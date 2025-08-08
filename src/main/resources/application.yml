@@ -1,0 +1,51 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: request-replay-service
+
+  threads:
+    virtual:
+      enabled: true
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.10.200:3306/whole_process_rrs?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+
+  thymeleaf:
+    cache: false  # 开发环境禁用模板缓存
+    prefix: classpath:/views/
+    suffix: .html
+
+server:
+  port: 27500
+
+#中继器配置
+repeater:
+  proxy_pass: http://192.168.10.200:85
+
+h2:
+  port: 59000
+
