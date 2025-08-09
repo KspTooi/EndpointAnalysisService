@@ -14,7 +14,7 @@ import java.time.Duration;
 @Configuration
 public class RepeaterConfig {
 
-    @Value("${repeater.proxy_pass}")
+    //@Value("${repeater.proxy_pass}")
     private String proxyPass;
 
     public URI buildTargetUri(jakarta.servlet.http.HttpServletRequest request) {

@@ -1,7 +1,7 @@
 package com.ksptooi.commons.aop;
 
-import com.ksptooi.biz.model.request.RequestPo;
-import com.ksptooi.biz.service.RequestService;
+import com.ksptooi.biz.core.model.request.RequestPo;
+import com.ksptooi.biz.core.service.RequestService;
 import com.ksptooi.commons.config.RepeaterConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,8 +28,8 @@ import java.util.*;
 import java.time.LocalDateTime;
 import com.google.gson.Gson;
 
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+//@Component
+//@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ProxyForwardFilter extends OncePerRequestFilter {
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();

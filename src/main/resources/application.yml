@@ -3,7 +3,7 @@ spring:
     active: dev
 
   application:
-    name: request-replay-service
+    name: endpoint-relay-service
 
   threads:
     virtual:
@@ -17,19 +17,24 @@ spring:
       enabled: true
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.10.200:3306/whole_process_rrs?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:mysql://192.168.10.200:3306/whole_process_rrs?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    #username: root
+    #password: root
+
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://127.0.0.1:59000/./EndpointAnalysisService
+    username:
+    password:
 
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: false
@@ -42,10 +47,5 @@ spring:
 server:
   port: 27500
 
-#中继器配置
-repeater:
-  proxy_pass: http://192.168.10.200:85
-
-h2:
-  port: 59000
-
+session:
+  expires: 86400

@@ -7,7 +7,7 @@
           :items="menuItems"
           :active-item-id="activeMenuId"
           :is-collapse="false"
-          title="RAS服务 管理控制台"
+          title="端点中继服务控制台"
           @item-click="handleMenuClick"
           @action="handleMenuAction"
         />
@@ -89,7 +89,7 @@ import {
   Grid, Briefcase, Tools, Monitor, Opportunity, 
   Collection, CollectionTag, Cpu, Trophy, List,
   HomeFilled, Refrigerator, Ticket, Management,
-  SetUp, Operation, DocumentCopy
+  SetUp, Operation, DocumentCopy, DArrowLeft, DArrowRight
 } from '@element-plus/icons-vue'
 
 // 定义组件props
@@ -126,10 +126,52 @@ const navigateToUrl = (url: string) => {
 // 内置菜单项定义，与旧版保持完全一致
 const menuItems = ref([
   {
+    id: 'user-manager',
+    title: '用户列表',
+    icon: User,
+    routerLink: '/user-manager'
+  },
+  {
+    id: 'group-manager',
+    title: '用户访问组',
+    icon: Lock,
+    routerLink: '/group-manager'
+  },
+  {
+    id: 'permission-manager',
+    title: '权限节点',
+    icon: Key,
+    routerLink: '/permission-manager'
+  },
+  {
+    id: 'session-manager',
+    title: '会话管理',
+    icon: Ticket,
+    routerLink: '/session-manager'
+  },
+  {
+    id: 'config-manager',
+    title: '配置管理',
+    icon: Setting,
+    routerLink: '/config-manager'
+  },
+  {
+    id: 'application-maintain',
+    title: '维护中心',
+    icon: Tools,
+    routerLink: '/application-maintain'
+  },
+  {
     id: 'request-manager',
     title: '请求管理',
     icon: Grid,
     routerLink: '/'
+  },
+  {
+    id: 'relay-server-manager',
+    title: '中继通道配置',
+    icon: DArrowRight,
+    routerLink: '/relay-server-manager'
   }
 ])
 

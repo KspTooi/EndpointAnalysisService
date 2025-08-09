@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ksptooi</groupId>
-    <artifactId>request-replay-service</artifactId>
+    <artifactId>endpoint-analysis-service</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

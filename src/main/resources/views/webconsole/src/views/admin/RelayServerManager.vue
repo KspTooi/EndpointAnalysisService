@@ -1,0 +1,488 @@
+<template>
+  <div class="relay-server-manager-container">
+    <!-- 查询表单 -->
+    <div class="query-form">
+      <el-form :model="query" inline>
+        <el-form-item label="中继通道名称">
+          <el-input
+              v-model="query.name"
+              placeholder="请输入中继通道名称"
+              clearable
+              style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item label="桥接目标URL">
+          <el-input
+              v-model="query.forwardUrl"
+              placeholder="请输入桥接目标URL"
+              clearable
+              style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="loadRelayServerList">查询</el-button>
+          <el-button @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <el-button type="primary" @click="openAddModal">创建中继通道</el-button>
+    </div>
+
+    <!-- 列表 -->
+    <div class="relay-server-table">
+      <el-table
+          :data="list"
+          stripe
+          v-loading="loading"
+          border
+      >
+        <el-table-column label="通道名称" prop="name" />
+        <el-table-column label="主机" prop="host" />
+        <el-table-column label="桥接目标URL" prop="forwardUrl" show-overflow-tooltip/>
+        <el-table-column label="自动运行" prop="autoStart" width="100">
+          <template #default="scope">
+            <span v-show="scope.row.autoStart === 1" style="color: #67c23a;">
+              已启用
+            </span>
+            <span v-show="scope.row.autoStart === 0" style="color: #f56c6c;">
+              未启用
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" prop="status" min-width="70">
+          <template #default="scope">
+            <span v-show="scope.row.status === 0" style="color: #999;">
+              已禁用
+            </span>
+            <span v-show="scope.row.status === 1" style="color: #e6a23c;">
+              未启动
+            </span>
+            <span v-show="scope.row.status === 2" style="color: #67c23a;">
+              运行中
+            </span>
+            <span v-show="scope.row.status === 3" style="color: #f56c6c;">
+              启动失败
+            </span>
+            <el-button
+                style="margin-left: 0;"
+                inline
+                link
+                type="primary"
+                size="small"
+                v-show="scope.row.status === 1 || scope.row.status === 3"
+                @click="startRelayServer(scope.row)"
+                :icon="CaretTopIcon"
+            >
+              启动
+            </el-button>
+            <el-button
+                style="margin-left: 0;"
+                inline
+                link
+                type="primary"
+                size="small"
+                v-show="scope.row.status === 2"
+                @click="stopRelayServer(scope.row)"
+                :icon="CaretBottomIcon"
+            >
+              停止
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" prop="createTime" />
+        <el-table-column label="操作" fixed="right" >
+          <template #default="scope">
+            <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openEditModal(scope.row)"
+                :icon="ViewIcon"
+            >
+              编辑
+            </el-button>
+            <el-button
+                link
+                type="danger"
+                size="small"
+                @click="removeRelayServer(scope.row)"
+                :icon="DeleteIcon"
+            >
+              删除
+            </el-button>
+
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页 -->
+      <div class="pagination-container">
+        <el-pagination
+            v-model:current-page="query.pageNum"
+            v-model:page-size="query.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="(val: number) => {
+            query.pageSize = val
+            loadRelayServerList()
+          }"
+            @current-change="(val: number) => {
+            query.pageNum = val
+            loadRelayServerList()
+          }"
+            background
+        />
+      </div>
+    </div>
+
+    <!-- 请求编辑模态框 -->
+    <el-dialog
+        v-model="dialogVisible"
+        :title="modalMode === 'edit' ? '编辑中继通道' : '添加中继通道'"
+        width="550px"
+        :close-on-click-modal="false"
+        @close="resetForm(); loadRelayServerList()"
+    >
+      <el-form
+          v-if="dialogVisible"
+          ref="formRef"
+          :model="details"
+          :rules="rules"
+          label-width="140px"
+          :validate-on-rule-change="false"
+      >
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="details.name" placeholder="请输入中继通道名称" />
+        </el-form-item>
+        <el-form-item label="主机" prop="host">
+          <el-input v-model="details.host" placeholder="192.168.1.1" />
+        </el-form-item>
+        <el-form-item label="端口" prop="port">
+          <el-input v-model="details.port" placeholder="8080" type="number" />
+        </el-form-item>
+        <el-form-item label="桥接目标URL" prop="forwardUrl">
+          <el-input v-model="details.forwardUrl" placeholder="https://www.baidu.com" />
+        </el-form-item>
+        <el-form-item label="自动运行" prop="autoStart">
+          <el-switch v-model="details.autoStart" :active-value="1" :inactive-value="0"  style="margin-right: 10px;"/>
+          <el-tooltip content="自动运行：如果勾选，则中继服务器启动后会自动运行，否则需要手动启动" placement="top" >
+            <div style="display: flex; align-items: center; gap: 5px; color: #999;">
+              <span>查看说明</span>
+              <el-icon><InfoFilled/></el-icon>
+            </div>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item label="重定向覆写" prop="overrideRedirect">
+          <el-switch v-model="details.overrideRedirect" :active-value="1" :inactive-value="0"  style="margin-right: 10px;"/>
+          <el-tooltip content="当桥接目标响应30X重定向时,桥接通道会将其跳转地址统一改为下方填写的‘重定向覆写URL’；不勾选则原样返回目标站重定向。仅对重定向响应生效，普通 200 响应不受影响。" placement="top" >
+            <div style="display: flex; align-items: center; gap: 5px; color: #999;">
+              <span>查看说明</span>
+              <el-icon><InfoFilled/></el-icon>
+            </div>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="details.overrideRedirect === 1">
+          <el-input v-model="details.overrideRedirectUrl" placeholder="例如：https://example.com/after-login 或 https://example.com/home" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveRelayServer" :loading="submitLoading">
+            {{ modalMode === 'add' ? '创建' : '保存' }}
+          </el-button>
+        </div>
+        </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import {reactive, ref, onMounted} from "vue";
+import RelayServerApi, { type GetRelayServerListDto } from "@/api/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo } from "@/api/RelayServerApi.ts";
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from '@element-plus/icons-vue';
+import { markRaw } from 'vue';
+import type { FormInstance } from 'element-plus';
+
+//查询条件
+const query = reactive<GetRelayServerListDto>({
+  name: null,
+  forwardUrl: null,
+  pageNum: 1,
+  pageSize: 10
+})
+
+//列表
+const list = ref<GetRelayServerListVo[]>([])
+const total = ref(0)
+
+// 加载状态
+const loading = ref(false)
+
+// 使用markRaw包装图标组件
+const EditIcon = markRaw(Edit);
+const ViewIcon = markRaw(View);
+const DeleteIcon = markRaw(Delete);
+const CaretTopIcon = markRaw(CaretTop);
+const CaretBottomIcon = markRaw(CaretBottom);
+
+// 模态框相关
+const dialogVisible = ref(false)
+const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
+const modalMode = ref<("view" | "edit" | "add")>("view") //view:预览,edit:编辑,add:添加
+
+//表单数据
+const details = reactive<GetRelayServerDetailsVo>({
+  id: null,
+  name: null,
+  host: null,
+  port: null,
+  forwardUrl: null,
+  autoStart: null,
+  status: null,
+  errorMessage: null,
+  overrideRedirect: null,
+  overrideRedirectUrl: null,
+  createTime: null,
+})
+
+// 表单校验规则
+const rules = {
+  name: [
+    { required: true, message: '请输入中继通道名称', trigger: 'blur' }
+  ],
+  host: [
+    { required: true, message: '请输入中继服务器主机', trigger: 'blur' },
+    { pattern: /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/, message: '主机名必须为有效IP地址', trigger: 'blur' }
+  ],
+  port: [
+    { required: true, message: '请输入中继服务器端口', trigger: 'blur' },
+    { pattern: /^[0-9]{1,5}$/, message: '端口必须为1-65535之间的整数', trigger: 'blur' }
+  ],
+  forwardUrl: [
+    { required: true, message: '请输入桥接目标URL', trigger: 'blur' },
+    { pattern: /^https?:\/\/[^\s/$.?#].[^\s]*$/i, message: '桥接目标URL必须为有效URL', trigger: 'blur' }
+  ],
+  autoStart: [
+    { required: true, message: '请选择是否自动运行', trigger: 'blur' }
+  ]
+}
+
+//页面加载时自动加载数据
+onMounted(() => {
+  loadRelayServerList()
+})
+
+
+const loadRelayServerList = async () => {
+
+  loading.value = true
+  try {
+    const res = await RelayServerApi.getRelayServerList(query);
+    list.value = res.data;
+    total.value = res.total;
+    console.log(res)
+  } catch (e) {
+    ElMessage.error('加载中继通道列表失败');
+  } finally {
+    loading.value = false
+  }
+}
+
+const resetQuery = () => {
+  query.name = null
+  query.forwardUrl = null
+  query.pageNum = 1
+  loadRelayServerList()
+}
+
+const resetForm = () => {
+  details.id = null
+  details.name = null
+  details.host = null
+  details.port = null
+  details.forwardUrl = null
+  details.autoStart = null
+  details.status = null
+  details.errorMessage = null
+  details.overrideRedirect = null
+  details.overrideRedirectUrl = null
+  details.createTime = null
+}
+
+
+//打开添加中继服务器模态框
+const openAddModal = async () => {
+  modalMode.value = "add"
+  resetForm()
+  details.host = "0.0.0.0"
+  details.port = 8080
+  details.autoStart = 1
+  dialogVisible.value = true
+}
+
+//打开编辑中继服务器模态框
+const openEditModal = async (row: GetRelayServerListVo) => {
+
+
+  //无法修改一个正在运行中的中继通道
+  if(row.status === 2){
+    ElMessage.error('无法修改一个正在运行中的中继通道');
+    return;
+  }
+
+  modalMode.value = "edit"
+  resetForm()
+  try {
+
+    //获取请求数据
+    const res = await RelayServerApi.getRelayServerDetails(row.id.toString())
+    details.id = res.id
+    details.name = res.name
+    details.host = res.host
+    details.port = res.port
+    details.forwardUrl = res.forwardUrl
+    details.autoStart = res.autoStart
+    details.status = res.status
+    details.errorMessage = res.errorMessage
+    details.overrideRedirect = res.overrideRedirect
+    details.overrideRedirectUrl = res.overrideRedirectUrl
+    details.createTime = res.createTime
+    dialogVisible.value = true
+  } catch (error: any) {
+    ElMessage.error(error.message)
+    console.error('获取请求详情失败', error)
+  }
+}
+
+
+const saveRelayServer = async () => {
+
+  //验证表单
+  if (formRef.value){
+    await formRef.value.validate()
+  }
+
+  try {
+
+    if(modalMode.value === "add"){
+      await RelayServerApi.addRelayServer({
+        name: details.name,
+        host: details.host,
+        port: details.port,
+        forwardUrl: details.forwardUrl,
+        autoStart: details.autoStart,
+        overrideRedirect: details.overrideRedirect,
+        overrideRedirectUrl: details.overrideRedirectUrl
+      })
+      ElMessage.success('添加中继通道成功')
+    }
+
+    if(modalMode.value === "edit"){
+      await RelayServerApi.editRelayServer({
+        id: details.id,
+        name: details.name,
+        host: details.host,
+        port: details.port,
+        forwardUrl: details.forwardUrl,
+        autoStart: details.autoStart,
+        overrideRedirect: details.overrideRedirect,
+        overrideRedirectUrl: details.overrideRedirectUrl
+      })
+      ElMessage.success('编辑中继通道成功')
+    }
+
+    dialogVisible.value = false
+    loadRelayServerList()
+
+  } catch (error: any) {
+    ElMessage.error(error.message)
+    console.error('操作中继通道失败', error)
+  }
+
+
+
+}
+
+const removeRelayServer = async (row: GetRelayServerListVo) => {
+
+  //无法删除一个正在运行中的中继通道
+  if(row.status === 2){
+    ElMessage.error('无法删除一个正在运行中的中继通道');
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm('确定删除中继通道 [' + row.name + '] 吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+  } catch (error) {
+    return
+  } 
+
+  try {
+    await RelayServerApi.removeRelayServer(row.id.toString())
+    ElMessage.success('删除中继通道成功');
+    loadRelayServerList()
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+
+}
+
+const startRelayServer = async (row: GetRelayServerListVo) => {
+
+  try {
+    await RelayServerApi.startRelayServer(row.id.toString())
+    ElMessage.success('启动中继通道成功');
+    loadRelayServerList()
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+}
+
+const stopRelayServer = async (row: GetRelayServerListVo) => {  
+  try {
+    await RelayServerApi.stopRelayServer(row.id.toString())
+    ElMessage.success('停止中继通道成功');
+    loadRelayServerList()
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+}
+
+</script>
+
+<style scoped>
+.relay-server-manager-container {
+  padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.query-form {
+  margin-bottom: 20px;
+}
+
+.relay-server-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.copy-icon {
+  cursor: pointer;
+}
+</style>

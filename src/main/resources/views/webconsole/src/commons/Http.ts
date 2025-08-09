@@ -1,4 +1,4 @@
-import type Result from "@/entity/Result.ts";
+import type Result from "@/commons/entity/Result.ts";
 import axios from "axios";
 // 不再需要单独导入 useRouter，因为我们直接使用 admin router
 import router from '@/router/admin';

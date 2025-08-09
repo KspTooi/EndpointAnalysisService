@@ -13,8 +13,7 @@ public class H2Server {
 
     private final Logger log = LoggerFactory.getLogger(H2Server.class.getName());
 
-    @Value("${h2.port:1109}")
-    private int port;
+    private int port = 1109;
 
     private Server tcpServer;
     private Server memServer;
@@ -28,10 +27,8 @@ public class H2Server {
     }
 
     public void start() throws SQLException {
-
         tcpServer = Server.createTcpServer("-tcpPort", ""+port, "-tcpAllowOthers","-ifNotExists").start();
         log.info("H2数据库引擎已启动(TCP模式) 端口:"+port);
-
     }
 
     public void stop() {

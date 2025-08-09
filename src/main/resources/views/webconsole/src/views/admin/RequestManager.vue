@@ -144,6 +144,7 @@
         <el-table-column 
           prop="requestTime" 
           label="请求时间" 
+          show-overflow-tooltip
         />
         
         <el-table-column label="操作" fixed="right" min-width="100">
@@ -187,7 +188,8 @@
       v-model="dialogVisible"
       :title="modalMode === 'view' ? '预览请求' : '编辑请求'"
       width="800px"
-      :close-on-click-modal="false"
+      :close-on-click-modal="true"
+      class="centered-dialog"
     >
       <el-form
         v-if="dialogVisible"
@@ -197,52 +199,84 @@
         label-width="100px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="请求ID" prop="requestId">
-          <el-input v-model="details.requestId" disabled />
-        </el-form-item>
-        <el-form-item label="请求方法" prop="method">
-          <el-input v-model="details.method" disabled />
-        </el-form-item>
-        <el-form-item label="请求URL" prop="url">
-          <el-input v-model="details.url" disabled />
-        </el-form-item>
-        <el-form-item label="来源" prop="source">
-          <el-input v-model="details.source" disabled />
-        </el-form-item>
-        <el-form-item label="请求头" prop="requestHeaders">
-          <el-input v-show="expandRequestHeaders" v-model="details.requestHeaders" type="textarea" :rows="10" disabled/>
-          <el-button type="text" @click="expandRequestHeaders = !expandRequestHeaders">展开</el-button>
-        </el-form-item>
-        <el-form-item label="响应头" prop="responseHeaders">
-          <el-input v-show="expandResponseHeaders" v-model="details.responseHeaders" type="textarea" :rows="10" disabled/>
-          <el-button type="text" @click="expandResponseHeaders = !expandResponseHeaders">展开</el-button>
-        </el-form-item>
-        <el-form-item label="请求体" prop="requestBody">
-          <el-input v-model="details.requestBody" type="textarea" :rows="10" :autosize="false" disabled />
-        </el-form-item>
-        <el-form-item label="响应体" prop="responseBody">
-          <el-input v-model="details.responseBody" type="textarea" :rows="10" disabled />
-        </el-form-item>
-        <el-form-item label="HTTP状态码" prop="statusCode">
-          <el-input v-model="details.statusCode" disabled />
-        </el-form-item>
-        <el-form-item label="重定向URL" prop="redirectUrl">
-          <el-input v-model="details.redirectUrl" disabled />
-        </el-form-item>
-        <el-form-item label="响应时间" prop="responseTime">
-          <el-input v-model="details.responseTime" disabled />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="details.status" disabled>
-            <el-option label="正常" :value="0" />
-            <el-option label="HTTP失败" :value="1" />
-            <el-option label="业务失败" :value="2" />
-            <el-option label="连接超时" :value="3" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请求时间" prop="requestTime">
-          <el-input v-model="details.requestTime" disabled />
-        </el-form-item>
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="负载" name="payload">
+            <el-form-item label="请求体" prop="requestBody">
+              <el-input
+                :model-value="formatJson(details.requestBody)"
+                type="textarea"
+                :rows="14"
+                readonly
+              />
+            </el-form-item>
+            <el-form-item label="响应体" prop="responseBody">
+              <el-input
+                :model-value="formatJson(details.responseBody)"
+                type="textarea"
+                :rows="14"
+                readonly
+              />
+            </el-form-item>
+          </el-tab-pane>
+
+          <el-tab-pane label="标头" name="headers">
+            <el-form-item label="请求头" prop="requestHeaders">
+              <el-input v-model="details.requestHeaders" type="textarea" :rows="12" disabled />
+            </el-form-item>
+            <el-form-item label="响应头" prop="responseHeaders">
+              <el-input v-model="details.responseHeaders" type="textarea" :rows="12" disabled />
+            </el-form-item>
+          </el-tab-pane>
+
+          <el-tab-pane label="详情" name="meta">
+            <el-form-item label="请求ID" prop="requestId">
+              <el-input v-model="details.requestId" disabled />
+            </el-form-item>
+            <el-form-item label="请求方法" prop="method">
+              <el-input v-model="details.method" disabled />
+            </el-form-item>
+            <el-form-item label="请求URL" prop="url">
+              <el-input v-model="details.url" disabled />
+            </el-form-item>
+            <el-form-item label="来源" prop="source">
+              <el-input v-model="details.source" disabled />
+            </el-form-item>
+
+            <el-form-item label="请求体类型" prop="requestBodyType">
+              <el-input v-model="details.requestBodyType" disabled />
+            </el-form-item>
+            <el-form-item label="请求体长度" prop="requestBodyLength">
+              <el-input v-model="details.requestBodyLength" disabled />
+            </el-form-item>
+            <el-form-item label="响应体类型" prop="responseBodyType">
+              <el-input v-model="details.responseBodyType" disabled />
+            </el-form-item>
+            <el-form-item label="响应体长度" prop="responseBodyLength">
+              <el-input v-model="details.responseBodyLength" disabled />
+            </el-form-item>
+
+            <el-form-item label="HTTP状态码" prop="statusCode">
+              <el-input v-model="details.statusCode" disabled />
+            </el-form-item>
+            <el-form-item label="重定向URL" prop="redirectUrl">
+              <el-input v-model="details.redirectUrl" disabled />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="details.status" disabled>
+                <el-option label="正常" :value="0" />
+                <el-option label="HTTP失败" :value="1" />
+                <el-option label="业务失败" :value="2" />
+                <el-option label="连接超时" :value="3" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="请求时间" prop="requestTime">
+              <el-input v-model="details.requestTime" disabled />
+            </el-form-item>
+            <el-form-item label="响应时间" prop="responseTime">
+              <el-input v-model="details.responseTime" disabled />
+            </el-form-item>
+          </el-tab-pane>
+        </el-tabs>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -258,8 +292,8 @@
 
 <script setup lang="ts">
 import {reactive, ref, onMounted} from "vue";
-import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo} from "@/commons/api/RequestApi";
-import RequestApi from "@/commons/api/RequestApi";
+import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo} from "@/api/RequestApi.ts";
+import RequestApi from "@/api/RequestApi.ts";
 import { ElMessage } from 'element-plus';
 import { Edit, DocumentCopy, View } from '@element-plus/icons-vue';
 import { markRaw } from 'vue';
@@ -293,8 +327,8 @@ const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
 const modalMode = ref<("view" | "edit")>("view") //view:预览,edit:编辑
 
-const expandResponseHeaders = ref(false) //是否展开响应头
-const expandRequestHeaders = ref(false) //是否展开请求头
+// 预览Tab
+const activeTab = ref<'payload' | 'headers' | 'meta'>('payload')
 
 
 //表单数据
@@ -425,6 +459,7 @@ const openViewModal = async (row: GetRequestListVo) => {
     details.responseBodyLength = res.responseBodyLength
     details.responseBodyType = res.responseBodyType
     modalMode.value = "view"
+    activeTab.value = 'payload'
     dialogVisible.value = true
   } catch (error) {
     ElMessage.error('获取请求详情失败')
@@ -498,6 +533,25 @@ const copyText = async (text: string) => {
     ElMessage.error('复制失败')
   }
 }
+
+const formatJson = (data: unknown): string => {
+  if (data === null || data === undefined) return ''
+  if (typeof data === 'string') {
+    const trimmed = data.trim()
+    if (!trimmed) return ''
+    try {
+      const parsed = JSON.parse(trimmed)
+      return JSON.stringify(parsed, null, 2)
+    } catch (_) {
+      return data
+    }
+  }
+  try {
+    return JSON.stringify(data, null, 2)
+  } catch (_) {
+    return String(data)
+  }
+}
 </script>
 
 <style scoped>
@@ -526,5 +580,48 @@ const copyText = async (text: string) => {
 
 .copy-icon {
   cursor: pointer;
+}
+
+/* 垂直居中对话框并在小屏自适应高度 */
+:deep(.centered-dialog) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 70vh;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 内容区滚动以防止超出屏幕 */
+:deep(.centered-dialog .el-dialog__body) {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 表单充满对话框，便于内部滚动控制 */
+:deep(.centered-dialog .el-form) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Tabs 使用列布局，头部固定，内容区自适应 */
+:deep(.centered-dialog .el-tabs) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 仅内容区滚动 */
+:deep(.centered-dialog .el-tabs__content) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 </style>
