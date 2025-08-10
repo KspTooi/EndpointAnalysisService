@@ -35,7 +35,7 @@ public class ConfigService {
         }
 
         Pageable pageQuery = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize(), Sort.Direction.DESC, "updateTime");
-        Page<GetConfigListVo> pPos = repository.getConfigList(dto.getKeyword(),dto.getPlayerName(), userId, pageQuery);
+        Page<GetConfigListVo> pPos = repository.getConfigList(dto.getKeyword(),dto.getUserName(), userId, pageQuery);
         List<GetConfigListVo> vos = as(pPos.getContent(),GetConfigListVo.class);
 
         for(GetConfigListVo vo:vos){

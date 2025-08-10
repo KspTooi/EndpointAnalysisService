@@ -79,7 +79,17 @@ const router = createRouter({
       component: () => import('@/views/admin/RelayServerManager.vue'),
       meta: {
         breadcrumb: {
-          title: '中继服务器配置'
+          title: '中继通道配置'
+        }
+      }
+    },
+    {
+      path: '/ep-doc-manager',
+      name: 'ep-doc-manager',
+      component: () => import('@/views/admin/EpDocManager.vue'),
+      meta: {
+        breadcrumb: {
+          title: '端点文档配置'
         }
       }
     }

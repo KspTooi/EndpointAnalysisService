@@ -41,7 +41,12 @@ public class TokenFilter implements Filter {
             "/userRegister",
             "/install-wizard/**",
             "/welcome",
-            "/"
+            "/",
+            
+            // springdoc / swagger
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**"
     );
 
     private static final Map<String,String> BLACK_LIST = Map.of(

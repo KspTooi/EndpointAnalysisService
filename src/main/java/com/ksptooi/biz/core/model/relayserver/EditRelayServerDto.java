@@ -58,8 +58,11 @@ public class EditRelayServerDto {
             return "端口必须为1-65535之间的整数";
         }
 
-        //桥接目标URL必须为有效URL https:// or http://
-        if(!forwardUrl.matches("^https?://\\S+$") || !forwardUrl.matches("^http://\\S+$")) {
+        //桥接目标URL必须为有效URL http:// 或 https:// 且支持域名
+        if(StringUtils.isBlank(forwardUrl)) {
+            return "桥接目标URL不能为空";
+        }
+        if(!forwardUrl.matches("^https?://[A-Za-z0-9.-]+(?::\\d+)?(?:/\\S*)?$")) {
             return "桥接目标URL必须为有效URL";
         }
 

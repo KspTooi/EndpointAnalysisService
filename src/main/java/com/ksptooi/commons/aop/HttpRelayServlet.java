@@ -148,7 +148,7 @@ public class HttpRelayServlet extends HttpServlet{
                 if(relayServer.getOverrideRedirect() == 1){
                     var oldLocation = location;
                     location = replaceHostAndScheme(location, relayServer.getOverrideRedirectUrl());
-                    log.info("中继通道:{} 已将重定向URL覆写为:{} 原重定向URL:{}", relayServer.getForwardUrl(), location, oldLocation);
+                    log.info("中继通道:{} 已将重定向URL覆写为:{} 原重定向URL:{}", relayServer.getName(), location, oldLocation);
                 }
                 request.setRedirectUrl(location);
             }
@@ -220,7 +220,7 @@ public class HttpRelayServlet extends HttpServlet{
                 var oldLocation = location;
                 location = replaceHostAndScheme(location, relayServer.getOverrideRedirectUrl());
                 hsrp.setHeader("Location", location);
-                log.info("中继通道:{} 已将重定向URL覆写为:{} 原重定向URL:{}", relayServer.getForwardUrl(), location, oldLocation);
+                log.info("中继通道:{} 已将重定向URL覆写为:{} 原重定向URL:{}", relayServer.getName(), location, oldLocation);
             }
         }
 

@@ -1,8 +1,11 @@
 package com.ksptooi.biz.core.model.relayserver;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.Comment;
+
+import com.ksptooi.biz.core.model.request.RequestPo;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -61,6 +64,10 @@ public class RelayServerPo {
     @Column(name = "update_time", nullable = false)
     @Comment("更新时间")
     private LocalDateTime updateTime;
+
+    @OneToMany(mappedBy = "relayServer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("请求记录")
+    private List<RequestPo> requestList;
     
 
     @PrePersist

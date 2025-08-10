@@ -25,20 +25,21 @@ public interface ConfigRepository extends JpaRepository<ConfigPo, Long> {
 
     @Query("""
             SELECT new com.ksptooi.biz.core.model.config.GetConfigListVo(
-                c.id, c.user.username, c.configKey,
+                c.id, u.username, c.configKey,
                 c.configValue, c.description, c.createTime, c.updateTime
             )
             FROM ConfigPo c
+            LEFT JOIN c.user u
             WHERE (:keyword IS NULL
                 OR c.configKey LIKE %:keyword%
                 OR c.configValue LIKE %:keyword%
                 OR c.description LIKE %:keyword%
             )
             AND (:userName IS NULL
-                OR (c.user.username LIKE CONCAT('%', :userName, '%') AND :userName != '全局')
-                OR (c.user IS NULL AND :userName = '全局')
+                OR (u.username LIKE CONCAT('%', :userName, '%') AND :userName != '全局')
+                OR (u IS NULL AND :userName = '全局')
             )
-            AND (:userId IS NULL OR c.user.id = :userId)
+            AND (:userId IS NULL OR u.id = :userId)
             ORDER BY c.configKey ASC,c.updateTime DESC
             """)
     Page<GetConfigListVo> getConfigList(@Param("keyword") String keyword,

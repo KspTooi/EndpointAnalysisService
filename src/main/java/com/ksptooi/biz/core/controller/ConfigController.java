@@ -12,6 +12,8 @@ import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.Result;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,20 +21,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @PrintLog
 @RestController
 @RequestMapping("/config")
+@Tag(name = "配置项管理", description = "配置项管理")
 public class ConfigController {
 
     @Autowired
     private ConfigService service;
 
+    @Operation(summary = "获取配置项列表")
     @PostMapping("getConfigList")
     @RequirePermissionRest("admin:config:view")
     public PageResult<GetConfigListVo> getConfigList(@RequestBody @Valid GetConfigListDto dto) throws Exception{
         return service.getConfigList(dto);
     }
-
+    
+    @Operation(summary = "获取配置项详情")
     @PostMapping("getConfigDetails")
     @RequirePermissionRest("admin:config:save")
     public Result<GetConfigDetailsVo> getConfigDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
@@ -43,6 +49,7 @@ public class ConfigController {
         }
     }
 
+    @Operation(summary = "保存配置项")
     @PostMapping("saveConfig")
     @RequirePermissionRest("admin:config:save")
     public Result<String> saveConfig(@RequestBody @Valid SaveConfigDto dto) throws Exception{
@@ -54,6 +61,7 @@ public class ConfigController {
         }
     }
 
+    @Operation(summary = "删除配置项")
     @PostMapping("removeConfig")
     @RequirePermissionRest("admin:config:remove")
     public Result<String> removeConfig(@RequestBody @Valid CommonIdDto dto) throws Exception{

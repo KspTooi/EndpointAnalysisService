@@ -27,10 +27,10 @@ public enum PermissionEnum {
     ADMIN_GROUP_ASSIGN("admin:group:assign", "为用户组分配权限"),
 
     //配置管理
-    ADMIN_CONFIG_VIEW("admin:config:view", "查看配置项"),
+    ADMIN_CONFIG_VIEW("admin:config:view", "访问配置项"),
     ADMIN_CONFIG_SAVE("admin:config:save", "新增/编辑配置项"), 
     ADMIN_CONFIG_REMOVE("admin:config:remove", "移除配置项"),
-
+    ADMIN_CONFIG_VIEW_GLOBAL("panel:config:view:global", "查看全局配置项"),
 
     //系统维护  
     ADMIN_MAINTAIN_PERMISSION("admin:maintain:permission", "校验系统权限"),

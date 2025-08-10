@@ -49,3 +49,17 @@ server:
 
 session:
   expires: 86400
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui
+    display-request-duration: true
+    try-it-out-enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+knife4j:
+  enable: true
