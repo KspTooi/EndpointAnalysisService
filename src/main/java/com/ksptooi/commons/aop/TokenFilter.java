@@ -42,7 +42,8 @@ public class TokenFilter implements Filter {
             "/install-wizard/**",
             "/welcome",
             "/",
-            
+            "/favicon.ico",
+
             // springdoc / swagger
             "/v3/api-docs/**",
             "/swagger-ui.html",
