@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.request;
 
+import com.ksptooi.biz.core.model.replayrequest.ReplayRequestPo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "relay_request")
@@ -96,6 +98,11 @@ public class RequestPo {
     @Column(name = "response_time")
     @Comment("响应时间")
     private LocalDateTime responseTime;
+
+    
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "originalRequest")
+    @Comment("重放请求")
+    private List<ReplayRequestPo> replayRequests;
 
     @PrePersist
     public void prePersist(){

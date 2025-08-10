@@ -48,20 +48,25 @@
             <el-option label="连接超时" value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="开始时间">
-          <el-date-picker
-            v-model="query.startTime"
-            type="datetime"
-            placeholder="请选择开始时间区间"
-            style="width: 200px"
-          />
+        <el-form-item label="是否重放"> 
+          <el-select 
+            v-model="query.replay" 
+            placeholder="请选择是否重放" 
+            clearable
+            style="width: 80px"
+          >
+            <el-option label="全部" :value="0" />
+            <el-option label="是" :value="1" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="结束时间">
+        <el-form-item label="时间区间">
           <el-date-picker
-            v-model="query.endTime"
-            type="datetime"
-            placeholder="请选择结束时间区间"
-            style="width: 200px"
+            v-model="timeRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            style="width: 360px"
           />
         </el-form-item>
         <el-form-item>
@@ -142,12 +147,18 @@
           </template>
         </el-table-column>
         <el-table-column 
+          prop="replayCount" 
+          label="重放" 
+          min-width="35"
+          show-overflow-tooltip
+        />
+        <el-table-column 
           prop="requestTime" 
           label="请求时间" 
           show-overflow-tooltip
         />
         
-        <el-table-column label="操作" fixed="right" min-width="100">
+        <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button 
               link
@@ -157,6 +168,16 @@
               :icon="ViewIcon"
             >
               预览请求
+            </el-button>
+            <el-button 
+              link
+              type="success" 
+              size="small" 
+              @click="goToReplay(scope.row)"
+              :icon="RightIcon"
+              style="margin-left: 8px;"
+            >
+              转到重放
             </el-button>
           </template>
         </el-table-column>
@@ -295,9 +316,14 @@ import {reactive, ref, onMounted} from "vue";
 import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo} from "@/api/RequestApi.ts";
 import RequestApi from "@/api/RequestApi.ts";
 import { ElMessage } from 'element-plus';
-import { Edit, DocumentCopy, View } from '@element-plus/icons-vue';
+import { Edit, DocumentCopy, View, Right } from '@element-plus/icons-vue';
 import { markRaw } from 'vue';
 import type { FormInstance } from 'element-plus';
+import { useRouter } from 'vue-router';
+import QueryPersistService from '@/service/QueryPersistService';
+
+const router = useRouter()
+const queryPersistService = QueryPersistService
 
 const query = reactive<GetRequestListDto>({
   requestId: null,
@@ -307,8 +333,9 @@ const query = reactive<GetRequestListDto>({
   status: null,
   startTime: null,
   endTime: null,
+  replay: 0,
   pageNum: 1,
-  pageSize: 10
+  pageSize: 10,
 })
 
 const list = ref<GetRequestListVo[]>([])
@@ -320,6 +347,7 @@ const loading = ref(false)
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const ViewIcon = markRaw(View);
+const RightIcon = markRaw(Right);
 
 // 模态框相关
 const dialogVisible = ref(false)
@@ -341,11 +369,11 @@ const details = reactive<GetRequestDetailsVo>({
   requestHeaders: "",
   requestBodyLength: 0,
   requestBodyType: "",
-  requestBody: {},
+  requestBody: "",
   responseHeaders: "",
   responseBodyLength: 0,
   responseBodyType: "",
-  responseBody: {},
+  responseBody: "",
   statusCode: 0,
   redirectUrl: "",
   status: 0,
@@ -366,12 +394,22 @@ const rules = {
   ]
 }
 
-const updateTimeRange = ref<[string, string] | null>(null)
+const timeRange = ref<[Date, Date] | null>(null)
+
+const formatDateTime = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
 
 const loadRequestList = async () => {
-  if (updateTimeRange.value) {
-    query.startTime = updateTimeRange.value[0]
-    query.endTime = updateTimeRange.value[1]
+  if (timeRange.value) {
+    query.startTime = formatDateTime(timeRange.value[0])
+    query.endTime = formatDateTime(timeRange.value[1])
   } else {
     query.startTime = null
     query.endTime = null
@@ -381,6 +419,7 @@ const loadRequestList = async () => {
     const res = await RequestApi.getRequestList(query);
     list.value = res.data;
     total.value = res.total;
+    queryPersistService.persistQuery("request-manager", query);
     console.log(res)
   } catch (e) {
     ElMessage.error('Failed to load configuration list');
@@ -398,8 +437,10 @@ const resetQuery = () => {
   query.status = null
   query.startTime = null
   query.endTime = null
-  updateTimeRange.value = null
+  query.replay = 0
+  timeRange.value = null
   query.pageNum = 1
+  queryPersistService.clearQuery("request-manager");
   loadRequestList()
 }
 
@@ -412,11 +453,11 @@ const resetForm = () => {
   details.requestHeaders = ""
   details.requestBodyLength = 0
   details.requestBodyType = ""
-  details.requestBody = {}
+  details.requestBody = ""
   details.responseHeaders = ""
   details.responseBodyLength = 0
   details.responseBodyType = ""
-  details.responseBody = {}
+  details.responseBody = ""
   details.statusCode = 0
   details.redirectUrl = ""
   details.status = 0
@@ -430,6 +471,7 @@ const resetForm = () => {
 
 //页面加载时自动加载数据
 onMounted(() => {
+  queryPersistService.loadQuery("request-manager", query);
   loadRequestList()
 })
 
@@ -532,6 +574,12 @@ const copyText = async (text: string) => {
   } catch (e) {
     ElMessage.error('复制失败')
   }
+}
+
+const goToReplay = (row: GetRequestListVo) => {
+  localStorage.setItem('originRequestId', row.requestId)
+  router.push({ name: 'replay-request-manager' })
+  ElMessage.success('已跳转到重放请求页面')
 }
 
 const formatJson = (data: unknown): string => {

@@ -35,6 +35,9 @@ public class GetRequestListVo{
     //HTTP响应状态码
     private Integer statusCode;
 
+    //重放次数
+    private Integer replayCount;
+
     //发起请求时间
     private LocalDateTime requestTime;
 
@@ -48,6 +51,7 @@ public class GetRequestListVo{
                             String source,
                             Integer status,
                             Integer statusCode,
+                            Integer replayCount,
                             LocalDateTime requestTime,
                             LocalDateTime responseTime) {
         this.id = id;
@@ -57,6 +61,7 @@ public class GetRequestListVo{
         this.source = source;
         this.status = status;
         this.statusCode = statusCode;
+        this.replayCount = replayCount;
         this.requestTime = requestTime;
         this.responseTime = responseTime;
     }

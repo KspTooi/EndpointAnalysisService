@@ -14,10 +14,13 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.ksptooi.biz.core.model.relayserver.GetRelayServerDetailsVo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.service.RequestService;
+import com.ksptooi.commons.utils.GsonUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -155,6 +158,43 @@ public class HttpRelayServlet extends HttpServlet{
 
             request.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
             request.setResponseTime(LocalDateTime.now());
+
+            //如果请求ID策略为1 则尝试从响应头中获取请求ID
+            if(relayServer.getRequestIdStrategy() == 1){
+                String requestId = upstream.headers().firstValue(relayServer.getRequestIdHeaderName()).orElse(null);
+                if(requestId != null){
+                    request.setRequestId(requestId);
+                }
+                if(requestId == null){
+                    log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", relayServer.getName(), request.getRequestId());
+                }
+            }
+
+            //如果业务错误策略为1 则尝试从响应体中获取业务错误码
+            if(relayServer.getBizErrorStrategy() == 1){
+                if(request.getResponseBodyType().contains("application/json")){
+
+                    JsonElement jsonTree = gson.fromJson(new String(responseBody, StandardCharsets.UTF_8), JsonElement.class);
+
+                    String successCode = relayServer.getBizSuccessCodeValue();
+                    String bizErrorCode = GsonUtils.getFromPath(jsonTree, relayServer.getBizErrorCodeField());
+
+                    //无法获取到错误码值 直接判定业务错误
+                    if(bizErrorCode == null){
+                        request.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                    }
+                    if(bizErrorCode != null){
+                        if(bizErrorCode.equals(successCode)){
+                            request.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                        }
+                        if(!bizErrorCode.equals(successCode)){
+                            request.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                        } 
+                    }
+                }
+
+            }
+
 
             //中继响应
             doResponse(hsrp,upstream,responseBody);

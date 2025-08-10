@@ -37,6 +37,21 @@ public class GetRelayServerDetailsVo {
     //覆盖桥接目标的重定向URL
     private String overrideRedirectUrl;
 
+    //请求ID策略 0:随机生成 1:从响应头获取
+    private Integer requestIdStrategy;
+
+    //请求ID在响应头中的字段名称
+    private String requestIdHeaderName;
+
+    //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    private Integer bizErrorStrategy;
+
+    //业务错误码字段(JSONPath)
+    private String bizErrorCodeField;
+
+    //业务错误码值(正确时返回的值)
+    private String bizSuccessCodeValue;
+
     //创建时间
     private LocalDateTime createTime;
 

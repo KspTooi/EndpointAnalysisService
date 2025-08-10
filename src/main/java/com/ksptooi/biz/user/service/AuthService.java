@@ -67,6 +67,20 @@ public class AuthService {
 
 
     /**
+     * 获取当前用户
+     * @return 当前用户
+     * @throws AuthException 如果用户未登录
+     */
+    public UserPo requireUser() throws AuthException {
+        var session = getCurrentUserSession();
+        if(session == null || session.getUserId() == null){
+            throw new AuthException("require user login");
+        }
+        return userRepository.findById(session.getUserId()).orElseThrow(() -> new AuthException("user not found"));
+    }
+
+
+    /**
      * 设置当前请求的用户会话
      * @param session 用户会话信息
      */

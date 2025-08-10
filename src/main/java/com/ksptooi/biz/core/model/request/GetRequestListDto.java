@@ -28,6 +28,9 @@ public class GetRequestListDto extends PageQuery{
     //状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时
     private Integer status;
 
+    //是否重放 0:否 1:是
+    private Integer replay;
+
     //时间范围开始
     private LocalDateTime startTime;
 

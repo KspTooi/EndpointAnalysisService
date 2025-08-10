@@ -38,6 +38,8 @@ public class EpDocSyncLogService {
             vo.setPullUrl(p.getPullUrl());
             vo.setStatus(p.getStatus());
             vo.setCreateTime(p.getCreateTime());
+            vo.setNewVersionCreated(p.getNewVersionCreated());
+            vo.setNewVersionNum(p.getNewVersionNum());
             vos.add(vo);
         }
 

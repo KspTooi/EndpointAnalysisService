@@ -40,6 +40,25 @@ public class AddRelayServerDto {
     //覆盖桥接目标的重定向URL
     private String overrideRedirectUrl;
 
+    //请求ID策略 0:随机生成 1:从请求头获取
+    @NotNull(message = "请求ID策略不能为空")
+    @Range(min = 0, max = 1, message = "请求ID策略只能为0或1")
+    private Integer requestIdStrategy;
+
+    //请求ID头名称
+    private String requestIdHeaderName;
+
+    //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    @NotNull(message = "业务错误策略不能为空")
+    @Range(min = 0, max = 1, message = "业务错误策略只能为0或1")
+    private Integer bizErrorStrategy;
+
+    //业务错误码字段(JSONPath)
+    private String bizErrorCodeField;
+
+    //业务错误码值(正确时返回的值)
+    private String bizSuccessCodeValue;
+
     //覆盖桥接目标的重定向URL
     /**
      * 验证参数
@@ -72,6 +91,21 @@ public class AddRelayServerDto {
         //当覆盖桥接目标的重定向为1时，覆盖桥接目标的重定向URL必须为有效URL https:// or http://
         if(overrideRedirect == 1 && !overrideRedirectUrl.matches("^https?://\\S+$") && !overrideRedirectUrl.matches("^http://\\S+$")) {
             return "覆盖桥接目标的重定向URL必须为有效URL";
+        }
+        
+        //当请求ID策略为1时，请求ID头名称不能为空
+        if(requestIdStrategy == 1 && StringUtils.isBlank(requestIdHeaderName)) {
+            return "请求ID头名称不能为空";
+        }
+
+        //当业务错误策略为1时，业务错误码字段不能为空
+        if(bizErrorStrategy == 1 && StringUtils.isBlank(bizErrorCodeField)) {
+            return "业务错误码字段不能为空";
+        }
+
+        //当业务错误策略为1时，业务错误码值不能为空
+        if(bizErrorStrategy == 1 && StringUtils.isBlank(bizSuccessCodeValue)) {
+            return "业务错误码值不能为空";
         }
 
         return null;

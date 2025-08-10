@@ -27,6 +27,11 @@ export interface AddRelayServerDto {
     autoStart: number | null; //自动运行 0:否 1:是
     overrideRedirect: number | null; //覆盖桥接目标的重定向 0:否 1:是
     overrideRedirectUrl: string | null; //覆盖桥接目标的重定向URL
+    requestIdStrategy: number | null; //请求ID策略 0:随机生成 1:从请求头获取
+    requestIdHeaderName: string | null; //请求ID头名称
+    bizErrorStrategy: number | null; //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    bizErrorCodeField: string | null; //业务错误码字段(JSONPath)
+    bizSuccessCodeValue: string | null; //业务成功码值(正确时返回的值)
 }
 
 export interface EditRelayServerDto {
@@ -38,6 +43,11 @@ export interface EditRelayServerDto {
     autoStart: number | null; //自动运行 0:否 1:是
     overrideRedirect: number | null; //覆盖桥接目标的重定向 0:否 1:是
     overrideRedirectUrl: string | null; //覆盖桥接目标的重定向URL
+    requestIdStrategy: number | null; //请求ID策略 0:随机生成 1:从请求头获取
+    requestIdHeaderName: string | null; //请求ID头名称
+    bizErrorStrategy: number | null; //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    bizErrorCodeField: string | null; //业务错误码字段(JSONPath)
+    bizSuccessCodeValue: string | null; //业务成功码值(正确时返回的值)
 }
 
 export interface GetRelayServerDetailsVo {
@@ -51,6 +61,11 @@ export interface GetRelayServerDetailsVo {
     errorMessage: string | null; //启动失败原因
     overrideRedirect: number | null; //覆盖桥接目标的重定向 0:否 1:是
     overrideRedirectUrl: string | null; //覆盖桥接目标的重定向URL
+    requestIdStrategy: number | null; //请求ID策略 0:随机生成 1:从请求头获取
+    requestIdHeaderName: string | null; //请求ID头名称
+    bizErrorStrategy: number | null; //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    bizErrorCodeField: string | null; //业务错误码字段(JSONPath)
+    bizSuccessCodeValue: string | null; //业务成功码值(正确时返回的值)
     createTime: string | null; //创建时间
 }
 

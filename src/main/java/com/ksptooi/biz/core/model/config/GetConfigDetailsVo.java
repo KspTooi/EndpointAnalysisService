@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.config;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import java.util.Date;
 
 @Getter@Setter
+@Schema(name = "GetConfigDetailsVo")
 public class GetConfigDetailsVo {
 
     // 主键ID

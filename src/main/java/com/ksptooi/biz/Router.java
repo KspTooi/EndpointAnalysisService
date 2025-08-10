@@ -1,6 +1,7 @@
 package com.ksptooi.biz;
 
 import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptooi.biz.core.service.PanelInstallWizardService;
 import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,13 +20,27 @@ public class Router {
     @Autowired
     private GlobalConfigService globalConfigService;
 
+    @Autowired
+    private PanelInstallWizardService installWizardService;
+
     @GetMapping("/")
     public ModelAndView index(HttpServletRequest hsr) {
+
+        //如果启用向导模式 跳转到向导
+        if(installWizardService.hasInstallWizardMode()){
+            return new ModelAndView("redirect:/install-wizard/");
+        }
+
         return new ModelAndView("admin-ui-entry");
     }
 
     @GetMapping("/login")
     public ModelAndView login(HttpServletRequest hsr) {
+
+        //如果启用向导模式 跳转到向导
+        if(installWizardService.hasInstallWizardMode()){
+            return new ModelAndView("redirect:/install-wizard/");
+        }
 
         //用户已登录则不再响应视图
         if (authService.verifyUser(hsr) != null) {

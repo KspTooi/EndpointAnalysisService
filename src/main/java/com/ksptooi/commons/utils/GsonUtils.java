@@ -3,6 +3,7 @@ package com.ksptooi.commons.utils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -10,6 +11,61 @@ import java.util.Map;
  * JSON工具类
  */
 public class GsonUtils {
+
+
+    /**
+     * 根据JSONPath获取JSON对象中的内容 例如 result.code 则返回 result 对象中的 code 字段的值
+     * @param obj  JSON对象
+     * @param jsonPath JSONPath
+     * @return 内容 获取失败返回null
+     */
+    public static String getFromPath(JsonElement obj,String jsonPath){
+
+        if (obj == null || obj.isJsonNull()) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(jsonPath)) {
+            return null;
+        }
+
+        JsonElement current = obj;
+
+        String[] path = jsonPath.split("\\.");
+
+        for (String key : path) {
+
+            if (current == null || current.isJsonNull()) {
+                return null;
+            }
+
+            if (!current.isJsonObject()) {
+                return null;
+            }
+
+            JsonObject jsonObject = current.getAsJsonObject();
+
+            if (!jsonObject.has(key)) {
+                return null;
+            }
+
+            current = jsonObject.get(key);
+        }
+
+        if (current == null || current.isJsonNull()) {
+            return null;
+        }
+
+        if (current.isJsonPrimitive()) {
+            return current.getAsString();
+        }
+
+        return current.toString();
+    }
+
+
+
+
 
     public static JsonElement replaceContent(JsonElement obj, String jsonPath, String content){
         if (obj == null || jsonPath == null || jsonPath.isEmpty()) {

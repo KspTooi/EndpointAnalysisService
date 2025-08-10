@@ -134,12 +134,24 @@
         v-loading="loading"
         border
       >
-        <el-table-column label="文档MD5值" prop="hash" />
+        <el-table-column label="HASH" prop="hash" />
         <el-table-column label="拉取地址" prop="pullUrl" />
         <el-table-column label="状态" prop="status" width="80">
           <template #default="scope">
             <span v-if="scope.row.status === 0" style="color: green;">成功</span>
             <span v-if="scope.row.status === 1" style="color: red;">失败</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="版本变更" prop="newVersionCreated" width="100">
+          <template #default="scope">
+            <span v-if="scope.row.newVersionCreated === 0" style="color: red;">否</span>
+            <span v-if="scope.row.newVersionCreated === 1" style="color: green;">是</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="版号" prop="newVersionNum" width="80">
+          <template #default="scope">
+            <span v-if="scope.row.newVersionNum === 0" style="color: red;">未变更</span>
+            <span v-if="scope.row.newVersionNum > 0" style="color: green;">{{ scope.row.newVersionNum }}</span>
           </template>
         </el-table-column>
         <el-table-column label="拉取时间" prop="createTime" />

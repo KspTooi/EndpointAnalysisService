@@ -63,3 +63,6 @@ springdoc:
 
 knife4j:
   enable: true
+
+application:
+  version: 1.0A # 应用版本号

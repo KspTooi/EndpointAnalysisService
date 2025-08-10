@@ -53,4 +53,31 @@ public class OpenApiUtils {
         }
     }
 
+    public static String toJson(OpenAPI openAPI) {
+        if (openAPI == null) {
+            return null;
+        }
+        try {
+            return Json.mapper().writeValueAsString(openAPI);
+        } catch (JsonProcessingException e) {
+            log.error("转换OpenAPI为JSON失败:{}", e.getMessage(),e);
+            return null;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

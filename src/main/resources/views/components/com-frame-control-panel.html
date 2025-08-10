@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <!-- 引入通用脚本和样式 -->
+    <div th:replace="~{components/com-scripts}"></div>
+    <div th:replace="~{components/com-styles}"></div>
+    <style th:fragment="control-panel-style">
+        /* 基础样式 */
+        .control-panel {
+            min-height: 100vh;
+            background-color: var(--bs-light);
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background: var(--bs-dark);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 品牌名称渐变效果 */
+        .brand-gradient {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 10%, #fad0c4 20%, #a18cd1 30%, #fbc2eb 40%, #8fd3f4 50%, #84fab0 60%, #8fd3f4 70%, #fbc2eb 80%, #a18cd1 90%, #ff9a9e 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+            animation: gradient-shift 8s linear infinite;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-gradient:hover {
+            animation-duration: 3s;
+            text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* 品牌容器和装饰 */
+        .brand-container {
+            display: inline-block;
+            padding: 0 5px;
+        }
+
+        .brand-decoration {
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+        }
+
+        .menu-title {
+            color: var(--bs-gray-500);
+            font-size: 0.875rem;
+            padding: 1rem 1rem 0.5rem;
+        }
+
+        .menu-item {
+            color: var(--bs-gray-300);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            margin: 0 0.5rem 0.25rem;
+        }
+
+        .menu-item:hover {
+            color: var(--bs-white);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .menu-item.active {
+            color: var(--bs-white);
+            background: #4a5568;
+            font-weight: 500;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+            position: relative;
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #90cdf4;
+        }
+
+        .menu-item i {
+            width: 1.5rem;
+            text-align: center;
+            margin-right: 0.75rem;
+        }
+
+        /* 主内容区域样式 */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 顶部导航栏样式 */
+        .top-nav {
+            height: 60px;
+            background: var(--bs-white);
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+        }
+
+        .user-menu .dropdown-toggle::after {
+            display: none;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* 内容包装器样式 */
+        .content-wrapper {
+            padding: 1.5rem;
+            background: var(--bs-light);
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar .app-name,
+            .sidebar .menu-title,
+            .sidebar .menu-item span {
+                display: none;
+            }
+
+            .menu-item i {
+                margin: 0;
+                font-size: 1.25rem;
+            }
+        }
+
+        /* 用户菜单样式 */
+        .user-menu .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .user-menu .btn i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .user-menu .btn span {
+                display: none;
+            }
+            
+            .user-menu .btn {
+                padding: 0.5rem;
+            }
+            
+            .user-menu .btn i {
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-100">
+    <!-- 管理台框架组件 -->
+    <div th:fragment="control-panel(content)">
+        <!-- 引入通用脚本和样式 -->
+        <div th:replace="~{components/com-scripts}"></div>
+        <div th:replace="~{components/com-styles}"></div>
+        
+        <!-- 引入控制面板样式 -->
+        <div th:replace="~{::control-panel-style}"></div>
+        
+        <!-- 控制面板布局 -->
+        <div class="control-panel d-flex">
+            <!-- 侧边栏 -->
+            <nav class="sidebar d-flex flex-column flex-shrink-0">
+                <div class="sidebar-header d-flex align-items-center">
+                    <!--<img src="/img/logo.png" alt="Logo" class="logo me-2">-->
+                    <div class="brand-container position-relative">
+                        <span class="app-name brand-gradient fs-5" th:text="${panelBrand}">Quick Launcher</span>
+                        <div class="brand-decoration"></div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-menu flex-grow-1">
+                    <div class="menu-group">
+                        <div class="menu-title">系统管理</div>
+                        <a href="/panel/model/role/list" class="menu-item d-flex align-items-center rounded">
+                            <i class="bi bi-people-fill"></i>
+                            <span>模型角色管理</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- 主内容区域 -->
+            <div class="main-content d-flex flex-column">
+                <!-- 顶部导航栏 -->
+                <nav class="top-nav px-4 d-flex align-items-center justify-content-between">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="/ssr/dashboard" class="text-decoration-none">
+                                    <i class="bi bi-house me-1"></i>
+                                    <div class="brand-container position-relative d-inline-block">
+                                        <span class="brand-gradient" th:text="${panelBrand}">管理台</span>
+                                        <div class="brand-decoration"></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" th:text="${title != null ? title : '系统管理'}">系统管理</li>
+                        </ol>
+                    </nav>
+                    
+                    <div class="user-menu d-flex align-items-center gap-3">
+                        <a href="/leaveDashboard" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>
+                            返回应用中心
+                        </a>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm d-flex align-items-center">
+                            <i class="bi bi-box-arrow-right me-2"></i>
+                            注销
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- 内容区域 -->
+                <div class="content-wrapper">
+                    <div th:replace="${content}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{components/panel-mvc-toasts}"></div>
+        <div th:replace="~{components/panel-toasts}"></div>
+        
+        <!-- 内联脚本，确保在每个页面都执行 -->
+        <script th:inline="javascript">
+            // 等待DOM加载完成
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('控制面板脚本执行');
+                
+                // 设置当前活动菜单项
+                const currentPath = window.location.pathname;
+                console.log('当前路径:', currentPath);
+                
+                // 清除所有活动状态
+                document.querySelectorAll('.menu-item').forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                
+                // 精确匹配当前路径
+                let activeMenuItem = null;
+                document.querySelectorAll('.menu-item').forEach(function(item) {
+                    const href = item.getAttribute('href');
+                    console.log('菜单项路径:', href);
+                    if (href === currentPath) {
+                        activeMenuItem = item;
+                    }
+                });
+                
+                // 如果没有精确匹配，尝试前缀匹配（适用于子页面）
+                if (!activeMenuItem) {
+                    document.querySelectorAll('.menu-item').forEach(function(item) {
+                        const href = item.getAttribute('href');
+                        // 检查当前路径是否以菜单项的href开头，且href不是根路径
+                        if (href && href !== '/' && currentPath.startsWith(href)) {
+                            if (!activeMenuItem || href.length > activeMenuItem.getAttribute('href').length) {
+                                activeMenuItem = item;
+                            }
+                        }
+                    });
+                }
+                
+                // 添加活动状态
+                if (activeMenuItem) {
+                    console.log('选中菜单项:', activeMenuItem.getAttribute('href'));
+                    activeMenuItem.classList.add('active');
+                }
+                
+                // 添加菜单项点击效果
+                document.querySelectorAll('.menu-item').forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        // 添加点击反馈效果
+                        this.style.transform = 'scale(0.97)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    });
+                });
+                
+                // 响应式侧边栏切换
+                if (window.innerWidth <= 576) {
+                    document.querySelector('.sidebar').classList.add('collapsed');
+                }
+            });
+        </script>
+    </div>
+
+    <!-- 移除未使用的脚本片段 -->
+</body>
+</html> 

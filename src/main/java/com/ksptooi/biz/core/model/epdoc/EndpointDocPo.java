@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.hibernate.annotations.Comment;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import java.time.LocalDateTime;
+import java.util.List;
+import com.ksptooi.biz.core.model.epdocversion.EndpointDocVersionPo;
+import com.ksptooi.biz.core.model.epdocsynclog.EndpointDocSyncLogPo;
 
 @Entity
 @Table(name = "ep_document")
@@ -34,6 +37,15 @@ public class EndpointDocPo {
     @Column(name = "create_time")
     @Comment("创建时间")
     private LocalDateTime createTime;
+
+    @OneToMany(mappedBy = "endpointDoc", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("端点文档版本")
+    private List<EndpointDocVersionPo> versions;
+
+    @OneToMany(mappedBy = "endpointDoc", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("端点文档拉取记录")
+    private List<EndpointDocSyncLogPo> syncLogs;
+
 
     @PrePersist
     public void prePersist() {

@@ -108,6 +108,11 @@ public class RelayServerService {
         insertPo.setErrorMessage(null);
         insertPo.setOverrideRedirect(dto.getOverrideRedirect()); //重定向覆写 0:否 1:是
         insertPo.setOverrideRedirectUrl(dto.getOverrideRedirectUrl()); //重定向覆写URL
+        insertPo.setRequestIdStrategy(dto.getRequestIdStrategy()); //请求ID策略 0:随机生成 1:从响应头获取
+        insertPo.setRequestIdHeaderName(dto.getRequestIdHeaderName()); //请求ID在响应头中的字段名称
+        insertPo.setBizErrorStrategy(dto.getBizErrorStrategy()); //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+        insertPo.setBizErrorCodeField(dto.getBizErrorCodeField()); //业务错误码字段(JSONPath)
+        insertPo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
         relayServerRepository.save(insertPo);
     }
 
@@ -131,6 +136,11 @@ public class RelayServerService {
         vo.setCreateTime(po.getCreateTime());
         vo.setOverrideRedirect(po.getOverrideRedirect());
         vo.setOverrideRedirectUrl(po.getOverrideRedirectUrl());
+        vo.setRequestIdStrategy(po.getRequestIdStrategy());
+        vo.setRequestIdHeaderName(po.getRequestIdHeaderName());
+        vo.setBizErrorStrategy(po.getBizErrorStrategy());
+        vo.setBizErrorCodeField(po.getBizErrorCodeField());
+        vo.setBizSuccessCodeValue(po.getBizSuccessCodeValue());
         return vo;
     }
 
@@ -172,6 +182,11 @@ public class RelayServerService {
         updatePo.setAutoStart(dto.getAutoStart());
         updatePo.setOverrideRedirect(dto.getOverrideRedirect()); //重定向覆写 0:否 1:是
         updatePo.setOverrideRedirectUrl(dto.getOverrideRedirectUrl()); //重定向覆写URL
+        updatePo.setRequestIdStrategy(dto.getRequestIdStrategy()); //请求ID策略 0:随机生成 1:从响应头获取
+        updatePo.setRequestIdHeaderName(dto.getRequestIdHeaderName()); //请求ID在响应头中的字段名称
+        updatePo.setBizErrorStrategy(dto.getBizErrorStrategy()); //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+        updatePo.setBizErrorCodeField(dto.getBizErrorCodeField()); //业务错误码字段(JSONPath)
+        updatePo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
         relayServerRepository.save(updatePo);
     }
 

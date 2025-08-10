@@ -38,17 +38,10 @@ public class OpenApiConfig {
     public GroupedOpenApi coreApiGroup() {
         return GroupedOpenApi.builder()
                 .group("core")
-                .packagesToScan("com.ksptooi.biz.core.controller")
+                .packagesToScan("com.ksptooi.biz")
                 .build();
     }
 
-    @Bean
-    public GroupedOpenApi userApiGroup() {
-        return GroupedOpenApi.builder()
-                .group("user")
-                .packagesToScan("com.ksptooi.biz.user.controller")
-                .build();
-    }
 
 
 }

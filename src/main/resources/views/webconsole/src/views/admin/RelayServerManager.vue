@@ -184,6 +184,33 @@
         <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="details.overrideRedirect === 1">
           <el-input v-model="details.overrideRedirectUrl" placeholder="例如：https://example.com/after-login 或 https://example.com/home" />
         </el-form-item>
+        <el-form-item label="请求ID策略" prop="requestIdStrategy">
+          <el-switch v-model="details.requestIdStrategy" :active-value="1" :inactive-value="0"  style="margin-right: 10px;"/>
+          <el-tooltip content="请求ID策略：0-随机生成，1-从请求头获取。勾选表示从请求头获取，需要指定请求头名称" placement="top" >
+            <div style="display: flex; align-items: center; gap: 5px; color: #999;">
+              <span>查看说明</span>
+              <el-icon><InfoFilled/></el-icon>
+            </div>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item label="请求ID头名称" prop="requestIdHeaderName" v-show="details.requestIdStrategy === 1">
+          <el-input v-model="details.requestIdHeaderName" placeholder="例如：X-Request-ID 或 Request-ID" />
+        </el-form-item>
+        <el-form-item label="业务错误策略" prop="bizErrorStrategy">
+          <el-switch v-model="details.bizErrorStrategy" :active-value="1" :inactive-value="0"  style="margin-right: 10px;"/>
+          <el-tooltip content="业务错误策略：0-由HTTP状态码决定，1-由业务错误码决定。勾选表示使用业务错误码判断" placement="top" >
+            <div style="display: flex; align-items: center; gap: 5px; color: #999;">
+              <span>查看说明</span>
+              <el-icon><InfoFilled/></el-icon>
+            </div>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item label="业务错误码字段" prop="bizErrorCodeField" v-show="details.bizErrorStrategy === 1">
+          <el-input v-model="details.bizErrorCodeField" placeholder="例如：$.code 或 $.result.errorCode" />
+        </el-form-item>
+        <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="details.bizErrorStrategy === 1">
+          <el-input v-model="details.bizSuccessCodeValue" placeholder="例如：0 或 success" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -246,6 +273,11 @@ const details = reactive<GetRelayServerDetailsVo>({
   errorMessage: null,
   overrideRedirect: null,
   overrideRedirectUrl: null,
+  requestIdStrategy: null,
+  requestIdHeaderName: null,
+  bizErrorStrategy: null,
+  bizErrorCodeField: null,
+  bizSuccessCodeValue: null,
   createTime: null,
 })
 
@@ -268,6 +300,48 @@ const rules = {
   ],
   autoStart: [
     { required: true, message: '请选择是否自动运行', trigger: 'blur' }
+  ],
+  requestIdStrategy: [
+    { required: true, message: '请选择请求ID策略', trigger: 'blur' }
+  ],
+  requestIdHeaderName: [
+    { 
+      validator: (rule: any, value: any, callback: any) => {
+        if (details.requestIdStrategy === 1 && !value) {
+          callback(new Error('当请求ID策略为从请求头获取时，请求ID头名称不能为空'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
+  ],
+  bizErrorStrategy: [
+    { required: true, message: '请选择业务错误策略', trigger: 'blur' }
+  ],
+  bizErrorCodeField: [
+    { 
+      validator: (rule: any, value: any, callback: any) => {
+        if (details.bizErrorStrategy === 1 && !value) {
+          callback(new Error('当业务错误策略为业务错误码决定时，业务错误码字段不能为空'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
+  ],
+  bizErrorCodeValue: [
+    { 
+      validator: (rule: any, value: any, callback: any) => {
+        if (details.bizErrorStrategy === 1 && !value) {
+          callback(new Error('当业务错误策略为业务错误码决定时，业务错误码值不能为空'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ]
 }
 
@@ -310,6 +384,11 @@ const resetForm = () => {
   details.errorMessage = null
   details.overrideRedirect = null
   details.overrideRedirectUrl = null
+  details.requestIdStrategy = null
+  details.requestIdHeaderName = null
+  details.bizErrorStrategy = null
+  details.bizErrorCodeField = null
+  details.bizSuccessCodeValue = null
   details.createTime = null
 }
 
@@ -321,6 +400,9 @@ const openAddModal = async () => {
   details.host = "0.0.0.0"
   details.port = 8080
   details.autoStart = 1
+  details.overrideRedirect = 0
+  details.requestIdStrategy = 0
+  details.bizErrorStrategy = 0
   dialogVisible.value = true
 }
 
@@ -350,6 +432,11 @@ const openEditModal = async (row: GetRelayServerListVo) => {
     details.errorMessage = res.errorMessage
     details.overrideRedirect = res.overrideRedirect
     details.overrideRedirectUrl = res.overrideRedirectUrl
+    details.requestIdStrategy = res.requestIdStrategy
+    details.requestIdHeaderName = res.requestIdHeaderName
+    details.bizErrorStrategy = res.bizErrorStrategy
+    details.bizErrorCodeField = res.bizErrorCodeField
+    details.bizSuccessCodeValue = res.bizSuccessCodeValue
     details.createTime = res.createTime
     dialogVisible.value = true
   } catch (error: any) {
@@ -376,7 +463,12 @@ const saveRelayServer = async () => {
         forwardUrl: details.forwardUrl,
         autoStart: details.autoStart,
         overrideRedirect: details.overrideRedirect,
-        overrideRedirectUrl: details.overrideRedirectUrl
+        overrideRedirectUrl: details.overrideRedirectUrl,
+        requestIdStrategy: details.requestIdStrategy,
+        requestIdHeaderName: details.requestIdHeaderName,
+        bizErrorStrategy: details.bizErrorStrategy,
+        bizErrorCodeField: details.bizErrorCodeField,
+        bizSuccessCodeValue: details.bizSuccessCodeValue
       })
       ElMessage.success('添加中继通道成功')
     }
@@ -390,7 +482,12 @@ const saveRelayServer = async () => {
         forwardUrl: details.forwardUrl,
         autoStart: details.autoStart,
         overrideRedirect: details.overrideRedirect,
-        overrideRedirectUrl: details.overrideRedirectUrl
+        overrideRedirectUrl: details.overrideRedirectUrl,
+        requestIdStrategy: details.requestIdStrategy,
+        requestIdHeaderName: details.requestIdHeaderName,
+        bizErrorStrategy: details.bizErrorStrategy,
+        bizErrorCodeField: details.bizErrorCodeField,
+        bizSuccessCodeValue: details.bizSuccessCodeValue
       })
       ElMessage.success('编辑中继通道成功')
     }

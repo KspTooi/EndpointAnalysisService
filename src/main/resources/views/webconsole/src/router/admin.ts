@@ -74,6 +74,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/replay-request-manager',
+      name: 'replay-request-manager',
+      component: () => import('@/views/admin/ReplayRequestManager.vue'),
+      meta: {
+        breadcrumb: {
+          title: '请求重放管理器'
+        }
+      }
+    },
+    {
       path: '/relay-server-manager',
       name: 'relay-server-manager',
       component: () => import('@/views/admin/RelayServerManager.vue'),
@@ -90,6 +100,16 @@ const router = createRouter({
       meta: {
         breadcrumb: {
           title: '端点文档配置'
+        }
+      }
+    },
+    {
+      path: '/ep-doc-viewer',
+      name: 'ep-doc-viewer',
+      component: () => import('@/views/admin/EpDocViewer.vue'),
+      meta: {
+        breadcrumb: {
+          title: '端点文档查看器'
         }
       }
     }

@@ -3,13 +3,16 @@ package com.ksptooi.biz.core.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ksptooi.commons.utils.OpenApiUtils;
 import com.ksptooi.biz.core.model.epdoc.*;
+import com.ksptooi.biz.core.model.epdocversion.EndpointDocVersionPo;
 import com.ksptooi.biz.core.model.epdocsynclog.EndpointDocSyncLogPo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.repository.EndpointDocSyncLogRepository;
+import com.ksptooi.biz.core.repository.EndpointDocVersionRepository;
 import com.ksptooi.biz.core.repository.RelayServerRepository;
 import com.ksptooi.commons.utils.web.PageResult;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.core.models.ParseOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,12 @@ public class EpDocService {
     @Autowired
     private RelayServerRepository relayServerRepository;
 
+    @Autowired
+    private EndpointDocVersionRepository endpointDocVersionRepository;
+
+    @Autowired
+    private EpDocOperationService epDocOperationService;
+
     @Transactional(rollbackFor = Exception.class)
     public void pullEpDoc(Long epDocId) throws BizException, JsonProcessingException {
 
@@ -47,23 +56,85 @@ public class EpDocService {
         syncLogPo.setEndpointDoc(epDoc);
         syncLogPo.setHash(null);
         syncLogPo.setPullUrl(pullUrl);
-        syncLogPo.setStatus(1); //0: 成功 1: 失败
+        syncLogPo.setStatus(1); //状态 0: 成功 1: 失败
+        syncLogPo.setNewVersionCreated(0); //是否创建了新版本 0: 否 1: 是
+        syncLogPo.setNewVersionNum(null); //新版本号，如果创建了新版本，则记录新版本号
         syncLogPo.setCreateTime(LocalDateTime.now());
 
         try{
 
-            //从该地址拉取Swagger文档
-            OpenAPI openAPI = new OpenAPIV3Parser().read(pullUrl);
+            ParseOptions options = new ParseOptions();
+            options.setResolve(true);
+            //options.setResolveFully(true);
+            //options.setResolveCombinators(true);
+            //options.setResolveRequestBody(true);
+            options.setResolveResponses(true);
 
-            if (OpenApiUtils.isComplete(openAPI)) {
-                String hash = OpenApiUtils.getHash(openAPI);
-                if (hash != null) {
-                    System.out.println("API文档MD5值: " + hash);
+            //从该地址拉取Swagger文档
+            OpenAPI openAPI = new OpenAPIV3Parser().read(pullUrl,null,options);
+
+            //判断文档是否完整
+            if(!OpenApiUtils.isComplete(openAPI)){
+                log.error("拉取文档失败，文档不完整 :{}", pullUrl);
+                syncLogPo.setStatus(1); //0: 成功 1: 失败
+                return;
+            }
+
+            //获取文档HASH
+            String hash = OpenApiUtils.getHash(openAPI);
+            syncLogPo.setHash(hash);
+            syncLogPo.setStatus(0); //0: 成功 1: 失败
+
+            //根据Hash查询文档版本
+            EndpointDocVersionPo versionPo = endpointDocVersionRepository.getLatestByHash(hash);
+
+            //版本存在说明文档未变更
+            if(versionPo != null){
+                syncLogPo.setNewVersionCreated(0); //是否创建了新版本 0: 否 1: 是
+                syncLogPo.setNewVersionNum(versionPo.getVersion()); //新版本号，如果创建了新版本，则记录新版本号
+                epDocOperationService.saveOperation(openAPI, versionPo.getId());
+                log.info("文档未变更 中继通道:{} 文档路径:{} 版本号:{}", epDoc.getRelayServer().getName(), epDoc.getDocPullUrl(), versionPo.getVersion());
+            }
+
+            //如果版本不存在则表示文档有变更 需获取本地最新版本号
+            if(versionPo == null){
+
+                //获取当前最新版本
+                EndpointDocVersionPo latestVersionPo = endpointDocVersionRepository.getLatestVersion(epDocId);
+                Long latestVersionNum = 1L;
+
+                if(latestVersionPo != null){
+                    latestVersionNum = latestVersionPo.getVersion() + 1;
+
+                    //将当前最新版本设置为非最新版本
+                    latestVersionPo.setIsLatest(0);
+                    endpointDocVersionRepository.save(latestVersionPo);
                 }
 
-                syncLogPo.setHash(hash);
-                syncLogPo.setStatus(0); //0: 成功 1: 失败
+                //创建新版本
+                EndpointDocVersionPo newVersionPo = new EndpointDocVersionPo();
+                newVersionPo.setRelayServer(epDoc.getRelayServer());
+                newVersionPo.setEndpointDoc(epDoc);
+                newVersionPo.setVersion(latestVersionNum);
+                newVersionPo.setHash(hash);
+                newVersionPo.setIsLatest(1);
+                newVersionPo.setApiTotal(openAPI.getPaths().size());
+                newVersionPo.setDocJson(OpenApiUtils.toJson(openAPI));
+                newVersionPo.setIsPersisted(0); //是否已持久化 0:否 1:是
+                newVersionPo.setCreateTime(LocalDateTime.now());
+                endpointDocVersionRepository.save(newVersionPo);
+                syncLogPo.setNewVersionCreated(1); //是否创建了新版本 0: 否 1: 是
+                syncLogPo.setNewVersionNum(latestVersionNum); //新版本号，如果创建了新版本，则记录新版本号
+                log.info("为文档创建新版本 中继通道:{} 文档路径:{} 新版本号:{}", epDoc.getRelayServer().getName(), epDoc.getDocPullUrl(), latestVersionNum);
+        
+                //持久化版本
+                epDocOperationService.saveOperation(openAPI, newVersionPo.getId());
             }
+
+
+            //拉取成功后更新拉取时间
+            epDoc.setPullTime(LocalDateTime.now());
+            relayDocPullConfigRepository.save(epDoc);
 
         }catch(Exception e){
             log.error("拉取文档失败", e);

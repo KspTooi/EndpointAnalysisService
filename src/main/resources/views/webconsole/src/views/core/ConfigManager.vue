@@ -13,7 +13,7 @@
         </el-form-item>
         <el-form-item label="所有者名称">
           <el-input 
-            v-model="query.playerName" 
+            v-model="query.userName"
             placeholder="输入所有者名称查询" 
             clearable 
             style="width: 200px"

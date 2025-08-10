@@ -49,13 +49,34 @@ public class RelayServerPo {
     @Comment("启动失败原因")
     private String errorMessage;
 
-    @Column(name = "override_redirect", nullable = false,columnDefinition = "tinyint default 0")
+    @Column(name = "override_redirect", nullable = false,columnDefinition = "tinyint")
     @Comment("覆盖桥接目标的重定向 0:否 1:是")
     private Integer overrideRedirect;
 
     @Column(name = "override_redirect_url", nullable = true,length = 320)
     @Comment("覆盖桥接目标的重定向URL")
     private String overrideRedirectUrl;
+
+    @Column(name = "request_id_strategy", nullable = false,columnDefinition = "tinyint")
+    @Comment("请求ID策略 0:随机生成 1:从请求头获取")
+    private Integer requestIdStrategy;
+
+    @Column(name = "request_id_header_name", nullable = true,length = 128)
+    @Comment("请求ID头名称")
+    private String requestIdHeaderName;
+
+    @Column(name = "biz_error_strategy", nullable = false,columnDefinition = "tinyint")
+    @Comment("业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定")
+    private Integer bizErrorStrategy;
+
+    @Column(name = "biz_error_code_field", nullable = true,length = 128)
+    @Comment("业务错误码字段(JSONPath)")
+    private String bizErrorCodeField;
+
+    @Column(name = "biz_success_code_value", nullable = true,length = 128)
+    @Comment("业务成功码值(正确时返回的值)")
+    private String bizSuccessCodeValue;
+
 
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")

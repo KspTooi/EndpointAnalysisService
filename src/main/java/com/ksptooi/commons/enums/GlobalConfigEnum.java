@@ -5,6 +5,9 @@ package com.ksptooi.commons.enums;
  */
 public enum GlobalConfigEnum {
 
+    ALLOW_INSTALL_WIZARD("allow.install.wizard","false","第一次进入时显示安装向导 true-允许执行安装向导 false-不执行安装向导"),
+    ALLOW_INSTALL_WIZARD_UPGRADED("allow.install.wizard.upgraded","true","应用程序版本落后时是否允许执行升级向导 true-允许 false-拒绝"),
+
     APPLICATION_VERSION("application.version","1.0A","应用程序版本"),
     ALLOW_USER_REGISTER("allow.user.register","false","允许用户注册账号 true-允许 -false禁止"),
     ;

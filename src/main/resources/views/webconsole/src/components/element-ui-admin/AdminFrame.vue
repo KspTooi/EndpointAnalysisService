@@ -89,7 +89,7 @@ import {
   Grid, Briefcase, Tools, Monitor, Opportunity, 
   Collection, CollectionTag, Cpu, Trophy, List,
   HomeFilled, Refrigerator, Ticket, Management,
-  SetUp, Operation, DocumentCopy, DArrowLeft, DArrowRight,
+  SetUp, Operation, DocumentCopy, DArrowLeft, DArrowRight,Select,
   Switch
 } from '@element-plus/icons-vue'
 
@@ -169,6 +169,12 @@ const menuItems = ref([
     routerLink: '/'
   },
   {
+    id: 'replay-request-manager',
+    title: '请求重放管理器',
+    icon: Select,
+    routerLink: '/replay-request-manager'
+  },
+  {
     id: 'relay-server-manager',
     title: '中继通道配置',
     icon: DArrowRight,
@@ -179,6 +185,12 @@ const menuItems = ref([
     title: '端点文档配置',
     icon: DocumentCopy,
     routerLink: '/ep-doc-manager'
+  },
+  {
+    id: 'ep-doc-viewer',
+    title: '端点文档查看器',
+    icon: Operation,
+    routerLink: '/ep-doc-viewer'
   }
 ])
 

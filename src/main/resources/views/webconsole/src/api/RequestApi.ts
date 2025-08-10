@@ -11,6 +11,7 @@ export interface GetRequestListDto extends PageQuery {
     status: number | null; //状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时
     startTime: string | null; //开始时间
     endTime: string | null; //结束时间
+    replay: number | null; //是否重放 0:否 1:是
 }
 
 export interface GetRequestListVo {
@@ -24,6 +25,7 @@ export interface GetRequestListVo {
     status: number; //状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时
     requestTime: string; //请求时间
     responseTime: string; //响应时间
+    replayCount: number; //重放次数
 }
 
 export interface GetRequestDetailsVo {
@@ -35,11 +37,11 @@ export interface GetRequestDetailsVo {
     requestHeaders: string; //请求头
     requestBodyLength: number; //请求体长度
     requestBodyType: string; //请求体类型
-    requestBody: object; //请求体
+    requestBody: string; //请求体
     responseHeaders: string; //响应头
     responseBodyLength: number; //响应体长度
     responseBodyType: string; //响应体类型
-    responseBody: object; //响应体
+    responseBody: string; //响应体
     statusCode: number; //HTTP响应状态码
     redirectUrl: string; //重定向URL
     status: number; //状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时
