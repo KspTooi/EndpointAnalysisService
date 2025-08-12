@@ -142,7 +142,7 @@ const handleSelect = (index: string) => {
 }
 
 .panel-title {
-  padding: 16px;
+  padding: 12px;
   font-size: 16px;
   font-weight: bold;
   text-align: center;

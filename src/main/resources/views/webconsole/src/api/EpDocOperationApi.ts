@@ -4,8 +4,8 @@ import Http from "@/commons/Http";
 
 
 export interface GetEpDocOperationTagListDto {
-    epDocId: number; // 端点文档ID
-    epDocVersionId: number | null; // 端点文档版本ID null为最新版本
+    epDocId: string; // 端点文档ID
+    epDocVersionId: string | null; // 端点文档版本ID null为最新版本
 }
 
 export interface GetEpDocOperationTagListVo {
@@ -15,14 +15,14 @@ export interface GetEpDocOperationTagListVo {
 }
 
 export interface GetEpDocOperationTagListOperationDefineVo {
-    id: number; // 接口ID
+    id: string; // 接口ID
     name: string; // 接口名称
     method: string; // 请求方法
 }
 
 
 export interface GetEpDocOperationDetailsVo {
-    id: number; // 接口ID
+    id: string; // 接口ID
     path: string; // 接口路径
     method: string; // 请求方法
     summary: string; // 接口摘要

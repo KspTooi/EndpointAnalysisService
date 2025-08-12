@@ -264,7 +264,12 @@ public class EpDocOperationService {
 
                 // 设置请求参数 (Query, Header, Path, Cookie)
                 // 将所有参数都序列化，也可根据 in 字段进行过滤
-                po.setReqQueryJson(gson.toJson(operation.getParameters()));
+                try{
+                    po.setReqQueryJson(gson.toJson(operation.getParameters()));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
 
                 // 设置请求体 (Request Body)
                 BodySchema reqSchema = com.ksptooi.commons.utils.JsonRequestBodySchemaParser.parse(openApi, operation);

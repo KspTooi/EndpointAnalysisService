@@ -1,6 +1,6 @@
 {
-  "name": "aether",
-  "version": "1.3E-1",
+  "name": "webconsole",
+  "version": "1.0A",
   "private": true,
   "type": "module",
   "scripts": {

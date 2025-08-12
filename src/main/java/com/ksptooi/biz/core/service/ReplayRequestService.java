@@ -86,7 +86,7 @@ public class ReplayRequestService {
         String requestType = originalRequest.getRequestBodyType();
 
         //只能重放json请求
-        if(!requestType.equals("application/json")){
+        if(!requestType.contains("application/json")){
             throw new BizException("只能重放application/json请求");
         }
 

@@ -16,7 +16,7 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "groups")
+@Table(name = "`groups`")
 @Getter@Setter
 public class GroupPo {
 

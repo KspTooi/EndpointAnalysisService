@@ -11,8 +11,10 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 public final class JsonResponseBodySchemaParser {
@@ -69,7 +71,7 @@ public final class JsonResponseBodySchemaParser {
             return null;
         }
         String name = resolveSchemaName(schema);
-        BodySchema bodySchema = buildBodySchema(name, schema, null);
+        BodySchema bodySchema = buildBodySchema(name, schema, null, new HashSet<>());
         return bodySchema;
     }
 
@@ -93,7 +95,7 @@ public final class JsonResponseBodySchemaParser {
             return null;
         }
         String name = resolveSchemaName(schema);
-        BodySchema bodySchema = buildBodySchema(name, schema, openAPI);
+        BodySchema bodySchema = buildBodySchema(name, schema, openAPI, new HashSet<>());
         return bodySchema;
     }
 
@@ -136,10 +138,27 @@ public final class JsonResponseBodySchemaParser {
     }
 
     private static BodySchema buildBodySchema(String schemaName, Schema<?> schema, OpenAPI openAPI) {
+        return buildBodySchema(schemaName, schema, openAPI, new HashSet<>());
+    }
+
+    private static BodySchema buildBodySchema(String schemaName, Schema<?> schema, OpenAPI openAPI, Set<Object> visiting) {
         if (schema == null) {
             return null;
         }
         Schema<?> effective = dereference(openAPI, schema);
+
+        Object visitKey = visitKey(effective);
+        if (visitKey != null && visiting.contains(visitKey)) {
+            BodySchema loopSchema = new BodySchema();
+            String preferred = resolveSchemaName(effective);
+            String finalName = StringUtils.isNotBlank(preferred) ? preferred : schemaName;
+            loopSchema.setSchemaName(StringUtils.isNotBlank(finalName) ? finalName : null);
+            loopSchema.setParams(new ArrayList<>());
+            return loopSchema;
+        }
+        if (visitKey != null) {
+            visiting.add(visitKey);
+        }
         BodySchema bodySchema = new BodySchema();
         String preferred = resolveSchemaName(schema);
         String finalName = StringUtils.isNotBlank(preferred) ? preferred : schemaName;
@@ -160,10 +179,13 @@ public final class JsonResponseBodySchemaParser {
             param.setDefaultValue(defVal != null ? String.valueOf(defVal) : null);
             param.setRequired(null);
             String nestedName = resolveSchemaName(itemSchema);
-            BodySchema nested = buildBodySchema(nestedName, itemSchema, openAPI);
+            BodySchema nested = buildBodySchema(nestedName, itemSchema, openAPI, visiting);
             param.setSchema(nested);
             params.add(param);
             bodySchema.setParams(params);
+            if (visitKey != null) {
+                visiting.remove(visitKey);
+            }
             return bodySchema;
         }
 
@@ -191,20 +213,23 @@ public final class JsonResponseBodySchemaParser {
                 if (isArray) {
                     Schema<?> itemSchema = dereference(openAPI, ((ArraySchema) propertySchema).getItems());
                     String nestedName = resolveSchemaName(itemSchema);
-                    BodySchema nested = buildBodySchema(nestedName, itemSchema, openAPI);
+                    BodySchema nested = buildBodySchema(nestedName, itemSchema, openAPI, visiting);
                     param.setSchema(nested);
                 }
                 if (!(propertySchema instanceof ArraySchema)) {
                     Map<String, Schema> nestedProps = propertySchema.getProperties();
                     if (nestedProps != null && !nestedProps.isEmpty()) {
                         String nestedName = resolveSchemaName(propertySchema);
-                        BodySchema nested = buildBodySchema(nestedName, propertySchema, openAPI);
+                        BodySchema nested = buildBodySchema(nestedName, propertySchema, openAPI, visiting);
                         param.setSchema(nested);
                     }
                 }
                 params.add(param);
             }
             bodySchema.setParams(params);
+            if (visitKey != null) {
+                visiting.remove(visitKey);
+            }
             return bodySchema;
         }
 
@@ -219,7 +244,26 @@ public final class JsonResponseBodySchemaParser {
         selfParam.setSchema(null);
         params.add(selfParam);
         bodySchema.setParams(params);
+        if (visitKey != null) {
+            visiting.remove(visitKey);
+        }
         return bodySchema;
+    }
+
+    private static Object visitKey(Schema<?> schema) {
+        if (schema == null) {
+            return null;
+        }
+        String ref = schema.get$ref();
+        if (StringUtils.isNotBlank(ref)) {
+            int idx = ref.lastIndexOf('/')
+            ;
+            if (idx >= 0 && idx < ref.length() - 1) {
+                return ref.substring(idx + 1);
+            }
+            return ref;
+        }
+        return schema;
     }
 
     private static String inferType(Schema<?> schema) {

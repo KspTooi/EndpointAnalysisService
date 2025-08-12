@@ -16,10 +16,8 @@
       
       <el-container>
         <!-- 头部区域 -->
-        <el-header class="admin-header" height="60px">
+        <el-header class="admin-header" height="30px">
           <div class="header-left">
-            
-            
             <!-- 面包屑导航，放在头部区域 -->
             <el-breadcrumb v-if="autoBreadcrumbs.length" separator="/" class="admin-breadcrumb">
               <el-breadcrumb-item v-for="(item, index) in autoBreadcrumbs" :key="index" :to="item.to">
@@ -322,7 +320,7 @@ const autoBreadcrumbs = computed(() => {
   justify-content: space-between;
   padding: 0 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  height: 60px;
+  height: 50px;
   flex-shrink: 0;
 }
 

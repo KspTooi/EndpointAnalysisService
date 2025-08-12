@@ -195,6 +195,10 @@ public class HttpRelayServlet extends HttpServlet{
 
             }
 
+            //如果有X-Real-IP则将源设置为X-Real-IP
+            if(hsr.getHeader("X-Real-IP") != null){
+                request.setSource(hsr.getHeader("X-Real-IP"));
+            }
 
             //中继响应
             doResponse(hsrp,upstream,responseBody);
