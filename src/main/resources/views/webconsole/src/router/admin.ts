@@ -84,6 +84,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/user-request-manager',
+      name: 'user-request-manager',
+      component: () => import('@/views/admin/UserRequestView.vue'),
+      meta: {
+        breadcrumb: {
+          title: '请求调试视图'
+        }
+      }
+    },
+    {
       path: '/relay-server-manager',
       name: 'relay-server-manager',
       component: () => import('@/views/admin/RelayServerManager.vue'),

@@ -1,5 +1,6 @@
 package com.ksptooi.biz.userrequest.controller;
 
+import com.ksptooi.biz.userrequest.model.userrequest.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +11,6 @@ import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.Result;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.biz.userrequest.service.UserRequestService;
-import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestTreeVo;
-import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestTreeDto;
-import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestDetailsVo;
-import com.ksptooi.biz.userrequest.model.userrequest.EditUserRequestDto;
-import com.ksptooi.biz.userrequest.model.userrequest.SaveAsUserRequestDto;
 import com.ksptooi.commons.utils.web.PageResult;
 
 import java.util.List;
@@ -35,12 +31,6 @@ public class UserRequestController {
     public Result<String> saveAsUserRequest(@RequestBody @Valid SaveAsUserRequestDto dto) throws Exception{
         userRequestService.saveAsUserRequest(dto);
         return Result.success("保存成功");
-    }
-
-    @PostMapping("/getUserRequestTree")
-    @Operation(summary ="获取用户请求树")
-    public Result<List<GetUserRequestTreeVo>> getUserRequestTree(@RequestBody @Valid GetUserRequestTreeDto dto) throws Exception{
-        return Result.success(userRequestService.getUserRequestTree(dto));
     }
 
 

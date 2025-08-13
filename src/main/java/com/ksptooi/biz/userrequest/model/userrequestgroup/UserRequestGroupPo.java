@@ -1,6 +1,7 @@
 package com.ksptooi.biz.userrequest.model.userrequestgroup;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
@@ -45,6 +46,8 @@ public class UserRequestGroupPo {
     private Integer seq;
 
     //请求组中的请求
+    @BatchSize(size = 20)
+    @OrderBy("seq ASC")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "group")
     @Comment("请求组中的请求")
     private List<UserRequestPo> requests;
@@ -53,9 +56,19 @@ public class UserRequestGroupPo {
     @Comment("创建时间")
     private LocalDateTime createTime;
 
+    @Column(name = "update_time", nullable = false)
+    @Comment("更新时间")
+    private LocalDateTime updateTime;
+
     @PrePersist
     public void prePersist() {
         this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
     }
 
 }

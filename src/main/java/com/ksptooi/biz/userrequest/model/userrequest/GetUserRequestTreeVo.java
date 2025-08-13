@@ -12,8 +12,11 @@ public class GetUserRequestTreeVo {
     @Schema(description="对象ID")
     private Long id;
 
+    @Schema(description = "父级ID null为根节点")
+    private Long parentId;
+
     @Schema(description="对象类型 0:请求组 1:用户请求")
-    private String type;
+    private Integer type;
 
     @Schema(description="名称")
     private String name;

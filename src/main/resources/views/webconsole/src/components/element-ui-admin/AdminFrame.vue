@@ -88,7 +88,10 @@ import {
   Collection, CollectionTag, Cpu, Trophy, List,
   HomeFilled, Refrigerator, Ticket, Management,
   SetUp, Operation, DocumentCopy, DArrowLeft, DArrowRight,Select,
-  Switch
+  Switch,
+  Warning,
+  Coin,
+  MagicStick
 } from '@element-plus/icons-vue'
 
 // 定义组件props
@@ -171,6 +174,12 @@ const menuItems = ref([
     title: '请求重放管理器',
     icon: Select,
     routerLink: '/replay-request-manager'
+  },
+  {
+    id: 'user-request-manager',
+    title: '请求调试视图',
+    icon: MagicStick,
+    routerLink: '/user-request-manager'
   },
   {
     id: 'relay-server-manager',

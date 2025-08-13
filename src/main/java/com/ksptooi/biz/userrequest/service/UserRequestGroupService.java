@@ -67,7 +67,7 @@ public class UserRequestGroupService {
         insertPo.setUser(user);
         insertPo.setParent(parentPo);
         insertPo.setName(dto.getName());
-        insertPo.setSeq(0);
+        insertPo.setSeq(repository.getNextSeq(AuthService.requireUserId(),0));
         repository.save(insertPo);
     }
 

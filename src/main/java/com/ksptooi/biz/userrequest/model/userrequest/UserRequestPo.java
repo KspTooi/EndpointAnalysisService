@@ -53,12 +53,20 @@ public class UserRequestPo {
     @Comment("创建时间")
     private LocalDateTime createTime;
 
+    @Column(name = "update_time", nullable = false)
+    @Comment("更新时间")
+    private LocalDateTime updateTime;
+
     @PrePersist
     public void prePersist() {
         this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
     }
 
-
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "userRequest")
     @Comment("用户请求记录")

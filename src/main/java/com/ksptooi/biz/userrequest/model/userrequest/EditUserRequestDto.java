@@ -13,12 +13,6 @@ public class EditUserRequestDto {
     @Schema(description="请求组ID")
     private Long groupId;
 
-    @Schema(description="原始请求ID")
-    private Long requestId;
-
-    @Schema(description="用户ID")
-    private Long userId;
-
     @Schema(description="用户自定义请求名称")
     private String name;
 
