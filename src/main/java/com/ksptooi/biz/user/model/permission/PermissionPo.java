@@ -17,6 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "permissions")
 @Getter@Setter
+@Comment("权限表")
 public class PermissionPo {
 
     @Id

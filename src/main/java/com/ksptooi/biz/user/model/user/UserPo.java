@@ -9,6 +9,7 @@ import java.util.*;
 @Entity
 @Table(name = "users")
 @Getter@Setter
+@Comment("用户表")
 public class UserPo {
 
     @Id

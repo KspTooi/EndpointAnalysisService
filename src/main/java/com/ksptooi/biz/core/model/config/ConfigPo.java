@@ -12,6 +12,7 @@ import java.util.Date;
 @Table(name = "config", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "config_key"}, name = "uk_config")
 })
+@Comment("配置表")
 public class ConfigPo {
     
     @Id

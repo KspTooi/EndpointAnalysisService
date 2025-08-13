@@ -9,6 +9,7 @@ import org.hibernate.annotations.Comment;
 @Table(name = "ep_document_schema")
 @Getter
 @Setter
+@Comment("端点架构定义")
 public class EndpointDocSchemaPo {
 
     @Id

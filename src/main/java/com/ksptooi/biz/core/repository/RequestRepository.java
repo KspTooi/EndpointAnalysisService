@@ -77,5 +77,6 @@ public interface RequestRepository extends JpaRepository<RequestPo, Long> {
         WHERE t.requestId = :requestId
     """)
     RequestPo getByRequestId(@Param("requestId") String requestId);
+    
 
 }

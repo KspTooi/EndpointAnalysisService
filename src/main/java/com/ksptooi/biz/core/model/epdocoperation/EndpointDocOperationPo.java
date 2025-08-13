@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @Table(name = "ep_document_operation")
 @Getter
 @Setter
+@Comment("端点文档操作")
 public class EndpointDocOperationPo {
 
     @Id

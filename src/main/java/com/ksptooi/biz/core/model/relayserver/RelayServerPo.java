@@ -14,6 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "relay_server")
 @Getter @Setter
+@Comment("中继服务器")
 public class RelayServerPo {
 
     @Id

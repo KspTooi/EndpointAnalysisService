@@ -1,42 +1,30 @@
-package com.ksptooi.biz.core.model.replayrequest;
+package com.ksptooi.biz.userrequest.model.userrequestlog;
 
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
-import com.ksptooi.biz.core.model.request.RequestPo;
-import com.ksptooi.biz.user.model.user.UserPo;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import java.time.LocalDateTime;
+import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "replay_requets")
-@Getter@Setter
-@Comment("重放请求记录")
-public class ReplayRequestPo {
-    
+@Table(name = "user_request_log")
+@Getter @Setter
+@Comment("用户请求记录")
+public class UserRequestLogPo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("用户请求记录ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relay_server_id",nullable = false)
-    @Comment("中继服务器ID")
-    private RelayServerPo relayServer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "original_request_id",nullable = false)
-    @Comment("原始请求")
-    private RequestPo originalRequest;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
-    @Comment("用户ID")
-    private UserPo user;
+    @JoinColumn(name = "user_request_id", nullable = false,foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("用户请求ID")
+    private UserRequestPo userRequest;
 
     @Column(name = "request_id",length = 64,nullable = false,unique = true)
     @Comment("请求ID")
@@ -63,7 +51,7 @@ public class ReplayRequestPo {
     @Comment("请求体长度")
     private Integer requestBodyLength;
 
-    @Column(name = "request_body_type",length = 64,nullable = false)
+    @Column(name = "request_body_type",length = 256,nullable = false)
     @Comment("请求体类型 JSON、表单数据、二进制")
     private String requestBodyType;
 
@@ -81,7 +69,7 @@ public class ReplayRequestPo {
     @Comment("响应体长度")
     private Integer responseBodyLength;
 
-    @Column(name = "response_body_type",length = 64,nullable = false)
+    @Column(name = "response_body_type",length = 256,nullable = false)
     @Comment("响应体类型 JSON、表单数据、二进制")
     private String responseBodyType;
 
@@ -94,7 +82,7 @@ public class ReplayRequestPo {
     @Comment("HTTP响应状态码 -1为请求失败")
     private Integer statusCode;
 
-    @Column(name = "redirect_url",length = 255)
+    @Column(name = "redirect_url",columnDefinition = "longtext")
     @Comment("重定向URL 301、302、303、307、308")
     private String redirectUrl;
 
@@ -109,26 +97,5 @@ public class ReplayRequestPo {
     @Column(name = "response_time")
     @Comment("响应时间")
     private LocalDateTime responseTime;
-
-    @PrePersist
-    public void prePersist(){
-        if(StringUtils.isBlank(this.requestBody)){
-            this.requestBody = null;
-        }
-        if(StringUtils.isBlank(this.responseBody)){
-            this.responseBody = null;
-        }
-    }
-
-    @PreUpdate
-    public void preUpdate(){
-        if(StringUtils.isBlank(this.requestBody)){
-            this.requestBody = null;
-        }
-        if(StringUtils.isBlank(this.responseBody)){
-            this.responseBody = null;
-        }
-    }
-
 
 }

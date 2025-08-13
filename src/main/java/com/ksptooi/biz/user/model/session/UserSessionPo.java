@@ -9,6 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "user_session")
 @Data
+@Comment("用户会话")
 public class UserSessionPo {
 
     @Id

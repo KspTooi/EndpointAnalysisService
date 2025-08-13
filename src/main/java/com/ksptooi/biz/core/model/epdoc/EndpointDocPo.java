@@ -14,6 +14,7 @@ import com.ksptooi.biz.core.model.epdocsynclog.EndpointDocSyncLogPo;
 @Table(name = "ep_document")
 @Getter
 @Setter
+@Comment("端点文档定义")
 public class EndpointDocPo {
 
     @Id

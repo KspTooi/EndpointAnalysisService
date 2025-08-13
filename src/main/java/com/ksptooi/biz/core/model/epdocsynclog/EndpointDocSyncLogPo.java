@@ -13,6 +13,7 @@ import com.ksptooi.biz.core.model.epdoc.EndpointDocPo;
 @Table(name = "ep_document_sync_log")
 @Getter
 @Setter
+@Comment("端点文档拉取记录")
 public class EndpointDocSyncLogPo {
 
     @Id

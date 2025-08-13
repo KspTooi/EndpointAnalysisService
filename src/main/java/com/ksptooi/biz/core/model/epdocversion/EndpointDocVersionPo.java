@@ -14,6 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "ep_document_version")
 @Getter@Setter
+@Comment("端点文档版本")
 public class EndpointDocVersionPo {
 
     @Id

@@ -18,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "`groups`")
 @Getter@Setter
+@Comment("用户组")
 public class GroupPo {
 
     @Id

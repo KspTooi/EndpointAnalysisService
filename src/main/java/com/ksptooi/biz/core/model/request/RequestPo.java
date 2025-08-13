@@ -9,13 +9,40 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * CREATE TABLE `relay_request` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `method` varchar(32) NOT NULL COMMENT '请求方法',
+  `redirect_url` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '重定向URL 301、302、303、307、308',
+  `request_body` json DEFAULT NULL COMMENT '请求体JSON',
+  `request_body_length` int NOT NULL COMMENT '请求体长度',
+  `request_body_type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '请求体类型 JSON、表单数据、二进制',
+  `request_headers` json DEFAULT NULL COMMENT '请求头JSON',
+  `request_id` varchar(64) NOT NULL COMMENT '请求ID',
+  `create_time` datetime(6) NOT NULL COMMENT '发起请求时间',
+  `response_body` json DEFAULT NULL COMMENT '响应体JSON',
+  `response_body_length` int NOT NULL COMMENT '响应体长度',
+  `response_body_type` varchar(64) NOT NULL COMMENT '响应体类型 JSON、表单数据、二进制',
+  `response_headers` json DEFAULT NULL COMMENT '响应头JSON',
+  `response_time` datetime(6) DEFAULT NULL COMMENT '响应时间',
+  `source` varchar(64) NOT NULL COMMENT '来源',
+  `status` int NOT NULL COMMENT '状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时',
+  `status_code` int NOT NULL COMMENT 'HTTP响应状态码 -1为请求失败',
+  `url` varchar(255) NOT NULL COMMENT '请求URL',
+  `relay_server_id` bigint NOT NULL COMMENT '中继服务器ID',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UKqfbp1xsjy7lwq8ich6s0o4x16` (`request_id`),
+  KEY `FKfgjbfvxueqqqcg01mitu358h0` (`relay_server_id`),
+  CONSTRAINT `FKfgjbfvxueqqqcg01mitu358h0` FOREIGN KEY (`relay_server_id`) REFERENCES `relay_server` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4936 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='重放请求';
+ */
 @Entity
 @Table(name = "relay_request")
 @Getter@Setter
+@Comment("请求表")
 public class RequestPo {
     
     @Id
@@ -52,7 +79,7 @@ public class RequestPo {
     @Comment("请求体长度")
     private Integer requestBodyLength;
 
-    @Column(name = "request_body_type",length = 64,nullable = false)
+    @Column(name = "request_body_type",length = 256,nullable = false)
     @Comment("请求体类型 JSON、表单数据、二进制")
     private String requestBodyType;
 
@@ -70,7 +97,7 @@ public class RequestPo {
     @Comment("响应体长度")
     private Integer responseBodyLength;
 
-    @Column(name = "response_body_type",length = 64,nullable = false)
+    @Column(name = "response_body_type",length = 256,nullable = false)
     @Comment("响应体类型 JSON、表单数据、二进制")
     private String responseBodyType;
 
@@ -83,7 +110,7 @@ public class RequestPo {
     @Comment("HTTP响应状态码 -1为请求失败")
     private Integer statusCode;
 
-    @Column(name = "redirect_url",length = 255)
+    @Column(name = "redirect_url",columnDefinition = "longtext")
     @Comment("重定向URL 301、302、303、307、308")
     private String redirectUrl;
 
