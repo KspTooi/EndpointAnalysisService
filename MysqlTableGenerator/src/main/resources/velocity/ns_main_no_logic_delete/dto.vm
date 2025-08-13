@@ -1,0 +1,22 @@
+package ${pkgNameDto};
+
+import com.baodian.common.core.domain.PageE;
+import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Getter
+@Setter
+public class ${classNameDto} extends PageE {
+
+    #foreach ($field in $fields)
+
+    #if(${field.comment} != "")
+    @Schema(description="${field.comment}")
+    #end
+    private ${field.javaType} ${field.javaFieldName};
+    #end
+
+}
+

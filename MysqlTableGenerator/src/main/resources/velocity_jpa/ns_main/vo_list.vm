@@ -1,0 +1,20 @@
+package ${pkgNameVo};
+
+import java.util.Date;
+import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Data
+public class Get${businessClassName}ListVo{
+
+    #foreach ($field in $fields)
+
+    #if(${field.comment} != "")
+    @Schema(description="${field.comment}")
+    #end
+    #set ($javaType = $field.javaType)
+    private ${javaType} ${field.javaFieldName};
+    #end
+
+}
+

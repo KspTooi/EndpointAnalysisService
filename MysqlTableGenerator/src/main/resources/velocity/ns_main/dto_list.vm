@@ -1,0 +1,27 @@
+package ${pkgNameDto};
+
+import com.ksptooi.commons.utils.page.BasePage;
+import java.util.Date;
+import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+* ${comments}列表dto
+*
+* @author ${author}
+* @date ${datetime}
+*/
+
+@Data
+public class ${businessClassName}PageDto extends BasePage {
+
+    #foreach ($field in $fields)
+
+    #if(${field.comment} != "")
+    @Schema(description="${field.comment}")
+    #end
+    private ${field.javaType} ${field.javaFieldName};
+    #end
+
+}
+

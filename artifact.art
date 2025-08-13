@@ -1,0 +1,404 @@
+{
+  "pkgNameService": "com.ksptooi.biz.userrequestlog.service",
+  "pkgNamePo": "com.ksptooi.biz.userrequestlog.model.po",
+  "fieldHelper": {
+    "fields": [
+      {
+        "name": "id",
+        "javaFieldName": "id",
+        "javaGetterName": "Id",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "用户请求记录ID",
+        "primary": true
+      },
+      {
+        "name": "user_request_id",
+        "javaFieldName": "userRequestId",
+        "javaGetterName": "UserRequestId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "用户请求ID",
+        "primary": false
+      },
+      {
+        "name": "request_id",
+        "javaFieldName": "requestId",
+        "javaGetterName": "RequestId",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "请求ID",
+        "primary": false
+      },
+      {
+        "name": "method",
+        "javaFieldName": "method",
+        "javaGetterName": "Method",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "请求方法",
+        "primary": false
+      },
+      {
+        "name": "url",
+        "javaFieldName": "url",
+        "javaGetterName": "Url",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "请求URL",
+        "primary": false
+      },
+      {
+        "name": "source",
+        "javaFieldName": "source",
+        "javaGetterName": "Source",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "来源",
+        "primary": false
+      },
+      {
+        "name": "request_headers",
+        "javaFieldName": "requestHeaders",
+        "javaGetterName": "RequestHeaders",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "请求头JSON",
+        "primary": false
+      },
+      {
+        "name": "request_body_length",
+        "javaFieldName": "requestBodyLength",
+        "javaGetterName": "RequestBodyLength",
+        "type": "INT",
+        "javaType": "Integer",
+        "comment": "请求体长度",
+        "primary": false
+      },
+      {
+        "name": "request_body_type",
+        "javaFieldName": "requestBodyType",
+        "javaGetterName": "RequestBodyType",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "请求体类型 JSON、表单数据、二进制",
+        "primary": false
+      },
+      {
+        "name": "request_body",
+        "javaFieldName": "requestBody",
+        "javaGetterName": "RequestBody",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "请求体JSON",
+        "primary": false
+      },
+      {
+        "name": "response_headers",
+        "javaFieldName": "responseHeaders",
+        "javaGetterName": "ResponseHeaders",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "响应头JSON",
+        "primary": false
+      },
+      {
+        "name": "response_body_length",
+        "javaFieldName": "responseBodyLength",
+        "javaGetterName": "ResponseBodyLength",
+        "type": "INT",
+        "javaType": "Integer",
+        "comment": "响应体长度",
+        "primary": false
+      },
+      {
+        "name": "response_body_type",
+        "javaFieldName": "responseBodyType",
+        "javaGetterName": "ResponseBodyType",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "响应体类型 JSON、表单数据、二进制",
+        "primary": false
+      },
+      {
+        "name": "response_body",
+        "javaFieldName": "responseBody",
+        "javaGetterName": "ResponseBody",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "响应体JSON",
+        "primary": false
+      },
+      {
+        "name": "status_code",
+        "javaFieldName": "statusCode",
+        "javaGetterName": "StatusCode",
+        "type": "INT",
+        "javaType": "Integer",
+        "comment": "HTTP响应状态码 -1为请求失败",
+        "primary": false
+      },
+      {
+        "name": "redirect_url",
+        "javaFieldName": "redirectUrl",
+        "javaGetterName": "RedirectUrl",
+        "type": "LONGTEXT",
+        "comment": "重定向URL 301、302、303、307、308",
+        "primary": false
+      },
+      {
+        "name": "status",
+        "javaFieldName": "status",
+        "javaGetterName": "Status",
+        "type": "INT",
+        "javaType": "Integer",
+        "comment": "状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时",
+        "primary": false
+      },
+      {
+        "name": "create_time",
+        "javaFieldName": "createTime",
+        "javaGetterName": "CreateTime",
+        "type": "DATETIME",
+        "javaType": "Date",
+        "comment": "发起请求时间",
+        "primary": false
+      },
+      {
+        "name": "response_time",
+        "javaFieldName": "responseTime",
+        "javaGetterName": "ResponseTime",
+        "type": "DATETIME",
+        "javaType": "Date",
+        "comment": "响应时间",
+        "primary": false
+      }
+    ],
+    "options": [
+      {
+        "key": "tableName",
+        "val": "user_request_log",
+        "defaultVal": "user_request_log"
+      }
+    ],
+    "optionDeclare": []
+  },
+  "pkgNameController": "com.ksptooi.biz.userrequestlog.controller",
+  "dirRoot": "src",
+  "dbName": "endpoint_analysis_service",
+  "genService": "true",
+  "tableName": "user_request_log",
+  "classNamePo": "UserRequestLogPo",
+  "genRepository": "true",
+  "logicExists": "0",
+  "fieldNameService": "userRequestLogService",
+  "password": "root",
+  "datetime": "2025-08-13 12:55:33",
+  "host": "192.168.10.200:3306",
+  "template.namespace": "ns_main",
+  "author": "wangshuailong",
+  "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
+  "classNameVo": "UserRequestLogVo",
+  "driver": "com.mysql.cj.jdbc.Driver",
+  "excludeNames": "sys_",
+  "genPo": "true",
+  "table.name": "user_request_log",
+  "classNameService": "UserRequestLogService",
+  "logicRemoved": "1",
+  "fields": [
+    {
+      "name": "id",
+      "javaFieldName": "id",
+      "javaGetterName": "Id",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "用户请求记录ID",
+      "primary": true
+    },
+    {
+      "name": "user_request_id",
+      "javaFieldName": "userRequestId",
+      "javaGetterName": "UserRequestId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "用户请求ID",
+      "primary": false
+    },
+    {
+      "name": "request_id",
+      "javaFieldName": "requestId",
+      "javaGetterName": "RequestId",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "请求ID",
+      "primary": false
+    },
+    {
+      "name": "method",
+      "javaFieldName": "method",
+      "javaGetterName": "Method",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "请求方法",
+      "primary": false
+    },
+    {
+      "name": "url",
+      "javaFieldName": "url",
+      "javaGetterName": "Url",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "请求URL",
+      "primary": false
+    },
+    {
+      "name": "source",
+      "javaFieldName": "source",
+      "javaGetterName": "Source",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "来源",
+      "primary": false
+    },
+    {
+      "name": "request_headers",
+      "javaFieldName": "requestHeaders",
+      "javaGetterName": "RequestHeaders",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "请求头JSON",
+      "primary": false
+    },
+    {
+      "name": "request_body_length",
+      "javaFieldName": "requestBodyLength",
+      "javaGetterName": "RequestBodyLength",
+      "type": "INT",
+      "javaType": "Integer",
+      "comment": "请求体长度",
+      "primary": false
+    },
+    {
+      "name": "request_body_type",
+      "javaFieldName": "requestBodyType",
+      "javaGetterName": "RequestBodyType",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "请求体类型 JSON、表单数据、二进制",
+      "primary": false
+    },
+    {
+      "name": "request_body",
+      "javaFieldName": "requestBody",
+      "javaGetterName": "RequestBody",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "请求体JSON",
+      "primary": false
+    },
+    {
+      "name": "response_headers",
+      "javaFieldName": "responseHeaders",
+      "javaGetterName": "ResponseHeaders",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "响应头JSON",
+      "primary": false
+    },
+    {
+      "name": "response_body_length",
+      "javaFieldName": "responseBodyLength",
+      "javaGetterName": "ResponseBodyLength",
+      "type": "INT",
+      "javaType": "Integer",
+      "comment": "响应体长度",
+      "primary": false
+    },
+    {
+      "name": "response_body_type",
+      "javaFieldName": "responseBodyType",
+      "javaGetterName": "ResponseBodyType",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "响应体类型 JSON、表单数据、二进制",
+      "primary": false
+    },
+    {
+      "name": "response_body",
+      "javaFieldName": "responseBody",
+      "javaGetterName": "ResponseBody",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "响应体JSON",
+      "primary": false
+    },
+    {
+      "name": "status_code",
+      "javaFieldName": "statusCode",
+      "javaGetterName": "StatusCode",
+      "type": "INT",
+      "javaType": "Integer",
+      "comment": "HTTP响应状态码 -1为请求失败",
+      "primary": false
+    },
+    {
+      "name": "redirect_url",
+      "javaFieldName": "redirectUrl",
+      "javaGetterName": "RedirectUrl",
+      "type": "LONGTEXT",
+      "comment": "重定向URL 301、302、303、307、308",
+      "primary": false
+    },
+    {
+      "name": "status",
+      "javaFieldName": "status",
+      "javaGetterName": "Status",
+      "type": "INT",
+      "javaType": "Integer",
+      "comment": "状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时",
+      "primary": false
+    },
+    {
+      "name": "create_time",
+      "javaFieldName": "createTime",
+      "javaGetterName": "CreateTime",
+      "type": "DATETIME",
+      "javaType": "Date",
+      "comment": "发起请求时间",
+      "primary": false
+    },
+    {
+      "name": "response_time",
+      "javaFieldName": "responseTime",
+      "javaGetterName": "ResponseTime",
+      "type": "DATETIME",
+      "javaType": "Date",
+      "comment": "响应时间",
+      "primary": false
+    }
+  ],
+  "fieldNameController": "userRequestLogController",
+  "pkgNameVo": "com.ksptooi.biz.userrequestlog.model.vo",
+  "fieldNameDto": "userRequestLogDto",
+  "logicRemoveField": "is_deleted",
+  "apiTagName": "UserRequestLog",
+  "fieldNamePo": "userRequestLogPo",
+  "classNameController": "UserRequestLogController",
+  "pkgNameDto": "com.ksptooi.biz.userrequestlog.model.dto",
+  "classNameRepository": "UserRequestLogRepository",
+  "pkgNameRepository": "com.ksptooi.biz.userrequestlog.repository",
+  "comments": "用户请求记录",
+  "fieldNameRepository": "userRequestLogRepository",
+  "genDto": "true",
+  "dirXml": "src.main.resources.mapper",
+  "pkgRoot": "com.ksptooi.biz",
+  "requestMappingName": "userRequestLog",
+  "genController": "true",
+  "fieldNameVo": "userRequestLogVo",
+  "businessClassName": "UserRequestLog",
+  "genVo": "true",
+  "dirClasses": "main.java",
+  "gWorkspace": "C:\\InternalDev\\KspTooiProject\\endpoint-analysis-service",
+  "classNameDto": "UserRequestLogDto",
+  "username": "root"
+}

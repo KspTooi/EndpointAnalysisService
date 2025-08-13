@@ -1,0 +1,6 @@
+
+#foreach($d in $dict)
+INSERT INTO `sys_dict_data` (`id`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES
+(${d.pk}, 0, '${d.value}', '${d.key}', '${dictType}', NULL, 'default', 'N', '0', 'admin', '2024-07-16 09:54:21', '', NULL, NULL);
+#end
+

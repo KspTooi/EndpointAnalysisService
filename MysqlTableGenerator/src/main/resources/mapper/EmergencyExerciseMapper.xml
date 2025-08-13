@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ksptooi.dtd.mapper.EmergencyExerciseMapper">
+
+	<resultMap id="poMap" type="com.ksptooi.dtd.models.mv.EmergencyExercisePo">
+		<result column="id" property="id"/>
+		<result column="plan_id" property="planId"/>
+		<result column="pub_dept_type" property="pubDeptType"/>
+		<result column="pub_dept_code" property="pubDeptCode"/>
+		<result column="play_name" property="playName"/>
+		<result column="finish_date_expected" property="finishDateExpected"/>
+		<result column="hold_dept_name" property="holdDeptName"/>
+		<result column="exercise_type" property="exerciseType"/>
+		<result column="exercise_level" property="exerciseLevel"/>
+		<result column="exercise_layout" property="exerciseLayout"/>
+		<result column="plan_status" property="planStatus"/>
+		<result column="edit_man" property="editMan"/>
+		<result column="review_man" property="reviewMan"/>
+		<result column="approve_date" property="approveDate"/>
+		<result column="member_count" property="memberCount"/>
+		<result column="address" property="address"/>
+		<result column="create_time" property="createTime"/>
+		<result column="create_by" property="createBy"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_by" property="updateBy"/>
+		<result column="del_status" property="delStatus"/>
+	</resultMap>
+
+	<!-- 表所有参数-->
+	<sql id="tableCol">
+		`id`,
+		`plan_id`,
+		`pub_dept_type`,
+		`pub_dept_code`,
+		`play_name`,
+		`finish_date_expected`,
+		`hold_dept_name`,
+		`exercise_type`,
+		`exercise_level`,
+		`exercise_layout`,
+		`plan_status`,
+		`edit_man`,
+		`review_man`,
+		`approve_date`,
+		`member_count`,
+		`address`,
+		`create_time`,
+		`create_by`,
+		`update_time`,
+		`update_by`,
+		`del_status`
+	</sql>
+
+	<!-- 实体所有参数-->
+	<sql id="voVal">
+		#{val.id},
+		#{val.planId},
+		#{val.pubDeptType},
+		#{val.pubDeptCode},
+		#{val.playName},
+		#{val.finishDateExpected},
+		#{val.holdDeptName},
+		#{val.exerciseType},
+		#{val.exerciseLevel},
+		#{val.exerciseLayout},
+		#{val.planStatus},
+		#{val.editMan},
+		#{val.reviewMan},
+		#{val.approveDate},
+		#{val.memberCount},
+		#{val.address},
+		#{val.createTime},
+		#{val.createBy},
+		#{val.updateTime},
+		#{val.updateBy},
+		#{val.delStatus}
+	</sql>
+
+	<sql id="where">
+		<where>
+			<if test="val.id != null">
+				AND id = #{val.id}
+			</if>
+			<if test="val.planId != null">
+				AND plan_id = #{val.planId}
+			</if>
+			<if test="val.pubDeptType != null">
+				AND pub_dept_type = #{val.pubDeptType}
+			</if>
+			<if test="val.pubDeptCode != null">
+				AND pub_dept_code = #{val.pubDeptCode}
+			</if>
+			<if test="val.playName != null">
+				AND play_name = #{val.playName}
+			</if>
+			<if test="val.finishDateExpected != null">
+				AND finish_date_expected = #{val.finishDateExpected}
+			</if>
+			<if test="val.holdDeptName != null">
+				AND hold_dept_name = #{val.holdDeptName}
+			</if>
+			<if test="val.exerciseType != null">
+				AND exercise_type = #{val.exerciseType}
+			</if>
+			<if test="val.exerciseLevel != null">
+				AND exercise_level = #{val.exerciseLevel}
+			</if>
+			<if test="val.exerciseLayout != null">
+				AND exercise_layout = #{val.exerciseLayout}
+			</if>
+			<if test="val.planStatus != null">
+				AND plan_status = #{val.planStatus}
+			</if>
+			<if test="val.editMan != null">
+				AND edit_man = #{val.editMan}
+			</if>
+			<if test="val.reviewMan != null">
+				AND review_man = #{val.reviewMan}
+			</if>
+			<if test="val.approveDate != null">
+				AND approve_date = #{val.approveDate}
+			</if>
+			<if test="val.memberCount != null">
+				AND member_count = #{val.memberCount}
+			</if>
+			<if test="val.address != null">
+				AND address = #{val.address}
+			</if>
+			<if test="val.createTime != null">
+				AND create_time = #{val.createTime}
+			</if>
+			<if test="val.createBy != null">
+				AND create_by = #{val.createBy}
+			</if>
+			<if test="val.updateTime != null">
+				AND update_time = #{val.updateTime}
+			</if>
+			<if test="val.updateBy != null">
+				AND update_by = #{val.updateBy}
+			</if>
+			AND del_status = 0
+		</where>
+	</sql>
+
+	<select id="getList" resultMap="poMap">
+		SELECT <include refid="tableCol"/> FROM tb_emergency_exercise
+		<include refid="where"/>
+	</select>
+
+	<delete id="removeByIds">
+		UPDATE tb_emergency_exercise
+		SET del_status = 1
+		<where>
+			<foreach collection="val" item="item" open="id in(" close=")" separator=",">
+				#{item}
+			</foreach>
+			AND del_status = 0
+		</where>
+	</delete>
+
+	<delete id="removeById">
+		UPDATE tb_emergency_exercise SET del_status = 1 WHERE id = #{val} AND del_status = 0
+	</delete>
+
+	<select id="getByIds" resultMap="poMap">
+		<if test="val != null and val.size() > 0">
+			SELECT <include refid="tableCol"/> FROM tb_emergency_exercise
+			<where>
+				<foreach collection="val" item="item" open="(" close=")" separator=" OR ">
+					id = #{item}
+				</foreach>
+				AND del_status = 0
+			</where>
+		</if>
+	</select>
+
+	<select id="getById" resultMap="poMap">
+		SELECT <include refid="tableCol"/> FROM tb_emergency_exercise
+		WHERE id = #{val} AND del_status = 0
+		LIMIT 1
+	</select>
+
+
+
+</mapper>

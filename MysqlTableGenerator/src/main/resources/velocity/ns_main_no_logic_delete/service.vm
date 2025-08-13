@@ -1,0 +1,64 @@
+package ${pkgNameService};
+
+import com.baodian.commons.utils.PageCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import com.baodian.commons.entities.Entities;
+
+import ${pkgNamePo}.${classNamePo};
+import ${pkgNameMapper}.${classNameMapper};
+import ${pkgNameVo}.Get${businessClassName}ListVo;
+import ${pkgNameDto}.Get${businessClassName}ListDto;
+import ${pkgNameVo}.Get${businessClassName}DetailsVo;
+import ${pkgNameDto}.Edit${classNameDto};
+import ${pkgNameDto}.Add${classNameDto};
+
+@Service
+public class ${classNameService} extends Entities {
+
+    @Autowired
+    private ${classNameMapper} ${fieldNameMapper};
+
+    public List<Get${businessClassName}ListVo> get${businessClassName}List(Get${businessClassName}ListDto dto,int page,int pageSize){
+
+        var pCalculator = new PageCalculator(page,pageSize);
+
+        if(page < 1 || pageSize < 1){
+            pCalculator = null;
+        }
+
+        var pos = ${fieldNameMapper}.getList(as(dto,${classNamePo}.class),pCalculator);
+        return as(pos,Get${businessClassName}ListVo.class);
+    }
+
+    public boolean add${businessClassName}(Add${classNameDto} dto){
+        var insert = new ${classNamePo}("insert");
+        assign(dto,insert);
+        return ${fieldNameMapper}.insert(insert) > 0;
+    }
+
+    public boolean edit${businessClassName}(Edit${classNameDto} dto) {
+        var update = new ${classNamePo}("update");
+        assign(dto,update);
+        return ${fieldNameMapper}.updateById(update) > 0;
+    }
+
+    public Get${businessClassName}DetailsVo get${businessClassName}Details(Long id) {
+        var po = ${fieldNameMapper}.getById(id);
+        return as(po,Get${businessClassName}DetailsVo.class);
+    }
+
+    public boolean remove${businessClassName}(long id) {
+        return ${fieldNameMapper}.removeById(id) > 0;
+    }
+
+    public boolean remove${businessClassName}(List<Long> ids) {
+        return ${fieldNameMapper}.removeByIds(ids) > 0;
+    }
+
+    public long count(Get${businessClassName}ListDto dto){
+        return ${fieldNameMapper}.count(as(dto,${classNamePo}.class));
+    }
+
+}
