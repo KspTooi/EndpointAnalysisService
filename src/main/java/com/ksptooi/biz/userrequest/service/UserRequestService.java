@@ -55,6 +55,11 @@ public class UserRequestService {
         userRequestPo.setOriginalRequest(requestPo);
         userRequestPo.setUser(authService.requireUser());
         userRequestPo.setName(requestPo.getRequestId());//如果未提供名称 则使用请求ID作为名称
+        userRequestPo.setMethod(requestPo.getMethod());
+        userRequestPo.setUrl(requestPo.getUrl());
+        userRequestPo.setRequestHeaders(requestPo.getRequestHeaders());
+        userRequestPo.setRequestBodyType(requestPo.getRequestBodyType());
+        userRequestPo.setRequestBody(requestPo.getRequestBody());
 
         if(StringUtils.isNotBlank(dto.getName())){
             userRequestPo.setName(dto.getName());

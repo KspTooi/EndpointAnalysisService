@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "user_request")
@@ -44,6 +46,28 @@ public class UserRequestPo {
     @Column(name = "name",length = 64)
     @Comment("用户自定义请求名称")
     private String name;
+
+    @Column(name = "method",length = 32,nullable = false)
+    @Comment("请求方法")
+    private String method;
+
+    @Column(name = "url",length = 320,nullable = false)
+    @Comment("请求URL")
+    private String url;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "request_headers",columnDefinition = "json")
+    @Comment("请求头JSON")
+    private String requestHeaders;
+
+    @Column(name = "request_body_type",length = 320,nullable = false)
+    @Comment("请求体类型 JSON、表单数据、二进制")
+    private String requestBodyType;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "request_body",columnDefinition = "json")
+    @Comment("请求体JSON")
+    private String requestBody;
 
     @Column(name = "seq",nullable = false)
     @Comment("排序")

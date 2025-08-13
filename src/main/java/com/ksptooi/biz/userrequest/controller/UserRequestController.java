@@ -25,14 +25,12 @@ public class UserRequestController {
     @Autowired
     private UserRequestService userRequestService;
 
-
     @Operation(summary ="保存原始请求为用户请求")
     @PostMapping("/saveAsUserRequest")
     public Result<String> saveAsUserRequest(@RequestBody @Valid SaveAsUserRequestDto dto) throws Exception{
         userRequestService.saveAsUserRequest(dto);
         return Result.success("保存成功");
     }
-
 
     @Operation(summary ="编辑")
     @PostMapping("/editUserRequest")

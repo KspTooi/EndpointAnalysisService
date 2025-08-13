@@ -1,12 +1,14 @@
 <template>
   <div class="request-viewer-container">
     <RequestTree style="width: 350px;" @select-request="handleSelectRequest" />
+    <RequestBuilder style="width: 100%;" />
   </div>
 </template>
 
 <script setup lang="ts">
 
 import RequestTree from "@/components/user-request-view/RequestTree.vue";
+import RequestBuilder from "@/components/user-request-view/RequestBuilder.vue";
 
 const handleSelectRequest = (requestId: string) => {
   console.log(requestId);
