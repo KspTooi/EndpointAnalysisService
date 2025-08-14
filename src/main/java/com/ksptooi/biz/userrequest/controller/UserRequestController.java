@@ -11,9 +11,6 @@ import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.Result;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.biz.userrequest.service.UserRequestService;
-import com.ksptooi.commons.utils.web.PageResult;
-
-import java.util.List;
 
 @PrintLog
 @RestController
@@ -32,14 +29,14 @@ public class UserRequestController {
         return Result.success("保存成功");
     }
 
-    @Operation(summary ="编辑")
+    @Operation(summary ="编辑用户请求")
     @PostMapping("/editUserRequest")
     public Result<String> editUserRequest(@RequestBody @Valid EditUserRequestDto dto) throws Exception{
         userRequestService.editUserRequest(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询用户请求详情")
     @PostMapping("/getUserRequestDetails")
     public Result<GetUserRequestDetailsVo> getUserRequestDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetUserRequestDetailsVo details = userRequestService.getUserRequestDetails(dto);
@@ -49,7 +46,7 @@ public class UserRequestController {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除用户请求")
     @PostMapping("/removeUserRequest")
     public Result<String> removeUserRequest(@RequestBody @Valid CommonIdDto dto) throws Exception{
         userRequestService.removeUserRequest(dto);

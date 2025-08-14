@@ -19,7 +19,7 @@ import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
-
+import com.google.gson.Gson;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -37,6 +37,9 @@ public class UserRequestService {
 
     @Autowired
     private UserRequestGroupRepository userRequestGroupRepository;
+
+    @Autowired
+    private Gson gson;
 
     /**
      * 保存原始请求为用户请求
@@ -250,8 +253,15 @@ public class UserRequestService {
 
     public GetUserRequestDetailsVo getUserRequestDetails(CommonIdDto dto) throws BizException {
         UserRequestPo po = repository.findById(dto.getId())
-                .orElseThrow(()-> new BizException("更新失败,数据不存在."));
-        return as(po,GetUserRequestDetailsVo.class);
+                .orElseThrow(()-> new BizException("查询失败,数据不存在."));
+
+        GetUserRequestDetailsVo vo = as(po,GetUserRequestDetailsVo.class);
+
+        if (po.getRequestHeaders() != null){
+            vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(),Map.class));
+        }
+
+        return vo;
     }
 
     @Transactional(rollbackFor = Exception.class)
