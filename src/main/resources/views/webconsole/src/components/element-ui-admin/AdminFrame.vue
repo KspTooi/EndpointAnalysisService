@@ -313,12 +313,14 @@ const autoBreadcrumbs = computed(() => {
   width: 100%;
   overflow: hidden;
   display: flex;
+  min-height: 0;
 }
 
 .el-container {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  min-height: 0;
 }
 
 .admin-header {
@@ -406,16 +408,30 @@ const autoBreadcrumbs = computed(() => {
   background-color: var(--el-bg-color-page);
   padding: 0;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
 }
 
 .content-wrapper {
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  min-height: 100%;
   padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 路由容器占满剩余高度，允许内部滚动 */
+.content-wrapper > div {
+  flex: 1;
+  display: flex;
+  min-height: 0;
 }
 
 /* 侧边栏内部元素样式增强 */

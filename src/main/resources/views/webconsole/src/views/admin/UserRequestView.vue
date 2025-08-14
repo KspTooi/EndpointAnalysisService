@@ -1,7 +1,7 @@
 <template>
   <div class="request-viewer-container">
     <RequestTree style="width: 350px;" @select-request="handleSelectRequest" />
-    <RequestBuilder :request-id="requestId" style="width: 100%" v-if="requestId"/>
+    <RequestBuilder :request-id="requestId" style="flex: 1;" v-if="requestId"/>
   </div>
 </template>
 
@@ -22,6 +22,9 @@ const handleSelectRequest = (id: string) => {
 .request-viewer-container {
   display: flex;
   flex-direction: row;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  width: 100%;
 }
 </style>

@@ -1,6 +1,7 @@
-import type { Reactive } from "vue"
+import type { Reactive, Ref } from "vue"
 
 export default{
+
 
     /**
      * 持久化查询参数到localStorage

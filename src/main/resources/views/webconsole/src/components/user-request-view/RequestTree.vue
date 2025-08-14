@@ -341,6 +341,7 @@ defineExpose({
 
 <style scoped>
 .tag-tree-container {
+    height: 100%;
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 1px solid #e9ecef;
@@ -349,7 +350,7 @@ defineExpose({
 .tag-tree-body {
     border-top: 1px solid rgba(64, 158, 255, 0.2);
     overflow-y: auto;
-    height: calc(100vh - 105px);
+    height: 100%;
     padding-top: 4px;
     position: relative;
 }

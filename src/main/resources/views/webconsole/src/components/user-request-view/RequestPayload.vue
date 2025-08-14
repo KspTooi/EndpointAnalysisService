@@ -2,15 +2,15 @@
   <div class="request-payload-container">
     <div class="rb-radio-group">
       <el-radio-group v-model="requestBodyType" size="small">
-        <el-radio label="none">none</el-radio>
-        <el-radio label="multipart/form-data">form-data</el-radio>
-        <el-radio label="x-www-form-urlencoded">x-www-form-urlencoded</el-radio>
-        <el-radio label="text/plain">text</el-radio>
-        <el-radio label="application/json">json</el-radio>
-        <el-radio label="application/xml">xml</el-radio>
-        <el-radio label="application/javascript">javascript</el-radio>
-        <el-radio label="application/html">html</el-radio>
-        <el-radio label="binary">binary</el-radio>
+        <el-radio :value="'none'">none</el-radio>
+        <el-radio :value="'multipart/form-data'">form-data</el-radio>
+        <el-radio :value="'x-www-form-urlencoded'">x-www-form-urlencoded</el-radio>
+        <el-radio :value="'text/plain'">text</el-radio>
+        <el-radio :value="'application/json'">json</el-radio>
+        <el-radio :value="'application/xml'">xml</el-radio>
+        <el-radio :value="'application/javascript'">javascript</el-radio>
+        <el-radio :value="'application/html'">html</el-radio>
+        <el-radio :value="'binary'">binary</el-radio>
       </el-radio-group>
     </div>
     <div class="rb-payload-content">
@@ -28,6 +28,7 @@ import { type GetUserRequestDetailsVo } from '@/api/UserRequestApi';
 import { ref, computed, watch } from 'vue';
 import JsonEditorVue from 'json-editor-vue'
 import { Mode } from 'vanilla-jsoneditor'
+import ContentTypeService, { ContentType } from '@/service/ContentTypeService';
 
 const props = defineProps<{
   requestDetails: GetUserRequestDetailsVo
@@ -37,7 +38,34 @@ const editorMode = ref<Mode.text>(Mode.text)
 const requestBody = ref<string>(props.requestDetails.requestBody || '')
 const requestBodyType = ref<string>(props.requestDetails.requestBodyType || 'text/plain')
 
+watch(() => props.requestDetails.requestBody, (newVal) => {
+  if (newVal) {
+    requestBody.value = newVal
+  }
+  if(newVal === null){
+    requestBody.value = ''
+  }
+}, { immediate: true ,deep: true})
+
+watch(() => props.requestDetails.requestBodyType, (newVal) => {
+  const contentType = ContentTypeService.getContentType(newVal)
+  requestBodyType.value = contentType.toString()
+}, { immediate: true ,deep: true})
+
+
+
+
 </script>
+
+<style>
+.jse-menu{
+  background-color: #4ba5ff !important;
+  border-radius: 5px 5px 0 0;
+}
+.jse-status-bar{
+  border-radius: 0 0 5px 5px;
+}
+</style>
 
 <style scoped>
 .request-payload-container {
@@ -50,8 +78,7 @@ const requestBodyType = ref<string>(props.requestDetails.requestBodyType || 'tex
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .rb-toolbar {
@@ -73,4 +100,5 @@ const requestBodyType = ref<string>(props.requestDetails.requestBodyType || 'tex
   margin: 0;
   font-size: 14px;
 }
+
 </style>

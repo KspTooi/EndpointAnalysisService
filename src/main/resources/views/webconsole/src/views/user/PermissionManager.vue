@@ -378,6 +378,7 @@ const removePermission = async (row: GetPermissionListVo) => {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
 }
 
 .query-form {

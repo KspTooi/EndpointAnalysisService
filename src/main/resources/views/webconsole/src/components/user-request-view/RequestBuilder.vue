@@ -9,16 +9,14 @@
 
       <div class="rb-header-input" style="margin-top: 12px;">
         <RequestUrlInput :url="requestDetail.url" 
-                       :method="requestDetail.method" 
-                       @onSendRequest="onSendRequest" 
-                       @onUrlChange="onUrlChange" />
+                       :method="requestDetail.method"/>
 
       </div>
 
     </div>
 
     <div v-if="requestDetail" class="rb-content">
-      
+
       <!-- 选项卡 -->
       <div class="rb-tab">
         <div class="rb-tab-item" :class="{ active: activeTab === 'header' }" @click="activeTab = 'header'">
@@ -61,9 +59,10 @@
 
 <script setup lang="ts">
 import UserRequestApi, { type GetUserRequestDetailsVo } from '@/api/UserRequestApi';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from './RequestPayload.vue';
+import QueryPersistService from '@/service/QueryPersistService';
 
 const requestDetail = ref<GetUserRequestDetailsVo>({
   id: "",
@@ -82,8 +81,6 @@ const props = defineProps<{
 
 const activeTab = ref('header')
 
-
-
 watch(()=>props.requestId,async ()=>{
   if(props.requestId){
     await loadRequestDetail()
@@ -96,6 +93,17 @@ const loadRequestDetail = async () => {
   console.log(requestDetail.value)
 }
 
+onMounted(()=>{
+  const tab = localStorage.getItem('request_builder_activeTab')
+  if(tab){
+    activeTab.value = tab
+  }
+})
+
+
+watch(activeTab, (newVal) => {
+  localStorage.setItem('request_builder_activeTab', newVal)
+})
 
 
 
@@ -128,6 +136,7 @@ const loadRequestDetail = async () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .rb-info {
@@ -216,11 +225,51 @@ const loadRequestDetail = async () => {
 .rb-tab-content {
   flex: 1;
   overflow: auto;
+  min-height: 0;
+}
+
+/* 自定义滚动条样式 */
+.rb-tab-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rb-tab-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.rb-tab-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.rb-tab-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* tab-panel滚动条样式 */
+.tab-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tab-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.tab-panel::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.tab-panel::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .tab-panel {
   padding: 5px 5px 5px 15px;
   height: 100%;
+  overflow: auto;
 }
 
 .headers-list {

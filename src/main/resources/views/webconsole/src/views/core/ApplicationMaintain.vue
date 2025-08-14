@@ -141,7 +141,8 @@ const maintainOperations: MaintainOperation[] = [
 <style scoped>
 .application-maintain {
     padding: 24px;
-    max-width: 1200px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
 }
 
