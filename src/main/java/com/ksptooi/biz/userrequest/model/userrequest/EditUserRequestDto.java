@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter@Setter
 public class EditUserRequestDto {
@@ -30,7 +29,7 @@ public class EditUserRequestDto {
 
     @NotNull(message = "请求头不能为空")
     @Schema(description="请求头")
-    private List<RequestHeaderVo> requestHeaders;
+    private List<HttpHeaderVo> requestHeaders;
 
     @NotBlank(message = "请求体类型不能为空")
     @Schema(description="请求体类型")

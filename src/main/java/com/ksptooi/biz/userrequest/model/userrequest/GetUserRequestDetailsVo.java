@@ -1,7 +1,6 @@
 package com.ksptooi.biz.userrequest.model.userrequest;
 
 import java.util.List;
-import java.util.Map;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -32,7 +31,7 @@ public class GetUserRequestDetailsVo{
     private String url;
 
     @Schema(description="请求头")
-    private List<RequestHeaderVo> requestHeaders;
+    private List<HttpHeaderVo> requestHeaders;
 
     @Schema(description="请求体类型")
     private String requestBodyType;

@@ -202,11 +202,17 @@ const loadComponentState = ()=>{
   }
 }
 
+/**
+ * 请求url变化
+ */
 const onUrlChange = (method: string, url: string) => {
   requestDetail.value.method = method
   requestDetail.value.url = url
 }
 
+/**
+ * 发送请求
+ */
 const onSendRequest = async () => {
   loading.value = true
 
@@ -226,6 +232,9 @@ const onSendRequest = async () => {
   loading.value = false
 }
 
+/**
+ * 请求体变化
+ */
 const onRequestBodyChange = (requestBody: string) => {
   requestDetail.value.requestBody = requestBody
 }

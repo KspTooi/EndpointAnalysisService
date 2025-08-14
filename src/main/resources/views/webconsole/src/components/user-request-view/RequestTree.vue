@@ -2,7 +2,6 @@
     <div class="tag-tree-container">
 
         <div class="tag-tree-search">
-            {{ activeRequestId }}
           <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable  />
           <el-button type="primary" @click="loadUserRequestTree" size="small">加载数据</el-button>
           <el-button type="primary" @click="showCreateGroupDialog" size="small">新建组</el-button>

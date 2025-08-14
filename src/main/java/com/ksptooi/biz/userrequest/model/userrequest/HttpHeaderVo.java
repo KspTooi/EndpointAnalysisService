@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
-public class RequestHeaderVo {
+public class HttpHeaderVo {
 
     private String k;
 

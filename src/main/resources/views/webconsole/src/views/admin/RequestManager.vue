@@ -326,7 +326,7 @@
       width="400px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      class="save-dialog-centered"
+      class="modal-centered"
     >
       <el-form
         ref="saveFormRef"
@@ -700,6 +700,8 @@ const formatJson = (data: unknown): string => {
   cursor: pointer;
 }
 
+
+
 /* 垂直居中对话框并在小屏自适应高度 */
 :deep(.centered-dialog) {
   margin: 0 auto;
@@ -744,7 +746,7 @@ const formatJson = (data: unknown): string => {
 }
 
 /* 保存请求对话框垂直居中 */
-:deep(.save-dialog-centered) {
+:deep(.modal-centered) {
   margin: 0 auto;
   top: 50%;
   transform: translateY(-50%);

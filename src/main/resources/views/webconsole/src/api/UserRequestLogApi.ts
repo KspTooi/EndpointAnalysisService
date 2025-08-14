@@ -1,4 +1,4 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
+import type Result from "@/commons/entity/Result";
 import type PageQuery from "@/commons/entity/PageQuery";
 import type PageResult from "@/commons/entity/PageResult";
 import Http from "@/commons/Http";
@@ -19,6 +19,31 @@ export interface GetUserRequestLogListVo {
     responseTime: string
 }
 
+export interface GetUserRequestLogDetailsVo {
+    id: string | null
+    requestId: string | null
+    method: string | null
+    url: string | null
+    source: string | null
+    requestHeaders: HttpHeaderVo[] | null
+    requestBodyLength: number | null
+    requestBodyType: string | null
+    requestBody: string | null
+    responseHeaders: HttpHeaderVo[] | null
+    responseBodyLength: number | null
+    responseBodyType: string | null
+    responseBody: string | null
+    statusCode: number | null
+    redirectUrl: string | null
+    status: number | null
+    requestTime: string | null
+    responseTime: string | null
+}
+
+export interface HttpHeaderVo {
+    k: string
+    v: string
+}
 
 export default {
 
@@ -29,6 +54,20 @@ export default {
      */
     getUserRequestLogList: async (dto: GetUserRequestLogListDto): Promise<PageResult<GetUserRequestLogListVo>> => {
         return await Http.postEntity<PageResult<GetUserRequestLogListVo>>('/userRequestLog/getUserRequestLogList', dto)
+    },
+
+    /**
+     * 获取用户请求详情
+     * @param id 用户请求ID
+     * @returns 用户请求详情
+     */
+    getUserRequestDetails: async (id: string): Promise<GetUserRequestLogDetailsVo> => {
+        const result = await Http.postEntity<Result<GetUserRequestLogDetailsVo>>('/userRequestLog/getUserRequestLogDetails', { id })
+        if (result.code == 0) {
+            return result.data
+        }
+        throw new Error(result.message)
     }
+
 }
         

@@ -1,8 +1,15 @@
 package com.ksptooi.biz.userrequest.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ksptooi.biz.userrequest.model.userrequest.HttpHeaderVo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import com.ksptooi.commons.utils.web.PageResult;
@@ -10,6 +17,7 @@ import com.ksptooi.commons.utils.web.CommonIdDto;
 import org.springframework.data.domain.Page;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
+import com.ksptooi.commons.utils.GsonUtils;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -19,6 +27,9 @@ public class UserRequestLogService {
 
     @Autowired
     private UserRequestLogRepository repository;
+
+    @Autowired
+    private Gson gson;
 
     public PageResult<GetUserRequestLogListVo> getUserRequestLogList(GetUserRequestLogListDto dto){
         Page<GetUserRequestLogListVo> pVos = repository.getUserRequestLogList(dto.getUserRequestId(), dto.pageRequest());
@@ -43,7 +54,42 @@ public class UserRequestLogService {
     public GetUserRequestLogDetailsVo getUserRequestLogDetails(CommonIdDto dto) throws BizException {
         UserRequestLogPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("更新失败,数据不存在."));
-        return as(po,GetUserRequestLogDetailsVo.class);
+
+        GetUserRequestLogDetailsVo vo = new GetUserRequestLogDetailsVo();
+        vo.setId(po.getId());
+        vo.setRequestId(po.getRequestId());
+        vo.setMethod(po.getMethod());
+        vo.setUrl(po.getUrl());
+        vo.setSource(po.getSource());
+        vo.setRequestHeaders(null);
+        vo.setRequestBodyLength(po.getRequestBodyLength());
+        vo.setRequestBodyType(po.getRequestBodyType());
+        vo.setRequestBody(po.getRequestBody());
+        vo.setResponseHeaders(null);
+        vo.setResponseBodyLength(po.getResponseBodyLength());
+        vo.setResponseBodyType(po.getResponseBodyType());
+        vo.setResponseBody(po.getResponseBody());
+        vo.setStatusCode(po.getStatusCode());
+        vo.setRedirectUrl(po.getRedirectUrl());
+        vo.setStatus(po.getStatus());
+        vo.setRequestTime(po.getRequestTime());
+        vo.setResponseTime(po.getResponseTime());
+        vo.setResponseTime(po.getResponseTime());
+
+        //处理请求头、响应头
+        List<HttpHeaderVo> requestHeaders = new ArrayList<>();
+        List<HttpHeaderVo> responseHeaders = new ArrayList<>();
+
+        if(StringUtils.isNotBlank(po.getRequestHeaders())){
+            requestHeaders = gson.fromJson(po.getRequestHeaders(), new TypeToken<List<HttpHeaderVo>>(){}.getType());
+        }
+        if(StringUtils.isNotBlank(po.getResponseHeaders())){
+            responseHeaders = gson.fromJson(po.getResponseHeaders(), new TypeToken<List<HttpHeaderVo>>(){}.getType());
+        }
+
+        vo.setRequestHeaders(requestHeaders);
+        vo.setResponseHeaders(responseHeaders);
+        return vo;
     }
 
     @Transactional(rollbackFor = Exception.class)

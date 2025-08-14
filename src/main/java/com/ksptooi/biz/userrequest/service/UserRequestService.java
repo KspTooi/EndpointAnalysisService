@@ -98,16 +98,16 @@ public class UserRequestService {
         userRequestPo.setUrl(requestPo.getUrl());
 
         //将请求头转换为列表
-        List<RequestHeaderVo> requestHeaders = new ArrayList<>();
+        List<HttpHeaderVo> requestHeaders = new ArrayList<>();
 
         try{
             Type mapType = new TypeToken<Map<String,String>>(){}.getType();
             Map<String,String> rhm = gson.fromJson(requestPo.getRequestHeaders(), mapType);
             for(Map.Entry<String,String> entry : rhm.entrySet()){
-                RequestHeaderVo requestHeaderVo = new RequestHeaderVo();
-                requestHeaderVo.setK(entry.getKey());
-                requestHeaderVo.setV(entry.getValue());
-                requestHeaders.add(requestHeaderVo);
+                HttpHeaderVo httpHeaderVo = new HttpHeaderVo();
+                httpHeaderVo.setK(entry.getKey());
+                httpHeaderVo.setV(entry.getValue());
+                requestHeaders.add(httpHeaderVo);
             }
         }catch(Exception e){
         }
@@ -343,7 +343,7 @@ public class UserRequestService {
         GetUserRequestDetailsVo vo = as(po,GetUserRequestDetailsVo.class);
 
         if (po.getRequestHeaders() != null){
-            Type listType = new TypeToken<List<RequestHeaderVo>>(){}.getType();
+            Type listType = new TypeToken<List<HttpHeaderVo>>(){}.getType();
             vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(),listType));
         }
 
@@ -451,14 +451,14 @@ public class UserRequestService {
             .method(method, HttpRequest.BodyPublishers.ofString(body));
 
         //将JSON格式的请求头处理为Map
-        List<RequestHeaderVo> headersList = new ArrayList<>();
+        List<HttpHeaderVo> headersList = new ArrayList<>();
         if(StringUtils.isNotBlank(headers)){
-            Type listType = new TypeToken<List<RequestHeaderVo>>(){}.getType();
+            Type listType = new TypeToken<List<HttpHeaderVo>>(){}.getType();
             headersList = gson.fromJson(headers, listType);
         }
 
         //将请求头添加到请求中
-        for(RequestHeaderVo header : headersList){
+        for(HttpHeaderVo header : headersList){
             if(HOP_BY_HOP_HEADERS.contains(header.getK().toLowerCase())){
                 continue;
             }
@@ -507,9 +507,9 @@ public class UserRequestService {
 
 
             //处理响应头
-            List<RequestHeaderVo> responseHeadersList = new ArrayList<>();
+            List<HttpHeaderVo> responseHeadersList = new ArrayList<>();
             for(Map.Entry<String,List<String>> entry : response.headers().map().entrySet()){
-                RequestHeaderVo responseHeaderVo = new RequestHeaderVo();
+                HttpHeaderVo responseHeaderVo = new HttpHeaderVo();
                 responseHeaderVo.setK(entry.getKey());
                 responseHeaderVo.setV(entry.getValue().get(0));
                 responseHeadersList.add(responseHeaderVo);
