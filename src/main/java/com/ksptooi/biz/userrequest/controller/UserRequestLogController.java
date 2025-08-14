@@ -29,24 +29,10 @@ public class UserRequestLogController {
 
     @PostMapping("/getUserRequestLogList")
     @Operation(summary ="列表查询")
-    public PageResult<GetUserRequestLogListVo> getUserRequestLogList(@RequestBody @Valid GetUserRequestLogListDto dto) throws Exception{
+    public PageResult<GetUserRequestLogListVo> getUserRequestLogList(@RequestBody @Valid GetUserRequestLogListDto dto) throws Exception {
         return userRequestLogService.getUserRequestLogList(dto);
     }
-
-    @Operation(summary ="新增")
-    @PostMapping("/addUserRequestLog")
-    public Result<String> addUserRequestLog(@RequestBody @Valid AddUserRequestLogDto dto) throws Exception{
-        userRequestLogService.addUserRequestLog(dto);
-        return Result.success("新增成功");
-    }
-
-    @Operation(summary ="编辑")
-    @PostMapping("/editUserRequestLog")
-    public Result<String> editUserRequestLog(@RequestBody @Valid EditUserRequestLogDto dto) throws Exception{
-        userRequestLogService.editUserRequestLog(dto);
-        return Result.success("修改成功");
-    }
-
+    
     @Operation(summary ="查询详情")
     @PostMapping("/getUserRequestLogDetails")
     public Result<GetUserRequestLogDetailsVo> getUserRequestLogDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{

@@ -14,7 +14,7 @@
       </el-radio-group>
     </div>
     <div class="rb-payload-content">
-      <JsonEditorVue style="height: 450px"
+      <JsonEditorVue style="height: 500px"
                      v-model="requestBody"
                      v-bind="{/* 局部 props & attrs */}"
                      v-model:mode="editorMode"
@@ -29,6 +29,10 @@ import { ref, computed, watch } from 'vue';
 import JsonEditorVue from 'json-editor-vue'
 import { Mode } from 'vanilla-jsoneditor'
 import ContentTypeService, { ContentType } from '@/service/ContentTypeService';
+
+const emit = defineEmits<{
+  (event: 'onRequestBodyChange', requestBody: string): void;
+}>()
 
 const props = defineProps<{
   requestDetails: GetUserRequestDetailsVo
@@ -53,6 +57,10 @@ watch(() => props.requestDetails.requestBodyType, (newVal) => {
 }, { immediate: true ,deep: true})
 
 
+//监听载荷变化
+watch(requestBody, (newVal) => {
+  emit('onRequestBodyChange', newVal)
+})
 
 
 </script>

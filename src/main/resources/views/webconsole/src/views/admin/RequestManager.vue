@@ -179,6 +179,16 @@
             >
               转到重放
             </el-button>
+            <el-button 
+              link
+              type="primary" 
+              size="small" 
+              @click="saveRequest(scope.row)"
+              :icon="SaveIcon"
+              style="margin-left: 8px;"
+            >
+              保存
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -302,8 +312,48 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="saveRequest" :loading="submitLoading">
+          <el-button type="primary" @click="saveRequest(details)" :loading="submitLoading">
             Confirm
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 保存请求对话框 -->
+    <el-dialog
+      v-model="saveDialogVisible"
+      title="另存为"
+      width="400px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      class="save-dialog-centered"
+    >
+      <el-form
+        ref="saveFormRef"
+        :model="saveForm"
+        label-width="80px"
+        :rules="{
+          name: [{ required: true, message: '请输入请求名称', trigger: 'blur' }]
+        }"
+      >
+        <el-form-item label="请求名称" prop="name">
+          <el-input 
+            v-model="saveForm.name" 
+            placeholder="请输入请求名称"
+            maxlength="100"
+            show-word-limit
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="saveDialogVisible = false">取消</el-button>
+          <el-button 
+            type="primary" 
+            @click="confirmSaveRequest" 
+            :loading="saveSubmitLoading"
+          >
+            保存
           </el-button>
         </span>
       </template>
@@ -321,6 +371,7 @@ import { markRaw } from 'vue';
 import type { FormInstance } from 'element-plus';
 import { useRouter } from 'vue-router';
 import QueryPersistService from '@/service/QueryPersistService';
+import UserRequestApi from "@/api/UserRequestApi.ts";
 
 const router = useRouter()
 const queryPersistService = QueryPersistService
@@ -348,12 +399,23 @@ const loading = ref(false)
 const EditIcon = markRaw(Edit);
 const ViewIcon = markRaw(View);
 const RightIcon = markRaw(Right);
+const SaveIcon = markRaw(DocumentCopy);
 
 // 模态框相关
 const dialogVisible = ref(false)
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
 const modalMode = ref<("view" | "edit")>("view") //view:预览,edit:编辑
+
+// 保存请求对话框相关
+const saveDialogVisible = ref(false)
+const saveFormRef = ref<FormInstance>()
+const saveSubmitLoading = ref(false)
+const saveForm = reactive({
+  requestId: '',
+  name: '',
+  url: ''
+})
 
 // 预览Tab
 const activeTab = ref<'payload' | 'headers' | 'meta'>('payload')
@@ -524,26 +586,33 @@ const openUpdateModal = async (row: GetRequestListVo) => {
   }
 }
 
-const saveRequest = async () => {
-  if (!formRef.value) return
+const saveRequest = (row: GetRequestListVo | GetRequestDetailsVo) => {
+  saveForm.requestId = row.id.toString()
+  saveForm.url = row.url
+  saveForm.name = row.url // 默认使用URL作为名称
+  saveDialogVisible.value = true
+}
+
+const confirmSaveRequest = async () => {
+  if (!saveFormRef.value) return
   
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return
+  try {
+    await saveFormRef.value.validate()
+    saveSubmitLoading.value = true
     
-    submitLoading.value = true
-    try {
-      //await RequestApi.editRequest(details)
-      console.log(details)
-      ElMessage.success('Configuration updated successfully')
-      dialogVisible.value = false
-      loadRequestList()
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Operation failed'
-      ElMessage.error(errorMsg)
-    } finally {
-      submitLoading.value = false
-    }
-  })
+    await UserRequestApi.saveAsUserRequest({
+      requestId: saveForm.requestId, 
+      name: saveForm.name
+    })
+    
+    ElMessage.success('保存成功')
+    saveDialogVisible.value = false
+    loadRequestList()
+  } catch (error) {
+    console.error('保存失败:', error)
+  } finally {
+    saveSubmitLoading.value = false
+  }
 }
 
 const copyText = async (text: string) => {
@@ -672,5 +741,12 @@ const formatJson = (data: unknown): string => {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+}
+
+/* 保存请求对话框垂直居中 */
+:deep(.save-dialog-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

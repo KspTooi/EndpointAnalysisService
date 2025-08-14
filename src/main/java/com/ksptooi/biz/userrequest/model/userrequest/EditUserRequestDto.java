@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter@Setter
@@ -29,7 +30,7 @@ public class EditUserRequestDto {
 
     @NotNull(message = "请求头不能为空")
     @Schema(description="请求头")
-    private Map<String,String> requestHeaders;
+    private List<RequestHeaderVo> requestHeaders;
 
     @NotBlank(message = "请求体类型不能为空")
     @Schema(description="请求体类型")

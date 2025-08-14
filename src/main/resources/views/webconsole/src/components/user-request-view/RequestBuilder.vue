@@ -11,6 +11,7 @@
         <RequestUrlInput :url="requestDetail.url" 
                        :method="requestDetail.method" 
                        @onUrlChange="onUrlChange"
+                       @onSendRequest="onSendRequest"
                        />
       </div>
 
@@ -32,20 +33,46 @@
 
       <!-- 请求头内容 -->
       <div v-if="activeTab === 'header'" class="tab-panel">
-        <div v-if="requestDetail.requestHeaders && Object.keys(requestDetail.requestHeaders).length > 0" class="headers-list">
-          <div v-for="(value, key) in requestDetail.requestHeaders" :key="key" class="header-item">
-            <div class="header-key">{{ key }}</div>
-            <div class="header-value">{{ value }}</div>
+        <div class="headers-editor">
+          <div class="headers-toolbar">
+            <button @click="addHeader" class="btn-add">添加请求头</button>
           </div>
-        </div>
-        <div v-else class="empty-state">
-          暂无请求头
+          <div class="headers-table">
+            <div class="headers-table-header">
+              <div class="header-key-col">键</div>
+              <div class="header-value-col">值</div>
+              <div class="header-action-col">操作</div>
+            </div>
+            <div v-if="editableHeaders.length === 0" class="empty-state-compact">
+              点击"添加请求头"开始编辑
+            </div>
+            <div v-for="(header, index) in editableHeaders" :key="index" class="header-row">
+              <input 
+                v-model="header.k" 
+                @blur="onHeaderChange"
+                class="header-key-input" 
+                placeholder="请求头名称"
+              />
+              <input 
+                v-model="header.v" 
+                @blur="onHeaderChange"
+                class="header-value-input" 
+                placeholder="请求头值"
+              />
+              <button @click="removeHeader(index)" class="btn-remove">删除</button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- 载荷内容 -->
       <div v-if="activeTab === 'body'" class="tab-panel">
-        <RequestPayload :requestDetails="requestDetail" />
+        <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />
+      </div>
+
+      <!-- 响应列表 -->
+      <div v-if="activeTab === 'response'" class="tab-panel">
+        <UrResponseList ref="urResponseListRef" :requestId="requestId" />
       </div>
 
     </div>
@@ -58,10 +85,11 @@
 </template>
 
 <script setup lang="ts">
-import UserRequestApi, { type GetUserRequestDetailsVo } from '@/api/UserRequestApi';
+import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from '@/api/UserRequestApi';
 import { ref, watch, onMounted, nextTick } from 'vue';
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from './RequestPayload.vue';
+import UrResponseList from './UrResponseList.vue';
 
 const props = defineProps<{
   requestId: string | null
@@ -77,12 +105,14 @@ const requestDetail = ref<GetUserRequestDetailsVo>({
   name: null,
   requestBody: null,
   requestBodyType: null,
-  requestHeaders: new Map<string,string>(),
+  requestHeaders: [],
   seq: null,
   url: null
 })
 
-
+//可编辑的请求头数据
+const editableHeaders = ref<RequestHeaderVo[]>([])
+const urResponseListRef = ref<InstanceType<typeof UrResponseList>>()
 
 const loadRequestDetail = async () => {
 
@@ -101,6 +131,9 @@ const loadRequestDetail = async () => {
     requestDetail.value.requestHeaders = res.requestHeaders
     requestDetail.value.seq = res.seq
     requestDetail.value.url = res.url
+    
+    // 初始化可编辑请求头
+    editableHeaders.value = [...(res.requestHeaders || [])]
   }catch(e){
     requestDetail.value = {
       id: "",
@@ -108,10 +141,11 @@ const loadRequestDetail = async () => {
       name: null,
       requestBody: null,
       requestBodyType: null,
-      requestHeaders: new Map<string,string>(),
+      requestHeaders: [],
       seq: null,
       url: null
     }
+    editableHeaders.value = []
   }
 }
 
@@ -139,10 +173,11 @@ watch(()=>props.requestId,async ()=>{
       name: null,
       requestBody: null,
       requestBodyType: null,
-      requestHeaders: new Map<string,string>(),
+      requestHeaders: [],
       seq: null,
       url: null
     }
+    editableHeaders.value = []
   }
 })
 
@@ -167,6 +202,59 @@ const loadComponentState = ()=>{
 const onUrlChange = (method: string, url: string) => {
   requestDetail.value.method = method
   requestDetail.value.url = url
+}
+
+const onSendRequest = async () => {
+
+
+  //先保存请求
+  UserRequestApi.editUserRequest({
+    id: requestDetail.value.id,
+    name: requestDetail.value.name,
+    method: requestDetail.value.method,
+    url: requestDetail.value.url,
+    requestHeaders: requestDetail.value.requestHeaders,
+    requestBodyType: requestDetail.value.requestBodyType,
+    requestBody: requestDetail.value.requestBody,
+  })
+
+  await UserRequestApi.sendUserRequest({id: requestDetail.value.id})
+  await urResponseListRef.value?.loadUserRequestLogList()
+}
+
+const onRequestBodyChange = (requestBody: string) => {
+  requestDetail.value.requestBody = requestBody
+}
+
+// 添加请求头
+const addHeader = () => {
+  editableHeaders.value.push({ k: '', v: '' })
+}
+
+// 删除请求头
+const removeHeader = (index: number) => {
+  editableHeaders.value.splice(index, 1)
+  onHeaderChange()
+}
+
+// 请求头变化时同步数据并保存
+const onHeaderChange = () => {
+  // 过滤掉空的请求头
+  const validHeaders = editableHeaders.value.filter(h => h.k && h.k.trim())
+  requestDetail.value.requestHeaders = validHeaders
+  
+  // 自动保存
+  if(requestDetail.value.id){
+    UserRequestApi.editUserRequest({
+      id: requestDetail.value.id,
+      name: requestDetail.value.name,
+      method: requestDetail.value.method,
+      url: requestDetail.value.url,
+      requestHeaders: validHeaders,
+      requestBodyType: requestDetail.value.requestBodyType,
+      requestBody: requestDetail.value.requestBody,
+    })
+  }
 }
 
 </script>
@@ -262,34 +350,106 @@ const onUrlChange = (method: string, url: string) => {
   overflow: auto;
 }
 
-.headers-list {
+/* 请求头编辑器样式 */
+.headers-editor {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  height: 100%;
 }
 
-.header-item {
-  display: flex;
-  background: #f8f9fa;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #e9ecef;
+.headers-toolbar {
+  padding: 8px 0;
+  margin-bottom: 8px;
 }
 
-.header-key {
-  background: #e9ecef;
-  padding: 12px 16px;
-  font-weight: 500;
-  color: #495057;
-  min-width: 150px;
-  border-right: 1px solid #dee2e6;
+.btn-add {
+  background: #60b0ff;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
 }
 
-.header-value {
-  padding: 12px 16px;
-  color: #6c757d;
+.btn-add:hover {
+  background: #218838;
+}
+
+.headers-table {
   flex: 1;
-  word-break: break-all;
+  overflow-y: auto;
+  padding-bottom: 25px;
+}
+
+.headers-table-header {
+  display: grid;
+  grid-template-columns: 2fr 3fr 80px;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.header-key-col,
+.header-value-col,
+.header-action-col {
+  text-align: left;
+}
+
+.header-row {
+  display: grid;
+  grid-template-columns: 2fr 3fr 80px;
+  gap: 8px;
+  padding: 4px 8px;
+  align-items: center;
+}
+
+.header-key-input,
+.header-value-input {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 12px;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.header-key-input:focus,
+.header-value-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.btn-remove {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  height: 24px;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #c82333;
+}
+
+.empty-state-compact {
+  text-align: center;
+  color: #6c757d;
+  padding: 20px;
+  font-size: 12px;
+  font-style: italic;
 }
 
 .body-type label {

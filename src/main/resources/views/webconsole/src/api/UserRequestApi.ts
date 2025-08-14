@@ -7,14 +7,18 @@ export interface SaveAsUserRequestDto {
     name: string | null;
 }
 
+export interface RequestHeaderVo {
+    k: string;
+    v: string;
+}
 
 
 export interface EditUserRequestDto {
-    id: string;
+    id: string | null;
     name: string | null;
     method: string | null;
     url: string | null;
-    requestHeaders: Map<string, string> | null;
+    requestHeaders: RequestHeaderVo[];
     requestBodyType: string | null;
     requestBody: string | null;
 }
@@ -24,11 +28,12 @@ export interface GetUserRequestDetailsVo {
     name: string | null;
     method: string | null;
     url: string | null;
-    requestHeaders: Map<string, string> | null;
+    requestHeaders: RequestHeaderVo[];
     requestBodyType: string | null;
     requestBody: string | null;
     seq: number | null;
 }
+
 
 export default {
 
@@ -68,6 +73,14 @@ export default {
         throw new Error(result.message);
     },
 
+    /** 发送用户请求 */
+    sendUserRequest: async (dto: CommonIdDto): Promise<string> => {
+        var result = await Http.postEntity<Result<string>>('/userRequest/sendUserRequest', dto);
+        if (result.code == 0) {
+            return result.message;
+        }
+        throw new Error(result.message);
+    },
 
 }
 

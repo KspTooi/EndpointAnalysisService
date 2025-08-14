@@ -13,10 +13,8 @@ import RequestBuilder from "@/components/user-request-view/RequestBuilder.vue";
 const requestId = ref<string | null>(null)
 
 const handleSelectRequest = (id: string | null) => {
-  console.log('监听RequestTree 请求id变化',id)
   requestId.value = id
 }
-
 
 </script>
 

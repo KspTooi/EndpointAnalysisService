@@ -60,4 +60,11 @@ public class UserRequestController {
         return Result.success("操作成功");
     }
 
+    @Operation(summary ="发送用户请求")
+    @PostMapping("/sendUserRequest")
+    public Result<String> sendUserRequest(@RequestBody @Valid CommonIdDto dto) throws Exception{
+        userRequestService.sendUserRequest(dto);
+        return Result.success("操作成功");
+    }
+
 }

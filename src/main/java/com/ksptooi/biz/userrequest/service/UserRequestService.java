@@ -1,28 +1,45 @@
 package com.ksptooi.biz.userrequest.service;
 
+import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.repository.RequestRepository;
+import com.ksptooi.biz.user.model.user.UserPo;
 import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.biz.userrequest.model.userrequest.*;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
+import com.ksptooi.biz.userrequest.model.userrequestlog.UserRequestLogPo;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.security.auth.message.AuthException;
+import lombok.extern.slf4j.Slf4j;
 
+import com.ksptooi.commons.utils.GsonUtils;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
+import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
 import com.google.gson.Gson;
-import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
+import static com.ksptool.entities.Entities.as;
+
+@Slf4j
 @Service
 public class UserRequestService {
 
@@ -40,6 +57,25 @@ public class UserRequestService {
 
     @Autowired
     private Gson gson;
+
+    @Autowired
+    private UserRequestLogRepository userRequestLogRepository;
+
+    //hop-by-hop请求头
+    private static final Set<String> HOP_BY_HOP_HEADERS = new HashSet<>();
+
+    static {
+        HOP_BY_HOP_HEADERS.add("connection");
+        HOP_BY_HOP_HEADERS.add("keep-alive");
+        HOP_BY_HOP_HEADERS.add("proxy-authenticate");
+        HOP_BY_HOP_HEADERS.add("proxy-authorization");
+        HOP_BY_HOP_HEADERS.add("te");
+        HOP_BY_HOP_HEADERS.add("trailer");
+        HOP_BY_HOP_HEADERS.add("transfer-encoding");
+        HOP_BY_HOP_HEADERS.add("upgrade");
+        HOP_BY_HOP_HEADERS.add("host");
+        HOP_BY_HOP_HEADERS.add("content-length");
+    }
 
     /**
      * 保存原始请求为用户请求
@@ -60,7 +96,24 @@ public class UserRequestService {
         userRequestPo.setName(requestPo.getRequestId());//如果未提供名称 则使用请求ID作为名称
         userRequestPo.setMethod(requestPo.getMethod());
         userRequestPo.setUrl(requestPo.getUrl());
-        userRequestPo.setRequestHeaders(requestPo.getRequestHeaders());
+
+        //将请求头转换为列表
+        List<RequestHeaderVo> requestHeaders = new ArrayList<>();
+
+        try{
+            Type mapType = new TypeToken<Map<String,String>>(){}.getType();
+            Map<String,String> rhm = gson.fromJson(requestPo.getRequestHeaders(), mapType);
+            for(Map.Entry<String,String> entry : rhm.entrySet()){
+                RequestHeaderVo requestHeaderVo = new RequestHeaderVo();
+                requestHeaderVo.setK(entry.getKey());
+                requestHeaderVo.setV(entry.getValue());
+                requestHeaders.add(requestHeaderVo);
+            }
+        }catch(Exception e){
+        }
+
+        userRequestPo.setRequestHeaders(gson.toJson(requestHeaders));
+
         userRequestPo.setRequestBodyType(requestPo.getRequestBodyType());
         userRequestPo.setRequestBody(requestPo.getRequestBody());
 
@@ -290,7 +343,8 @@ public class UserRequestService {
         GetUserRequestDetailsVo vo = as(po,GetUserRequestDetailsVo.class);
 
         if (po.getRequestHeaders() != null){
-            vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(),Map.class));
+            Type listType = new TypeToken<List<RequestHeaderVo>>(){}.getType();
+            vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(),listType));
         }
 
         return vo;
@@ -360,6 +414,152 @@ public class UserRequestService {
         }
 
         repository.delete(userRequestPo);
+    }
+
+    public void sendUserRequest(CommonIdDto dto) throws BizException,AuthException {
+
+        UserPo userPo = authService.requireUser();
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),userPo.getId());
+        
+        if(userRequestPo == null){
+            throw new BizException("数据不存在或无权限操作.");
+        }
+
+        //获取用户请求URL
+        String url = userRequestPo.getUrl();
+
+        //获取用户请求方法
+        String method = userRequestPo.getMethod();
+
+        //获取用户请求头
+        String headers = userRequestPo.getRequestHeaders();
+
+        //获取用户请求体
+        String body = userRequestPo.getRequestBody();
+
+        String requestType = userRequestPo.getRequestBodyType();
+
+        //只能重放json请求
+        if(!requestType.contains("application/json")){
+            throw new BizException("只能发送application/json请求");
+        }
+
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest.Builder request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .method(method, HttpRequest.BodyPublishers.ofString(body));
+
+        //将JSON格式的请求头处理为Map
+        List<RequestHeaderVo> headersList = new ArrayList<>();
+        if(StringUtils.isNotBlank(headers)){
+            Type listType = new TypeToken<List<RequestHeaderVo>>(){}.getType();
+            headersList = gson.fromJson(headers, listType);
+        }
+
+        //将请求头添加到请求中
+        for(RequestHeaderVo header : headersList){
+            if(HOP_BY_HOP_HEADERS.contains(header.getK().toLowerCase())){
+                continue;
+            }
+            request.header(header.getK(), header.getV());
+        }
+
+        //获取中继服务器
+        RelayServerPo relayServerPo = userRequestPo.getOriginalRequest().getRelayServer();
+
+        
+        //创建重放记录
+        UserRequestLogPo userRequestLogPo = new UserRequestLogPo();
+        userRequestLogPo.setUserRequest(userRequestPo);
+        userRequestLogPo.setRequestId(UUID.randomUUID().toString());
+        userRequestLogPo.setMethod(method);
+        userRequestLogPo.setUrl(url);
+        userRequestLogPo.setSource("EAS服务");
+        userRequestLogPo.setRequestHeaders(headers);
+        userRequestLogPo.setRequestBodyLength(body.length());
+        userRequestLogPo.setRequestBodyType(requestType);
+        userRequestLogPo.setRequestBody(body);
+        userRequestLogPo.setResponseHeaders(null);
+        userRequestLogPo.setResponseBodyLength(0);
+        userRequestLogPo.setResponseBodyType(null);
+        userRequestLogPo.setResponseBody(null);
+        userRequestLogPo.setStatusCode(-1); //-1为请求失败
+        userRequestLogPo.setRedirectUrl(null);
+        userRequestLogPo.setStatus(3); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+        userRequestLogPo.setRequestTime(LocalDateTime.now());
+        userRequestLogPo.setResponseTime(null);
+
+
+        try {
+            //发送请求
+            HttpResponse<String> response = client.send(request.build(), HttpResponse.BodyHandlers.ofString());
+        
+            //解析响应
+            String responseBody = response.body();
+            userRequestLogPo.setResponseBodyLength(responseBody.length());
+            userRequestLogPo.setResponseBodyType(response.headers().firstValue("Content-Type").orElse(""));
+            userRequestLogPo.setResponseBody(responseBody);
+            userRequestLogPo.setStatusCode(response.statusCode());
+            userRequestLogPo.setRedirectUrl(response.headers().firstValue("Location").orElse(null));
+            userRequestLogPo.setStatus(0);
+            userRequestLogPo.setResponseTime(LocalDateTime.now());
+
+
+            //处理响应头
+            List<RequestHeaderVo> responseHeadersList = new ArrayList<>();
+            for(Map.Entry<String,List<String>> entry : response.headers().map().entrySet()){
+                RequestHeaderVo responseHeaderVo = new RequestHeaderVo();
+                responseHeaderVo.setK(entry.getKey());
+                responseHeaderVo.setV(entry.getValue().get(0));
+                responseHeadersList.add(responseHeaderVo);
+            }
+
+
+            //如果请求ID策略为1 则尝试从响应头中获取请求ID
+            if(relayServerPo.getRequestIdStrategy() == 1){
+                String requestId = response.headers().firstValue(relayServerPo.getRequestIdHeaderName()).orElse(null);
+                if(requestId != null){
+                    userRequestLogPo.setRequestId(requestId);
+                }
+                if(requestId == null){
+                    log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", relayServerPo.getName(), userRequestLogPo.getRequestId());
+                }
+            }
+
+            //如果业务错误策略为1 则尝试从响应体中获取业务错误码
+            if(relayServerPo.getBizErrorStrategy() == 1){
+                if(userRequestLogPo.getResponseBodyType().contains("application/json")){
+
+                    JsonElement jsonTree = gson.fromJson(responseBody, JsonElement.class);
+
+                    String successCode = relayServerPo.getBizSuccessCodeValue();
+                    String bizErrorCode = GsonUtils.getFromPath(jsonTree, relayServerPo.getBizErrorCodeField());
+
+                    //无法获取到错误码值 直接判定业务错误
+                    if(bizErrorCode == null){
+                        userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                    }
+                    if(bizErrorCode != null){
+                        if(bizErrorCode.equals(successCode)){
+                            userRequestLogPo.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                        }
+                        if(!bizErrorCode.equals(successCode)){
+                            userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
+                        } 
+                    }
+                }
+                
+            }
+
+
+        } catch (IOException | InterruptedException e) {
+            throw new BizException("发送请求失败", e);
+        }finally{
+            //保存用户请求记录
+            userRequestLogRepository.save(userRequestLogPo);
+        }
+
     }
 
 }

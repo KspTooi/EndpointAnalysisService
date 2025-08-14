@@ -21,16 +21,8 @@ public class UserRequestLogService {
     private UserRequestLogRepository repository;
 
     public PageResult<GetUserRequestLogListVo> getUserRequestLogList(GetUserRequestLogListDto dto){
-        UserRequestLogPo query = new UserRequestLogPo();
-        assign(dto,query);
-
-        Page<UserRequestLogPo> page = repository.getUserRequestLogList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
-        List<GetUserRequestLogListVo> vos = as(page.getContent(), GetUserRequestLogListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        Page<GetUserRequestLogListVo> pVos = repository.getUserRequestLogList(dto.getUserRequestId(), dto.pageRequest());
+        return PageResult.success(pVos.getContent(), pVos.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)
