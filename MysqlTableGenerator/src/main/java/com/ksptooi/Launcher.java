@@ -22,7 +22,7 @@ public class Launcher {
 
 
         // 根据表结构生成CRUD
-        generateJpaCrud("user_request_log", "wangshuailong");
+        generateJpaCrud("simple_filter", "wangshuailong");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
     }
 
