@@ -12,6 +12,7 @@
                        :method="requestDetail.method" 
                        @onUrlChange="onUrlChange"
                        @onSendRequest="onSendRequest"
+                       :loading="loading"
                        />
       </div>
 
@@ -72,7 +73,7 @@
 
       <!-- 响应列表 -->
       <div v-if="activeTab === 'response'" class="tab-panel">
-        <UrResponseList ref="urResponseListRef" :requestId="requestId" />
+        <UrResponseList ref="urResponseListRef" :requestId="requestId" :loading="loading" />
       </div>
 
     </div>
@@ -113,6 +114,8 @@ const requestDetail = ref<GetUserRequestDetailsVo>({
 //可编辑的请求头数据
 const editableHeaders = ref<RequestHeaderVo[]>([])
 const urResponseListRef = ref<InstanceType<typeof UrResponseList>>()
+
+const loading = ref(false)
 
 const loadRequestDetail = async () => {
 
@@ -205,10 +208,10 @@ const onUrlChange = (method: string, url: string) => {
 }
 
 const onSendRequest = async () => {
-
+  loading.value = true
 
   //先保存请求
-  UserRequestApi.editUserRequest({
+  await UserRequestApi.editUserRequest({
     id: requestDetail.value.id,
     name: requestDetail.value.name,
     method: requestDetail.value.method,
@@ -220,6 +223,7 @@ const onSendRequest = async () => {
 
   await UserRequestApi.sendUserRequest({id: requestDetail.value.id})
   await urResponseListRef.value?.loadUserRequestLogList()
+  loading.value = false
 }
 
 const onRequestBodyChange = (requestBody: string) => {

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="response-list-table">
-      <el-table :data="list" v-loading="loading" border stripe size="small">
+      <el-table :data="list" v-loading="props.loading" border stripe size="small">
         <el-table-column
               prop="requestId"
               label="请求ID"
@@ -83,6 +83,7 @@ import UserRequestLogApi, { type GetUserRequestLogListDto, type GetUserRequestLo
 
 const props = defineProps<{
   requestId: string | null
+  loading: boolean
 }>()
 
 //查询条件

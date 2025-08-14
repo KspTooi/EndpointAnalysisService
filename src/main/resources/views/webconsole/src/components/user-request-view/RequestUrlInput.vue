@@ -18,7 +18,7 @@
             </el-input>
         </div>
         <div class="url-input-send">
-            <el-button type="primary" @click="sendRequest" :disabled="loading">发送</el-button>
+            <el-button type="primary" @click="sendRequest" :disabled="props.loading">发送</el-button>
         </div>
     </div>
 </template>
@@ -27,11 +27,10 @@
 import { ref } from 'vue';
 import { watch } from 'vue';
 
-const loading = ref(false)
-
 const props = defineProps<{
     url: string | null
     method: string | null
+    loading: boolean
 }>()
 
 const emit = defineEmits<{
@@ -57,11 +56,7 @@ watch(url, (newVal) => {
 })
 
 const sendRequest = async () => {
-    loading.value = true
-    console.log('sendRequest')
     await emit('onSendRequest')
-    console.log('sendRequest end')
-    loading.value = false
 }
 
 </script>
