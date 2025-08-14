@@ -3,125 +3,125 @@
     <div class="response-list-table">
       <el-table :data="list" v-loading="props.loading" border stripe size="small">
         <el-table-column
-              prop="requestId"
-              label="请求ID"
-              min-width="150"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="method"
-              label="方法"
-              min-width="50"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
+            prop="requestId"
+            label="请求ID"
+            min-width="150"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            prop="method"
+            label="方法"
+            min-width="50"
+            show-overflow-tooltip
+        >
+          <template #default="scope">
             <span :style="{color: scope.row.method === 'DELETE' ? '#E74C3C' : scope.row.method === 'GET' ? '#3498DB' : scope.row.method === 'POST' ? '#2ECC71' : scope.row.method === 'PUT' ? '#F1C40F' : '#95A5A6'}">
               {{ scope.row.method.toUpperCase() }}
             </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="url"
-              label="请求URL"
-              min-width="180"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="source"
-              label="来源"
-              min-width="60"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="status"
-              label="状态"
-              min-width="50"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
+          </template>
+        </el-table-column>
+        <el-table-column
+            prop="url"
+            label="请求URL"
+            min-width="180"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            prop="source"
+            label="来源"
+            min-width="60"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            prop="status"
+            label="状态"
+            min-width="50"
+            show-overflow-tooltip
+        >
+          <template #default="scope">
               <span :style="{color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6'}">
                 {{ scope.row.status === 0 ? '正常' : scope.row.status === 1 ? 'HTTP失败' : scope.row.status === 2 ? '业务失败' : '连接超时' }}
               </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="statusCode"
-              label="HTTP"
-              min-width="35"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
+          </template>
+        </el-table-column>
+        <el-table-column
+            prop="statusCode"
+            label="HTTP"
+            min-width="35"
+            show-overflow-tooltip
+        >
+          <template #default="scope">
             <span :style="{color: scope.row.statusCode >= 200 && scope.row.statusCode < 300 ? '#2ECC71' : scope.row.statusCode >= 300 && scope.row.statusCode < 400 ? '#F1C40F' : scope.row.statusCode >= 400 && scope.row.statusCode < 500 ? '#E74C3C' : '#95A5A6'}">
               {{ scope.row.statusCode }}
             </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="requestTime"
-              label="请求时间"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              label="预览"
-              min-width="50"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
-              <el-button type="primary" 
-                @click="previewRequest(scope.row)" 
-                size="small"
-                link
-                :icon="ViewIcon"
-              >
-                预览
-              </el-button>
-            </template>
-          </el-table-column>
+          </template>
+        </el-table-column>
+        <el-table-column
+            prop="requestTime"
+            label="请求时间"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            label="预览"
+            min-width="50"
+            show-overflow-tooltip
+        >
+          <template #default="scope">
+            <el-button type="primary"
+                       @click="previewRequest(scope.row)"
+                       size="small"
+                       link
+                       :icon="ViewIcon"
+            >
+              预览
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <div class="pagination-container">
-          <el-pagination size="small"
-            v-model:current-page="query.pageNum"
-            v-model:page-size="query.pageSize"
-            :total="total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="loadUserRequestLogList"
-            @current-change="loadUserRequestLogList"
-          />
+        <el-pagination size="small"
+                       v-model:current-page="query.pageNum"
+                       v-model:page-size="query.pageSize"
+                       :total="total"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       @size-change="loadUserRequestLogList"
+                       @current-change="loadUserRequestLogList"
+        />
       </div>
     </div>
 
     <!-- 请求详情模态框 -->
     <el-dialog
-      v-model="dialogVisible"
-      title="请求详情"
-      width="800px"
-      :close-on-click-modal="true"
-      class="centered-dialog"
+        v-model="dialogVisible"
+        title="请求详情"
+        width="800px"
+        :close-on-click-modal="true"
+        class="centered-dialog"
     >
       <el-form
-        v-if="dialogVisible"
-        ref="formRef"
-        :model="details"
-        label-width="100px"
-        :validate-on-rule-change="false"
+          v-if="dialogVisible"
+          ref="formRef"
+          :model="details"
+          label-width="100px"
+          :validate-on-rule-change="false"
       >
         <el-tabs v-model="activeTab">
           <el-tab-pane label="负载" name="payload">
             <el-form-item label="请求体" prop="requestBody">
               <el-input
-                :model-value="formatJson(details.requestBody)"
-                type="textarea"
-                :rows="14"
-                readonly
+                  :model-value="formatJson(details.requestBody)"
+                  type="textarea"
+                  :rows="14"
+                  readonly
               />
             </el-form-item>
             <el-form-item label="响应体" prop="responseBody">
               <el-input
-                :model-value="formatJson(details.responseBody)"
-                type="textarea"
-                :rows="14"
-                readonly
+                  :model-value="formatJson(details.responseBody)"
+                  type="textarea"
+                  :rows="14"
+                  readonly
               />
             </el-form-item>
           </el-tab-pane>

@@ -8,12 +8,12 @@
       </div>
 
       <div class="rb-header-input" style="margin-top: 12px;">
-        <RequestUrlInput :url="requestDetail.url" 
-                       :method="requestDetail.method" 
-                       @onUrlChange="onUrlChange"
-                       @onSendRequest="onSendRequest"
-                       :loading="loading"
-                       />
+        <RequestUrlInput :url="requestDetail.url"
+                         :method="requestDetail.method"
+                         @onUrlChange="onUrlChange"
+                         @onSendRequest="onSendRequest"
+                         :loading="loading"
+        />
       </div>
 
     </div>
@@ -48,17 +48,17 @@
               点击"添加请求头"开始编辑
             </div>
             <div v-for="(header, index) in editableHeaders" :key="index" class="header-row">
-              <input 
-                v-model="header.k" 
-                @blur="onHeaderChange"
-                class="header-key-input" 
-                placeholder="请求头名称"
+              <input
+                  v-model="header.k"
+                  @blur="onHeaderChange"
+                  class="header-key-input"
+                  placeholder="请求头名称"
               />
-              <input 
-                v-model="header.v" 
-                @blur="onHeaderChange"
-                class="header-value-input" 
-                placeholder="请求头值"
+              <input
+                  v-model="header.v"
+                  @blur="onHeaderChange"
+                  class="header-value-input"
+                  placeholder="请求头值"
               />
               <button @click="removeHeader(index)" class="btn-remove">删除</button>
             </div>
@@ -134,7 +134,7 @@ const loadRequestDetail = async () => {
     requestDetail.value.requestHeaders = res.requestHeaders
     requestDetail.value.seq = res.seq
     requestDetail.value.url = res.url
-    
+
     // 初始化可编辑请求头
     editableHeaders.value = [...(res.requestHeaders || [])]
   }catch(e){
@@ -255,7 +255,7 @@ const onHeaderChange = () => {
   // 过滤掉空的请求头
   const validHeaders = editableHeaders.value.filter(h => h.k && h.k.trim())
   requestDetail.value.requestHeaders = validHeaders
-  
+
   // 自动保存
   if(requestDetail.value.id){
     UserRequestApi.editUserRequest({
