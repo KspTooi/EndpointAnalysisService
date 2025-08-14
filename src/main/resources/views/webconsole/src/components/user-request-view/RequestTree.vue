@@ -1,6 +1,12 @@
 <template>
   <div class="tag-tree-container">
 
+    <!-- Loading 遮罩 -->
+    <div v-show="loading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在处理...</div>
+    </div>
+
     <div class="tag-tree-search">
       <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable  />
       <el-button type="primary" @click="loadUserRequestTree" size="small">加载数据</el-button>
@@ -9,10 +15,10 @@
     </div>
 
     <!-- 创建组对话框 -->
-    <el-dialog v-model="createGroupDialogVisible" title="创建请求组" width="400px">
+    <el-dialog v-model="createGroupDialogVisible" title="创建请求组" width="400px" destroy-on-close @opened="handleGroupDialogOpened">
       <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
         <el-form-item label="组名称" prop="name">
-          <el-input v-model="createGroupForm.name" placeholder="请输入组名称" />
+          <el-input v-model="createGroupForm.name" placeholder="请输入组名称" ref="createGroupInputRef" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -34,11 +40,11 @@
           v-for="(item, index) in treeData"
           :key="item.id"
           :node="item"
-          :active-nodes="activeNodes"
-          :active-request-id="activeRequestId"
+          :active-nodes="UserRequestHolder().getActiveNodeIds"
+          :active-request-id="UserRequestHolder().getRequestId"
           :child-index="index"
           @toggle-node="handleToggleNode"
-          @select-request="handleSelectRequest"
+          @select-request="UserRequestHolder().setRequestId"
           @right-click="handleRightClick"
           @refresh-tree="loadUserRequestTree"
       />
@@ -51,31 +57,34 @@
         :y="rightMenuY"
         :node="rightMenuNode"
         @close="handleRightMenuClose"
-        @refresh="loadUserRequestTree"
+        @refresh="ReloadHolder().requestReloadTree"
     />
   </div>
 </template>
 
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import UserRequestTreeApi from '@/api/UserRequestTreeApi.ts'
 import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from '@/api/UserRequestTreeApi.ts'
 import UserRequestGroupApi from '@/api/UserRequestGroupApi.ts'
 import type { AddUserRequestGroupDto } from '@/api/UserRequestGroupApi.ts'
 import RequestTreeItem from './RequestTreeItem.vue'
 import RequestTreeItemRightMenu from './RequestTreeItemRightMenu.vue'
-import { ElMessage, type FormInstance } from 'element-plus'
+import { ElMessage, type FormInstance, type InputInstance } from 'element-plus'
+import { UserRequestHolder } from '@/store/RequestHolder'
+import { ReloadHolder } from '@/store/ReloadHolder'
 
 const emit = defineEmits<{
   (e: 'select-group', groupId: string): void
   (e: 'select-request', requestId: string | null): void
 }>()
 
+// 加载状态
+const loading = ref(false)
+
 const treeData = ref<GetUserRequestTreeVo[]>([])
 const searchValue = ref('')
-const activeNodes = ref<string[]>([])
-const activeRequestId = ref<string | null>(null)
 
 // 右键菜单状态
 const rightMenuVisible = ref(false)
@@ -92,6 +101,7 @@ const tagTreeBodyRef = ref<HTMLElement | null>(null)
 const createGroupDialogVisible = ref(false)
 const createGroupLoading = ref(false)
 const createGroupFormRef = ref<FormInstance>()
+const createGroupInputRef = ref<InputInstance>()
 const createGroupForm = ref<AddUserRequestGroupDto>({
   parentId: null,
   name: ''
@@ -107,6 +117,7 @@ const createGroupRules = {
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 
 const loadUserRequestTree = async () => {
+  loading.value = true
   try {
     const dto: GetUserRequestTreeDto = {
       keyword: searchValue.value || null
@@ -114,16 +125,13 @@ const loadUserRequestTree = async () => {
     const res = await UserRequestTreeApi.getUserRequestTree(dto)
     treeData.value = res
 
-    // 清理没有子节点的分组展开状态
+    // 清理没有子节点的分组展开状态 
     cleanupActiveNodes()
-
-    // 如果activeRequestId为空 则需要触发一次handleSelectRequest
-    if(!activeRequestId.value){
-      handleSelectRequest(activeRequestId.value || null)
-    }
 
   } catch (error) {
     console.error('加载用户请求树失败:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -150,7 +158,8 @@ const collectEmptyGroupIds = (nodes: GetUserRequestTreeVo[]): Set<string> => {
 }
 
 // 递归检查请求是否存在于树中
-const isRequestExists = (requestId: string, nodes: GetUserRequestTreeVo[]): boolean => {
+const isRequestExists = (requestId: string | null, nodes: GetUserRequestTreeVo[]): boolean => {
+  if(!requestId) return false
   for (const node of nodes) {
     if (node.type === 1 && node.id === requestId) {
       return true
@@ -167,17 +176,15 @@ const isRequestExists = (requestId: string, nodes: GetUserRequestTreeVo[]): bool
 // 清理activeNodes中没有子节点的分组
 const cleanupActiveNodes = () => {
   const emptyGroupIds = collectEmptyGroupIds(treeData.value)
-  activeNodes.value = activeNodes.value.filter(nodeId => !emptyGroupIds.has(nodeId))
+  UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter(nodeId => !emptyGroupIds.has(nodeId)))
 
   // 清理activeRequestId - 如果当前请求不存在于树中则清理
-  if (!activeRequestId.value) {
+  if (!UserRequestHolder().getRequestId) {
     return
   }
 
-  if (!isRequestExists(activeRequestId.value, treeData.value)) {
-    activeRequestId.value = null
-    persistComponentState()
-    emit('select-request', null)
+  if (!isRequestExists(UserRequestHolder().getRequestId || '', treeData.value)) {
+    UserRequestHolder().setRequestId(null)
   }
 }
 
@@ -190,19 +197,7 @@ const handleSearch = () => {
   }, 500)
 }
 
-const handleToggleNode = (nodeId: string) => {
-  if (activeNodes.value.includes(nodeId)) {
-    activeNodes.value = activeNodes.value.filter(id => id !== nodeId)
-  } else {
-    activeNodes.value.push(nodeId)
-  }
-}
 
-const handleSelectRequest = (requestId: string | null) => {
-  activeRequestId.value = requestId
-  persistComponentState()
-  emit('select-request', requestId)
-}
 
 
 // 右键菜单处理
@@ -224,6 +219,11 @@ const showCreateGroupDialog = () => {
     name: ''
   }
   createGroupDialogVisible.value = true
+}
+
+//聚焦到输入框
+const handleGroupDialogOpened = () => {
+  createGroupInputRef.value?.focus()
 }
 
 // 根级拖拽处理
@@ -359,11 +359,7 @@ const handleCreateGroup = async () => {
 
 
 onMounted(() => {
-  loadComponentState()
   loadUserRequestTree()
-  if(activeRequestId.value){
-    handleSelectRequest(activeRequestId.value)
-  }
   document.addEventListener('dragover', onDocumentDragOver)
   document.addEventListener('drop', onDocumentDrop)
 })
@@ -372,32 +368,37 @@ onUnmounted(() => {
   document.removeEventListener('dragover', onDocumentDragOver)
   document.removeEventListener('drop', onDocumentDrop)
 })
-defineExpose({
-  loadUserRequestTree
+
+
+//监听树重新加载
+watch(() => ReloadHolder().isNeedReloadTree, async () => {
+  await loadUserRequestTree()
 })
 
 
-/**
- * 持久化组件状态
- */
-const persistComponentState = () => {
-  if(activeRequestId.value){
-    localStorage.setItem('request_tree_selected_request_id', activeRequestId.value)
-  }
-}
+
+//处理子组件事件
 
 /**
- * 加载组件状态
+ * 处理节点展开/折叠
+ * @param nodeId 节点ID
  */
-const loadComponentState = () => {
-  if(activeRequestId.value){
-    return
+const handleToggleNode = (nodeId: string) => {
+
+  //如果节点已展开，则折叠
+  if (UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
+    UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter(id => id !== nodeId))
   }
-  const requestId = localStorage.getItem('request_tree_selected_request_id')
-  if(requestId){
-    activeRequestId.value = requestId
+
+  //如果节点未展开，则展开
+  if(!UserRequestHolder().getActiveNodeIds.includes(nodeId)){
+    UserRequestHolder().setActiveNodeIds([...UserRequestHolder().getActiveNodeIds, nodeId])
   }
+
 }
+
+
+
 </script>
 
 <style scoped>
@@ -406,6 +407,7 @@ const loadComponentState = () => {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #e9ecef;
+  position: relative;
 }
 
 .tag-tree-body {
@@ -473,5 +475,34 @@ const loadComponentState = () => {
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
   pointer-events: none;
   white-space: nowrap;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: 16px;
+  color: #495057;
+  font-size: 14px;
 }
 </style>

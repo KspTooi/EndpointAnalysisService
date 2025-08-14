@@ -65,9 +65,9 @@ public interface UserRequestGroupRepository extends JpaRepository<UserRequestGro
     List<UserRequestGroupPo> getUserRequestGroupWithRequests(@Param("userId") Long userId);
 
     @Query("""
-        SELECT CASE WHEN COUNT(t) > 0 THEN :seq + 1 ELSE :seq END FROM UserRequestGroupPo t
-        WHERE t.user.id = :userId AND t.seq = :seq
+        SELECT (COALESCE(MAX(t.seq), 0) + 1) FROM UserRequestGroupPo t
+        WHERE t.user.id = :userId
     """)
-    Integer getNextSeq(@Param("userId") Long userId, @Param("seq") Integer seq);
+    Integer getNextSeq(@Param("userId") Long userId);
 
 }

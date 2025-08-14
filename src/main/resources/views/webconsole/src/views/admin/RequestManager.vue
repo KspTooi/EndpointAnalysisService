@@ -311,9 +311,9 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button @click="dialogVisible = false">关闭</el-button>
           <el-button type="primary" @click="saveRequest(details)" :loading="submitLoading">
-            Confirm
+            保存请求
           </el-button>
         </span>
       </template>

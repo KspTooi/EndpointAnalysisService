@@ -212,11 +212,14 @@ const handleDrop = async (event: DragEvent) => {
       return
     }
     let seq = (props.childIndex ?? 0) + 1
+
     if (zone === 'top') {
-      seq = Math.max(1, (props.childIndex ?? 0))
+      seq = (props.childIndex ?? 0 )- 1
+      console.log('top', seq)
     }
     if (zone === 'bottom') {
       seq = (props.childIndex ?? 0) + 1
+      console.log('bottom', seq)
     }
 
     const dtoSort: EditUserRequestTreeDto = {

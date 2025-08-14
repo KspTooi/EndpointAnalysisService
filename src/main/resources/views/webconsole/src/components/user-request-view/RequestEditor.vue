@@ -1,10 +1,19 @@
 <template>
+
   <div class="rb-container">
+
+    <!-- Loading 遮罩 -->
+    <div v-show="globalLoading" class="rb-loading-overlay">
+      <div class="rb-loading-spinner"></div>
+      <div class="rb-loading-text">正在处理...</div>
+    </div>
+
+    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null" style="height: 100%; width: 100%;"/>
 
     <div class="rb-header">
 
       <div class="rb-header-title">
-        <span>{{ requestDetail?.name || '未命名请求' }}</span>
+        <input class="rb-name-input" v-model="requestDetail.name"/>
       </div>
 
       <div class="rb-header-input" style="margin-top: 12px;">
@@ -19,13 +28,19 @@
     </div>
     <!-- 选项卡 -->
     <div class="rb-tab">
-      <div class="rb-tab-item" :class="{ active: activeTab === 'header' }" @click="activeTab = 'header'">
+      <div class="rb-tab-item" 
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }" 
+          @click="PreferenceHolder().setRequestEditorTab('header')">
         标头
       </div>
-      <div class="rb-tab-item" :class="{ active: activeTab === 'body' }" @click="activeTab = 'body'">
+      <div class="rb-tab-item" 
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }" 
+          @click="PreferenceHolder().setRequestEditorTab('body')">
         载荷
       </div>
-      <div class="rb-tab-item" :class="{ active: activeTab === 'response' }" @click="activeTab = 'response'">
+      <div class="rb-tab-item" 
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }" 
+          @click="PreferenceHolder().setRequestEditorTab('response')">
         响应列表
       </div>
     </div>
@@ -33,7 +48,7 @@
     <div v-if="requestDetail" class="rb-content">
 
       <!-- 请求头内容 -->
-      <div v-if="activeTab === 'header'" class="tab-panel">
+      <div v-if="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
         <div class="headers-editor">
           <div class="headers-toolbar">
             <button @click="addHeader" class="btn-add">添加请求头</button>
@@ -67,13 +82,13 @@
       </div>
 
       <!-- 载荷内容 -->
-      <div v-if="activeTab === 'body'" class="tab-panel">
+      <div v-if="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
         <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />
       </div>
 
       <!-- 响应列表 -->
-      <div v-if="activeTab === 'response'" class="tab-panel">
-        <UrResponseList ref="urResponseListRef" :requestId="requestId" :loading="loading" />
+      <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
+        <UrResponseList ref="urResponseListRef" :loading="loading" />
       </div>
 
     </div>
@@ -87,17 +102,15 @@
 
 <script setup lang="ts">
 import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from '@/api/UserRequestApi';
-import { ref, watch, onMounted, nextTick } from 'vue';
+import { ref, watch, onMounted, nextTick, onUnmounted } from 'vue';
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from './RequestPayload.vue';
 import UrResponseList from './UrResponseList.vue';
+import { ElMessage } from 'element-plus';
+import { UserRequestHolder } from '@/store/RequestHolder';
+import { ReloadHolder } from '@/store/ReloadHolder';
+import { PreferenceHolder } from '@/store/PreferenceHolder';
 
-const props = defineProps<{
-  requestId: string | null
-}>()
-
-//当前选中的选项卡
-const activeTab = ref<string>('header')
 
 //完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
@@ -116,16 +129,17 @@ const editableHeaders = ref<RequestHeaderVo[]>([])
 const urResponseListRef = ref<InstanceType<typeof UrResponseList>>()
 
 const loading = ref(false)
+const globalLoading = ref(false)
 
 const loadRequestDetail = async () => {
 
-  if(props.requestId == null){
+  if(UserRequestHolder().getRequestId == null){
     console.log('请求id为空')
     return
   }
 
   try{
-    const res = await UserRequestApi.getUserRequestDetails({id:props.requestId || ''})
+    const res = await UserRequestApi.getUserRequestDetails({id:UserRequestHolder().getRequestId || ''})
     requestDetail.value.id = res.id
     requestDetail.value.method = res.method
     requestDetail.value.name = res.name
@@ -152,23 +166,57 @@ const loadRequestDetail = async () => {
   }
 }
 
+const onCtrlS = async (event: KeyboardEvent)=>{
+
+  event.preventDefault()
+  event.stopPropagation()
+  event.stopImmediatePropagation()
+
+  globalLoading.value = true
+
+  try{
+    await UserRequestApi.editUserRequest({
+      id: requestDetail.value.id,
+      name: requestDetail.value.name,
+      method: requestDetail.value.method,
+      url: requestDetail.value.url,
+      requestHeaders: requestDetail.value.requestHeaders,
+      requestBodyType: requestDetail.value.requestBodyType,
+      requestBody: requestDetail.value.requestBody,
+    })
+    // 通知树重新加载
+    ReloadHolder().requestReloadTree()
+  }catch(e){
+    console.error('保存请求失败', e)
+  }finally{
+    globalLoading.value = false
+  }
+
+  ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`)
+}
+
 onMounted(()=>{
-  loadComponentState()
+
+  loadRequestDetail()
+
+  window.addEventListener('keydown', (event: KeyboardEvent)=>{
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey; 
+      // 检查按下的键是否是 's'
+      if (isCtrlOrCmd && (event.key === 's' || event.key === 'S')) {
+        onCtrlS(event)
+      }
+  })
 })
 
 
-
-watch(activeTab, (newVal) => {
-  persistComponentState()
-})
 
 //监听外部请求id变化
-watch(()=>props.requestId,async ()=>{
-  if(props.requestId){
-    console.log('监听外部请求id变化',props.requestId)
+watch(()=>UserRequestHolder().getRequestId,async ()=>{
+  if(UserRequestHolder().getRequestId){
+    console.log('监听外部请求id变化',UserRequestHolder().getRequestId)
     loadRequestDetail()
   }
-  if(props.requestId == null){
+  if(UserRequestHolder().getRequestId == null){
     console.log('监听外部请求id变化 为空')
     requestDetail.value = {
       id: "",
@@ -183,24 +231,6 @@ watch(()=>props.requestId,async ()=>{
     editableHeaders.value = []
   }
 })
-
-
-/**
- * 持久化组件状态
- */
-const persistComponentState = ()=>{
-  localStorage.setItem('request_builder_activeTab', activeTab.value)
-}
-
-/**
- * 加载组件状态
- */
-const loadComponentState = ()=>{
-  const tab = localStorage.getItem('request_builder_activeTab')
-  if(tab){
-    activeTab.value = tab
-  }
-}
 
 /**
  * 请求url变化
@@ -229,6 +259,7 @@ const onSendRequest = async () => {
 
   await UserRequestApi.sendUserRequest({id: requestDetail.value.id})
   await urResponseListRef.value?.loadUserRequestLogList()
+
   loading.value = false
 }
 
@@ -267,13 +298,32 @@ const onHeaderChange = () => {
       requestBodyType: requestDetail.value.requestBodyType,
       requestBody: requestDetail.value.requestBody,
     })
+    // 通知树重新加载
+    ReloadHolder().requestReloadTree()
   }
 }
+
+
+
+
+onUnmounted(()=>{
+  window.removeEventListener('keydown', (event: KeyboardEvent)=>{
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey; 
+    if (isCtrlOrCmd && (event.key === 's' || event.key === 'S')) {
+      onCtrlS(event)
+    }
+  })
+})
+
+
+
+
 
 </script>
 
 <style scoped>
 .rb-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -511,5 +561,51 @@ const onHeaderChange = () => {
   height: 200px;
   color: #6c757d;
   font-size: 14px;
+}
+
+.rb-name-input{
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  width: 100%;
+  background: transparent;
+  height: 20px;
+}
+
+/* Loading 遮罩样式 */
+.rb-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.rb-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.rb-loading-text {
+  margin-top: 16px;
+  color: #495057;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

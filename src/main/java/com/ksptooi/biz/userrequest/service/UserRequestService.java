@@ -121,7 +121,7 @@ public class UserRequestService {
             userRequestPo.setName(dto.getName());
         }
 
-        userRequestPo.setSeq(repository.getNextSeq(AuthService.requireUserId(),0));
+        userRequestPo.setSeq(repository.getNextSeq(AuthService.requireUserId()));
         repository.save(userRequestPo);
     }
 
@@ -324,6 +324,7 @@ public class UserRequestService {
             throw new BizException("数据不存在或无权限操作.");
         }
 
+        updatePo.setName(dto.getName());
         updatePo.setMethod(dto.getMethod());
         updatePo.setUrl(dto.getUrl());
         updatePo.setRequestHeaders(gson.toJson(dto.getRequestHeaders()));

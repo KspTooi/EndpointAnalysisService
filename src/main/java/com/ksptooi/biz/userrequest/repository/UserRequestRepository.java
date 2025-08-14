@@ -54,8 +54,8 @@ public interface UserRequestRepository extends JpaRepository<UserRequestPo, Long
 
 
     @Query("""
-        SELECT CASE WHEN COUNT(t) > 0 THEN :seq + 1 ELSE :seq END FROM UserRequestPo t
-        WHERE t.user.id = :userId AND t.seq = :seq
+        SELECT (COALESCE(MAX(t.seq), 0) + 1) FROM UserRequestPo t
+        WHERE t.user.id = :userId
     """)
-    Integer getNextSeq(@Param("userId") Long userId, @Param("seq") Integer seq);
+    Integer getNextSeq(@Param("userId") Long userId);
 }
