@@ -18,6 +18,11 @@
             <span>编辑{{ node?.type === 0 ? '分组' : '请求' }}</span>
         </div>
 
+        <div class="menu-item" @click="handleCopy">
+            <el-icon><CopyDocument /></el-icon>
+            <span>复制{{ node?.type === 0 ? '分组' : '请求' }}</span>
+        </div>
+
         <div class="menu-item" @click="handleDelete">
             <el-icon><Delete /></el-icon>
             <span>删除{{ node?.type === 0 ? '分组' : '请求' }}</span>
@@ -57,12 +62,13 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
-import { Edit, Delete, Plus } from '@element-plus/icons-vue'
+import { Edit, Delete, Plus, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import UserRequestTreeApi from '@/api/UserRequestTreeApi'
 import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTreeDto } from '@/api/UserRequestTreeApi'
 import UserRequestGroupApi from '@/api/UserRequestGroupApi'
 import type { AddUserRequestGroupDto } from '@/api/UserRequestGroupApi'
+import UserRequestApi from '@/api/UserRequestApi'
 
 interface Props {
     visible: boolean
@@ -148,6 +154,29 @@ const handleConfirmEdit = async () => {
     } finally {
         editLoading.value = false
     }
+}
+
+// 处理复制
+const handleCopy = async () => {
+    if (!props.node) return
+
+    //如果是请求
+    if(props.node.type === 1){
+        try{
+            await UserRequestApi.copyUserRequest({id:props.node.id})
+            ElMessage.success('复制请求成功')
+            emit('refresh')
+            emit('close')
+        }catch(error: any){
+            ElMessage.error(error.message || '复制请求失败')
+        }
+    }
+
+    //如果是分组
+    if(props.node.type === 0){
+        ElMessage.error('分组不能复制')
+    }
+
 }
 
 // 处理新建子组

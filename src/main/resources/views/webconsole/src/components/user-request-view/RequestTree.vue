@@ -2,6 +2,7 @@
     <div class="tag-tree-container">
 
         <div class="tag-tree-search">
+            {{ activeRequestId }}
           <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable  />
           <el-button type="primary" @click="loadUserRequestTree" size="small">加载数据</el-button>
           <el-button type="primary" @click="showCreateGroupDialog" size="small">新建组</el-button>
@@ -58,7 +59,7 @@
 
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import UserRequestTreeApi from '@/api/UserRequestTreeApi.ts'
 import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from '@/api/UserRequestTreeApi.ts'
 import UserRequestGroupApi from '@/api/UserRequestGroupApi.ts'
@@ -69,7 +70,7 @@ import { ElMessage, type FormInstance } from 'element-plus'
 
 const emit = defineEmits<{
   (e: 'select-group', groupId: string): void
-  (e: 'select-request', requestId: string): void
+  (e: 'select-request', requestId: string | null): void
 }>()
 
 const treeData = ref<GetUserRequestTreeVo[]>([])
@@ -116,6 +117,12 @@ const loadUserRequestTree = async () => {
         
         // 清理没有子节点的分组展开状态
         cleanupActiveNodes()
+
+        // 如果activeRequestId为空 则需要触发一次handleSelectRequest
+        if(!activeRequestId.value){
+            handleSelectRequest(activeRequestId.value || null)
+        }
+
     } catch (error) {
         console.error('加载用户请求树失败:', error)
     }
@@ -143,10 +150,36 @@ const collectEmptyGroupIds = (nodes: GetUserRequestTreeVo[]): Set<string> => {
     return emptyGroupIds
 }
 
+// 递归检查请求是否存在于树中
+const isRequestExists = (requestId: string, nodes: GetUserRequestTreeVo[]): boolean => {
+    for (const node of nodes) {
+        if (node.type === 1 && node.id === requestId) {
+            return true
+        }
+        if (node.children && node.children.length > 0) {
+            if (isRequestExists(requestId, node.children)) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 // 清理activeNodes中没有子节点的分组
 const cleanupActiveNodes = () => {
     const emptyGroupIds = collectEmptyGroupIds(treeData.value)
     activeNodes.value = activeNodes.value.filter(nodeId => !emptyGroupIds.has(nodeId))
+
+    // 清理activeRequestId - 如果当前请求不存在于树中则清理
+    if (!activeRequestId.value) {
+        return
+    }
+    
+    if (!isRequestExists(activeRequestId.value, treeData.value)) {
+        activeRequestId.value = null
+        persistComponentState()
+        emit('select-request', null)
+    }
 }
 
 const handleSearch = () => {
@@ -166,10 +199,12 @@ const handleToggleNode = (nodeId: string) => {
     }
 }
 
-const handleSelectRequest = (requestId: string) => {
+const handleSelectRequest = (requestId: string | null) => {
     activeRequestId.value = requestId
+    persistComponentState()
     emit('select-request', requestId)
 }
+
 
 // 右键菜单处理
 const handleRightClick = (event: { node: GetUserRequestTreeVo, x: number, y: number }) => {
@@ -325,7 +360,11 @@ const handleCreateGroup = async () => {
 
 
 onMounted(() => {
+    loadComponentState()
     loadUserRequestTree()
+    if(activeRequestId.value){
+        handleSelectRequest(activeRequestId.value)
+    }
     document.addEventListener('dragover', onDocumentDragOver)
     document.addEventListener('drop', onDocumentDrop)
 })
@@ -337,6 +376,29 @@ onUnmounted(() => {
 defineExpose({
     loadUserRequestTree
 })
+
+
+/**
+ * 持久化组件状态
+ */
+const persistComponentState = () => {
+    if(activeRequestId.value){
+        localStorage.setItem('request_tree_selected_request_id', activeRequestId.value)
+    }
+}
+
+/**
+ * 加载组件状态
+ */
+const loadComponentState = () => {
+    if(activeRequestId.value){
+        return
+    }
+    const requestId = localStorage.getItem('request_tree_selected_request_id')
+    if(requestId){
+        activeRequestId.value = requestId
+    }
+}
 </script>
 
 <style scoped>

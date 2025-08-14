@@ -2,15 +2,15 @@
   <div class="request-payload-container">
     <div class="rb-radio-group">
       <el-radio-group v-model="requestBodyType" size="small">
-        <el-radio :value="'none'">none</el-radio>
-        <el-radio :value="'multipart/form-data'">form-data</el-radio>
-        <el-radio :value="'x-www-form-urlencoded'">x-www-form-urlencoded</el-radio>
-        <el-radio :value="'text/plain'">text</el-radio>
+        <el-radio :disabled="true" :value="'none'">none</el-radio>
+        <el-radio :disabled="true" :value="'multipart/form-data'">form-data</el-radio>
+        <el-radio :disabled="true" :value="'x-www-form-urlencoded'">x-www-form-urlencoded</el-radio>
+        <el-radio :disabled="true" :value="'text/plain'">text</el-radio>
         <el-radio :value="'application/json'">json</el-radio>
-        <el-radio :value="'application/xml'">xml</el-radio>
-        <el-radio :value="'application/javascript'">javascript</el-radio>
-        <el-radio :value="'application/html'">html</el-radio>
-        <el-radio :value="'binary'">binary</el-radio>
+        <el-radio :disabled="true" :value="'application/xml'">xml</el-radio>
+        <el-radio :disabled="true" :value="'application/javascript'">javascript</el-radio>
+        <el-radio :disabled="true" :value="'application/html'">html</el-radio>
+        <el-radio :disabled="true" :value="'binary'">binary</el-radio>
       </el-radio-group>
     </div>
     <div class="rb-payload-content">

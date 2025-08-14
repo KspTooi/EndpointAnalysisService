@@ -240,16 +240,48 @@ public class UserRequestService {
         repository.save(userRequestPo);
     }
 
+    public void copyUserRequest(CommonIdDto dto) throws BizException,AuthException {
 
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
+        
+        if(userRequestPo == null){
+            throw new BizException("数据不存在或无权限操作.");
+        }
+
+        UserRequestPo copyPo = new UserRequestPo();
+        copyPo.setGroup(userRequestPo.getGroup());
+        copyPo.setOriginalRequest(userRequestPo.getOriginalRequest());
+        copyPo.setUser(userRequestPo.getUser());
+        copyPo.setName(userRequestPo.getName());
+        copyPo.setMethod(userRequestPo.getMethod());
+        copyPo.setUrl(userRequestPo.getUrl());
+        copyPo.setRequestHeaders(userRequestPo.getRequestHeaders());
+        copyPo.setRequestBodyType(userRequestPo.getRequestBodyType());
+        copyPo.setRequestBody(userRequestPo.getRequestBody());
+        copyPo.setSeq(userRequestPo.getSeq()+1);
+        repository.save(copyPo);
+    }
 
     @Transactional(rollbackFor = Exception.class)
-    public void editUserRequest(EditUserRequestDto dto) throws BizException {
-        UserRequestPo updatePo = repository.findById(dto.getId())
-                .orElseThrow(()-> new BizException("更新失败,数据不存在."));
+    public void editUserRequest(EditUserRequestDto dto) throws BizException,AuthException {
 
-        assign(dto,updatePo);
+        UserRequestPo updatePo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
+
+        if(updatePo == null){
+            throw new BizException("数据不存在或无权限操作.");
+        }
+
+        updatePo.setMethod(dto.getMethod());
+        updatePo.setUrl(dto.getUrl());
+        updatePo.setRequestHeaders(gson.toJson(dto.getRequestHeaders()));
+        updatePo.setRequestBodyType(dto.getRequestBodyType());
+        updatePo.setRequestBody(dto.getRequestBody());
         repository.save(updatePo);
     }
+
+
+
+
 
     public GetUserRequestDetailsVo getUserRequestDetails(CommonIdDto dto) throws BizException {
         UserRequestPo po = repository.findById(dto.getId())

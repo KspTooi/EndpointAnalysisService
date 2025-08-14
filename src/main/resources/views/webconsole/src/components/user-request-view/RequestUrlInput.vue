@@ -32,6 +32,11 @@ const props = defineProps<{
     method: string | null
 }>()
 
+const emit = defineEmits<{
+  (event: 'onSendRequest', method: string, url: string): void;
+  (event: 'onUrlChange', method: string, url: string): void;
+}>()
+
 const method = ref<string>(props.method || 'GET')
 const url = ref<string>(props.url || 'http://')
 
@@ -42,19 +47,12 @@ watch(() => props.url, (newVal) => {
     url.value = newVal || 'http://'
 })
 
-
 watch(method, (newVal) => {
     emit('onUrlChange', newVal, url.value)
 })
 watch(url, (newVal) => {
     emit('onUrlChange', method.value, newVal)
 })
-
-const emit = defineEmits<{
-  (event: 'onSendRequest', method: string, url: string): void;
-  (event: 'onUrlChange', method: string, url: string): void;
-}>()
-
 
 const sendRequest = () => {
     emit('onSendRequest', method.value, url.value)

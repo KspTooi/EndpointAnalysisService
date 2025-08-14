@@ -9,43 +9,43 @@
 
       <div class="rb-header-input" style="margin-top: 12px;">
         <RequestUrlInput :url="requestDetail.url" 
-                       :method="requestDetail.method"/>
-
+                       :method="requestDetail.method" 
+                       @onUrlChange="onUrlChange"
+                       />
       </div>
 
+    </div>
+    <!-- 选项卡 -->
+    <div class="rb-tab">
+      <div class="rb-tab-item" :class="{ active: activeTab === 'header' }" @click="activeTab = 'header'">
+        标头
+      </div>
+      <div class="rb-tab-item" :class="{ active: activeTab === 'body' }" @click="activeTab = 'body'">
+        载荷
+      </div>
+      <div class="rb-tab-item" :class="{ active: activeTab === 'response' }" @click="activeTab = 'response'">
+        响应列表
+      </div>
     </div>
 
     <div v-if="requestDetail" class="rb-content">
 
-      <!-- 选项卡 -->
-      <div class="rb-tab">
-        <div class="rb-tab-item" :class="{ active: activeTab === 'header' }" @click="activeTab = 'header'">
-          请求头
+      <!-- 请求头内容 -->
+      <div v-if="activeTab === 'header'" class="tab-panel">
+        <div v-if="requestDetail.requestHeaders && Object.keys(requestDetail.requestHeaders).length > 0" class="headers-list">
+          <div v-for="(value, key) in requestDetail.requestHeaders" :key="key" class="header-item">
+            <div class="header-key">{{ key }}</div>
+            <div class="header-value">{{ value }}</div>
+          </div>
         </div>
-        <div class="rb-tab-item" :class="{ active: activeTab === 'body' }" @click="activeTab = 'body'">
-          载荷
+        <div v-else class="empty-state">
+          暂无请求头
         </div>
       </div>
 
-      <!-- 选项卡内容 -->
-      <div class="rb-tab-content">
-        <!-- 请求头内容 -->
-        <div v-if="activeTab === 'header'" class="tab-panel">
-          <div v-if="requestDetail.requestHeaders && Object.keys(requestDetail.requestHeaders).length > 0" class="headers-list">
-            <div v-for="(value, key) in requestDetail.requestHeaders" :key="key" class="header-item">
-              <div class="header-key">{{ key }}</div>
-              <div class="header-value">{{ value }}</div>
-            </div>
-          </div>
-          <div v-else class="empty-state">
-            暂无请求头
-          </div>
-        </div>
-
-        <!-- 载荷内容 -->
-        <div v-if="activeTab === 'body'" class="tab-panel">
-          <RequestPayload :requestDetails="requestDetail" />
-        </div>
+      <!-- 载荷内容 -->
+      <div v-if="activeTab === 'body'" class="tab-panel">
+        <RequestPayload :requestDetails="requestDetail" />
       </div>
 
     </div>
@@ -62,8 +62,15 @@ import UserRequestApi, { type GetUserRequestDetailsVo } from '@/api/UserRequestA
 import { ref, watch, onMounted, nextTick } from 'vue';
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from './RequestPayload.vue';
-import QueryPersistService from '@/service/QueryPersistService';
 
+const props = defineProps<{
+  requestId: string | null
+}>()
+
+//当前选中的选项卡
+const activeTab = ref<string>('header')
+
+//完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
   id: "",
   method: null,
@@ -75,37 +82,92 @@ const requestDetail = ref<GetUserRequestDetailsVo>({
   url: null
 })
 
-const props = defineProps<{
-  requestId: string
-}>()
 
-const activeTab = ref('header')
-
-watch(()=>props.requestId,async ()=>{
-  if(props.requestId){
-    await loadRequestDetail()
-  }
-})
 
 const loadRequestDetail = async () => {
-  const res = await UserRequestApi.getUserRequestDetails({id:props.requestId})
-  requestDetail.value = res
-  console.log(requestDetail.value)
+
+  if(props.requestId == null){
+    console.log('请求id为空')
+    return
+  }
+
+  try{
+    const res = await UserRequestApi.getUserRequestDetails({id:props.requestId || ''})
+    requestDetail.value.id = res.id
+    requestDetail.value.method = res.method
+    requestDetail.value.name = res.name
+    requestDetail.value.requestBody = res.requestBody
+    requestDetail.value.requestBodyType = res.requestBodyType
+    requestDetail.value.requestHeaders = res.requestHeaders
+    requestDetail.value.seq = res.seq
+    requestDetail.value.url = res.url
+  }catch(e){
+    requestDetail.value = {
+      id: "",
+      method: null,
+      name: null,
+      requestBody: null,
+      requestBodyType: null,
+      requestHeaders: new Map<string,string>(),
+      seq: null,
+      url: null
+    }
+  }
 }
 
 onMounted(()=>{
+  loadComponentState()
+})
+
+
+
+watch(activeTab, (newVal) => {
+  persistComponentState()
+})
+
+//监听外部请求id变化
+watch(()=>props.requestId,async ()=>{
+  if(props.requestId){
+    console.log('监听外部请求id变化',props.requestId)
+    loadRequestDetail()
+  }
+  if(props.requestId == null){
+    console.log('监听外部请求id变化 为空')
+    requestDetail.value = {
+      id: "",
+      method: null,
+      name: null,
+      requestBody: null,
+      requestBodyType: null,
+      requestHeaders: new Map<string,string>(),
+      seq: null,
+      url: null
+    }
+  }
+})
+
+
+/**
+ * 持久化组件状态
+ */
+const persistComponentState = ()=>{
+  localStorage.setItem('request_builder_activeTab', activeTab.value)
+}
+
+/**
+ * 加载组件状态
+ */
+const loadComponentState = ()=>{
   const tab = localStorage.getItem('request_builder_activeTab')
   if(tab){
     activeTab.value = tab
   }
-})
+}
 
-
-watch(activeTab, (newVal) => {
-  localStorage.setItem('request_builder_activeTab', newVal)
-})
-
-
+const onUrlChange = (method: string, url: string) => {
+  requestDetail.value.method = method
+  requestDetail.value.url = url
+}
 
 </script>
 
@@ -136,24 +198,9 @@ watch(activeTab, (newVal) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 0;
 }
 
-.rb-info {
-  padding: 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
 
-.rb-info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.rb-info-row:last-child {
-  margin-bottom: 0;
-}
 
 .rb-info-row label {
   min-width: 80px;
@@ -162,38 +209,6 @@ watch(activeTab, (newVal) => {
   margin-right: 12px;
 }
 
-.method-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.method-badge.get {
-  background: #d4edda;
-  color: #155724;
-}
-
-.method-badge.post {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-.method-badge.put {
-  background: #ffeaa7;
-  color: #856404;
-}
-
-.method-badge.delete {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.url-text {
-  color: #495057;
-  word-break: break-all;
-}
 
 .rb-tab {
   display: flex;
@@ -220,31 +235,6 @@ watch(activeTab, (newVal) => {
   color: #007bff;
   border-bottom-color: #007bff;
   background: #fff;
-}
-
-.rb-tab-content {
-  flex: 1;
-  overflow: auto;
-  min-height: 0;
-}
-
-/* 自定义滚动条样式 */
-.rb-tab-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.rb-tab-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.rb-tab-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-.rb-tab-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
 }
 
 /* tab-panel滚动条样式 */
@@ -300,18 +290,6 @@ watch(activeTab, (newVal) => {
   color: #6c757d;
   flex: 1;
   word-break: break-all;
-}
-
-.body-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.body-type {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .body-type label {
