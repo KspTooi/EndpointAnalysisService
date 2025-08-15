@@ -4,7 +4,9 @@
     <div
       class="tag-tree-item"
       :class="{
-        'tag-item-active': isGroup(node) ? isExpanded(node.id) : isActive(node.id),
+        /* 'tag-item-active': isGroup(node) ? isExpanded(node.id) : isActive(node.id), */
+        'node-active': isGroup(node) ? RequestTreeHolder().getActiveGroupId === node.id : RequestTreeHolder().getActiveRequestId === node.id,
+        'tag-item-active': isGroup(node) ? isExpanded(node.id) : false,
         'request-item': !isGroup(node),
         'drag-over-center': dragHoverZone === 'center',
         'drag-over-top': dragHoverZone === 'top',
@@ -429,5 +431,12 @@ const handleDrop = async (event: DragEvent) => {
 
 .tree-node {
   margin-bottom: 2px;
+}
+
+.node-active {
+  border: 1px solid #5dc7cd;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #f0ffff 0%, rgb(211, 250, 255) 100%) !important;
 }
 </style>
