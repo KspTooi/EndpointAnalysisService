@@ -2,7 +2,6 @@ import { createApp, markRaw } from 'vue'
 import { createPinia } from 'pinia'
 import AdminRoot from './AdminRoot.vue'
 import router from './router/admin'  // 使用admin专用路由
-
 // 导入 Element Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'

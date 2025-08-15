@@ -12,8 +12,7 @@
           @action="handleMenuAction"
         />
       </el-aside>
-      
-      
+
       <el-container>
         <!-- 头部区域 -->
         <el-header class="admin-header" height="30px">
@@ -27,36 +26,33 @@
           </div>
           <div class="header-right">
             <!-- 系统导航按钮区域 -->
-            <div class="nav-buttons">
-            </div>
-            
+            <div class="nav-buttons"></div>
+
             <!-- 用户自定义操作区域 -->
             <slot name="header-actions"></slot>
-            
+
             <!-- 用户信息和下拉菜单-->
             <el-dropdown trigger="click">
-              <div class="user-info" style="display: flex; align-items: center; height: 100%;"> 
-                <div class="color-block" style="width: 15px; height: 15px; background-color: #409EFF; border-radius: 50%; margin-right: 5px;"></div>
-                <div style="line-height: 1;">
-                  Operator Options
-                </div>
+              <div class="user-info" style="display: flex; align-items: center; height: 100%">
+                <div class="color-block" style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"></div>
+                <div style="line-height: 1">Operator Options</div>
               </div>
               <template #dropdown>
-                <el-dropdown-menu> 
+                <el-dropdown-menu>
                   <el-dropdown-item>No options</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
           </div>
         </el-header>
-        
+
         <!-- 内容区域 -->
         <el-main class="admin-content">
           <div class="content-wrapper">
             <!-- 路由视图 -->
             <router-view v-slot="{ Component, route }">
               <transition name="fade" mode="out-in">
-                <div :key="route.fullPath"> 
+                <div :key="route.fullPath">
                   <keep-alive v-if="route.meta.keepAlive">
                     <component :is="Component" />
                   </keep-alive>
@@ -72,141 +68,171 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import AdminSidePanel from './AdminSidePanel.vue'
-import { 
-  ElContainer, ElHeader, ElAside, ElMain, 
-  ElBreadcrumb, ElBreadcrumbItem, ElIcon, 
-  ElDropdown, ElDropdownMenu, ElDropdownItem, ElAvatar,
-  ElLoading, ElButton
-} from 'element-plus'
-import { 
-  Back, 
-  User, Avatar, UserFilled, Lock, Setting, Key, 
-  Grid, Briefcase, Tools, Monitor, Opportunity, 
-  Collection, CollectionTag, Cpu, Trophy, List,
-  HomeFilled, Refrigerator, Ticket, Management,
-  SetUp, Operation, DocumentCopy, DArrowLeft, DArrowRight,Select,
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import AdminSidePanel from "./AdminSidePanel.vue";
+import {
+  ElContainer,
+  ElHeader,
+  ElAside,
+  ElMain,
+  ElBreadcrumb,
+  ElBreadcrumbItem,
+  ElIcon,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElAvatar,
+  ElLoading,
+  ElButton,
+} from "element-plus";
+import {
+  Back,
+  User,
+  Avatar,
+  UserFilled,
+  Lock,
+  Setting,
+  Key,
+  Grid,
+  Briefcase,
+  Tools,
+  Monitor,
+  Opportunity,
+  Collection,
+  CollectionTag,
+  Cpu,
+  Trophy,
+  List,
+  HomeFilled,
+  Refrigerator,
+  Ticket,
+  Management,
+  SetUp,
+  Operation,
+  DocumentCopy,
+  DArrowLeft,
+  DArrowRight,
+  Select,
   Switch,
   Warning,
   Coin,
-  MagicStick
-} from '@element-plus/icons-vue'
+  MagicStick,
+} from "@element-plus/icons-vue";
 
 // 定义组件props
 const props = defineProps<{
-  title?: string,
-  logo?: string,
+  title?: string;
+  logo?: string;
   user?: {
-    name: string,
-    avatar?: string,
-    [key: string]: any
-  },
-  defaultActiveMenuId?: string,
+    name: string;
+    avatar?: string;
+    [key: string]: any;
+  };
+  defaultActiveMenuId?: string;
   breadcrumbs?: Array<{
-    text: string,
-    to?: string | object
-  }>
-}>()
+    text: string;
+    to?: string | object;
+  }>;
+}>();
 
 // 定义事件
 const emit = defineEmits<{
-  (e: 'menu-click', menuId: string): void
-  (e: 'menu-action', action: string, menuId: string): void
-  (e: 'logout'): void
-}>()
+  (e: "menu-click", menuId: string): void;
+  (e: "menu-action", action: string, menuId: string): void;
+  (e: "logout"): void;
+}>();
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 // 导航到指定URL
 const navigateToUrl = (url: string) => {
-  window.location.href = url
-}
+  window.location.href = url;
+};
 
 // 内置菜单项定义，与旧版保持完全一致
 const menuItems = ref([
   {
-    id: 'user-manager',
-    title: '用户列表',
+    id: "user-manager",
+    title: "用户列表",
     icon: User,
-    routerLink: '/user-manager'
+    routerLink: "/user-manager",
   },
   {
-    id: 'group-manager',
-    title: '用户访问组',
+    id: "group-manager",
+    title: "用户访问组",
     icon: Lock,
-    routerLink: '/group-manager'
+    routerLink: "/group-manager",
   },
   {
-    id: 'permission-manager',
-    title: '权限节点',
+    id: "permission-manager",
+    title: "权限节点",
     icon: Key,
-    routerLink: '/permission-manager'
+    routerLink: "/permission-manager",
   },
   {
-    id: 'session-manager',
-    title: '会话管理',
+    id: "session-manager",
+    title: "会话管理",
     icon: Ticket,
-    routerLink: '/session-manager'
+    routerLink: "/session-manager",
   },
   {
-    id: 'config-manager',
-    title: '配置管理',
+    id: "config-manager",
+    title: "配置管理",
     icon: Setting,
-    routerLink: '/config-manager'
+    routerLink: "/config-manager",
   },
   {
-    id: 'application-maintain',
-    title: '维护中心',
+    id: "application-maintain",
+    title: "维护中心",
     icon: Tools,
-    routerLink: '/application-maintain'
+    routerLink: "/application-maintain",
   },
   {
-    id: 'request-manager',
-    title: '中继通道请求',
+    id: "request-manager",
+    title: "中继通道请求",
     icon: Switch,
-    routerLink: '/'
+    routerLink: "/",
   },
   {
-    id: 'replay-request-manager',
-    title: '请求重放管理器',
+    id: "replay-request-manager",
+    title: "请求重放管理器",
     icon: Select,
-    routerLink: '/replay-request-manager'
+    routerLink: "/replay-request-manager",
   },
   {
-    id: 'user-request-manager',
-    title: '请求调试视图',
+    id: "user-request-manager",
+    title: "请求调试视图",
     icon: MagicStick,
-    routerLink: '/user-request-manager'
+    routerLink: "/user-request-manager",
   },
   {
-    id: 'relay-server-manager',
-    title: '中继通道配置',
+    id: "relay-server-manager",
+    title: "中继通道配置",
     icon: DArrowRight,
-    routerLink: '/relay-server-manager'
+    routerLink: "/relay-server-manager",
   },
   {
-    id: 'ep-doc-manager',
-    title: '端点文档配置',
+    id: "ep-doc-manager",
+    title: "端点文档配置",
     icon: DocumentCopy,
-    routerLink: '/ep-doc-manager'
+    routerLink: "/ep-doc-manager",
   },
   {
-    id: 'ep-doc-viewer',
-    title: '端点文档查看器',
+    id: "ep-doc-viewer",
+    title: "端点文档查看器",
     icon: Operation,
-    routerLink: '/ep-doc-viewer'
-  }
-])
+    routerLink: "/ep-doc-viewer",
+  },
+]);
 
 // 移除折叠功能
 
 // 菜单项点击事件
 const handleMenuItemClick = (menuId: string) => {
-  emit('menu-click', menuId)
-}
+  emit("menu-click", menuId);
+};
 
 // 无移动端兼容逻辑
 
@@ -214,36 +240,36 @@ const handleMenuItemClick = (menuId: string) => {
 const findMenuIdByPath = (items: any[], path: string): string => {
   for (const item of items) {
     if (item.routerLink === path) {
-      return item.id
+      return item.id;
     }
     if (item.children?.length) {
-      const foundId = findMenuIdByPath(item.children, path)
-      if (foundId) return foundId
+      const foundId = findMenuIdByPath(item.children, path);
+      if (foundId) return foundId;
     }
   }
-  return ''
-}
+  return "";
+};
 
 // 当前活动菜单
 const activeMenuId = computed(() => {
-  if (props.defaultActiveMenuId) return props.defaultActiveMenuId
-  return findMenuIdByPath(menuItems.value, route.path)
-})
+  if (props.defaultActiveMenuId) return props.defaultActiveMenuId;
+  return findMenuIdByPath(menuItems.value, route.path);
+});
 
 // 处理菜单点击
 const handleMenuClick = (menuId: string) => {
-  handleMenuItemClick(menuId)
-}
+  handleMenuItemClick(menuId);
+};
 
 // 处理菜单动作
 const handleMenuAction = (action: string, menuId: string) => {
-  emit('menu-action', action, menuId)
-}
+  emit("menu-action", action, menuId);
+};
 
 // 处理退出登录
 const handleLogout = () => {
-  emit('logout')
-}
+  emit("logout");
+};
 
 // 自动生成面包屑导航
 const autoBreadcrumbs = computed(() => {
@@ -251,60 +277,60 @@ const autoBreadcrumbs = computed(() => {
   if (props.breadcrumbs?.length) return props.breadcrumbs;
 
   const revisedBreadcrumbs: Array<{ text: string; to?: string | object }> = [];
-  
+
   // 尝试添加首页/根路径面包屑
-  const homeRouteConfig = router.options.routes.find(r => r.path === '/');
+  const homeRouteConfig = router.options.routes.find((r) => r.path === "/");
   // Use optional chaining and type checking for safer access
-  const homeBreadcrumbMeta = homeRouteConfig?.meta?.breadcrumb as { title?: string, hidden?: boolean } | undefined;
-  if (homeBreadcrumbMeta?.title && route.path !== '/') {
-      revisedBreadcrumbs.push({
-          text: homeBreadcrumbMeta.title,
-          to: '/'
-      });
+  const homeBreadcrumbMeta = homeRouteConfig?.meta?.breadcrumb as { title?: string; hidden?: boolean } | undefined;
+  if (homeBreadcrumbMeta?.title && route.path !== "/") {
+    revisedBreadcrumbs.push({
+      text: homeBreadcrumbMeta.title,
+      to: "/",
+    });
   }
 
   // 遍历匹配的路由记录
   route.matched.forEach((record, index) => {
-      // 如果已经添加了首页，并且当前记录是根路径，则跳过
-      if (record.path === '/' && revisedBreadcrumbs.length > 0 && revisedBreadcrumbs[0].to === '/') return;
+    // 如果已经添加了首页，并且当前记录是根路径，则跳过
+    if (record.path === "/" && revisedBreadcrumbs.length > 0 && revisedBreadcrumbs[0].to === "/") return;
 
-      const meta = record.meta;
-      let title = '';
-      let hidden = false;
-      const path = record.path; // 使用匹配路由的路径
+    const meta = record.meta;
+    let title = "";
+    let hidden = false;
+    const path = record.path; // 使用匹配路由的路径
 
-      // 检查 meta.breadcrumb 配置
-      // Use type assertion for breadcrumb meta structure
-      const breadcrumbMeta = meta?.breadcrumb as { title?: string, hidden?: boolean } | undefined;
-      if (breadcrumbMeta) {
-          if (breadcrumbMeta.title) {
-              title = breadcrumbMeta.title;
-          }
-          hidden = breadcrumbMeta.hidden === true;
+    // 检查 meta.breadcrumb 配置
+    // Use type assertion for breadcrumb meta structure
+    const breadcrumbMeta = meta?.breadcrumb as { title?: string; hidden?: boolean } | undefined;
+    if (breadcrumbMeta) {
+      if (breadcrumbMeta.title) {
+        title = breadcrumbMeta.title;
       }
+      hidden = breadcrumbMeta.hidden === true;
+    }
 
-      // 如果 breadcrumb 中没有 title，尝试使用 meta.title
-      // Check if meta.title exists and is a string
-      if (!title && meta?.title && typeof meta.title === 'string') {
-          title = meta.title;
-      }
+    // 如果 breadcrumb 中没有 title，尝试使用 meta.title
+    // Check if meta.title exists and is a string
+    if (!title && meta?.title && typeof meta.title === "string") {
+      title = meta.title;
+    }
 
-      // 如果有标题且不隐藏，则添加到面包屑数组中
-      if (title && !hidden) {
-           // 检查是否已存在（基于路径）
-           const alreadyExists = revisedBreadcrumbs.some(b => b.to === path);
-           if(!alreadyExists){
-                revisedBreadcrumbs.push({
-                    text: title,
-                    // 最后一个面包屑（当前页面）不设置链接
-                    to: index === route.matched.length - 1 ? undefined : path
-                });
-           }
+    // 如果有标题且不隐藏，则添加到面包屑数组中
+    if (title && !hidden) {
+      // 检查是否已存在（基于路径）
+      const alreadyExists = revisedBreadcrumbs.some((b) => b.to === path);
+      if (!alreadyExists) {
+        revisedBreadcrumbs.push({
+          text: title,
+          // 最后一个面包屑（当前页面）不设置链接
+          to: index === route.matched.length - 1 ? undefined : path,
+        });
       }
+    }
   });
 
   return revisedBreadcrumbs;
-})
+});
 </script>
 
 <style scoped>
@@ -440,7 +466,8 @@ const autoBreadcrumbs = computed(() => {
   padding: 4px;
 }
 
-:deep(.el-menu-item), :deep(.el-sub-menu__title) {
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
   border-radius: 4px;
   margin: 1px 0;
   height: 44px;
@@ -456,7 +483,7 @@ const autoBreadcrumbs = computed(() => {
 }
 
 :deep(.el-menu-item.is-active)::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -467,11 +494,13 @@ const autoBreadcrumbs = computed(() => {
   border-radius: 0 2px 2px 0;
 }
 
-:deep(.el-menu-item:hover), :deep(.el-sub-menu__title:hover) {
+:deep(.el-menu-item:hover),
+:deep(.el-sub-menu__title:hover) {
   background-color: rgba(64, 158, 255, 0.08);
 }
 
-:deep(.el-menu--collapse .el-menu-item), :deep(.el-menu--collapse .el-sub-menu__title) {
+:deep(.el-menu--collapse .el-menu-item),
+:deep(.el-menu--collapse .el-sub-menu__title) {
   height: 44px;
   line-height: 44px;
 }
@@ -482,12 +511,13 @@ const autoBreadcrumbs = computed(() => {
   line-height: 40px;
 }
 
-:deep(.el-menu-item .el-icon), :deep(.el-sub-menu__title .el-icon) {
+:deep(.el-menu-item .el-icon),
+:deep(.el-sub-menu__title .el-icon) {
   margin-right: 8px;
   font-size: 16px;
 }
 
-:deep(.el-menu--collapse .el-menu-item .el-icon), 
+:deep(.el-menu--collapse .el-menu-item .el-icon),
 :deep(.el-menu--collapse .el-sub-menu__title .el-icon) {
   margin: 0;
 }
