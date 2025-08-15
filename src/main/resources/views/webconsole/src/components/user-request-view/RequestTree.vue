@@ -392,11 +392,13 @@ const handleToggleNode = (nodeId: string) => {
   //如果节点已展开，则折叠
   if (UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
     UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter((id) => id !== nodeId));
+    return;
   }
 
   //如果节点未展开，则展开
   if (!UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
     UserRequestHolder().setActiveNodeIds([...UserRequestHolder().getActiveNodeIds, nodeId]);
+    return;
   }
 };
 </script>

@@ -2,43 +2,37 @@
   <div class="tree-node">
     <!-- 节点本身 -->
     <div
-        class="tag-tree-item"
-        :class="{
-                'tag-item-active': isGroup(node) ? isExpanded(node.id) : isActive(node.id),
-                'request-item': !isGroup(node),
-                'drag-over-center': dragHoverZone === 'center',
-                'drag-over-top': dragHoverZone === 'top',
-                'drag-over-bottom': dragHoverZone === 'bottom'
-            }"
-        @click="handleNodeClick(node)"
-        @contextmenu.prevent="handleRightClick"
-        draggable="true"
-        @dragstart="handleDragStart"
-        @dragover.prevent="handleDragOver"
-        @dragleave="handleDragLeave"
-        @drop.prevent="handleDrop"
+      class="tag-tree-item"
+      :class="{
+        'tag-item-active': isGroup(node) ? isExpanded(node.id) : isActive(node.id),
+        'request-item': !isGroup(node),
+        'drag-over-center': dragHoverZone === 'center',
+        'drag-over-top': dragHoverZone === 'top',
+        'drag-over-bottom': dragHoverZone === 'bottom',
+      }"
+      @click="handleNodeClick(node)"
+      @contextmenu.prevent="handleRightClick"
+      draggable="true"
+      @dragstart="handleDragStart"
+      @dragover.prevent="handleDragOver"
+      @dragleave="handleDragLeave"
+      @drop.prevent="handleDrop"
     >
       <!-- 请求组的显示 -->
       <div v-if="isGroup(node)" class="tag-tree-item-tag">
-        <el-icon
-            v-if="hasChildren(node)"
-            class="expand-icon"
-            @click.stop="handleToggleNode(node.id)"
-        >
+        <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="handleToggleNode(node.id)">
           <ArrowRight v-if="!isExpanded(node.id)" />
           <ArrowDown v-else />
         </el-icon>
         <el-icon class="folder-icon">
           <Folder />
         </el-icon>
-        <span class="node-name" >{{ node.name }}</span>
+        <span class="node-name">{{ node.name }}</span>
       </div>
 
       <!-- 请求项的显示 -->
       <div v-else class="operation-item-content" style="overflow: hidden">
-        <div v-if="node.method"
-             class="operation-method"
-             :class="getMethodClass(node.method)">
+        <div v-if="node.method" class="operation-method" :class="getMethodClass(node.method)">
           {{ node.method }}
         </div>
         <div class="operation-name">
@@ -52,174 +46,172 @@
     </div>
 
     <!-- 子节点 -->
-    <div
-        v-if="isGroup(node) && hasChildren(node) && isExpanded(node.id)"
-        class="operation-list"
-    >
+    <div v-if="isGroup(node) && hasChildren(node) && isExpanded(node.id)" class="operation-list">
       <RequestTreeItem
-          v-for="(child, childIndex) in node.children"
-          :key="child.id"
-          :node="child"
-          :active-nodes="activeNodes"
-          :active-request-id="activeRequestId"
-          :parent-node="node"
-          :child-index="childIndex"
-          @toggle-node="$emit('toggle-node', $event)"
-          @select-request="$emit('select-request', $event)"
-          @right-click="$emit('right-click', $event)"
-          @refresh-tree="$emit('refresh-tree')"
+        v-for="(child, childIndex) in node.children"
+        :key="child.id"
+        :node="child"
+        :active-nodes="activeNodes"
+        :active-request-id="activeRequestId"
+        :parent-node="node"
+        :child-index="childIndex"
+        @toggle-node="$emit('toggle-node', $event)"
+        @select-request="$emit('select-request', $event)"
+        @right-click="$emit('right-click', $event)"
+        @refresh-tree="$emit('refresh-tree')"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import UserRequestTreeApi from '@/api/UserRequestTreeApi'
-import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from '@/api/UserRequestTreeApi'
-import { Folder, ArrowDown, ArrowRight, Document } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import UserRequestTreeApi from "@/api/UserRequestTreeApi";
+import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from "@/api/UserRequestTreeApi";
+import { Folder, ArrowDown, ArrowRight, Document } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
 interface Props {
-  node: GetUserRequestTreeVo
-  activeNodes: string[]
-  activeRequestId: string | null
-  parentNode?: GetUserRequestTreeVo | undefined
-  childIndex?: number | undefined
+  node: GetUserRequestTreeVo;
+  activeNodes: string[];
+  activeRequestId: string | null;
+  parentNode?: GetUserRequestTreeVo | undefined;
+  childIndex?: number | undefined;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  'toggle-node': [nodeId: string]
-  'select-request': [requestId: string]
-  'right-click': [event: { node: GetUserRequestTreeVo, x: number, y: number }]
-  'refresh-tree': []
-}>()
+  "toggle-node": [nodeId: string];
+  "select-request": [requestId: string];
+  "right-click": [event: { node: GetUserRequestTreeVo; x: number; y: number }];
+  "refresh-tree": [];
+}>();
 
 // 工具函数
-const isGroup = (node: GetUserRequestTreeVo) => node.type === 0
-const hasChildren = (node: GetUserRequestTreeVo) => node.children && node.children.length > 0
-const isExpanded = (nodeId: string) => props.activeNodes.includes(nodeId)
-const isActive = (nodeId: string) => props.activeRequestId === nodeId
+const isGroup = (node: GetUserRequestTreeVo) => node.type === 0;
+const hasChildren = (node: GetUserRequestTreeVo) => node.children && node.children.length > 0;
+const isExpanded = (nodeId: string) => props.activeNodes.includes(nodeId);
+const isActive = (nodeId: string) => props.activeRequestId === nodeId;
 
 // 获取HTTP方法的CSS类名
 const getMethodClass = (method: string | undefined) => {
-  if (!method) return ''
-  const knownMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options']
-  const lowerMethod = method.toLowerCase()
-  return knownMethods.includes(lowerMethod) ? `method-${lowerMethod}` : 'method-unknown'
-}
+  if (!method) return "";
+  const knownMethods = ["get", "post", "put", "delete", "patch", "head", "options"];
+  const lowerMethod = method.toLowerCase();
+  return knownMethods.includes(lowerMethod) ? `method-${lowerMethod}` : "method-unknown";
+};
 
 const handleToggleNode = (nodeId: string) => {
-  emit('toggle-node', nodeId)
-}
+  emit("toggle-node", nodeId);
+};
 
 const handleSelectRequest = (requestId: string) => {
-  emit('select-request', requestId)
-}
+  emit("select-request", requestId);
+};
 
 const handleNodeClick = (node: GetUserRequestTreeVo) => {
   if (isGroup(node)) {
     if (hasChildren(node)) {
-      handleToggleNode(node.id)
+      handleToggleNode(node.id);
     }
   } else {
-    handleSelectRequest(node.id)
+    handleSelectRequest(node.id);
   }
-}
+};
 
 const handleRightClick = (event: MouseEvent) => {
-  emit('right-click', {
+  emit("right-click", {
     node: props.node,
     x: event.clientX,
-    y: event.clientY
-  })
-}
+    y: event.clientY,
+  });
+};
 
 // 拖拽交互状态
-import { ref } from 'vue'
-const dragHoverZone = ref<'center' | 'top' | 'bottom' | null>(null)
+import { ref } from "vue";
+const dragHoverZone = ref<"center" | "top" | "bottom" | null>(null);
 
 // 序列化拖拽数据
-const serializeDragData = (n: GetUserRequestTreeVo) => JSON.stringify({
-  id: n.id,
-  parentId: n.parentId,
-  type: n.type,
-  name: n.name,
-})
+const serializeDragData = (n: GetUserRequestTreeVo) =>
+  JSON.stringify({
+    id: n.id,
+    parentId: n.parentId,
+    type: n.type,
+    name: n.name,
+  });
 
 // 事件: 开始拖拽
 const handleDragStart = (event: DragEvent) => {
-  if (!event.dataTransfer) return
-  event.dataTransfer.setData('application/json', serializeDragData(props.node))
-  event.dataTransfer.effectAllowed = 'move'
-}
+  if (!event.dataTransfer) return;
+  event.dataTransfer.setData("application/json", serializeDragData(props.node));
+  event.dataTransfer.effectAllowed = "move";
+};
 
 // 事件: 悬停
 const handleDragOver = (event: DragEvent) => {
-  const target = event.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  const y = event.clientY - rect.top
-  const zoneHeight = rect.height
-  const threshold = Math.max(10, zoneHeight * 0.25)
+  const target = event.currentTarget as HTMLElement;
+  const rect = target.getBoundingClientRect();
+  const y = event.clientY - rect.top;
+  const zoneHeight = rect.height;
+  const threshold = Math.max(10, zoneHeight * 0.25);
 
   if (y < threshold) {
-    dragHoverZone.value = 'top'
+    dragHoverZone.value = "top";
   } else if (y > zoneHeight - threshold) {
-    dragHoverZone.value = 'bottom'
+    dragHoverZone.value = "bottom";
   } else {
-    dragHoverZone.value = 'center'
+    dragHoverZone.value = "center";
   }
-}
+};
 
 // 事件: 离开
 const handleDragLeave = () => {
-  dragHoverZone.value = null
-}
+  dragHoverZone.value = null;
+};
 
 // 事件: 放置
 const handleDrop = async (event: DragEvent) => {
-  const zone = dragHoverZone.value
-  dragHoverZone.value = null
+  const zone = dragHoverZone.value;
+  dragHoverZone.value = null;
   try {
-    if (!event.dataTransfer) return
-    const json = event.dataTransfer.getData('application/json')
-    if (!json) return
-    const drag = JSON.parse(json) as { id: string, parentId: string | null, type: number, name: string }
+    if (!event.dataTransfer) return;
+    const json = event.dataTransfer.getData("application/json");
+    if (!json) return;
+    const drag = JSON.parse(json) as { id: string; parentId: string | null; type: number; name: string };
     // 自身或同一元素不处理
-    if (drag.id === props.node.id) return
+    if (drag.id === props.node.id) return;
 
     // 拖拽到中心：若目标是分组，则加入子组
-    if (zone === 'center' && isGroup(props.node)) {
-      if (drag.id === props.node.id) return
+    if (zone === "center" && isGroup(props.node)) {
+      if (drag.id === props.node.id) return;
       const dtoCenter: EditUserRequestTreeDto = {
         id: drag.id,
         parentId: props.node.id,
         type: drag.type,
         name: drag.name,
         seq: (props.node.children?.length || 0) + 1,
-      }
-      await UserRequestTreeApi.editUserRequestTree(dtoCenter)
-      ElMessage.success('已移动到子组')
-      emit('refresh-tree')
-      return
+      };
+      await UserRequestTreeApi.editUserRequestTree(dtoCenter);
+      ElMessage.success("已移动到子组");
+      emit("refresh-tree");
+      return;
     }
 
     // 拖拽到上/下边缘：进行排序（目标同级之前/之后）
-    const parentId = props.parentNode ? props.parentNode.id : null
+    const parentId = props.parentNode ? props.parentNode.id : null;
     // 若拖拽进来的是分组（type=0）且当前目标是请求（type=1），不允许跨类型排序为安全起见
     if (!isGroup(props.node) && drag.type === 0) {
-      return
+      return;
     }
-    let seq = (props.childIndex ?? 0) + 1
+    let seq = (props.childIndex ?? 0) + 1;
 
-    if (zone === 'top') {
-      seq = (props.childIndex ?? 0 )- 1
-      console.log('top', seq)
+    if (zone === "top") {
+      seq = (props.childIndex ?? 0) - 1;
+      console.log("top", seq);
     }
-    if (zone === 'bottom') {
-      seq = (props.childIndex ?? 0) + 1
-      console.log('bottom', seq)
+    if (zone === "bottom") {
+      seq = (props.childIndex ?? 0) + 1;
+      console.log("bottom", seq);
     }
 
     const dtoSort: EditUserRequestTreeDto = {
@@ -228,14 +220,14 @@ const handleDrop = async (event: DragEvent) => {
       type: drag.type,
       name: drag.name,
       seq,
-    }
-    await UserRequestTreeApi.editUserRequestTree(dtoSort)
-    ElMessage.success('排序已更新')
-    emit('refresh-tree')
-  } catch (e:any) {
-    ElMessage.error(e?.message || '拖拽操作失败')
+    };
+    await UserRequestTreeApi.editUserRequestTree(dtoSort);
+    ElMessage.success("排序已更新");
+    emit("refresh-tree");
+  } catch (e: any) {
+    ElMessage.error(e?.message || "拖拽操作失败");
   }
-}
+};
 </script>
 
 <style scoped>
@@ -257,8 +249,6 @@ const handleDrop = async (event: DragEvent) => {
 .folder-icon {
   color: #409eff !important;
 }
-
-
 
 .node-name {
   flex: 1;
@@ -371,7 +361,6 @@ const handleDrop = async (event: DragEvent) => {
   align-items: center;
   gap: 8px;
   flex: 1;
-
 }
 
 .operation-method {
