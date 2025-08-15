@@ -1,116 +1,80 @@
 <template>
-
   <div class="rb-container">
-
     <!-- Loading 遮罩 -->
     <div v-show="globalLoading" class="rb-loading-overlay">
       <div class="rb-loading-spinner"></div>
       <div class="rb-loading-text">正在处理...</div>
     </div>
 
-    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null" style="height: 100%; width: 100%;"/>
+    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null" style="height: 100%; width: 100%" />
 
-    <div class="rb-header">
+    <div v-show="UserRequestHolder().getRequestId != null" class="rb-editor-wrapper">
+      <div class="rb-header">
+        <div class="rb-header-title">
+          <input class="rb-name-input" v-model="requestDetail.name" />
+        </div>
 
-      <div class="rb-header-title">
-        <input class="rb-name-input" v-model="requestDetail.name"/>
-      </div>
-
-      <div class="rb-header-input" style="margin-top: 12px;">
-        <RequestUrlInput :url="requestDetail.url"
-                         :method="requestDetail.method"
-                         @onUrlChange="onUrlChange"
-                         @onSendRequest="onSendRequest"
-                         :loading="loading"
-        />
-      </div>
-
-    </div>
-    <!-- 选项卡 -->
-    <div class="rb-tab">
-      <div class="rb-tab-item" 
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }" 
-          @click="PreferenceHolder().setRequestEditorTab('header')">
-        标头
-      </div>
-      <div class="rb-tab-item" 
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }" 
-          @click="PreferenceHolder().setRequestEditorTab('body')">
-        载荷
-      </div>
-      <div class="rb-tab-item" 
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }" 
-          @click="PreferenceHolder().setRequestEditorTab('response')">
-        响应列表
-      </div>
-    </div>
-
-    <div v-if="requestDetail" class="rb-content">
-
-      <!-- 请求头内容 -->
-      <div v-if="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
-        <div class="headers-editor">
-          <div class="headers-toolbar">
-            <button @click="addHeader" class="btn-add">添加请求头</button>
-          </div>
-          <div class="headers-table">
-            <div class="headers-table-header">
-              <div class="header-key-col">键</div>
-              <div class="header-value-col">值</div>
-              <div class="header-action-col">操作</div>
-            </div>
-            <div v-if="editableHeaders.length === 0" class="empty-state-compact">
-              点击"添加请求头"开始编辑
-            </div>
-            <div v-for="(header, index) in editableHeaders" :key="index" class="header-row">
-              <input
-                  v-model="header.k"
-                  @blur="onHeaderChange"
-                  class="header-key-input"
-                  placeholder="请求头名称"
-              />
-              <input
-                  v-model="header.v"
-                  @blur="onHeaderChange"
-                  class="header-value-input"
-                  placeholder="请求头值"
-              />
-              <button @click="removeHeader(index)" class="btn-remove">删除</button>
-            </div>
-          </div>
+        <div class="rb-header-input" style="margin-top: 12px">
+          <RequestUrlInput :url="requestDetail.url" :method="requestDetail.method" @onUrlChange="onUrlChange" @onSendRequest="onSendRequest" :loading="loading" />
         </div>
       </div>
 
-      <!-- 载荷内容 -->
-      <div v-if="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
-        <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />
+      <!-- 选项卡 -->
+      <div class="rb-tab">
+        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }" @click="PreferenceHolder().setRequestEditorTab('header')">标头</div>
+        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }" @click="PreferenceHolder().setRequestEditorTab('body')">载荷</div>
+        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }" @click="PreferenceHolder().setRequestEditorTab('response')">
+          响应列表
+        </div>
       </div>
 
-      <!-- 响应列表 -->
-      <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
-        <UrResponseList ref="urResponseListRef" :loading="loading" />
+      <div v-if="requestDetail" class="rb-content">
+        <!-- 请求头内容 -->
+        <div v-if="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
+          <div class="headers-editor">
+            <div class="headers-toolbar">
+              <button @click="addHeader" class="btn-add">添加请求头</button>
+            </div>
+            <div class="headers-table">
+              <div class="headers-table-header">
+                <div class="header-key-col">键</div>
+                <div class="header-value-col">值</div>
+                <div class="header-action-col">操作</div>
+              </div>
+              <div v-if="editableHeaders.length === 0" class="empty-state-compact">点击"添加请求头"开始编辑</div>
+              <div v-for="(header, index) in editableHeaders" :key="index" class="header-row">
+                <input v-model="header.k" @blur="onHeaderChange" class="header-key-input" placeholder="请求头名称" />
+                <input v-model="header.v" @blur="onHeaderChange" class="header-value-input" placeholder="请求头值" />
+                <button @click="removeHeader(index)" class="btn-remove">删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 载荷内容 -->
+        <div v-if="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
+          <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />
+        </div>
+
+        <!-- 响应列表 -->
+        <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
+          <UrResponseList ref="urResponseListRef" :loading="loading" />
+        </div>
       </div>
-
     </div>
-
-    <div v-else class="rb-loading">
-      加载中...
-    </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from '@/api/UserRequestApi';
-import { ref, watch, onMounted, nextTick, onUnmounted } from 'vue';
+import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/api/UserRequestApi";
+import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
-import RequestPayload from './RequestPayload.vue';
-import UrResponseList from './UrResponseList.vue';
-import { ElMessage } from 'element-plus';
-import { UserRequestHolder } from '@/store/RequestHolder';
-import { ReloadHolder } from '@/store/ReloadHolder';
-import { PreferenceHolder } from '@/store/PreferenceHolder';
-
+import RequestPayload from "./RequestPayload.vue";
+import UrResponseList from "./UrResponseList.vue";
+import { ElMessage } from "element-plus";
+import { UserRequestHolder } from "@/store/RequestHolder";
+import { ReloadHolder } from "@/store/ReloadHolder";
+import { PreferenceHolder } from "@/store/PreferenceHolder";
 
 //完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
@@ -121,37 +85,36 @@ const requestDetail = ref<GetUserRequestDetailsVo>({
   requestBodyType: null,
   requestHeaders: [],
   seq: null,
-  url: null
-})
+  url: null,
+});
 
 //可编辑的请求头数据
-const editableHeaders = ref<RequestHeaderVo[]>([])
-const urResponseListRef = ref<InstanceType<typeof UrResponseList>>()
+const editableHeaders = ref<RequestHeaderVo[]>([]);
+const urResponseListRef = ref<InstanceType<typeof UrResponseList>>();
 
-const loading = ref(false)
-const globalLoading = ref(false)
+const loading = ref(false);
+const globalLoading = ref(false);
 
 const loadRequestDetail = async () => {
-
-  if(UserRequestHolder().getRequestId == null){
-    console.log('请求id为空')
-    return
+  if (UserRequestHolder().getRequestId == null) {
+    console.log("请求id为空");
+    return;
   }
 
-  try{
-    const res = await UserRequestApi.getUserRequestDetails({id:UserRequestHolder().getRequestId || ''})
-    requestDetail.value.id = res.id
-    requestDetail.value.method = res.method
-    requestDetail.value.name = res.name
-    requestDetail.value.requestBody = res.requestBody
-    requestDetail.value.requestBodyType = res.requestBodyType
-    requestDetail.value.requestHeaders = res.requestHeaders
-    requestDetail.value.seq = res.seq
-    requestDetail.value.url = res.url
+  try {
+    const res = await UserRequestApi.getUserRequestDetails({ id: UserRequestHolder().getRequestId || "" });
+    requestDetail.value.id = res.id;
+    requestDetail.value.method = res.method;
+    requestDetail.value.name = res.name;
+    requestDetail.value.requestBody = res.requestBody;
+    requestDetail.value.requestBodyType = res.requestBodyType;
+    requestDetail.value.requestHeaders = res.requestHeaders;
+    requestDetail.value.seq = res.seq;
+    requestDetail.value.url = res.url;
 
     // 初始化可编辑请求头
-    editableHeaders.value = [...(res.requestHeaders || [])]
-  }catch(e){
+    editableHeaders.value = [...(res.requestHeaders || [])];
+  } catch (e) {
     requestDetail.value = {
       id: "",
       method: null,
@@ -160,21 +123,20 @@ const loadRequestDetail = async () => {
       requestBodyType: null,
       requestHeaders: [],
       seq: null,
-      url: null
-    }
-    editableHeaders.value = []
+      url: null,
+    };
+    editableHeaders.value = [];
   }
-}
+};
 
-const onCtrlS = async (event: KeyboardEvent)=>{
+const onCtrlS = async (event: KeyboardEvent) => {
+  event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
 
-  event.preventDefault()
-  event.stopPropagation()
-  event.stopImmediatePropagation()
+  globalLoading.value = true;
 
-  globalLoading.value = true
-
-  try{
+  try {
     await UserRequestApi.editUserRequest({
       id: requestDetail.value.id,
       name: requestDetail.value.name,
@@ -183,68 +145,68 @@ const onCtrlS = async (event: KeyboardEvent)=>{
       requestHeaders: requestDetail.value.requestHeaders,
       requestBodyType: requestDetail.value.requestBodyType,
       requestBody: requestDetail.value.requestBody,
-    })
+    });
     // 通知树重新加载
-    ReloadHolder().requestReloadTree()
-  }catch(e){
-    console.error('保存请求失败', e)
-  }finally{
-    globalLoading.value = false
+    ReloadHolder().requestReloadTree();
+  } catch (e) {
+    console.error("保存请求失败", e);
+  } finally {
+    globalLoading.value = false;
   }
 
-  ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`)
-}
+  ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`);
+};
 
-onMounted(()=>{
+onMounted(() => {
+  loadRequestDetail();
 
-  loadRequestDetail()
-
-  window.addEventListener('keydown', (event: KeyboardEvent)=>{
-    const isCtrlOrCmd = event.ctrlKey || event.metaKey; 
-      // 检查按下的键是否是 's'
-      if (isCtrlOrCmd && (event.key === 's' || event.key === 'S')) {
-        onCtrlS(event)
-      }
-  })
-})
-
-
+  window.addEventListener("keydown", (event: KeyboardEvent) => {
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+    // 检查按下的键是否是 's'
+    if (isCtrlOrCmd && (event.key === "s" || event.key === "S")) {
+      onCtrlS(event);
+    }
+  });
+});
 
 //监听外部请求id变化
-watch(()=>UserRequestHolder().getRequestId,async ()=>{
-  if(UserRequestHolder().getRequestId){
-    console.log('监听外部请求id变化',UserRequestHolder().getRequestId)
-    loadRequestDetail()
-  }
-  if(UserRequestHolder().getRequestId == null){
-    console.log('监听外部请求id变化 为空')
-    requestDetail.value = {
-      id: "",
-      method: null,
-      name: null,
-      requestBody: null,
-      requestBodyType: null,
-      requestHeaders: [],
-      seq: null,
-      url: null
+watch(
+  () => UserRequestHolder().getRequestId,
+  async () => {
+    if (UserRequestHolder().getRequestId) {
+      console.log("监听外部请求id变化", UserRequestHolder().getRequestId);
+      loadRequestDetail();
     }
-    editableHeaders.value = []
+    if (UserRequestHolder().getRequestId == null) {
+      console.log("监听外部请求id变化 为空");
+      requestDetail.value = {
+        id: "",
+        method: null,
+        name: null,
+        requestBody: null,
+        requestBodyType: null,
+        requestHeaders: [],
+        seq: null,
+        url: null,
+      };
+      editableHeaders.value = [];
+    }
   }
-})
+);
 
 /**
  * 请求url变化
  */
 const onUrlChange = (method: string, url: string) => {
-  requestDetail.value.method = method
-  requestDetail.value.url = url
-}
+  requestDetail.value.method = method;
+  requestDetail.value.url = url;
+};
 
 /**
  * 发送请求
  */
 const onSendRequest = async () => {
-  loading.value = true
+  loading.value = true;
 
   //先保存请求
   await UserRequestApi.editUserRequest({
@@ -255,40 +217,40 @@ const onSendRequest = async () => {
     requestHeaders: requestDetail.value.requestHeaders,
     requestBodyType: requestDetail.value.requestBodyType,
     requestBody: requestDetail.value.requestBody,
-  })
+  });
 
-  await UserRequestApi.sendUserRequest({id: requestDetail.value.id})
-  await urResponseListRef.value?.loadUserRequestLogList()
+  await UserRequestApi.sendUserRequest({ id: requestDetail.value.id });
+  await urResponseListRef.value?.loadUserRequestLogList();
 
-  loading.value = false
-}
+  loading.value = false;
+};
 
 /**
  * 请求体变化
  */
 const onRequestBodyChange = (requestBody: string) => {
-  requestDetail.value.requestBody = requestBody
-}
+  requestDetail.value.requestBody = requestBody;
+};
 
 // 添加请求头
 const addHeader = () => {
-  editableHeaders.value.push({ k: '', v: '' })
-}
+  editableHeaders.value.push({ k: "", v: "" });
+};
 
 // 删除请求头
 const removeHeader = (index: number) => {
-  editableHeaders.value.splice(index, 1)
-  onHeaderChange()
-}
+  editableHeaders.value.splice(index, 1);
+  onHeaderChange();
+};
 
 // 请求头变化时同步数据并保存
 const onHeaderChange = () => {
   // 过滤掉空的请求头
-  const validHeaders = editableHeaders.value.filter(h => h.k && h.k.trim())
-  requestDetail.value.requestHeaders = validHeaders
+  const validHeaders = editableHeaders.value.filter((h) => h.k && h.k.trim());
+  requestDetail.value.requestHeaders = validHeaders;
 
   // 自动保存
-  if(requestDetail.value.id){
+  if (requestDetail.value.id) {
     UserRequestApi.editUserRequest({
       id: requestDetail.value.id,
       name: requestDetail.value.name,
@@ -297,28 +259,20 @@ const onHeaderChange = () => {
       requestHeaders: validHeaders,
       requestBodyType: requestDetail.value.requestBodyType,
       requestBody: requestDetail.value.requestBody,
-    })
+    });
     // 通知树重新加载
-    ReloadHolder().requestReloadTree()
+    ReloadHolder().requestReloadTree();
   }
-}
+};
 
-
-
-
-onUnmounted(()=>{
-  window.removeEventListener('keydown', (event: KeyboardEvent)=>{
-    const isCtrlOrCmd = event.ctrlKey || event.metaKey; 
-    if (isCtrlOrCmd && (event.key === 's' || event.key === 'S')) {
-      onCtrlS(event)
+onUnmounted(() => {
+  window.removeEventListener("keydown", (event: KeyboardEvent) => {
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+    if (isCtrlOrCmd && (event.key === "s" || event.key === "S")) {
+      onCtrlS(event);
     }
-  })
-})
-
-
-
-
-
+  });
+});
 </script>
 
 <style scoped>
@@ -351,15 +305,12 @@ onUnmounted(()=>{
   overflow: hidden;
 }
 
-
-
 .rb-info-row label {
   min-width: 80px;
   font-weight: 500;
   color: #6c757d;
   margin-right: 12px;
 }
-
 
 .rb-tab {
   display: flex;
@@ -542,7 +493,7 @@ onUnmounted(()=>{
   white-space: pre-wrap;
   word-wrap: break-word;
   color: #495057;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size: 13px;
   line-height: 1.5;
 }
@@ -554,16 +505,7 @@ onUnmounted(()=>{
   font-style: italic;
 }
 
-.rb-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #6c757d;
-  font-size: 14px;
-}
-
-.rb-name-input{
+.rb-name-input {
   border: none;
   outline: none;
   font-size: 14px;
@@ -572,6 +514,13 @@ onUnmounted(()=>{
   width: 100%;
   background: transparent;
   height: 20px;
+}
+
+.rb-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Loading 遮罩样式 */
@@ -605,7 +554,11 @@ onUnmounted(()=>{
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
