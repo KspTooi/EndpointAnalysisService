@@ -6,9 +6,9 @@
       <div class="rb-loading-text">正在处理...</div>
     </div>
 
-    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null || requestDetail.id == null" style="height: 100%; width: 100%" />
+    <el-empty description="请选择一个请求" v-show="RequestTreeHolder().getActiveRequestId == null || requestDetail.id == null" style="height: 100%; width: 100%" />
 
-    <div v-show="UserRequestHolder().getRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
+    <div v-show="RequestTreeHolder().getActiveRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
       <div class="rb-header">
         <div class="rb-header-title">
           <input class="rb-name-input" v-model="requestDetail.name" />
@@ -76,7 +76,7 @@ import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue"
 import RequestPayload from "./RequestPayload.vue";
 import UrResponseList from "./UrResponseList.vue";
 import { ElMessage } from "element-plus";
-import { UserRequestHolder } from "@/store/RequestHolder";
+import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import { EventHolder } from "@/store/EventHolder";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
 
@@ -100,13 +100,13 @@ const loading = ref(false);
 const globalLoading = ref(false);
 
 const loadRequestDetail = async () => {
-  if (UserRequestHolder().getRequestId == null) {
+  if (RequestTreeHolder().getActiveRequestId == null) {
     console.log("请求id为空");
     return;
   }
 
   try {
-    const res = await UserRequestApi.getUserRequestDetails({ id: UserRequestHolder().getRequestId || "" });
+    const res = await UserRequestApi.getUserRequestDetails({ id: RequestTreeHolder().getActiveRequestId || "" });
     requestDetail.value.id = res.id;
     requestDetail.value.method = res.method;
     requestDetail.value.name = res.name;
@@ -140,12 +140,12 @@ onMounted(() => {
 
 //监听外部请求id变化
 watch(
-  () => UserRequestHolder().getRequestId,
+  () => RequestTreeHolder().getActiveRequestId,
   async () => {
-    if (UserRequestHolder().getRequestId) {
+    if (RequestTreeHolder().getActiveRequestId) {
       loadRequestDetail();
     }
-    if (UserRequestHolder().getRequestId == null) {
+    if (RequestTreeHolder().getActiveRequestId == null) {
       requestDetail.value = {
         id: null,
         method: null,
@@ -236,7 +236,7 @@ const onHeaderChange = () => {
 watch(
   () => EventHolder().isOnCtrlS,
   async (newVal) => {
-    if (UserRequestHolder().getRequestId == null) {
+    if (RequestTreeHolder().getActiveRequestId == null) {
       ElMessage.error("请选择一个请求后，再使用CTRL+S保存");
       return;
     }

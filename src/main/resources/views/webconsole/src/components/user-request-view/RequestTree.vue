@@ -29,11 +29,11 @@
         v-for="(item, index) in treeData"
         :key="item.id"
         :node="item"
-        :active-nodes="UserRequestHolder().getActiveNodeIds"
-        :active-request-id="UserRequestHolder().getRequestId"
+        :active-nodes="RequestTreeHolder().getExpandedNodeIds"
+        :active-request-id="RequestTreeHolder().getActiveNodeId"
         :child-index="index"
         @toggle-node="handleToggleNode"
-        @select-request="UserRequestHolder().setRequestId"
+        @select-request="RequestTreeHolder().setActiveNodeId"
         @right-click="handleRightClick"
         @refresh-tree="loadUserRequestTree"
       />
@@ -83,7 +83,7 @@ import type { AddUserRequestGroupDto } from "@/api/UserRequestGroupApi.ts";
 import RequestTreeItem from "./RequestTreeItem.vue";
 import RequestTreeItemRightMenu from "./RequestTreeItemRightMenu.vue";
 import { ElMessage, type FormInstance, type InputInstance } from "element-plus";
-import { UserRequestHolder } from "@/store/RequestHolder";
+import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import { EventHolder } from "@/store/EventHolder";
 
 const emit = defineEmits<{
@@ -187,15 +187,15 @@ const isRequestExists = (requestId: string | null, nodes: GetUserRequestTreeVo[]
 // 清理activeNodes中没有子节点的分组
 const cleanupActiveNodes = () => {
   const emptyGroupIds = collectEmptyGroupIds(treeData.value);
-  UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter((nodeId) => !emptyGroupIds.has(nodeId)));
+  RequestTreeHolder().setExpandedNodeIds(RequestTreeHolder().getExpandedNodeIds.filter((nodeId) => !emptyGroupIds.has(nodeId)));
 
   // 清理activeRequestId - 如果当前请求不存在于树中则清理
-  if (!UserRequestHolder().getRequestId) {
+  if (!RequestTreeHolder().getActiveNodeId) {
     return;
   }
 
-  if (!isRequestExists(UserRequestHolder().getRequestId || "", treeData.value)) {
-    UserRequestHolder().setRequestId(null);
+  if (!isRequestExists(RequestTreeHolder().getActiveNodeId || "", treeData.value)) {
+    RequestTreeHolder().setActiveNodeId(null);
   }
 };
 
@@ -390,14 +390,14 @@ watch(
  */
 const handleToggleNode = (nodeId: string) => {
   //如果节点已展开，则折叠
-  if (UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
-    UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter((id) => id !== nodeId));
+  if (RequestTreeHolder().getExpandedNodeIds.includes(nodeId)) {
+    RequestTreeHolder().setExpandedNodeIds(RequestTreeHolder().getExpandedNodeIds.filter((id) => id !== nodeId));
     return;
   }
 
   //如果节点未展开，则展开
-  if (!UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
-    UserRequestHolder().setActiveNodeIds([...UserRequestHolder().getActiveNodeIds, nodeId]);
+  if (!RequestTreeHolder().getExpandedNodeIds.includes(nodeId)) {
+    RequestTreeHolder().setExpandedNodeIds([...RequestTreeHolder().getExpandedNodeIds, nodeId]);
     return;
   }
 };

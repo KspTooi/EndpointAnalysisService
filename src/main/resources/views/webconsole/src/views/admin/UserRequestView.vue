@@ -10,9 +10,10 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import RequestTree from "@/components/user-request-view/RequestTree.vue";
 import RequestEditor from "@/components/user-request-view/RequestEditor.vue";
 import { EventHolder } from "@/store/EventHolder";
-import { UserRequestHolder } from "@/store/RequestHolder";
-import { ElMessage } from "element-plus";
+import { RequestTreeHolder } from "@/store/RequestTreeHolder.ts";
+import { ElMessage, ElMessageBox } from "element-plus";
 import UserRequestApi from "@/api/UserRequestApi";
+import UserRequestTreeApi from "@/api/UserRequestTreeApi";
 
 onMounted(() => {
   window.addEventListener("keydown", onKeyboardEvent);
@@ -37,6 +38,12 @@ const onKeyboardEvent = (event: KeyboardEvent) => {
     event.stopImmediatePropagation();
     EventHolder().onCtrlD();
   }
+  if (event.key === "delete" || event.key === "Delete") {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    EventHolder().onDelete();
+  }
 };
 
 //处理CTRL+D复制
@@ -44,14 +51,20 @@ watch(
   () => EventHolder().isOnCtrlD,
   async (newVal) => {
     if (newVal) {
-      if (UserRequestHolder().getRequestId == null) {
+      //提示用户不支持复制组
+      if (RequestTreeHolder().getActiveNodeType == "group") {
+        ElMessage.error("不支持复制组");
+        return;
+      }
+
+      if (RequestTreeHolder().getActiveRequestId == null) {
         ElMessage.error("请选择一个请求后，再使用CTRL+D复制");
         return;
       }
 
       try {
         const requestDetail = await UserRequestApi.copyUserRequest({
-          id: UserRequestHolder().getRequestId,
+          id: RequestTreeHolder().getActiveRequestId,
         });
         ElMessage.success("复制请求成功");
 
@@ -59,6 +72,55 @@ watch(
         EventHolder().requestReloadTree();
       } catch (e) {
         ElMessage.error("复制请求失败");
+      }
+    }
+  }
+);
+
+//处理DELETE删除
+watch(
+  () => EventHolder().isOnDelete,
+  async (newVal) => {
+    if (newVal) {
+      if (RequestTreeHolder().getActiveNodeId == null) {
+        ElMessage.error("请选择一个对象后，再使用DELETE删除");
+        return;
+      }
+
+      //如果是请求则删请求
+      if (RequestTreeHolder().getActiveNodeType == "request") {
+        try {
+          //提示用户确认
+          const confirm = await ElMessageBox.confirm("确定删除该请求吗？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          });
+          if (confirm) {
+            await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveRequestId, type: 1 });
+            ElMessage.success("删除请求成功");
+          }
+        } catch (e) {
+          ElMessage.error("删除请求失败");
+        }
+      }
+
+      //如果是组则删组
+      if (RequestTreeHolder().getActiveNodeType == "group") {
+        try {
+          //提示用户确认
+          const confirm = await ElMessageBox.confirm("确定删除该组吗？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          });
+          if (confirm) {
+            await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveGroupId, type: 0 });
+            ElMessage.success("删除组成功");
+          }
+        } catch (e) {
+          ElMessage.error("删除组失败");
+        }
       }
     }
   }

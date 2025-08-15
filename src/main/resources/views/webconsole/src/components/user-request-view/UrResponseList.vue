@@ -199,7 +199,7 @@
 import { ref, onMounted, reactive, watch } from 'vue';
 import UserRequestLogApi, { type GetUserRequestLogDetailsVo, type GetUserRequestLogListDto, type GetUserRequestLogListVo } from '@/api/UserRequestLogApi';
 import { View as ViewIcon } from '@element-plus/icons-vue';
-import { UserRequestHolder } from '@/store/RequestHolder';
+import { RequestTreeHolder } from '@/store/RequestTreeHolder';
 
 const props = defineProps<{
   loading: boolean
@@ -207,7 +207,7 @@ const props = defineProps<{
 
 //查询条件
 const query = reactive<GetUserRequestLogListDto>({
-  userRequestId: UserRequestHolder().getRequestId,
+  userRequestId: RequestTreeHolder().getRequestId,
   pageNum: 1,
   pageSize: 10
 })
@@ -285,8 +285,8 @@ onMounted(() => {
 })
 
 
-watch(() => UserRequestHolder().getRequestId, () => {
-  query.userRequestId = UserRequestHolder().getRequestId
+watch(() => RequestTreeHolder().getRequestId, () => {
+  query.userRequestId = RequestTreeHolder().getRequestId
   loadUserRequestLogList()
 })
 

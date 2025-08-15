@@ -69,6 +69,7 @@ import UserRequestTreeApi from "@/api/UserRequestTreeApi";
 import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from "@/api/UserRequestTreeApi";
 import { Folder, ArrowDown, ArrowRight, Document } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 
 interface Props {
   node: GetUserRequestTreeVo;
@@ -109,13 +110,27 @@ const handleSelectRequest = (requestId: string) => {
   emit("select-request", requestId);
 };
 
+//处理Tree节点 点击
 const handleNodeClick = (node: GetUserRequestTreeVo) => {
+  //处理Group
   if (isGroup(node)) {
     if (hasChildren(node)) {
       handleToggleNode(node.id);
     }
-  } else {
+    //更新RequstTree状态
+    RequestTreeHolder().setActiveNodeId(node.id);
+    RequestTreeHolder().setActiveNodeType("group");
+    RequestTreeHolder().setActiveGroupId(node.id);
+    RequestTreeHolder().setActiveRequestId(null);
+  }
+
+  //处理Request
+  if (!isGroup(node)) {
     handleSelectRequest(node.id);
+    RequestTreeHolder().setActiveNodeId(node.id);
+    RequestTreeHolder().setActiveNodeType("request");
+    RequestTreeHolder().setActiveRequestId(node.id);
+    RequestTreeHolder().setActiveGroupId(null);
   }
 };
 

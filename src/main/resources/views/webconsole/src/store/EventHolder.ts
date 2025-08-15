@@ -7,6 +7,7 @@ export const EventHolder = defineStore("EventHolder", {
 
     ctrlsState: 0,
     ctrlDState: 0,
+    deleteState: 0,
   }),
 
   getters: {
@@ -21,6 +22,10 @@ export const EventHolder = defineStore("EventHolder", {
     isOnCtrlD: (state) => {
       return state.ctrlDState;
     },
+
+    isOnDelete: (state) => {
+      return state.deleteState;
+    },
   },
 
   actions: {
@@ -34,6 +39,10 @@ export const EventHolder = defineStore("EventHolder", {
 
     onCtrlD() {
       this.ctrlDState++;
+    },
+
+    onDelete() {
+      this.deleteState++;
     },
   },
 });
