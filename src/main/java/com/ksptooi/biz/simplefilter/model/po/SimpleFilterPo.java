@@ -1,7 +1,6 @@
 package com.ksptooi.biz.simplefilter.model.po;
 
-import com.odisp.biz.auth.service.AuthService;
-import com.odisp.commons.utils.IdWorker;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -91,10 +90,7 @@ public class SimpleFilterPo {
 
     @PrePersist
     private void onCreate() {
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-        
+
         Date now = new Date();
         if (this.createTime == null) {
             this.createTime = now;
@@ -102,20 +98,11 @@ public class SimpleFilterPo {
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
-        
-        if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
-        }
-        if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
-        }
+
     }
 
     @PreUpdate
     private void onUpdate() {
         this.updateTime = new Date();
-        if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
-        }
     }
 }

@@ -12,6 +12,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "axios": "^1.8.4",
     "bootstrap-icons": "^1.11.3",
     "element-plus": "^2.9.7",
@@ -19,6 +20,8 @@
     "marked": "^15.0.7",
     "monaco-editor-vue3": "^0.1.10",
     "pinia": "^3.0.1",
+    "pnpm": "^10.14.0",
+    "vanilla-jsoneditor": "^3.8.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "vue3-json-editor": "^1.1.5"

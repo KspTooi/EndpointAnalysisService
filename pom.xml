@@ -171,29 +171,31 @@
                     <workingDirectory>src/main/resources/views/webconsole</workingDirectory>
                     <nodeVersion>v20.19.0</nodeVersion>
                     <npmVersion>11.2.0</npmVersion>
+                    <pnpmVersion>10.14.0</pnpmVersion>
                 </configuration>
                 <executions>
-                    <!-- 安装 node 和 npm -->
+                    <!-- 安装 node 和 pnpm -->
                     <execution>
-                        <id>install node and npm</id>
+                        <id>install node and pnpm</id>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>install-node-and-pnpm</goal>
                         </goals>
                     </execution>
                     <!-- 执行 npm install -->
                     <execution>
-                        <id>npm install</id>
+                        <id>pnpm install</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                     </execution>
                     <!-- 执行 npm run build -->
                     <execution>
-                        <id>npm run build</id>
+                        <id>pnpm run build</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
+                            <pnpmInheritsProxyConfigFromMaven>false</pnpmInheritsProxyConfigFromMaven>
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
