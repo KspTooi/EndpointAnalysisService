@@ -81,3 +81,5 @@ package-lock.json
 *.rar
 node.exe
 MicroMarket.mv.db
+
+components.d.ts
