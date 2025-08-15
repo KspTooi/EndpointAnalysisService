@@ -1,6 +1,5 @@
 <template>
   <div class="tag-tree-container">
-
     <!-- Loading 遮罩 -->
     <div v-show="loading" class="loading-overlay">
       <div class="loading-spinner"></div>
@@ -8,7 +7,7 @@
     </div>
 
     <div class="tag-tree-search">
-      <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable  />
+      <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable />
       <el-button type="primary" @click="loadUserRequestTree" size="small">加载数据</el-button>
       <el-button type="primary" @click="showCreateGroupDialog" size="small">新建组</el-button>
       <div v-if="isRootDragOver" class="root-drop-hint">拖拽到此处以移动到根级别</div>
@@ -22,360 +21,340 @@
         </el-form-item>
       </el-form>
       <template #footer>
-                <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right;">
-                    <el-button @click="createGroupDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">确定</el-button>
-                </span>
+        <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
+          <el-button @click="createGroupDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">确定</el-button>
+        </span>
       </template>
     </el-dialog>
 
-    <div class="tag-tree-body"
-         ref="tagTreeBodyRef"
-         @dragenter="handleRootDragEnter"
-         @dragover.prevent="handleRootDragOver"
-         @drop.prevent="handleRootDrop"
-         @dragleave="handleRootDragLeave"
-    >
+    <div class="tag-tree-body" ref="tagTreeBodyRef" @dragenter="handleRootDragEnter" @dragover.prevent="handleRootDragOver" @drop.prevent="handleRootDrop" @dragleave="handleRootDragLeave">
       <RequestTreeItem
-          v-for="(item, index) in treeData"
-          :key="item.id"
-          :node="item"
-          :active-nodes="UserRequestHolder().getActiveNodeIds"
-          :active-request-id="UserRequestHolder().getRequestId"
-          :child-index="index"
-          @toggle-node="handleToggleNode"
-          @select-request="UserRequestHolder().setRequestId"
-          @right-click="handleRightClick"
-          @refresh-tree="loadUserRequestTree"
+        v-for="(item, index) in treeData"
+        :key="item.id"
+        :node="item"
+        :active-nodes="UserRequestHolder().getActiveNodeIds"
+        :active-request-id="UserRequestHolder().getRequestId"
+        :child-index="index"
+        @toggle-node="handleToggleNode"
+        @select-request="UserRequestHolder().setRequestId"
+        @right-click="handleRightClick"
+        @refresh-tree="loadUserRequestTree"
       />
     </div>
 
     <!-- 右键菜单 -->
-    <RequestTreeItemRightMenu
-        :visible="rightMenuVisible"
-        :x="rightMenuX"
-        :y="rightMenuY"
-        :node="rightMenuNode"
-        @close="handleRightMenuClose"
-        @refresh="ReloadHolder().requestReloadTree"
-    />
+    <RequestTreeItemRightMenu :visible="rightMenuVisible" :x="rightMenuX" :y="rightMenuY" :node="rightMenuNode" @close="handleRightMenuClose" @refresh="ReloadHolder().requestReloadTree" />
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import UserRequestTreeApi from '@/api/UserRequestTreeApi.ts'
-import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from '@/api/UserRequestTreeApi.ts'
-import UserRequestGroupApi from '@/api/UserRequestGroupApi.ts'
-import type { AddUserRequestGroupDto } from '@/api/UserRequestGroupApi.ts'
-import RequestTreeItem from './RequestTreeItem.vue'
-import RequestTreeItemRightMenu from './RequestTreeItemRightMenu.vue'
-import { ElMessage, type FormInstance, type InputInstance } from 'element-plus'
-import { UserRequestHolder } from '@/store/RequestHolder'
-import { ReloadHolder } from '@/store/ReloadHolder'
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import UserRequestTreeApi from "@/api/UserRequestTreeApi.ts";
+import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from "@/api/UserRequestTreeApi.ts";
+import UserRequestGroupApi from "@/api/UserRequestGroupApi.ts";
+import type { AddUserRequestGroupDto } from "@/api/UserRequestGroupApi.ts";
+import RequestTreeItem from "./RequestTreeItem.vue";
+import RequestTreeItemRightMenu from "./RequestTreeItemRightMenu.vue";
+import { ElMessage, type FormInstance, type InputInstance } from "element-plus";
+import { UserRequestHolder } from "@/store/RequestHolder";
+import { ReloadHolder } from "@/store/ReloadHolder";
 
 const emit = defineEmits<{
-  (e: 'select-group', groupId: string): void
-  (e: 'select-request', requestId: string | null): void
-}>()
+  (e: "select-group", groupId: string): void;
+  (e: "select-request", requestId: string | null): void;
+}>();
 
 // 加载状态
-const loading = ref(false)
+const loading = ref(false);
 
-const treeData = ref<GetUserRequestTreeVo[]>([])
-const searchValue = ref('')
+const treeData = ref<GetUserRequestTreeVo[]>([]);
+const searchValue = ref("");
 
 // 右键菜单状态
-const rightMenuVisible = ref(false)
-const rightMenuX = ref(0)
-const rightMenuY = ref(0)
-const rightMenuNode = ref<GetUserRequestTreeVo | null>(null)
+const rightMenuVisible = ref(false);
+const rightMenuX = ref(0);
+const rightMenuY = ref(0);
+const rightMenuNode = ref<GetUserRequestTreeVo | null>(null);
 
 // 根级拖拽状态
-const isRootDragOver = ref(false)
-let rootDragCounter = 0
-const tagTreeBodyRef = ref<HTMLElement | null>(null)
+const isRootDragOver = ref(false);
+let rootDragCounter = 0;
+const tagTreeBodyRef = ref<HTMLElement | null>(null);
 
 // 创建组相关数据
-const createGroupDialogVisible = ref(false)
-const createGroupLoading = ref(false)
-const createGroupFormRef = ref<FormInstance>()
-const createGroupInputRef = ref<InputInstance>()
+const createGroupDialogVisible = ref(false);
+const createGroupLoading = ref(false);
+const createGroupFormRef = ref<FormInstance>();
+const createGroupInputRef = ref<InputInstance>();
 const createGroupForm = ref<AddUserRequestGroupDto>({
   parentId: null,
-  name: ''
-})
+  name: "",
+});
 
 const createGroupRules = {
   name: [
-    { required: true, message: '请输入组名称', trigger: 'blur' },
-    { min: 1, max: 64, message: '组名称长度应在 1 到 64 个字符之间', trigger: 'blur' }
-  ]
-}
+    { required: true, message: "请输入组名称", trigger: "blur" },
+    { min: 1, max: 64, message: "组名称长度应在 1 到 64 个字符之间", trigger: "blur" },
+  ],
+};
 
-let searchTimer: ReturnType<typeof setTimeout> | null = null
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const loadUserRequestTree = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const dto: GetUserRequestTreeDto = {
-      keyword: searchValue.value || null
-    }
-    const res = await UserRequestTreeApi.getUserRequestTree(dto)
-    treeData.value = res
+      keyword: searchValue.value || null,
+    };
+    const res = await UserRequestTreeApi.getUserRequestTree(dto);
+    treeData.value = res;
 
-    // 清理没有子节点的分组展开状态 
-    cleanupActiveNodes()
-
+    // 清理没有子节点的分组展开状态
+    cleanupActiveNodes();
   } catch (error) {
-    console.error('加载用户请求树失败:', error)
+    console.error("加载用户请求树失败:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 递归收集所有没有子节点的分组ID
 const collectEmptyGroupIds = (nodes: GetUserRequestTreeVo[]): Set<string> => {
-  const emptyGroupIds = new Set<string>()
+  const emptyGroupIds = new Set<string>();
 
   const traverse = (nodeList: GetUserRequestTreeVo[]) => {
     for (const node of nodeList) {
-      if (node.type === 0) { // 分组类型
+      if (node.type === 0) {
+        // 分组类型
         if (!node.children || node.children.length === 0) {
           // 没有子节点的分组
-          emptyGroupIds.add(node.id)
+          emptyGroupIds.add(node.id);
         } else {
           // 递归检查子节点
-          traverse(node.children)
+          traverse(node.children);
         }
       }
     }
-  }
+  };
 
-  traverse(nodes)
-  return emptyGroupIds
-}
+  traverse(nodes);
+  return emptyGroupIds;
+};
 
 // 递归检查请求是否存在于树中
 const isRequestExists = (requestId: string | null, nodes: GetUserRequestTreeVo[]): boolean => {
-  if(!requestId) return false
+  if (!requestId) return false;
   for (const node of nodes) {
     if (node.type === 1 && node.id === requestId) {
-      return true
+      return true;
     }
     if (node.children && node.children.length > 0) {
       if (isRequestExists(requestId, node.children)) {
-        return true
+        return true;
       }
     }
   }
-  return false
-}
+  return false;
+};
 
 // 清理activeNodes中没有子节点的分组
 const cleanupActiveNodes = () => {
-  const emptyGroupIds = collectEmptyGroupIds(treeData.value)
-  UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter(nodeId => !emptyGroupIds.has(nodeId)))
+  const emptyGroupIds = collectEmptyGroupIds(treeData.value);
+  UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter((nodeId) => !emptyGroupIds.has(nodeId)));
 
   // 清理activeRequestId - 如果当前请求不存在于树中则清理
   if (!UserRequestHolder().getRequestId) {
-    return
+    return;
   }
 
-  if (!isRequestExists(UserRequestHolder().getRequestId || '', treeData.value)) {
-    UserRequestHolder().setRequestId(null)
+  if (!isRequestExists(UserRequestHolder().getRequestId || "", treeData.value)) {
+    UserRequestHolder().setRequestId(null);
   }
-}
+};
 
 const handleSearch = () => {
   if (searchTimer) {
-    clearTimeout(searchTimer)
+    clearTimeout(searchTimer);
   }
   searchTimer = setTimeout(() => {
-    loadUserRequestTree()
-  }, 500)
-}
-
-
-
+    loadUserRequestTree();
+  }, 500);
+};
 
 // 右键菜单处理
-const handleRightClick = (event: { node: GetUserRequestTreeVo, x: number, y: number }) => {
-  rightMenuNode.value = event.node
-  rightMenuX.value = event.x
-  rightMenuY.value = event.y
-  rightMenuVisible.value = true
-}
+const handleRightClick = (event: { node: GetUserRequestTreeVo; x: number; y: number }) => {
+  rightMenuNode.value = event.node;
+  rightMenuX.value = event.x;
+  rightMenuY.value = event.y;
+  rightMenuVisible.value = true;
+};
 
 const handleRightMenuClose = () => {
-  rightMenuVisible.value = false
-}
+  rightMenuVisible.value = false;
+};
 
 // 创建组相关方法
 const showCreateGroupDialog = () => {
   createGroupForm.value = {
     parentId: null,
-    name: ''
-  }
-  createGroupDialogVisible.value = true
-}
+    name: "",
+  };
+  createGroupDialogVisible.value = true;
+};
 
 //聚焦到输入框
 const handleGroupDialogOpened = () => {
-  createGroupInputRef.value?.focus()
-}
+  createGroupInputRef.value?.focus();
+};
 
 // 根级拖拽处理
 const handleRootDragEnter = (event: DragEvent) => {
-  if (!event.dataTransfer) return
-  event.preventDefault()
-  event.stopPropagation()
-  rootDragCounter++
+  if (!event.dataTransfer) return;
+  event.preventDefault();
+  event.stopPropagation();
+  rootDragCounter++;
   if (rootDragCounter === 1) {
-    isRootDragOver.value = true
+    isRootDragOver.value = true;
   }
-}
+};
 
 const handleRootDragOver = (event: DragEvent) => {
-  if (!event.dataTransfer) return
-  event.preventDefault()
-  event.stopPropagation()
-  event.dataTransfer.dropEffect = 'move'
-}
+  if (!event.dataTransfer) return;
+  event.preventDefault();
+  event.stopPropagation();
+  event.dataTransfer.dropEffect = "move";
+};
 
 const handleRootDragLeave = () => {
-  rootDragCounter--
+  rootDragCounter--;
   if (rootDragCounter <= 0) {
-    isRootDragOver.value = false
-    rootDragCounter = 0
+    isRootDragOver.value = false;
+    rootDragCounter = 0;
   }
-}
+};
 
 const handleRootDrop = async (event: DragEvent) => {
-  if (!event.dataTransfer) return
-  event.preventDefault()
-  event.stopPropagation()
-  isRootDragOver.value = false
-  rootDragCounter = 0
+  if (!event.dataTransfer) return;
+  event.preventDefault();
+  event.stopPropagation();
+  isRootDragOver.value = false;
+  rootDragCounter = 0;
 
   try {
-    const jsonData = event.dataTransfer.getData('application/json')
-    if (!jsonData) return
-    const dragData = JSON.parse(jsonData) as { id: string, parentId: string | null, type: number, name: string }
+    const jsonData = event.dataTransfer.getData("application/json");
+    if (!jsonData) return;
+    const dragData = JSON.parse(jsonData) as { id: string; parentId: string | null; type: number; name: string };
     // 已在根级则忽略
-    if (dragData.parentId === null) return
+    if (dragData.parentId === null) return;
 
     // 计算根级新序号
-    const rootItems = treeData.value.filter(item => !item.parentId)
-    const newSeq = rootItems.length + 1
+    const rootItems = treeData.value.filter((item) => !item.parentId);
+    const newSeq = rootItems.length + 1;
 
     const editDto = {
       id: dragData.id,
       parentId: null,
       type: dragData.type,
       name: dragData.name,
-      seq: newSeq
-    }
-    await UserRequestTreeApi.editUserRequestTree(editDto)
-    ElMessage.success('已移动到根级别')
-    await loadUserRequestTree()
-  } catch (error:any) {
-    ElMessage.error(error?.message || '移动失败')
+      seq: newSeq,
+    };
+    await UserRequestTreeApi.editUserRequestTree(editDto);
+    ElMessage.success("已移动到根级别");
+    await loadUserRequestTree();
+  } catch (error: any) {
+    ElMessage.error(error?.message || "移动失败");
   }
-}
+};
 
 // 全局拖拽：允许在 tag-tree-body 之外任意位置放入根
 const onDocumentDragOver = (event: DragEvent) => {
-  if (!event.dataTransfer) return
-  const bodyEl = tagTreeBodyRef.value
-  const target = event.target as Node | null
-  const outside = bodyEl ? (target ? !bodyEl.contains(target) : true) : true
+  if (!event.dataTransfer) return;
+  const bodyEl = tagTreeBodyRef.value;
+  const target = event.target as Node | null;
+  const outside = bodyEl ? (target ? !bodyEl.contains(target) : true) : true;
   if (outside) {
-    event.preventDefault()
-    event.stopPropagation()
-    event.dataTransfer.dropEffect = 'move'
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = "move";
     if (!isRootDragOver.value) {
-      isRootDragOver.value = true
+      isRootDragOver.value = true;
     }
   }
-}
+};
 
 const onDocumentDrop = async (event: DragEvent) => {
-  const bodyEl = tagTreeBodyRef.value
-  const target = event.target as Node | null
-  const outside = bodyEl ? (target ? !bodyEl.contains(target) : true) : true
-  if (!outside) return
-  if (!event.dataTransfer) return
-  event.preventDefault()
-  event.stopPropagation()
-  isRootDragOver.value = false
-  rootDragCounter = 0
+  const bodyEl = tagTreeBodyRef.value;
+  const target = event.target as Node | null;
+  const outside = bodyEl ? (target ? !bodyEl.contains(target) : true) : true;
+  if (!outside) return;
+  if (!event.dataTransfer) return;
+  event.preventDefault();
+  event.stopPropagation();
+  isRootDragOver.value = false;
+  rootDragCounter = 0;
   try {
-    const jsonData = event.dataTransfer.getData('application/json')
-    if (!jsonData) return
-    const dragData = JSON.parse(jsonData) as { id: string, parentId: string | null, type: number, name: string }
-    if (dragData.parentId === null) return
-    const rootItems = treeData.value.filter(item => !item.parentId)
-    const newSeq = rootItems.length + 1
+    const jsonData = event.dataTransfer.getData("application/json");
+    if (!jsonData) return;
+    const dragData = JSON.parse(jsonData) as { id: string; parentId: string | null; type: number; name: string };
+    if (dragData.parentId === null) return;
+    const rootItems = treeData.value.filter((item) => !item.parentId);
+    const newSeq = rootItems.length + 1;
     const editDto = {
       id: dragData.id,
       parentId: null,
       type: dragData.type,
       name: dragData.name,
-      seq: newSeq
-    }
-    await UserRequestTreeApi.editUserRequestTree(editDto)
-    ElMessage.success('已移动到根级别')
-    await loadUserRequestTree()
-  } catch (error:any) {
-    ElMessage.error(error?.message || '移动失败')
+      seq: newSeq,
+    };
+    await UserRequestTreeApi.editUserRequestTree(editDto);
+    ElMessage.success("已移动到根级别");
+    await loadUserRequestTree();
+  } catch (error: any) {
+    ElMessage.error(error?.message || "移动失败");
   }
-}
+};
 
 const handleCreateGroup = async () => {
-  if (!createGroupFormRef.value) return
+  if (!createGroupFormRef.value) return;
 
   try {
-    const valid = await createGroupFormRef.value.validate()
-    if (!valid) return
+    const valid = await createGroupFormRef.value.validate();
+    if (!valid) return;
 
-    createGroupLoading.value = true
-    await UserRequestGroupApi.addUserRequestGroup(createGroupForm.value)
+    createGroupLoading.value = true;
+    await UserRequestGroupApi.addUserRequestGroup(createGroupForm.value);
 
-    ElMessage.success('创建组成功')
-    createGroupDialogVisible.value = false
+    ElMessage.success("创建组成功");
+    createGroupDialogVisible.value = false;
 
     // 重新加载数据
-    await loadUserRequestTree()
-
+    await loadUserRequestTree();
   } catch (error: any) {
-    ElMessage.error(error.message || '创建组失败')
+    ElMessage.error(error.message || "创建组失败");
   } finally {
-    createGroupLoading.value = false
+    createGroupLoading.value = false;
   }
-}
-
-
+};
 
 onMounted(() => {
-  loadUserRequestTree()
-  document.addEventListener('dragover', onDocumentDragOver)
-  document.addEventListener('drop', onDocumentDrop)
-})
+  loadUserRequestTree();
+  document.addEventListener("dragover", onDocumentDragOver);
+  document.addEventListener("drop", onDocumentDrop);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('dragover', onDocumentDragOver)
-  document.removeEventListener('drop', onDocumentDrop)
-})
-
+  document.removeEventListener("dragover", onDocumentDragOver);
+  document.removeEventListener("drop", onDocumentDrop);
+});
 
 //监听树重新加载
-watch(() => ReloadHolder().isNeedReloadTree, async () => {
-  await loadUserRequestTree()
-})
-
-
+watch(
+  () => ReloadHolder().isNeedReloadTree,
+  async () => {
+    await loadUserRequestTree();
+  }
+);
 
 //处理子组件事件
 
@@ -384,21 +363,16 @@ watch(() => ReloadHolder().isNeedReloadTree, async () => {
  * @param nodeId 节点ID
  */
 const handleToggleNode = (nodeId: string) => {
-
   //如果节点已展开，则折叠
   if (UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
-    UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter(id => id !== nodeId))
+    UserRequestHolder().setActiveNodeIds(UserRequestHolder().getActiveNodeIds.filter((id) => id !== nodeId));
   }
 
   //如果节点未展开，则展开
-  if(!UserRequestHolder().getActiveNodeIds.includes(nodeId)){
-    UserRequestHolder().setActiveNodeIds([...UserRequestHolder().getActiveNodeIds, nodeId])
+  if (!UserRequestHolder().getActiveNodeIds.includes(nodeId)) {
+    UserRequestHolder().setActiveNodeIds([...UserRequestHolder().getActiveNodeIds, nodeId]);
   }
-
-}
-
-
-
+};
 </script>
 
 <style scoped>
@@ -447,7 +421,7 @@ const handleToggleNode = (nodeId: string) => {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   z-index: 1000;
 }
-.el-button+.el-button{
+.el-button + .el-button {
   margin-left: 0;
 }
 

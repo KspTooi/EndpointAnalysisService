@@ -46,7 +46,7 @@ onMounted(() => {
     fullscreen: true,
     lock: true
   });
-  
+
   setTimeout(() => {
     // 关闭loading
     if (loadingInstance) {
@@ -59,13 +59,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <admin-frame 
-    v-if="!isLoading"
-    title="管理控制台"
-    :user="currentUser"
-    @menu-click="handleMenuClick"
-    @menu-action="handleMenuAction"
-    @logout="handleLogout"
+  <admin-frame
+      v-if="!isLoading"
+      title="管理控制台"
+      :user="currentUser"
+      @menu-click="handleMenuClick"
+      @menu-action="handleMenuAction"
+      @logout="handleLogout"
   >
     <!-- 用户下拉菜单额外项目插槽 -->
     <template #user-dropdown>

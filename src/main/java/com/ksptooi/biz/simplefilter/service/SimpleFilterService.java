@@ -1,17 +1,15 @@
 package com.ksptooi.biz.simplefilter.service;
 
+import com.ksptooi.biz.core.model.filter.SimpleFilterPo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.CommonIdDto;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import com.ksptooi.commons.exception.BizException;
-import java.util.Optional;
 import com.ksptooi.biz.simplefilter.repository.SimpleFilterRepository;
-import com.ksptooi.biz.simplefilter.model.po.SimpleFilterPo;
 import com.ksptooi.biz.simplefilter.model.vo.GetSimpleFilterListVo;
 import com.ksptooi.biz.simplefilter.model.dto.GetSimpleFilterListDto;
 import com.ksptooi.biz.simplefilter.model.vo.GetSimpleFilterDetailsVo;
@@ -27,6 +25,7 @@ public class SimpleFilterService {
     private SimpleFilterRepository repository;
 
     public PageResult<GetSimpleFilterListVo> getSimpleFilterList(GetSimpleFilterListDto dto){
+
         SimpleFilterPo query = new SimpleFilterPo();
         assign(dto,query);
 
