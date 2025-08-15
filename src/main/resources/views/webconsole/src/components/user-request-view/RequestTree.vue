@@ -13,22 +13,18 @@
       <div v-if="isRootDragOver" class="root-drop-hint">拖拽到此处以移动到根级别</div>
     </div>
 
-    <!-- 创建组对话框 -->
-    <el-dialog v-model="createGroupDialogVisible" title="创建请求组" width="400px" destroy-on-close @opened="handleGroupDialogOpened">
-      <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
-        <el-form-item label="组名称" prop="name">
-          <el-input v-model="createGroupForm.name" placeholder="请输入组名称" ref="createGroupInputRef" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
-          <el-button @click="createGroupDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">确定</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <div
+      class="tag-tree-body"
+      ref="tagTreeBodyRef"
+      @dragenter="handleRootDragEnter"
+      @dragover.prevent="handleRootDragOver"
+      @drop.prevent="handleRootDrop"
+      @dragleave="handleRootDragLeave"
+    >
+      <div v-if="treeData.length === 0" class="empty-tree">
+        <el-empty description="没有任何对象" />
+      </div>
 
-    <div class="tag-tree-body" ref="tagTreeBodyRef" @dragenter="handleRootDragEnter" @dragover.prevent="handleRootDragOver" @drop.prevent="handleRootDrop" @dragleave="handleRootDragLeave">
       <RequestTreeItem
         v-for="(item, index) in treeData"
         :key="item.id"
@@ -44,7 +40,37 @@
     </div>
 
     <!-- 右键菜单 -->
-    <RequestTreeItemRightMenu :visible="rightMenuVisible" :x="rightMenuX" :y="rightMenuY" :node="rightMenuNode" @close="handleRightMenuClose" @refresh="ReloadHolder().requestReloadTree" />
+    <RequestTreeItemRightMenu
+      :visible="rightMenuVisible"
+      :x="rightMenuX"
+      :y="rightMenuY"
+      :node="rightMenuNode"
+      @close="handleRightMenuClose"
+      @refresh="ReloadHolder().requestReloadTree"
+    />
+
+    <!-- 创建组对话框 -->
+    <el-dialog
+      v-model="createGroupDialogVisible"
+      title="创建请求组"
+      width="400px"
+      destroy-on-close
+      @opened="handleGroupDialogOpened"
+      class="modal-centered"
+      @keyup.enter="handleCreateGroup"
+    >
+      <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
+        <el-form-item label="组名称" prop="name">
+          <el-input v-model="createGroupForm.name" placeholder="请输入组名称" ref="createGroupInputRef" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
+          <el-button @click="createGroupDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -478,5 +504,17 @@ const handleToggleNode = (nodeId: string) => {
   margin-top: 16px;
   color: #495057;
   font-size: 14px;
+}
+
+.empty-tree {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
