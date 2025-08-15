@@ -24,10 +24,6 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
     setRequestEditorTab(tab: "header" | "body" | "response") {
       localStorage.setItem("request_editor_tab", tab);
       this.requestEditorTab = tab;
-
-      //通知JSON重新格式化
-      console.log("通知JSON重新格式化");
-      ReloadHolder().requestFormatJson();
     },
   },
 });
