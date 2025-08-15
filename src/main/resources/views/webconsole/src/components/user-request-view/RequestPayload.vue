@@ -14,63 +14,88 @@
       </el-radio-group>
     </div>
     <div class="rb-payload-content">
-      <JsonEditorVue style="height: 500px"
-                     v-model="requestBody"
-                     v-bind="{/* 局部 props & attrs */}"
-                     v-model:mode="editorMode"
+      <JsonEditorVue
+        style="height: 500px"
+        v-model="requestBody"
+        v-bind="{
+          /* 局部 props & attrs */
+        }"
+        v-model:mode="editorMode"
+        ref="jsonEditorRef"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { type GetUserRequestDetailsVo } from '@/api/UserRequestApi';
-import { ref, computed, watch } from 'vue';
-import JsonEditorVue from 'json-editor-vue'
-import { Mode } from 'vanilla-jsoneditor'
-import ContentTypeService, { ContentType } from '@/service/ContentTypeService';
+import { type GetUserRequestDetailsVo } from "@/api/UserRequestApi";
+import { ref, computed, watch } from "vue";
+import JsonEditorVue from "json-editor-vue";
+import { Mode } from "vanilla-jsoneditor";
+import ContentTypeService, { ContentType } from "@/service/ContentTypeService";
+import { ReloadHolder } from "@/store/ReloadHolder";
 
 const emit = defineEmits<{
-  (event: 'onRequestBodyChange', requestBody: string): void;
-}>()
+  (event: "onRequestBodyChange", requestBody: string): void;
+}>();
 
 const props = defineProps<{
-  requestDetails: GetUserRequestDetailsVo
-}>()
+  requestDetails: GetUserRequestDetailsVo;
+}>();
 
-const editorMode = ref<Mode.text>(Mode.text)
-const requestBody = ref<string>(props.requestDetails.requestBody || '')
-const requestBodyType = ref<string>(props.requestDetails.requestBodyType || 'text/plain')
+const editorMode = ref<Mode.text>(Mode.text);
+const requestBody = ref<string>(props.requestDetails.requestBody || "");
+const requestBodyType = ref<string>(props.requestDetails.requestBodyType || "text/plain");
+const jsonEditorRef = ref<InstanceType<typeof JsonEditorVue>>();
 
-watch(() => props.requestDetails.requestBody, (newVal) => {
-  if (newVal) {
-    requestBody.value = newVal
-  }
-  if(newVal === null){
-    requestBody.value = ''
-  }
-}, { immediate: true ,deep: true})
+watch(
+  () => props.requestDetails.requestBody,
+  (newVal) => {
+    if (newVal) {
+      requestBody.value = newVal;
+    }
+    if (newVal === null) {
+      requestBody.value = "";
+    }
+  },
+  { immediate: true, deep: true }
+);
 
-watch(() => props.requestDetails.requestBodyType, (newVal) => {
-  const contentType = ContentTypeService.getContentType(newVal)
-  requestBodyType.value = contentType.toString()
-}, { immediate: true ,deep: true})
-
+watch(
+  () => props.requestDetails.requestBodyType,
+  (newVal) => {
+    const contentType = ContentTypeService.getContentType(newVal);
+    requestBodyType.value = contentType.toString();
+  },
+  { immediate: true, deep: true }
+);
 
 //监听载荷变化
 watch(requestBody, (newVal) => {
-  emit('onRequestBodyChange', newVal)
-})
+  emit("onRequestBodyChange", newVal);
+});
 
-
+watch(
+  () => props.requestDetails.requestBody,
+  (newVal) => {
+    try {
+      if (newVal) {
+        //手动格式化
+        requestBody.value = JSON.stringify(JSON.parse(requestBody.value), null, 2);
+      }
+    } catch (e) {
+      console.error("手动格式化失败", e);
+    }
+  }
+);
 </script>
 
 <style>
-.jse-menu{
+.jse-menu {
   background-color: #4ba5ff !important;
   border-radius: 5px 5px 0 0;
 }
-.jse-status-bar{
+.jse-status-bar {
   border-radius: 0 0 5px 5px;
 }
 </style>
@@ -108,5 +133,4 @@ watch(requestBody, (newVal) => {
   margin: 0;
   font-size: 14px;
 }
-
 </style>

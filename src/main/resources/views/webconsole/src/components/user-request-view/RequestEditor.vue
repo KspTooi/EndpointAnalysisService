@@ -6,9 +6,9 @@
       <div class="rb-loading-text">正在处理...</div>
     </div>
 
-    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null" style="height: 100%; width: 100%" />
+    <el-empty description="请选择一个请求" v-show="UserRequestHolder().getRequestId == null || requestDetail.id == null" style="height: 100%; width: 100%" />
 
-    <div v-show="UserRequestHolder().getRequestId != null" class="rb-editor-wrapper">
+    <div v-show="UserRequestHolder().getRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
       <div class="rb-header">
         <div class="rb-header-title">
           <input class="rb-name-input" v-model="requestDetail.name" />
@@ -28,31 +28,35 @@
         </div>
       </div>
 
-      <div v-if="requestDetail" class="rb-content">
+      <div v-show="requestDetail" class="rb-content">
         <!-- 请求头内容 -->
-        <div v-if="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
+        <div v-show="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
           <div class="headers-editor">
             <div class="headers-toolbar">
-              <button @click="addHeader" class="btn-add">添加请求头</button>
+              <el-button @click="addHeader" type="primary" size="small">添加请求头</el-button>
             </div>
-            <div class="headers-table">
-              <div class="headers-table-header">
-                <div class="header-key-col">键</div>
-                <div class="header-value-col">值</div>
-                <div class="header-action-col">操作</div>
-              </div>
-              <div v-if="editableHeaders.length === 0" class="empty-state-compact">点击"添加请求头"开始编辑</div>
-              <div v-for="(header, index) in editableHeaders" :key="index" class="header-row">
-                <input v-model="header.k" @blur="onHeaderChange" class="header-key-input" placeholder="请求头名称" />
-                <input v-model="header.v" @blur="onHeaderChange" class="header-value-input" placeholder="请求头值" />
-                <button @click="removeHeader(index)" class="btn-remove">删除</button>
-              </div>
-            </div>
+            <el-table :data="editableHeaders" style="width: 100%" height="100%" empty-text="点击'添加请求头'开始编辑" size="small" border>
+              <el-table-column prop="k" label="键" width="200">
+                <template #default="scope">
+                  <el-input v-model="scope.row.k" @blur="onHeaderChange" placeholder="请求头名称" size="small" />
+                </template>
+              </el-table-column>
+              <el-table-column prop="v" label="值">
+                <template #default="scope">
+                  <el-input v-model="scope.row.v" @blur="onHeaderChange" placeholder="请求头值" size="small" />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="80" align="center">
+                <template #default="scope">
+                  <el-button @click="removeHeader(scope.$index)" type="danger" size="small" plain>删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
         </div>
 
         <!-- 载荷内容 -->
-        <div v-if="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
+        <div v-show="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
           <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />
         </div>
 
@@ -78,7 +82,7 @@ import { PreferenceHolder } from "@/store/PreferenceHolder";
 
 //完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
-  id: "",
+  id: null,
   method: null,
   name: null,
   requestBody: null,
@@ -115,8 +119,9 @@ const loadRequestDetail = async () => {
     // 初始化可编辑请求头
     editableHeaders.value = [...(res.requestHeaders || [])];
   } catch (e) {
+    ElMessage.error(`无法加载请求配置:${e}`);
     requestDetail.value = {
-      id: "",
+      id: null,
       method: null,
       name: null,
       requestBody: null,
@@ -148,13 +153,13 @@ const onCtrlS = async (event: KeyboardEvent) => {
     });
     // 通知树重新加载
     ReloadHolder().requestReloadTree();
+    ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`);
   } catch (e) {
+    ElMessage.error(`无法保存请求配置:${e}`);
     console.error("保存请求失败", e);
   } finally {
     globalLoading.value = false;
   }
-
-  ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`);
 };
 
 onMounted(() => {
@@ -174,13 +179,11 @@ watch(
   () => UserRequestHolder().getRequestId,
   async () => {
     if (UserRequestHolder().getRequestId) {
-      console.log("监听外部请求id变化", UserRequestHolder().getRequestId);
       loadRequestDetail();
     }
     if (UserRequestHolder().getRequestId == null) {
-      console.log("监听外部请求id变化 为空");
       requestDetail.value = {
-        id: "",
+        id: null,
         method: null,
         name: null,
         requestBody: null,
@@ -219,7 +222,7 @@ const onSendRequest = async () => {
     requestBody: requestDetail.value.requestBody,
   });
 
-  await UserRequestApi.sendUserRequest({ id: requestDetail.value.id });
+  await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
   await urResponseListRef.value?.loadUserRequestLogList();
 
   loading.value = false;
@@ -359,7 +362,7 @@ onUnmounted(() => {
 }
 
 .tab-panel {
-  padding: 5px 5px 5px 15px;
+  padding: 5px 5px 15px 15px;
   height: 100%;
   overflow: auto;
 }
@@ -372,98 +375,8 @@ onUnmounted(() => {
 }
 
 .headers-toolbar {
-  padding: 8px 0;
-  margin-bottom: 8px;
-}
-
-.btn-add {
-  background: #60b0ff;
-  color: white;
-  border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background 0.2s;
-}
-
-.btn-add:hover {
-  background: #218838;
-}
-
-.headers-table {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 25px;
-}
-
-.headers-table-header {
-  display: grid;
-  grid-template-columns: 2fr 3fr 80px;
-  gap: 8px;
-  padding: 6px 8px;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 12px;
-  color: #495057;
-  margin-bottom: 4px;
-}
-
-.header-key-col,
-.header-value-col,
-.header-action-col {
-  text-align: left;
-}
-
-.header-row {
-  display: grid;
-  grid-template-columns: 2fr 3fr 80px;
-  gap: 8px;
-  padding: 4px 8px;
-  align-items: center;
-}
-
-.header-key-input,
-.header-value-input {
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  padding: 4px 8px;
-  font-size: 12px;
-  height: 28px;
-  box-sizing: border-box;
-}
-
-.header-key-input:focus,
-.header-value-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-}
-
-.btn-remove {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 2px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 11px;
-  height: 24px;
-  transition: background 0.2s;
-}
-
-.btn-remove:hover {
-  background: #c82333;
-}
-
-.empty-state-compact {
-  text-align: center;
-  color: #6c757d;
-  padding: 20px;
-  font-size: 12px;
-  font-style: italic;
+  padding: 5px 0;
+  margin-bottom: 5px;
 }
 
 .body-type label {
