@@ -87,19 +87,23 @@ watch(
         return;
       }
 
+      //提示用户确认
+      const confirm = await ElMessageBox.confirm("确定删除该对象吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      });
+      if (!confirm) {
+        return;
+      }
+
       //如果是请求则删请求
       if (RequestTreeHolder().getActiveNodeType == "request") {
         try {
-          //提示用户确认
-          const confirm = await ElMessageBox.confirm("确定删除该请求吗？", "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          });
-          if (confirm) {
-            await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveRequestId, type: 1 });
-            ElMessage.success("删除请求成功");
-          }
+          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveRequestId, type: 1 });
+          ElMessage.success("删除请求成功");
+          //刷新树
+          EventHolder().requestReloadTree();
         } catch (e) {
           ElMessage.error("删除请求失败");
         }
@@ -108,16 +112,10 @@ watch(
       //如果是组则删组
       if (RequestTreeHolder().getActiveNodeType == "group") {
         try {
-          //提示用户确认
-          const confirm = await ElMessageBox.confirm("确定删除该组吗？", "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          });
-          if (confirm) {
-            await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveGroupId, type: 0 });
-            ElMessage.success("删除组成功");
-          }
+          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveGroupId, type: 0 });
+          ElMessage.success("删除组成功");
+          //刷新树
+          EventHolder().requestReloadTree();
         } catch (e) {
           ElMessage.error("删除组失败");
         }

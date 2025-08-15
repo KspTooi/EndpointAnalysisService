@@ -190,12 +190,13 @@ const cleanupActiveNodes = () => {
   RequestTreeHolder().setExpandedNodeIds(RequestTreeHolder().getExpandedNodeIds.filter((nodeId) => !emptyGroupIds.has(nodeId)));
 
   // 清理activeRequestId - 如果当前请求不存在于树中则清理
-  if (!RequestTreeHolder().getActiveNodeId) {
+  if (!RequestTreeHolder().getActiveRequestId) {
     return;
   }
 
-  if (!isRequestExists(RequestTreeHolder().getActiveNodeId || "", treeData.value)) {
+  if (!isRequestExists(RequestTreeHolder().getActiveRequestId || "", treeData.value)) {
     RequestTreeHolder().setActiveNodeId(null);
+    RequestTreeHolder().setActiveRequestId(null);
   }
 };
 
