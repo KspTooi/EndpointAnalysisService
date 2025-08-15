@@ -105,6 +105,8 @@ const loadRequestDetail = async () => {
     return;
   }
 
+  globalLoading.value = true;
+
   try {
     const res = await UserRequestApi.getUserRequestDetails({ id: RequestTreeHolder().getActiveRequestId || "" });
     requestDetail.value.id = res.id;
@@ -131,6 +133,8 @@ const loadRequestDetail = async () => {
       url: null,
     };
     editableHeaders.value = [];
+  } finally {
+    globalLoading.value = false;
   }
 };
 
