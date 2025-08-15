@@ -46,7 +46,7 @@
       :y="rightMenuY"
       :node="rightMenuNode"
       @close="handleRightMenuClose"
-      @refresh="ReloadHolder().requestReloadTree"
+      @refresh="EventHolder().requestReloadTree"
     />
 
     <!-- 创建组对话框 -->
@@ -84,7 +84,7 @@ import RequestTreeItem from "./RequestTreeItem.vue";
 import RequestTreeItemRightMenu from "./RequestTreeItemRightMenu.vue";
 import { ElMessage, type FormInstance, type InputInstance } from "element-plus";
 import { UserRequestHolder } from "@/store/RequestHolder";
-import { ReloadHolder } from "@/store/ReloadHolder";
+import { EventHolder } from "@/store/EventHolder";
 
 const emit = defineEmits<{
   (e: "select-group", groupId: string): void;
@@ -376,7 +376,7 @@ onUnmounted(() => {
 
 //监听树重新加载
 watch(
-  () => ReloadHolder().isNeedReloadTree,
+  () => EventHolder().isNeedReloadTree,
   async () => {
     await loadUserRequestTree();
   }

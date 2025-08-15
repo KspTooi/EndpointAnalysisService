@@ -75,7 +75,7 @@ import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTre
 import UserRequestGroupApi from "@/api/UserRequestGroupApi";
 import type { AddUserRequestGroupDto } from "@/api/UserRequestGroupApi";
 import UserRequestApi from "@/api/UserRequestApi";
-import { ReloadHolder } from "@/store/ReloadHolder";
+import { EventHolder } from "@/store/EventHolder";
 
 interface Props {
   visible: boolean;

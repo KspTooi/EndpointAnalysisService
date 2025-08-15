@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ReloadHolder } from "./ReloadHolder";
+import { EventHolder } from "./EventHolder.ts";
 
 export const PreferenceHolder = defineStore("PreferenceHolder", {
   state: () => ({

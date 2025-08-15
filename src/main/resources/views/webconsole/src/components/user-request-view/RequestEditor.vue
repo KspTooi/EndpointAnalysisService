@@ -77,7 +77,7 @@ import RequestPayload from "./RequestPayload.vue";
 import UrResponseList from "./UrResponseList.vue";
 import { ElMessage } from "element-plus";
 import { UserRequestHolder } from "@/store/RequestHolder";
-import { ReloadHolder } from "@/store/ReloadHolder";
+import { EventHolder } from "@/store/EventHolder";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
 
 //完整用户请求数据
@@ -134,44 +134,8 @@ const loadRequestDetail = async () => {
   }
 };
 
-const onCtrlS = async (event: KeyboardEvent) => {
-  event.preventDefault();
-  event.stopPropagation();
-  event.stopImmediatePropagation();
-
-  globalLoading.value = true;
-
-  try {
-    await UserRequestApi.editUserRequest({
-      id: requestDetail.value.id,
-      name: requestDetail.value.name,
-      method: requestDetail.value.method,
-      url: requestDetail.value.url,
-      requestHeaders: requestDetail.value.requestHeaders,
-      requestBodyType: requestDetail.value.requestBodyType,
-      requestBody: requestDetail.value.requestBody,
-    });
-    // 通知树重新加载
-    ReloadHolder().requestReloadTree();
-    ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`);
-  } catch (e) {
-    ElMessage.error(`无法保存请求配置:${e}`);
-    console.error("保存请求失败", e);
-  } finally {
-    globalLoading.value = false;
-  }
-};
-
 onMounted(() => {
   loadRequestDetail();
-
-  window.addEventListener("keydown", (event: KeyboardEvent) => {
-    const isCtrlOrCmd = event.ctrlKey || event.metaKey;
-    // 检查按下的键是否是 's'
-    if (isCtrlOrCmd && (event.key === "s" || event.key === "S")) {
-      onCtrlS(event);
-    }
-  });
 });
 
 //监听外部请求id变化
@@ -264,18 +228,42 @@ const onHeaderChange = () => {
       requestBody: requestDetail.value.requestBody,
     });
     // 通知树重新加载
-    ReloadHolder().requestReloadTree();
+    EventHolder().requestReloadTree();
   }
 };
 
-onUnmounted(() => {
-  window.removeEventListener("keydown", (event: KeyboardEvent) => {
-    const isCtrlOrCmd = event.ctrlKey || event.metaKey;
-    if (isCtrlOrCmd && (event.key === "s" || event.key === "S")) {
-      onCtrlS(event);
+//监听CTRL+S保存快捷键
+watch(
+  () => EventHolder().isOnCtrlS,
+  async (newVal) => {
+    if (UserRequestHolder().getRequestId == null) {
+      ElMessage.error("请选择一个请求后，再使用CTRL+S保存");
+      return;
     }
-  });
-});
+
+    globalLoading.value = true;
+
+    try {
+      await UserRequestApi.editUserRequest({
+        id: requestDetail.value.id,
+        name: requestDetail.value.name,
+        method: requestDetail.value.method,
+        url: requestDetail.value.url,
+        requestHeaders: requestDetail.value.requestHeaders,
+        requestBodyType: requestDetail.value.requestBodyType,
+        requestBody: requestDetail.value.requestBody,
+      });
+      // 通知树重新加载
+      EventHolder().requestReloadTree();
+      ElMessage.success(`请求 [${requestDetail.value.name}] 已保存`);
+    } catch (e) {
+      ElMessage.error(`无法保存请求配置:${e}`);
+      console.error("保存请求失败", e);
+    } finally {
+      globalLoading.value = false;
+    }
+  }
+);
 </script>
 
 <style scoped>

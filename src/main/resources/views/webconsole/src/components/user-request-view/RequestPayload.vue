@@ -33,7 +33,7 @@ import { ref, computed, watch } from "vue";
 import JsonEditorVue from "json-editor-vue";
 import { Mode } from "vanilla-jsoneditor";
 import ContentTypeService, { ContentType } from "@/service/ContentTypeService";
-import { ReloadHolder } from "@/store/ReloadHolder";
+import { EventHolder } from "@/store/EventHolder";
 
 const emit = defineEmits<{
   (event: "onRequestBodyChange", requestBody: string): void;
