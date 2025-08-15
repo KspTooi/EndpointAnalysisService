@@ -409,7 +409,6 @@ const handleToggleNode = (nodeId: string) => {
   height: 100%;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e9ecef;
   position: relative;
 }
 
