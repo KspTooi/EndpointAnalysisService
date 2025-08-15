@@ -415,7 +415,7 @@ const handleToggleNode = (nodeId: string) => {
 .tag-tree-body {
   border-top: 1px solid rgba(64, 158, 255, 0.2);
   overflow-y: auto;
-  height: 100%;
+  height: calc(100% - 50px);
   padding-top: 4px;
   position: relative;
 }
