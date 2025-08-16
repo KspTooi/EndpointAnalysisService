@@ -118,6 +118,7 @@ import {
   Warning,
   Coin,
   MagicStick,
+  WalletFilled,
 } from "@element-plus/icons-vue";
 
 // 定义组件props
@@ -206,6 +207,12 @@ const menuItems = ref([
     title: "请求调试视图",
     icon: MagicStick,
     routerLink: "/user-request-manager",
+  },
+  {
+    id: "simple-filter-manager",
+    title: "基本过滤器",
+    icon: Grid,
+    routerLink: "/simple-filter-manager",
   },
   {
     id: "relay-server-manager",

@@ -3,7 +3,8 @@ package com.ksptooi.biz.user.model.group;
 import com.ksptooi.biz.user.model.permission.PermissionPo;
 import com.ksptooi.biz.user.model.user.UserPo;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.util.Date;
@@ -16,8 +17,9 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "`groups`")
-@Getter@Setter
+@Table(name = "`GROUPS`")
+@Getter
+@Setter
 @Comment("用户组")
 public class GroupPo {
 
@@ -68,9 +70,9 @@ public class GroupPo {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "group_permission",
-        joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
-        inverseJoinColumns = @JoinColumn(name = "permission_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+            name = "group_permission",
+            joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
     //用户组拥有的权限
     private Set<PermissionPo> permissions = new HashSet<>();

@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "simple_filter_request_operation")
+@Table(name = "simple_filter_operation")
 @Getter
 @Setter
 @Comment("过滤器操作")
@@ -35,14 +36,80 @@ public class SimpleFilterOperationPo {
     private Integer target;
 
     @Comment("原始键")
-    @Column(name = "from", length = 128, nullable = false)
-    private String from;
+    @Column(name = "f", length = 128, nullable = false)
+    private String f;
 
     @Comment("目标键")
-    @Column(name = "to", length = 128, nullable = false)
-    private String to;
+    @Column(name = "t", length = 128, nullable = false)
+    private String t;
 
     @Comment("排序")
     @Column(name = "seq", nullable = false)
     private Integer seq;
+
+    @Column(name = "create_time", nullable = false)
+    @Comment("创建时间")
+    private LocalDateTime createTime;
+
+    @Column(name = "update_time", nullable = false)
+    @Comment("更新时间")
+    private LocalDateTime updateTime;
+
+
+
+    @PrePersist
+    public void prePersist() {
+        this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+        generateName();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+        generateName();
+    }
+
+    public void generateName(){
+        
+        StringBuilder sb = new StringBuilder();
+        String targetStr = null;
+        if(target == 0){
+            targetStr = "标头";
+        }
+        if(target == 1){
+            targetStr = "JSON载荷";
+        }
+        if(target == 2){
+            targetStr = "URL";
+        }
+
+        String kindStr = null;
+        if(kind == 0){
+            kindStr = "持久化";
+        }
+        if(kind == 1){
+            kindStr = "缓存";
+        }
+        if(kind == 2){
+            kindStr = "注入缓存";
+        }
+        if(kind == 3){
+            kindStr = "注入持久化";
+        }
+        if(kind == 4){
+            kindStr = "覆写URL";
+        }
+
+        if(targetStr == null || kindStr == null){
+            return;
+        }
+
+        sb.append(targetStr).append("_").append(kindStr);
+        this.name = sb.toString();
+    }
+
+
 }
+
+

@@ -1,0 +1,82 @@
+package com.ksptooi.biz.core.model.filter.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
+import com.ksptooi.commons.dataprocess.Str;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class EditSimpleFilterOperationDto {
+
+    @NotNull(message = "操作ID不能为空")
+    private Long id;
+
+    @NotBlank(message = "操作名称不能为空")
+    @Schema(description = "操作名称")
+    private String name;
+
+    @NotNull(message = "类型不能为空")
+    @Range(min = 0, max = 4, message = "类型只能为0、1、2、3、4")
+    @Schema(description = "类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL")
+    private Integer kind;
+
+    @NotNull(message = "目标不能为空")
+    @Range(min = 0, max = 2, message = "目标只能为0、1、2")
+    @Schema(description = "目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)")
+    private Integer target;
+
+    @Schema(description = "原始键")
+    private String f;
+
+    @Schema(description = "目标键")
+    private String t;
+
+    @NotNull(message = "排序不能为空")
+    @Range(min = 0, message = "排序不能小于0")
+    @Schema(description = "排序")
+    private Integer seq;
+
+        /**
+     * 验证参数逻辑
+     * @return 错误信息 当没有错误时返回null
+     */
+    public String validate() {
+
+        //持久化 缓存 注入缓存 注入持久化 时需提供原始键与目标键
+        if (kind == 0 || kind == 1 || kind == 2 || kind == 3) {
+            if (Str.isBlank(f)) {
+                return "原始键不能为空";
+            }
+            if (Str.isBlank(t)) {
+                return "目标键不能为空";
+            }
+        }
+
+        //覆写URL时只能提供目标键
+        if (kind == 4) {
+            if (Str.isBlank(t)) {
+                return "目标键不能为空";
+            }
+            if (Str.isNotBlank(f)) {
+                return "当类型为4时，不能提供原始键";
+            }
+        }
+
+        //目标为URL时 kind 只能为4
+        if (target == 2) {
+            if (kind != 4) {
+                return "当目标为URL时，类型只能为覆写URL";
+            }
+        }
+
+        return null;
+    }
+
+    
+
+}
+
