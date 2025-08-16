@@ -5,13 +5,12 @@
     </div>
 
     <div class="content-area">
-      <div class="placeholder" v-if="!selectedItem">
+      <div class="placeholder" v-if="!filterStore.getSelectedFilterId">
         <el-empty description="请选择一个过滤器查看详情" />
       </div>
 
-      <div class="filter-details" v-if="selectedItem">
-        <h3>{{ selectedItem.name }}</h3>
-        <p>过滤器详情将在这里显示...</p>
+      <div class="filter-details" v-if="filterStore.getSelectedFilterId">
+        <SimpleFilterEditor />
       </div>
     </div>
   </div>
@@ -21,6 +20,7 @@
 import { ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
 import SimpleFilterSideList from "@/components/simple-filter/SimpleFilterSideList.vue";
+import SimpleFilterEditor from "@/components/simple-filter/SimpleFilterEditor.vue";
 import type { GetSimpleFilterListVo } from "@/api/SimpleFilterApi";
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 
@@ -51,6 +51,7 @@ const handleAddFilter = () => {
 .manager-container {
   height: 100%;
   display: flex;
+  width: 100%;
 }
 
 .sidebar {
@@ -74,7 +75,6 @@ const handleAddFilter = () => {
 }
 
 .filter-details {
-  padding: 20px;
   flex: 1;
 }
 </style>

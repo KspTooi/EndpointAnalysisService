@@ -3,10 +3,11 @@
     <div class="item-header">
       <div class="item-title">
         <span class="name">{{ item.name }}</span>
-        <el-tag :type="getDirectionTagType(item.direction)" size="small">
+        <el-tag :class="['direction-tag', item.direction === 0 ? 'direction-request' : 'direction-response']" size="small" style="display: flex; align-items: center; gap: 4px">
+          <IIconamoonCloudUploadThin style="width: 16px; height: 16px; vertical-align: -28%" />
           {{ getDirectionText(item.direction) }}
         </el-tag>
-        <el-tag :type="getStatusTagType(item.status)" size="small">
+        <el-tag :class="['status-tag', item.status === 0 ? 'status-enabled' : 'status-disabled']" size="small">
           {{ getStatusText(item.status) }}
         </el-tag>
       </div>
@@ -27,7 +28,7 @@
     </div>
 
     <div class="item-time">
-      <span class="create-time">{{ formatDate(item.createTime) }}</span>
+      <span class="create-time">{{ item.createTime }}</span>
     </div>
   </div>
 </template>
@@ -77,21 +78,6 @@ const getStatusTagType = (status: number) => {
   return status === 0 ? "success" : "danger";
 };
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-
-  return date.toLocaleString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-};
 </script>
 
 <style scoped>
@@ -116,13 +102,13 @@ const formatDate = (dateStr: string) => {
 }
 
 .filter-item.selected {
-  background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%);
-  border-color: #409eff;
+  background: linear-gradient(135deg, #f0ffff 0%, rgb(211, 250, 255) 100%);
+  border: 1px solid #5dc7cd;
   box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
 }
 
 .filter-item.selected .name {
-  color: #409eff;
+  color: #32c6ab;
   font-weight: 600;
 }
 
@@ -193,5 +179,31 @@ const formatDate = (dateStr: string) => {
 .create-time {
   color: #c0c4cc;
   font-size: 11px;
+}
+
+/* 方向标签样式 */
+.direction-tag.direction-request {
+  background: linear-gradient(135deg, #e6f3ff 0%, #b8e0ff 100%) !important;
+  color: #2970cc !important;
+  border: 1px solid #7cc7ff !important;
+}
+
+.direction-tag.direction-response {
+  background: linear-gradient(135deg, #f0f9ff 0%, #c7f0db 100%) !important;
+  color: #239874 !important;
+  border: 1px solid #76dcb3 !important;
+}
+
+/* 状态标签样式 */
+.status-tag.status-enabled {
+  background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%) !important;
+  color: #247861 !important;
+  border: 1px solid #6cc5a8 !important;
+}
+
+.status-tag.status-disabled {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%) !important;
+  color: #991b1b !important;
+  border: 1px solid #f87171 !important;
 }
 </style>
