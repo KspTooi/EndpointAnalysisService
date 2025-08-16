@@ -105,7 +105,7 @@ public class DatabaseTools {
      */
     public boolean tableExist(String tableName) throws SQLException {
         DatabaseMetaData metaData = conn.getMetaData();
-        try (ResultSet resultSet = metaData.getTables(null, null, tableName, new String[]{"TABLE"})) {
+        try (ResultSet resultSet = metaData.getTables(null, null, tableName.toUpperCase(), new String[]{"TABLE"})) {
             return resultSet.next();
         }
     }

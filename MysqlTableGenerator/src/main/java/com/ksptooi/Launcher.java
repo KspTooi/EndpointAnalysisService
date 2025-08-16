@@ -20,7 +20,6 @@ public class Launcher {
         // 根据Dtd生成表结构
         // generateTable("EduExamProgress");
 
-
         // 根据表结构生成CRUD
         generateJpaCrud("simple_filter", "wangshuailong");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
@@ -59,11 +58,9 @@ public class Launcher {
         genProc.set("gen.vo", "true");
         genProc.set("gen.dto", "true");
 
-
         genProc.set("logicRemoveField", "is_deleted");
         genProc.set("logicExists", "0");
         genProc.set("logicRemoved", "1");
-
 
         // VM生成器 用于将工件+模板整合 并构建输出
         var vmProc = new VelocityProcessor();
