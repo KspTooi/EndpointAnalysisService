@@ -11,6 +11,7 @@ export interface GetUserRequestTreeVo {
   type: number; //类型 0:请求组 1:用户请求
   name: string; //名称
   method?: string; //请求方法
+  simpleFilterCount?: number; //基本过滤器数量 当type为0时会出现
   children?: GetUserRequestTreeVo[]; //子节点
 }
 

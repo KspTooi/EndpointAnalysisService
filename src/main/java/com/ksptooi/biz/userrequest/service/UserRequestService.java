@@ -1,5 +1,8 @@
 package com.ksptooi.biz.userrequest.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.repository.RequestRepository;
@@ -8,34 +11,27 @@ import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.biz.userrequest.model.userrequest.*;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.UserRequestLogPo;
-
+import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
+import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
+import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
+import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.utils.GsonUtils;
+import com.ksptooi.commons.utils.web.CommonIdDto;
+import jakarta.security.auth.message.AuthException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.security.auth.message.AuthException;
-import lombok.extern.slf4j.Slf4j;
-
-import com.ksptooi.commons.utils.GsonUtils;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
-import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
-import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 
 import static com.ksptool.entities.Entities.as;
 
@@ -79,14 +75,15 @@ public class UserRequestService {
 
     /**
      * 保存原始请求为用户请求
+     *
      * @param dto 保存请求参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void saveAsUserRequest(SaveAsUserRequestDto dto) throws BizException,AuthException{
+    public void saveAsUserRequest(SaveAsUserRequestDto dto) throws BizException, AuthException {
 
         //查询原始请求
         RequestPo requestPo = requestRepository.findById(dto.getRequestId())
-                .orElseThrow(()-> new BizException("原始请求不存在."));
+                .orElseThrow(() -> new BizException("原始请求不存在."));
 
         //创建用户请求
         UserRequestPo userRequestPo = new UserRequestPo();
@@ -100,16 +97,17 @@ public class UserRequestService {
         //将请求头转换为列表
         List<HttpHeaderVo> requestHeaders = new ArrayList<>();
 
-        try{
-            Type mapType = new TypeToken<Map<String,String>>(){}.getType();
-            Map<String,String> rhm = gson.fromJson(requestPo.getRequestHeaders(), mapType);
-            for(Map.Entry<String,String> entry : rhm.entrySet()){
+        try {
+            Type mapType = new TypeToken<Map<String, String>>() {
+            }.getType();
+            Map<String, String> rhm = gson.fromJson(requestPo.getRequestHeaders(), mapType);
+            for (Map.Entry<String, String> entry : rhm.entrySet()) {
                 HttpHeaderVo httpHeaderVo = new HttpHeaderVo();
                 httpHeaderVo.setK(entry.getKey());
                 httpHeaderVo.setV(entry.getValue());
                 requestHeaders.add(httpHeaderVo);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
 
         userRequestPo.setRequestHeaders(gson.toJson(requestHeaders));
@@ -117,7 +115,7 @@ public class UserRequestService {
         userRequestPo.setRequestBodyType(requestPo.getRequestBodyType());
         userRequestPo.setRequestBody(requestPo.getRequestBody());
 
-        if(StringUtils.isNotBlank(dto.getName())){
+        if (StringUtils.isNotBlank(dto.getName())) {
             userRequestPo.setName(dto.getName());
         }
 
@@ -128,6 +126,7 @@ public class UserRequestService {
 
     /**
      * 获取用户请求树
+     *
      * @param dto 获取请求参数
      * @return 用户请求树
      */
@@ -138,7 +137,7 @@ public class UserRequestService {
         List<GetUserRequestTreeVo> treeList = new ArrayList<>();
 
         //将请求组转换为树形结构
-        if(groupList == null || groupList.isEmpty()){
+        if (groupList == null || groupList.isEmpty()) {
             return treeList;
         }
 
@@ -150,7 +149,7 @@ public class UserRequestService {
             groupNode.setId(groupPo.getId());
             groupNode.setParentId(null);
 
-            if(groupPo.getParent()!=null){
+            if (groupPo.getParent() != null) {
                 groupNode.setParentId(groupPo.getParent().getId());
             }
 
@@ -163,6 +162,7 @@ public class UserRequestService {
         // 第二遍：挂载父子组关系
         for (UserRequestGroupPo groupPo : groupList) {
             GetUserRequestTreeVo current = groupNodeMap.get(groupPo.getId());
+            current.setSimpleFilterCount(groupPo.getFilters().size());
             if (groupPo.getParent() == null) {
                 treeList.add(current);
                 continue;
@@ -181,7 +181,7 @@ public class UserRequestService {
             if (groupNode == null) {
                 continue;
             }
-            if (groupPo.getRequests() == null || groupPo.getRequests().isEmpty()){
+            if (groupPo.getRequests() == null || groupPo.getRequests().isEmpty()) {
                 continue;
             }
             for (UserRequestPo req : groupPo.getRequests()) {
@@ -190,7 +190,7 @@ public class UserRequestService {
                 reqNode.setParentId(groupPo.getId());
                 reqNode.setType(1);
                 reqNode.setName(req.getName());
-                if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())){
+                if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())) {
                     reqNode.setMethod(req.getOriginalRequest().getMethod());
                 }
                 groupNode.getChildren().add(reqNode);
@@ -205,28 +205,29 @@ public class UserRequestService {
             reqNode.setId(req.getId());
             reqNode.setType(1);
             reqNode.setName(req.getName());
-            if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())){
+            if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())) {
                 reqNode.setMethod(req.getOriginalRequest().getMethod());
             }
+
             treeList.add(reqNode);
         }
 
         // 关键字过滤（可选）
         String keyword = dto != null ? dto.getKeyword() : null;
-        if (StringUtils.isBlank(keyword)){
+        if (StringUtils.isBlank(keyword)) {
             return treeList;
         }
 
         List<GetUserRequestTreeVo> filtered = new ArrayList<>();
         for (GetUserRequestTreeVo node : treeList) {
-            if (filterTree(node, keyword)){
+            if (filterTree(node, keyword)) {
                 filtered.add(node);
             }
         }
 
         //处理空子级
         for (GetUserRequestTreeVo node : filtered) {
-            if (node.getChildren() == null){
+            if (node.getChildren() == null) {
                 node.setChildren(new ArrayList<>());
             }
         }
@@ -236,27 +237,28 @@ public class UserRequestService {
 
     /**
      * 编辑用户请求树
+     *
      * @param dto 编辑请求参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editUserRequestTree(EditUserRequestTreeDto dto) throws BizException,AuthException {
-        
+    public void editUserRequestTree(EditUserRequestTreeDto dto) throws BizException, AuthException {
+
         //判断树对象类型 0:请求组 1:用户请求
-        if(dto.getType() == 0){
+        if (dto.getType() == 0) {
             //处理请求组
 
-            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(),AuthService.requireUserId());
+            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(), AuthService.requireUserId());
 
-            if(groupPo == null){
+            if (groupPo == null) {
                 throw new BizException("数据不存在或无权限操作.");
             }
 
             UserRequestGroupPo parentPo = null;
 
-            if(dto.getParentId() != null){
-                parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(),AuthService.requireUserId());
+            if (dto.getParentId() != null) {
+                parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(), AuthService.requireUserId());
 
-                if(parentPo == null){
+                if (parentPo == null) {
                     throw new BizException("父级数据不存在或无权限操作.");
                 }
             }
@@ -271,18 +273,18 @@ public class UserRequestService {
         }
 
         //处理请求对象
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
 
-        if(userRequestPo == null){
+        if (userRequestPo == null) {
             throw new BizException("数据不存在或无权限操作.");
         }
 
         UserRequestGroupPo parentPo = null;
 
-        if(dto.getParentId() != null){
-            parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(),AuthService.requireUserId());
+        if (dto.getParentId() != null) {
+            parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(), AuthService.requireUserId());
 
-            if(parentPo == null){
+            if (parentPo == null) {
                 throw new BizException("父级数据不存在或无权限操作.");
             }
         }
@@ -293,11 +295,11 @@ public class UserRequestService {
         repository.save(userRequestPo);
     }
 
-    public void copyUserRequest(CommonIdDto dto) throws BizException,AuthException {
+    public void copyUserRequest(CommonIdDto dto) throws BizException, AuthException {
 
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
-        
-        if(userRequestPo == null){
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
+
+        if (userRequestPo == null) {
             throw new BizException("数据不存在或无权限操作.");
         }
 
@@ -311,16 +313,16 @@ public class UserRequestService {
         copyPo.setRequestHeaders(userRequestPo.getRequestHeaders());
         copyPo.setRequestBodyType(userRequestPo.getRequestBodyType());
         copyPo.setRequestBody(userRequestPo.getRequestBody());
-        copyPo.setSeq(userRequestPo.getSeq()+1);
+        copyPo.setSeq(userRequestPo.getSeq() + 1);
         repository.save(copyPo);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void editUserRequest(EditUserRequestDto dto) throws BizException,AuthException {
+    public void editUserRequest(EditUserRequestDto dto) throws BizException, AuthException {
 
-        UserRequestPo updatePo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
+        UserRequestPo updatePo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
 
-        if(updatePo == null){
+        if (updatePo == null) {
             throw new BizException("数据不存在或无权限操作.");
         }
 
@@ -334,18 +336,16 @@ public class UserRequestService {
     }
 
 
-
-
-
     public GetUserRequestDetailsVo getUserRequestDetails(CommonIdDto dto) throws BizException {
         UserRequestPo po = repository.findById(dto.getId())
-                .orElseThrow(()-> new BizException("查询失败,数据不存在."));
+                .orElseThrow(() -> new BizException("查询失败,数据不存在."));
 
-        GetUserRequestDetailsVo vo = as(po,GetUserRequestDetailsVo.class);
+        GetUserRequestDetailsVo vo = as(po, GetUserRequestDetailsVo.class);
 
-        if (po.getRequestHeaders() != null){
-            Type listType = new TypeToken<List<HttpHeaderVo>>(){}.getType();
-            vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(),listType));
+        if (po.getRequestHeaders() != null) {
+            Type listType = new TypeToken<List<HttpHeaderVo>>() {
+            }.getType();
+            vo.setRequestHeaders(gson.fromJson(po.getRequestHeaders(), listType));
         }
 
         return vo;
@@ -356,35 +356,35 @@ public class UserRequestService {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
         }
-        if(!dto.isBatch()){
+        if (!dto.isBatch()) {
             repository.deleteById(dto.getId());
         }
     }
 
-    private boolean filterTree(GetUserRequestTreeVo node, String keyword){
-        if (node == null){
+    private boolean filterTree(GetUserRequestTreeVo node, String keyword) {
+        if (node == null) {
             return false;
         }
         boolean selfMatch = false;
-        if (StringUtils.isNotBlank(node.getName()) && StringUtils.containsIgnoreCase(node.getName(), keyword)){
+        if (StringUtils.isNotBlank(node.getName()) && StringUtils.containsIgnoreCase(node.getName(), keyword)) {
             selfMatch = true;
         }
-        if (!selfMatch && StringUtils.isNotBlank(node.getMethod()) && StringUtils.containsIgnoreCase(node.getMethod(), keyword)){
+        if (!selfMatch && StringUtils.isNotBlank(node.getMethod()) && StringUtils.containsIgnoreCase(node.getMethod(), keyword)) {
             selfMatch = true;
         }
 
-        if (node.getChildren() == null || node.getChildren().isEmpty()){
+        if (node.getChildren() == null || node.getChildren().isEmpty()) {
             return selfMatch;
         }
 
         List<GetUserRequestTreeVo> keptChildren = new ArrayList<>();
-        for (GetUserRequestTreeVo child : node.getChildren()){
-            if (filterTree(child, keyword)){
+        for (GetUserRequestTreeVo child : node.getChildren()) {
+            if (filterTree(child, keyword)) {
                 keptChildren.add(child);
             }
         }
         node.setChildren(keptChildren);
-        if (selfMatch){
+        if (selfMatch) {
             return true;
         }
         return !keptChildren.isEmpty();
@@ -392,16 +392,17 @@ public class UserRequestService {
 
     /**
      * 删除用户请求树对象
+     *
      * @param dto 删除请求参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeUserRequestTree(RemoveUserRequestTreeDto dto) throws BizException,AuthException {
+    public void removeUserRequestTree(RemoveUserRequestTreeDto dto) throws BizException, AuthException {
 
         //判断对象类型 0:请求组 1:用户请求
-        if(dto.getType() == 0){
+        if (dto.getType() == 0) {
             //处理请求组
-            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(),AuthService.requireUserId());
-            if(groupPo == null){
+            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(), AuthService.requireUserId());
+            if (groupPo == null) {
                 throw new BizException("数据不存在或无权限操作.");
             }
             userRequestGroupRepository.delete(groupPo);
@@ -409,20 +410,20 @@ public class UserRequestService {
         }
 
         //处理用户请求
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),AuthService.requireUserId());
-        if(userRequestPo == null){
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
+        if (userRequestPo == null) {
             throw new BizException("数据不存在或无权限操作.");
         }
 
         repository.delete(userRequestPo);
     }
 
-    public void sendUserRequest(CommonIdDto dto) throws BizException,AuthException {
+    public void sendUserRequest(CommonIdDto dto) throws BizException, AuthException {
 
         UserPo userPo = authService.requireUser();
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(),userPo.getId());
-        
-        if(userRequestPo == null){
+        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), userPo.getId());
+
+        if (userRequestPo == null) {
             throw new BizException("数据不存在或无权限操作.");
         }
 
@@ -441,26 +442,27 @@ public class UserRequestService {
         String requestType = userRequestPo.getRequestBodyType();
 
         //只能重放json请求
-        if(!requestType.contains("application/json")){
+        if (!requestType.contains("application/json")) {
             throw new BizException("只能发送application/json请求");
         }
 
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest.Builder request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .method(method, HttpRequest.BodyPublishers.ofString(body));
+                .uri(URI.create(url))
+                .method(method, HttpRequest.BodyPublishers.ofString(body));
 
         //将JSON格式的请求头处理为Map
         List<HttpHeaderVo> headersList = new ArrayList<>();
-        if(StringUtils.isNotBlank(headers)){
-            Type listType = new TypeToken<List<HttpHeaderVo>>(){}.getType();
+        if (StringUtils.isNotBlank(headers)) {
+            Type listType = new TypeToken<List<HttpHeaderVo>>() {
+            }.getType();
             headersList = gson.fromJson(headers, listType);
         }
 
         //将请求头添加到请求中
-        for(HttpHeaderVo header : headersList){
-            if(HOP_BY_HOP_HEADERS.contains(header.getK().toLowerCase())){
+        for (HttpHeaderVo header : headersList) {
+            if (HOP_BY_HOP_HEADERS.contains(header.getK().toLowerCase())) {
                 continue;
             }
             request.header(header.getK(), header.getV());
@@ -469,7 +471,7 @@ public class UserRequestService {
         //获取中继服务器
         RelayServerPo relayServerPo = userRequestPo.getOriginalRequest().getRelayServer();
 
-        
+
         //创建重放记录
         UserRequestLogPo userRequestLogPo = new UserRequestLogPo();
         userRequestLogPo.setUserRequest(userRequestPo);
@@ -495,7 +497,7 @@ public class UserRequestService {
         try {
             //发送请求
             HttpResponse<String> response = client.send(request.build(), HttpResponse.BodyHandlers.ofString());
-        
+
             //解析响应
             String responseBody = response.body();
             userRequestLogPo.setResponseBodyLength(responseBody.length());
@@ -509,7 +511,7 @@ public class UserRequestService {
 
             //处理响应头
             List<HttpHeaderVo> responseHeadersList = new ArrayList<>();
-            for(Map.Entry<String,List<String>> entry : response.headers().map().entrySet()){
+            for (Map.Entry<String, List<String>> entry : response.headers().map().entrySet()) {
                 HttpHeaderVo responseHeaderVo = new HttpHeaderVo();
                 responseHeaderVo.setK(entry.getKey());
                 responseHeaderVo.setV(entry.getValue().get(0));
@@ -518,19 +520,19 @@ public class UserRequestService {
 
 
             //如果请求ID策略为1 则尝试从响应头中获取请求ID
-            if(relayServerPo.getRequestIdStrategy() == 1){
+            if (relayServerPo.getRequestIdStrategy() == 1) {
                 String requestId = response.headers().firstValue(relayServerPo.getRequestIdHeaderName()).orElse(null);
-                if(requestId != null){
+                if (requestId != null) {
                     userRequestLogPo.setRequestId(requestId);
                 }
-                if(requestId == null){
+                if (requestId == null) {
                     log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", relayServerPo.getName(), userRequestLogPo.getRequestId());
                 }
             }
 
             //如果业务错误策略为1 则尝试从响应体中获取业务错误码
-            if(relayServerPo.getBizErrorStrategy() == 1){
-                if(userRequestLogPo.getResponseBodyType().contains("application/json")){
+            if (relayServerPo.getBizErrorStrategy() == 1) {
+                if (userRequestLogPo.getResponseBodyType().contains("application/json")) {
 
                     JsonElement jsonTree = gson.fromJson(responseBody, JsonElement.class);
 
@@ -538,25 +540,25 @@ public class UserRequestService {
                     String bizErrorCode = GsonUtils.getFromPath(jsonTree, relayServerPo.getBizErrorCodeField());
 
                     //无法获取到错误码值 直接判定业务错误
-                    if(bizErrorCode == null){
+                    if (bizErrorCode == null) {
                         userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                     }
-                    if(bizErrorCode != null){
-                        if(bizErrorCode.equals(successCode)){
+                    if (bizErrorCode != null) {
+                        if (bizErrorCode.equals(successCode)) {
                             userRequestLogPo.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                         }
-                        if(!bizErrorCode.equals(successCode)){
+                        if (!bizErrorCode.equals(successCode)) {
                             userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                        } 
+                        }
                     }
                 }
-                
+
             }
 
 
         } catch (IOException | InterruptedException e) {
             throw new BizException("发送请求失败", e);
-        }finally{
+        } finally {
             //保存用户请求记录
             userRequestLogRepository.save(userRequestLogPo);
         }

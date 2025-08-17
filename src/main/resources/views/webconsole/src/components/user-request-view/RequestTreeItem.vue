@@ -24,26 +24,37 @@
       <div v-if="isGroup(node)" class="tag-tree-item-tag">
         <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="handleToggleNode(node.id)">
           <ArrowRight v-if="!isExpanded(node.id)" />
-          <ArrowDown v-else />
+          <ArrowDown v-if="isExpanded(node.id)" />
         </el-icon>
         <el-icon class="folder-icon">
-          <Folder />
+          <Folder v-show="node.children?.length === 0"/>
+<!--          <IDeviconPlainHyperv />-->
+<!--          <IFlatColorIconsFolder  />-->
+          <IStreamlineCyberNetwork v-show="node.children?.length !== 0"/>
         </el-icon>
         <span class="node-name">{{ node.name }}</span>
       </div>
 
+      <div class="item-indicator-filter" v-if="node.simpleFilterCount && node.simpleFilterCount > 0" :title="`启用了${node.simpleFilterCount}个基本过滤器`">
+        <el-icon class="filter-icon">
+          <!--          <Filter />-->
+          <IDashiconsImageFilter />
+        </el-icon>
+        <span>{{ node.simpleFilterCount }}</span>
+      </div>
+
+      <div class="item-indicator-count" v-if="isGroup(node) && hasChildren(node)">
+        {{ node.children?.length }}
+      </div>
+
       <!-- 请求项的显示 -->
-      <div v-else class="operation-item-content" style="overflow: hidden">
+      <div v-if="!isGroup(node)" class="operation-item-content" style="overflow: hidden">
         <div v-if="node.method" class="operation-method" :class="getMethodClass(node.method)">
           {{ node.method }}
         </div>
         <div class="operation-name">
           {{ node.name }}
         </div>
-      </div>
-
-      <div v-if="isGroup(node) && hasChildren(node)" class="tag-tree-item-count">
-        {{ node.children?.length }}
       </div>
     </div>
 
@@ -69,7 +80,7 @@
 <script setup lang="ts">
 import UserRequestTreeApi from "@/api/UserRequestTreeApi";
 import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from "@/api/UserRequestTreeApi";
-import { Folder, ArrowDown, ArrowRight, Document } from "@element-plus/icons-vue";
+import { Folder, ArrowDown, ArrowRight, Document, Filter } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 
@@ -264,7 +275,47 @@ const handleDrop = async (event: DragEvent) => {
 }
 
 .folder-icon {
-  color: #409eff !important;
+  color: #30aabf !important;
+}
+
+.item-indicator-filter {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #ff8888 0%, #ee5a6f 100%);
+  color: white;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: none;
+  margin-left: auto;
+  gap: 3px;
+}
+
+.item-indicator-filter .filter-icon {
+  color: white !important;
+  font-size: 12px;
+}
+
+.item-indicator-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #409eff 0%, #66b3ff 100%);
+  color: white;
+  padding: 2px 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: none;
+  margin-left: 4px;
+  min-width: 20px;
+  text-align: center;
+  line-height: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(64, 158, 255, 0.3);
 }
 
 .node-name {
@@ -280,14 +331,15 @@ const handleDrop = async (event: DragEvent) => {
   padding: 6px 12px;
   font-size: 14px;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  margin: 4px 8px;
+  /*border: 1px solid #e9ecef;*/
+  /*border-radius: 4px;*/
+  margin: 0 0px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   user-select: none;
   min-height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0);
 }
 
 .drag-over-center {
@@ -305,7 +357,8 @@ const handleDrop = async (event: DragEvent) => {
 
 .request-item {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #dee2e6;
+  /*border: 1px solid #dee2e6;*/
+  border: 1px solid rgba(222, 226, 230, 0);
 }
 
 .request-item:hover {
@@ -333,18 +386,6 @@ const handleDrop = async (event: DragEvent) => {
   box-shadow: 0 2px 6px rgba(64, 158, 255, 0.2);
 }
 
-.tag-tree-item-count {
-  background: linear-gradient(135deg, #409eff 0%, #66b3ff 100%);
-  color: white;
-  padding: 2px 4px;
-  border-radius: 16px;
-  font-size: 11px;
-  font-weight: 600;
-  min-width: 20px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(64, 158, 255, 0.3);
-}
-
 .expand-icon {
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -357,8 +398,8 @@ const handleDrop = async (event: DragEvent) => {
 }
 
 .operation-list {
-  margin-left: 20px;
-  margin-top: 4px;
+  margin-left: 15px;
+  margin-top: 2px;
   animation: slideDown 0.3s ease-out;
 }
 
@@ -427,10 +468,6 @@ const handleDrop = async (event: DragEvent) => {
 
 .method-unknown {
   background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
-}
-
-.tree-node {
-  margin-bottom: 2px;
 }
 
 .node-active {

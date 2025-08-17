@@ -124,6 +124,7 @@ import UserRequestGroupApi from "@/api/UserRequestGroupApi";
 import { ElMessage } from "element-plus";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
 import SimpleFilterApi, { type GetSimpleFilterListVo } from "@/api/SimpleFilterApi";
+import { EventHolder } from "@/store/EventHolder";
 
 const globalLoading = ref(false);
 
@@ -189,6 +190,9 @@ const saveGroup = async () => {
       description: formData.value.description,
       simpleFilterIds: appliedFilters.value.map((f) => f.id),
     });
+
+    //通知树重新加载
+    EventHolder().requestReloadTree();
     ElMessage.success("保存成功");
   } catch (e) {
     ElMessage.error(`保存失败:${e}`);
