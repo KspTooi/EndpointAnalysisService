@@ -1,18 +1,17 @@
 package com.ksptooi.biz.core.model.filter.dto;
 
+import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Range;
-import com.ksptooi.commons.dataprocess.Str;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
 public class EditSimpleFilterOperationDto {
 
-    @NotNull(message = "操作ID不能为空")
     private Long id;
 
     @NotBlank(message = "操作名称不能为空")
@@ -40,8 +39,9 @@ public class EditSimpleFilterOperationDto {
     @Schema(description = "排序")
     private Integer seq;
 
-        /**
+    /**
      * 验证参数逻辑
+     *
      * @return 错误信息 当没有错误时返回null
      */
     public String validate() {
@@ -76,7 +76,6 @@ public class EditSimpleFilterOperationDto {
         return null;
     }
 
-    
 
 }
 

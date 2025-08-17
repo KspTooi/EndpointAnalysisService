@@ -20,8 +20,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SimpleFilterService {
@@ -49,7 +52,7 @@ public class SimpleFilterService {
      * @param dto 过滤器信息
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addSimpleFilter(AddSimpleFilterDto dto) throws AuthException {
+    public String addSimpleFilter(AddSimpleFilterDto dto) throws AuthException {
 
         //获取当前登录用户
         UserPo user = authService.requireUser();
@@ -95,7 +98,8 @@ public class SimpleFilterService {
         insertPo.setOperations(operations);
 
         //保存过滤器
-        repository.save(insertPo);
+        SimpleFilterPo save = repository.save(insertPo);
+        return save.getId() + "";
     }
 
     /**
@@ -111,6 +115,13 @@ public class SimpleFilterService {
 
         SimpleFilterPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
+
+        //判断更新时间是否过期
+        String epochMilli = updatePo.getUpdateTime().toInstant(ZoneOffset.of("+0")).toEpochMilli() + "";
+
+        if (!epochMilli.equals(dto.getUpdateTimeEpochMill())) {
+            throw new BizException("过滤器数据已过期,请刷新页面后重试");
+        }
 
         //判断过滤器是否属于当前用户
         if (updatePo.getUser() != null && !updatePo.getUser().getId().equals(user.getId())) {
@@ -155,7 +166,7 @@ public class SimpleFilterService {
 
             //更新触发器并搜集需要删除的触发器
             for (var dtoItem : dto.getTriggers()) {
-                if (dtoItem.getId() == item.getId()) {
+                if (Objects.equals(dtoItem.getId(), item.getId())) {
                     item.setTarget(dtoItem.getTarget());
                     item.setKind(dtoItem.getKind());
                     item.setTk(dtoItem.getTk());
@@ -206,7 +217,7 @@ public class SimpleFilterService {
         for (var item : operationPos) {
             var needRemove = true;
             for (var dtoItem : dto.getOperations()) {
-                if (dtoItem.getId() == item.getId()) {
+                if (Objects.equals(dtoItem.getId(), item.getId())) {
                     item.setKind(dtoItem.getKind());
                     item.setTarget(dtoItem.getTarget());
                     item.setF(dtoItem.getF());
@@ -228,6 +239,7 @@ public class SimpleFilterService {
         }
 
         //保存过滤器
+        updatePo.setUpdateTime(LocalDateTime.now());
         repository.save(updatePo);
     }
 
@@ -252,6 +264,7 @@ public class SimpleFilterService {
         vo.setName(po.getName());
         vo.setDirection(po.getDirection());
         vo.setStatus(po.getStatus());
+        vo.setUpdateTimeEpochMill(po.getUpdateTime().toInstant(ZoneOffset.of("+0")).toEpochMilli() + "");
 
         //处理触发器
         List<GetSimpleFilterTriggerDetailsVo> triggerVos = new ArrayList<>();

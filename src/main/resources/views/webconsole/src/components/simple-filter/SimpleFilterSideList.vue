@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
 import SimpleFilterApi, { type GetSimpleFilterListDto, type GetSimpleFilterListVo } from "@/api/SimpleFilterApi";
@@ -132,6 +132,8 @@ const handleItemClick = (item: GetSimpleFilterListVo) => {
 
 const handleAddFilter = () => {
   emit("addFilter");
+  filterStore.setIsCreating(true);
+  ElMessage.primary("开始创建新基本过滤器,请在编辑器中进行编辑");
 };
 
 const handleDelete = async (item: GetSimpleFilterListVo) => {
@@ -142,7 +144,13 @@ const handleDelete = async (item: GetSimpleFilterListVo) => {
       type: "warning",
     });
 
-    // TODO: 实现删除功能
+    await SimpleFilterApi.removeSimpleFilter({ id: item.id });
+
+    //如果删除的是当前选中的过滤器，则清空选中
+    if (filterStore.getSelectedFilterId === item.id) {
+      filterStore.setSelectedFilterId(null);
+    }
+
     ElMessage.success("删除成功");
     await loadData();
   } catch {
@@ -183,6 +191,28 @@ onUnmounted(() => {
     listContentRef.value.removeEventListener("scroll", handleScroll);
   }
 });
+
+//退出编辑器时，重新加载数据
+watch(
+  () => filterStore.isCreating,
+  (isCreating) => {
+    if (!isCreating) {
+      loadData();
+    }
+  },
+  { immediate: true }
+);
+
+//监听是否需要重新加载数据
+watch(
+  () => filterStore.isNeedReloadList,
+  (isNeedReloadList) => {
+    if (isNeedReloadList) {
+      loadData();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>

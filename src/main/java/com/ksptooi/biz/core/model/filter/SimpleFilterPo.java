@@ -46,11 +46,11 @@ public class SimpleFilterPo {
     private LocalDateTime updateTime;
 
     //过滤器下的触发器
-    @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SimpleFilterTriggerPo> triggers;
 
     //过滤器下的操作
-    @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SimpleFilterOperationPo> operations;
 
     @PrePersist

@@ -1,15 +1,15 @@
 <template>
   <div class="manager-container">
     <div class="sidebar">
-      <SimpleFilterSideList @selectItem="handleSelectItem" @addFilter="handleAddFilter" />
+      <SimpleFilterSideList @selectItem="handleSelectItem" />
     </div>
 
     <div class="content-area">
-      <div class="placeholder" v-if="!filterStore.getSelectedFilterId">
+      <div class="placeholder" v-if="!filterStore.getSelectedFilterId && !filterStore.isCreating">
         <el-empty description="请选择一个过滤器查看详情" />
       </div>
 
-      <div class="filter-details" v-if="filterStore.getSelectedFilterId">
+      <div class="filter-details" v-if="filterStore.getSelectedFilterId || filterStore.isCreating">
         <SimpleFilterEditor />
       </div>
     </div>
@@ -41,10 +41,6 @@ watch(selectedFilterId, (newId) => {
 const handleSelectItem = (item: GetSimpleFilterListVo) => {
   selectedItem.value = item;
 };
-
-const handleAddFilter = () => {
-  ElMessage.info("新增过滤器功能开发中...");
-};
 </script>
 
 <style scoped>
@@ -65,6 +61,8 @@ const handleAddFilter = () => {
   background: #ffffff;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .placeholder {
@@ -76,5 +74,7 @@ const handleAddFilter = () => {
 
 .filter-details {
   flex: 1;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

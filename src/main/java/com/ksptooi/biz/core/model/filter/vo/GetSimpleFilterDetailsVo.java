@@ -1,10 +1,10 @@
 package com.ksptooi.biz.core.model.filter.vo;
 
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,5 +28,7 @@ public class GetSimpleFilterDetailsVo {
     @Schema(description = "操作列表")
     private List<GetSimpleFilterOperationDetailsVo> operations;
 
+    @Schema(description = "更新时间")
+    private String updateTimeEpochMill;
 }
 

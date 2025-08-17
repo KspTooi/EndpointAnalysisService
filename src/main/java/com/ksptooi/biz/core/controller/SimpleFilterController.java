@@ -46,9 +46,8 @@ public class SimpleFilterController {
         if (Str.isNotBlank(validate)) {
             return Result.error(validate);
         }
-
-        simpleFilterService.addSimpleFilter(dto);
-        return Result.success("新增成功");
+        
+        return Result.success(simpleFilterService.addSimpleFilter(dto));
     }
 
     @Operation(summary = "编辑简单过滤器")

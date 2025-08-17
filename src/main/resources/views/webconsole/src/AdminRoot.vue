@@ -1,40 +1,40 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw } from 'vue'
-import { useRouter } from 'vue-router'
-import AdminFrame from './components/element-ui-admin/AdminFrame.vue'
-import { ElLoading, ElLoadingService, ElDropdownItem, ElIcon } from 'element-plus'
-import { User, Setting, InfoFilled } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, markRaw } from "vue";
+import { useRouter } from "vue-router";
+import AdminFrame from "./components/element-ui-admin/AdminFrame.vue";
+import { ElLoading, ElLoadingService, ElDropdownItem, ElIcon } from "element-plus";
+import { User, Setting, InfoFilled } from "@element-plus/icons-vue";
 
 // 使用 markRaw 包装图标组件
 const UserIcon = markRaw(User);
 const SettingIcon = markRaw(Setting);
 const InfoFilledIcon = markRaw(InfoFilled);
 
-const router = useRouter()
-const isLoading = ref(true)
+const router = useRouter();
+const isLoading = ref(true);
 
 // 模拟用户数据
 const currentUser = reactive({
-  name: '管理员',
-  avatar: '', // 可以添加头像路径
-  role: 'admin'
-})
+  name: "管理员",
+  avatar: "", // 可以添加头像路径
+  role: "admin",
+});
 
 // 处理菜单点击
 const handleMenuClick = (menuId: string) => {
-  console.log(`菜单点击: ${menuId}`)
-}
+  console.log(`菜单点击: ${menuId}`);
+};
 
 // 处理菜单操作
 const handleMenuAction = (action: string, menuId: string) => {
-  console.log(`执行操作: ${action}, 菜单ID: ${menuId}`)
-}
+  console.log(`执行操作: ${action}, 菜单ID: ${menuId}`);
+};
 
 // 处理登出
 const handleLogout = () => {
   // 这里添加登出逻辑
-  router.push('/login')
-}
+  router.push("/login");
+};
 
 // 创建loading实例
 let loadingInstance: ReturnType<typeof ElLoadingService> | null = null;
@@ -44,7 +44,8 @@ onMounted(() => {
   // 使用 ElLoadingService 而非组件形式
   loadingInstance = ElLoading.service({
     fullscreen: true,
-    lock: true
+    lock: true,
+    text: "正在处理...",
   });
 
   setTimeout(() => {
@@ -54,19 +55,12 @@ onMounted(() => {
       loadingInstance = null;
     }
     isLoading.value = false;
-  }, 500)
-})
+  }, 320);
+});
 </script>
 
 <template>
-  <admin-frame
-      v-if="!isLoading"
-      title="管理控制台"
-      :user="currentUser"
-      @menu-click="handleMenuClick"
-      @menu-action="handleMenuAction"
-      @logout="handleLogout"
-  >
+  <admin-frame v-if="!isLoading" title="管理控制台" :user="currentUser" @menu-click="handleMenuClick" @menu-action="handleMenuAction" @logout="handleLogout">
     <!-- 用户下拉菜单额外项目插槽 -->
     <template #user-dropdown>
       <el-dropdown-item>
@@ -87,7 +81,9 @@ onMounted(() => {
 
 <style>
 /* 全局样式，禁止页面滚动 */
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   padding: 0;
   height: 100%;

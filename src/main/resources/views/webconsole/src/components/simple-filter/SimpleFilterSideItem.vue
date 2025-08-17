@@ -77,7 +77,6 @@ const getStatusText = (status: number) => {
 const getStatusTagType = (status: number) => {
   return status === 0 ? "success" : "danger";
 };
-
 </script>
 
 <style scoped>
@@ -89,6 +88,7 @@ const getStatusTagType = (status: number) => {
   margin-bottom: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  user-select: none;
 }
 
 .filter-item:hover {

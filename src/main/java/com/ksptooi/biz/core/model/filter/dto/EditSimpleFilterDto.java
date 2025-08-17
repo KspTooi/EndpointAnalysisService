@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import com.ksptooi.commons.dataprocess.Str;
 
@@ -35,6 +37,10 @@ public class EditSimpleFilterDto {
     @Valid
     @Schema(description = "操作列表")
     private List<EditSimpleFilterOperationDto> operations;
+
+    @NotBlank(message = "更新时间不能为空")
+    @Schema(description = "更新时间")
+    private String updateTimeEpochMill;
 
     /**
      * 验证参数逻辑

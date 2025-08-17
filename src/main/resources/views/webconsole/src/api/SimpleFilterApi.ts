@@ -70,17 +70,18 @@ export interface EditSimpleFilterOperationDto {
 
 //编辑过滤器
 export interface EditSimpleFilterDto {
-  id: string; // 过滤器ID
+  id: string | null; // 过滤器ID
   name: string; // 过滤器名称
   direction: number; // 过滤器方向 0:请求过滤器 1:响应过滤器
   status: number; // 状态 0:启用 1:禁用
   triggers: EditSimpleFilterTriggerDto[]; // 触发器列表
   operations: EditSimpleFilterOperationDto[]; // 操作列表
+  updateTimeEpochMill: string; // 更新时间
 }
 
 //查询过滤器触发器详情
 export interface GetSimpleFilterTriggerDetailsVo {
-  id: string; // 触发器ID
+  id: string | null; // 触发器ID
   name: string; // 触发器名称
   target: number; // 目标 0:标头 1:JSON载荷 2:URL 3:HTTP方法
   kind: number; // 条件 0:包含 1:不包含 2:等于 3:不等于
@@ -91,7 +92,7 @@ export interface GetSimpleFilterTriggerDetailsVo {
 
 //查询过滤器操作详情
 export interface GetSimpleFilterOperationDetailsVo {
-  id: string; // 操作ID
+  id: string | null; // 操作ID
   name: string; // 操作名称
   kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
   target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)
@@ -102,12 +103,13 @@ export interface GetSimpleFilterOperationDetailsVo {
 
 //查询过滤器详情
 export interface GetSimpleFilterDetailsVo {
-  id: string; // 过滤器ID
+  id: string | null; // 过滤器ID
   name: string; // 过滤器名称
   direction: number; // 过滤器方向 0:请求过滤器 1:响应过滤器
   status: number; // 状态 0:启用 1:禁用
   triggers: GetSimpleFilterTriggerDetailsVo[]; // 触发器列表
   operations: GetSimpleFilterOperationDetailsVo[]; // 操作列表
+  updateTimeEpochMill: string; // 更新时间
 }
 
 export default {
@@ -125,8 +127,12 @@ export default {
    * @param dto 过滤器信息
    * @returns 过滤器ID
    */
-  addSimpleFilter: async (dto: AddSimpleFilterDto): Promise<Result<void>> => {
-    return await Http.postEntity<Result<void>>("/simpleFilter/addSimpleFilter", dto);
+  addSimpleFilter: async (dto: AddSimpleFilterDto): Promise<string> => {
+    const ret = await Http.postEntity<Result<string>>("/simpleFilter/addSimpleFilter", dto);
+    if (ret.code === 0) {
+      return ret.data;
+    }
+    throw new Error(ret.message);
   },
 
   /**
@@ -149,5 +155,14 @@ export default {
       return ret.data;
     }
     throw new Error(ret.message);
+  },
+
+  /**
+   * 删除过滤器
+   * @param dto 过滤器ID
+   * @returns 删除结果
+   */
+  removeSimpleFilter: async (dto: CommonIdDto): Promise<Result<void>> => {
+    return await Http.postEntity<Result<void>>("/simpleFilter/removeSimpleFilter", dto);
   },
 };
