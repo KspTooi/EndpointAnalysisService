@@ -1,7 +1,8 @@
 <template>
   <div class="request-viewer-container">
     <RequestTree style="width: 350px" />
-    <RequestEditor style="flex: 1" />
+    <RequestEditor style="flex: 1" v-show="RequestTreeHolder().getActiveNodeType == 'request'" />
+    <RequestEditorGroup style="flex: 1" v-show="RequestTreeHolder().getActiveNodeType == 'group'" />
   </div>
 </template>
 

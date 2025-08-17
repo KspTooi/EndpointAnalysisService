@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -121,7 +120,7 @@ public class UserRequestGroupService {
                 item.getGroups().add(updatePo);
             }
         }
-        
+
         //前端的过滤器列表中无法找到已绑定的过滤器 处理关系解绑
         for (var item : applyedFilterPos) {
             var find = false;
@@ -135,8 +134,6 @@ public class UserRequestGroupService {
                 item.getGroups().remove(updatePo);
             }
         }
-
-
 
         repository.save(updatePo);
     }
