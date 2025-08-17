@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -103,38 +104,39 @@ public class UserRequestGroupService {
         //查找已绑定的过滤器
         List<SimpleFilterPo> applyedFilterPos = updatePo.getFilters();
 
-        if(dto.getSimpleFilterIds().size() != filterPos.size()){
+        if (dto.getSimpleFilterIds().size() != filterPos.size()) {
             throw new BizException("无法处理过滤器应用,至少有一个过滤器不存在.");
         }
 
         //已绑定的过滤器中不存在前端传入的过滤器 处理新增
-        for(var item : filterPos){
+        for (var item : filterPos) {
             var find = false;
-            for(var applyedItem : applyedFilterPos){
-                if(applyedItem.getId().equals(item.getId())){
+            for (var applyedItem : applyedFilterPos) {
+                if (applyedItem.getId().equals(item.getId())) {
                     find = true;
                     break;
                 }
             }
-            if(!find){
+            if (!find) {
                 item.getGroups().add(updatePo);
             }
         }
-
-        //前端的过滤器列表中无法找到已绑定的过滤器 处理删除
-        for(var item : applyedFilterPos){
+        
+        //前端的过滤器列表中无法找到已绑定的过滤器 处理关系解绑
+        for (var item : applyedFilterPos) {
             var find = false;
-            for(var filterPosItem : filterPos){
-                if(filterPosItem.getId().equals(item.getId())){
+            for (var filterPosItem : filterPos) {
+                if (filterPosItem.getId().equals(item.getId())) {
                     find = true;
                     break;
                 }
             }
-            if(!find){
+            if (!find) {
                 item.getGroups().remove(updatePo);
-                updatePo.getFilters().remove(item);
             }
         }
+
+
 
         repository.save(updatePo);
     }
