@@ -1,10 +1,11 @@
 package com.ksptooi.biz.userrequest.controller;
 
-import com.ksptooi.biz.userrequest.model.userrequestgroup.*;
+import com.ksptooi.biz.userrequest.model.userrequestgroup.AddUserRequestGroupDto;
+import com.ksptooi.biz.userrequest.model.userrequestgroup.EditUserRequestGroupDto;
+import com.ksptooi.biz.userrequest.model.userrequestgroup.GetUserRequestGroupDetailsVo;
 import com.ksptooi.biz.userrequest.service.UserRequestGroupService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,13 +36,6 @@ public class UserRequestGroupController {
             return Result.error("无数据");
         }
         return Result.success(details);
-    }
-
-
-    @PostMapping("/getUserRequestGroupList")
-    @Operation(summary = "查询请求组列表")
-    public PageResult<GetUserRequestGroupListVo> getUserRequestGroupList(@RequestBody @Valid GetUserRequestGroupListDto dto) throws Exception {
-        return userRequestGroupService.getUserRequestGroupList(dto);
     }
 
     @Operation(summary = "新增请求组")

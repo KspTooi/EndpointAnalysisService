@@ -1,5 +1,9 @@
 package com.ksptooi.biz.userrequest.model.userrequestgroup;
 
+import java.util.List;
+
+import com.ksptooi.biz.core.model.filter.vo.GetSimpleFilterListVo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +20,8 @@ public class GetUserRequestGroupDetailsVo {
     @Schema(description = "请求组描述")
     private String description;
 
-    @Schema(description = "绑定的过滤器")
-    
+    @Schema(description = "基本过滤器列表")
+    private List<GetSimpleFilterListVo> simpleFilters;
 
 }
 

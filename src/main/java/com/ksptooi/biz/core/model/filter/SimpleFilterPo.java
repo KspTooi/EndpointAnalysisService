@@ -1,9 +1,11 @@
 package com.ksptooi.biz.core.model.filter;
 
 import com.ksptooi.biz.user.model.user.UserPo;
+import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
@@ -52,6 +54,17 @@ public class SimpleFilterPo {
     //过滤器下的操作
     @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SimpleFilterOperationPo> operations;
+
+    //过滤器所属的请求组
+    @BatchSize(size = 20)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_request_group_simple_filter",
+            joinColumns = @JoinColumn(name = "simple_filter_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
+            inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    )
+    @Comment("过滤器所属的请求组")
+    private List<UserRequestGroupPo> groups;
 
     @PrePersist
     public void prePersist() {
