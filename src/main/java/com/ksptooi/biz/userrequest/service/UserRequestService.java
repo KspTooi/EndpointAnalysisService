@@ -492,12 +492,6 @@ public class UserRequestService {
             userRequestLogPo.setStatus(0);
             userRequestLogPo.setResponseTime(LocalDateTime.now());
 
-            if (StringUtils.isBlank(responseBody)) {
-                userRequestLogPo.setResponseBody("{}");
-            }
-            if (StringUtils.isNotBlank(userRequestLogPo.getResponseBodyType())) {
-                userRequestLogPo.setResponseBodyType("?");
-            }
 
             //处理响应头
             List<HttpHeaderVo> responseHeadersList = new ArrayList<>();
