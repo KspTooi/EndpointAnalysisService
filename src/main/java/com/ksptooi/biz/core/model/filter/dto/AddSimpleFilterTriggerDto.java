@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.Range;
 @Setter
 public class AddSimpleFilterTriggerDto {
 
-    @NotBlank(message = "触发器名称不能为空")
     @Schema(description = "触发器名称")
     private String name;
 

@@ -12,7 +12,6 @@ import lombok.Setter;
 @Setter
 public class AddSimpleFilterOperationDto {
 
-    @NotBlank(message = "操作名称不能为空")
     @Schema(description = "操作名称")
     private String name;
     

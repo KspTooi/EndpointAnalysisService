@@ -13,23 +13,25 @@
             <el-option label="JSON载荷" :value="1" />
             <el-option label="URL" :value="2" />
             <el-option label="HTTP方法" :value="3" />
+            <el-option label="总是触发" :value="4" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="条件" required>
+        <el-form-item label="条件" required v-if="formData.target !== 4">
           <el-select v-model="formData.kind" placeholder="请选择条件">
             <el-option label="包含" :value="0" />
             <el-option label="不包含" :value="1" />
             <el-option label="等于" :value="2" />
             <el-option label="不等于" :value="3" />
+            <el-option label="总是触发" :value="4" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="目标键" required>
+        <el-form-item label="目标键" required v-if="formData.target !== 4">
           <el-input v-model="formData.tk" placeholder="请输入目标键" />
         </el-form-item>
 
-        <el-form-item label="比较值" required>
+        <el-form-item label="比较值" required v-if="formData.target !== 4">
           <el-input v-model="formData.tv" placeholder="请输入比较值" />
         </el-form-item>
       </el-form>
@@ -44,7 +46,7 @@
 
 <script setup lang="ts">
 import type { AddSimpleFilterTriggerDto, EditSimpleFilterTriggerDto } from "@/api/SimpleFilterApi";
-import { ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 
 const show = ref(false);
 const mode = ref<"add" | "edit">("add");

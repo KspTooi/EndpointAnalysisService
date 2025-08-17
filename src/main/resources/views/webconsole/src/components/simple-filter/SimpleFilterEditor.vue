@@ -6,11 +6,11 @@
       <div class="sf-loading-text">正在处理...</div>
     </div>
 
-    <div v-if="!formData && !filterStore.isCreating" class="empty-state">
+    <div v-show="!formData && !filterStore.isCreating" class="empty-state">
       <el-empty description="无法加载过滤器信息" />
     </div>
 
-    <div v-if="formData || filterStore.isCreating" class="editor-content">
+    <div v-show="formData || filterStore.isCreating" class="editor-content">
       <!-- 主编辑卡片 -->
       <el-card class="main-card">
         <template #header>
@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
-import { onMounted, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import SimpleFilterApi from "@/api/SimpleFilterApi";
 import type {
@@ -193,36 +193,29 @@ const loadFilterDetails = async () => {
   globalLoading.value = true;
   try {
     const filter = await SimpleFilterApi.getSimpleFilterDetails({ id: selectedFilterId });
-
-    //组装局部数据
-    const incomingFormdata: GetSimpleFilterDetailsVo = {
-      id: filter.id,
-      name: filter.name,
-      direction: filter.direction,
-      status: filter.status,
-      triggers: filter.triggers.map((t) => ({
-        id: t.id,
-        name: t.name,
-        target: t.target,
-        kind: t.kind,
-        tk: t.tk,
-        tv: t.tv,
-        seq: t.seq,
-      })),
-      operations: filter.operations.map((o) => ({
-        id: o.id,
-        name: o.name,
-        kind: o.kind,
-        target: o.target,
-        f: o.f,
-        t: o.t,
-        seq: o.seq,
-      })),
-      updateTimeEpochMill: filter.updateTimeEpochMill,
-    };
-
-    //替换核心表单数据
-    formData.value = incomingFormdata;
+    formData.value.id = filter.id;
+    formData.value.name = filter.name;
+    formData.value.direction = filter.direction;
+    formData.value.status = filter.status;
+    formData.value.triggers = filter.triggers.map((t) => ({
+      id: t.id,
+      name: t.name,
+      target: t.target,
+      kind: t.kind,
+      tk: t.tk,
+      tv: t.tv,
+      seq: t.seq,
+    }));
+    formData.value.operations = filter.operations.map((o) => ({
+      id: o.id,
+      name: o.name,
+      kind: o.kind,
+      target: o.target,
+      f: o.f,
+      t: o.t,
+      seq: o.seq,
+    }));
+    formData.value.updateTimeEpochMill = filter.updateTimeEpochMill;
   } catch (error) {
     ElMessage.error("加载过滤器详情失败");
     console.error(error);
@@ -465,7 +458,6 @@ watch(
   height: calc(100% - 50px);
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 500px;
   /* 修复快速滚动出现的绘制错位问题：为滚动容器创建独立合成层并限制重绘范围 */
   will-change: transform;
   transform: translateZ(0);
