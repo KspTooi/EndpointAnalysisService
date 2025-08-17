@@ -93,6 +93,11 @@ const openWithEdit = (data: EditSimpleFilterTriggerDto, idx: number) => {
 };
 
 const submit = () => {
+  //当目标是4:总是触发时，kind变更为4
+  if (formData.value.target === 4) {
+    formData.value.kind = 4;
+  }
+
   //新增
   if (mode.value === "add") {
     emit("add", {

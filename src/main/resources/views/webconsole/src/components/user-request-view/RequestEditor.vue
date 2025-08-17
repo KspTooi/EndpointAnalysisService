@@ -190,10 +190,15 @@ const onSendRequest = async () => {
     requestBody: requestDetail.value.requestBody,
   });
 
-  await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
-  await urResponseListRef.value?.loadUserRequestLogList();
-
-  loading.value = false;
+  try {
+    await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
+    await urResponseListRef.value?.loadUserRequestLogList();
+  } catch (e) {
+    ElMessage.error(`发送请求失败:${e}`);
+  } finally {
+    await urResponseListRef.value?.loadUserRequestLogList();
+    loading.value = false;
+  }
 };
 
 /**

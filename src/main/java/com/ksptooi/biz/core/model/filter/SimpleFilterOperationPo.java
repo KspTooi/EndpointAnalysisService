@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,7 +37,7 @@ public class SimpleFilterOperationPo {
     private Integer target;
 
     @Comment("原始键")
-    @Column(name = "f", length = 128, nullable = false)
+    @Column(name = "f", length = 128)
     private String f;
 
     @Comment("目标键")
@@ -56,7 +57,6 @@ public class SimpleFilterOperationPo {
     private LocalDateTime updateTime;
 
 
-
     @PrePersist
     public void prePersist() {
         this.createTime = LocalDateTime.now();
@@ -70,38 +70,38 @@ public class SimpleFilterOperationPo {
         generateName();
     }
 
-    public void generateName(){
-        
+    public void generateName() {
+
         StringBuilder sb = new StringBuilder();
         String targetStr = null;
-        if(target == 0){
+        if (target == 0) {
             targetStr = "标头";
         }
-        if(target == 1){
+        if (target == 1) {
             targetStr = "JSON载荷";
         }
-        if(target == 2){
+        if (target == 2) {
             targetStr = "URL";
         }
 
         String kindStr = null;
-        if(kind == 0){
+        if (kind == 0) {
             kindStr = "持久化";
         }
-        if(kind == 1){
+        if (kind == 1) {
             kindStr = "缓存";
         }
-        if(kind == 2){
+        if (kind == 2) {
             kindStr = "注入缓存";
         }
-        if(kind == 3){
+        if (kind == 3) {
             kindStr = "注入持久化";
         }
-        if(kind == 4){
+        if (kind == 4) {
             kindStr = "覆写URL";
         }
 
-        if(targetStr == null || kindStr == null){
+        if (targetStr == null || kindStr == null) {
             return;
         }
 

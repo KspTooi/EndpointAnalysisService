@@ -2,22 +2,20 @@ package com.ksptooi.biz.userrequest.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.ksptooi.biz.userrequest.model.userrequest.HttpHeaderVo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.*;
-
+import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
+import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.http.HttpHeaderVo;
+import com.ksptooi.commons.utils.web.CommonIdDto;
+import com.ksptooi.commons.utils.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import org.springframework.data.domain.Page;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
-import com.ksptooi.commons.utils.GsonUtils;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -31,29 +29,29 @@ public class UserRequestLogService {
     @Autowired
     private Gson gson;
 
-    public PageResult<GetUserRequestLogListVo> getUserRequestLogList(GetUserRequestLogListDto dto){
+    public PageResult<GetUserRequestLogListVo> getUserRequestLogList(GetUserRequestLogListDto dto) {
         Page<GetUserRequestLogListVo> pVos = repository.getUserRequestLogList(dto.getUserRequestId(), dto.pageRequest());
         return PageResult.success(pVos.getContent(), pVos.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addUserRequestLog(AddUserRequestLogDto dto){
-        UserRequestLogPo insertPo = as(dto,UserRequestLogPo.class);
+    public void addUserRequestLog(AddUserRequestLogDto dto) {
+        UserRequestLogPo insertPo = as(dto, UserRequestLogPo.class);
         repository.save(insertPo);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void editUserRequestLog(EditUserRequestLogDto dto) throws BizException {
         UserRequestLogPo updatePo = repository.findById(dto.getId())
-            .orElseThrow(()-> new BizException("更新失败,数据不存在."));
+                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
-        assign(dto,updatePo);
+        assign(dto, updatePo);
         repository.save(updatePo);
     }
 
     public GetUserRequestLogDetailsVo getUserRequestLogDetails(CommonIdDto dto) throws BizException {
         UserRequestLogPo po = repository.findById(dto.getId())
-            .orElseThrow(()-> new BizException("更新失败,数据不存在."));
+                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
         GetUserRequestLogDetailsVo vo = new GetUserRequestLogDetailsVo();
         vo.setId(po.getId());
@@ -80,11 +78,13 @@ public class UserRequestLogService {
         List<HttpHeaderVo> requestHeaders = new ArrayList<>();
         List<HttpHeaderVo> responseHeaders = new ArrayList<>();
 
-        if(StringUtils.isNotBlank(po.getRequestHeaders())){
-            requestHeaders = gson.fromJson(po.getRequestHeaders(), new TypeToken<List<HttpHeaderVo>>(){}.getType());
+        if (StringUtils.isNotBlank(po.getRequestHeaders())) {
+            requestHeaders = gson.fromJson(po.getRequestHeaders(), new TypeToken<List<HttpHeaderVo>>() {
+            }.getType());
         }
-        if(StringUtils.isNotBlank(po.getResponseHeaders())){
-            responseHeaders = gson.fromJson(po.getResponseHeaders(), new TypeToken<List<HttpHeaderVo>>(){}.getType());
+        if (StringUtils.isNotBlank(po.getResponseHeaders())) {
+            responseHeaders = gson.fromJson(po.getResponseHeaders(), new TypeToken<List<HttpHeaderVo>>() {
+            }.getType());
         }
 
         vo.setRequestHeaders(requestHeaders);
@@ -97,7 +97,7 @@ public class UserRequestLogService {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
         }
-        if(!dto.isBatch()){
+        if (!dto.isBatch()) {
             repository.deleteById(dto.getId());
         }
     }

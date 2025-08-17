@@ -75,6 +75,7 @@
                   <span v-show="row.target === 1" class="gradient-text gradient-green">JSON载荷</span>
                   <span v-show="row.target === 2" class="gradient-text gradient-purple">URL</span>
                   <span v-show="row.target === 3" class="gradient-text gradient-orange">HTTP方法</span>
+                  <span v-show="row.target === 4" class="gradient-text gradient-indigo">总是触发</span>
                 </template>
               </el-table-column>
               <el-table-column prop="kind" label="条件">
@@ -83,6 +84,7 @@
                   <span v-show="row.kind === 1" class="gradient-text gradient-red">不包含</span>
                   <span v-show="row.kind === 2" class="gradient-text gradient-teal">等于</span>
                   <span v-show="row.kind === 3" class="gradient-text gradient-pink">不等于</span>
+                  <span v-show="row.kind === 4" class="gradient-text gradient-indigo">总是触发</span>
                 </template>
               </el-table-column>
               <el-table-column prop="tk" label="目标键" />

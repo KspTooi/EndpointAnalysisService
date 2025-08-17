@@ -92,6 +92,9 @@ public class SimpleFilterTriggerPo {
         if (target == 3) {
             targetStr = "HTTP方法";
         }
+        if (target == 4) {
+            targetStr = "@";
+        }
 
         String kindStr = null;
         if (kind == 0) {
@@ -106,12 +109,16 @@ public class SimpleFilterTriggerPo {
         if (kind == 3) {
             kindStr = "不等于";
         }
+        if (target == 4) {
+            kindStr = "总是触发";
+        }
 
         if (targetStr == null || kindStr == null) {
             return;
         }
 
         sb.append(targetStr).append("_").append(kindStr);
+
         this.name = sb.toString();
     }
 

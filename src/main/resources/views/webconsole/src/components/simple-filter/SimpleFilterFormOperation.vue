@@ -23,7 +23,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="原始键" required>
+      <el-form-item label="原始键" required v-if="formData.kind !== 4">
         <el-input v-model="formData.f" placeholder="请输入原始键" />
       </el-form-item>
 
@@ -88,6 +88,13 @@ const openWithEdit = (data: EditSimpleFilterOperationDto, idx: number) => {
 };
 
 const submit = () => {
+  //当类型是4:覆写URL时，target变更为2:URL
+  if (formData.value.kind === 4) {
+    formData.value.target = 2;
+    //清除原始键
+    formData.value.f = null;
+  }
+
   //新增
   if (mode.value === "add") {
     emit("add", {

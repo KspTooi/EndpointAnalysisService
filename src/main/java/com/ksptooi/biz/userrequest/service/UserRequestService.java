@@ -15,6 +15,8 @@ import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
 import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.http.HttpHeaderVo;
+import com.ksptooi.commons.http.RequestSchema;
 import com.ksptooi.commons.utils.GsonUtils;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import jakarta.security.auth.message.AuthException;
@@ -26,10 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -56,6 +57,9 @@ public class UserRequestService {
 
     @Autowired
     private UserRequestLogRepository userRequestLogRepository;
+
+    @Autowired
+    private UserRequestFilterService userRequestFilterService;
 
     //hop-by-hop请求头
     private static final Set<String> HOP_BY_HOP_HEADERS = new HashSet<>();
@@ -427,66 +431,43 @@ public class UserRequestService {
             throw new BizException("数据不存在或无权限操作.");
         }
 
-        //获取用户请求URL
-        String url = userRequestPo.getUrl();
+        //创建请求Schema
+        RequestSchema requestSchema = new RequestSchema();
+        requestSchema.setUrl(userRequestPo.getUrl());
+        requestSchema.setMethod(userRequestPo.getMethod());
+        requestSchema.parserHeaderFromJson(userRequestPo.getRequestHeaders());
+        requestSchema.setBody(userRequestPo.getRequestBody().getBytes(StandardCharsets.UTF_8));
+        requestSchema.setContentType(userRequestPo.getRequestBodyType());
 
-        //获取用户请求方法
-        String method = userRequestPo.getMethod();
-
-        //获取用户请求头
-        String headers = userRequestPo.getRequestHeaders();
-
-        //获取用户请求体
-        String body = userRequestPo.getRequestBody();
-
-        String requestType = userRequestPo.getRequestBodyType();
-
-        //只能重放json请求
-        if (!requestType.contains("application/json")) {
+        if (!requestSchema.getContentType().contains("application/json")) {
             throw new BizException("只能发送application/json请求");
         }
 
-
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest.Builder request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .method(method, HttpRequest.BodyPublishers.ofString(body));
 
-        //将JSON格式的请求头处理为Map
-        List<HttpHeaderVo> headersList = new ArrayList<>();
-        if (StringUtils.isNotBlank(headers)) {
-            Type listType = new TypeToken<List<HttpHeaderVo>>() {
-            }.getType();
-            headersList = gson.fromJson(headers, listType);
-        }
 
-        //将请求头添加到请求中
-        for (HttpHeaderVo header : headersList) {
-            if (HOP_BY_HOP_HEADERS.contains(header.getK().toLowerCase())) {
-                continue;
-            }
-            request.header(header.getK(), header.getV());
-        }
+        //执行请求过滤器
+        userRequestFilterService.doRequestFilter(requestSchema, userRequestPo);
+
 
         //获取中继服务器
         RelayServerPo relayServerPo = userRequestPo.getOriginalRequest().getRelayServer();
-
 
         //创建重放记录
         UserRequestLogPo userRequestLogPo = new UserRequestLogPo();
         userRequestLogPo.setUserRequest(userRequestPo);
         userRequestLogPo.setRequestId(UUID.randomUUID().toString());
-        userRequestLogPo.setMethod(method);
-        userRequestLogPo.setUrl(url);
+        userRequestLogPo.setMethod(requestSchema.getMethod());
+        userRequestLogPo.setUrl(requestSchema.getUrl());
         userRequestLogPo.setSource("EAS服务");
-        userRequestLogPo.setRequestHeaders(headers);
-        userRequestLogPo.setRequestBodyLength(body.length());
-        userRequestLogPo.setRequestBodyType(requestType);
-        userRequestLogPo.setRequestBody(body);
-        userRequestLogPo.setResponseHeaders(null);
+        userRequestLogPo.setRequestHeaders(gson.toJson(requestSchema.getHeaders()));
+        userRequestLogPo.setRequestBodyLength(requestSchema.getBody().length);
+        userRequestLogPo.setRequestBodyType(requestSchema.getContentType());
+        userRequestLogPo.setRequestBody(new String(requestSchema.getBody(), StandardCharsets.UTF_8));
+        userRequestLogPo.setResponseHeaders("[]");
         userRequestLogPo.setResponseBodyLength(0);
-        userRequestLogPo.setResponseBodyType(null);
-        userRequestLogPo.setResponseBody(null);
+        userRequestLogPo.setResponseBodyType("UNKNOW");
+        userRequestLogPo.setResponseBody("{}");
         userRequestLogPo.setStatusCode(-1); //-1为请求失败
         userRequestLogPo.setRedirectUrl(null);
         userRequestLogPo.setStatus(3); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
@@ -496,7 +477,10 @@ public class UserRequestService {
 
         try {
             //发送请求
-            HttpResponse<String> response = client.send(request.build(), HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(requestSchema.getBuilder().build(), HttpResponse.BodyHandlers.ofString());
+
+            //处理响应过滤器
+            userRequestFilterService.doResponseFilter(response, userRequestPo, userRequestLogPo);
 
             //解析响应
             String responseBody = response.body();
@@ -508,6 +492,12 @@ public class UserRequestService {
             userRequestLogPo.setStatus(0);
             userRequestLogPo.setResponseTime(LocalDateTime.now());
 
+            if (StringUtils.isBlank(responseBody)) {
+                userRequestLogPo.setResponseBody("{}");
+            }
+            if (StringUtils.isNotBlank(userRequestLogPo.getResponseBodyType())) {
+                userRequestLogPo.setResponseBodyType("?");
+            }
 
             //处理响应头
             List<HttpHeaderVo> responseHeadersList = new ArrayList<>();
@@ -557,6 +547,7 @@ public class UserRequestService {
 
 
         } catch (IOException | InterruptedException e) {
+            userRequestLogRepository.save(userRequestLogPo);
             throw new BizException("发送请求失败", e);
         } finally {
             //保存用户请求记录

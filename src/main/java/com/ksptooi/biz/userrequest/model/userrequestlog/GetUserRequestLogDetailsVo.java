@@ -1,14 +1,15 @@
 package com.ksptooi.biz.userrequest.model.userrequestlog;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.ksptooi.biz.userrequest.model.userrequest.HttpHeaderVo;
+import com.ksptooi.commons.http.HttpHeaderVo;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter@Setter
-public class GetUserRequestLogDetailsVo{
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+public class GetUserRequestLogDetailsVo {
 
     //数据ID
     private Long id;
