@@ -107,7 +107,7 @@
                   <IFeQuestion style="vertical-align: -18%; color: #0095ff; cursor: pointer" />
                 </el-tooltip>
               </div>
-              <el-button type="primary" @click="openModalOperation">新增操作</el-button>
+              <el-button type="primary" @click="() => operationFormRef?.openWithAdd()">新增操作</el-button>
             </div>
 
             <el-table :data="formData.operations" :border="true">
@@ -132,7 +132,7 @@
               <el-table-column prop="t" label="目标键" />
               <el-table-column label="操作">
                 <template #default="{ row, $index }">
-                  <el-button type="primary" size="small" @click="editOperation($index)"> 编辑 </el-button>
+                  <el-button type="primary" size="small" @click="() => operationFormRef?.openWithEdit(formData.operations[$index], $index)"> 编辑 </el-button>
                   <el-button type="danger" size="small" @click="removeOperation($index)"> 删除 </el-button>
                 </template>
               </el-table-column>
@@ -146,44 +146,7 @@
     <SimpleFilterFormTrigger ref="triggerFormRef" @add="onTriggerFormAdd" @edit="onTriggerFormEdit" />
 
     <!-- 操作编辑对话框 -->
-    <el-dialog v-model="modalOperationVisible" :title="modalMode === 'add' ? '新增操作' : '编辑操作'" width="500px" align-center>
-      <el-form :model="modalOperationForm" label-width="100px">
-        <el-form-item label="名称">
-          <el-input v-model="modalOperationForm.name" placeholder="请输入操作名称" disabled />
-        </el-form-item>
-
-        <el-form-item label="类型" required>
-          <el-select v-model="modalOperationForm.kind" placeholder="请选择类型">
-            <el-option label="持久化" :value="0" />
-            <el-option label="缓存" :value="1" />
-            <el-option label="注入缓存" :value="2" />
-            <el-option label="注入持久化" :value="3" />
-            <el-option label="覆写URL" :value="4" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="目标" required>
-          <el-select v-model="modalOperationForm.target" placeholder="请选择目标">
-            <el-option label="标头" :value="0" />
-            <el-option label="JSON载荷" :value="1" />
-            <el-option label="URL" :value="2" v-if="modalOperationForm.kind === 4" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="原始键" required>
-          <el-input v-model="modalOperationForm.f" placeholder="请输入原始键" />
-        </el-form-item>
-
-        <el-form-item label="目标键" required>
-          <el-input v-model="modalOperationForm.t" placeholder="请输入目标键" />
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <el-button @click="modalOperationVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveOperation">确定</el-button>
-      </template>
-    </el-dialog>
+    <SimpleFilterFormOperation ref="operationFormRef" @add="onOperationFormAdd" @edit="onOperationFormEdit" />
   </div>
 </template>
 
@@ -192,15 +155,24 @@ import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 import { onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import SimpleFilterApi from "@/api/SimpleFilterApi";
-import type { GetSimpleFilterDetailsVo, EditSimpleFilterDto, EditSimpleFilterTriggerDto, EditSimpleFilterOperationDto, AddSimpleFilterTriggerDto } from "@/api/SimpleFilterApi";
+import type {
+  GetSimpleFilterDetailsVo,
+  EditSimpleFilterTriggerDto,
+  EditSimpleFilterOperationDto,
+  AddSimpleFilterTriggerDto,
+  AddSimpleFilterOperationDto,
+} from "@/api/SimpleFilterApi";
 import SimpleFilterFormTrigger from "./SimpleFilterFormTrigger.vue";
+import SimpleFilterFormOperation from "./SimpleFilterFormOperation.vue";
 
 const filterStore = SimpleFilterStore();
 const loading = ref(false);
 const saving = ref(false);
 const globalLoading = ref(false);
 const triggerFormRef = ref<InstanceType<typeof SimpleFilterFormTrigger>>();
+const operationFormRef = ref<InstanceType<typeof SimpleFilterFormOperation>>();
 
+//核心表单
 const formData = ref<GetSimpleFilterDetailsVo>({
   id: "",
   name: "",
@@ -209,32 +181,6 @@ const formData = ref<GetSimpleFilterDetailsVo>({
   triggers: [],
   operations: [],
   updateTimeEpochMill: "",
-});
-
-const modalMode = ref<"add" | "edit">("add");
-
-//模态框相关 - 触发器
-const modalTriggerVisible = ref(false);
-const editingTriggerIndex = ref(-1);
-const modalTriggerForm = ref<EditSimpleFilterTriggerDto>({
-  id: null,
-  name: "",
-  target: 0,
-  kind: 0,
-  tk: "",
-  tv: "",
-});
-
-//模态框相关 - 操作
-const modalOperationVisible = ref(false);
-const editingOperationIndex = ref(-1);
-const modalOperationForm = ref<EditSimpleFilterOperationDto>({
-  id: null,
-  name: "",
-  kind: 0,
-  target: 0,
-  f: "",
-  t: "",
 });
 
 // 加载过滤器详情
@@ -247,10 +193,9 @@ const loadFilterDetails = async () => {
   globalLoading.value = true;
   try {
     const filter = await SimpleFilterApi.getSimpleFilterDetails({ id: selectedFilterId });
-    formData.value = filter;
 
-    // 转换为编辑表单格式
-    formData.value = {
+    //组装局部数据
+    const incomingFormdata: GetSimpleFilterDetailsVo = {
       id: filter.id,
       name: filter.name,
       direction: filter.direction,
@@ -275,6 +220,9 @@ const loadFilterDetails = async () => {
       })),
       updateTimeEpochMill: filter.updateTimeEpochMill,
     };
+
+    //替换核心表单数据
+    formData.value = incomingFormdata;
   } catch (error) {
     ElMessage.error("加载过滤器详情失败");
     console.error(error);
@@ -324,61 +272,28 @@ const removeTrigger = (index: number) => {
 /**
  * 操作模态框相关操作
  */
-
-// 新增操作
-const openModalOperation = () => {
-  modalMode.value = "add";
-  clearModalForm();
-  editingOperationIndex.value = -1;
-  modalOperationVisible.value = true;
-  modalOperationForm.value.name = `操作${formData.value.operations.length + 1}`;
+const onOperationFormAdd = (data: AddSimpleFilterOperationDto) => {
+  formData.value.operations.push({
+    id: null,
+    name: data.name,
+    kind: data.kind,
+    target: data.target,
+    f: data.f,
+    t: data.t,
+    seq: 0,
+  });
 };
 
-// 编辑操作
-const editOperation = (index: number) => {
-  modalMode.value = "edit";
-  editingOperationIndex.value = index;
-  const operation = formData.value.operations[index];
-  modalOperationForm.value = {
-    id: operation.id,
-    name: operation.name,
-    kind: operation.kind,
-    target: operation.target,
-    f: operation.f,
-    t: operation.t,
+const onOperationFormEdit = (data: EditSimpleFilterOperationDto, idx: number) => {
+  formData.value.operations[idx] = {
+    id: data.id,
+    name: data.name,
+    kind: data.kind,
+    target: data.target,
+    f: data.f,
+    t: data.t,
+    seq: 0,
   };
-  modalOperationVisible.value = true;
-};
-
-// 保存操作
-const saveOperation = () => {
-  //新增操作
-  if (modalMode.value === "add") {
-    formData.value.operations.push({
-      id: null,
-      name: modalOperationForm.value.name,
-      kind: modalOperationForm.value.kind,
-      target: modalOperationForm.value.target,
-      f: modalOperationForm.value.f,
-      t: modalOperationForm.value.t,
-      seq: 0,
-    });
-  }
-
-  //编辑操作
-  if (modalMode.value === "edit" && editingOperationIndex.value >= 0) {
-    formData.value.operations[editingOperationIndex.value] = {
-      id: modalOperationForm.value.id,
-      name: modalOperationForm.value.name,
-      kind: modalOperationForm.value.kind,
-      target: modalOperationForm.value.target,
-      f: modalOperationForm.value.f,
-      t: modalOperationForm.value.t,
-      seq: formData.value.operations[editingOperationIndex.value].seq,
-    };
-  }
-
-  modalOperationVisible.value = false;
 };
 
 // 删除操作
@@ -420,7 +335,6 @@ const addFilter = async () => {
     filterStore.setIsCreating(false);
     ElMessage.success("创建过滤器成功");
     clearForm();
-    clearModalForm();
   } catch (error) {
     ElMessage.error("创建过滤器失败");
     console.error(error);
@@ -456,7 +370,6 @@ const saveFilter = async () => {
     });
     ElMessage.success("保存过滤器成功");
     clearForm();
-    clearModalForm();
     loadFilterDetails();
 
     //通知列表重新加载
@@ -472,7 +385,6 @@ const saveFilter = async () => {
 const cancelCreate = () => {
   filterStore.setIsCreating(false);
   clearForm();
-  clearModalForm();
   //重新获取详情
   loadFilterDetails();
   filterStore.requestReloadList();
@@ -493,22 +405,11 @@ const clearForm = () => {
     updateTimeEpochMill: "",
   };
 };
-const clearModalForm = () => {
-  modalOperationForm.value = {
-    id: null,
-    name: "",
-    kind: 0,
-    target: 0,
-    f: "",
-    t: "",
-  };
-};
 
 watch(
   () => filterStore.isCreating,
   () => {
     clearForm();
-    clearModalForm();
   }
 );
 
@@ -519,7 +420,6 @@ watch(
     //如果选中的过滤器为空，则清空表单
     if (!filterStore.getSelectedFilterId) {
       clearForm();
-      clearModalForm();
       return;
     }
     loadFilterDetails();
