@@ -215,6 +215,12 @@ const menuItems = ref([
     routerLink: "/simple-filter-manager",
   },
   {
+    id: "adv-filter-manager",
+    title: "高级过滤器",
+    icon: Grid,
+    routerLink: "/adv-filter-manager",
+  },
+  {
     id: "relay-server-manager",
     title: "中继通道配置",
     icon: DArrowRight,

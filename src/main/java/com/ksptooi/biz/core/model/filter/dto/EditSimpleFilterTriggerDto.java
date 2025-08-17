@@ -2,7 +2,6 @@ package com.ksptooi.biz.core.model.filter.dto;
 
 import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,6 @@ public class EditSimpleFilterTriggerDto {
     @Schema(description = "触发器ID 新增时为null")
     private Long id;
 
-    @NotBlank(message = "触发器名称不能为空")
     @Schema(description = "触发器名称")
     private String name;
 

@@ -162,6 +162,11 @@ public class SimpleFilterService {
         //处理更新与删除触发器
         for (var item : triggerPos) {
 
+            //跳过更新刚刚加入的过滤器
+            if (item.getId() == null) {
+                continue;
+            }
+
             var needRemove = true;
 
             //更新触发器并搜集需要删除的触发器
@@ -215,6 +220,12 @@ public class SimpleFilterService {
 
         //处理更新与删除操作
         for (var item : operationPos) {
+
+            //跳过更新刚刚加入的过滤器
+            if (item.getId() == null) {
+                continue;
+            }
+
             var needRemove = true;
             for (var dtoItem : dto.getOperations()) {
                 if (Objects.equals(dtoItem.getId(), item.getId())) {

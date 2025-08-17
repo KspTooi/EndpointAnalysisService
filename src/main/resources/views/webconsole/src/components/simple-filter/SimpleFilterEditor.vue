@@ -16,7 +16,7 @@
         <template #header>
           <div class="card-header">
             <span v-show="!filterStore.isCreating"
-              ><el-icon><Edit /></el-icon> 配置基本过滤器 <span class="gradient-text gradient-blue">{{ editForm.name }}</span>
+              ><el-icon><Edit /></el-icon> 配置基本过滤器 <span class="gradient-text gradient-blue">{{ formData.name }}</span>
             </span>
             <span v-show="filterStore.isCreating">创建基本过滤器</span>
             <div>
@@ -32,20 +32,20 @@
           <!-- 基础信息 -->
           <div class="section">
             <div class="section-title"></div>
-            <el-form :model="editForm" label-width="120px">
+            <el-form :model="formData" label-width="120px">
               <el-form-item label="过滤器名称">
-                <el-input v-model="editForm.name" placeholder="请输入过滤器名称" />
+                <el-input v-model="formData.name" placeholder="请输入过滤器名称" />
               </el-form-item>
 
               <el-form-item label="过滤器方向">
-                <el-select v-model="editForm.direction" placeholder="请选择方向">
+                <el-select v-model="formData.direction" placeholder="请选择方向">
                   <el-option label="请求过滤器" :value="0" />
                   <el-option label="响应过滤器" :value="1" />
                 </el-select>
               </el-form-item>
 
               <el-form-item label="状态">
-                <el-select v-model="editForm.status" placeholder="请选择状态">
+                <el-select v-model="formData.status" placeholder="请选择状态">
                   <el-option label="启用" :value="0" />
                   <el-option label="禁用" :value="1" />
                 </el-select>
@@ -59,15 +59,15 @@
           <div class="section">
             <div class="section-header">
               <div class="section-title">
-                在此过滤器上配置的触发器 ({{ editForm.triggers.length }})
+                在此过滤器上配置的触发器 ({{ formData.triggers.length }})
                 <el-tooltip content="触发器用于判断什么条件下执行此过滤器。可以根据请求的标头、载荷、URL或HTTP方法来设置触发条件。" placement="top">
                   <IFeQuestion style="vertical-align: -18%; color: #0095ff; cursor: pointer" />
                 </el-tooltip>
               </div>
-              <el-button type="primary" @click="openModalTrigger">新增触发器</el-button>
+              <el-button type="primary" @click="() => triggerFormRef?.openWithAdd()">新增触发器</el-button>
             </div>
 
-            <el-table :data="editForm.triggers" :border="true">
+            <el-table :data="formData.triggers" :border="true">
               <el-table-column prop="name" label="名称" />
               <el-table-column prop="target" label="目标">
                 <template #default="{ row }">
@@ -89,7 +89,7 @@
               <el-table-column prop="tv" label="比较值" />
               <el-table-column label="操作">
                 <template #default="{ row, $index }">
-                  <el-button type="primary" size="small" @click="editTrigger($index)"> 编辑 </el-button>
+                  <el-button type="primary" size="small" @click="() => triggerFormRef?.openWithEdit(formData.triggers[$index], $index)"> 编辑 </el-button>
                   <el-button type="danger" size="small" @click="removeTrigger($index)"> 删除 </el-button>
                 </template>
               </el-table-column>
@@ -102,7 +102,7 @@
           <div class="section">
             <div class="section-header">
               <div class="section-title">
-                在此过滤器上配置的操作 ({{ editForm.operations.length }})
+                在此过滤器上配置的操作 ({{ formData.operations.length }})
                 <el-tooltip content="操作定义了过滤器触发后要执行的动作。可以对数据进行持久化、缓存、注入或URL覆写等操作。" placement="top">
                   <IFeQuestion style="vertical-align: -18%; color: #0095ff; cursor: pointer" />
                 </el-tooltip>
@@ -110,7 +110,7 @@
               <el-button type="primary" @click="openModalOperation">新增操作</el-button>
             </div>
 
-            <el-table :data="editForm.operations" :border="true">
+            <el-table :data="formData.operations" :border="true">
               <el-table-column prop="name" label="名称" />
               <el-table-column prop="kind" label="类型">
                 <template #default="{ row }">
@@ -143,44 +143,7 @@
     </div>
 
     <!-- 触发器编辑对话框 -->
-    <el-dialog v-model="modalTriggerVisible" :title="modalMode === 'add' ? '新增触发器' : '编辑触发器'" width="500px" align-center>
-      <el-form :model="modalTriggerForm" label-width="100px">
-        <el-form-item label="名称">
-          <el-input v-model="modalTriggerForm.name" placeholder="请输入触发器名称" disabled />
-        </el-form-item>
-
-        <el-form-item label="目标" required>
-          <el-select v-model="modalTriggerForm.target" placeholder="请选择目标">
-            <el-option label="标头" :value="0" />
-            <el-option label="JSON载荷" :value="1" />
-            <el-option label="URL" :value="2" />
-            <el-option label="HTTP方法" :value="3" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="条件" required>
-          <el-select v-model="modalTriggerForm.kind" placeholder="请选择条件">
-            <el-option label="包含" :value="0" />
-            <el-option label="不包含" :value="1" />
-            <el-option label="等于" :value="2" />
-            <el-option label="不等于" :value="3" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="目标键" required>
-          <el-input v-model="modalTriggerForm.tk" placeholder="请输入目标键" />
-        </el-form-item>
-
-        <el-form-item label="比较值" required>
-          <el-input v-model="modalTriggerForm.tv" placeholder="请输入比较值" />
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <el-button @click="modalTriggerVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveTrigger">确定</el-button>
-      </template>
-    </el-dialog>
+    <SimpleFilterFormTrigger ref="triggerFormRef" @add="onTriggerFormAdd" @edit="onTriggerFormEdit" />
 
     <!-- 操作编辑对话框 -->
     <el-dialog v-model="modalOperationVisible" :title="modalMode === 'add' ? '新增操作' : '编辑操作'" width="500px" align-center>
@@ -229,17 +192,16 @@ import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 import { onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import SimpleFilterApi from "@/api/SimpleFilterApi";
-import type { GetSimpleFilterDetailsVo, EditSimpleFilterDto, EditSimpleFilterTriggerDto, EditSimpleFilterOperationDto } from "@/api/SimpleFilterApi";
+import type { GetSimpleFilterDetailsVo, EditSimpleFilterDto, EditSimpleFilterTriggerDto, EditSimpleFilterOperationDto, AddSimpleFilterTriggerDto } from "@/api/SimpleFilterApi";
+import SimpleFilterFormTrigger from "./SimpleFilterFormTrigger.vue";
 
 const filterStore = SimpleFilterStore();
 const loading = ref(false);
 const saving = ref(false);
 const globalLoading = ref(false);
+const triggerFormRef = ref<InstanceType<typeof SimpleFilterFormTrigger>>();
 
-const formData = ref<GetSimpleFilterDetailsVo | null>(null);
-
-//过滤器基础信息
-const editForm = ref<GetSimpleFilterDetailsVo>({
+const formData = ref<GetSimpleFilterDetailsVo>({
   id: "",
   name: "",
   direction: 0,
@@ -288,7 +250,7 @@ const loadFilterDetails = async () => {
     formData.value = filter;
 
     // 转换为编辑表单格式
-    editForm.value = {
+    formData.value = {
       id: filter.id,
       name: filter.name,
       direction: filter.direction,
@@ -324,61 +286,28 @@ const loadFilterDetails = async () => {
 /**
  * 触发器模态框相关操作
  */
-
-// 新增触发器
-const openModalTrigger = () => {
-  modalMode.value = "add";
-  clearModalForm();
-  editingTriggerIndex.value = -1;
-  modalTriggerVisible.value = true;
-  modalTriggerForm.value.name = `触发器${editForm.value.triggers.length + 1}`;
+const onTriggerFormAdd = (data: AddSimpleFilterTriggerDto) => {
+  formData.value.triggers.push({
+    id: null,
+    name: data.name,
+    target: data.target,
+    kind: data.kind,
+    tk: data.tk,
+    tv: data.tv,
+    seq: 0,
+  });
 };
 
-// 编辑触发器
-const editTrigger = (index: number) => {
-  modalMode.value = "edit";
-  editingTriggerIndex.value = index;
-  const trigger = editForm.value.triggers[index];
-  modalTriggerForm.value = {
-    id: trigger.id,
-    name: trigger.name,
-    target: trigger.target,
-    kind: trigger.kind,
-    tk: trigger.tk,
-    tv: trigger.tv,
+const onTriggerFormEdit = (data: EditSimpleFilterTriggerDto, idx: number) => {
+  formData.value.triggers[idx] = {
+    id: data.id,
+    name: data.name,
+    target: data.target,
+    kind: data.kind,
+    tk: data.tk,
+    tv: data.tv,
+    seq: 0,
   };
-  modalTriggerVisible.value = true;
-};
-
-// 保存触发器
-const saveTrigger = () => {
-  //新增触发器
-  if (modalMode.value === "add") {
-    editForm.value.triggers.push({
-      id: null,
-      name: modalTriggerForm.value.name,
-      target: modalTriggerForm.value.target,
-      kind: modalTriggerForm.value.kind,
-      tk: modalTriggerForm.value.tk,
-      tv: modalTriggerForm.value.tv,
-      seq: 0,
-    });
-  }
-
-  //编辑触发器
-  if (modalMode.value === "edit" && editingTriggerIndex.value >= 0) {
-    editForm.value.triggers[editingTriggerIndex.value] = {
-      id: modalTriggerForm.value.id,
-      name: modalTriggerForm.value.name,
-      target: modalTriggerForm.value.target,
-      kind: modalTriggerForm.value.kind,
-      tk: modalTriggerForm.value.tk,
-      tv: modalTriggerForm.value.tv,
-      seq: editForm.value.triggers[editingTriggerIndex.value].seq,
-    };
-  }
-
-  modalTriggerVisible.value = false;
 };
 
 // 删除触发器
@@ -388,7 +317,7 @@ const removeTrigger = (index: number) => {
     cancelButtonText: "取消",
     type: "warning",
   }).then(() => {
-    editForm.value.triggers.splice(index, 1);
+    formData.value.triggers.splice(index, 1);
   });
 };
 
@@ -402,14 +331,14 @@ const openModalOperation = () => {
   clearModalForm();
   editingOperationIndex.value = -1;
   modalOperationVisible.value = true;
-  modalOperationForm.value.name = `操作${editForm.value.operations.length + 1}`;
+  modalOperationForm.value.name = `操作${formData.value.operations.length + 1}`;
 };
 
 // 编辑操作
 const editOperation = (index: number) => {
   modalMode.value = "edit";
   editingOperationIndex.value = index;
-  const operation = editForm.value.operations[index];
+  const operation = formData.value.operations[index];
   modalOperationForm.value = {
     id: operation.id,
     name: operation.name,
@@ -425,7 +354,7 @@ const editOperation = (index: number) => {
 const saveOperation = () => {
   //新增操作
   if (modalMode.value === "add") {
-    editForm.value.operations.push({
+    formData.value.operations.push({
       id: null,
       name: modalOperationForm.value.name,
       kind: modalOperationForm.value.kind,
@@ -438,14 +367,14 @@ const saveOperation = () => {
 
   //编辑操作
   if (modalMode.value === "edit" && editingOperationIndex.value >= 0) {
-    editForm.value.operations[editingOperationIndex.value] = {
+    formData.value.operations[editingOperationIndex.value] = {
       id: modalOperationForm.value.id,
       name: modalOperationForm.value.name,
       kind: modalOperationForm.value.kind,
       target: modalOperationForm.value.target,
       f: modalOperationForm.value.f,
       t: modalOperationForm.value.t,
-      seq: editForm.value.operations[editingOperationIndex.value].seq,
+      seq: formData.value.operations[editingOperationIndex.value].seq,
     };
   }
 
@@ -459,20 +388,20 @@ const removeOperation = (index: number) => {
     cancelButtonText: "取消",
     type: "warning",
   }).then(() => {
-    editForm.value.operations.splice(index, 1);
+    formData.value.operations.splice(index, 1);
   });
 };
 
 // 创建新的基本过滤器
 const addFilter = async () => {
   //过滤器至少有一个触发器
-  if (editForm.value.triggers.length === 0) {
+  if (formData.value.triggers.length === 0) {
     ElMessage.error("过滤器至少需要配置一个触发器");
     return;
   }
 
   //过滤器至少有一个操作
-  if (editForm.value.operations.length === 0) {
+  if (formData.value.operations.length === 0) {
     ElMessage.error("过滤器至少需要配置一个操作");
     return;
   }
@@ -481,11 +410,11 @@ const addFilter = async () => {
   //创建过滤器
   try {
     const newFilterId: string = await SimpleFilterApi.addSimpleFilter({
-      name: editForm.value.name,
-      direction: editForm.value.direction,
-      status: editForm.value.status,
-      triggers: editForm.value.triggers,
-      operations: editForm.value.operations,
+      name: formData.value.name,
+      direction: formData.value.direction,
+      status: formData.value.status,
+      triggers: formData.value.triggers,
+      operations: formData.value.operations,
     });
     filterStore.setSelectedFilterId(newFilterId);
     filterStore.setIsCreating(false);
@@ -503,13 +432,13 @@ const addFilter = async () => {
 // 保存过滤器
 const saveFilter = async () => {
   //过滤器至少有一个触发器
-  if (editForm.value.triggers.length === 0) {
+  if (formData.value.triggers.length === 0) {
     ElMessage.error("过滤器至少需要配置一个触发器");
     return;
   }
 
   //过滤器至少有一个操作
-  if (editForm.value.operations.length === 0) {
+  if (formData.value.operations.length === 0) {
     ElMessage.error("过滤器至少需要配置一个操作");
     return;
   }
@@ -517,13 +446,13 @@ const saveFilter = async () => {
   globalLoading.value = true;
   try {
     await SimpleFilterApi.editSimpleFilter({
-      id: editForm.value.id,
-      name: editForm.value.name,
-      direction: editForm.value.direction,
-      status: editForm.value.status,
-      triggers: editForm.value.triggers,
-      operations: editForm.value.operations,
-      updateTimeEpochMill: editForm.value.updateTimeEpochMill,
+      id: formData.value.id,
+      name: formData.value.name,
+      direction: formData.value.direction,
+      status: formData.value.status,
+      triggers: formData.value.triggers,
+      operations: formData.value.operations,
+      updateTimeEpochMill: formData.value.updateTimeEpochMill,
     });
     ElMessage.success("保存过滤器成功");
     clearForm();
@@ -554,7 +483,7 @@ onMounted(() => {
 });
 
 const clearForm = () => {
-  editForm.value = {
+  formData.value = {
     id: "",
     name: "",
     direction: 0,
@@ -565,14 +494,6 @@ const clearForm = () => {
   };
 };
 const clearModalForm = () => {
-  modalTriggerForm.value = {
-    id: null,
-    name: "",
-    target: 0,
-    kind: 0,
-    tk: "",
-    tv: "",
-  };
   modalOperationForm.value = {
     id: null,
     name: "",

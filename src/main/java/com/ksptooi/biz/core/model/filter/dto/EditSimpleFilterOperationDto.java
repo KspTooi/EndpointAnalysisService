@@ -2,7 +2,6 @@ package com.ksptooi.biz.core.model.filter.dto;
 
 import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,6 @@ public class EditSimpleFilterOperationDto {
 
     private Long id;
 
-    @NotBlank(message = "操作名称不能为空")
     @Schema(description = "操作名称")
     private String name;
 
