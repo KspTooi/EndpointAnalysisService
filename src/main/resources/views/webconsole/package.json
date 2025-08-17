@@ -24,6 +24,7 @@
     "pnpm": "^10.14.0",
     "vanilla-jsoneditor": "^3.8.0",
     "vue": "^3.5.13",
+    "vue-json-pretty": "^2.5.0",
     "vue-router": "^4.5.0",
     "vue3-json-editor": "^1.1.5"
   },
