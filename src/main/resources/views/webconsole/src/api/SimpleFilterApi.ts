@@ -35,7 +35,7 @@ export interface AddSimpleFilterOperationDto {
   name: string; // 操作名称
   kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
   target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)
-  f: string; // 原始键
+  f: string | null; // 原始键
   t: string; // 目标键
   seq: number; // 排序
 }

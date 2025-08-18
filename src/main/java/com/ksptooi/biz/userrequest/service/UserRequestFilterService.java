@@ -510,9 +510,33 @@ public class UserRequestFilterService {
             return true;
         }
 
-        // URL 和 HTTP方法不适用于响应
-        if (tgt == 2 || tgt == 3) {
+        // HTTP方法不适用于响应
+        if (tgt == 3) {
             return false;
+        }
+
+        //处理URL
+        if (tgt == 2) {
+            String url = rs.uri().toString();
+            if (StringUtils.isBlank(url)) {
+                return false;
+            }
+            //URL包含(只能填写tv 直接判断URL是否包含tv)
+            if (kind == 0) {
+                return url.contains(tv);
+            }
+            //URL不包含(只能填写tv 直接判断URL是否不包含tv)
+            if (kind == 1) {
+                return !url.contains(tv);
+            }
+            //URL等于(只能填写tv 直接判断URL是否等于tv)
+            if (kind == 2) {
+                return url.equals(tv);
+            }
+            //URL不等于(只能填写tv 直接判断URL是否不等于tv)
+            if (kind == 3) {
+                return !url.equals(tv);
+            }
         }
 
         // 处理标头

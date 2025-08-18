@@ -1,14 +1,15 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","src/**/*.ts", "components.d.ts"],
+  "exclude": ["src/**/__tests__/*"],
   "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ],
+
   "compilerOptions": {
-    "types": ["unplugin-icons/types/vue"]
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "baseUrl": ".",
+    "types": ["unplugin-icons/types/vue"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
