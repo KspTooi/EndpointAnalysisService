@@ -28,6 +28,9 @@ public class GetUserRequestTreeVo {
     @Schema(description = "基本过滤器数量")
     private Integer simpleFilterCount;
 
+    @Schema(description = "已绑定原始请求 0:未绑定 1:已绑定")
+    private Integer linkForOriginalRequest;
+
     @Schema(description = "子节点")
     private List<GetUserRequestTreeVo> children;
 }

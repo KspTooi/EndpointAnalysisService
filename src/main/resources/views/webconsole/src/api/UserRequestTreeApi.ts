@@ -12,6 +12,7 @@ export interface GetUserRequestTreeVo {
   name: string; //名称
   method?: string; //请求方法
   simpleFilterCount?: number; //基本过滤器数量 当type为0时会出现
+  linkForOriginalRequest: number | null; //已绑定原始请求 0:未绑定 1:已绑定
   children?: GetUserRequestTreeVo[]; //子节点
 }
 

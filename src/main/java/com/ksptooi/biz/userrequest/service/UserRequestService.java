@@ -189,6 +189,7 @@ public class UserRequestService {
                 continue;
             }
             for (UserRequestPo req : groupPo.getRequests()) {
+                
                 GetUserRequestTreeVo reqNode = new GetUserRequestTreeVo();
                 reqNode.setId(req.getId());
                 reqNode.setParentId(groupPo.getId());
@@ -197,6 +198,15 @@ public class UserRequestService {
                 if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())) {
                     reqNode.setMethod(req.getOriginalRequest().getMethod());
                 }
+
+                //处理原始请求
+                if (req.getOriginalRequest() == null) {
+                    reqNode.setLinkForOriginalRequest(0);
+                }
+                if (req.getOriginalRequest() != null) {
+                    reqNode.setLinkForOriginalRequest(1);
+                }
+
                 groupNode.getChildren().add(reqNode);
             }
         }

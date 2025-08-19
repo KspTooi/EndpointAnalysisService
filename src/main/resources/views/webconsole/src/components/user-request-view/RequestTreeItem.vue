@@ -56,6 +56,11 @@
           {{ node.name }}
         </div>
       </div>
+      <div class="item-indicator-light" v-if="node.linkForOriginalRequest === 1" :title="`已绑定原始请求`">
+        <el-icon class="filter-icon">
+          <IVaadinLink />
+        </el-icon>
+      </div>
     </div>
 
     <!-- 子节点 -->
@@ -292,9 +297,10 @@ const handleDrop = async (event: DragEvent) => {
   gap: 3px;
 }
 
-.item-indicator-filter .filter-icon {
-  color: white !important;
+.item-indicator-light  {
+  color: rgb(206, 206, 206) !important;
   font-size: 12px;
+  margin-right: 7.5px;
 }
 
 .item-indicator-count {
@@ -370,14 +376,12 @@ const handleDrop = async (event: DragEvent) => {
   background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%) !important;
   border-color: #40b9ff !important;
   box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15) !important;
-  transform: translateY(-1px) !important;
 }
 
 .tag-tree-item:hover {
   background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
   border-color: #409eff;
   box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-  transform: translateY(-1px);
 }
 
 .tag-tree-item:active {
@@ -406,7 +410,7 @@ const handleDrop = async (event: DragEvent) => {
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
@@ -473,7 +477,6 @@ const handleDrop = async (event: DragEvent) => {
 .node-active {
   border: 1px solid #5dc7cd;
   box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-  transform: translateY(-1px);
   background: linear-gradient(135deg, #f0ffff 0%, rgb(211, 250, 255) 100%) !important;
 }
 </style>
