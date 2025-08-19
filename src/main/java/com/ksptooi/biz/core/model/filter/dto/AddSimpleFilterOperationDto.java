@@ -16,13 +16,13 @@ public class AddSimpleFilterOperationDto {
     private String name;
     
     @NotNull(message = "类型不能为空")
-    @Range(min = 0, max = 4, message = "类型只能为0、1、2、3、4")
-    @Schema(description = "类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL")
+    @Range(min = 0, max = 60, message = "类型只能为0、1、2、3、4、50、60")
+    @Schema(description = "类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID")
     private Integer kind;
 
     @NotNull(message = "目标不能为空")
-    @Range(min = 0, max = 2, message = "目标只能为0、1、2")
-    @Schema(description = "目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)")
+    @Range(min = 0, max = 53, message = "目标只能为0、1、2、50、51、52、53")
+    @Schema(description = "目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]")
     private Integer target;
 
     @Schema(description = "原始键")
@@ -66,6 +66,39 @@ public class AddSimpleFilterOperationDto {
         if (target == 2) {
             if (kind != 4) {
                 return "当目标为URL时，类型只能为覆写URL";
+            }
+        }
+
+        //标记请求状态时kind = 50 时target 只能为50、51、52、53
+        if (kind == 50) {
+
+            if (target != 50 && target != 51 && target != 52 && target != 53) {
+                return "当类型为50时，目标只能为50、51、52、53";
+            }
+
+            //不允许提供原始键
+            if (Str.isNotBlank(f)) {
+                return "当类型为50时，不能提供原始键";
+            }
+            //不允许提供目标键
+            if (Str.isNotBlank(t)) {
+                return "当类型为50时，不能提供目标键";
+            }
+
+        }
+
+        //获取请求ID时kind = 60 时target 只能为0 1
+        if (kind == 60) {
+            if (target != 0 && target != 1) {
+                return "当类型为60时，目标只能为0、1";
+            }
+            //必须提供原始键
+            if (Str.isBlank(f)) {
+                return "当类型为60时，必须提供原始键";
+            }
+            //不允许提供目标键
+            if (Str.isNotBlank(t)) {
+                return "当类型为60时，不能提供目标键";
             }
         }
 

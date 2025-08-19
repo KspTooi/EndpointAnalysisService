@@ -459,10 +459,6 @@ public class UserRequestService {
         //执行请求过滤器
         userRequestFilterService.doRequestFilter(requestSchema, userRequestPo);
 
-
-        //获取中继服务器
-        RelayServerPo relayServerPo = userRequestPo.getOriginalRequest().getRelayServer();
-
         //创建重放记录
         UserRequestLogPo userRequestLogPo = new UserRequestLogPo();
         userRequestLogPo.setUserRequest(userRequestPo);
@@ -489,9 +485,6 @@ public class UserRequestService {
             //发送请求
             HttpResponse<String> response = client.send(requestSchema.getBuilder().build(), HttpResponse.BodyHandlers.ofString());
 
-            //处理响应过滤器
-            userRequestFilterService.doResponseFilter(response, userRequestPo, userRequestLogPo);
-
             //解析响应
             String responseBody = response.body();
             userRequestLogPo.setResponseBodyLength(responseBody.length());
@@ -512,43 +505,8 @@ public class UserRequestService {
                 responseHeadersList.add(responseHeaderVo);
             }
 
-
-            //如果请求ID策略为1 则尝试从响应头中获取请求ID
-            if (relayServerPo.getRequestIdStrategy() == 1) {
-                String requestId = response.headers().firstValue(relayServerPo.getRequestIdHeaderName()).orElse(null);
-                if (requestId != null) {
-                    userRequestLogPo.setRequestId(requestId);
-                }
-                if (requestId == null) {
-                    log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", relayServerPo.getName(), userRequestLogPo.getRequestId());
-                }
-            }
-
-            //如果业务错误策略为1 则尝试从响应体中获取业务错误码
-            if (relayServerPo.getBizErrorStrategy() == 1) {
-                if (userRequestLogPo.getResponseBodyType().contains("application/json")) {
-
-                    JsonElement jsonTree = gson.fromJson(responseBody, JsonElement.class);
-
-                    String successCode = relayServerPo.getBizSuccessCodeValue();
-                    String bizErrorCode = GsonUtils.getFromPath(jsonTree, relayServerPo.getBizErrorCodeField());
-
-                    //无法获取到错误码值 直接判定业务错误
-                    if (bizErrorCode == null) {
-                        userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                    }
-                    if (bizErrorCode != null) {
-                        if (bizErrorCode.equals(successCode)) {
-                            userRequestLogPo.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                        }
-                        if (!bizErrorCode.equals(successCode)) {
-                            userRequestLogPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                        }
-                    }
-                }
-
-            }
-
+            //处理响应过滤器
+            userRequestFilterService.doResponseFilter(response, userRequestPo, userRequestLogPo);
 
         } catch (IOException | InterruptedException e) {
             userRequestLogRepository.save(userRequestLogPo);

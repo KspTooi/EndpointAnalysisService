@@ -28,11 +28,11 @@ public class SimpleFilterOperationPo {
     @Column(name = "name", length = 128, nullable = false)
     private String name;
 
-    @Comment("类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL")
+    @Comment("类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID")
     @Column(name = "kind", nullable = false, columnDefinition = "tinyint")
     private Integer kind;
 
-    @Comment("目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)")
+    @Comment("目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]")
     @Column(name = "target", nullable = false, columnDefinition = "tinyint")
     private Integer target;
 
@@ -41,7 +41,7 @@ public class SimpleFilterOperationPo {
     private String f;
 
     @Comment("目标键")
-    @Column(name = "t", length = 128, nullable = false)
+    @Column(name = "t", length = 128)
     private String t;
 
     @Comment("排序")
@@ -83,6 +83,18 @@ public class SimpleFilterOperationPo {
         if (target == 2) {
             targetStr = "URL";
         }
+        if (target == 50) {
+            targetStr = "正常";
+        }
+        if (target == 51) {
+            targetStr = "HTTP失败";
+        }
+        if (target == 52) {
+            targetStr = "业务失败";
+        }
+        if (target == 53) {
+            targetStr = "连接超时";
+        }
 
         String kindStr = null;
         if (kind == 0) {
@@ -99,6 +111,12 @@ public class SimpleFilterOperationPo {
         }
         if (kind == 4) {
             kindStr = "覆写URL";
+        }
+        if (kind == 50) {
+            kindStr = "标记请求状态";
+        }
+        if (kind == 60) {
+            kindStr = "获取请求ID";
         }
 
         if (targetStr == null || kindStr == null) {

@@ -87,7 +87,7 @@ public class UserRequestFilterService {
 
             //遍历执行全部操作
             for (var item : operationPoList) {
-                doResponseOperation(res, item);
+                doResponseOperation(res, item, logPo);
             }
 
         }
@@ -101,7 +101,7 @@ public class UserRequestFilterService {
      * @param res          响应
      * @param operationPo 操作列表
      */
-    public void doResponseOperation(HttpResponse<String> res, SimpleFilterOperationPo operationPo) {
+    public void doResponseOperation(HttpResponse<String> res, SimpleFilterOperationPo operationPo,UserRequestLogPo logPo) {
 
         //类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
         var kind = operationPo.getKind();
@@ -149,6 +149,46 @@ public class UserRequestFilterService {
         }
 
         // 注入和覆写URL不适用于响应
+
+        // 标记请求状态
+        if (kind == 50) {
+            if (target == 50) {
+                logPo.setStatus(0);
+                log.info("响应过滤器：处理标记请求状态(正常)");
+            }
+            if (target == 51) {
+                logPo.setStatus(1);
+                log.info("响应过滤器：处理标记请求状态(HTTP失败)");
+            }
+            if (target == 52) {
+                logPo.setStatus(2);
+                log.info("响应过滤器：处理标记请求状态(业务失败)");
+            }
+            if (target == 53) {
+                logPo.setStatus(3);
+                log.info("响应过滤器：处理标记请求状态(连接超时)");
+            }
+        }
+
+        // 获取请求ID
+        if (kind == 60) {
+
+            //0:标头
+            if (target == 0) {
+                var value = res.headers().firstValue(f).orElse(null);
+                if (StringUtils.isNotBlank(value)) {
+                    logPo.setRequestId(value);
+                }
+            }
+
+            //1:JSON载荷
+            if (target == 1) {
+                var value = GsonUtils.getFromPath(gson.fromJson(res.body(), JsonElement.class), f);
+                if (StringUtils.isNotBlank(value)) {
+                    logPo.setRequestId(value);
+                }
+            }
+        }
     }
 
 
@@ -610,11 +650,24 @@ public class UserRequestFilterService {
 
             // 不包含
             if (kind == 1) {
+
+                //只填写了tk 则判断json下是否不存在tk
                 if (StringUtils.isNotBlank(tk) && StringUtils.isBlank(tv)) {
-                    return valueFromPath == null;
+                    if(valueFromPath == null){
+                        return true;
+                    }
+                    return false;
                 }
+
+                //同时填写了tk和tv 则判断json下tk字段的值是否不包含tv
                 if (StringUtils.isNotBlank(tk) && StringUtils.isNotBlank(tv)) {
-                    return valueFromPath == null || !valueFromPath.contains(tv);
+                    if(valueFromPath == null){
+                        return true;
+                    }
+                    if(valueFromPath.contains(tv)){
+                        return false;
+                    }
+                    return true;
                 }
             }
 

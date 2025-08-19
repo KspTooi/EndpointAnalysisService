@@ -125,7 +125,6 @@ public class RequestPo {
     @Column(name = "response_time")
     @Comment("响应时间")
     private LocalDateTime responseTime;
-
     
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "originalRequest")
     @Comment("重放请求")

@@ -121,6 +121,8 @@
                   <span v-show="row.kind === 2" class="gradient-text gradient-amber">注入缓存</span>
                   <span v-show="row.kind === 3" class="gradient-text gradient-violet">注入持久化</span>
                   <span v-show="row.kind === 4" class="gradient-text gradient-rose">覆写URL</span>
+                  <span v-show="row.kind === 50" class="gradient-text gradient-blue">标记请求状态</span>
+                  <span v-show="row.kind === 60" class="gradient-text gradient-indigo">获取请求ID</span>
                 </template>
               </el-table-column>
               <el-table-column prop="target" label="目标">
@@ -128,6 +130,10 @@
                   <span v-show="row.target === 0" class="gradient-text gradient-blue">标头</span>
                   <span v-show="row.target === 1" class="gradient-text gradient-green">JSON载荷</span>
                   <span v-show="row.target === 2" class="gradient-text gradient-purple">URL</span>
+                  <span v-show="row.target === 50" class="gradient-text gradient-cyan">正常</span>
+                  <span v-show="row.target === 51" class="gradient-text gradient-red">HTTP失败</span>
+                  <span v-show="row.target === 52" class="gradient-text gradient-orange">业务失败</span>
+                  <span v-show="row.target === 53" class="gradient-text gradient-amber">连接超时</span>
                 </template>
               </el-table-column>
               <el-table-column prop="f" label="原始键" />

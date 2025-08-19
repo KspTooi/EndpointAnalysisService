@@ -49,17 +49,7 @@ public class AddSimpleFilterTriggerDto {
 
         //如果目标为4 则kind必须为4
         if (target == 4) {
-            if (kind != 4) {
-                return "当目标为 总是触发 时，条件只能为 总是触发";
-            }
-            //不允许提供目标键
-            if (Str.isNotBlank(tk)) {
-                return "当目标为 总是触发 时，不能提供目标键";
-            }
-            //不允许提供比较值
-            if (Str.isNotBlank(tv)) {
-                return "当目标为 总是触发 时，不能提供比较值";
-            }
+            return "当目标为 总是触发 时，条件只能为 总是触发";
         }
 
 
@@ -74,9 +64,6 @@ public class AddSimpleFilterTriggerDto {
         if (target == 1) {
             if (Str.isBlank(tk)) {
                 return "目标键不能为空";
-            }
-            if (Str.isBlank(tv)) {
-                return "比较值不能为空";
             }
         }
 

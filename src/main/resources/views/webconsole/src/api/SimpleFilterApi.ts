@@ -33,8 +33,8 @@ export interface AddSimpleFilterTriggerDto {
 //新增过滤器操作
 export interface AddSimpleFilterOperationDto {
   name: string; // 操作名称
-  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
-  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)
+  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID
+  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]
   f: string | null; // 原始键
   t: string; // 目标键
   seq: number; // 排序
@@ -62,8 +62,8 @@ export interface EditSimpleFilterTriggerDto {
 export interface EditSimpleFilterOperationDto {
   id: string | null; // 操作ID 新增时为null
   name: string; // 操作名称
-  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
-  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)
+  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID
+  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]
   f: string | null; // 原始键
   t: string; // 目标键
 }
@@ -94,8 +94,8 @@ export interface GetSimpleFilterTriggerDetailsVo {
 export interface GetSimpleFilterOperationDetailsVo {
   id: string | null; // 操作ID
   name: string; // 操作名称
-  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL
-  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4)
+  kind: number; // 类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID
+  target: number; // 目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]
   f: string | null; // 原始键
   t: string; // 目标键
   seq: number; // 排序
