@@ -7,7 +7,7 @@
           :items="menuItems"
           :active-item-id="activeMenuId"
           :is-collapse="false"
-          title="端点中继服务控制台"
+          title="EAS服务管理控制台"
           @item-click="handleMenuClick"
           @action="handleMenuAction"
         />

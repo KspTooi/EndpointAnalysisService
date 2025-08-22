@@ -3,12 +3,12 @@ package com.ksptooi.biz.userrequest.model.userrequestgroup;
 import com.ksptooi.biz.core.model.filter.SimpleFilterPo;
 import com.ksptooi.biz.user.model.user.UserPo;
 import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
+import com.ksptooi.biz.userrequest.model.userrequesttree.UserRequestTreePo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +24,11 @@ public class UserRequestGroupPo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("请求组ID")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tree_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("用户请求树ID")
+    private UserRequestTreePo tree;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

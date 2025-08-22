@@ -5,6 +5,7 @@ import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.user.model.user.UserPo;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.UserRequestLogPo;
+import com.ksptooi.biz.userrequest.model.userrequesttree.UserRequestTreePo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,11 @@ public class UserRequestPo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("用户请求ID")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tree_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("用户请求树ID")
+    private UserRequestTreePo tree;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

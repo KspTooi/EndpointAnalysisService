@@ -4,7 +4,10 @@ import com.ksptooi.biz.userrequest.model.userrequest.EditUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestTreeVo;
 import com.ksptooi.biz.userrequest.model.userrequest.RemoveUserRequestTreeDto;
+import com.ksptooi.biz.userrequest.model.userrequesttree.dto.AddUserRequestTreeDto;
+import com.ksptooi.biz.userrequest.repository.UserRequestTreeRepository;
 import com.ksptooi.biz.userrequest.service.UserRequestService;
+import com.ksptooi.biz.userrequest.service.UserRequestTreeService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.utils.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,12 +32,23 @@ public class UserRequestTreeController {
     @Autowired
     private UserRequestService userRequestService;
 
+    @Autowired
+    private UserRequestTreeService userRequestTreeService;
+
 
     @PostMapping("/getUserRequestTree")
     @Operation(summary ="获取用户请求树")
     public Result<List<GetUserRequestTreeVo>> getUserRequestTree(@RequestBody @Valid GetUserRequestTreeDto dto) throws Exception{
         return Result.success(userRequestService.getUserRequestTree(dto));
     }
+
+    @PostMapping("/addUserRequestTree")
+    @Operation(summary = "新增用户请求树")
+    public Result<String> addUserRequestTree(@RequestBody @Valid AddUserRequestTreeDto dto) throws Exception{
+        userRequestService.addUserRequestTree(dto);
+        return Result.success("新增成功");
+    }
+
 
     @PostMapping("/editUserRequestTree")
     @Operation(summary ="编辑用户请求树")
