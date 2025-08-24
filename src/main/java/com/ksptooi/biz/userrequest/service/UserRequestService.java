@@ -6,15 +6,16 @@ import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.repository.RequestRepository;
 import com.ksptooi.biz.user.model.user.UserPo;
 import com.ksptooi.biz.user.service.AuthService;
-import com.ksptooi.biz.userrequest.model.userrequest.*;
-import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
+import com.ksptooi.biz.userrequest.model.userrequest.EditUserRequestDto;
+import com.ksptooi.biz.userrequest.model.userrequest.GetUserRequestDetailsVo;
+import com.ksptooi.biz.userrequest.model.userrequest.SaveAsUserRequestDto;
+import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.UserRequestLogPo;
-import com.ksptooi.biz.userrequest.model.userrequesttree.dto.EditUserRequestTreeDto;
-import com.ksptooi.biz.userrequest.model.userrequesttree.dto.GetUserRequestTreeDto;
-import com.ksptooi.biz.userrequest.model.userrequesttree.vo.GetUserRequestTreeVo;
+import com.ksptooi.biz.userrequest.model.userrequesttree.UserRequestTreePo;
 import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
+import com.ksptooi.biz.userrequest.repository.UserRequestTreeRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.http.HttpHeaderVo;
 import com.ksptooi.commons.http.RequestSchema;
@@ -32,7 +33,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.ksptool.entities.Entities.as;
 
@@ -50,6 +54,9 @@ public class UserRequestService {
     private AuthService authService;
 
     @Autowired
+    private UserRequestTreeRepository userRequestTreeRepository;
+
+    @Autowired
     private UserRequestGroupRepository userRequestGroupRepository;
 
     @Autowired
@@ -61,21 +68,6 @@ public class UserRequestService {
     @Autowired
     private UserRequestFilterService userRequestFilterService;
 
-    //hop-by-hop请求头
-    private static final Set<String> HOP_BY_HOP_HEADERS = new HashSet<>();
-
-    static {
-        HOP_BY_HOP_HEADERS.add("connection");
-        HOP_BY_HOP_HEADERS.add("keep-alive");
-        HOP_BY_HOP_HEADERS.add("proxy-authenticate");
-        HOP_BY_HOP_HEADERS.add("proxy-authorization");
-        HOP_BY_HOP_HEADERS.add("te");
-        HOP_BY_HOP_HEADERS.add("trailer");
-        HOP_BY_HOP_HEADERS.add("transfer-encoding");
-        HOP_BY_HOP_HEADERS.add("upgrade");
-        HOP_BY_HOP_HEADERS.add("host");
-        HOP_BY_HOP_HEADERS.add("content-length");
-    }
 
     /**
      * 保存原始请求为用户请求
@@ -115,7 +107,6 @@ public class UserRequestService {
         }
 
         userRequestPo.setRequestHeaders(gson.toJson(requestHeaders));
-
         userRequestPo.setRequestBodyType(requestPo.getRequestBodyType());
         userRequestPo.setRequestBody(requestPo.getRequestBody());
 
@@ -123,190 +114,19 @@ public class UserRequestService {
             userRequestPo.setName(dto.getName());
         }
 
-        //userRequestPo.setSeq(repository.getNextSeq(AuthService.requireUserId()));
+        //创建用户请求树
+        UserRequestTreePo treePo = new UserRequestTreePo();
+        treePo.setUser(authService.requireUser());
+        treePo.setParent(null);
+        treePo.setName(userRequestPo.getName());
+        treePo.setKind(1); //0:请求组 1:用户请求
+        treePo.setSeq(userRequestTreeRepository.getMinSeqInParent(null)); //新建的请求排在最前 
+        treePo.setRequest(userRequestPo);
+        
+        userRequestPo.setTree(treePo);
         repository.save(userRequestPo);
     }
 
-
-    /**
-     * 获取用户请求树
-     *
-     * @param dto 获取请求参数
-     * @return 用户请求树
-     */
-    public List<GetUserRequestTreeVo> getUserRequestTree(GetUserRequestTreeDto dto) throws AuthException {
-
-        //先获取请求组
-        List<UserRequestGroupPo> groupList = userRequestGroupRepository.getUserRequestGroupWithRequests(AuthService.requireUserId());
-        List<GetUserRequestTreeVo> treeList = new ArrayList<>();
-
-        //将请求组转换为树形结构
-        if (groupList == null || groupList.isEmpty()) {
-            return treeList;
-        }
-
-        Map<Long, GetUserRequestTreeVo> groupNodeMap = new HashMap<>();
-
-        // 第一遍：创建组节点
-        for (UserRequestGroupPo groupPo : groupList) {
-            GetUserRequestTreeVo groupNode = new GetUserRequestTreeVo();
-            groupNode.setId(groupPo.getId());
-            groupNode.setParentId(null);
-
-            if (groupPo.getParent() != null) {
-                groupNode.setParentId(groupPo.getParent().getId());
-            }
-
-            groupNode.setType(0);
-            groupNode.setName(groupPo.getName());
-            groupNode.setChildren(new ArrayList<>());
-            groupNodeMap.put(groupPo.getId(), groupNode);
-        }
-
-        // 第二遍：挂载父子组关系
-        for (UserRequestGroupPo groupPo : groupList) {
-            GetUserRequestTreeVo current = groupNodeMap.get(groupPo.getId());
-            current.setSimpleFilterCount(groupPo.getFilters().size());
-            if (groupPo.getParent() == null) {
-                treeList.add(current);
-                continue;
-            }
-            GetUserRequestTreeVo parentNode = groupNodeMap.get(groupPo.getParent().getId());
-            if (parentNode == null) {
-                treeList.add(current);
-                continue;
-            }
-            parentNode.getChildren().add(current);
-        }
-
-        // 第三遍：为每个组挂载请求
-        for (UserRequestGroupPo groupPo : groupList) {
-            GetUserRequestTreeVo groupNode = groupNodeMap.get(groupPo.getId());
-            if (groupNode == null) {
-                continue;
-            }
-            if (groupPo.getRequests() == null || groupPo.getRequests().isEmpty()) {
-                continue;
-            }
-            for (UserRequestPo req : groupPo.getRequests()) {
-
-                GetUserRequestTreeVo reqNode = new GetUserRequestTreeVo();
-                reqNode.setId(req.getId());
-                reqNode.setParentId(groupPo.getId());
-                reqNode.setType(1);
-                reqNode.setName(req.getName());
-                if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())) {
-                    reqNode.setMethod(req.getOriginalRequest().getMethod());
-                }
-
-                //处理原始请求
-                if (req.getOriginalRequest() == null) {
-                    reqNode.setLinkForOriginalRequest(0);
-                }
-                if (req.getOriginalRequest() != null) {
-                    reqNode.setLinkForOriginalRequest(1);
-                }
-
-                groupNode.getChildren().add(reqNode);
-            }
-        }
-
-        //处理不在组中的请求
-        List<UserRequestPo> notInGroupRequests = repository.getNotInGroupUserRequestList(authService.requireUser().getId());
-
-        for (UserRequestPo req : notInGroupRequests) {
-            GetUserRequestTreeVo reqNode = new GetUserRequestTreeVo();
-            reqNode.setId(req.getId());
-            reqNode.setType(1);
-            reqNode.setName(req.getName());
-            if (req.getOriginalRequest() != null && StringUtils.isNotBlank(req.getOriginalRequest().getMethod())) {
-                reqNode.setMethod(req.getOriginalRequest().getMethod());
-            }
-
-            treeList.add(reqNode);
-        }
-
-        // 关键字过滤（可选）
-        String keyword = dto != null ? dto.getKeyword() : null;
-        if (StringUtils.isBlank(keyword)) {
-            return treeList;
-        }
-
-        List<GetUserRequestTreeVo> filtered = new ArrayList<>();
-        for (GetUserRequestTreeVo node : treeList) {
-            if (filterTree(node, keyword)) {
-                filtered.add(node);
-            }
-        }
-
-        //处理空子级
-        for (GetUserRequestTreeVo node : filtered) {
-            if (node.getChildren() == null) {
-                node.setChildren(new ArrayList<>());
-            }
-        }
-
-        return filtered;
-    }
-
-    /**
-     * 编辑用户请求树
-     *
-     * @param dto 编辑请求参数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void editUserRequestTree(EditUserRequestTreeDto dto) throws BizException, AuthException {
-
-        //判断树对象类型 0:请求组 1:用户请求
-        if (dto.getType() == 0) {
-            //处理请求组
-
-            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(), AuthService.requireUserId());
-
-            if (groupPo == null) {
-                throw new BizException("数据不存在或无权限操作.");
-            }
-
-            UserRequestGroupPo parentPo = null;
-
-            if (dto.getParentId() != null) {
-                parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(), AuthService.requireUserId());
-
-                if (parentPo == null) {
-                    throw new BizException("父级数据不存在或无权限操作.");
-                }
-            }
-
-            groupPo.setParent(parentPo);
-            groupPo.setName(dto.getName());
-            groupPo.setSeq(dto.getSeq());
-
-
-            userRequestGroupRepository.save(groupPo);
-            return;
-        }
-
-        //处理请求对象
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
-
-        if (userRequestPo == null) {
-            throw new BizException("数据不存在或无权限操作.");
-        }
-
-        UserRequestGroupPo parentPo = null;
-
-        if (dto.getParentId() != null) {
-            parentPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getParentId(), AuthService.requireUserId());
-
-            if (parentPo == null) {
-                throw new BizException("父级数据不存在或无权限操作.");
-            }
-        }
-
-        userRequestPo.setGroup(parentPo);
-        userRequestPo.setName(dto.getName());
-        repository.save(userRequestPo);
-    }
 
     public void copyUserRequest(CommonIdDto dto) throws BizException, AuthException {
 
@@ -363,72 +183,6 @@ public class UserRequestService {
         return vo;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void removeUserRequest(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-        }
-        if (!dto.isBatch()) {
-            repository.deleteById(dto.getId());
-        }
-    }
-
-    private boolean filterTree(GetUserRequestTreeVo node, String keyword) {
-        if (node == null) {
-            return false;
-        }
-        boolean selfMatch = false;
-        if (StringUtils.isNotBlank(node.getName()) && StringUtils.containsIgnoreCase(node.getName(), keyword)) {
-            selfMatch = true;
-        }
-        if (!selfMatch && StringUtils.isNotBlank(node.getMethod()) && StringUtils.containsIgnoreCase(node.getMethod(), keyword)) {
-            selfMatch = true;
-        }
-
-        if (node.getChildren() == null || node.getChildren().isEmpty()) {
-            return selfMatch;
-        }
-
-        List<GetUserRequestTreeVo> keptChildren = new ArrayList<>();
-        for (GetUserRequestTreeVo child : node.getChildren()) {
-            if (filterTree(child, keyword)) {
-                keptChildren.add(child);
-            }
-        }
-        node.setChildren(keptChildren);
-        if (selfMatch) {
-            return true;
-        }
-        return !keptChildren.isEmpty();
-    }
-
-    /**
-     * 删除用户请求树对象
-     *
-     * @param dto 删除请求参数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void removeUserRequestTree(RemoveUserRequestTreeDto dto) throws BizException, AuthException {
-
-        //判断对象类型 0:请求组 1:用户请求
-        if (dto.getType() == 0) {
-            //处理请求组
-            UserRequestGroupPo groupPo = userRequestGroupRepository.getRequestGroupByIdAndUserId(dto.getId(), AuthService.requireUserId());
-            if (groupPo == null) {
-                throw new BizException("数据不存在或无权限操作.");
-            }
-            userRequestGroupRepository.delete(groupPo);
-            return;
-        }
-
-        //处理用户请求
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
-        if (userRequestPo == null) {
-            throw new BizException("数据不存在或无权限操作.");
-        }
-
-        repository.delete(userRequestPo);
-    }
 
     public void sendUserRequest(CommonIdDto dto) throws BizException, AuthException {
 

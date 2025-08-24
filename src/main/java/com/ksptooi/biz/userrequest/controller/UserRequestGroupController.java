@@ -1,6 +1,5 @@
 package com.ksptooi.biz.userrequest.controller;
 
-import com.ksptooi.biz.userrequest.model.userrequestgroup.AddUserRequestGroupDto;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.EditUserRequestGroupDto;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.GetUserRequestGroupDetailsVo;
 import com.ksptooi.biz.userrequest.service.UserRequestGroupService;
@@ -38,12 +37,6 @@ public class UserRequestGroupController {
         return Result.success(details);
     }
 
-    @Operation(summary = "新增请求组")
-    @PostMapping("/addUserRequestGroup")
-    public Result<String> addUserRequestGroup(@RequestBody @Valid AddUserRequestGroupDto dto) throws Exception {
-        userRequestGroupService.addUserRequestGroup(dto);
-        return Result.success("新增成功");
-    }
 
     @Operation(summary = "编辑请求组")
     @PostMapping("/editUserRequestGroup")
@@ -52,12 +45,5 @@ public class UserRequestGroupController {
         return Result.success("修改成功");
     }
 
-
-    @Operation(summary = "删除请求组")
-    @PostMapping("/removeUserRequestGroup")
-    public Result<String> removeUserRequestGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        userRequestGroupService.removeUserRequestGroup(dto);
-        return Result.success("操作成功");
-    }
 
 }

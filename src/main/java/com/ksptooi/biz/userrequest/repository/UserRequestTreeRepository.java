@@ -11,12 +11,23 @@ import java.util.List;
 @Repository
 public interface UserRequestTreeRepository extends JpaRepository<UserRequestTreePo, Long> {
 
+    /**
+     * 获取父级下的最小排序 -1 
+     * @param parentId 父级ID 
+     * @return 最小排序 如果没有任何内容，则返回0
+     */
+    @Query("""
+            SELECT COALESCE(MIN(t.seq) - 1, 1) FROM UserRequestTreePo t
+            WHERE (:parentId IS NULL OR t.parent.id = :parentId) AND
+                  (:parentId IS NOT NULL OR t.parent IS NULL)
+            """)
+    Integer getMinSeqInParent(@Param("parentId") Long parentId);
 
     /**
      * 获取父级下的最大排序+1
      *
      * @param parentId 父级ID
-     * @return 最大排序 如果父级为空，则返回顶级节点的最大排序+1
+     * @return 最大排序 如果没有任何内容，则返回1
      */
     @Query("""
             SELECT COALESCE(MAX(t.seq) + 1,1) FROM UserRequestTreePo t

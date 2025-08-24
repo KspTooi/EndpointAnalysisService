@@ -44,10 +44,6 @@ public class UserRequestGroupPo {
     @Comment("请求组描述")
     private String description;
 
-    @Column(name = "seq", nullable = false)
-    @Comment("排序")
-    private Integer seq;
-
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
     private LocalDateTime createTime;

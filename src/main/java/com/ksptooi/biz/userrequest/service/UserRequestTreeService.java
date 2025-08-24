@@ -146,10 +146,8 @@ public class UserRequestTreeService {
             UserRequestGroupPo userRequestGroupPo = new UserRequestGroupPo();
             userRequestGroupPo.setTree(userRequestTreePo);
             userRequestGroupPo.setUser(authService.requireUser());
-            userRequestGroupPo.setParent(null);
             userRequestGroupPo.setName(dto.getName());
             userRequestGroupPo.setDescription(null);
-            userRequestGroupPo.setSeq(0);
             userRequestTreePo.setGroup(userRequestGroupPo);
         }
         //挂载空用户请求
@@ -165,7 +163,6 @@ public class UserRequestTreeService {
             userRequestPo.setRequestHeaders("{}");
             userRequestPo.setRequestBodyType("application/json;charset=utf-8");
             userRequestPo.setRequestBody("{}");
-            userRequestPo.setSeq(0);
             userRequestTreePo.setRequest(userRequestPo);
         }
 
@@ -188,6 +185,8 @@ public class UserRequestTreeService {
         if (nodePo == null) {
             throw new BizException("对象节点不存在或无权限访问");
         }
+        //同步处理请求
+        UserRequestPo requestPo = nodePo.getRequest();
 
         //构造查询DTO
         GetUserRequestTreeDto queryDto = new GetUserRequestTreeDto();
@@ -197,6 +196,11 @@ public class UserRequestTreeService {
         if (dto.getTargetId() == null) {
             nodePo.setParent(null);
             nodePo.setSeq(userRequestTreeRepository.getMaxSeqInParent(null));
+
+            if (requestPo != null) {
+                requestPo.setGroup(null);
+            }
+
             userRequestTreeRepository.save(nodePo);
             return getUserRequestTree(queryDto);
         }
@@ -224,6 +228,20 @@ public class UserRequestTreeService {
 
             //将当前正在移动的节点父级设置为目标节点的父级
             nodePo.setParent(targetParentNodePo);
+
+            //处理请求挂载
+            if (requestPo != null) {
+                //如果目标节点的父级不为空 则需将请求挂载到目标节点的父级
+                if (targetParentNodePo != null) {
+                    var group = targetParentNodePo.getGroup();
+                    if (group != null) {
+                        requestPo.setGroup(group);
+                    }
+                }
+                if (targetParentNodePo == null) {
+                    requestPo.setGroup(null);
+                }
+            }
 
             //处理顶级节点让位
             if (targetParentNodePo == null) {
@@ -276,6 +294,19 @@ public class UserRequestTreeService {
             //将当前正在移动的节点父级设置为目标节点的父级
             nodePo.setParent(targetParentNodePo);
 
+            //处理请求挂载
+            if (requestPo != null) {
+                if (targetParentNodePo != null) {
+                    var group = targetParentNodePo.getGroup();
+                    if (group != null) {
+                        requestPo.setGroup(group);
+                    }
+                }
+                if (targetParentNodePo == null) {
+                    requestPo.setGroup(null);
+                }
+            }
+
             //处理顶级节点让位
             if (targetParentNodePo == null) {
                 List<UserRequestTreePo> rootNodeList = userRequestTreeRepository.getRootNodeListByUserId(userId);
@@ -327,6 +358,19 @@ public class UserRequestTreeService {
                 //将当前正在移动的节点父级设置为目标节点的父级
                 nodePo.setParent(targetParentNodePo);
 
+                //处理请求挂载
+                if (requestPo != null) {
+                    if (targetParentNodePo != null) {
+                        var group = targetParentNodePo.getGroup();
+                        if (group != null) {
+                            requestPo.setGroup(group);
+                        }
+                    }
+                    if (targetParentNodePo == null) {
+                        requestPo.setGroup(null);
+                    }
+                }
+
                 //处理顶级节点让位
                 if (targetParentNodePo == null) {
                     List<UserRequestTreePo> rootNodeList = userRequestTreeRepository.getRootNodeListByUserId(userId);
@@ -363,6 +407,13 @@ public class UserRequestTreeService {
             if (targetNodePo.getKind() == 0) {
                 nodePo.setParent(targetNodePo);
                 nodePo.setSeq(userRequestTreeRepository.getMaxSeqInParent(targetNodePo.getId()));
+
+                //处理请求挂载
+                if (requestPo != null) {
+                    var group = targetNodePo.getGroup();
+                    requestPo.setGroup(group);
+                }
+
                 userRequestTreeRepository.save(nodePo);
                 return getUserRequestTree(queryDto);
             }
