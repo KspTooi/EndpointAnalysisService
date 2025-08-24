@@ -2,7 +2,8 @@ package com.ksptooi.biz.user.model.permission;
 
 import com.ksptooi.biz.user.model.group.GroupPo;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.util.Date;
@@ -16,7 +17,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "permissions")
-@Getter@Setter
+@Getter
+@Setter
 @Comment("权限表")
 public class PermissionPo {
 
