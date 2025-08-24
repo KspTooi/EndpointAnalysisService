@@ -33,7 +33,7 @@ public class UserRequestPo {
     @Comment("用户请求树ID")
     private UserRequestTreePo tree;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("请求组ID")
     private UserRequestGroupPo group;
