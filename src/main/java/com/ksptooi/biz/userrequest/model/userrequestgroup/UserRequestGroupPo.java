@@ -26,7 +26,7 @@ public class UserRequestGroupPo {
     @Comment("请求组ID")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "tree_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("用户请求树ID")
     private UserRequestTreePo tree;
