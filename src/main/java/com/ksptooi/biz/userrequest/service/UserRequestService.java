@@ -123,7 +123,7 @@ public class UserRequestService {
             userRequestPo.setName(dto.getName());
         }
 
-        userRequestPo.setSeq(repository.getNextSeq(AuthService.requireUserId()));
+        //userRequestPo.setSeq(repository.getNextSeq(AuthService.requireUserId()));
         repository.save(userRequestPo);
     }
 
@@ -305,7 +305,6 @@ public class UserRequestService {
 
         userRequestPo.setGroup(parentPo);
         userRequestPo.setName(dto.getName());
-        userRequestPo.setSeq(dto.getSeq());
         repository.save(userRequestPo);
     }
 
@@ -327,7 +326,6 @@ public class UserRequestService {
         copyPo.setRequestHeaders(userRequestPo.getRequestHeaders());
         copyPo.setRequestBodyType(userRequestPo.getRequestBodyType());
         copyPo.setRequestBody(userRequestPo.getRequestBody());
-        copyPo.setSeq(userRequestPo.getSeq() + 1);
         repository.save(copyPo);
     }
 

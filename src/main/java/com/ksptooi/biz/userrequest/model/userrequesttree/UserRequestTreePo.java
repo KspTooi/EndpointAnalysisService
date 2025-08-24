@@ -62,7 +62,6 @@ public class UserRequestTreePo {
     @Comment("挂载的请求")
     private UserRequestPo request;
 
-
     //挂载的请求组
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

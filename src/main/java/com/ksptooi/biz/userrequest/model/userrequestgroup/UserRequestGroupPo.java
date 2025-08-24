@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class UserRequestGroupPo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tree_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "tree_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("用户请求树ID")
     private UserRequestTreePo tree;
 
@@ -34,11 +35,6 @@ public class UserRequestGroupPo {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("用户ID")
     private UserPo user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("父级ID 为空表示根节点")
-    private UserRequestGroupPo parent;
 
     @Column(name = "name", length = 64, nullable = false)
     @Comment("请求组名称")
@@ -62,7 +58,6 @@ public class UserRequestGroupPo {
 
     //请求组中的请求
     @BatchSize(size = 20)
-    @OrderBy("seq ASC")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     @Comment("请求组中的请求")
     private List<UserRequestPo> requests;

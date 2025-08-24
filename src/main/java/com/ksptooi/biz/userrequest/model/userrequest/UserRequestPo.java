@@ -29,11 +29,11 @@ public class UserRequestPo {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "tree_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "tree_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("用户请求树ID")
     private UserRequestTreePo tree;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("请求组ID")
     private UserRequestGroupPo group;
@@ -73,10 +73,6 @@ public class UserRequestPo {
     @Column(name = "request_body", columnDefinition = "json")
     @Comment("请求体JSON")
     private String requestBody;
-
-    @Column(name = "seq", nullable = false)
-    @Comment("排序")
-    private Integer seq;
 
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
