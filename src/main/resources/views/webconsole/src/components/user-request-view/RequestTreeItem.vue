@@ -77,6 +77,7 @@
         @select-request="$emit('select-request', $event)"
         @right-click="$emit('right-click', $event)"
         @refresh-tree="$emit('refresh-tree')"
+        @apply-tree="$emit('apply-tree', $event)"
       />
     </div>
   </div>
@@ -103,7 +104,8 @@ const emit = defineEmits<{
   "toggle-node": [nodeId: string];
   "select-request": [requestId: string];
   "right-click": [event: { node: GetUserRequestTreeVo; x: number; y: number }];
-  "refresh-tree": [];
+  "refresh-tree": []; //刷新树结构
+  "apply-tree": [tree: GetUserRequestTreeVo[]]; //应用树结构
 }>();
 
 // 工具函数
@@ -230,31 +232,32 @@ const handleDrop = async (event: DragEvent) => {
     // 拖拽到目标节点中心
     if (zone === "center") {
       moveParam.kind = 2;
-      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      const ret = await UserRequestTreeApi.moveUserRequestTree(moveParam);
       ElMessage.success("已完成移动操作");
-      emit("refresh-tree");
+      emit("apply-tree", ret);
       return false;
     }
 
     //拖拽到目标上边缘
     if (zone === "top") {
       moveParam.kind = 0;
-      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      const ret = await UserRequestTreeApi.moveUserRequestTree(moveParam);
       ElMessage.success("已完成移动操作");
-      emit("refresh-tree");
+      emit("apply-tree", ret);
       return false;
     }
 
     //拖拽到目标下边缘
     if (zone === "bottom") {
       moveParam.kind = 1;
-      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      const ret = await UserRequestTreeApi.moveUserRequestTree(moveParam);
       ElMessage.success("已完成移动操作");
-      emit("refresh-tree");
+      emit("apply-tree", ret);
       return false;
     }
   } catch (e: any) {
     ElMessage.error(e?.message || "拖拽操作失败");
+    return false;
   }
 };
 </script>

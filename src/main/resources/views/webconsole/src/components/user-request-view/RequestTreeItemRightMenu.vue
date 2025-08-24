@@ -304,6 +304,7 @@ const focusModalAddSubGroup = () => {
   font-size: 14px;
   color: #606266;
   transition: all 0.3s;
+  user-select: none;
 }
 
 .menu-item:hover {

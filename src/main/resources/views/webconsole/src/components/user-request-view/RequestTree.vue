@@ -36,6 +36,7 @@
         @select-request="RequestTreeHolder().setActiveNodeId"
         @right-click="handleRightClick"
         @refresh-tree="loadUserRequestTree"
+        @apply-tree="onTreeApplied"
       />
     </div>
 
@@ -126,13 +127,9 @@ const createGroupRules = {
 };
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
-let loadingTimer: ReturnType<typeof setTimeout> | null = null;
 
 const loadUserRequestTree = async () => {
-  if (loadingTimer) clearTimeout(loadingTimer);
-  loadingTimer = setTimeout(() => {
-    loading.value = true;
-  }, 300);
+  loading.value = true;
 
   try {
     const dto: GetUserRequestTreeDto = {
@@ -146,7 +143,6 @@ const loadUserRequestTree = async () => {
   } catch (error) {
     console.error("加载用户请求树失败:", error);
   } finally {
-    if (loadingTimer) clearTimeout(loadingTimer);
     loading.value = false;
   }
 };
@@ -294,9 +290,9 @@ const handleRootDrop = async (event: DragEvent) => {
       kind: 0, //0:顶部 1:底部 2:内部
     };
 
-    await UserRequestTreeApi.moveUserRequestTree(moveParam);
+    const ret = await UserRequestTreeApi.moveUserRequestTree(moveParam);
     ElMessage.success("已移动到根级别");
-    await loadUserRequestTree();
+    await onTreeApplied(ret);
   } catch (error: any) {
     ElMessage.error(error?.message || "移动失败");
   }
@@ -345,9 +341,9 @@ const onDocumentDrop = async (event: DragEvent) => {
       kind: 0, //0:顶部 1:底部 2:内部
     };
 
-    await UserRequestTreeApi.moveUserRequestTree(moveParam);
+    const ret = await UserRequestTreeApi.moveUserRequestTree(moveParam);
     ElMessage.success("已移动到根级别");
-    await loadUserRequestTree();
+    await onTreeApplied(ret);
   } catch (error: any) {
     ElMessage.error(error?.message || "移动失败");
   }
@@ -377,6 +373,15 @@ const handleCreateGroup = async () => {
   } finally {
     createGroupLoading.value = false;
   }
+};
+
+/**
+ * 应用树结构
+ * @param tree 树结构
+ */
+const onTreeApplied = async (tree: GetUserRequestTreeVo[]) => {
+  treeData.value = tree;
+  await cleanupActiveNodes();
 };
 
 onMounted(() => {
