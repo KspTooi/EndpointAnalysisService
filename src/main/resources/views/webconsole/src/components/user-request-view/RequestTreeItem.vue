@@ -27,10 +27,10 @@
           <ArrowDown v-if="isExpanded(node.id)" />
         </el-icon>
         <el-icon class="folder-icon">
-          <Folder v-show="node.children?.length === 0"/>
-<!--          <IDeviconPlainHyperv />-->
-<!--          <IFlatColorIconsFolder  />-->
-          <IStreamlineCyberNetwork v-show="node.children?.length !== 0"/>
+          <Folder v-show="node.children?.length === 0" />
+          <!--          <IDeviconPlainHyperv />-->
+          <!--          <IFlatColorIconsFolder  />-->
+          <IStreamlineCyberNetwork v-show="node.children?.length !== 0" />
         </el-icon>
         <span class="node-name">{{ node.name }}</span>
       </div>
@@ -214,49 +214,45 @@ const handleDrop = async (event: DragEvent) => {
     // 自身或同一元素不处理
     if (drag.id === props.node.id) return;
 
-    // 拖拽到中心：若目标是分组，则加入子组
-    if (zone === "center" && isGroup(props.node)) {
-      if (drag.id === props.node.id) return;
-      const dtoCenter: EditUserRequestTreeDto = {
-        id: drag.id,
-        parentId: props.node.id,
-        type: drag.type,
-        name: drag.name,
-        seq: (props.node.children?.length || 0) + 1,
-      };
-      await UserRequestTreeApi.editUserRequestTree(dtoCenter);
-      ElMessage.success("已移动到子组");
-      emit("refresh-tree");
-      return;
-    }
+    const dragNodeId = drag.id;
+    const targetNodeId = props.node.id;
 
-    // 拖拽到上/下边缘：进行排序（目标同级之前/之后）
-    const parentId = props.parentNode ? props.parentNode.id : null;
-    // 若拖拽进来的是分组（type=0）且当前目标是请求（type=1），不允许跨类型排序为安全起见
-    if (!isGroup(props.node) && drag.type === 0) {
-      return;
-    }
-    let seq = (props.childIndex ?? 0) + 1;
-
-    if (zone === "top") {
-      seq = (props.childIndex ?? 0) - 1;
-      console.log("top", seq);
-    }
-    if (zone === "bottom") {
-      seq = (props.childIndex ?? 0) + 1;
-      console.log("bottom", seq);
-    }
-
-    const dtoSort: EditUserRequestTreeDto = {
-      id: drag.id,
-      parentId,
-      type: drag.type,
-      name: drag.name,
-      seq,
+    const moveParam = {
+      keyword: null,
+      nodeId: dragNodeId,
+      targetId: targetNodeId,
+      kind: 2, //0:顶部 1:底部 2:内部
     };
-    await UserRequestTreeApi.editUserRequestTree(dtoSort);
-    ElMessage.success("排序已更新");
-    emit("refresh-tree");
+
+    //标记事件已被处理过
+    event.dataTransfer.dropEffect = "none";
+
+    // 拖拽到目标节点中心
+    if (zone === "center") {
+      moveParam.kind = 2;
+      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      ElMessage.success("已完成移动操作");
+      emit("refresh-tree");
+      return false;
+    }
+
+    //拖拽到目标上边缘
+    if (zone === "top") {
+      moveParam.kind = 0;
+      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      ElMessage.success("已完成移动操作");
+      emit("refresh-tree");
+      return false;
+    }
+
+    //拖拽到目标下边缘
+    if (zone === "bottom") {
+      moveParam.kind = 1;
+      await UserRequestTreeApi.moveUserRequestTree(moveParam);
+      ElMessage.success("已完成移动操作");
+      emit("refresh-tree");
+      return false;
+    }
   } catch (e: any) {
     ElMessage.error(e?.message || "拖拽操作失败");
   }
@@ -297,7 +293,7 @@ const handleDrop = async (event: DragEvent) => {
   gap: 3px;
 }
 
-.item-indicator-light  {
+.item-indicator-light {
   color: rgb(206, 206, 206) !important;
   font-size: 12px;
   margin-right: 7.5px;

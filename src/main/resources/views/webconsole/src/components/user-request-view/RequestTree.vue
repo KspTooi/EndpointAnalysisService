@@ -261,12 +261,18 @@ const handleRootDragLeave = () => {
   }
 };
 
+/**
+ * 根级拖拽处理
+ * @param event 拖拽事件
+ */
 const handleRootDrop = async (event: DragEvent) => {
   if (!event.dataTransfer) return;
   event.preventDefault();
   event.stopPropagation();
   isRootDragOver.value = false;
   rootDragCounter = 0;
+
+  if (event.dataTransfer.dropEffect === "none") return;
 
   try {
     const jsonData = event.dataTransfer.getData("application/json");
@@ -275,18 +281,14 @@ const handleRootDrop = async (event: DragEvent) => {
     // 已在根级则忽略
     if (dragData.parentId === null) return;
 
-    // 计算根级新序号
-    const rootItems = treeData.value.filter((item) => !item.parentId);
-    const newSeq = rootItems.length + 1;
-
-    const editDto = {
-      id: dragData.id,
-      parentId: null,
-      type: dragData.type,
-      name: dragData.name,
-      seq: newSeq,
+    const moveParam = {
+      keyword: null,
+      nodeId: dragData.id,
+      targetId: null,
+      kind: 0, //0:顶部 1:底部 2:内部
     };
-    await UserRequestTreeApi.editUserRequestTree(editDto);
+
+    await UserRequestTreeApi.moveUserRequestTree(moveParam);
     ElMessage.success("已移动到根级别");
     await loadUserRequestTree();
   } catch (error: any) {
@@ -310,6 +312,10 @@ const onDocumentDragOver = (event: DragEvent) => {
   }
 };
 
+/**
+ * 全局拖拽：允许在 tag-tree-body 之外任意位置放入根
+ * @param event 拖拽事件
+ */
 const onDocumentDrop = async (event: DragEvent) => {
   const bodyEl = tagTreeBodyRef.value;
   const target = event.target as Node | null;
@@ -325,16 +331,15 @@ const onDocumentDrop = async (event: DragEvent) => {
     if (!jsonData) return;
     const dragData = JSON.parse(jsonData) as { id: string; parentId: string | null; type: number; name: string };
     if (dragData.parentId === null) return;
-    const rootItems = treeData.value.filter((item) => !item.parentId);
-    const newSeq = rootItems.length + 1;
-    const editDto = {
-      id: dragData.id,
-      parentId: null,
-      type: dragData.type,
-      name: dragData.name,
-      seq: newSeq,
+
+    const moveParam = {
+      keyword: null,
+      nodeId: dragData.id,
+      targetId: null,
+      kind: 0, //0:顶部 1:底部 2:内部
     };
-    await UserRequestTreeApi.editUserRequestTree(editDto);
+
+    await UserRequestTreeApi.moveUserRequestTree(moveParam);
     ElMessage.success("已移动到根级别");
     await loadUserRequestTree();
   } catch (error: any) {
@@ -350,7 +355,11 @@ const handleCreateGroup = async () => {
     if (!valid) return;
 
     createGroupLoading.value = true;
-    await UserRequestGroupApi.addUserRequestGroup(createGroupForm.value);
+    await UserRequestTreeApi.addUserRequestTree({
+      parentId: null,
+      kind: 0, //0:组 1:请求
+      name: createGroupForm.value.name,
+    });
 
     ElMessage.success("创建组成功");
     createGroupDialogVisible.value = false;

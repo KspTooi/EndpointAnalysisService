@@ -1,4 +1,4 @@
-package com.ksptooi.biz.userrequest.model.userrequest;
+package com.ksptooi.biz.userrequest.model.userrequesttree.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -12,6 +12,12 @@ public class GetUserRequestTreeVo {
 
     @Schema(description = "对象ID")
     private Long id;
+
+    @Schema(description = "请求ID(当type为1时存在)")
+    private Long requestId;
+
+    @Schema(description = "请求组ID(当type为0时存在)")
+    private Long groupId;
 
     @Schema(description = "父级ID null为根节点")
     private Long parentId;

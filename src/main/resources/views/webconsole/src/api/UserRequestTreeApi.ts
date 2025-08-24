@@ -16,6 +16,12 @@ export interface GetUserRequestTreeVo {
   children?: GetUserRequestTreeVo[]; //子节点
 }
 
+export interface AddUserRequestTreeDto {
+  parentId: string | null; //父级ID
+  kind: number; //类型 0:请求组 1:用户请求
+  name: string; //名称
+}
+
 export interface EditUserRequestTreeDto {
   id: string; //数据ID
   parentId: string | null; //父级ID
@@ -29,10 +35,35 @@ export interface RemoveUserRequestTreeDto {
   type: number | null; //类型 0:请求组 1:用户请求
 }
 
+export interface MoveUserRequestTreeDto {
+  keyword?: string | null; //关键字查询
+  nodeId: string; //对象ID
+  targetId: string | null; //目标ID
+  kind: number; //移动方式 0:顶部 1:底部 2:内部
+}
+
 export default {
   /** 获取用户请求树 */
   getUserRequestTree: async (dto: GetUserRequestTreeDto): Promise<GetUserRequestTreeVo[]> => {
-    var result = await Http.postEntity<Result<GetUserRequestTreeVo[]>>("/userRequest/getUserRequestTree", dto);
+    var result = await Http.postEntity<Result<GetUserRequestTreeVo[]>>("/userRequestTree/getUserRequestTree", dto);
+    if (result.code == 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /** 新增用户请求树 */
+  addUserRequestTree: async (dto: AddUserRequestTreeDto): Promise<string> => {
+    var result = await Http.postEntity<Result<string>>("/userRequestTree/addUserRequestTree", dto);
+    if (result.code == 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /** 移动用户请求树 */
+  moveUserRequestTree: async (dto: MoveUserRequestTreeDto): Promise<GetUserRequestTreeVo[]> => {
+    var result = await Http.postEntity<Result<GetUserRequestTreeVo[]>>("/userRequestTree/moveUserRequestTree", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -41,7 +72,7 @@ export default {
 
   /** 编辑用户请求树 */
   editUserRequestTree: async (dto: EditUserRequestTreeDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/userRequest/editUserRequestTree", dto);
+    var result = await Http.postEntity<Result<string>>("/userRequestTree/editUserRequestTree", dto);
     if (result.code == 0) {
       return result.message;
     }
@@ -50,7 +81,7 @@ export default {
 
   /** 删除用户请求树 */
   removeUserRequestTree: async (dto: RemoveUserRequestTreeDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/userRequest/removeUserRequestTree", dto);
+    var result = await Http.postEntity<Result<string>>("/userRequestTree/removeUserRequestTree", dto);
     if (result.code == 0) {
       return result.message;
     }

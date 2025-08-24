@@ -1,9 +1,7 @@
 package com.ksptooi.biz.userrequest.service;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.repository.RequestRepository;
 import com.ksptooi.biz.user.model.user.UserPo;
@@ -11,13 +9,15 @@ import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.biz.userrequest.model.userrequest.*;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
 import com.ksptooi.biz.userrequest.model.userrequestlog.UserRequestLogPo;
+import com.ksptooi.biz.userrequest.model.userrequesttree.dto.EditUserRequestTreeDto;
+import com.ksptooi.biz.userrequest.model.userrequesttree.dto.GetUserRequestTreeDto;
+import com.ksptooi.biz.userrequest.model.userrequesttree.vo.GetUserRequestTreeVo;
 import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestLogRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.http.HttpHeaderVo;
 import com.ksptooi.commons.http.RequestSchema;
-import com.ksptooi.commons.utils.GsonUtils;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import jakarta.security.auth.message.AuthException;
 import lombok.extern.slf4j.Slf4j;
@@ -189,7 +189,7 @@ public class UserRequestService {
                 continue;
             }
             for (UserRequestPo req : groupPo.getRequests()) {
-                
+
                 GetUserRequestTreeVo reqNode = new GetUserRequestTreeVo();
                 reqNode.setId(req.getId());
                 reqNode.setParentId(groupPo.getId());

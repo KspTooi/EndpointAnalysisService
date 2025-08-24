@@ -71,7 +71,7 @@ import { ref, nextTick, onMounted, onUnmounted } from "vue";
 import { Edit, Delete, Plus, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import UserRequestTreeApi from "@/api/UserRequestTreeApi";
-import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTreeDto } from "@/api/UserRequestTreeApi";
+import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTreeDto, AddUserRequestTreeDto } from "@/api/UserRequestTreeApi";
 import UserRequestGroupApi from "@/api/UserRequestGroupApi";
 import type { AddUserRequestGroupDto } from "@/api/UserRequestGroupApi";
 import UserRequestApi from "@/api/UserRequestApi";
@@ -205,12 +205,13 @@ const handleConfirmAddSubGroup = async () => {
 
     addSubGroupLoading.value = true;
 
-    const dto: AddUserRequestGroupDto = {
-      parentId: Number(props.node.id),
+    const dto: AddUserRequestTreeDto = {
+      parentId: props.node.id,
+      kind: 0, //0:组 1:请求
       name: addSubGroupForm.value.name,
     };
 
-    await UserRequestGroupApi.addUserRequestGroup(dto);
+    await UserRequestTreeApi.addUserRequestTree(dto);
 
     ElMessage.success("新建子组成功");
     addSubGroupDialogVisible.value = false;

@@ -1,28 +1,15 @@
 package com.ksptooi.biz.userrequest.model.userrequesttree;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.Comment;
 import com.ksptooi.biz.user.model.user.UserPo;
 import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "user_request_tree")
@@ -70,18 +57,17 @@ public class UserRequestTreePo {
     private List<UserRequestTreePo> children;
 
     //挂载的请求
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "request_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("挂载的请求")
     private UserRequestPo request;
 
 
     //挂载的请求组
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("挂载的请求组")
     private UserRequestGroupPo group;
-
 
 
     @PrePersist
