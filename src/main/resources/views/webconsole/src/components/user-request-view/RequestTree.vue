@@ -35,7 +35,6 @@
         @toggle-node="handleToggleNode"
         @select-request="RequestTreeHolder().setActiveNodeId"
         @right-click="handleRightClick"
-        @refresh-tree="loadUserRequestTree"
         @apply-tree="onTreeApplied"
       />
     </div>

@@ -7,6 +7,8 @@ export interface GetUserRequestTreeDto {
 
 export interface GetUserRequestTreeVo {
   id: string; //数据ID
+  requestId: string; //请求ID
+  groupId: string; //组ID
   parentId: string | null; //父级ID
   type: number; //类型 0:请求组 1:用户请求
   name: string; //名称

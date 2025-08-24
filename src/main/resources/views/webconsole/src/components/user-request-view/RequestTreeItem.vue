@@ -5,7 +5,7 @@
       class="tag-tree-item"
       :class="{
         /* 'tag-item-active': isGroup(node) ? isExpanded(node.id) : isActive(node.id), */
-        'node-active': isGroup(node) ? RequestTreeHolder().getActiveGroupId === node.id : RequestTreeHolder().getActiveRequestId === node.id,
+        'node-active': isGroup(node) ? RequestTreeHolder().getActiveNodeId === node.id : RequestTreeHolder().getActiveNodeId === node.id,
         'tag-item-active': isGroup(node) ? isExpanded(node.id) : false,
         'request-item': !isGroup(node),
         'drag-over-center': dragHoverZone === 'center',
@@ -140,16 +140,16 @@ const handleNodeClick = (node: GetUserRequestTreeVo) => {
     //更新RequstTree状态
     RequestTreeHolder().setActiveNodeId(node.id);
     RequestTreeHolder().setActiveNodeType("group");
-    RequestTreeHolder().setActiveGroupId(node.id);
+    RequestTreeHolder().setActiveGroupId(node.groupId);
     RequestTreeHolder().setActiveRequestId(null);
   }
 
   //处理Request
   if (!isGroup(node)) {
-    handleSelectRequest(node.id);
+    handleSelectRequest(node.requestId);
     RequestTreeHolder().setActiveNodeId(node.id);
     RequestTreeHolder().setActiveNodeType("request");
-    RequestTreeHolder().setActiveRequestId(node.id);
+    RequestTreeHolder().setActiveRequestId(node.requestId);
     RequestTreeHolder().setActiveGroupId(null);
   }
 };

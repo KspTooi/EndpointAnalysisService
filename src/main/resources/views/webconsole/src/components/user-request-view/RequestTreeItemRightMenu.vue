@@ -247,6 +247,7 @@ const handleDelete = async () => {
     emit("close");
     emit("refresh");
   } catch (error: any) {
+    emit("close");
     if (error !== "cancel") {
       ElMessage.error(error.message || `删除${nodeType}失败`);
     }
