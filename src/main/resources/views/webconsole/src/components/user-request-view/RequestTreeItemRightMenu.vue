@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, onUnmounted } from "vue";
+import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 import { Edit, Delete, Plus, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import UserRequestTreeApi from "@/api/UserRequestTreeApi";
@@ -153,6 +153,9 @@ const handleConfirmEdit = async () => {
     ElMessage.success(`编辑${nodeType}成功`);
     editDialogVisible.value = false;
     emit("refresh");
+
+    //还需要刷新请求详情
+    EventHolder().requestReloadRequestDetails();
   } catch (error: any) {
     const nodeType = props.node.type === 0 ? "分组" : "请求";
     ElMessage.error(error.message || `编辑${nodeType}失败`);

@@ -273,6 +273,15 @@ watch(
     }
   }
 );
+
+watch(
+  () => EventHolder().isNeedReloadRequestDetails,
+  (newVal) => {
+    if (newVal) {
+      loadRequestDetail();
+    }
+  }
+);
 </script>
 
 <style scoped>

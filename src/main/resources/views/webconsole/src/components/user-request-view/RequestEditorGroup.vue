@@ -212,6 +212,13 @@ watch(
     loadGroupDetail();
   }
 );
+
+watch(
+  () => EventHolder().isNeedReloadRequestDetails,
+  (newVal: number) => {
+    loadGroupDetail();
+  }
+);
 </script>
 
 <style scoped>
