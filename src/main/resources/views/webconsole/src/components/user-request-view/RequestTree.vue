@@ -173,7 +173,7 @@ const collectEmptyGroupIds = (nodes: GetUserRequestTreeVo[]): Set<string> => {
 const isRequestExists = (requestId: string | null, nodes: GetUserRequestTreeVo[]): boolean => {
   if (!requestId) return false;
   for (const node of nodes) {
-    if (node.type === 1 && node.id === requestId) {
+    if (node.type === 1 && node.requestId === requestId) {
       return true;
     }
     if (node.children && node.children.length > 0) {
