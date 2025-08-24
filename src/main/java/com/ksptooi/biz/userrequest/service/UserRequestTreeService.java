@@ -153,6 +153,10 @@ public class UserRequestTreeService {
             userRequestGroupPo.setName(dto.getName());
             userRequestGroupPo.setDescription(null);
             userRequestTreePo.setGroup(userRequestGroupPo);
+
+            //先保存请求
+            var saveGroup = userRequestGroupRepository.save(userRequestGroupPo);
+            userRequestTreePo.setGroupId(saveGroup.getId());
         }
         //挂载空用户请求
         if (dto.getKind() == 1) {
@@ -168,6 +172,10 @@ public class UserRequestTreeService {
             userRequestPo.setRequestBodyType("application/json;charset=utf-8");
             userRequestPo.setRequestBody("{}");
             userRequestTreePo.setRequest(userRequestPo);
+
+            //先保存请求
+            var saveRequest = userRequestRepository.save(userRequestPo);
+            userRequestTreePo.setRequestId(saveRequest.getId());
         }
 
         userRequestTreeRepository.save(userRequestTreePo);
