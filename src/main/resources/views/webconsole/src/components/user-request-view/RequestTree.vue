@@ -126,9 +126,14 @@ const createGroupRules = {
 };
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+let loadingTimer: ReturnType<typeof setTimeout> | null = null;
 
 const loadUserRequestTree = async () => {
-  loading.value = true;
+  if (loadingTimer) clearTimeout(loadingTimer);
+  loadingTimer = setTimeout(() => {
+    loading.value = true;
+  }, 300);
+
   try {
     const dto: GetUserRequestTreeDto = {
       keyword: searchValue.value || null,
@@ -141,6 +146,7 @@ const loadUserRequestTree = async () => {
   } catch (error) {
     console.error("加载用户请求树失败:", error);
   } finally {
+    if (loadingTimer) clearTimeout(loadingTimer);
     loading.value = false;
   }
 };
