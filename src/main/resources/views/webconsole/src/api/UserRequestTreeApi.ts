@@ -26,10 +26,7 @@ export interface AddUserRequestTreeDto {
 
 export interface EditUserRequestTreeDto {
   id: string; //数据ID
-  parentId: string | null; //父级ID
-  type: number; //类型 0:请求组 1:用户请求
   name: string; //名称
-  seq: number; //排序
 }
 
 export interface RemoveUserRequestTreeDto {

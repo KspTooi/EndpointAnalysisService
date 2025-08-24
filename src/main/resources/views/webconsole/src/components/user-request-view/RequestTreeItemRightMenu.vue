@@ -144,10 +144,7 @@ const handleConfirmEdit = async () => {
 
     const dto: EditUserRequestTreeDto = {
       id: props.node.id,
-      parentId: props.node.parentId,
-      type: props.node.type,
       name: editForm.value.name,
-      seq: 0, // 暂时设为0，可根据需要调整
     };
 
     await UserRequestTreeApi.editUserRequestTree(dto);

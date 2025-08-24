@@ -30,9 +30,6 @@ import java.util.List;
 public class UserRequestTreeController {
 
     @Autowired
-    private UserRequestService userRequestService;
-
-    @Autowired
     private UserRequestTreeService userRequestTreeService;
 
 
@@ -58,7 +55,7 @@ public class UserRequestTreeController {
     @PostMapping("/editUserRequestTree")
     @Operation(summary = "编辑用户请求树")
     public Result<String> editUserRequestTree(@RequestBody @Valid EditUserRequestTreeDto dto) throws Exception {
-        //userRequestService.editUserRequestTree(dto);
+        userRequestTreeService.editUserRequestTree(dto);
         return Result.success("修改成功");
     }
 

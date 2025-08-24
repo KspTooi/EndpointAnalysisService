@@ -6,6 +6,7 @@ import com.ksptooi.biz.userrequest.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
 import com.ksptooi.biz.userrequest.model.userrequesttree.UserRequestTreePo;
 import com.ksptooi.biz.userrequest.model.userrequesttree.dto.AddUserRequestTreeDto;
+import com.ksptooi.biz.userrequest.model.userrequesttree.dto.EditUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequesttree.dto.GetUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequesttree.dto.MoveUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequesttree.vo.GetUserRequestTreeVo;
@@ -16,6 +17,7 @@ import com.ksptooi.commons.exception.BizException;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -122,6 +124,7 @@ public class UserRequestTreeService {
      *
      * @param dto 参数
      */
+    @Transactional(rollbackFor = Exception.class)
     public void addUserRequestTree(AddUserRequestTreeDto dto) throws BizException, AuthException {
 
         UserRequestTreePo parentPo = null;
@@ -176,6 +179,7 @@ public class UserRequestTreeService {
      * @return 移动成功以后返回新的树结构
      * @throws AuthException 认证异常
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<GetUserRequestTreeVo> moveUserRequestTree(MoveUserRequestTreeDto dto) throws BizException, AuthException {
 
         Long userId = AuthService.requireUserId();
@@ -423,12 +427,46 @@ public class UserRequestTreeService {
         return getUserRequestTree(queryDto);
     }
 
+    /**
+     * 编辑用户请求树
+     *
+     * @param dto 参数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void editUserRequestTree(EditUserRequestTreeDto dto) throws BizException, AuthException {
+
+        Long userId = AuthService.requireUserId();
+        UserRequestTreePo nodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getId(), userId);
+
+        if (nodePo == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        nodePo.setName(dto.getName());
+
+        //如果树节点是组类型 则需要同步更新组信息
+        if (nodePo.getKind() == 0) {
+            UserRequestGroupPo groupPo = nodePo.getGroup();
+            groupPo.setName(dto.getName());
+        }
+
+        //如果树节点是请求类型 则需要同步更新请求信息
+        if (nodePo.getKind() == 1) {
+            UserRequestPo requestPo = nodePo.getRequest();
+            requestPo.setName(dto.getName());
+        }
+
+        //级联修改
+        userRequestTreeRepository.save(nodePo);
+    }
+
 
     /**
      * 移除用户请求树对象
      *
      * @param dto 参数
      */
+    @Transactional(rollbackFor = Exception.class)
     public void removeUserRequestTree(RemoveUserRequestTreeDto dto) throws BizException, AuthException {
 
         Long userId = AuthService.requireUserId();
