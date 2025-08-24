@@ -52,20 +52,14 @@ watch(
   () => EventHolder().isOnCtrlD,
   async (newVal) => {
     if (newVal) {
-      //提示用户不支持复制组
-      if (RequestTreeHolder().getActiveNodeType == "group") {
-        ElMessage.error("不支持复制组");
-        return;
-      }
-
-      if (RequestTreeHolder().getActiveRequestId == null) {
-        ElMessage.error("请选择一个请求后，再使用CTRL+D复制");
+      if (RequestTreeHolder().getActiveNodeId == null) {
+        ElMessage.error("请选择一个对象后，再使用CTRL+D复制");
         return;
       }
 
       try {
-        const requestDetail = await UserRequestApi.copyUserRequest({
-          id: RequestTreeHolder().getActiveRequestId,
+        await UserRequestTreeApi.copyUserRequestTree({
+          id: RequestTreeHolder().getActiveNodeId,
         });
         ElMessage.success("复制请求成功");
 
@@ -101,24 +95,24 @@ watch(
       //如果是请求则删请求
       if (RequestTreeHolder().getActiveNodeType == "request") {
         try {
-          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveRequestId, type: 1 });
+          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveNodeId });
           ElMessage.success("删除请求成功");
           //刷新树
           EventHolder().requestReloadTree();
-        } catch (e) {
-          ElMessage.error("删除请求失败");
+        } catch (e: any) {
+          ElMessage.error("删除请求失败:" + e.message);
         }
       }
 
       //如果是组则删组
       if (RequestTreeHolder().getActiveNodeType == "group") {
         try {
-          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveGroupId, type: 0 });
+          await UserRequestTreeApi.removeUserRequestTree({ id: RequestTreeHolder().getActiveNodeId });
           ElMessage.success("删除组成功");
           //刷新树
           EventHolder().requestReloadTree();
-        } catch (e) {
-          ElMessage.error("删除组失败");
+        } catch (e: any) {
+          ElMessage.error("删除组失败:" + e.message);
         }
       }
     }

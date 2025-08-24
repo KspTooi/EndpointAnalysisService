@@ -27,7 +27,7 @@ public class UserRequestGroupPo {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "tree_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "tree_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), unique = true)
     @Comment("用户请求树ID")
     private UserRequestTreePo tree;
 
@@ -54,7 +54,7 @@ public class UserRequestGroupPo {
 
     //请求组中的请求
     @BatchSize(size = 20)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     @Comment("请求组中的请求")
     private List<UserRequestPo> requests;
 

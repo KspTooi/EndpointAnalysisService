@@ -122,32 +122,11 @@ public class UserRequestService {
         treePo.setKind(1); //0:请求组 1:用户请求
         treePo.setSeq(userRequestTreeRepository.getMinSeqInParent(null)); //新建的请求排在最前 
         treePo.setRequest(userRequestPo);
-        
+
         userRequestPo.setTree(treePo);
         repository.save(userRequestPo);
     }
 
-
-    public void copyUserRequest(CommonIdDto dto) throws BizException, AuthException {
-
-        UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
-
-        if (userRequestPo == null) {
-            throw new BizException("数据不存在或无权限操作.");
-        }
-
-        UserRequestPo copyPo = new UserRequestPo();
-        copyPo.setGroup(userRequestPo.getGroup());
-        copyPo.setOriginalRequest(userRequestPo.getOriginalRequest());
-        copyPo.setUser(userRequestPo.getUser());
-        copyPo.setName(userRequestPo.getName());
-        copyPo.setMethod(userRequestPo.getMethod());
-        copyPo.setUrl(userRequestPo.getUrl());
-        copyPo.setRequestHeaders(userRequestPo.getRequestHeaders());
-        copyPo.setRequestBodyType(userRequestPo.getRequestBodyType());
-        copyPo.setRequestBody(userRequestPo.getRequestBody());
-        repository.save(copyPo);
-    }
 
     @Transactional(rollbackFor = Exception.class)
     public void editUserRequest(EditUserRequestDto dto) throws BizException, AuthException {
@@ -158,12 +137,20 @@ public class UserRequestService {
             throw new BizException("数据不存在或无权限操作.");
         }
 
+        //如果请求有更名 同步修改树
+        if (!updatePo.getName().equals(dto.getName())) {
+            UserRequestTreePo treePo = updatePo.getTree();
+            treePo.setName(dto.getName());
+        }
+
         updatePo.setName(dto.getName());
         updatePo.setMethod(dto.getMethod());
         updatePo.setUrl(dto.getUrl());
         updatePo.setRequestHeaders(gson.toJson(dto.getRequestHeaders()));
         updatePo.setRequestBodyType(dto.getRequestBodyType());
         updatePo.setRequestBody(dto.getRequestBody());
+
+        //级联修改
         repository.save(updatePo);
     }
 

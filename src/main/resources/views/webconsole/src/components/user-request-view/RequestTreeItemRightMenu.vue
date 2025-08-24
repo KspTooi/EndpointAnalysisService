@@ -168,21 +168,13 @@ const handleConfirmEdit = async () => {
 const handleCopy = async () => {
   if (!props.node) return;
 
-  //如果是请求
-  if (props.node.type === 1) {
-    try {
-      await UserRequestApi.copyUserRequest({ id: props.node.id });
-      ElMessage.success("复制请求成功");
-      emit("refresh");
-      emit("close");
-    } catch (error: any) {
-      ElMessage.error(error.message || "复制请求失败");
-    }
-  }
-
-  //如果是分组
-  if (props.node.type === 0) {
-    ElMessage.error("分组不能复制");
+  try {
+    await UserRequestTreeApi.copyUserRequestTree({ id: props.node.id });
+    ElMessage.success("复制成功");
+    emit("refresh");
+    emit("close");
+  } catch (error: any) {
+    ElMessage.error(error.message || "复制失败");
   }
 };
 
@@ -238,7 +230,6 @@ const handleDelete = async () => {
 
     const dto: RemoveUserRequestTreeDto = {
       id: props.node.id,
-      type: props.node.type,
     };
 
     await UserRequestTreeApi.removeUserRequestTree(dto);

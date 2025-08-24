@@ -41,13 +41,6 @@ public class UserRequestController {
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "复制用户请求")
-    @PostMapping("/copyUserRequest")
-    public Result<String> copyUserRequest(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        userRequestService.copyUserRequest(dto);
-        return Result.success("复制成功");
-    }
-
     @Operation(summary = "查询用户请求详情")
     @PostMapping("/getUserRequestDetails")
     public Result<GetUserRequestDetailsVo> getUserRequestDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {

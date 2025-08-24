@@ -6,9 +6,9 @@ import com.ksptooi.biz.userrequest.model.userrequesttree.dto.EditUserRequestTree
 import com.ksptooi.biz.userrequest.model.userrequesttree.dto.GetUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequesttree.dto.MoveUserRequestTreeDto;
 import com.ksptooi.biz.userrequest.model.userrequesttree.vo.GetUserRequestTreeVo;
-import com.ksptooi.biz.userrequest.service.UserRequestService;
 import com.ksptooi.biz.userrequest.service.UserRequestTreeService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,6 +51,14 @@ public class UserRequestTreeController {
     public Result<List<GetUserRequestTreeVo>> moveUserRequestTree(@RequestBody @Valid MoveUserRequestTreeDto dto) throws Exception {
         return Result.success(userRequestTreeService.moveUserRequestTree(dto));
     }
+
+    @PostMapping("/copyUserRequestTree")
+    @Operation(summary = "复制用户请求树")
+    public Result<String> copyUserRequestTree(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        userRequestTreeService.copyUserRequestTree(dto);
+        return Result.success("复制成功");
+    }
+
 
     @PostMapping("/editUserRequestTree")
     @Operation(summary = "编辑用户请求树")

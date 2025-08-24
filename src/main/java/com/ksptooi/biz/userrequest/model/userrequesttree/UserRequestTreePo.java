@@ -56,17 +56,23 @@ public class UserRequestTreePo {
     @Comment("子节点")
     private List<UserRequestTreePo> children;
 
-    //挂载的请求
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "request_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("挂载的请求")
-    private UserRequestPo request;
+    @Column(name = "request_id", nullable = true)
+    @Comment("请求ID")
+    private Long requestId;
+
+    @Column(name = "group_id", nullable = true)
+    @Comment("请求组ID")
+    private Long groupId;
 
     //挂载的请求组
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "group_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @OneToOne(mappedBy = "tree", cascade = CascadeType.ALL, orphanRemoval = true)
     @Comment("挂载的请求组")
     private UserRequestGroupPo group;
+
+    //挂载的请求
+    @OneToOne(mappedBy = "tree", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("挂载的请求")
+    private UserRequestPo request;
 
 
     @PrePersist

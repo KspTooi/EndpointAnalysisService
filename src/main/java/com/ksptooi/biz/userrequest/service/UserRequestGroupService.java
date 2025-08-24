@@ -8,6 +8,7 @@ import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.EditUserRequestGroupDto;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.GetUserRequestGroupDetailsVo;
 import com.ksptooi.biz.userrequest.model.userrequestgroup.UserRequestGroupPo;
+import com.ksptooi.biz.userrequest.model.userrequesttree.UserRequestTreePo;
 import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
@@ -44,6 +45,12 @@ public class UserRequestGroupService {
 
         if (updatePo == null) {
             throw new BizException("更新失败,数据不存在.");
+        }
+
+        //如果组有更名 同步修改树
+        if (!updatePo.getName().equals(dto.getName())) {
+            UserRequestTreePo treePo = updatePo.getTree();
+            treePo.setName(dto.getName());
         }
 
         //处理基本信息
@@ -87,6 +94,7 @@ public class UserRequestGroupService {
             }
         }
 
+        //级联修改
         repository.save(updatePo);
     }
 

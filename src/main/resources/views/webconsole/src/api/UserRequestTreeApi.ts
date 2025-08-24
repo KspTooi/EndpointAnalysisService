@@ -1,5 +1,6 @@
 import Http from "@/commons/Http.ts";
 import type Result from "@/commons/entity/Result.ts";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 
 export interface GetUserRequestTreeDto {
   keyword?: string | null;
@@ -31,7 +32,6 @@ export interface EditUserRequestTreeDto {
 
 export interface RemoveUserRequestTreeDto {
   id: string | null; //数据ID
-  type: number | null; //类型 0:请求组 1:用户请求
 }
 
 export interface MoveUserRequestTreeDto {
@@ -65,6 +65,15 @@ export default {
     var result = await Http.postEntity<Result<GetUserRequestTreeVo[]>>("/userRequestTree/moveUserRequestTree", dto);
     if (result.code == 0) {
       return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /** 复制用户请求树 */
+  copyUserRequestTree: async (dto: CommonIdDto): Promise<string> => {
+    var result = await Http.postEntity<Result<string>>("/userRequestTree/copyUserRequestTree", dto);
+    if (result.code == 0) {
+      return result.message;
     }
     throw new Error(result.message);
   },

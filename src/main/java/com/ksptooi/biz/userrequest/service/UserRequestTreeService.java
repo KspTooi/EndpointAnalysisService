@@ -14,6 +14,7 @@ import com.ksptooi.biz.userrequest.repository.UserRequestGroupRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestTreeRepository;
 import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.utils.web.CommonIdDto;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -425,6 +426,183 @@ public class UserRequestTreeService {
         }
 
         return getUserRequestTree(queryDto);
+    }
+
+    /**
+     * 复制用户请求树
+     *
+     * @param dto 参数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void copyUserRequestTree(CommonIdDto dto) throws BizException, AuthException {
+
+        Long userId = AuthService.requireUserId();
+
+        UserRequestTreePo sourceNodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getId(), userId);
+
+        if (sourceNodePo == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        /*
+         * 处理节点基础信息
+         * 新复制的节点排序为当前节点排序+1且父级为当前节点的父级
+         * 新复制的节点将插入在被复制节点之后的一个槽位,并且后方所有大于等于 新复制节点SEQ 的节点都需要进行让位处理
+         * 让位规则: 节点SEQ >= 新复制节点SEQ 则节点SEQ + 1
+         */
+        var nodeName = sourceNodePo.getName() + " 副本";
+
+        UserRequestTreePo newNodePo = new UserRequestTreePo();
+        newNodePo.setUser(authService.requireUser());
+        newNodePo.setParent(sourceNodePo.getParent());
+        newNodePo.setName(nodeName);
+        newNodePo.setKind(sourceNodePo.getKind());
+        newNodePo.setSeq(sourceNodePo.getSeq() + 1);
+
+        //处理让位
+        var sourceParentNodePo = sourceNodePo.getParent();
+
+        //处理顶层节点让位
+        if (sourceParentNodePo == null) {
+            List<UserRequestTreePo> rootNodeList = userRequestTreeRepository.getRootNodeListByUserId(userId);
+            for (UserRequestTreePo item : rootNodeList) {
+
+                //所有SEQ大于等于新复制节点SEQ的节点都需要进行让位处理
+                if (item.getSeq() >= newNodePo.getSeq()) {
+                    item.setSeq(item.getSeq() + 1);
+                }
+            }
+            //先更新让位节点
+            userRequestTreeRepository.saveAll(rootNodeList);
+            //插入新复制的节点
+            userRequestTreeRepository.save(newNodePo);
+        }
+
+        //处理内部节点让位
+        if (sourceParentNodePo != null) {
+            List<UserRequestTreePo> sourceParentNodeList = sourceParentNodePo.getChildren();
+            for (UserRequestTreePo item : sourceParentNodeList) {
+                if (item.getSeq() >= newNodePo.getSeq()) {
+                    item.setSeq(item.getSeq() + 1);
+                }
+            }
+            //先更新让位节点
+            userRequestTreeRepository.saveAll(sourceParentNodeList);
+            //插入新复制的节点
+            userRequestTreeRepository.save(newNodePo);
+        }
+
+        //处理节点关联请求复制
+        if (sourceNodePo.getKind() == 1) {
+            UserRequestPo newRequestPo = new UserRequestPo();
+            newRequestPo.setTree(newNodePo);
+            newRequestPo.setGroup(sourceNodePo.getGroup());
+            newRequestPo.setUser(authService.requireUser());
+            newRequestPo.setOriginalRequest(null);
+            newRequestPo.setUser(authService.requireUser());
+            newRequestPo.setName(nodeName);
+            newRequestPo.setMethod(null);
+            newRequestPo.setUrl(null);
+            newRequestPo.setRequestHeaders(null);
+            newRequestPo.setRequestBodyType(null);
+            newRequestPo.setRequestBody(null);
+            newNodePo.setRequest(newRequestPo);
+
+            var requestPo = sourceNodePo.getRequest();
+            var originalRequestPo = requestPo.getOriginalRequest();
+
+            newRequestPo.setMethod(requestPo.getMethod());
+            newRequestPo.setUrl(requestPo.getUrl());
+            newRequestPo.setRequestHeaders(requestPo.getRequestHeaders());
+            newRequestPo.setRequestBodyType(requestPo.getRequestBodyType());
+            newRequestPo.setRequestBody(requestPo.getRequestBody());
+            if (originalRequestPo != null) {
+                newRequestPo.setOriginalRequest(originalRequestPo);
+            }
+
+            //保存新请求
+            var saveRequest = userRequestRepository.save(newRequestPo);
+            newNodePo.setRequestId(saveRequest.getId());
+        }
+
+        /*
+         * 处理组复制
+         * 组复制逻辑:
+         * 1.遍历源组下的请求 为每个请求创建新的树节点与请求数据，并将新树节点挂载到新组下
+         * 2.遍历源组下关联的过滤器,将过滤器绑定关系复制到新组
+         */
+        if (sourceNodePo.getKind() == 0) {
+
+            var sourceGroupPo = sourceNodePo.getGroup();
+
+            //为树对象创建组
+            var newGroupPo = new UserRequestGroupPo();
+            newGroupPo.setTree(newNodePo);
+            newGroupPo.setUser(authService.requireUser());
+            newGroupPo.setName(nodeName);
+            newGroupPo.setDescription(sourceGroupPo.getDescription());
+            newNodePo.setGroup(newGroupPo);
+
+            //获取源组下的所有对象
+            var sourceChildren = sourceNodePo.getChildren();
+            var newChildren = new ArrayList<UserRequestTreePo>();
+
+            for (var item : sourceChildren) {
+
+                //跳过对象中的组
+                if (item.getKind() == 0) {
+                    continue;
+                }
+
+                //先为请求创建树对象
+                var newRequestTreePo = new UserRequestTreePo();
+                newRequestTreePo.setUser(authService.requireUser());
+                newRequestTreePo.setParent(newNodePo);
+                newRequestTreePo.setName(item.getName());
+                newRequestTreePo.setKind(1);
+                newRequestTreePo.setSeq(item.getSeq());
+
+                var oldRequestPo = item.getRequest();
+
+                if (oldRequestPo == null) {
+                    throw new BizException("对象节点所关联的请求不存在 对象ID:" + item.getId());
+                }
+
+                //创建请求数据
+                var newRequestPo = new UserRequestPo();
+                newRequestPo.setTree(newRequestTreePo);
+                newRequestPo.setGroup(newGroupPo);
+                newRequestPo.setOriginalRequest(oldRequestPo.getOriginalRequest());
+                newRequestPo.setUser(authService.requireUser());
+                newRequestPo.setName(item.getName());
+                newRequestPo.setMethod(oldRequestPo.getMethod());
+                newRequestPo.setUrl(oldRequestPo.getUrl());
+                newRequestPo.setRequestHeaders(oldRequestPo.getRequestHeaders());
+                newRequestPo.setRequestBodyType(oldRequestPo.getRequestBodyType());
+                newRequestPo.setRequestBody(oldRequestPo.getRequestBody());
+
+                //挂载请求数据
+                newRequestTreePo.setRequest(newRequestPo);
+                newChildren.add(newRequestTreePo);
+            }
+
+            //挂载子节点到新的树对象
+            newNodePo.setChildren(newChildren);
+
+            //获取旧组下的所有过滤器并挂载到新创建的组
+            var sourceGroupFilters = sourceGroupPo.getFilters();
+
+            //向新组中添加过滤器
+            var newGroupFilters = new ArrayList<>(sourceGroupFilters);
+            //挂载过滤器
+            newGroupPo.setFilters(newGroupFilters);
+
+            //保存新组
+            var saveGroup = userRequestGroupRepository.save(newGroupPo);
+            newNodePo.setGroupId(saveGroup.getId());
+        }
+
+        userRequestTreeRepository.save(newNodePo);
     }
 
     /**
