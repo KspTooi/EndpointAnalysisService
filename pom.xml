@@ -290,8 +290,11 @@
                     <include>**/**.jpeg</include>
                 </includes>
                 <excludes>
-                    <exclude>views/webconsole/**</exclude>
-                    <exclude>views/aether/**</exclude>
+                    <exclude>views/webconsole/node_modules/**</exclude>
+                    <exclude>views/webconsole/dist/**</exclude>
+                    <exclude>views/webconsole/*.json</exclude>
+                    <exclude>views/webconsole/*.yaml</exclude>
+                    <exclude>views/webconsole/*.ts</exclude>
                 </excludes>
             </resource>
         </resources>

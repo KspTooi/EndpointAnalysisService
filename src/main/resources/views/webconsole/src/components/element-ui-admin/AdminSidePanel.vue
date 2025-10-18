@@ -1,15 +1,25 @@
 <template>
   <div class="admin-side-panel">
-    <!-- 标题区域 -->
+    <!-- LOGO与标题区域 -->
     <div v-if="title" class="panel-title">
+      <img :src="logoUrl" alt="EAS Logo" class="logo-image" />
       {{ title }}
     </div>
 
     <!-- 菜单区域 -->
-    <el-menu :default-active="activeItemId" class="panel-menu" @select="handleSelect" :collapse="isCollapse" :unique-opened="true">
+    <el-menu
+      :default-active="activeItemId"
+      :default-openeds="openedMenus"
+      class="panel-menu"
+      @select="handleSelect"
+      @open="handleMenuOpen"
+      @close="handleMenuClose"
+      :collapse="isCollapse"
+      :unique-opened="false"
+    >
       <template v-for="item in filteredItems" :key="item.id">
         <!-- 目录类型 -->
-        <el-sub-menu v-if="item.menuKind === 0 && item.children?.length" :index="item.id">
+        <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id">
           <template #title>
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
@@ -27,7 +37,7 @@
         </el-sub-menu>
 
         <!-- 菜单类型 -->
-        <el-menu-item v-else-if="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
+        <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
           <el-icon>
             <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
           </el-icon>
@@ -46,6 +56,7 @@ import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
+import logoUrl from "@/assets/EAS_CROWN.png";
 
 const router = useRouter();
 
@@ -59,6 +70,50 @@ const props = defineProps<{
   title?: string;
   isCollapse?: boolean;
 }>();
+
+const STORAGE_KEY = "admin_menu_opened_state";
+
+// 初始化菜单展开状态
+const getInitialOpenedMenus = (): string[] => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error("Failed to load menu state:", error);
+  }
+  return [];
+};
+
+// 菜单展开状态
+const openedMenus = ref<string[]>(getInitialOpenedMenus());
+
+// 保存展开状态到 localStorage
+const saveOpenedMenus = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(openedMenus.value));
+  } catch (error) {
+    console.error("Failed to save menu state:", error);
+  }
+};
+
+// 处理菜单打开
+const handleMenuOpen = (index: string) => {
+  if (!openedMenus.value.includes(index)) {
+    openedMenus.value.push(index);
+    saveOpenedMenus();
+  }
+};
+
+// 处理菜单关闭
+const handleMenuClose = (index: string) => {
+  const idx = openedMenus.value.indexOf(index);
+  if (idx > -1) {
+    openedMenus.value.splice(idx, 1);
+    saveOpenedMenus();
+  }
+};
 
 // 过滤掉按钮类型的菜单
 const filteredItems = computed(() => {
@@ -141,24 +196,41 @@ const handleSelect = (index: string) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--el-border-color-light);
+  border-right: none;
   overflow: hidden;
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+.logo-image {
+  max-width: 30px;
+  height: auto;
 }
 
 .panel-title {
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
-  color: var(--el-text-color-primary);
-  border-bottom: 1px solid var(--el-border-color-light);
+  color: #430675;
   flex-shrink: 0;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .panel-menu {
   flex: 1;
   overflow-y: auto;
   border-right: none;
+  background: transparent;
 }
 
 .panel-menu:not(.el-menu--collapse) {
@@ -171,7 +243,7 @@ const handleSelect = (index: string) => {
 
 /* 滚动条样式 */
 .panel-menu::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
 }
 
 .panel-menu::-webkit-scrollbar-track {
@@ -179,11 +251,98 @@ const handleSelect = (index: string) => {
 }
 
 .panel-menu::-webkit-scrollbar-thumb {
-  background: var(--el-border-color);
-  border-radius: 2px;
+  background: linear-gradient(180deg, #c0c4cc 0%, #909399 100%);
+  border-radius: 3px;
 }
 
 .panel-menu::-webkit-scrollbar-thumb:hover {
-  background: var(--el-border-color-darker);
+  background: linear-gradient(180deg, #909399 0%, #606266 100%);
+}
+
+/* 菜单项样式 */
+.panel-menu :deep(.el-menu) {
+  border-right: none;
+  background: transparent;
+}
+
+.panel-menu :deep(.el-menu-item),
+.panel-menu :deep(.el-sub-menu__title) {
+  margin: 3px 0;
+  height: 42px;
+  line-height: 42px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* 菜单项激活状态 */
+.panel-menu :deep(.el-menu-item.is-active) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  font-weight: 500;
+}
+
+.panel-menu :deep(.el-menu-item.is-active .el-icon) {
+  color: #ffffff;
+}
+
+/* 移除旧的左侧边框 */
+.panel-menu :deep(.el-menu-item.is-active)::before {
+  display: none;
+}
+
+/* 菜单项悬停效果 */
+.panel-menu :deep(.el-menu-item:hover),
+.panel-menu :deep(.el-sub-menu__title:hover) {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+/* 子菜单样式 */
+.panel-menu :deep(.el-sub-menu .el-menu-item) {
+  min-width: auto;
+  height: 38px;
+  line-height: 38px;
+  padding-left: 48px !important;
+  margin: 2px 0;
+}
+
+.panel-menu :deep(.el-sub-menu .el-menu-item.is-active) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+  font-weight: 500;
+}
+
+/* 图标样式 */
+.panel-menu :deep(.el-menu-item .el-icon),
+.panel-menu :deep(.el-sub-menu__title .el-icon) {
+  margin-right: 10px;
+  font-size: 17px;
+  transition: all 0.3s;
+}
+
+.panel-menu :deep(.el-menu-item.is-active .el-icon) {
+  transform: scale(1.1);
+}
+
+/* 折叠状态 */
+.panel-menu :deep(.el-menu--collapse .el-menu-item),
+.panel-menu :deep(.el-menu--collapse .el-sub-menu__title) {
+  height: 42px;
+  line-height: 42px;
+}
+
+.panel-menu :deep(.el-menu--collapse .el-menu-item .el-icon),
+.panel-menu :deep(.el-menu--collapse .el-sub-menu__title .el-icon) {
+  margin: 0;
+}
+
+/* 展开箭头样式 */
+.panel-menu :deep(.el-sub-menu__icon-arrow) {
+  transition: transform 0.3s;
+}
+
+.panel-menu :deep(.el-sub-menu.is-opened > .el-sub-menu__title .el-sub-menu__icon-arrow) {
+  transform: rotateZ(180deg);
 }
 </style>
