@@ -119,6 +119,7 @@ import {
   Coin,
   MagicStick,
   WalletFilled,
+  Menu,
 } from "@element-plus/icons-vue";
 
 // 定义组件props
@@ -237,6 +238,12 @@ const menuItems = ref([
     title: "端点文档查看器",
     icon: Operation,
     routerLink: "/ep-doc-viewer",
+  },
+  {
+    id: "menu-manager",
+    title: "菜单管理",
+    icon: Menu,
+    routerLink: "/menu-manager",
   },
 ]);
 

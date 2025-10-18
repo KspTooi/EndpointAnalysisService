@@ -14,6 +14,9 @@ importers:
       '@iconify/json':
         specifier: ^2.2.373
         version: 2.2.373
+      '@iconify/vue':
+        specifier: ^5.0.0
+        version: 5.0.0(vue@3.5.18(typescript@5.8.3))
       axios:
         specifier: ^1.8.4
         version: 1.11.0
@@ -54,9 +57,6 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5(typescript@5.8.3)
     devDependencies:
-      '@iconify/vue':
-        specifier: ^5.0.0
-        version: 5.0.0(vue@3.5.18(typescript@5.8.3))
       '@tsconfig/node22':
         specifier: ^22.0.0
         version: 22.0.2

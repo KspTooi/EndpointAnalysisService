@@ -24,7 +24,7 @@ import static com.ksptool.entities.Entities.as;
 
 @PrintLog
 @RestController
-@RequestMapping("/resource/menu")
+@RequestMapping("/menu")
 @Tag(name = "菜单管理", description = "菜单管理")
 @Slf4j
 public class MenuController {
@@ -51,6 +51,7 @@ public class MenuController {
         addResourceDto.setMenuPath(dto.getMenuPath());
         addResourceDto.setMenuQueryParam(dto.getMenuQueryParam());
         addResourceDto.setMenuIcon(dto.getMenuIcon());
+        addResourceDto.setPermission(dto.getPermission());
         addResourceDto.setSeq(dto.getSeq());
         resourceService.addResource(addResourceDto);
         return Result.success("新增成功");
@@ -84,8 +85,12 @@ public class MenuController {
         if (vo.getPermission() != null && vo.getPermission().equals("*")) {
             vo.setPermission(null);
         }
+        
+        if(vo.getParentId() == null){
+            vo.setParentId(-1L);
+        }
 
-        return Result.success(as(resourceService.getResourceDetails(dto), GetMenuDetailsVo.class));
+        return Result.success(vo);
     }
 
     @PostMapping("/getMenuTree")

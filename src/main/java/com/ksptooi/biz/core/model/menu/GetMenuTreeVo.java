@@ -19,6 +19,9 @@ public class GetMenuTreeVo {
     @Schema(description = "菜单名称")
     private String name;
 
+    @Schema(description = "菜单图标")
+    private String menuIcon;
+
     @Schema(description = "资源类型 0:菜单 1:接口")
     private Integer kind;
 

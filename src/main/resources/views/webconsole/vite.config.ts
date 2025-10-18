@@ -20,6 +20,9 @@ export default defineConfig({
     icons({
       autoInstall: true,
       compiler: "vue3",
+      customCollections: {
+        // 如果需要自定义图标集可以在这里配置
+      },
     }),
   ],
   resolve: {

@@ -135,6 +135,16 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/menu-manager",
+      name: "menu-manager",
+      component: () => import("@/views/core/MenuManager.vue"),
+      meta: {
+        breadcrumb: {
+          title: "菜单管理",
+        },
+      },
+    },
   ],
 });
 
