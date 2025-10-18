@@ -83,10 +83,10 @@ public class MenuController {
         GetMenuDetailsVo vo = as(resourceService.getResourceDetails(dto), GetMenuDetailsVo.class);
 
         if (vo.getPermission() != null && vo.getPermission().equals("*")) {
-            vo.setPermission(null);
+            vo.setPermission("*");
         }
-        
-        if(vo.getParentId() == null){
+
+        if (vo.getParentId() == null) {
             vo.setParentId(-1L);
         }
 

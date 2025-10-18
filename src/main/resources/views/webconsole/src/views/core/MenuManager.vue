@@ -132,6 +132,7 @@ import { reactive, ref, watch, computed } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
+import { EventHolder } from "@/store/EventHolder";
 
 //列表内容
 const query = reactive<GetMenuTreeDto>({
@@ -318,14 +319,20 @@ const submitModal = async () => {
 
   modalVisible.value = false;
   loadList();
+
+  //通知左侧菜单重新加载
+  EventHolder().requestReloadLeftMenu();
 };
 
 watch(
   () => modalForm.menuKind,
   (newVal: number) => {
-    if (newVal == 1) {
+    console.log("modalForm.menuKind");
+    console.log(newVal);
+    if (newVal == 0) {
       modalForm.menuPath = "";
       modalForm.menuQueryParam = "";
+      modalForm.permission = "";
     }
   },
   { immediate: true }

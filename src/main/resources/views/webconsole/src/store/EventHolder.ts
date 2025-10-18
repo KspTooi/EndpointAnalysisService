@@ -8,6 +8,9 @@ export const EventHolder = defineStore("EventHolder", {
     //是否需要重新加载请求
     needReloadRequestDetails: 0,
 
+    //是否需要重新加载左侧菜单
+    needReloadLeftMenu: 0,
+
     ctrlsState: 0,
     ctrlDState: 0,
     deleteState: 0,
@@ -20,6 +23,10 @@ export const EventHolder = defineStore("EventHolder", {
 
     isNeedReloadRequestDetails: (state) => {
       return state.needReloadRequestDetails;
+    },
+
+    isNeedReloadLeftMenu: (state) => {
+      return state.needReloadLeftMenu;
     },
 
     isOnCtrlS: (state) => {
@@ -50,6 +57,10 @@ export const EventHolder = defineStore("EventHolder", {
 
     onDelete() {
       this.deleteState++;
+    },
+
+    requestReloadLeftMenu() {
+      this.needReloadLeftMenu++;
     },
 
     requestReloadRequestDetails() {

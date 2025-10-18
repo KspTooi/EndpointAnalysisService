@@ -2,9 +2,9 @@
   <div class="common-layout">
     <el-container>
       <!-- 桌面版侧边栏 -->
-      <el-aside width="200px" class="admin-sidebar">
+      <el-aside width="210px" class="admin-sidebar">
         <admin-side-panel
-          :items="menuItems"
+          :items="menuTree"
           :active-item-id="activeMenuId"
           :is-collapse="false"
           title="EAS服务管理控制台"
@@ -85,42 +85,12 @@ import {
   ElAvatar,
   ElLoading,
   ElButton,
+  ElMessage,
 } from "element-plus";
-import {
-  Back,
-  User,
-  Avatar,
-  UserFilled,
-  Lock,
-  Setting,
-  Key,
-  Grid,
-  Briefcase,
-  Tools,
-  Monitor,
-  Opportunity,
-  Collection,
-  CollectionTag,
-  Cpu,
-  Trophy,
-  List,
-  HomeFilled,
-  Refrigerator,
-  Ticket,
-  Management,
-  SetUp,
-  Operation,
-  DocumentCopy,
-  DArrowLeft,
-  DArrowRight,
-  Select,
-  Switch,
-  Warning,
-  Coin,
-  MagicStick,
-  WalletFilled,
-  Menu,
-} from "@element-plus/icons-vue";
+import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
+import { Result } from "@/commons/entity/Result";
+import MenuApi from "@/api/core/MenuApi";
+import { EventHolder } from "@/store/EventHolder";
 
 // 定义组件props
 const props = defineProps<{
@@ -148,106 +118,29 @@ const emit = defineEmits<{
 const router = useRouter();
 const route = useRoute();
 
+const menuTree = ref<GetUserMenuTreeVo[]>([]);
+
+const loadMenuTree = async () => {
+  try {
+    const result = await MenuApi.getUserMenuTree();
+
+    if (!Result.isSuccess(result)) {
+      ElMessage.error(result.message);
+      return;
+    }
+
+    menuTree.value = result.data;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+loadMenuTree();
+
 // 导航到指定URL
 const navigateToUrl = (url: string) => {
   window.location.href = url;
 };
-
-// 内置菜单项定义，与旧版保持完全一致
-const menuItems = ref([
-  {
-    id: "user-manager",
-    title: "用户列表",
-    icon: User,
-    routerLink: "/user-manager",
-  },
-  {
-    id: "group-manager",
-    title: "用户访问组",
-    icon: Lock,
-    routerLink: "/group-manager",
-  },
-  {
-    id: "permission-manager",
-    title: "权限节点",
-    icon: Key,
-    routerLink: "/permission-manager",
-  },
-  {
-    id: "session-manager",
-    title: "会话管理",
-    icon: Ticket,
-    routerLink: "/session-manager",
-  },
-  {
-    id: "config-manager",
-    title: "配置管理",
-    icon: Setting,
-    routerLink: "/config-manager",
-  },
-  {
-    id: "application-maintain",
-    title: "维护中心",
-    icon: Tools,
-    routerLink: "/application-maintain",
-  },
-  {
-    id: "request-manager",
-    title: "中继通道请求",
-    icon: Switch,
-    routerLink: "/",
-  },
-  {
-    id: "replay-request-manager",
-    title: "请求重放管理器",
-    icon: Select,
-    routerLink: "/replay-request-manager",
-  },
-  {
-    id: "user-request-manager",
-    title: "请求调试视图",
-    icon: MagicStick,
-    routerLink: "/user-request-manager",
-  },
-  {
-    id: "simple-filter-manager",
-    title: "基本过滤器",
-    icon: Grid,
-    routerLink: "/simple-filter-manager",
-  },
-  {
-    id: "adv-filter-manager",
-    title: "高级过滤器",
-    icon: Grid,
-    routerLink: "/adv-filter-manager",
-  },
-  {
-    id: "relay-server-manager",
-    title: "中继通道配置",
-    icon: DArrowRight,
-    routerLink: "/relay-server-manager",
-  },
-  {
-    id: "ep-doc-manager",
-    title: "端点文档配置",
-    icon: DocumentCopy,
-    routerLink: "/ep-doc-manager",
-  },
-  {
-    id: "ep-doc-viewer",
-    title: "端点文档查看器",
-    icon: Operation,
-    routerLink: "/ep-doc-viewer",
-  },
-  {
-    id: "menu-manager",
-    title: "菜单管理",
-    icon: Menu,
-    routerLink: "/menu-manager",
-  },
-]);
-
-// 移除折叠功能
 
 // 菜单项点击事件
 const handleMenuItemClick = (menuId: string) => {
@@ -257,9 +150,9 @@ const handleMenuItemClick = (menuId: string) => {
 // 无移动端兼容逻辑
 
 // 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: any[], path: string): string => {
+const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): string => {
   for (const item of items) {
-    if (item.routerLink === path) {
+    if (item.menuPath === path) {
       return item.id;
     }
     if (item.children?.length) {
@@ -273,7 +166,7 @@ const findMenuIdByPath = (items: any[], path: string): string => {
 // 当前活动菜单
 const activeMenuId = computed(() => {
   if (props.defaultActiveMenuId) return props.defaultActiveMenuId;
-  return findMenuIdByPath(menuItems.value, route.path);
+  return findMenuIdByPath(menuTree.value, route.path);
 });
 
 // 处理菜单点击
@@ -351,6 +244,17 @@ const autoBreadcrumbs = computed(() => {
 
   return revisedBreadcrumbs;
 });
+
+//监听左侧菜单重新加载事件
+watch(
+  () => EventHolder().isNeedReloadLeftMenu,
+  (newVal) => {
+    if (newVal) {
+      loadMenuTree();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
