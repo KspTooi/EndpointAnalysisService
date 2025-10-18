@@ -1,0 +1,29 @@
+// 只需要重写你需要的即可
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  $colors: (
+    "primary": (
+      "base": #009688,
+    ),
+    "success": (
+      "base": #00a8be,
+    ),
+    "warning": (
+      "base": #ffc107,
+    ),
+    "danger": (
+      "base": #f44336,
+    ),
+    "info": (
+      "base": #9c27b0,
+    ),
+  )
+);
+
+// 如果只想重写某一个组件的样式
+//@forward 'element-plus/theme-chalk/src/button/var.scss' with (
+//  $button: (
+//    'font-weight': 'bolder'
+//  )
+//);
+
+@import "element-plus/theme-chalk/src/index.scss";

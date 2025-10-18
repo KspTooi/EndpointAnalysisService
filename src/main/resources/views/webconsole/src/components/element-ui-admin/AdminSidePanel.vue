@@ -297,6 +297,11 @@ const handleSelect = (index: string) => {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
 }
 
+/* 激活状态下的菜单项悬停效果 */
+.panel-menu :deep(.el-menu-item.is-active:hover) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 保持激活状态的背景色 */
+}
+
 /* 子菜单样式 */
 .panel-menu :deep(.el-sub-menu .el-menu-item) {
   min-width: auto;

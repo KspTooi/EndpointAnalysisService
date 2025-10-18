@@ -4,7 +4,7 @@ import AdminRoot from "./AdminRoot.vue";
 import router from "./router/admin"; // 使用admin专用路由
 // 导入 Element Plus
 import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
+import "@/styles/element-theme.scss";
 // 导入中文语言包
 // @ts-ignore
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";

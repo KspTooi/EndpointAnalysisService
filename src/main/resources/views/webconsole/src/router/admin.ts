@@ -64,12 +64,12 @@ const router = createRouter({
       },
     },
     {
-      path: "/",
+      path: "/request-manager",
       name: "request-manager",
       component: () => import("@/views/admin/RequestManager.vue"),
       meta: {
         breadcrumb: {
-          title: "请求管理",
+          title: "中继请求记录",
         },
       },
     },
@@ -79,7 +79,7 @@ const router = createRouter({
       component: () => import("@/views/admin/ReplayRequestManager.vue"),
       meta: {
         breadcrumb: {
-          title: "请求重放管理器",
+          title: "简单请求重放",
         },
       },
     },
@@ -89,7 +89,7 @@ const router = createRouter({
       component: () => import("@/views/admin/UserRequestView.vue"),
       meta: {
         breadcrumb: {
-          title: "请求调试视图",
+          title: "端点调试工作台",
         },
       },
     },

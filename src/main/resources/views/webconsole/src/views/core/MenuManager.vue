@@ -302,13 +302,19 @@ const submitModal = async () => {
   try {
     if (modalMode.value === "add" || modalMode.value === "add-item") {
       await MenuApi.addMenu(modalForm);
+      ElMessage.success("操作成功");
+      const parentId = modalForm.parentId;
+      resetModal();
+      modalForm.parentId = parentId;
     }
+
     if (modalMode.value === "edit") {
       //如果是目录则将权限设置为null
       if (modalForm.menuKind == 0) {
         modalForm.permission = "";
       }
       await MenuApi.editMenu(modalForm);
+      ElMessage.success("操作成功");
     }
   } catch (error: any) {
     ElMessage.error(error.message);
@@ -317,7 +323,7 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  modalVisible.value = false;
+  //modalVisible.value = false;
   loadList();
 
   //通知左侧菜单重新加载
