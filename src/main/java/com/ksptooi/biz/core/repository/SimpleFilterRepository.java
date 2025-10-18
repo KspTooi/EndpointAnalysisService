@@ -26,7 +26,7 @@ public interface SimpleFilterRepository extends JpaRepository<SimpleFilterPo, Lo
                 t.createTime
             ) FROM SimpleFilterPo t
             WHERE
-            (:#{#dto.name} IS NULL OR t.name  = :#{#dto.name} )
+            (:#{#dto.name} IS NULL OR t.name LIKE CONCAT('%', :#{#dto.name}, '%') )
             AND (:#{#dto.direction} IS NULL OR t.direction  = :#{#dto.direction} )
             AND (:#{#dto.status} IS NULL OR t.status  = :#{#dto.status} )
             ORDER BY t.updateTime DESC

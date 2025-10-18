@@ -20,6 +20,7 @@ public class RequestService {
 
     /**
      * 获取请求列表
+     *
      * @param dto 请求列表查询条件
      * @return 请求列表
      */
@@ -37,12 +38,13 @@ public class RequestService {
 
     /**
      * 获取请求详情
+     *
      * @param id 请求ID
      * @return 请求详情
      */
     public GetRequestDetailsVo getRequestDetails(Long id) {
         RequestPo item = requestRepository.findById(id).orElse(null);
-        if(item == null){
+        if (item == null) {
             return null;
         }
         GetRequestDetailsVo vo = new GetRequestDetailsVo();
@@ -70,6 +72,7 @@ public class RequestService {
 
     /**
      * 提交请求
+     *
      * @param request 请求
      */
     @Async
@@ -80,6 +83,5 @@ public class RequestService {
         //requestQueue.offer(request);
     }
 
-    
 
 }
