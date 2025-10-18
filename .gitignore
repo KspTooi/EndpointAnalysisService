@@ -81,5 +81,6 @@ package-lock.json
 *.rar
 node.exe
 MicroMarket.mv.db
+pdm/.back_EndpointAnalysisService
 
 components.d.ts
