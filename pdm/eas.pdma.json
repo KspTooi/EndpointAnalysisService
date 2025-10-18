@@ -1,10 +1,10 @@
 {
-  "name": "GlowTavern",
-  "describe": "GlowTavern",
+  "name": "EndpointAnalysisService",
+  "describe": "EndpointAnalysisService",
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2025-8-25 07:05:33",
+  "updatedTime": "2025-10-18 17:35:06",
   "dbConns": [],
   "profile": {
     "default": {
@@ -7624,6 +7624,463 @@
       "correlations": [],
       "indexes": [],
       "type": "P"
+    },
+    {
+      "id": "63318AE1-50A8-4347-9C18-B04622B4205D",
+      "env": {
+        "base": {
+          "nameSpace": "",
+          "codeRoot": ""
+        }
+      },
+      "defKey": "CORE_RESOURCE",
+      "defName": "菜单与资源",
+      "comment": "",
+      "properties": {
+        "partitioned by": "(date string)",
+        "row format delimited": "",
+        "fields terminated by ','": "",
+        "collection items terminated by '-'": "",
+        "map keys terminated by ':'": "",
+        "store as textfile;": ""
+      },
+      "sysProps": {
+        "nameTemplate": "{defKey}[{defName}]"
+      },
+      "notes": {},
+      "headers": [
+        {
+          "refKey": "hideInGraph",
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "defName",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "primaryKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "notNull",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "autoIncrement",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "domain",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "type",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "len",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "scale",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "comment",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "refDict",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defaultValue",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "isStandard",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "uiHint",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "extProps",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr1",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr2",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr3",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr4",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr5",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr6",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr7",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr8",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr9",
+          "freeze": false,
+          "hideInGraph": true
+        }
+      ],
+      "fields": [
+        {
+          "defKey": "id",
+          "defName": "主键id",
+          "comment": "",
+          "type": "BIGINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": true,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "CA36AC02-8F8B-4F4E-B485-463730D15D26",
+          "extProps": {},
+          "domain": null,
+          "id": "2DBC0790-A8A9-422F-B271-6319734374D7",
+          "uiHint": null
+        },
+        {
+          "defKey": "parent_id",
+          "defName": "父级ID",
+          "comment": "",
+          "type": "BIGINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "CA36AC02-8F8B-4F4E-B485-463730D15D26",
+          "extProps": {},
+          "domain": null,
+          "id": "31197597-43CC-4BD8-A80A-ACF9548EC3C9",
+          "uiHint": null
+        },
+        {
+          "defKey": "name",
+          "defName": "资源名",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "F4D47919-6CD8-417F-8482-57602E10398E",
+          "uiHint": null
+        },
+        {
+          "defKey": "description",
+          "defName": "资源描述",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "CE3DAE94-7253-4CFF-809C-5B05A2FD3EBC",
+          "uiHint": null
+        },
+        {
+          "defKey": "kind",
+          "defName": "资源类型 0:菜单 1:接口",
+          "comment": "",
+          "type": "TINYINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "extProps": {},
+          "domain": null,
+          "id": "4D8F8086-50A3-49DB-BB8A-841FCC5DC6F2",
+          "uiHint": null
+        },
+        {
+          "defKey": "menu_kind",
+          "defName": "菜单类型 0:目录 1:菜单 2:按钮",
+          "comment": "",
+          "type": "TINYINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "extProps": {},
+          "domain": null,
+          "id": "BF1EE82E-995D-4637-BC5E-14830ED300C4",
+          "uiHint": null
+        },
+        {
+          "defKey": "menu_path",
+          "defName": "菜单路径",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "8C7D06A3-43E4-431F-88CE-CD525E598B08",
+          "uiHint": null
+        },
+        {
+          "defKey": "menu_query_param",
+          "defName": "菜单查询参数",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "8D14ED12-E4B1-451A-A9F9-9EC777A20857",
+          "uiHint": null
+        },
+        {
+          "defKey": "menu_icon",
+          "defName": "菜单图标",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "5B2ADE05-1ED3-427D-B139-5B6223B7837C",
+          "uiHint": null
+        },
+        {
+          "defKey": "path",
+          "defName": "接口路径",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "2DB13654-8F78-4825-9484-2E0F3CBB43E5",
+          "uiHint": null
+        },
+        {
+          "defKey": "permission",
+          "defName": "所需权限",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "4C9EEF10-DB43-4B0D-8143-519B4A38100F",
+          "uiHint": null
+        },
+        {
+          "defKey": "seq",
+          "defName": "排序",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "FC9790A7-36B8-4A48-8F9A-BC1042BCFE64",
+          "extProps": {},
+          "domain": "9092C4E0-1A54-4859-ABBB-5B62DBC27573",
+          "id": "3046DB47-3F4E-41EA-AA86-4DF8D94FE935",
+          "uiHint": null
+        },
+        {
+          "defKey": "create_time",
+          "defName": "创建时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "89D69E81-EA34-42EE-9FA2-93B8BD27E098",
+          "extProps": {},
+          "domain": "7CFFA0D3-6A93-4DDC-BC10-DF21211064DC",
+          "id": "9DE2826C-0FCE-4A45-B570-344ADC40B1B7",
+          "uiHint": null
+        },
+        {
+          "defKey": "creator_id",
+          "defName": "创建人id",
+          "comment": "",
+          "type": "BIGINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "CA36AC02-8F8B-4F4E-B485-463730D15D26",
+          "extProps": {},
+          "domain": null,
+          "id": "B941249D-8963-4CDB-A25B-47C3932487D3",
+          "uiHint": null
+        },
+        {
+          "defKey": "update_time",
+          "defName": "更新时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "89D69E81-EA34-42EE-9FA2-93B8BD27E098",
+          "extProps": {},
+          "domain": "7CFFA0D3-6A93-4DDC-BC10-DF21211064DC",
+          "id": "5E5FC05F-1303-409A-B1DE-58096C72FB91",
+          "uiHint": null
+        },
+        {
+          "defKey": "updater_id",
+          "defName": "更新人id",
+          "comment": "",
+          "type": "BIGINT",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": null,
+          "baseType": "CA36AC02-8F8B-4F4E-B485-463730D15D26",
+          "extProps": {},
+          "domain": null,
+          "id": "DDA8C7E8-ED80-4376-A203-F2E799B5FE72",
+          "uiHint": null
+        }
+      ],
+      "correlations": [],
+      "indexes": [],
+      "type": "P"
     }
   ],
   "views": [],
@@ -7639,6 +8096,7 @@
         "99BC1D3A-0089-4C8D-93BC-BA2A1380EB59",
         "7FBCD59C-0E87-4692-A7BB-41FAC778E3BD",
         "806E39B2-9FDE-40C4-BBAC-9709891AB698",
+        "63318AE1-50A8-4347-9C18-B04622B4205D",
         "8FC5A75C-4575-491B-86C4-A93845795543",
         "A5A84F67-1F6E-4BB4-B127-B688854329BB",
         "C2695EBB-283F-4B31-994F-CD51165D749B",
@@ -7652,13 +8110,7 @@
         "51B9BD67-970C-4D1E-83FA-9C9CF09DFEFA"
       ],
       "refViews": [],
-      "refDiagrams": [
-        "C9FDB451-BC8E-44DC-85C2-7A67E5959CA0",
-        "E65B3F74-6A19-4972-9408-EA22B95E9A22",
-        "4302A785-D578-476A-B902-BEC3AB4DB8AD",
-        "DB5BB3A7-4322-4D46-8012-80C2270624E4",
-        "DD76FEBC-5938-42F2-902E-5EC8519A1B35"
-      ],
+      "refDiagrams": [],
       "refDicts": [],
       "id": "486C12EC-2C36-40E9-82E3-C5DED93715B5",
       "refLogicEntities": []
@@ -7944,1643 +8396,7 @@
       "id": "3E948CEC-3070-472C-AF92-F3CA11EC9D15"
     }
   ],
-  "diagrams": [
-    {
-      "defKey": "玩家权限体系",
-      "defName": "玩家权限体系",
-      "relationType": "field",
-      "canvasData": {
-        "cells": [
-          {
-            "id": "3c6d73d5-90c5-4b07-bb1a-70085037cf74",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "e198e990-b147-43ab-b24e-155662f9674b",
-              "port": "BBEA1363-BAD8-4CC2-BB35-61A6768B0B63%in"
-            },
-            "target": {
-              "cell": "86279dc0-1551-4a99-9e41-ce4524e86abe",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->访问组"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(35, 156, 163)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "040d8a8f-56c5-44a6-af2a-2a204e86f405",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "9c550c83-5f8a-4b4e-9893-5a5a0dff9e1f",
-              "port": "294CFFBA-C716-4942-B511-806D953FFF83%in"
-            },
-            "target": {
-              "cell": "792acbc5-515f-42de-8ed3-566845e60586",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->访问组"
-                  }
-                },
-                "position": {
-                  "distance": 0.5462962962962963,
-                  "offset": -14,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "rgb(154, 72, 199)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "83a2de2e-5683-499d-ba75-9559778959eb",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "6754c2e4-7a69-4437-8499-3e68341f1474",
-              "port": "C6EAA5CE-1CD7-4102-A7A6-549DE21B8A6E%in"
-            },
-            "target": {
-              "cell": "9c550c83-5f8a-4b4e-9893-5a5a0dff9e1f",
-              "port": "C7891867-55CC-4A6C-949C-DDA0B202D8C6%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->访问组"
-                  }
-                },
-                "position": {
-                  "distance": 0.5421731997788878,
-                  "offset": -22.24477996981502,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "rgb(154, 72, 199)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "0fce2fce-dcb2-494d-94d7-f5112a4c77a0",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "6754c2e4-7a69-4437-8499-3e68341f1474",
-              "port": "C6EAA5CE-1CD7-4102-A7A6-549DE21B8A6E%in"
-            },
-            "target": {
-              "cell": "e6a002d9-8a7a-485b-be48-5b5199dc1abd",
-              "port": "750D8185-5C5B-4472-B694-16E8DB7BF5B0%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "新注册玩家->访问组"
-                  }
-                },
-                "position": {
-                  "distance": 0.4716679085766194,
-                  "offset": 29.368956527899467,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "rgb(214, 74, 67)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "c5399559-f4c6-4753-bbe7-9d40241905ff",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "e198e990-b147-43ab-b24e-155662f9674b",
-              "port": "BB9CD4A7-2B90-4490-A801-554065F7F202%out"
-            },
-            "target": {
-              "cell": "6754c2e4-7a69-4437-8499-3e68341f1474",
-              "port": "C6EAA5CE-1CD7-4102-A7A6-549DE21B8A6E%in"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->访问组"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(35, 156, 163)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "df19502c-48a6-4caa-9fff-3e1e336a9a24",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "06a5509d-fa6b-49dd-8ce2-43948e08f786",
-              "port": "D6E68E5D-6402-45A0-86A5-5ADF2739B236%in"
-            },
-            "target": {
-              "cell": "86279dc0-1551-4a99-9e41-ce4524e86abe",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%in"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": -2840,
-                "y": -1940
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->会话"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "e6a002d9-8a7a-485b-be48-5b5199dc1abd",
-            "shape": "table",
-            "position": {
-              "x": -1970,
-              "y": -2195
-            },
-            "count": 0,
-            "originKey": "A6D9A8A9-D00C-4AC3-ADC0-3EC8DDA2537D",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 100
-            }
-          },
-          {
-            "id": "e96dc70c-d4f2-46b9-92cf-0a0ad890d19e",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "792acbc5-515f-42de-8ed3-566845e60586",
-              "port": "4810310E-5854-4A41-9FA9-A5EF9BE5E645%in"
-            },
-            "target": {
-              "cell": "86279dc0-1551-4a99-9e41-ce4524e86abe",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->玩家"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(154, 72, 199)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "86279dc0-1551-4a99-9e41-ce4524e86abe",
-            "shape": "table",
-            "position": {
-              "x": -2790,
-              "y": -1845
-            },
-            "count": 0,
-            "originKey": "A55CAEAD-E7B4-450D-820C-5664BA25A3AF",
-            "fillColor": "rgb(117, 190, 250)",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 290
-            },
-            "autoSize": false
-          },
-          {
-            "id": "e198e990-b147-43ab-b24e-155662f9674b",
-            "shape": "table",
-            "position": {
-              "x": -2380,
-              "y": -2095
-            },
-            "count": 0,
-            "originKey": "C65ECE73-2758-4E5D-9774-21341AB9357A",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 80
-            }
-          },
-          {
-            "id": "6b4edf2b-a97c-44f5-8283-d4add7afe062",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "792acbc5-515f-42de-8ed3-566845e60586",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%in"
-            },
-            "target": {
-              "cell": "06a5509d-fa6b-49dd-8ce2-43948e08f786",
-              "port": "14855CE8-B291-419C-8DCC-60DDD91F3B08%in"
-            },
-            "relation": "1:n",
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->会话"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(117, 190, 250)",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "06a5509d-fa6b-49dd-8ce2-43948e08f786",
-            "shape": "table",
-            "position": {
-              "x": -2790,
-              "y": -2222
-            },
-            "count": 0,
-            "originKey": "E813C0EC-710F-4C78-893A-BB1D2FD22BE0",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 260
-            }
-          },
-          {
-            "id": "0563397b-7e1b-4f41-8327-23636f74de32",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "6754c2e4-7a69-4437-8499-3e68341f1474",
-              "port": "C6EAA5CE-1CD7-4102-A7A6-549DE21B8A6E%in"
-            },
-            "target": {
-              "cell": "e037a539-5c81-418e-b064-5325d1e2accc",
-              "port": "50E03E62-B1A2-4815-92CC-6FF8DE89CD5D%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "访问组->权限"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(25, 25, 26)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "6754c2e4-7a69-4437-8499-3e68341f1474",
-            "shape": "table",
-            "position": {
-              "x": -1530,
-              "y": -2080
-            },
-            "count": 0,
-            "originKey": "8FB0C081-41F0-48BD-BAB2-2A710952D8BC",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 280
-            }
-          },
-          {
-            "id": "9c550c83-5f8a-4b4e-9893-5a5a0dff9e1f",
-            "shape": "table",
-            "position": {
-              "x": -1970,
-              "y": -1962
-            },
-            "count": 0,
-            "originKey": "CC7A1C8C-6741-4098-8BF6-F5F638F34CB5",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 80
-            }
-          },
-          {
-            "id": "36a48c77-d898-4b5a-bf2e-987751ce2f64",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "99075d3a-672c-442f-9a5a-98e0f2fed242",
-              "port": "78B34E17-2433-43F3-94E2-496C3F8F7903%in"
-            },
-            "target": {
-              "cell": "e037a539-5c81-418e-b064-5325d1e2accc",
-              "port": "65996276-355E-4BCA-8BAF-77D27C85CB1E%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "访问组->权限"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(25, 25, 26)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "99075d3a-672c-442f-9a5a-98e0f2fed242",
-            "shape": "table",
-            "position": {
-              "x": -1530,
-              "y": -1745
-            },
-            "count": 0,
-            "originKey": "09E709B8-79CB-4BCD-9F2D-4D86407236F2",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 220
-            }
-          },
-          {
-            "id": "e037a539-5c81-418e-b064-5325d1e2accc",
-            "shape": "table",
-            "position": {
-              "x": -1970,
-              "y": -1787
-            },
-            "count": 0,
-            "originKey": "CF51C5A5-0694-4905-B8D3-268B52F2FB82",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 80
-            }
-          },
-          {
-            "id": "792acbc5-515f-42de-8ed3-566845e60586",
-            "shape": "table",
-            "position": {
-              "x": -2380,
-              "y": -1962
-            },
-            "count": 0,
-            "originKey": "AED91307-6EF9-447A-9D15-337D0C485530",
-            "fillColor": "rgb(117, 190, 250)",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 450
-            }
-          }
-        ]
-      },
-      "id": "C9FDB451-BC8E-44DC-85C2-7A67E5959CA0",
-      "comment": ""
-    },
-    {
-      "defKey": "玩家主题",
-      "defName": "玩家主题",
-      "relationType": "field",
-      "canvasData": {
-        "cells": [
-          {
-            "id": "570188f3-07e8-46dc-9f14-152b3a4befed",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "4ffe8f23-406b-4684-93a3-1c95f7f8b0f1",
-              "port": "BA8E3744-7ACC-4BDA-BFC5-6D09D1C223EF%out"
-            },
-            "target": {
-              "cell": "9fcbefbc-d94a-4468-9ed7-19d84b813d2a",
-              "port": "77D04FD5-12F5-4E8F-8D67-CC424E95F0FC%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": 700,
-                "y": -280
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "主题->主题颜色配置项"
-                  }
-                },
-                "position": {
-                  "distance": 0.48655256723716384,
-                  "offset": 30,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "4ffe8f23-406b-4684-93a3-1c95f7f8b0f1",
-            "shape": "table",
-            "position": {
-              "x": 340,
-              "y": -200
-            },
-            "count": 0,
-            "originKey": "7579A0D4-9AF9-45C1-85A1-B459CF174187",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 190
-            },
-            "autoSize": false
-          },
-          {
-            "id": "bb7f178c-32e1-475f-8f99-fcf7237ab7dd",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "9fcbefbc-d94a-4468-9ed7-19d84b813d2a",
-              "port": "938D69B7-5343-45E6-BDE3-2A5CB4BD3847%in"
-            },
-            "target": {
-              "cell": "0e501973-5598-4c06-ae5f-eda58f98f2ac",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->主题"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "9fcbefbc-d94a-4468-9ed7-19d84b813d2a",
-            "shape": "table",
-            "position": {
-              "x": 340,
-              "y": -470
-            },
-            "count": 0,
-            "originKey": "F35FCAAF-F322-4113-B9FC-7779E26AAEDA",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 220
-            },
-            "autoSize": false
-          },
-          {
-            "id": "0e501973-5598-4c06-ae5f-eda58f98f2ac",
-            "shape": "table",
-            "position": {
-              "x": -67,
-              "y": -470
-            },
-            "count": 0,
-            "originKey": "AED91307-6EF9-447A-9D15-337D0C485530",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 450
-            }
-          },
-          {
-            "id": "593bbeec-c404-4736-bd29-2f878b75a037",
-            "shape": "table",
-            "position": {
-              "x": -490,
-              "y": -470
-            },
-            "count": 0,
-            "originKey": "A55CAEAD-E7B4-450D-820C-5664BA25A3AF",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 280
-            }
-          },
-          {
-            "id": "98a25fd2-1fb6-4c20-b75b-16c34727b12d",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "0e501973-5598-4c06-ae5f-eda58f98f2ac",
-              "port": "4810310E-5854-4A41-9FA9-A5EF9BE5E645%in"
-            },
-            "target": {
-              "cell": "593bbeec-c404-4736-bd29-2f878b75a037",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->玩家"
-                  }
-                },
-                "position": {
-                  "distance": 0.511414517302925,
-                  "offset": -0.767153786702637,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          }
-        ]
-      },
-      "id": "E65B3F74-6A19-4972-9408-EA22B95E9A22",
-      "comment": ""
-    },
-    {
-      "defKey": "NPC设定",
-      "defName": "NPC设定",
-      "relationType": "field",
-      "canvasData": {
-        "cells": [
-          {
-            "id": "f70b5547-411f-4139-b93c-b18e83899e78",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "2b7833cd-4702-46d2-b991-639a47d25f97",
-              "port": "4810310E-5854-4A41-9FA9-A5EF9BE5E645%in"
-            },
-            "target": {
-              "cell": "22874da4-de06-4b37-9d0c-0522e4f271ee",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->玩家"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "22874da4-de06-4b37-9d0c-0522e4f271ee",
-            "shape": "table",
-            "position": {
-              "x": 60,
-              "y": -500
-            },
-            "count": 0,
-            "originKey": "A55CAEAD-E7B4-450D-820C-5664BA25A3AF",
-            "type": "P",
-            "size": {
-              "width": 290,
-              "height": 280
-            }
-          },
-          {
-            "id": "5a81aef9-e938-48f3-afb3-fef64e1a0ec1",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "70b1e6e7-2722-4c9a-9cb2-f6d9b4131c9a",
-              "port": "6BFF5FBD-0D64-49CC-B1F3-0D136C293E4B%in"
-            },
-            "target": {
-              "cell": "2b7833cd-4702-46d2-b991-639a47d25f97",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->NPC"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "4ac8819f-d350-421f-82c7-1cb06355d05a",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "70b1e6e7-2722-4c9a-9cb2-f6d9b4131c9a",
-              "port": "D24ECA8A-A7B5-465C-8F27-CBB7B685B728%out"
-            },
-            "target": {
-              "cell": "d164eea4-da30-4e9c-aa27-01f1f0aba7d1",
-              "port": "E0C84711-482F-4583-B921-42390F745D38%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": 1230,
-                "y": -240
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "NPC->对话示例"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "70b1e6e7-2722-4c9a-9cb2-f6d9b4131c9a",
-            "shape": "table",
-            "position": {
-              "x": 870,
-              "y": -500
-            },
-            "count": 0,
-            "originKey": "1CE2E935-848F-45EC-BC78-800E72F34B1E",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 350
-            }
-          },
-          {
-            "id": "2b7833cd-4702-46d2-b991-639a47d25f97",
-            "shape": "table",
-            "position": {
-              "x": 469.9999999999998,
-              "y": -500
-            },
-            "count": 0,
-            "originKey": "AED91307-6EF9-447A-9D15-337D0C485530",
-            "type": "P",
-            "size": {
-              "width": 290,
-              "height": 450
-            }
-          },
-          {
-            "id": "d164eea4-da30-4e9c-aa27-01f1f0aba7d1",
-            "shape": "table",
-            "position": {
-              "x": 870,
-              "y": -80
-            },
-            "count": 0,
-            "originKey": "4E412145-5CB3-4AB4-9DD8-430851DBEEC6",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 180
-            }
-          }
-        ]
-      },
-      "id": "4302A785-D578-476A-B902-BEC3AB4DB8AD",
-      "comment": ""
-    },
-    {
-      "defKey": "模型变体",
-      "defName": "",
-      "relationType": "field",
-      "canvasData": {
-        "cells": [
-          {
-            "id": "b9df1ebe-9472-42e2-b137-cab284bd76c0",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "46d88dba-304d-473a-8fcb-3903e2a9e5ec",
-              "port": "BE728C81-C987-4F0B-9978-F3A553623671%in"
-            },
-            "target": {
-              "cell": "22a001c2-0d03-4458-b49e-d40cff0ea740",
-              "port": "6CF623B9-C3C7-408B-B744-E1FE768C32F9%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "模型变体->参数"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(35, 156, 163)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "3de7ec01-e033-423f-9e0a-3027465f96cd",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "46d88dba-304d-473a-8fcb-3903e2a9e5ec",
-              "port": "7D9A14D7-7613-4461-B4D0-6B07552AB50E%in"
-            },
-            "target": {
-              "cell": "5f785c4e-50a1-49a2-a3e2-cc744f278725",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->参数"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(52, 124, 212)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "4270688a-3b15-4d1a-afb5-992fc6c05a7c",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "46d88dba-304d-473a-8fcb-3903e2a9e5ec",
-              "port": "68718940-D543-430F-B4C7-3780ABE14EE0%in"
-            },
-            "target": {
-              "cell": "36049395-f529-4daf-b032-8f0d28244b06",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%in"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家-参数"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(208, 67, 138)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "a3ca3d20-8801-4af2-b4b0-a655354577f8",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "36049395-f529-4daf-b032-8f0d28244b06",
-              "port": "4810310E-5854-4A41-9FA9-A5EF9BE5E645%in"
-            },
-            "target": {
-              "cell": "5f785c4e-50a1-49a2-a3e2-cc744f278725",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->玩家"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(52, 124, 212)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "0e511b49-2eb9-4cda-b355-700286234206",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "41e5e3bc-48bb-492c-a04b-970e79ff7a33",
-              "port": "489A2158-96DA-4ECE-BD91-385F73BAFFF2%in"
-            },
-            "target": {
-              "cell": "36049395-f529-4daf-b032-8f0d28244b06",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->模板"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(208, 67, 138)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "17849d91-209e-4881-94ea-150d0a205daf",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "41e5e3bc-48bb-492c-a04b-970e79ff7a33",
-              "port": "5BFE9E8B-698F-4C35-81F7-2A621EA751FE%in"
-            },
-            "target": {
-              "cell": "5f785c4e-50a1-49a2-a3e2-cc744f278725",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": 280,
-                "y": 370
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->模板"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(52, 124, 212)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "22a001c2-0d03-4458-b49e-d40cff0ea740",
-            "shape": "table",
-            "position": {
-              "x": -300,
-              "y": 50
-            },
-            "count": 0,
-            "originKey": "46EBDB7D-5189-4A20-8FCE-FC9771976119",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 330
-            }
-          },
-          {
-            "id": "5f785c4e-50a1-49a2-a3e2-cc744f278725",
-            "shape": "table",
-            "position": {
-              "x": -300,
-              "y": 470
-            },
-            "count": 0,
-            "originKey": "A55CAEAD-E7B4-450D-820C-5664BA25A3AF",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 280
-            }
-          },
-          {
-            "id": "74aaa4c8-f482-4393-b15a-ed86bd045de4",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "9c4bc2ee-6856-4cbb-8c4d-cd5423cff116",
-              "port": "73ADD49B-6EBD-4E0C-923A-341569C8F44C%in"
-            },
-            "target": {
-              "cell": "41e5e3bc-48bb-492c-a04b-970e79ff7a33",
-              "port": "0870E6CF-CBDE-4F50-9ADA-0D7AB06D164C%in"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": 440,
-                "y": 340
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "模板->值"
-                  }
-                },
-                "position": {
-                  "distance": 0.44862155388471175,
-                  "offset": -20,
-                  "angle": 0
-                }
-              }
-            ],
-            "fillColor": "rgb(154, 72, 199)",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "41e5e3bc-48bb-492c-a04b-970e79ff7a33",
-            "shape": "table",
-            "position": {
-              "x": 500,
-              "y": 140
-            },
-            "count": 0,
-            "originKey": "4CE108FB-C4C8-47F3-B536-52A8BEA3D345",
-            "type": "P",
-            "size": {
-              "width": 380,
-              "height": 180
-            },
-            "autoSize": false
-          },
-          {
-            "id": "46d88dba-304d-473a-8fcb-3903e2a9e5ec",
-            "shape": "table",
-            "position": {
-              "x": 120,
-              "y": 50
-            },
-            "count": 0,
-            "originKey": "D06D83C7-B0E7-4152-8F2B-CFECD005204D",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 270
-            }
-          },
-          {
-            "id": "36049395-f529-4daf-b032-8f0d28244b06",
-            "shape": "table",
-            "position": {
-              "x": 110,
-              "y": 470
-            },
-            "count": 0,
-            "originKey": "AED91307-6EF9-447A-9D15-337D0C485530",
-            "type": "P",
-            "size": {
-              "width": 300,
-              "height": 450
-            }
-          },
-          {
-            "id": "9c4bc2ee-6856-4cbb-8c4d-cd5423cff116",
-            "shape": "table",
-            "position": {
-              "x": 500,
-              "y": 400
-            },
-            "count": 0,
-            "originKey": "15CDFB02-9259-49AD-A11C-DD4DCF03713F",
-            "type": "P",
-            "size": {
-              "width": 440,
-              "height": 220
-            }
-          }
-        ]
-      },
-      "id": "DB5BB3A7-4322-4D46-8012-80C2270624E4",
-      "comment": ""
-    },
-    {
-      "defKey": "对话系统",
-      "defName": "对话系统",
-      "relationType": "field",
-      "canvasData": {
-        "cells": [
-          {
-            "id": "a8202923-9257-4f8b-a20a-5bd0b7e8ebf9",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "aa5249fc-acf2-4c66-9ff1-ce8b2de83c0b",
-              "port": "4810310E-5854-4A41-9FA9-A5EF9BE5E645%in"
-            },
-            "target": {
-              "cell": "19a8da11-5421-48b1-a1d4-2d24d690bc53",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->玩家"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "6612f7c2-e09e-42d6-944e-7e53a56be19d",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "d12000ff-c9b1-4ef0-acf1-6a215520c338",
-              "port": "6BFF5FBD-0D64-49CC-B1F3-0D136C293E4B%in"
-            },
-            "target": {
-              "cell": "aa5249fc-acf2-4c66-9ff1-ce8b2de83c0b",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->NPC"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "ea8e6c23-1c6f-41d4-8839-c19d418e2c66",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "8ccb7618-f1b2-4805-940e-1f6c7317bada",
-              "port": "C2FDC383-E46D-4DD9-97AA-CF2A61085D94%in"
-            },
-            "target": {
-              "cell": "19a8da11-5421-48b1-a1d4-2d24d690bc53",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": -340,
-                "y": -40
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->对话串"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(51, 153, 108)",
-            "router": {
-              "name": "manhattan",
-              "args": {
-                "excludeShapes": [
-                  "group"
-                ]
-              }
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "979134a9-4472-4474-bf4d-62f31a9d852b",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "8ccb7618-f1b2-4805-940e-1f6c7317bada",
-              "port": "9BE5EE41-A3C7-48AB-BA13-650B4F080E06%in"
-            },
-            "target": {
-              "cell": "aa5249fc-acf2-4c66-9ff1-ce8b2de83c0b",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": -50,
-                "y": -20
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->对话串"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(214, 74, 67)",
-            "router": {
-              "name": "manhattan",
-              "args": {
-                "excludeShapes": [
-                  "group"
-                ]
-              }
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "0259bdb0-3db5-4426-a8e3-09a9b93b3a6e",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "8ccb7618-f1b2-4805-940e-1f6c7317bada",
-              "port": "09AAF466-5501-4191-AB2C-B940A8FF9D9A%in"
-            },
-            "target": {
-              "cell": "d12000ff-c9b1-4ef0-acf1-6a215520c338",
-              "port": "D24ECA8A-A7B5-465C-8F27-CBB7B685B728%out"
-            },
-            "relation": "1:n",
-            "vertices": [],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "NPC->对话串"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(35, 156, 163)",
-            "router": {
-              "name": "normal"
-            },
-            "connector": {
-              "name": "normal"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "60d1f738-37d4-41e1-8c5f-60db49f1d3d6",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "a7c98435-bc39-4597-9706-25139642e04c",
-              "port": "EA74D273-EECD-40C3-8FE6-DDB59A138A74%in"
-            },
-            "target": {
-              "cell": "8ccb7618-f1b2-4805-940e-1f6c7317bada",
-              "port": "311BFA9E-6565-47CD-A86B-12BD223D8830%in"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": 400,
-                "y": 250
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "对话串->对话消息"
-                  }
-                }
-              }
-            ],
-            "fillColor": "#ACDAFC",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "8ccb7618-f1b2-4805-940e-1f6c7317bada",
-            "shape": "table",
-            "position": {
-              "x": 500,
-              "y": 0
-            },
-            "count": 0,
-            "originKey": "CF47A008-B606-4163-AF4C-25C3CC4EFCF5",
-            "type": "P",
-            "size": {
-              "width": 580,
-              "height": 450
-            }
-          },
-          {
-            "id": "d923fb21-1223-4e52-a6d5-c1a226d2493b",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "a7c98435-bc39-4597-9706-25139642e04c",
-              "port": "46ECF88F-E715-4EB9-855A-3B60314E0B1F%in"
-            },
-            "target": {
-              "cell": "19a8da11-5421-48b1-a1d4-2d24d690bc53",
-              "port": "2F60487E-2F66-4A79-9D36-8E9E22F3F99A%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": -540,
-                "y": 350
-              },
-              {
-                "x": -540,
-                "y": 70
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "用户->对话消息"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(51, 153, 108)",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "6a8303a1-69ad-4624-8d5b-592a298da684",
-            "shape": "erdRelation",
-            "source": {
-              "cell": "a7c98435-bc39-4597-9706-25139642e04c",
-              "port": "2D975698-E502-4471-A1AD-174B8153B9F3%in"
-            },
-            "target": {
-              "cell": "aa5249fc-acf2-4c66-9ff1-ce8b2de83c0b",
-              "port": "73FC3538-E73B-48F2-B888-E3E044BEC440%out"
-            },
-            "relation": "1:n",
-            "vertices": [
-              {
-                "x": -180,
-                "y": 510
-              }
-            ],
-            "labels": [
-              {
-                "attrs": {
-                  "text": {
-                    "text": "玩家->对话消息"
-                  }
-                }
-              }
-            ],
-            "fillColor": "rgb(214, 74, 67)",
-            "router": {
-              "name": "manhattan"
-            },
-            "attrs": {
-              "line": {
-                "strokeDasharray": ""
-              }
-            }
-          },
-          {
-            "id": "19a8da11-5421-48b1-a1d4-2d24d690bc53",
-            "shape": "table",
-            "position": {
-              "x": -970,
-              "y": 0
-            },
-            "count": 0,
-            "originKey": "A55CAEAD-E7B4-450D-820C-5664BA25A3AF",
-            "type": "P",
-            "size": {
-              "width": 320,
-              "height": 280
-            }
-          },
-          {
-            "id": "d12000ff-c9b1-4ef0-acf1-6a215520c338",
-            "shape": "table",
-            "position": {
-              "x": -20,
-              "y": 0
-            },
-            "count": 0,
-            "originKey": "1CE2E935-848F-45EC-BC78-800E72F34B1E",
-            "type": "P",
-            "size": {
-              "width": 320,
-              "height": 370
-            }
-          },
-          {
-            "id": "aa5249fc-acf2-4c66-9ff1-ce8b2de83c0b",
-            "shape": "table",
-            "position": {
-              "x": -520,
-              "y": 0
-            },
-            "count": 0,
-            "originKey": "AED91307-6EF9-447A-9D15-337D0C485530",
-            "type": "P",
-            "size": {
-              "width": 320,
-              "height": 470
-            }
-          },
-          {
-            "id": "a7c98435-bc39-4597-9706-25139642e04c",
-            "shape": "table",
-            "position": {
-              "x": 500,
-              "y": 520
-            },
-            "count": 0,
-            "originKey": "0B0BC34E-1176-41CC-866D-8F006B2E8962",
-            "type": "P",
-            "size": {
-              "width": 450,
-              "height": 380
-            }
-          }
-        ]
-      },
-      "id": "DD76FEBC-5938-42F2-902E-5EC8519A1B35",
-      "comment": ""
-    }
-  ],
+  "diagrams": [],
   "standardFields": [],
   "dbConn": [],
   "logicEntities": [],
