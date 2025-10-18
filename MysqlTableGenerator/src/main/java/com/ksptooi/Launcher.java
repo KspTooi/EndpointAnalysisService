@@ -21,7 +21,9 @@ public class Launcher {
         // generateTable("EduExamProgress");
 
         // 根据表结构生成CRUD
-        generateJpaCrud("simple_filter", "wangshuailong");
+        generateJpaCrud("route_group", "DEAN");
+        generateJpaCrud("route_rule", "DEAN");
+        generateJpaCrud("route_server", "DEAN");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
     }
 
@@ -33,7 +35,7 @@ public class Launcher {
         // 使用Mysql数据源
         var ds = new MysqlDataSource();
         ds.set("driver", "com.mysql.cj.jdbc.Driver");
-        ds.set("host", "192.168.10.200:3306");
+        ds.set("host", "127.0.0.1:3306");
         ds.set("username", "root");
         ds.set("password", "root");
         ds.set("params", "?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8");

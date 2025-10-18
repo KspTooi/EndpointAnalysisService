@@ -145,6 +145,26 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/route-server",
+      name: "route-server",
+      component: () => import("@/views/route/RouteServerManager.vue"),
+      meta: {
+        breadcrumb: {
+          title: "路由服务器管理",
+        },
+      },
+    },
+    {
+      path: "/route-group",
+      name: "route-group",
+      component: () => import("@/views/route/RouteGroupManager.vue"),
+      meta: {
+        breadcrumb: {
+          title: "路由策略组管理",
+        },
+      },
+    },
   ],
 });
 
