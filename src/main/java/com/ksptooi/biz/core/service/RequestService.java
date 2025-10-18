@@ -25,8 +25,14 @@ public class RequestService {
      */
     public PageableResult<GetRequestListVo> getRequestList(GetRequestListDto dto) {
 
+        //检查查询耗时
+        long startTime = System.currentTimeMillis();
+
         Page<GetRequestListVo> page = requestRepository.getRequestList(dto, dto.pageRequest());
-        return PageableResult.success(page.getContent(), page.getTotalElements());
+        var ret = PageableResult.success(page.getContent(), page.getTotalElements());
+        long endTime = System.currentTimeMillis();
+        System.out.println("查询请求列表耗时：" + (endTime - startTime) + "ms");
+        return ret;
     }
 
     /**

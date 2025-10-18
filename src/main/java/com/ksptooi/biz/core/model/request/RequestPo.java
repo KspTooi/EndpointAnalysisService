@@ -40,9 +40,12 @@ import java.util.List;
 ) ENGINE=InnoDB AUTO_INCREMENT=4936 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='重放请求';
  */
 @Entity
-@Table(name = "relay_request")
+@Table(name = "relay_request",indexes = {
+    @Index(name = "idx_create_time",columnList = "create_time")
+})
 @Getter@Setter
 @Comment("请求表")
+
 public class RequestPo {
     
     @Id
