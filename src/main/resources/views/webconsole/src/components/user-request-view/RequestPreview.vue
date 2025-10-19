@@ -1,0 +1,465 @@
+<template>
+  <div class="dialog-content">
+    <div class="payload-section">
+      <div class="section-header">
+        <!-- <h4>响应体</h4> -->
+        <div class="response-meta">
+          <el-tag v-if="props.requestPreviewVo.responseBodyType" size="small" type="info">
+            {{ props.requestPreviewVo.responseBodyType }}
+          </el-tag>
+          <el-tag v-if="props.requestPreviewVo.statusCode" size="small" :type="getStatusType(props.requestPreviewVo.statusCode)">
+            {{ props.requestPreviewVo.statusCode }}
+          </el-tag>
+        </div>
+        <div style="font-size: 14px; color: #ad00ba; margin-right: 25px">时间: {{ props.requestPreviewVo.responseTime }}</div>
+      </div>
+      <div class="json-container">
+        <vue-json-pretty
+          :data="parseJsonSafe(props.requestPreviewVo.responseBody)"
+          :show-line="true"
+          :show-length="true"
+          :deep="99"
+          :show-double-quotes="true"
+          class="json-viewer"
+        />
+      </div>
+    </div>
+
+    <el-tabs v-model="activeTab" class="preview-tabs" v-if="false">
+      <!-- 负载标签页 -->
+      <el-tab-pane label="负载" name="payload">
+        <div class="payload-container">
+          <!--           <div class="payload-section">
+            <div class="section-header">
+              <h4>请求体</h4>
+              <el-tag v-if="props.requestPreviewVo.requestBodyType" size="small" type="info">
+                {{ props.requestPreviewVo.requestBodyType }}
+              </el-tag>
+            </div>
+            <div class="json-container">
+              <vue-json-pretty
+                :data="parseJsonSafe(props.requestPreviewVo.requestBody)"
+                :show-line="true"
+                :show-length="true"
+                :deep="99"
+                :show-double-quotes="true"
+                class="json-viewer"
+              />
+            </div>
+          </div> -->
+        </div>
+      </el-tab-pane>
+
+      <!-- 标头标签页 -->
+      <el-tab-pane label="标头" name="headers">
+        <div class="headers-container">
+          <div class="header-section">
+            <h4 class="header-title">请求头</h4>
+            <el-table :data="props.requestPreviewVo.requestHeaders" border stripe size="small" class="headers-table">
+              <el-table-column prop="k" label="键" width="200" show-overflow-tooltip />
+              <el-table-column prop="v" label="值" show-overflow-tooltip />
+            </el-table>
+          </div>
+
+          <el-divider />
+
+          <div class="header-section">
+            <h4 class="header-title">响应头</h4>
+            <el-table :data="props.requestPreviewVo.responseHeaders" border stripe size="small" class="headers-table">
+              <el-table-column prop="k" label="键" width="200" show-overflow-tooltip />
+              <el-table-column prop="v" label="值" show-overflow-tooltip />
+            </el-table>
+          </div>
+        </div>
+      </el-tab-pane>
+
+      <!-- 详情标签页 -->
+      <el-tab-pane label="详情" name="meta">
+        <div class="meta-container">
+          <el-card class="meta-card" shadow="hover">
+            <template #header>
+              <div class="card-header">
+                <span>基本信息</span>
+                <el-tag :type="getMethodType(props.requestPreviewVo.method)" size="small">{{ props.requestPreviewVo.method }}</el-tag>
+              </div>
+            </template>
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item label="请求ID">
+                <el-text class="monospace-text">{{ props.requestPreviewVo.requestId || "-" }}</el-text>
+              </el-descriptions-item>
+              <el-descriptions-item label="来源">
+                {{ props.requestPreviewVo.source || "-" }}
+              </el-descriptions-item>
+              <el-descriptions-item label="请求URL" :span="2">
+                <el-text class="url-text">{{ props.requestPreviewVo.url || "-" }}</el-text>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-card>
+
+          <el-card class="meta-card" shadow="hover">
+            <template #header>
+              <span>请求信息</span>
+            </template>
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item label="请求体类型">
+                <el-tag v-if="props.requestPreviewVo.requestBodyType" size="small" type="info">
+                  {{ props.requestPreviewVo.requestBodyType }}
+                </el-tag>
+                <span v-else>-</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="请求体长度">
+                {{ formatBytes(props.requestPreviewVo.requestBodyLength) }}
+              </el-descriptions-item>
+              <el-descriptions-item label="请求时间" :span="2">
+                {{ props.requestPreviewVo.requestTime || "-" }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-card>
+
+          <el-card class="meta-card" shadow="hover">
+            <template #header>
+              <span>响应信息</span>
+            </template>
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item label="HTTP状态码">
+                <el-tag v-if="props.requestPreviewVo.statusCode" :type="getStatusType(props.requestPreviewVo.statusCode)" size="small">
+                  {{ props.requestPreviewVo.statusCode }}
+                </el-tag>
+                <span v-else>-</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="状态">
+                <el-tag :type="getStatusTagType(props.requestPreviewVo.status)" size="small">
+                  {{ getStatusText(props.requestPreviewVo.status) }}
+                </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="响应体类型">
+                <el-tag v-if="props.requestPreviewVo.responseBodyType" size="small" type="info">
+                  {{ props.requestPreviewVo.responseBodyType }}
+                </el-tag>
+                <span v-else>-</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="响应体长度">
+                {{ formatBytes(props.requestPreviewVo.responseBodyLength) }}
+              </el-descriptions-item>
+              <el-descriptions-item label="响应时间" :span="2">
+                {{ props.requestPreviewVo.responseTime || "-" }}
+              </el-descriptions-item>
+              <el-descriptions-item label="重定向URL" :span="2" v-if="props.requestPreviewVo.redirectUrl">
+                <el-text class="url-text">{{ props.requestPreviewVo.redirectUrl }}</el-text>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-card>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
+import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
+
+const activeTab = ref<"payload" | "headers" | "meta">("payload");
+
+export interface RequestPreviewVo {
+  id: string | null;
+  requestId: string | null;
+  method: string | null;
+  url: string | null;
+  source: string | null;
+  requestHeaders: HttpHeaderVo[] | null;
+  requestBodyLength: number | null;
+  requestBodyType: string | null;
+  requestBody: string | null;
+  responseHeaders: HttpHeaderVo[] | null;
+  responseBodyLength: number | null;
+  responseBodyType: string | null;
+  responseBody: string | null;
+  statusCode: number | null;
+  redirectUrl: string | null;
+  status: number | null;
+  requestTime: string | null;
+  responseTime: string | null;
+}
+
+const props = defineProps({
+  requestPreviewVo: {
+    type: Object as () => RequestPreviewVo,
+    required: true,
+  },
+});
+
+const parseJsonSafe = (json: string | null) => {
+  if (!json) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(json);
+  } catch {
+    return json;
+  }
+};
+
+const getStatusType = (statusCode: number | null) => {
+  if (!statusCode) return "";
+
+  if (statusCode >= 200 && statusCode < 300) return "success";
+  if (statusCode >= 300 && statusCode < 400) return "warning";
+  if (statusCode >= 400 && statusCode < 500) return "danger";
+  if (statusCode >= 500) return "danger";
+  return "info";
+};
+
+const getMethodType = (method: string | null) => {
+  if (!method) return "";
+
+  switch (method.toUpperCase()) {
+    case "GET":
+      return "success";
+    case "POST":
+      return "primary";
+    case "PUT":
+      return "warning";
+    case "DELETE":
+      return "danger";
+    case "PATCH":
+      return "info";
+    default:
+      return "";
+  }
+};
+
+const getStatusText = (status: number | null) => {
+  switch (status) {
+    case 0:
+      return "正常";
+    case 1:
+      return "HTTP失败";
+    case 2:
+      return "业务失败";
+    case 3:
+      return "连接超时";
+    default:
+      return "未知";
+  }
+};
+
+const getStatusTagType = (status: number | null) => {
+  switch (status) {
+    case 0:
+      return "success";
+    case 1:
+    case 2:
+      return "danger";
+    case 3:
+      return "warning";
+    default:
+      return "info";
+  }
+};
+
+const formatBytes = (bytes: number | null) => {
+  if (!bytes) return "-";
+
+  const sizes = ["B", "KB", "MB", "GB"];
+  if (bytes === 0) return "0 B";
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
+};
+</script>
+
+<style scoped>
+.dialog-content {
+  max-height: 75vh;
+  overflow: hidden;
+}
+
+.preview-tabs {
+  height: 100%;
+}
+
+.preview-tabs :deep(.el-tabs__content) {
+  max-height: calc(75vh - 120px);
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.payload-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.payload-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--el-border-color-light);
+  flex-shrink: 0;
+}
+
+.section-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.response-meta {
+  display: flex;
+  gap: 4px;
+}
+
+.json-container {
+  flex: 1;
+  min-height: 0;
+  background: var(--el-bg-color-page);
+  border: 1px solid var(--el-border-color);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.json-container :deep(.vjs-tree) {
+  font-size: 13px;
+  line-height: 1.4;
+  height: 100%;
+  overflow: auto;
+}
+
+.json-container :deep(.vue-json-pretty) {
+  height: 100%;
+  overflow: auto;
+}
+
+.json-viewer {
+  height: 100%;
+  overflow: auto;
+}
+
+.headers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header-section {
+  flex: 1;
+}
+
+.header-title {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.headers-table {
+  font-size: 13px;
+}
+
+.headers-table :deep(.el-table__cell) {
+  padding: 4px 8px;
+}
+
+.meta-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-card {
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+.meta-card :deep(.el-card__header) {
+  background: var(--el-bg-color-page);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  padding: 8px 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.meta-card :deep(.el-card__body) {
+  padding: 12px;
+}
+
+.meta-card :deep(.el-descriptions__label) {
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+  width: 120px;
+}
+
+.meta-card :deep(.el-descriptions__content) {
+  color: var(--el-text-color-primary);
+}
+
+.monospace-text {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 12px;
+  background: var(--el-fill-color-light);
+  padding: 1px 4px;
+  border-radius: 0;
+}
+
+.url-text {
+  word-break: break-all;
+  font-size: 13px;
+  color: var(--el-color-primary);
+}
+
+:deep(.el-tabs__nav-wrap::after) {
+  background: var(--el-border-color-lighter);
+}
+
+:deep(.el-tabs__active-bar) {
+  background: var(--el-color-primary);
+}
+
+:deep(.el-tabs__item) {
+  font-weight: 500;
+  color: var(--el-text-color-regular);
+}
+
+:deep(.el-tabs__item.is-active) {
+  color: var(--el-color-primary);
+  font-weight: 600;
+}
+
+.payload-container :deep(.el-divider--horizontal) {
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+:deep(.el-divider--horizontal) {
+  margin: 8px 0;
+}
+
+:deep(.el-tag) {
+  border-radius: 0;
+}
+
+:deep(.el-descriptions) {
+  --el-descriptions-table-border: 1px solid var(--el-border-color-lighter);
+}
+</style>

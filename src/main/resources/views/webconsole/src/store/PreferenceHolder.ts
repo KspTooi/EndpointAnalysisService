@@ -4,7 +4,7 @@ import { EventHolder } from "./EventHolder.ts";
 export const PreferenceHolder = defineStore("PreferenceHolder", {
   state: () => ({
     //请求编辑器Tab
-    requestEditorTab: "header" as "header" | "body" | "response",
+    requestEditorTab: "header" as "header" | "body" | "response" | "lastResponse",
 
     //请求组编辑器Tab
     requestGroupEditorTab: "filter" as "filter" | "request-list",
@@ -16,7 +16,7 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
       const persistedRequestEditorTab = localStorage.getItem("request_editor_tab");
 
       if (persistedRequestEditorTab) {
-        state.requestEditorTab = persistedRequestEditorTab as "header" | "body" | "response";
+        state.requestEditorTab = persistedRequestEditorTab as "header" | "body" | "response" | "lastResponse";
       }
 
       return state.requestEditorTab;
@@ -33,7 +33,7 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
   },
 
   actions: {
-    setRequestEditorTab(tab: "header" | "body" | "response") {
+    setRequestEditorTab(tab: "header" | "body" | "response" | "lastResponse") {
       localStorage.setItem("request_editor_tab", tab);
       this.requestEditorTab = tab;
     },

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRequestLogRepository extends JpaRepository<UserRequestLogPo, Long> {
 
@@ -30,4 +32,14 @@ public interface UserRequestLogRepository extends JpaRepository<UserRequestLogPo
             ORDER BY u.requestTime DESC
             """)
     Page<GetUserRequestLogListVo> getUserRequestLogList(@Param("urId") Long urId, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM UserRequestLogPo u
+            WHERE
+            u.userRequest.id = :userRequestId
+            ORDER BY u.requestTime DESC
+            LIMIT 1
+            """)
+    UserRequestLogPo getLastUserRequestLog(@Param("userRequestId") Long userRequestId);
+
 }

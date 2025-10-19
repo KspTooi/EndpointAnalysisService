@@ -23,6 +23,9 @@
       <div class="rb-tab">
         <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }" @click="PreferenceHolder().setRequestEditorTab('header')">标头</div>
         <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }" @click="PreferenceHolder().setRequestEditorTab('body')">载荷</div>
+        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'lastResponse' }" @click="PreferenceHolder().setRequestEditorTab('lastResponse')">
+          响应
+        </div>
         <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }" @click="PreferenceHolder().setRequestEditorTab('response')">
           响应列表
         </div>
@@ -64,6 +67,16 @@
         <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
           <UrResponseList ref="urResponseListRef" :loading="loading" />
         </div>
+
+        <!-- 响应 -->
+        <div v-if="PreferenceHolder().getRequestEditorTab === 'lastResponse'" class="tab-panel">
+          <div v-if="!lastResponse" style="text-align: center; margin-top: 50px">
+            <el-empty description="暂无响应，请先发送请求"></el-empty>
+          </div>
+          <div v-if="lastResponse">
+            <RequestPreview :request-preview-vo="lastResponse" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -79,6 +92,9 @@ import { ElMessage } from "element-plus";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import { EventHolder } from "@/store/EventHolder";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
+import UserRequestLogApi from "@/api/userrequest/UserRequestLogApi";
+import type { GetUserRequestLogDetailsVo } from "@/api/userrequest/UserRequestLogApi";
+import RequestPreview from "@/components/user-request-view/RequestPreview.vue";
 
 //完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
@@ -98,6 +114,7 @@ const urResponseListRef = ref<InstanceType<typeof UrResponseList>>();
 
 const loading = ref(false);
 const globalLoading = ref(false);
+const lastResponse = ref<GetUserRequestLogDetailsVo | null>(null);
 
 const loadRequestDetail = async () => {
   if (RequestTreeHolder().getActiveRequestId == null) {
@@ -133,8 +150,16 @@ const loadRequestDetail = async () => {
       url: null,
     };
     editableHeaders.value = [];
+    lastResponse.value = null;
   } finally {
     globalLoading.value = false;
+  }
+  // 加载最后一次响应
+  try {
+    lastResponse.value = await UserRequestLogApi.getLastUserRequestLogDetails(RequestTreeHolder().getActiveRequestId || "");
+  } catch (e) {
+    //需要清空lastResponse
+    lastResponse.value = null;
   }
 };
 
@@ -161,6 +186,7 @@ watch(
         url: null,
       };
       editableHeaders.value = [];
+      lastResponse.value = null;
     }
   }
 );
@@ -193,6 +219,9 @@ const onSendRequest = async () => {
   try {
     await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
     await urResponseListRef.value?.loadUserRequestLogList();
+
+    // 刷新最后一次响应
+    lastResponse.value = await UserRequestLogApi.getLastUserRequestLogDetails(RequestTreeHolder().getActiveRequestId || "");
   } catch (e) {
     ElMessage.error(`发送请求失败:${e}`);
   } finally {

@@ -43,6 +43,16 @@ public class UserRequestLogController {
         return Result.success(details);
     }
 
+    @Operation(summary ="查询最新的响应")
+    @PostMapping("/getLastUserRequestLogDetails")
+    public Result<GetUserRequestLogDetailsVo> getLastUserRequestLogDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
+        GetUserRequestLogDetailsVo details = userRequestLogService.getLastUserRequestLogDetails(dto);
+        if(details == null){
+            return Result.error("无数据");
+        }
+        return Result.success(details);
+    }
+
     @Operation(summary ="删除")
     @PostMapping("/removeUserRequestLog")
     public Result<String> removeUserRequestLog(@RequestBody @Valid CommonIdDto dto) throws Exception{
