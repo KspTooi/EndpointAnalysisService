@@ -1,29 +1,15 @@
 package com.ksptooi.biz.core.service;
 
 import com.google.gson.Gson;
-import com.ksptooi.biz.core.model.relayserver.AddRelayServerDto;
-import com.ksptooi.biz.core.model.relayserver.EditRelayServerDto;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerDetailsVo;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerListDto;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerListVo;
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
-import com.ksptooi.biz.core.model.relayserver.RelayServerRouteRuleDto;
-import com.ksptooi.biz.core.model.relayserver.RelayServerRouteRuleVo;
+import com.ksptooi.biz.core.model.relayserver.*;
 import com.ksptooi.biz.core.model.relayserverroute.po.RelayServerRoutePo;
 import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 import com.ksptooi.biz.core.repository.RelayServerRepository;
 import com.ksptooi.biz.core.repository.RouteRuleRepository;
 import com.ksptooi.commons.aop.HttpRelayServlet;
 import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.Result;
 import com.ksptooi.commons.utils.web.PageableResult;
-import java.io.File;
-import java.net.http.HttpClient;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
+import com.ksptooi.commons.utils.web.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -33,6 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.net.http.HttpClient;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 
 import static com.ksptool.entities.Entities.as;
 
@@ -59,6 +53,7 @@ public class RelayServerService {
 
     /**
      * 获取中继服务器列表
+     *
      * @param dto 查询条件
      * @return 中继服务器列表
      */
@@ -85,23 +80,24 @@ public class RelayServerService {
 
     /**
      * 添加中继服务器
+     *
      * @param dto 中继服务器信息
      * @return 中继服务器ID
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addRelayServer(AddRelayServerDto dto) throws BizException{
+    public void addRelayServer(AddRelayServerDto dto) throws BizException {
 
         //中继服务器名称不能重复
         Long count = relayServerRepository.countByName(dto.getName());
 
-        if(count > 0) {
+        if (count > 0) {
             throw new BizException("中继服务器名称不能重复");
         }
 
         //主机和端口不能重复
         count = relayServerRepository.countByHostAndPort(dto.getHost(), dto.getPort());
 
-        if(count > 0) {
+        if (count > 0) {
             throw new BizException("已有相同主机和端口的中继服务器");
         }
 
@@ -123,38 +119,38 @@ public class RelayServerService {
         insertPo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
 
         //当桥接目标类型为路由时，处理路由规则 0:直接 1:路由
-        if(dto.getForwardType() == 1) {
+        if (dto.getForwardType() == 1) {
 
             //搜集路由规则IDS
             List<Long> routeRuleIds = new ArrayList<>();
-            for(RelayServerRouteRuleDto item : dto.getRouteRules()) {
+            for (RelayServerRouteRuleDto item : dto.getRouteRules()) {
                 routeRuleIds.add(item.getRouteRuleId());
             }
 
             //获取路由规则列表
             List<RouteRulePo> routeRuleList = routeRuleRepository.getRouteRuleListByIds(routeRuleIds);
 
-            if(routeRuleList.isEmpty()) {
+            if (routeRuleList.isEmpty()) {
                 throw new BizException("路由规则查询失败，请检查路由规则是否存在或无权限访问");
             }
 
-            for(var item : routeRuleList){
+            for (var item : routeRuleList) {
 
                 //从原始DTO中查询出SEQ
                 var seq = -1;
-                for(var dtoItem : dto.getRouteRules()){
-                    if(dtoItem.getRouteRuleId().equals(item.getId())){
+                for (var dtoItem : dto.getRouteRules()) {
+                    if (dtoItem.getRouteRuleId().equals(item.getId())) {
                         seq = dtoItem.getSeq();
                         break;
                     }
                 }
 
-                if(seq == -1) {
+                if (seq == -1) {
                     throw new BizException("路由规则SEQ查询失败，请检查路由规则是否存在或无权限访问");
                 }
 
-                if(item.getRouteServer() == null){
-                    throw new BizException("路由规则:"+item.getName()+" 未配置目标服务器，请检查路由规则是否存在或无权限访问");
+                if (item.getRouteServer() == null) {
+                    throw new BizException("路由规则:" + item.getName() + " 未配置目标服务器，请检查路由规则是否存在或无权限访问");
                 }
 
                 RelayServerRoutePo newRule = new RelayServerRoutePo();
@@ -172,30 +168,31 @@ public class RelayServerService {
 
     /**
      * 编辑中继服务器
+     *
      * @param dto 中继服务器信息
      * @return 中继服务器ID
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editRelayServer(EditRelayServerDto dto) throws BizException{
+    public void editRelayServer(EditRelayServerDto dto) throws BizException {
 
         RelayServerPo updatePo = relayServerRepository.findById(dto.getId())
-            .orElseThrow(() -> new BizException("中继服务器不存在"));
+                .orElseThrow(() -> new BizException("中继服务器不存在"));
 
-        if(updatePo.getStatus() == 2) {
+        if (updatePo.getStatus() == 2) {
             throw new BizException("无法修改一个正在运行的中继服务器");
         }
 
         //中继服务器名称不能重复
         Long count = relayServerRepository.countByNameExcludeId(dto.getName(), updatePo.getId());
 
-        if(count > 0) {
+        if (count > 0) {
             throw new BizException("中继服务器名称不能重复");
         }
 
         //主机和端口不能重复
         count = relayServerRepository.countByHostAndPortExcludeId(dto.getHost(), dto.getPort(), updatePo.getId());
 
-        if(count > 0) {
+        if (count > 0) {
             throw new BizException("已有相同主机和端口的中继服务器");
         }
 
@@ -217,39 +214,39 @@ public class RelayServerService {
         updatePo.clearRouteRules();
 
         //当桥接目标类型为路由时，处理路由规则 0:直接 1:路由
-        if(dto.getForwardType() == 1) {
+        if (dto.getForwardType() == 1) {
 
 
             //搜集路由规则IDS
             List<Long> routeRuleIds = new ArrayList<>();
-            for(RelayServerRouteRuleDto item : dto.getRouteRules()) {
+            for (RelayServerRouteRuleDto item : dto.getRouteRules()) {
                 routeRuleIds.add(item.getRouteRuleId());
             }
 
             //获取路由规则列表
             List<RouteRulePo> routeRuleList = routeRuleRepository.getRouteRuleListByIds(routeRuleIds);
 
-            if(routeRuleList.isEmpty()) {
+            if (routeRuleList.isEmpty()) {
                 throw new BizException("路由规则查询失败，请检查路由规则是否存在或无权限访问");
             }
 
-            for(var item : routeRuleList){
+            for (var item : routeRuleList) {
 
                 //从原始DTO中查询出SEQ
                 var seq = -1;
-                for(var dtoItem : dto.getRouteRules()){
-                    if(dtoItem.getRouteRuleId().equals(item.getId())){
+                for (var dtoItem : dto.getRouteRules()) {
+                    if (dtoItem.getRouteRuleId().equals(item.getId())) {
                         seq = dtoItem.getSeq();
                         break;
                     }
                 }
 
-                if(seq == -1) {
+                if (seq == -1) {
                     throw new BizException("路由规则SEQ查询失败，请检查路由规则是否存在或无权限访问");
                 }
 
-                if(item.getRouteServer() == null){
-                    throw new BizException("路由规则:"+item.getName()+" 未配置目标服务器，请检查路由规则是否存在或无权限访问");
+                if (item.getRouteServer() == null) {
+                    throw new BizException("路由规则:" + item.getName() + " 未配置目标服务器，请检查路由规则是否存在或无权限访问");
                 }
 
                 RelayServerRoutePo newRule = new RelayServerRoutePo();
@@ -260,19 +257,20 @@ public class RelayServerService {
             }
 
         }
-        
+
         relayServerRepository.save(updatePo);
     }
 
 
     /**
      * 获取中继服务器详情
+     *
      * @param id 中继服务器ID
      * @return 中继服务器详情
      */
-    public GetRelayServerDetailsVo getRelayServerDetails(Long id) throws BizException{
+    public GetRelayServerDetailsVo getRelayServerDetails(Long id) throws BizException {
         RelayServerPo po = relayServerRepository.findById(id)
-            .orElseThrow(() -> new BizException("中继服务器不存在"));
+                .orElseThrow(() -> new BizException("中继服务器不存在"));
         GetRelayServerDetailsVo vo = new GetRelayServerDetailsVo();
         vo.setId(po.getId());
         vo.setName(po.getName());
@@ -293,8 +291,8 @@ public class RelayServerService {
 
         //处理绑定的路由规则回显
         List<RelayServerRouteRuleVo> routeRules = new ArrayList<>();
-        
-        for(RelayServerRoutePo item : po.getRouteRules()) {
+
+        for (RelayServerRoutePo item : po.getRouteRules()) {
             RelayServerRouteRuleVo ruleVo = new RelayServerRouteRuleVo();
             ruleVo.setRouteRuleId(item.getRouteRule().getId());
             ruleVo.setRouteRuleName(item.getRouteRule().getName());
@@ -306,18 +304,18 @@ public class RelayServerService {
     }
 
 
-
     /**
      * 删除中继服务器
+     *
      * @param id 中继服务器ID
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeRelayServer(Long id) throws BizException{
+    public void removeRelayServer(Long id) throws BizException {
 
         RelayServerPo po = relayServerRepository.findById(id)
-            .orElseThrow(() -> new BizException("中继服务器不存在"));
+                .orElseThrow(() -> new BizException("中继服务器不存在"));
 
-        if(po.getStatus() == 2) {
+        if (po.getStatus() == 2) {
             throw new BizException("无法删除一个正在运行的中继服务器");
         }
 
@@ -326,6 +324,7 @@ public class RelayServerService {
 
     /**
      * 启动中继服务器
+     *
      * @param id 中继服务器ID
      * @throws BizException
      */
@@ -333,10 +332,10 @@ public class RelayServerService {
     public Result<String> startRelayServer(Long id) throws BizException {
 
         RelayServerPo po = relayServerRepository.findById(id)
-            .orElseThrow(() -> new BizException("中继服务器不存在"));
+                .orElseThrow(() -> new BizException("中继服务器不存在"));
 
         //0:已禁用 1:未启动 2:运行中 3:启动失败
-        if(po.getStatus() != 1 && po.getStatus() != 3) {
+        if (po.getStatus() != 1 && po.getStatus() != 3) {
             throw new BizException("中继服务器状态不正确");
         }
 
@@ -357,7 +356,7 @@ public class RelayServerService {
             Context context = tomcat.addContext("", base.getAbsolutePath());
 
             // 创建并注册我们的转发Servlet
-            HttpRelayServlet servlet = new HttpRelayServlet(as(po,GetRelayServerDetailsVo.class),httpClient , gson,requestService);
+            HttpRelayServlet servlet = new HttpRelayServlet(as(po, GetRelayServerDetailsVo.class), httpClient, gson, requestService);
             Tomcat.addServlet(context, "proxyServlet", servlet);
             context.addServletMappingDecoded("/*", "proxyServlet"); // 匹配所有路径
             tomcat.start();
@@ -378,7 +377,7 @@ public class RelayServerService {
             po.setStatus(3);
             po.setErrorMessage(e.getMessage());
             relayServerRepository.save(po);
-            return Result.error("启动中继服务器失败 原因:"+e.getMessage());
+            return Result.error("启动中继服务器失败 原因:" + e.getMessage());
         }
 
         return Result.success("启动中继服务器成功");
@@ -386,20 +385,21 @@ public class RelayServerService {
 
     /**
      * 停止中继服务器
+     *
      * @param id 中继服务器ID
      */
     @Transactional(rollbackFor = Exception.class)
     public Result<String> stopRelayServer(Long id) throws BizException {
 
         RelayServerPo po = relayServerRepository.findById(id)
-            .orElseThrow(() -> new BizException("中继通道不存在"));
+                .orElseThrow(() -> new BizException("中继通道不存在"));
 
-        if(po.getStatus() != 2) {
+        if (po.getStatus() != 2) {
             throw new BizException("中继通道状态不正确");
         }
 
         Tomcat tomcat = runningServers.remove(po.getPort());
-        if(tomcat != null) {
+        if (tomcat != null) {
             try {
                 tomcat.stop();
                 tomcat.destroy();
@@ -417,7 +417,7 @@ public class RelayServerService {
      * 启动所有自动运行的中继服务器
      */
     @Transactional(rollbackFor = Exception.class)
-    public void initRelayServer(){
+    public void initRelayServer() {
 
         //将所有中继服务器修改为停止状态
         relayServerRepository.stopAllRelayServer();

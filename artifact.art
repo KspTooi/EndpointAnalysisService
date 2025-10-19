@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.relayserverroute.service",
-  "pkgNamePo": "com.ksptooi.biz.relayserverroute.model.po",
+  "pkgNameService": "com.ksptooi.biz.userrequestenvstorage.service",
+  "pkgNamePo": "com.ksptooi.biz.userrequestenvstorage.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,34 +9,52 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "路由表ID",
-        "primary": true
-      },
-      {
-        "name": "relay_server_id",
-        "javaFieldName": "relayServerId",
-        "javaGetterName": "RelayServerId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "中继服务器ID",
+        "comment": "共享存储ID",
         "primary": false
       },
       {
-        "name": "route_rule_id",
-        "javaFieldName": "routeRuleId",
-        "javaGetterName": "RouteRuleId",
+        "name": "env_id",
+        "javaFieldName": "envId",
+        "javaGetterName": "EnvId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "路由策略ID",
+        "comment": "环境ID",
         "primary": false
       },
       {
-        "name": "seq",
-        "javaFieldName": "seq",
-        "javaGetterName": "Seq",
-        "type": "INT",
+        "name": "name",
+        "javaFieldName": "name",
+        "javaGetterName": "Name",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "变量名",
+        "primary": false
+      },
+      {
+        "name": "init_value",
+        "javaFieldName": "initValue",
+        "javaGetterName": "InitValue",
+        "type": "TEXT",
+        "javaType": "String",
+        "comment": "初始值",
+        "primary": false
+      },
+      {
+        "name": "value",
+        "javaFieldName": "value",
+        "javaGetterName": "Value",
+        "type": "TEXT",
+        "javaType": "String",
+        "comment": "当前值",
+        "primary": false
+      },
+      {
+        "name": "status",
+        "javaFieldName": "status",
+        "javaGetterName": "Status",
+        "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "权重",
+        "comment": "状态 0:启用 1:禁用",
         "primary": false
       },
       {
@@ -61,33 +79,33 @@
     "options": [
       {
         "key": "tableName",
-        "val": "relay_server_route",
-        "defaultVal": "relay_server_route"
+        "val": "user_request_env_storage",
+        "defaultVal": "user_request_env_storage"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.relayserverroute.controller",
+  "pkgNameController": "com.ksptooi.biz.userrequestenvstorage.controller",
   "dirRoot": "src",
   "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "relay_server_route",
-  "classNamePo": "RelayServerRoutePo",
+  "tableName": "user_request_env_storage",
+  "classNamePo": "UserRequestEnvStoragePo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "relayServerRouteService",
+  "fieldNameService": "userRequestEnvStorageService",
   "password": "root",
-  "datetime": "2025-10-19 16:04:57",
+  "datetime": "2025-10-19 19:35:34",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "RelayServerRouteVo",
+  "classNameVo": "UserRequestEnvStorageVo",
   "driver": "com.mysql.cj.jdbc.Driver",
   "excludeNames": "sys_",
   "genPo": "true",
-  "table.name": "relay_server_route",
-  "classNameService": "RelayServerRouteService",
+  "table.name": "user_request_env_storage",
+  "classNameService": "UserRequestEnvStorageService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -96,34 +114,52 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "路由表ID",
-      "primary": true
-    },
-    {
-      "name": "relay_server_id",
-      "javaFieldName": "relayServerId",
-      "javaGetterName": "RelayServerId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "中继服务器ID",
+      "comment": "共享存储ID",
       "primary": false
     },
     {
-      "name": "route_rule_id",
-      "javaFieldName": "routeRuleId",
-      "javaGetterName": "RouteRuleId",
+      "name": "env_id",
+      "javaFieldName": "envId",
+      "javaGetterName": "EnvId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "路由策略ID",
+      "comment": "环境ID",
       "primary": false
     },
     {
-      "name": "seq",
-      "javaFieldName": "seq",
-      "javaGetterName": "Seq",
-      "type": "INT",
+      "name": "name",
+      "javaFieldName": "name",
+      "javaGetterName": "Name",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "变量名",
+      "primary": false
+    },
+    {
+      "name": "init_value",
+      "javaFieldName": "initValue",
+      "javaGetterName": "InitValue",
+      "type": "TEXT",
+      "javaType": "String",
+      "comment": "初始值",
+      "primary": false
+    },
+    {
+      "name": "value",
+      "javaFieldName": "value",
+      "javaGetterName": "Value",
+      "type": "TEXT",
+      "javaType": "String",
+      "comment": "当前值",
+      "primary": false
+    },
+    {
+      "name": "status",
+      "javaFieldName": "status",
+      "javaGetterName": "Status",
+      "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "权重",
+      "comment": "状态 0:启用 1:禁用",
       "primary": false
     },
     {
@@ -145,28 +181,28 @@
       "primary": false
     }
   ],
-  "fieldNameController": "relayServerRouteController",
-  "pkgNameVo": "com.ksptooi.biz.relayserverroute.model.vo",
-  "fieldNameDto": "relayServerRouteDto",
+  "fieldNameController": "userRequestEnvStorageController",
+  "pkgNameVo": "com.ksptooi.biz.userrequestenvstorage.model.vo",
+  "fieldNameDto": "userRequestEnvStorageDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "RelayServerRoute",
-  "fieldNamePo": "relayServerRoutePo",
-  "classNameController": "RelayServerRouteController",
-  "pkgNameDto": "com.ksptooi.biz.relayserverroute.model.dto",
-  "classNameRepository": "RelayServerRouteRepository",
-  "pkgNameRepository": "com.ksptooi.biz.relayserverroute.repository",
+  "apiTagName": "UserRequestEnvStorage",
+  "fieldNamePo": "userRequestEnvStoragePo",
+  "classNameController": "UserRequestEnvStorageController",
+  "pkgNameDto": "com.ksptooi.biz.userrequestenvstorage.model.dto",
+  "classNameRepository": "UserRequestEnvStorageRepository",
+  "pkgNameRepository": "com.ksptooi.biz.userrequestenvstorage.repository",
   "comments": "",
-  "fieldNameRepository": "relayServerRouteRepository",
+  "fieldNameRepository": "userRequestEnvStorageRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "relayServerRoute",
+  "requestMappingName": "userRequestEnvStorage",
   "genController": "true",
-  "fieldNameVo": "relayServerRouteVo",
-  "businessClassName": "RelayServerRoute",
+  "fieldNameVo": "userRequestEnvStorageVo",
+  "businessClassName": "UserRequestEnvStorage",
   "genVo": "true",
   "dirClasses": "main.java",
   "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
-  "classNameDto": "RelayServerRouteDto",
+  "classNameDto": "UserRequestEnvStorageDto",
   "username": "root"
 }

@@ -1,0 +1,73 @@
+package com.ksptooi.biz.userrequest.service;
+
+import com.ksptooi.biz.userrequest.model.userrequestenv.UserRequestEnvPo;
+import com.ksptooi.biz.userrequest.model.userrequestenv.dto.AddUserRequestEnvDto;
+import com.ksptooi.biz.userrequest.model.userrequestenv.dto.EditUserRequestEnvDto;
+import com.ksptooi.biz.userrequest.model.userrequestenv.dto.GetUserRequestEnvListDto;
+import com.ksptooi.biz.userrequest.model.userrequestenv.vo.GetUserRequestEnvDetailsVo;
+import com.ksptooi.biz.userrequest.model.userrequestenv.vo.GetUserRequestEnvListVo;
+import com.ksptooi.biz.userrequest.repository.UserRequestEnvRepository;
+import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.utils.web.CommonIdDto;
+import com.ksptooi.commons.utils.web.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.assign;
+
+@Service
+public class UserRequestEnvService {
+
+    @Autowired
+    private UserRequestEnvRepository repository;
+
+    public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) {
+        UserRequestEnvPo query = new UserRequestEnvPo();
+        assign(dto, query);
+
+        Page<UserRequestEnvPo> page = repository.getUserRequestEnvList(query, dto.pageRequest());
+        if (page.isEmpty()) {
+            return PageResult.successWithEmpty();
+        }
+
+        List<GetUserRequestEnvListVo> vos = as(page.getContent(), GetUserRequestEnvListVo.class);
+        return PageResult.success(vos, (int) page.getTotalElements());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void addUserRequestEnv(AddUserRequestEnvDto dto) {
+        UserRequestEnvPo insertPo = as(dto, UserRequestEnvPo.class);
+        repository.save(insertPo);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void editUserRequestEnv(EditUserRequestEnvDto dto) throws BizException {
+        UserRequestEnvPo updatePo = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
+
+        assign(dto, updatePo);
+        repository.save(updatePo);
+    }
+
+    public GetUserRequestEnvDetailsVo getUserRequestEnvDetails(CommonIdDto dto) throws BizException {
+        UserRequestEnvPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
+        return as(po, GetUserRequestEnvDetailsVo.class);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void removeUserRequestEnv(CommonIdDto dto) throws BizException {
+        if (dto.isBatch()) {
+            repository.deleteAllById(dto.getIds());
+        }
+        if (!dto.isBatch()) {
+            repository.deleteById(dto.getId());
+        }
+    }
+
+}
