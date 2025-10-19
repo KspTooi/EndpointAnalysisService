@@ -15,6 +15,9 @@
       </el-aside>
 
       <el-container>
+        <!-- 多标签页区域 -->
+        <tab-panel />
+
         <!-- 头部区域 -->
         <el-header class="admin-header" height="30px">
           <div class="header-left">
@@ -72,6 +75,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import AdminSidePanel from "./AdminSidePanel.vue";
+import TabPanel from "./TabPanel.vue";
 import {
   ElContainer,
   ElHeader,

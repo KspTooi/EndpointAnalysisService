@@ -69,9 +69,11 @@ import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
+import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
 const router = useRouter();
+const tabStore = useTabStore();
 
 // 使用 markRaw 包装所有图标组件
 const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
@@ -196,7 +198,14 @@ const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
     return;
   }
 
-  router.push(item.menuPath);
+  // Use the tab store to add a new tab
+  tabStore.addTab({
+    id: item.id,
+    title: item.name,
+    path: item.menuPath,
+  });
+
+  // Emit events for parent components if needed, but navigation is handled by the tab store
   emit("item-click", item.id);
   emit("update:activeItemId", item.id);
 };
