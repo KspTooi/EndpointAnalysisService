@@ -13,8 +13,8 @@ import RequestEditor from "@/components/user-request-view/RequestEditor.vue";
 import { EventHolder } from "@/store/EventHolder";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
-import UserRequestApi from "@/api/UserRequestApi";
-import UserRequestTreeApi from "@/api/UserRequestTreeApi";
+import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
+import UserRequestTreeApi from "@/api/userrequest/UserRequestTreeApi.ts";
 
 onMounted(() => {
   window.addEventListener("keydown", onKeyboardEvent);

@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/api/UserRequestApi";
+import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/api/userrequest/UserRequestApi.ts";
 import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from "./RequestPayload.vue";

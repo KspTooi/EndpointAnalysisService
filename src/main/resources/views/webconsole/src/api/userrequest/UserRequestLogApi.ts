@@ -1,7 +1,7 @@
-import type Result from "@/commons/entity/Result";
-import type PageQuery from "@/commons/entity/PageQuery";
-import type PageResult from "@/commons/entity/PageResult";
-import Http from "@/commons/Http";
+import type Result from "@/commons/entity/Result.ts";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
+import type PageResult from "@/commons/entity/PageResult.ts";
+import Http from "@/commons/Http.ts";
 
 export interface GetUserRequestLogListDto extends PageQuery { 
     userRequestId: string | null

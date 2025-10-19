@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/userRequestEnv")
-@Tag(name = "UserRequestEnv", description = "")
+@Tag(name = "UserRequestEnv", description = "用户请求环境")
 @Slf4j
 public class UserRequestEnvController {
 
@@ -31,26 +31,26 @@ public class UserRequestEnvController {
     private UserRequestEnvService userRequestEnvService;
 
     @PostMapping("/getUserRequestEnvList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "列表查询当前用户的环境")
     public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(@RequestBody @Valid GetUserRequestEnvListDto dto) throws Exception {
         return userRequestEnvService.getUserRequestEnvList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增当前用户的环境")
     @PostMapping("/addUserRequestEnv")
     public Result<String> addUserRequestEnv(@RequestBody @Valid AddUserRequestEnvDto dto) throws Exception {
         userRequestEnvService.addUserRequestEnv(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑当前用户的环境")
     @PostMapping("/editUserRequestEnv")
     public Result<String> editUserRequestEnv(@RequestBody @Valid EditUserRequestEnvDto dto) throws Exception {
         userRequestEnvService.editUserRequestEnv(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询当前用户的环境详情")
     @PostMapping("/getUserRequestEnvDetails")
     public Result<GetUserRequestEnvDetailsVo> getUserRequestEnvDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetUserRequestEnvDetailsVo details = userRequestEnvService.getUserRequestEnvDetails(dto);
@@ -60,7 +60,7 @@ public class UserRequestEnvController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除当前用户的环境")
     @PostMapping("/removeUserRequestEnv")
     public Result<String> removeUserRequestEnv(@RequestBody @Valid CommonIdDto dto) throws Exception {
         userRequestEnvService.removeUserRequestEnv(dto);

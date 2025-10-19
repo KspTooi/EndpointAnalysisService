@@ -117,10 +117,10 @@
 </template>
 
 <script setup lang="ts">
-import type { GetUserRequestGroupDetailsVo } from "@/api/UserRequestGroupApi";
+import type { GetUserRequestGroupDetailsVo } from "@/api/userrequest/UserRequestGroupApi.ts";
 import { onMounted, ref, watch } from "vue";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder.ts";
-import UserRequestGroupApi from "@/api/UserRequestGroupApi";
+import UserRequestGroupApi from "@/api/userrequest/UserRequestGroupApi.ts";
 import { ElMessage } from "element-plus";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
 import SimpleFilterApi, { type GetSimpleFilterListVo } from "@/api/SimpleFilterApi";

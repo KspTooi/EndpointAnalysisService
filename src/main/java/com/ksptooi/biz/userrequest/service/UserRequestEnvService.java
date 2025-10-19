@@ -1,5 +1,6 @@
 package com.ksptooi.biz.userrequest.service;
 
+import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.biz.userrequest.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.userrequest.model.userrequestenv.dto.AddUserRequestEnvDto;
 import com.ksptooi.biz.userrequest.model.userrequestenv.dto.EditUserRequestEnvDto;
@@ -10,6 +11,9 @@ import com.ksptooi.biz.userrequest.repository.UserRequestEnvRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
+
+import jakarta.security.auth.message.AuthException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,11 +30,11 @@ public class UserRequestEnvService {
     @Autowired
     private UserRequestEnvRepository repository;
 
-    public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) {
+    public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) throws AuthException {
         UserRequestEnvPo query = new UserRequestEnvPo();
         assign(dto, query);
 
-        Page<UserRequestEnvPo> page = repository.getUserRequestEnvList(query, dto.pageRequest());
+        Page<UserRequestEnvPo> page = repository.getUserRequestEnvList(query, AuthService.requireUserId(), dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
