@@ -4,20 +4,14 @@
     <div class="query-form">
       <el-form :model="query" inline>
         <el-form-item label="原始请求ID">
-          <el-input
-              ref="originRequestIdInput"
-              v-model="query.originRequestId"
-              placeholder="请输入原始请求ID"
-              clearable
-              style="width: 200px"
-          />
+          <el-input ref="originRequestIdInput" v-model="query.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" />
         </el-form-item>
         <el-button type="primary" @click="loadOriginRequestList">查询</el-button>
         <el-button @click="resetQuery">重置</el-button>
       </el-form>
       <el-button type="primary" @click="executeReplay">执行重放</el-button>
     </div>
-    
+
     <!-- 空状态提示 -->
     <div class="empty-state" v-if="originRequestList.length === 0 && !loading">
       <el-empty description="请输入原始请求ID进行查询">
@@ -26,23 +20,13 @@
     </div>
 
     <div class="request-area" v-if="originRequestList.length > 0">
-
-      <div class="origin-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac;" v-if="originRequestList.length > 0">
+      <div class="origin-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac" v-if="originRequestList.length > 0">
         原始请求ID: {{ query.originRequestId }}
       </div>
       <!-- 原始请求列表 -->
       <div class="origin-request-table">
-        <el-table
-            :data="originRequestList"
-            v-loading="loading"
-            border
-        >
-          <el-table-column
-              prop="requestId"
-              label="请求ID"
-              min-width="150"
-              show-overflow-tooltip
-          >
+        <el-table :data="originRequestList" v-loading="loading" border>
+          <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
                 <el-link type="primary" underline="never" @click="copyText(scope.row.requestId)">
@@ -51,94 +35,69 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="method"
-              label="方法"
-              min-width="50"
-              show-overflow-tooltip
-          >
+          <el-table-column prop="method" label="方法" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-            <span :style="{color: scope.row.method === 'DELETE' ? '#E74C3C' : scope.row.method === 'GET' ? '#3498DB' : scope.row.method === 'POST' ? '#2ECC71' : scope.row.method === 'PUT' ? '#F1C40F' : '#95A5A6'}">
-              {{ scope.row.method.toUpperCase() }}
-            </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="url"
-              label="请求URL"
-              min-width="180"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="source"
-              label="来源"
-              min-width="60"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="status"
-              label="状态"
-              min-width="50"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
-              <span :style="{color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6'}">
-                {{ scope.row.status === 0 ? '正常' : scope.row.status === 1 ? 'HTTP失败' : scope.row.status === 2 ? '业务失败' : '连接超时' }}
+              <span
+                :style="{
+                  color:
+                    scope.row.method === 'DELETE'
+                      ? '#E74C3C'
+                      : scope.row.method === 'GET'
+                        ? '#3498DB'
+                        : scope.row.method === 'POST'
+                          ? '#2ECC71'
+                          : scope.row.method === 'PUT'
+                            ? '#F1C40F'
+                            : '#95A5A6',
+                }"
+              >
+                {{ scope.row.method.toUpperCase() }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="statusCode"
-              label="HTTP"
-              min-width="35"
-              show-overflow-tooltip
-          >
+          <el-table-column prop="url" label="请求URL" min-width="180" show-overflow-tooltip />
+          <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
+          <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-            <span :style="{color: scope.row.statusCode >= 200 && scope.row.statusCode < 300 ? '#2ECC71' : scope.row.statusCode >= 300 && scope.row.statusCode < 400 ? '#F1C40F' : scope.row.statusCode >= 400 && scope.row.statusCode < 500 ? '#E74C3C' : '#95A5A6'}">
-              {{ scope.row.statusCode }}
-            </span>
+              <span :style="{ color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6' }">
+                {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "HTTP失败" : scope.row.status === 2 ? "业务失败" : "连接超时" }}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="requestTime"
-              label="请求时间"
-              show-overflow-tooltip
-          />
+          <el-table-column prop="statusCode" label="HTTP" min-width="35" show-overflow-tooltip>
+            <template #default="scope">
+              <span
+                :style="{
+                  color:
+                    scope.row.statusCode >= 200 && scope.row.statusCode < 300
+                      ? '#2ECC71'
+                      : scope.row.statusCode >= 300 && scope.row.statusCode < 400
+                        ? '#F1C40F'
+                        : scope.row.statusCode >= 400 && scope.row.statusCode < 500
+                          ? '#E74C3C'
+                          : '#95A5A6',
+                }"
+              >
+                {{ scope.row.statusCode }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
 
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button
-                  link
-                  type="primary"
-                  size="small"
-                  @click="openOriginViewModal(scope.row)"
-                  :icon="ViewIcon"
-              >
-                预览请求
-              </el-button>
+              <el-button link type="primary" size="small" @click="openOriginViewModal(scope.row)" :icon="ViewIcon"> 预览请求 </el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
-      <div class="replay-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #009175;">
-        重放请求列表
-      </div>
+      <div class="replay-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #009175">重放请求列表</div>
 
       <!-- 回放请求列表 -->
       <div class="replay-request-table">
-        <el-table
-            :data="list"
-            stripe
-            v-loading="loading"
-            border
-        >
-          <el-table-column
-              prop="requestId"
-              label="请求ID"
-              min-width="150"
-              show-overflow-tooltip
-          >
+        <el-table :data="list" stripe v-loading="loading" border>
+          <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
                 <el-link type="primary" underline="never" @click="copyText(scope.row.requestId)">
@@ -147,71 +106,58 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="method"
-              label="方法"
-              min-width="50"
-              show-overflow-tooltip
-          >
+          <el-table-column prop="method" label="方法" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-            <span :style="{color: scope.row.method === 'DELETE' ? '#E74C3C' : scope.row.method === 'GET' ? '#3498DB' : scope.row.method === 'POST' ? '#2ECC71' : scope.row.method === 'PUT' ? '#F1C40F' : '#95A5A6'}">
-              {{ scope.row.method.toUpperCase() }}
-            </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="url"
-              label="请求URL"
-              min-width="180"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="source"
-              label="来源"
-              min-width="60"
-              show-overflow-tooltip
-          />
-          <el-table-column
-              prop="status"
-              label="状态"
-              min-width="50"
-              show-overflow-tooltip
-          >
-            <template #default="scope">
-              <span :style="{color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6'}">
-                {{ scope.row.status === 0 ? '正常' : scope.row.status === 1 ? 'HTTP失败' : scope.row.status === 2 ? '业务失败' : '连接超时' }}
+              <span
+                :style="{
+                  color:
+                    scope.row.method === 'DELETE'
+                      ? '#E74C3C'
+                      : scope.row.method === 'GET'
+                        ? '#3498DB'
+                        : scope.row.method === 'POST'
+                          ? '#2ECC71'
+                          : scope.row.method === 'PUT'
+                            ? '#F1C40F'
+                            : '#95A5A6',
+                }"
+              >
+                {{ scope.row.method.toUpperCase() }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="statusCode"
-              label="HTTP"
-              min-width="35"
-              show-overflow-tooltip
-          >
+          <el-table-column prop="url" label="请求URL" min-width="180" show-overflow-tooltip />
+          <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
+          <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-            <span :style="{color: scope.row.statusCode >= 200 && scope.row.statusCode < 300 ? '#2ECC71' : scope.row.statusCode >= 300 && scope.row.statusCode < 400 ? '#F1C40F' : scope.row.statusCode >= 400 && scope.row.statusCode < 500 ? '#E74C3C' : '#95A5A6'}">
-              {{ scope.row.statusCode }}
-            </span>
+              <span :style="{ color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6' }">
+                {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "HTTP失败" : scope.row.status === 2 ? "业务失败" : "连接超时" }}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column
-              prop="requestTime"
-              label="请求时间"
-              show-overflow-tooltip
-          />
+          <el-table-column prop="statusCode" label="HTTP" min-width="35" show-overflow-tooltip>
+            <template #default="scope">
+              <span
+                :style="{
+                  color:
+                    scope.row.statusCode >= 200 && scope.row.statusCode < 300
+                      ? '#2ECC71'
+                      : scope.row.statusCode >= 300 && scope.row.statusCode < 400
+                        ? '#F1C40F'
+                        : scope.row.statusCode >= 400 && scope.row.statusCode < 500
+                          ? '#E74C3C'
+                          : '#95A5A6',
+                }"
+              >
+                {{ scope.row.statusCode }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
 
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button
-                  link
-                  type="primary"
-                  size="small"
-                  @click="openViewModal(scope.row)"
-                  :icon="ViewIcon"
-              >
-                预览请求
-              </el-button>
+              <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 预览请求 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -219,62 +165,39 @@
         <!-- 分页 -->
         <div class="pagination-container">
           <el-pagination
-              v-model:current-page="query.pageNum"
-              v-model:page-size="query.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              @size-change="(val: number) => {
-            query.pageSize = val
-            loadReplayRequestList()
-          }"
-              @current-change="(val: number) => {
-            query.pageNum = val
-            loadReplayRequestList()
-          }"
-              background
+            v-model:current-page="query.pageNum"
+            v-model:page-size="query.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="
+              (val: number) => {
+                query.pageSize = val;
+                loadReplayRequestList();
+              }
+            "
+            @current-change="
+              (val: number) => {
+                query.pageNum = val;
+                loadReplayRequestList();
+              }
+            "
+            background
           />
         </div>
       </div>
-
-
     </div>
 
-
-
     <!-- 回放请求编辑模态框 -->
-    <el-dialog
-        v-model="dialogVisible"
-        :title="modalMode === 'view' ? '预览请求' : '编辑请求'"
-        width="800px"
-        :close-on-click-modal="true"
-        class="centered-dialog"
-    >
-      <el-form
-          v-if="dialogVisible"
-          ref="formRef"
-          :model="details"
-          :rules="rules"
-          label-width="100px"
-          :validate-on-rule-change="false"
-      >
+    <el-dialog v-model="dialogVisible" :title="modalMode === 'view' ? '预览请求' : '编辑请求'" width="800px" :close-on-click-modal="true" class="centered-dialog">
+      <el-form v-if="dialogVisible" ref="formRef" :model="details" :rules="rules" label-width="100px" :validate-on-rule-change="false">
         <el-tabs v-model="activeTab">
           <el-tab-pane label="负载" name="payload">
             <el-form-item label="请求体" prop="requestBody">
-              <el-input
-                  :model-value="formatJson(details.requestBody)"
-                  type="textarea"
-                  :rows="14"
-                  readonly
-              />
+              <el-input :model-value="formatJson(details.requestBody)" type="textarea" :rows="14" readonly />
             </el-form-item>
             <el-form-item label="响应体" prop="responseBody">
-              <el-input
-                  :model-value="formatJson(details.responseBody)"
-                  type="textarea"
-                  :rows="14"
-                  readonly
-              />
+              <el-input :model-value="formatJson(details.responseBody)" type="textarea" :rows="14" readonly />
             </el-form-item>
           </el-tab-pane>
 
@@ -340,9 +263,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="saveRequest" :loading="submitLoading">
-            Confirm
-          </el-button>
+          <el-button type="primary" @click="saveRequest" :loading="submitLoading"> Confirm </el-button>
         </span>
       </template>
     </el-dialog>
@@ -350,20 +271,20 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref, onMounted} from "vue";
-import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo} from "@/api/ReplayRequestApi.ts";
+import { reactive, ref, onMounted } from "vue";
+import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/api/ReplayRequestApi.ts";
 import ReplayRequestApi from "@/api/ReplayRequestApi.ts";
-import { ElMessage } from 'element-plus';
-import { Edit, DocumentCopy, View } from '@element-plus/icons-vue';
-import { markRaw } from 'vue';
-import type { FormInstance } from 'element-plus';
+import { ElMessage } from "element-plus";
+import { Edit, DocumentCopy, View } from "@element-plus/icons-vue";
+import { markRaw } from "vue";
+import type { FormInstance } from "element-plus";
 import RequestApi from "@/api/RequestApi";
 
 //原始请求列表
-const originRequestList = ref<GetOriginRequestVo[]>([])
+const originRequestList = ref<GetOriginRequestVo[]>([]);
 
 //输入框引用
-const originRequestIdInput = ref()
+const originRequestIdInput = ref();
 
 //回放请求列表查询条件
 const query = reactive<GetReplayRequestListDto>({
@@ -375,31 +296,30 @@ const query = reactive<GetReplayRequestListDto>({
   source: null,
   status: null,
   pageNum: 1,
-  pageSize: 10
-})
+  pageSize: 10,
+});
 
 //回放请求列表
-const list = ref<GetReplayRequestListVo[]>([])
+const list = ref<GetReplayRequestListVo[]>([]);
 
 //回放请求列表总条数
-const total = ref(0)
+const total = ref(0);
 
 // 加载状态
-const loading = ref(false)
+const loading = ref(false);
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const ViewIcon = markRaw(View);
 
 // 模态框相关
-const dialogVisible = ref(false)
-const formRef = ref<FormInstance>()
-const submitLoading = ref(false)
-const modalMode = ref<("view" | "edit")>("view") //view:预览,edit:编辑
+const dialogVisible = ref(false);
+const formRef = ref<FormInstance>();
+const submitLoading = ref(false);
+const modalMode = ref<"view" | "edit">("view"); //view:预览,edit:编辑
 
 // 预览Tab
-const activeTab = ref<'payload' | 'headers' | 'meta'>('payload')
-
+const activeTab = ref<"payload" | "headers" | "meta">("payload");
 
 //表单数据
 const details = reactive<GetReplayRequestDetailsVo>({
@@ -420,257 +340,245 @@ const details = reactive<GetReplayRequestDetailsVo>({
   redirectUrl: "",
   status: 0,
   requestTime: "",
-  responseTime: ""
-})
+  responseTime: "",
+});
 
 // 表单校验规则
 const rules = {
-  key: [
-    { required: true, message: 'Please enter key', trigger: 'blur' }
-  ],
-  value: [
-    { required: true, message: 'Please enter value', trigger: 'blur' }
-  ],
-  description: [
-    { max: 200, message: 'Description cannot exceed 200 characters', trigger: 'blur' }
-  ]
-}
+  key: [{ required: true, message: "Please enter key", trigger: "blur" }],
+  value: [{ required: true, message: "Please enter value", trigger: "blur" }],
+  description: [{ max: 200, message: "Description cannot exceed 200 characters", trigger: "blur" }],
+};
 
 /**
  * 加载回放请求列表
  */
 const loadReplayRequestList = async () => {
-
-  loading.value = true
+  loading.value = true;
   try {
     const res = await ReplayRequestApi.getReplayRequestList(query);
     list.value = res.data;
     total.value = res.total;
   } catch (e) {
-    ElMessage.error('无法获取回放请求');
+    ElMessage.error("无法获取回放请求");
     console.error("无法获取回放请求", e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 /**
  * 加载原始请求列表
  */
 const loadOriginRequestList = async () => {
-
-  loading.value = true
+  loading.value = true;
   try {
-    localStorage.setItem('originRequestId', query.originRequestId || "")
-    const res = await ReplayRequestApi.getOriginRequest({requestId: query.originRequestId});
-    originRequestList.value = [res]
-    loadReplayRequestList()
+    localStorage.setItem("originRequestId", query.originRequestId || "");
+    const res = await ReplayRequestApi.getOriginRequest({ requestId: query.originRequestId });
+    originRequestList.value = [res];
+    loadReplayRequestList();
   } catch (e) {
-    ElMessage.error('无法获取原始请求');
+    ElMessage.error("无法获取原始请求");
     console.error("无法获取原始请求", e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const executeReplay = async () => {
   try {
-    await ReplayRequestApi.replayRequest(query.originRequestId || "")
-    ElMessage.success('执行重放成功');
-    loadReplayRequestList()
-    loadOriginRequestList()
-  } catch (e) {
-    ElMessage.error('执行重放失败');
+    await ReplayRequestApi.replayRequest(query.originRequestId || "");
+    ElMessage.success("执行重放成功");
+    loadReplayRequestList();
+    loadOriginRequestList();
+  } catch (e: any) {
+    ElMessage.error(e.message);
     console.error("执行重放失败", e);
   }
-}
+};
 
 const resetQuery = () => {
-  query.originRequestId = null
-  query.requestId = null
-  query.method = null
-  query.url = null
-  query.source = null
-  query.status = null
-  query.relayServerId = null
-  localStorage.removeItem('originRequestId')
-  originRequestList.value = []
-  list.value = []
-  total.value = 0
-  query.pageNum = 1
-  query.pageSize = 10
-}
+  query.originRequestId = null;
+  query.requestId = null;
+  query.method = null;
+  query.url = null;
+  query.source = null;
+  query.status = null;
+  query.relayServerId = null;
+  localStorage.removeItem("originRequestId");
+  originRequestList.value = [];
+  list.value = [];
+  total.value = 0;
+  query.pageNum = 1;
+  query.pageSize = 10;
+};
 
 const resetForm = () => {
-  localStorage.removeItem('originRequestId')
+  localStorage.removeItem("originRequestId");
   if (formRef.value) {
-    formRef.value.resetFields()
+    formRef.value.resetFields();
   }
-}
+};
 
 //页面加载时自动加载数据
 onMounted(() => {
   //从localStorage获取保存的原始请求ID
-  const originRequestId = localStorage.getItem('originRequestId')
+  const originRequestId = localStorage.getItem("originRequestId");
   if (originRequestId) {
-    query.originRequestId = originRequestId
-    loadOriginRequestList()
-    loadReplayRequestList()
+    query.originRequestId = originRequestId;
+    loadOriginRequestList();
+    loadReplayRequestList();
   }
-})
-
+});
 
 const openOriginViewModal = async (row: GetOriginRequestVo) => {
   try {
-    const res = await RequestApi.getRequestDetails(row.id.toString())
-    details.id = res.id.toString()
-    details.requestId = res.requestId
-    details.method = res.method
-    details.url = res.url
-    details.source = res.source
-    details.requestHeaders = res.requestHeaders
-    details.requestBody = res.requestBody
-    details.responseHeaders = res.responseHeaders
-    details.responseBody = res.responseBody
-    details.statusCode = res.statusCode
-    details.redirectUrl = res.redirectUrl
-    details.status = res.status
-    details.requestTime = res.requestTime
-    details.responseTime = res.responseTime
-    details.requestBodyLength = res.requestBodyLength
-    details.requestBodyType = res.requestBodyType
-    details.responseBodyLength = res.responseBodyLength
-    details.responseBodyType = res.responseBodyType
+    const res = await RequestApi.getRequestDetails(row.id.toString());
+    details.id = res.id.toString();
+    details.requestId = res.requestId;
+    details.method = res.method;
+    details.url = res.url;
+    details.source = res.source;
+    details.requestHeaders = res.requestHeaders;
+    details.requestBody = res.requestBody;
+    details.responseHeaders = res.responseHeaders;
+    details.responseBody = res.responseBody;
+    details.statusCode = res.statusCode;
+    details.redirectUrl = res.redirectUrl;
+    details.status = res.status;
+    details.requestTime = res.requestTime;
+    details.responseTime = res.responseTime;
+    details.requestBodyLength = res.requestBodyLength;
+    details.requestBodyType = res.requestBodyType;
+    details.responseBodyLength = res.responseBodyLength;
+    details.responseBodyType = res.responseBodyType;
 
-    modalMode.value = "view"
-    activeTab.value = 'payload'
-    dialogVisible.value = true
-    console.log(res)
+    modalMode.value = "view";
+    activeTab.value = "payload";
+    dialogVisible.value = true;
+    console.log(res);
   } catch (error) {
-    ElMessage.error('获取原始请求详情失败')
+    ElMessage.error("获取原始请求详情失败");
   }
-}
+};
 
 //打开预览请求模态框
 const openViewModal = async (row: GetReplayRequestListVo) => {
   try {
-
     //获取请求数据
-    const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString())
-    details.id = res.id
-    details.requestId = res.requestId
-    details.method = res.method
-    details.url = res.url
-    details.source = res.source
-    details.requestHeaders = res.requestHeaders
-    details.requestBody = res.requestBody
-    details.responseHeaders = res.responseHeaders
-    details.responseBody = res.responseBody
-    details.statusCode = res.statusCode
-    details.redirectUrl = res.redirectUrl
-    details.status = res.status
-    details.requestTime = res.requestTime
-    details.responseTime = res.responseTime
-    details.requestBodyLength = res.requestBodyLength
-    details.requestBodyType = res.requestBodyType
-    details.responseBodyLength = res.responseBodyLength
-    details.responseBodyType = res.responseBodyType
+    const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString());
+    details.id = res.id;
+    details.requestId = res.requestId;
+    details.method = res.method;
+    details.url = res.url;
+    details.source = res.source;
+    details.requestHeaders = res.requestHeaders;
+    details.requestBody = res.requestBody;
+    details.responseHeaders = res.responseHeaders;
+    details.responseBody = res.responseBody;
+    details.statusCode = res.statusCode;
+    details.redirectUrl = res.redirectUrl;
+    details.status = res.status;
+    details.requestTime = res.requestTime;
+    details.responseTime = res.responseTime;
+    details.requestBodyLength = res.requestBodyLength;
+    details.requestBodyType = res.requestBodyType;
+    details.responseBodyLength = res.responseBodyLength;
+    details.responseBodyType = res.responseBodyType;
 
-
-    modalMode.value = "view"
-    activeTab.value = 'payload'
-    dialogVisible.value = true
+    modalMode.value = "view";
+    activeTab.value = "payload";
+    dialogVisible.value = true;
   } catch (error) {
-    ElMessage.error('获取请求详情失败')
-    console.error('获取请求详情失败', error)
+    ElMessage.error("获取请求详情失败");
+    console.error("获取请求详情失败", error);
   }
-}
-
+};
 
 const openUpdateModal = async (row: GetReplayRequestListVo) => {
   try {
-    resetForm()
+    resetForm();
 
-    const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString())
-    Object.assign(details, res)
+    const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString());
+    Object.assign(details, res);
 
-    dialogVisible.value = true
+    dialogVisible.value = true;
   } catch (error) {
-    ElMessage.error('Failed to get configuration details')
-    console.error('Failed to get configuration details', error)
+    ElMessage.error("Failed to get configuration details");
+    console.error("Failed to get configuration details", error);
   }
-}
+};
 
 const saveRequest = async () => {
-  if (!formRef.value) return
+  if (!formRef.value) return;
 
   await formRef.value.validate(async (valid) => {
-    if (!valid) return
+    if (!valid) return;
 
-    submitLoading.value = true
+    submitLoading.value = true;
     try {
       //await ReplayRequestApi.editRequest(details)
-      console.log(details)
-      ElMessage.success('Configuration updated successfully')
-      dialogVisible.value = false
-      loadReplayRequestList()
+      console.log(details);
+      ElMessage.success("Configuration updated successfully");
+      dialogVisible.value = false;
+      loadReplayRequestList();
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Operation failed'
-      ElMessage.error(errorMsg)
+      const errorMsg = error instanceof Error ? error.message : "Operation failed";
+      ElMessage.error(errorMsg);
     } finally {
-      submitLoading.value = false
+      submitLoading.value = false;
     }
-  })
-}
+  });
+};
 
 const copyText = async (text: string) => {
   if (!text) {
-    ElMessage.warning('内容为空，无法复制')
-    return
+    ElMessage.warning("内容为空，无法复制");
+    return;
   }
   try {
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text)
-      ElMessage.success('已复制到剪贴板')
-      return
+      await navigator.clipboard.writeText(text);
+      ElMessage.success("已复制到剪贴板");
+      return;
     }
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    textarea.style.position = 'fixed'
-    textarea.style.left = '-9999px'
-    document.body.appendChild(textarea)
-    textarea.focus()
-    textarea.select()
-    const success = document.execCommand('copy')
-    document.body.removeChild(textarea)
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    const success = document.execCommand("copy");
+    document.body.removeChild(textarea);
     if (success) {
-      ElMessage.success('已复制到剪贴板')
-      return
+      ElMessage.success("已复制到剪贴板");
+      return;
     }
-    ElMessage.error('复制失败')
+    ElMessage.error("复制失败");
   } catch (e) {
-    ElMessage.error('复制失败')
+    ElMessage.error("复制失败");
   }
-}
+};
 
 const formatJson = (data: unknown): string => {
-  if (data === null || data === undefined) return ''
-  if (typeof data === 'string') {
-    const trimmed = data.trim()
-    if (!trimmed) return ''
+  if (data === null || data === undefined) return "";
+  if (typeof data === "string") {
+    const trimmed = data.trim();
+    if (!trimmed) return "";
     try {
-      const parsed = JSON.parse(trimmed)
-      return JSON.stringify(parsed, null, 2)
+      const parsed = JSON.parse(trimmed);
+      return JSON.stringify(parsed, null, 2);
     } catch (_) {
-      return data
+      return data;
     }
   }
   try {
-    return JSON.stringify(data, null, 2)
+    return JSON.stringify(data, null, 2);
   } catch (_) {
-    return String(data)
+    return String(data);
   }
-}
+};
 </script>
 
 <style scoped>
