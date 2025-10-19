@@ -213,12 +213,12 @@ public class RelayServerService {
         updatePo.setBizErrorCodeField(dto.getBizErrorCodeField()); //业务错误码字段(JSONPath)
         updatePo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
 
+        //清空原有路由规则
+        updatePo.clearRouteRules();
 
         //当桥接目标类型为路由时，处理路由规则 0:直接 1:路由
         if(dto.getForwardType() == 1) {
 
-            //先清空原有路由规则
-            updatePo.clearRouteRules();
 
             //搜集路由规则IDS
             List<Long> routeRuleIds = new ArrayList<>();
