@@ -20,7 +20,6 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
             AND (:#{#po.matchKey} IS NULL OR u.matchKey  = :#{#po.matchKey} )
             AND (:#{#po.matchOperator} IS NULL OR u.matchOperator  = :#{#po.matchOperator} )
             AND (:#{#po.matchValue} IS NULL OR u.matchValue  = :#{#po.matchValue} )
-            AND (:#{#po.routeServerId} IS NULL OR u.routeServerId  = :#{#po.routeServerId} )
             AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
             AND (:#{#po.remark} IS NULL OR u.remark  = :#{#po.remark} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )

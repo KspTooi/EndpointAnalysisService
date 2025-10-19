@@ -1,13 +1,12 @@
 package com.ksptooi.biz.core.model.routerule.po;
 
-import com.odisp.biz.auth.service.AuthService;
-import com.odisp.commons.utils.IdWorker;
+import com.ksptooi.biz.core.model.routeserver.po.RouteServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ${tableComment}
@@ -21,53 +20,56 @@ import java.util.Date;
 @Table(name = "route_rule")
 public class RouteRulePo {
 
-    @Column(name = "id")
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("路由规则ID")
     private Long id;
 
-
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, length = 32)
+    @Comment("路由策略名")
     private String name;
 
-    @Column(name = "match_type")
+    @Column(name = "match_type", nullable = false, columnDefinition = "tinyint")
+    @Comment("匹配类型 0:全部 1:IP地址")
     private Integer matchType;
 
-    @Column(name = "match_key")
+    @Column(name = "match_key",length = 255)
+    @Comment("匹配键")
     private String matchKey;
 
     @Column(name = "match_operator")
+    @Comment("匹配操作 0:等于")
     private Integer matchOperator;
 
-    @Column(name = "match_value")
-    @Comment("匹配来源IP 为null时匹配所有IP")
+    @Column(name = "match_value",length = 255)
+    @Comment("匹配值")
     private String matchValue;
 
-    @Column(name = "route_server_id")
-    @Comment("所属服务器ID")
-    private Long routeServerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_server_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    @Comment("目标服务器")
+    private RouteServerPo routeServer;
 
-    @Column(name = "seq")
+    @Column(name = "seq", nullable = false)
+    @Comment("权重")
     private Integer seq;
 
-    @Column(name = "remark")
+    @Column(name = "remark", length = 5000, columnDefinition = "text")
+    @Comment("策略描述")
     private String remark;
 
-    @Column(name = "create_time")
+    @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
-    @Column(name = "update_time")
+    @Column(name = "update_time", nullable = false)
     @Comment("更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @PrePersist
     private void onCreate() {
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
 
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         if (this.createTime == null) {
             this.createTime = now;
         }
@@ -75,19 +77,10 @@ public class RouteRulePo {
             this.updateTime = this.createTime;
         }
 
-        if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
-        }
-        if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
-        }
     }
 
     @PreUpdate
     private void onUpdate() {
-        this.updateTime = new Date();
-        if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
-        }
+        this.updateTime = LocalDateTime.now();
     }
 }

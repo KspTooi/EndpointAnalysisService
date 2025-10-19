@@ -31,7 +31,7 @@ public class RouteRuleController {
     private RouteRuleService routeRuleService;
 
     @PostMapping("/getRouteRuleList")
-    @Operation(summary = "列表查询路由规则")
+    @Operation(summary = "列表查询路由规则列表")
     public PageResult<GetRouteRuleListVo> getRouteRuleList(@RequestBody @Valid GetRouteRuleListDto dto) throws Exception {
         return routeRuleService.getRouteRuleList(dto);
     }

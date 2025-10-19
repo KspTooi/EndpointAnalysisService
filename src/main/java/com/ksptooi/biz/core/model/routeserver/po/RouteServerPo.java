@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 
 @Getter
 @Setter
@@ -46,6 +49,10 @@ public class RouteServerPo {
     @Column(name = "update_time", nullable = false)
     @Comment("更新时间")
     private LocalDateTime updateTime;
+
+    @OneToMany(mappedBy = "routeServer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("路由规则")
+    private List<RouteRulePo> routeRules;
 
     @PrePersist
     public void prePersist() {

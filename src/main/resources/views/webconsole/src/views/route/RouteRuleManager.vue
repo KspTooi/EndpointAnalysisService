@@ -3,48 +3,42 @@
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="query" inline>
-        <el-form-item label="组名称" label-for="query-name">
-          <el-input v-model="query.name" placeholder="输入组名称查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="备注" label-for="query-remark">
-          <el-input v-model="query.remark" placeholder="输入备注查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="负载均衡策略" label-for="query-loadBalance">
-          <el-select v-model="query.loadBalance" placeholder="选择负载均衡策略" clearable style="width: 200px">
-            <el-option label="轮询" value="0" />
-            <el-option label="随机" value="1" />
-            <el-option label="权重" value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="自动降级" label-for="query-autoDegradation">
-          <el-select v-model="query.autoDegradation" placeholder="选择自动降级" clearable style="width: 200px">
-            <el-option label="开启" value="0" />
-            <el-option label="关闭" value="1" />
-          </el-select>
-        </el-form-item>
         <el-form-item>
+          <el-form-item label="路由规则名" prop="name">
+            <el-input v-model="query.name" placeholder="请输入路由规则名" />
+          </el-form-item>
+          <el-form-item label="匹配类型" prop="matchType">
+            <el-select v-model="query.matchType" placeholder="请选择匹配类型" style="width: 200px">
+              <el-option label="全部" :value="0" />
+              <el-option label="IP地址" :value="1" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="匹配值" prop="matchValue">
+            <el-input v-model="query.matchValue" placeholder="请输入匹配值" />
+          </el-form-item>
           <el-button type="primary" @click="loadList">查询</el-button>
           <el-button @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="openModal('add', null)">创建路由策略组</el-button>
+      <el-button type="primary" @click="openModal('add', null)">创建路由规则</el-button>
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
       <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
-        <el-table-column label="组名称" prop="name" width="300" show-overflow-tooltip />
-        <el-table-column label="负载均衡" prop="loadBalance" width="90" show-overflow-tooltip>
+        <el-table-column label="路由规则名" prop="name" width="300" show-overflow-tooltip />
+        <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.loadBalance === 0 ? 'success' : 'danger'">{{ scope.row.loadBalance === 0 ? "轮询" : scope.row.loadBalance === 1 ? "随机" : "权重" }}</el-tag>
+            <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{ scope.row.matchType === 0 ? "全部" : "IP地址" }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="自动降级" prop="autoDegradation" width="100" show-overflow-tooltip>
-          <template #default="scope">
-            <el-tag :type="scope.row.autoDegradation === 0 ? 'success' : 'danger'">{{ scope.row.autoDegradation === 0 ? "开启" : "关闭" }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="备注" prop="remark" show-overflow-tooltip />
+        <el-table-column label="匹配键" prop="matchKey" width="100" show-overflow-tooltip />
+        <el-table-column label="匹配操作" prop="matchOperator" width="100" show-overflow-tooltip />
+        <el-table-column label="匹配值" prop="matchValue" width="100" show-overflow-tooltip />
+        <el-table-column label="目标服务器" prop="routeServerId" width="100" show-overflow-tooltip />
+        <el-table-column label="权重" prop="seq" width="100" show-overflow-tooltip />
+        <el-table-column label="策略描述" prop="remark" show-overflow-tooltip />
+        <el-table-column label="更新时间" prop="updateTime" width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
@@ -82,7 +76,7 @@
     <!-- 菜单编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑路由策略组' : '添加路由策略组'"
+      :title="modalMode === 'edit' ? '编辑路由规则' : '添加路由规则'"
       width="550px"
       :close-on-click-modal="false"
       @close="
@@ -90,25 +84,37 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="80px" :validate-on-rule-change="false">
-        <el-form-item label="组名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="输入组名称" />
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="90px" :validate-on-rule-change="false">
+        <el-form-item label="路由规则名" prop="name">
+          <el-input v-model="modalForm.name" placeholder="请输入路由规则名" />
         </el-form-item>
-        <el-form-item label="负载均衡" prop="loadBalance">
-          <el-select v-model="modalForm.loadBalance" placeholder="选择负载均衡策略" clearable>
-            <el-option label="轮询" :value="0" />
-            <el-option label="随机" :value="1" />
-            <el-option label="权重" :value="2" />
+        <el-form-item label="匹配类型" prop="matchType">
+          <el-select v-model="modalForm.matchType" placeholder="请选择匹配类型">
+            <el-option label="全部" :value="0" />
+            <el-option label="IP地址" :value="1" />
           </el-select>
         </el-form-item>
-        <el-form-item label="自动降级" prop="autoDegradation">
-          <el-select v-model="modalForm.autoDegradation" placeholder="选择自动降级" clearable>
-            <el-option label="开启" :value="0" />
-            <el-option label="关闭" :value="1" />
+        <el-form-item label="匹配键" prop="matchKey">
+          <el-input v-model="modalForm.matchKey" placeholder="请输入匹配键" />
+        </el-form-item>
+        <el-form-item label="匹配操作" prop="matchOperator">
+          <el-select v-model="modalForm.matchOperator" placeholder="请选择匹配操作">
+            <el-option label="等于" :value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="输入备注" />
+        <el-form-item label="匹配值" prop="matchValue">
+          <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
+        </el-form-item>
+        <el-form-item label="目标服务器" prop="routeServerId">
+          <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器">
+            <el-option label="全部" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="权重" prop="seq">
+          <el-input v-model="modalForm.seq" placeholder="请输入权重" />
+        </el-form-item>
+        <el-form-item label="策略描述" prop="remark">
+          <el-input v-model="modalForm.remark" placeholder="请输入策略描述" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -135,26 +141,24 @@ import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi";
 import RouteServerApi from "@/api/route/RouteServerApi";
-import type { GetRouteGroupDetailsVo, GetRouteGroupListDto, GetRouteGroupListVo } from "@/api/route/RouteGroupApi";
-import RouteGroupApi from "@/api/route/RouteGroupApi";
+import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
 
 //列表内容
-const query = reactive<GetRouteGroupListDto>({
+const query = reactive<GetRouteRuleListDto>({
   name: null,
-  remark: null,
-  loadBalance: null,
-  autoDegradation: null,
+  matchType: null,
+  matchValue: null,
   pageNum: 1,
   pageSize: 10,
 });
 
-const list = ref<GetRouteGroupListVo[]>([]);
+const list = ref<GetRouteRuleListVo[]>([]);
 const total = ref(0);
 const loading = ref(false);
 
 const loadList = async () => {
   loading.value = true;
-  const result = await RouteGroupApi.getRouteGroupList(query);
+  const result = await RouteRuleApi.getRouteRuleList(query);
 
   if (Result.isSuccess(result)) {
     list.value = result.data;
@@ -170,9 +174,8 @@ const loadList = async () => {
 
 const resetList = () => {
   query.name = null;
-  query.remark = null;
-  query.loadBalance = null;
-  query.autoDegradation = null;
+  query.matchType = null;
+  query.matchValue = null;
   query.pageNum = 1;
   query.pageSize = 10;
   loadList();
@@ -180,7 +183,7 @@ const resetList = () => {
 
 const removeList = async (id: string) => {
   try {
-    await ElMessageBox.confirm("确定删除该路由策略组吗？", "提示", {
+    await ElMessageBox.confirm("确定删除该路由规则吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -190,7 +193,7 @@ const removeList = async (id: string) => {
   }
 
   try {
-    const result = await RouteGroupApi.removeRouteGroup({ id });
+    const result = await RouteRuleApi.removeRouteRule({ id });
     if (Result.isSuccess(result)) {
       ElMessage.success("删除成功");
     }
@@ -212,44 +215,40 @@ const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
 const modalMode = ref<"add" | "edit">("add"); //add:添加,edit:编辑
-const modalForm = reactive<GetRouteGroupDetailsVo>({
-  id: null,
+const modalForm = reactive<GetRouteRuleDetailsVo>({
+  id: "",
   name: "",
-  remark: null,
-  loadBalance: 0,
-  autoDegradation: 0,
+  matchType: 0,
+  matchKey: "",
+  matchOperator: 0,
+  matchValue: "",
+  routeServerId: "",
+  seq: 0,
+  remark: "",
+  updateTime: "",
 });
 
-const modalRules = {
-  name: [
-    { required: true, message: "请输入组名称", trigger: "blur" },
-    { max: 32, message: "组名称长度不能超过32个字符", trigger: "blur" },
-  ],
-  remark: [{ max: 5000, message: "备注长度不能超过5000个字符", trigger: "blur" }],
-  loadBalance: [
-    { required: true, message: "请选择负载均衡策略", trigger: "blur" },
-    { type: "number", min: 0, max: 2, message: "负载均衡策略只能在0-2之间", trigger: "blur" },
-  ],
-  autoDegradation: [
-    { required: true, message: "请选择自动降级", trigger: "blur" },
-    { type: "number", min: 0, max: 1, message: "自动降级只能在0-1之间", trigger: "blur" },
-  ],
-};
+const modalRules = {};
 
-const openModal = async (mode: "add" | "edit", row: GetRouteGroupListVo | null) => {
+const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) => {
   modalMode.value = mode;
   resetModal();
 
   //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
-    const ret = await RouteGroupApi.getRouteGroupDetails({ id: row.id });
+    const ret = await RouteRuleApi.getRouteRuleDetails({ id: row.id });
 
     if (Result.isSuccess(ret)) {
       modalForm.id = ret.data.id;
       modalForm.name = ret.data.name;
+      modalForm.matchType = ret.data.matchType;
+      modalForm.matchKey = ret.data.matchKey;
+      modalForm.matchOperator = ret.data.matchOperator;
+      modalForm.matchValue = ret.data.matchValue;
+      modalForm.routeServerId = ret.data.routeServerId;
+      modalForm.seq = ret.data.seq;
       modalForm.remark = ret.data.remark;
-      modalForm.loadBalance = ret.data.loadBalance;
-      modalForm.autoDegradation = ret.data.autoDegradation;
+      modalForm.updateTime = ret.data.updateTime;
     }
 
     if (Result.isError(ret)) {
@@ -262,11 +261,16 @@ const openModal = async (mode: "add" | "edit", row: GetRouteGroupListVo | null) 
 };
 
 const resetModal = () => {
-  modalForm.id = null;
+  modalForm.id = "";
   modalForm.name = "";
-  modalForm.remark = null;
-  modalForm.loadBalance = 0;
-  modalForm.autoDegradation = 0;
+  modalForm.matchType = 0;
+  modalForm.matchKey = "";
+  modalForm.matchOperator = 0;
+  modalForm.matchValue = "";
+  modalForm.routeServerId = "";
+  modalForm.seq = 0;
+  modalForm.remark = "";
+  modalForm.updateTime = "";
 };
 
 const submitModal = async () => {
@@ -282,13 +286,13 @@ const submitModal = async () => {
   //提交表单
   try {
     if (modalMode.value === "add") {
-      await RouteGroupApi.addRouteGroup(modalForm);
+      await RouteRuleApi.addRouteRule(modalForm);
       ElMessage.success("新增成功");
       resetModal();
     }
 
     if (modalMode.value === "edit") {
-      await RouteGroupApi.editRouteGroup(modalForm);
+      await RouteRuleApi.editRouteRule(modalForm);
       ElMessage.success("操作成功");
     }
   } catch (error: any) {

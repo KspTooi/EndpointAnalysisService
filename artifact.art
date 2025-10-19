@@ -18,7 +18,7 @@
         "javaGetterName": "Name",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "",
+        "comment": "路由策略名",
         "primary": false
       },
       {
@@ -27,7 +27,7 @@
         "javaGetterName": "MatchType",
         "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "",
+        "comment": "匹配类型 0:全部 1:IP地址",
         "primary": false
       },
       {
@@ -36,7 +36,7 @@
         "javaGetterName": "MatchKey",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "",
+        "comment": "匹配键",
         "primary": false
       },
       {
@@ -45,7 +45,7 @@
         "javaGetterName": "MatchOperator",
         "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "",
+        "comment": "匹配操作 0:等于",
         "primary": false
       },
       {
@@ -54,7 +54,7 @@
         "javaGetterName": "MatchValue",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "匹配来源IP 为null时匹配所有IP",
+        "comment": "匹配值",
         "primary": false
       },
       {
@@ -63,7 +63,7 @@
         "javaGetterName": "RouteServerId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "所属服务器ID",
+        "comment": "目标服务器ID",
         "primary": false
       },
       {
@@ -72,7 +72,7 @@
         "javaGetterName": "Seq",
         "type": "INT",
         "javaType": "Integer",
-        "comment": "",
+        "comment": "权重",
         "primary": false
       },
       {
@@ -81,7 +81,7 @@
         "javaGetterName": "Remark",
         "type": "TEXT",
         "javaType": "String",
-        "comment": "",
+        "comment": "策略描述",
         "primary": false
       },
       {
@@ -122,7 +122,7 @@
   "logicExists": "0",
   "fieldNameService": "routeRuleService",
   "password": "root",
-  "datetime": "2025-10-19 11:56:09",
+  "datetime": "2025-10-19 11:58:49",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
@@ -150,7 +150,7 @@
       "javaGetterName": "Name",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "",
+      "comment": "路由策略名",
       "primary": false
     },
     {
@@ -159,7 +159,7 @@
       "javaGetterName": "MatchType",
       "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "",
+      "comment": "匹配类型 0:全部 1:IP地址",
       "primary": false
     },
     {
@@ -168,7 +168,7 @@
       "javaGetterName": "MatchKey",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "",
+      "comment": "匹配键",
       "primary": false
     },
     {
@@ -177,7 +177,7 @@
       "javaGetterName": "MatchOperator",
       "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "",
+      "comment": "匹配操作 0:等于",
       "primary": false
     },
     {
@@ -186,7 +186,7 @@
       "javaGetterName": "MatchValue",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "匹配来源IP 为null时匹配所有IP",
+      "comment": "匹配值",
       "primary": false
     },
     {
@@ -195,7 +195,7 @@
       "javaGetterName": "RouteServerId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "所属服务器ID",
+      "comment": "目标服务器ID",
       "primary": false
     },
     {
@@ -204,7 +204,7 @@
       "javaGetterName": "Seq",
       "type": "INT",
       "javaType": "Integer",
-      "comment": "",
+      "comment": "权重",
       "primary": false
     },
     {
@@ -213,7 +213,7 @@
       "javaGetterName": "Remark",
       "type": "TEXT",
       "javaType": "String",
-      "comment": "",
+      "comment": "策略描述",
       "primary": false
     },
     {

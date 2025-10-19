@@ -158,7 +158,7 @@ const router = createRouter({
     {
       path: "/route-group",
       name: "route-group",
-      component: () => import("@/views/route/RouteGroupManager.vue"),
+      component: () => import("@/views/route/RouteRuleManager.vue"),
       meta: {
         breadcrumb: {
           title: "路由策略组管理",
