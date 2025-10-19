@@ -44,10 +44,6 @@ public class RouteRulePo {
     @Comment("目标服务器")
     private RouteServerPo routeServer;
 
-    @Column(name = "seq", nullable = false)
-    @Comment("权重")
-    private Integer seq;
-
     @Column(name = "remark", length = 5000, columnDefinition = "text")
     @Comment("策略描述")
     private String remark;

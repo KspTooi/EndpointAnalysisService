@@ -51,7 +51,6 @@
             <span v-else>{{ scope.row.matchValue }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="权重" prop="seq" width="100" show-overflow-tooltip />
         <el-table-column label="策略描述" prop="remark" show-overflow-tooltip />
         <el-table-column label="更新时间" prop="updateTime" width="200" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
@@ -128,9 +127,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="权重" prop="seq">
-          <el-input v-model.number="modalForm.seq" placeholder="请输入权重" type="number" :min="0" :max="100000" />
-        </el-form-item>
         <el-form-item label="策略描述" prop="remark">
           <el-input v-model="modalForm.remark" placeholder="请输入策略描述" />
         </el-form-item>
@@ -151,7 +147,7 @@
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
 import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
 import type { GetRouteServerListVo } from "@/api/route/RouteServerApi";
 import RouteServerApi from "@/api/route/RouteServerApi";
@@ -236,7 +232,6 @@ const modalForm = reactive<GetRouteRuleDetailsVo>({
   matchOperator: null,
   matchValue: null,
   routeServerId: "",
-  seq: 1,
   remark: "",
   updateTime: "",
 });
@@ -257,10 +252,6 @@ const modalRules = {
     { max: 255, message: "匹配值长度不能超过255个字符", trigger: "blur" },
   ],
   routeServerId: [{ required: true, message: "请选择目标服务器", trigger: "change" }],
-  seq: [
-    { required: true, message: "请输入权重", trigger: "blur" },
-    { type: "number", min: 0, max: 100000, message: "权重必须在0-100000之间", trigger: "blur" },
-  ],
   remark: [
     { required: false, message: "请输入策略描述", trigger: "blur" },
     { max: 5000, message: "策略描述长度不能超过5000个字符", trigger: "blur" },
@@ -286,7 +277,6 @@ const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) =
       modalForm.matchOperator = ret.data.matchOperator;
       modalForm.matchValue = ret.data.matchValue;
       modalForm.routeServerId = ret.data.routeServerId;
-      modalForm.seq = ret.data.seq;
       modalForm.remark = ret.data.remark;
       modalForm.updateTime = ret.data.updateTime;
     }
@@ -308,7 +298,6 @@ const resetModal = () => {
   modalForm.matchOperator = null;
   modalForm.matchValue = null;
   modalForm.routeServerId = "";
-  modalForm.seq = 1;
   modalForm.remark = "";
   modalForm.updateTime = "";
 };

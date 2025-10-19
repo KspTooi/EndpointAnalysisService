@@ -40,11 +40,6 @@ public class EditRouteRuleDto {
     @Schema(description = "目标服务器ID")
     private Long routeServerId;
 
-    @Range(min = 0, max = 100000, message = "权重必须在0-100000之间")
-    @NotNull(message = "权重不能为空")
-    @Schema(description = "权重")
-    private Integer seq;
-
     @Length(max = 5000, message = "策略描述长度不能超过5000个字符")
     @Schema(description = "策略描述")
     private String remark;

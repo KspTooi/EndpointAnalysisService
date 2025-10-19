@@ -31,9 +31,6 @@ public class GetRouteRuleDetailsVo {
     @Schema(description = "目标服务器ID")
     private Long routeServerId;
 
-    @Schema(description = "权重")
-    private Integer seq;
-
     @Schema(description = "策略描述")
     private String remark;
 

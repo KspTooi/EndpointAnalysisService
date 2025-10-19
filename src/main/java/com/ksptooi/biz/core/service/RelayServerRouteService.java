@@ -6,7 +6,7 @@ import com.ksptooi.biz.core.model.relayserverroute.dto.GetRelayServerRouteListDt
 import com.ksptooi.biz.core.model.relayserverroute.po.RelayServerRoutePo;
 import com.ksptooi.biz.core.model.relayserverroute.vo.GetRelayServerRouteDetailsVo;
 import com.ksptooi.biz.core.model.relayserverroute.vo.GetRelayServerRouteListVo;
-import com.ksptooi.biz.relayserverroute.repository.RelayServerRouteRepository;
+import com.ksptooi.biz.core.repository.RelayServerRouteRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;

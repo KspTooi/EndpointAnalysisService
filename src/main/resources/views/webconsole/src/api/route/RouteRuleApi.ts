@@ -18,7 +18,6 @@ export interface GetRouteRuleListVo {
   matchKey: string; // 匹配键
   matchOperator: number; // 匹配操作 0:等于
   matchValue: string; // 匹配值
-  seq: number; // 权重
   remark: string | null; // 策略描述
   updateTime: string; // 更新时间
 }
@@ -30,7 +29,6 @@ export interface AddRouteRuleDto {
   matchOperator?: number | null; // 匹配操作 0:等于
   matchValue?: string | null; // 匹配值
   routeServerId?: string | null; // 目标服务器ID
-  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
 }
 
@@ -42,7 +40,6 @@ export interface EditRouteRuleDto {
   matchOperator?: number | null; // 匹配操作 0:等于
   matchValue?: string | null; // 匹配值
   routeServerId?: string | null; // 目标服务器ID
-  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
 }
 
@@ -54,7 +51,6 @@ export interface GetRouteRuleDetailsVo {
   matchOperator?: number | null; // 匹配操作 0:等于
   matchValue?: string | null; // 匹配值
   routeServerId?: string | null; // 目标服务器ID
-  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
   updateTime?: string | null; // 更新时间
 }

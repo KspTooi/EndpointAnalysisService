@@ -30,10 +30,7 @@ public class GetRouteRuleListVo {
 
     @Schema(description = "匹配值")
     private String matchValue;
-
-    @Schema(description = "权重")
-    private Integer seq;
-
+    
     @Schema(description = "策略描述")
     private String remark;
 

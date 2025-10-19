@@ -15,8 +15,6 @@ public interface RelayServerRouteRepository extends JpaRepository<RelayServerRou
             SELECT u FROM RelayServerRoutePo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.relayServerId} IS NULL OR u.relayServerId  = :#{#po.relayServerId} )
-            AND (:#{#po.routeRuleId} IS NULL OR u.routeRuleId  = :#{#po.routeRuleId} )
             AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )

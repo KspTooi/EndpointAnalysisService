@@ -21,7 +21,6 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
             AND (:#{#po.matchKey} IS NULL OR u.matchKey  = :#{#po.matchKey} )
             AND (:#{#po.matchOperator} IS NULL OR u.matchOperator  = :#{#po.matchOperator} )
             AND (:#{#po.matchValue} IS NULL OR u.matchValue  = :#{#po.matchValue} )
-            AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
             AND (:#{#po.remark} IS NULL OR u.remark  = :#{#po.remark} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
@@ -29,27 +28,29 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
             """)
     Page<RouteRulePo> getRouteRuleList(@Param("po") RouteRulePo po, Pageable pageable);
 
-    
+
     /**
      * 根据名称统计路由规则数量
+     *
      * @param name 路由规则名称
      * @return 路由规则数量
      */
     @Query("""
-            SELECT COUNT(t) FROM RouteRulePo t
-            WHERE t.name = :name
-    """)
+                    SELECT COUNT(t) FROM RouteRulePo t
+                    WHERE t.name = :name
+            """)
     Long countByName(@Param("name") String name);
 
     /**
      * 根据名称统计路由规则数量 排除指定ID
+     *
      * @param name 路由规则名称
-     * @param id 需排除的ID
+     * @param id   需排除的ID
      * @return 路由规则数量
      */
     @Query("""
-            SELECT COUNT(t) FROM RouteRulePo t
-            WHERE t.name = :name AND t.id != :id
-    """)
+                    SELECT COUNT(t) FROM RouteRulePo t
+                    WHERE t.name = :name AND t.id != :id
+            """)
     Long countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 }
