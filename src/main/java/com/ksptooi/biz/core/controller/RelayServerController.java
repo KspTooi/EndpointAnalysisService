@@ -55,17 +55,6 @@ public class RelayServerController {
         return Result.success("添加中继服务器成功");
     }
 
-    
-    /**
-     * 获取中继服务器详情
-     * @param id 中继服务器ID
-     * @return 中继服务器详情
-     */
-    @PostMapping("/getRelayServerDetails")
-    public Result<GetRelayServerDetailsVo> getRelayServerDetails(@RequestBody @Valid CommonIdDto dto) throws BizException {
-        return Result.success(relayServerService.getRelayServerDetails(dto.getId()));
-    }
-
     /**
      * 编辑中继服务器
      * @param dto 中继服务器信息
@@ -81,6 +70,17 @@ public class RelayServerController {
 
         relayServerService.editRelayServer(dto);
         return Result.success("编辑中继服务器成功");
+    }
+
+    
+    /**
+     * 获取中继服务器详情
+     * @param id 中继服务器ID
+     * @return 中继服务器详情
+     */
+    @PostMapping("/getRelayServerDetails")
+    public Result<GetRelayServerDetailsVo> getRelayServerDetails(@RequestBody @Valid CommonIdDto dto) throws BizException {
+        return Result.success(relayServerService.getRelayServerDetails(dto.getId()));
     }
 
     /**

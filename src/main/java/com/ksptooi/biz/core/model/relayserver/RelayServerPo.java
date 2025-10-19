@@ -110,4 +110,27 @@ public class RelayServerPo {
         this.updateTime = LocalDateTime.now();
     }
 
+    /**
+     * 添加路由规则
+     * @param routeRule 路由规则
+     */
+    public void addRouteRule(RelayServerRoutePo routeRule) {
+        this.routeRules.add(routeRule);
+        routeRule.setRelayServer(this);
+    }
+
+    /**
+     * 清空路由规则
+     */
+    public void clearRouteRules() {
+        if(this.routeRules == null){
+            return;
+        }
+        for(RelayServerRoutePo item : this.routeRules) {
+            item.setRelayServer(null);
+            item.setRouteRule(null);
+        }
+        this.routeRules.clear();
+    }
+
 }

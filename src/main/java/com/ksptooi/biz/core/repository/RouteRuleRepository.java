@@ -1,5 +1,7 @@
 package com.ksptooi.biz.core.repository;
 
+import java.util.List;
+
 import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,4 +55,16 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
                     WHERE t.name = :name AND t.id != :id
             """)
     Long countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
+
+    /**
+     * 根据ID列表获取路由规则列表
+     * @param ids ID列表
+     * @return 路由规则列表
+     */
+    @Query("""
+            SELECT t FROM RouteRulePo t
+            WHERE t.id IN :ids
+            """)
+    List<RouteRulePo> getRouteRuleListByIds(@Param("ids") List<Long> ids);
+
 }

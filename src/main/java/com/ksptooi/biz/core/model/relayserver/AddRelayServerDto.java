@@ -1,70 +1,105 @@
 package com.ksptooi.biz.core.model.relayserver;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
 public class AddRelayServerDto {
 
-    //中继服务器名称
+    @Schema(description = "中继服务器名称")
     @NotBlank(message = "中继服务器名称不能为空")
     private String name;
 
-    //中继服务器主机
+    @Schema(description = "中继服务器主机")
     @NotBlank(message = "中继服务器主机不能为空")
     private String host;
 
-    //中继服务器端口
+    @Schema(description = "中继服务器端口")
     @NotNull(message = "中继服务器端口不能为空")
     private Integer port;
 
-    //桥接目标URL
-    @NotBlank(message = "桥接目标URL不能为空")
+    @Schema(description = "桥接目标类型")
+    @NotNull(message = "桥接目标类型不能为空")
+    @Range(min = 0, max = 1, message = "桥接目标类型只能为0或1")
+    private Integer forwardType;
+
+    @Valid
+    @Schema(description = "路由规则列表(桥接目标类型为1时必填)")
+    @NotNull(message = "路由规则列表不能为null")
+    private List<RelayServerRouteRuleDto> routeRules;
+
+    @Schema(description = "桥接目标URL(桥接目标类型为0时必填)")
     private String forwardUrl;
 
-    //自动运行 0:否 1:是
+    @Schema(description = "自动运行")
     @NotNull(message = "自动运行不能为空")
     @Range(min = 0, max = 1, message = "自动运行只能为0或1")
     private Integer autoStart;
 
-    //覆盖桥接目标的重定向 0:否 1:是
+    @Schema(description = "覆盖桥接目标的重定向")
     @NotNull(message = "覆盖桥接目标的重定向不能为空")
     @Range(min = 0, max = 1, message = "覆盖桥接目标的重定向只能为0或1")
     private Integer overrideRedirect;
 
-    //覆盖桥接目标的重定向URL
+    @Schema(description = "覆盖桥接目标的重定向URL")
     private String overrideRedirectUrl;
 
-    //请求ID策略 0:随机生成 1:从请求头获取
+    @Schema(description = "请求ID策略")
     @NotNull(message = "请求ID策略不能为空")
     @Range(min = 0, max = 1, message = "请求ID策略只能为0或1")
     private Integer requestIdStrategy;
 
-    //请求ID头名称
+    @Schema(description = "请求ID头名称")
     private String requestIdHeaderName;
 
-    //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
+    @Schema(description = "业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定")
     @NotNull(message = "业务错误策略不能为空")
     @Range(min = 0, max = 1, message = "业务错误策略只能为0或1")
     private Integer bizErrorStrategy;
 
-    //业务错误码字段(JSONPath)
+    @Schema(description = "业务错误码字段(JSONPath)")
     private String bizErrorCodeField;
 
-    //业务错误码值(正确时返回的值)
+    @Schema(description = "业务错误码值(正确时返回的值)")
     private String bizSuccessCodeValue;
 
-    //覆盖桥接目标的重定向URL
     /**
      * 验证参数
      * @return 错误信息 当参数合法时返回null
      */
     public String validate() {
+
+        //桥接目标类型为1时，路由规则列表不能为空
+        if(forwardType == 1 && routeRules.isEmpty()) {
+
+            //不允许传递桥接目标URL
+            if(StringUtils.isNotBlank(forwardUrl)) {
+                return "当桥接目标类型为路由时，不允许传递桥接目标URL";
+            }
+
+            return "当桥接目标类型为路由时，路由规则列表不能为空";
+        }
+
+        //桥接目标类型为0时，桥接目标URL不能为空
+        if(forwardType == 0 && StringUtils.isBlank(forwardUrl)) {
+
+            //不允许传递路由规则列表
+            if(!routeRules.isEmpty()) {
+                return "当桥接目标类型为直接时，不允许传递路由规则列表";
+            }
+            
+            return "当桥接目标类型为直接时，桥接目标URL不能为空";
+        }
 
         //主机名必须为有效IP地址
         if(!host.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {

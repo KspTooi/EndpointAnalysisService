@@ -7,7 +7,11 @@ import com.ksptooi.biz.core.model.relayserver.GetRelayServerDetailsVo;
 import com.ksptooi.biz.core.model.relayserver.GetRelayServerListDto;
 import com.ksptooi.biz.core.model.relayserver.GetRelayServerListVo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
+import com.ksptooi.biz.core.model.relayserver.RelayServerRouteRuleDto;
+import com.ksptooi.biz.core.model.relayserverroute.po.RelayServerRoutePo;
+import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 import com.ksptooi.biz.core.repository.RelayServerRepository;
+import com.ksptooi.biz.core.repository.RouteRuleRepository;
 import com.ksptooi.commons.aop.HttpRelayServlet;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.Result;
@@ -50,6 +54,9 @@ public class RelayServerService {
 
     @Autowired
     private RequestService requestService;
+
+    @Autowired
+    private RouteRuleRepository routeRuleRepository;
 
     /**
      * 获取中继服务器列表
@@ -113,6 +120,52 @@ public class RelayServerService {
         insertPo.setBizErrorStrategy(dto.getBizErrorStrategy()); //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
         insertPo.setBizErrorCodeField(dto.getBizErrorCodeField()); //业务错误码字段(JSONPath)
         insertPo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
+
+        //当桥接目标类型为路由时，处理路由规则 0:直接 1:路由
+        if(dto.getForwardType() == 1) {
+
+            //搜集路由规则IDS
+            List<Long> routeRuleIds = new ArrayList<>();
+            for(RelayServerRouteRuleDto item : dto.getRouteRules()) {
+                routeRuleIds.add(item.getRouteRuleId());
+            }
+
+            //获取路由规则列表
+            List<RouteRulePo> routeRuleList = routeRuleRepository.getRouteRuleListByIds(routeRuleIds);
+
+            if(routeRuleList.isEmpty()) {
+                throw new BizException("路由规则查询失败，请检查路由规则是否存在或无权限访问");
+            }
+
+            for(var item : routeRuleList){
+
+                //从原始DTO中查询出SEQ
+                var seq = -1;
+                for(var dtoItem : dto.getRouteRules()){
+                    if(dtoItem.getRouteRuleId().equals(item.getId())){
+                        seq = dtoItem.getSeq();
+                        break;
+                    }
+                }
+
+                if(seq == -1) {
+                    throw new BizException("路由规则SEQ查询失败，请检查路由规则是否存在或无权限访问");
+                }
+
+                if(item.getRouteServer() == null){
+                    throw new BizException("路由规则:"+item.getName()+" 未配置目标服务器，请检查路由规则是否存在或无权限访问");
+                }
+
+                RelayServerRoutePo newRule = new RelayServerRoutePo();
+                newRule.setRelayServer(insertPo);
+                newRule.setRouteRule(item);
+                newRule.setSeq(seq);
+                insertPo.addRouteRule(newRule);
+            }
+
+        }
+
+
         relayServerRepository.save(insertPo);
     }
 
@@ -187,6 +240,55 @@ public class RelayServerService {
         updatePo.setBizErrorStrategy(dto.getBizErrorStrategy()); //业务错误策略 0:由HTTP状态码决定 1:由业务错误码决定
         updatePo.setBizErrorCodeField(dto.getBizErrorCodeField()); //业务错误码字段(JSONPath)
         updatePo.setBizSuccessCodeValue(dto.getBizSuccessCodeValue()); //业务成功码值(正确时返回的值)
+
+
+        //当桥接目标类型为路由时，处理路由规则 0:直接 1:路由
+        if(dto.getForwardType() == 1) {
+
+            //先清空原有路由规则
+            updatePo.clearRouteRules();
+
+            //搜集路由规则IDS
+            List<Long> routeRuleIds = new ArrayList<>();
+            for(RelayServerRouteRuleDto item : dto.getRouteRules()) {
+                routeRuleIds.add(item.getRouteRuleId());
+            }
+
+            //获取路由规则列表
+            List<RouteRulePo> routeRuleList = routeRuleRepository.getRouteRuleListByIds(routeRuleIds);
+
+            if(routeRuleList.isEmpty()) {
+                throw new BizException("路由规则查询失败，请检查路由规则是否存在或无权限访问");
+            }
+
+            for(var item : routeRuleList){
+
+                //从原始DTO中查询出SEQ
+                var seq = -1;
+                for(var dtoItem : dto.getRouteRules()){
+                    if(dtoItem.getRouteRuleId().equals(item.getId())){
+                        seq = dtoItem.getSeq();
+                        break;
+                    }
+                }
+
+                if(seq == -1) {
+                    throw new BizException("路由规则SEQ查询失败，请检查路由规则是否存在或无权限访问");
+                }
+
+                if(item.getRouteServer() == null){
+                    throw new BizException("路由规则:"+item.getName()+" 未配置目标服务器，请检查路由规则是否存在或无权限访问");
+                }
+
+                RelayServerRoutePo newRule = new RelayServerRoutePo();
+                newRule.setRelayServer(updatePo);
+                newRule.setRouteRule(item);
+                newRule.setSeq(seq);
+                updatePo.addRouteRule(newRule);
+            }
+
+        }
+        
         relayServerRepository.save(updatePo);
     }
 
