@@ -11,9 +11,7 @@ import com.ksptooi.biz.userrequest.repository.UserRequestEnvRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
-
 import jakarta.security.auth.message.AuthException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -30,6 +28,9 @@ public class UserRequestEnvService {
     @Autowired
     private UserRequestEnvRepository repository;
 
+    @Autowired
+    private AuthService authService;
+
     public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) throws AuthException {
         UserRequestEnvPo query = new UserRequestEnvPo();
         assign(dto, query);
@@ -44,8 +45,9 @@ public class UserRequestEnvService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addUserRequestEnv(AddUserRequestEnvDto dto) {
+    public void addUserRequestEnv(AddUserRequestEnvDto dto) throws AuthException {
         UserRequestEnvPo insertPo = as(dto, UserRequestEnvPo.class);
+        insertPo.setUser(authService.requireUser());
         repository.save(insertPo);
     }
 
@@ -53,7 +55,6 @@ public class UserRequestEnvService {
     public void editUserRequestEnv(EditUserRequestEnvDto dto) throws BizException {
         UserRequestEnvPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
-
         assign(dto, updatePo);
         repository.save(updatePo);
     }

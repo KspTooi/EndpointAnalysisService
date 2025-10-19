@@ -1,15 +1,21 @@
 package com.ksptooi.biz.userrequest.service;
 
+import com.ksptooi.biz.user.service.AuthService;
+import com.ksptooi.biz.userrequest.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.UserRequestEnvStoragePo;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.dto.AddUserRequestEnvStorageDto;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.dto.EditUserRequestEnvStorageDto;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.dto.GetUserRequestEnvStorageListDto;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.vo.GetUserRequestEnvStorageDetailsVo;
 import com.ksptooi.biz.userrequest.model.userrequestenvstorage.vo.GetUserRequestEnvStorageListVo;
+import com.ksptooi.biz.userrequest.repository.UserRequestEnvRepository;
 import com.ksptooi.biz.userrequest.repository.UserRequestEnvStorageRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
+
+import jakarta.security.auth.message.AuthException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,11 +32,23 @@ public class UserRequestEnvStorageService {
     @Autowired
     private UserRequestEnvStorageRepository repository;
 
-    public PageResult<GetUserRequestEnvStorageListVo> getUserRequestEnvStorageList(GetUserRequestEnvStorageListDto dto) {
+    @Autowired
+    private UserRequestEnvRepository userRequestEnvRepository;
+
+
+    public PageResult<GetUserRequestEnvStorageListVo> getUserRequestEnvStorageList(GetUserRequestEnvStorageListDto dto) throws Exception {
+
+        //查询该用户下的环境
+        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), AuthService.requireUserId());
+
+        if (env == null) {
+            throw new BizException("用户环境不存在或无权限访问");
+        }
+
         UserRequestEnvStoragePo query = new UserRequestEnvStoragePo();
         assign(dto, query);
 
-        Page<UserRequestEnvStoragePo> page = repository.getUserRequestEnvStorageList(query, dto.pageRequest());
+        Page<UserRequestEnvStoragePo> page = repository.getUserRequestEnvStorageList(query, dto.getRequestEnvId(), dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -40,8 +58,16 @@ public class UserRequestEnvStorageService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addUserRequestEnvStorage(AddUserRequestEnvStorageDto dto) {
+    public void addUserRequestEnvStorage(AddUserRequestEnvStorageDto dto) throws Exception {
         UserRequestEnvStoragePo insertPo = as(dto, UserRequestEnvStoragePo.class);
+
+        //查询该用户下的环境
+        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), AuthService.requireUserId());
+        if (env == null) {
+            throw new BizException("用户环境不存在或无权限访问");
+        }
+
+        insertPo.setEnv(env);
         repository.save(insertPo);
     }
 

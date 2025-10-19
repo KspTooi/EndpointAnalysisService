@@ -14,15 +14,12 @@ public interface UserRequestEnvStorageRepository extends JpaRepository<UserReque
     @Query("""
             SELECT u FROM UserRequestEnvStoragePo u
             WHERE
-            (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.envId} IS NULL OR u.envId  = :#{#po.envId} )
-            AND (:#{#po.name} IS NULL OR u.name  = :#{#po.name} )
-            AND (:#{#po.initValue} IS NULL OR u.initValue  = :#{#po.initValue} )
-            AND (:#{#po.value} IS NULL OR u.value  = :#{#po.value} )
-            AND (:#{#po.status} IS NULL OR u.status  = :#{#po.status} )
-            AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
-            AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
+            u.env.id = :requestEnvId
+            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%') )
+            AND (:#{#po.initValue} IS NULL OR u.initValue LIKE CONCAT('%', :#{#po.initValue}, '%') )
+            AND (:#{#po.value} IS NULL OR u.value LIKE CONCAT('%', :#{#po.value}, '%') )
+            AND (:#{#po.status} IS NULL OR u.status = :#{#po.status} )
             ORDER BY u.updateTime DESC
             """)
-    Page<UserRequestEnvStoragePo> getUserRequestEnvStorageList(@Param("po") UserRequestEnvStoragePo po, Pageable pageable);
+    Page<UserRequestEnvStoragePo> getUserRequestEnvStorageList(@Param("po") UserRequestEnvStoragePo po, @Param("requestEnvId") Long requestEnvId, Pageable pageable);
 }

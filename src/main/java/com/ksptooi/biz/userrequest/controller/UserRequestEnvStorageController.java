@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/userRequestEnvStorage")
-@Tag(name = "UserRequestEnvStorage", description = "")
+@Tag(name = "UserRequestEnvStorage", description = "环境共享存储")
 @Slf4j
 public class UserRequestEnvStorageController {
 
@@ -31,26 +31,26 @@ public class UserRequestEnvStorageController {
     private UserRequestEnvStorageService userRequestEnvStorageService;
 
     @PostMapping("/getUserRequestEnvStorageList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询环境共享存储列表")
     public PageResult<GetUserRequestEnvStorageListVo> getUserRequestEnvStorageList(@RequestBody @Valid GetUserRequestEnvStorageListDto dto) throws Exception {
         return userRequestEnvStorageService.getUserRequestEnvStorageList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增环境共享存储")
     @PostMapping("/addUserRequestEnvStorage")
     public Result<String> addUserRequestEnvStorage(@RequestBody @Valid AddUserRequestEnvStorageDto dto) throws Exception {
         userRequestEnvStorageService.addUserRequestEnvStorage(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑环境共享存储")
     @PostMapping("/editUserRequestEnvStorage")
     public Result<String> editUserRequestEnvStorage(@RequestBody @Valid EditUserRequestEnvStorageDto dto) throws Exception {
         userRequestEnvStorageService.editUserRequestEnvStorage(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询环境共享存储详情")
     @PostMapping("/getUserRequestEnvStorageDetails")
     public Result<GetUserRequestEnvStorageDetailsVo> getUserRequestEnvStorageDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetUserRequestEnvStorageDetailsVo details = userRequestEnvStorageService.getUserRequestEnvStorageDetails(dto);
@@ -60,7 +60,7 @@ public class UserRequestEnvStorageController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除环境共享存储")
     @PostMapping("/removeUserRequestEnvStorage")
     public Result<String> removeUserRequestEnvStorage(@RequestBody @Valid CommonIdDto dto) throws Exception {
         userRequestEnvStorageService.removeUserRequestEnvStorage(dto);

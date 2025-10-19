@@ -93,6 +93,16 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/user-request-env-manager",
+      name: "user-request-env-manager",
+      component: () => import("@/views/userrequest/UserRequestEnvManager.vue"),
+      meta: {
+        breadcrumb: {
+          title: "用户请求环境管理",
+        },
+      },
+    },
     //基本过滤器
     {
       path: "/simple-filter-manager",

@@ -15,9 +15,15 @@ public interface UserRequestEnvRepository extends JpaRepository<UserRequestEnvPo
             SELECT u FROM UserRequestEnvPo u
             WHERE
             u.user.id = :userId
-            AND (:#{#po} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%') OR u.name)
+            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%'))
             ORDER BY u.createTime DESC
             """)
     Page<UserRequestEnvPo> getUserRequestEnvList(@Param("po") UserRequestEnvPo po, @Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM UserRequestEnvPo u
+            WHERE
+            u.id = :id AND u.user.id = :userId
+            """)
+    UserRequestEnvPo getByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 }
