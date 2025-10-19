@@ -33,8 +33,8 @@
           <el-date-picker v-model="timeRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" style="width: 360px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadRequestList">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
+          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
     </div>

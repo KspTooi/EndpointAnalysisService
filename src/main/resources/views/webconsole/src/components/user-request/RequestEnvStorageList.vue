@@ -14,8 +14,8 @@
               <el-option label="禁用" :value="1" />
             </el-select>
           </el-form-item>
-          <el-button type="primary" @click="loadList">查询</el-button>
-          <el-button @click="resetList">重置</el-button>
+          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+          <el-button @click="resetList" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
       <el-button type="success" @click="openModal('add', null)">创建共享存储变量</el-button>
@@ -140,6 +140,7 @@ const total = ref(0);
 const loading = ref(false);
 
 const loadList = async () => {
+  loading.value = true;
   if (props.requestEnvId === null) {
     list.value = [];
     total.value = 0;

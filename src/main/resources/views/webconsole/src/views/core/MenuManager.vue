@@ -18,8 +18,8 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="loadList">查询</el-button>
-          <el-button @click="resetList">重置</el-button>
+          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+          <el-button @click="resetList" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>

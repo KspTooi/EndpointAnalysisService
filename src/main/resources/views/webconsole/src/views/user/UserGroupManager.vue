@@ -3,17 +3,11 @@
     <div class="query-form">
       <el-form :model="queryForm" inline>
         <el-form-item label="组名称" label-for="query-keyword">
-          <el-input 
-            v-model="queryForm.keyword" 
-            placeholder="输入组名称查询" 
-            clearable 
-            id="query-keyword"
-            style="width: 200px"
-          />
+          <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" style="width: 200px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadGroupList">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" @click="loadGroupList" :disabled="loading">查询</el-button>
+          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
       <div class="add-button-container">
@@ -22,52 +16,30 @@
     </div>
 
     <div class="group-table">
-      <el-table 
-        :data="groupList"
-        stripe
-        v-loading="loading"
-        border
-      >
+      <el-table :data="groupList" stripe v-loading="loading" border>
         <el-table-column prop="code" label="组标识" min-width="120" />
         <el-table-column prop="name" label="组名称" min-width="120" />
-        <el-table-column prop="memberCount" label="成员数量" min-width="100"/>
-        <el-table-column prop="permissionCount" label="权限数量" min-width="100"/>
+        <el-table-column prop="memberCount" label="成员数量" min-width="100" />
+        <el-table-column prop="permissionCount" label="权限数量" min-width="100" />
         <el-table-column label="系统组" min-width="80">
           <template #default="scope">
             <el-tag :type="scope.row.isSystem ? 'info' : ''">
-              {{ scope.row.isSystem ? '是' : '否' }}
+              {{ scope.row.isSystem ? "是" : "否" }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="80">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
+              {{ scope.row.status === 1 ? "启用" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button 
-              link
-              type="primary" 
-              size="small" 
-              @click="handleEdit(scope.row)"
-              :icon="EditIcon"
-            >
-              编辑
-            </el-button>
-            <el-button 
-              link
-              type="danger" 
-              size="small" 
-              @click="handleDelete(scope.row)"
-              :icon="DeleteIcon"
-              :disabled="scope.row.isSystem"
-            >
-              删除
-            </el-button>
+            <el-button link type="primary" size="small" @click="handleEdit(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -99,45 +71,28 @@
     </div>
 
     <!-- 用户组编辑/新增模态框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="formType === 'add' ? '新增访问组' : '编辑访问组'"
-      width="800px"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        v-if="dialogVisible"
-        ref="groupFormRef"
-        :model="groupForm"
-        :rules="groupFormRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
+    <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增访问组' : '编辑访问组'" width="800px" :close-on-click-modal="false">
+      <el-form v-if="dialogVisible" ref="groupFormRef" :model="groupForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
         <div class="form-two-columns">
           <div class="form-left-column">
             <el-form-item label="组标识" prop="code" label-for="group-code">
-              <el-input 
-                v-model="groupForm.code" 
+              <el-input
+                v-model="groupForm.code"
                 :disabled="formType === 'edit' && isSystemGroup"
                 :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
                 id="group-code"
               />
             </el-form-item>
             <el-form-item label="组名称" prop="name" label-for="group-name">
-              <el-input 
-                v-model="groupForm.name" 
+              <el-input
+                v-model="groupForm.name"
                 :disabled="formType === 'edit' && isSystemGroup"
                 :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
                 id="group-name"
               />
             </el-form-item>
             <el-form-item label="描述" prop="description" label-for="group-description">
-              <el-input 
-                v-model="groupForm.description" 
-                type="textarea" 
-                :rows="3"
-                id="group-description" 
-              />
+              <el-input v-model="groupForm.description" type="textarea" :rows="3" id="group-description" />
             </el-form-item>
             <el-form-item label="状态" prop="status" label-for="group-status">
               <el-radio-group v-model="groupForm.status" id="group-status">
@@ -146,50 +101,27 @@
               </el-radio-group>
             </el-form-item>
           </div>
-          
+
           <div class="form-right-column">
             <el-form-item label="权限节点" prop="permissionIds" label-for="permission-search" class="permission-form-item">
               <div class="permission-container">
                 <div class="permission-search">
-                  <el-input
-                    v-model="permissionSearch"
-                    placeholder="搜索权限节点"
-                    clearable
-                    id="permission-search"
-                  >
+                  <el-input v-model="permissionSearch" placeholder="搜索权限节点" clearable id="permission-search">
                     <template #prefix>
                       <el-icon><Search /></el-icon>
                     </template>
                   </el-input>
                   <div class="permission-select-buttons">
                     <el-button-group>
-                      <el-button 
-                        type="primary" 
-                        size="small" 
-                        @click="selectAllPermissions"
-                      >
-                        全选
-                      </el-button>
-                      <el-button 
-                        type="primary" 
-                        size="small" 
-                        @click="deselectAllPermissions"
-                      >
-                        取消全选
-                      </el-button>
+                      <el-button type="primary" size="small" @click="selectAllPermissions"> 全选 </el-button>
+                      <el-button type="primary" size="small" @click="deselectAllPermissions"> 取消全选 </el-button>
                     </el-button-group>
                   </div>
                 </div>
                 <div class="permission-list">
                   <el-checkbox-group v-model="groupForm.permissionIds" id="permission-group" style="width: 240px">
-                    <div 
-                      v-for="permission in filteredPermissions" 
-                      :key="permission.id" 
-                      class="permission-item"
-                    >
-                      <el-checkbox 
-                        :value="Number(permission.id)"
-                      >
+                    <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
+                      <el-checkbox :value="Number(permission.id)">
                         <div class="permission-info">
                           <span class="permission-name">{{ permission.name }}</span>
                           <span class="permission-code">{{ permission.code }}</span>
@@ -209,9 +141,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitLoading">
-            确定
-          </el-button>
+          <el-button type="primary" @click="submitForm" :loading="submitLoading"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>
@@ -219,11 +149,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from 'vue';
-import { Edit, Delete, Search } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import type { FormInstance } from 'element-plus';
-import AdminGroupApi, {type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto} from "@/api/GroupApi.ts";
+import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { Edit, Delete, Search } from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import type { FormInstance } from "element-plus";
+import AdminGroupApi, { type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto } from "@/api/GroupApi.ts";
 import AdminPermissionApi from "@/api/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 
@@ -240,8 +170,8 @@ const checkMobile = () => {
 const queryForm = reactive<GetGroupListDto>({
   pageNum: 1,
   pageSize: 10,
-  keyword: '',
-  status: undefined
+  keyword: "",
+  status: undefined,
 });
 
 // 用户组列表
@@ -251,29 +181,27 @@ const loading = ref(false);
 
 // 模态框相关
 const dialogVisible = ref(false);
-const formType = ref<'add' | 'edit'>('add');
+const formType = ref<"add" | "edit">("add");
 const submitLoading = ref(false);
 const groupFormRef = ref<FormInstance>();
 
 // 表单数据
 const groupForm = reactive<SaveGroupDto>({
-  name: '',
-  code: '',
-  description: '',
+  name: "",
+  code: "",
+  description: "",
   status: 1,
   sortOrder: 0,
-  permissionIds: []
+  permissionIds: [],
 });
 
 // 表单校验规则
 const groupFormRules = {
   name: [
-    { required: true, message: '请输入组名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+    { required: true, message: "请输入组名称", trigger: "blur" },
+    { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" },
   ],
-  description: [
-    { max: 200, message: '描述不能超过200个字符', trigger: 'blur' }
-  ]
+  description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
 };
 
 // 在 script 部分添加
@@ -283,7 +211,7 @@ const isSystemGroup = ref(false);
 const permissionList = ref<GroupPermissionDefinitionVo[]>([]);
 
 // 权限搜索
-const permissionSearch = ref('');
+const permissionSearch = ref("");
 
 // 过滤后的权限列表
 const filteredPermissions = computed(() => {
@@ -291,10 +219,7 @@ const filteredPermissions = computed(() => {
   if (!search) {
     return permissionList.value;
   }
-  return permissionList.value.filter(permission => 
-    permission.name.toLowerCase().includes(search) || 
-    permission.code.toLowerCase().includes(search)
-  );
+  return permissionList.value.filter((permission) => permission.name.toLowerCase().includes(search) || permission.code.toLowerCase().includes(search));
 });
 
 // 加载用户组列表数据
@@ -309,8 +234,8 @@ const loadGroupList = async () => {
     groupList.value = vos.data;
     total.value = Number(vos.total);
   } catch (error) {
-    ElMessage.error('加载访问组列表失败');
-    console.error('加载访问组列表失败', error);
+    ElMessage.error("加载访问组列表失败");
+    console.error("加载访问组列表失败", error);
   } finally {
     loading.value = false;
   }
@@ -318,7 +243,7 @@ const loadGroupList = async () => {
 
 // 重置查询条件
 const resetQuery = () => {
-  queryForm.keyword = '';
+  queryForm.keyword = "";
   queryForm.status = undefined;
   queryForm.pageNum = 1;
   loadGroupList();
@@ -340,15 +265,15 @@ const handleCurrentChange = (val: number) => {
 const resetForm = () => {
   // 重置表单数据
   groupForm.id = undefined;
-  groupForm.name = '';
-  groupForm.code = '';
-  groupForm.description = '';
+  groupForm.name = "";
+  groupForm.code = "";
+  groupForm.description = "";
   groupForm.status = 1;
   groupForm.sortOrder = 0;
   groupForm.permissionIds = [];
 
   // 重置权限搜索
-  permissionSearch.value = '';
+  permissionSearch.value = "";
 
   // 重置权限列表
   permissionList.value = [];
@@ -361,34 +286,34 @@ const resetForm = () => {
 
 // 处理新增用户组
 const handleAdd = async () => {
-  formType.value = 'add';
+  formType.value = "add";
   isSystemGroup.value = false;
   resetForm();
-  
+
   try {
     // 获取所有权限节点
     const permissions = await AdminPermissionApi.getPermissionDefinition();
 
-    permissionList.value = permissions.map(p => ({
+    permissionList.value = permissions.map((p) => ({
       id: p.id,
       code: p.code,
       name: p.name,
-      has: 0
+      has: 0,
     }));
   } catch (error) {
     console.log(error);
-    ElMessage.error('获取权限节点列表失败');
+    ElMessage.error("获取权限节点列表失败");
   }
-  
+
   dialogVisible.value = true;
 };
 
 // 处理编辑用户组
 const handleEdit = async (row: GetGroupListVo) => {
-  formType.value = 'edit';
+  formType.value = "edit";
   resetForm();
   isSystemGroup.value = row.isSystem;
-  
+
   try {
     const details = await AdminGroupApi.getGroupDetails({ id: row.id });
     groupForm.id = details.id;
@@ -397,16 +322,14 @@ const handleEdit = async (row: GetGroupListVo) => {
     groupForm.description = details.description;
     groupForm.status = details.status;
     groupForm.sortOrder = details.sortOrder;
-    
+
     // 设置权限列表
     permissionList.value = details.permissions;
-    groupForm.permissionIds = details.permissions
-      .filter(p => p.has === 0)
-      .map(p => Number(p.id));
-    
+    groupForm.permissionIds = details.permissions.filter((p) => p.has === 0).map((p) => Number(p.id));
+
     dialogVisible.value = true;
   } catch (error) {
-    ElMessage.error('获取访问组详情失败');
+    ElMessage.error("获取访问组详情失败");
   }
 };
 
@@ -415,21 +338,20 @@ const submitForm = async () => {
   if (!groupFormRef.value) {
     return;
   }
-  
+
   await groupFormRef.value.validate(async (valid) => {
     if (!valid) {
       return;
     }
-    
+
     submitLoading.value = true;
     try {
       await AdminGroupApi.saveGroup(groupForm);
-      ElMessage.success(formType.value === 'add' ? '新增访问组成功' : '更新访问组成功');
+      ElMessage.success(formType.value === "add" ? "新增访问组成功" : "更新访问组成功");
       dialogVisible.value = false;
       await loadGroupList();
     } catch (error) {
-
-      const errorMsg = error instanceof Error ? error.message : '操作失败';
+      const errorMsg = error instanceof Error ? error.message : "操作失败";
       ElMessage.error(errorMsg);
     } finally {
       submitLoading.value = false;
@@ -439,32 +361,30 @@ const submitForm = async () => {
 
 // 处理删除用户组
 const handleDelete = (row: GetGroupListVo) => {
-  ElMessageBox.confirm(
-    `确定要删除访问组 ${row.name} 吗？`,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(async () => {
-    try {
-      const params: CommonIdDto = { id: row.id };
-      await AdminGroupApi.removeGroup(params);
-      ElMessage.success('删除访问组成功');
-      loadGroupList();
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '删除失败';
-      ElMessage.error(errorMsg);
-    }
-  }).catch(() => {
-    // 用户取消删除操作
-  });
+  ElMessageBox.confirm(`确定要删除访问组 ${row.name} 吗？`, "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        const params: CommonIdDto = { id: row.id };
+        await AdminGroupApi.removeGroup(params);
+        ElMessage.success("删除访问组成功");
+        loadGroupList();
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : "删除失败";
+        ElMessage.error(errorMsg);
+      }
+    })
+    .catch(() => {
+      // 用户取消删除操作
+    });
 };
 
 // 全选权限节点
 const selectAllPermissions = () => {
-  groupForm.permissionIds = filteredPermissions.value.map(p => Number(p.id));
+  groupForm.permissionIds = filteredPermissions.value.map((p) => Number(p.id));
 };
 
 // 取消全选权限节点
@@ -475,7 +395,7 @@ const deselectAllPermissions = () => {
 // 页面加载和窗口大小变化时检测设备类型
 onMounted(() => {
   checkMobile();
-  window.addEventListener('resize', checkMobile);
+  window.addEventListener("resize", checkMobile);
   loadGroupList();
 });
 </script>
@@ -503,12 +423,12 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .query-form :deep(.el-form-item) {
     margin-bottom: 10px;
     width: 100%;
   }
-  
+
   .group-manager-container {
     padding: 10px;
   }
@@ -568,8 +488,6 @@ onMounted(() => {
   height: 100%;
 }
 
-
-
 .permission-list {
   max-height: 300px;
   overflow-y: auto;
@@ -615,12 +533,12 @@ onMounted(() => {
   .form-two-columns {
     flex-direction: column;
   }
-  
+
   .form-left-column,
   .form-right-column {
     width: 100%;
   }
-  
+
   .permission-list {
     max-height: 200px;
   }

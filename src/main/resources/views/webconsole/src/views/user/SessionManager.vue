@@ -4,68 +4,26 @@
     <div class="query-form">
       <el-form :model="query" inline>
         <el-form-item label="用户名">
-          <el-input
-            v-model="query.userName"
-            placeholder="输入用户名查询"
-            clearable
-            style="width: 200px"
-          />
+          <el-input v-model="query.userName" placeholder="输入用户名查询" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadSessionList">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" @click="loadSessionList" :disabled="loading">查询</el-button>
+          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <!-- 会话列表 -->
     <div class="session-table">
-      <el-table
-        :data="list"
-        stripe
-        v-loading="loading"
-        border
-      >
-        <el-table-column
-          prop="id"
-          label="会话ID"
-          min-width="100"
-        />
-        <el-table-column
-          prop="username"
-          label="用户名"
-          min-width="150"
-        />
-        <el-table-column
-          prop="createTime"
-          label="登入时间"
-          min-width="180"
-        />
-        <el-table-column
-          prop="expiresAt"
-          label="过期时间"
-          min-width="180"
-        />
+      <el-table :data="list" stripe v-loading="loading" border>
+        <el-table-column prop="id" label="会话ID" min-width="100" />
+        <el-table-column prop="username" label="用户名" min-width="150" />
+        <el-table-column prop="createTime" label="登入时间" min-width="180" />
+        <el-table-column prop="expiresAt" label="过期时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button
-              link
-              type="primary"
-              size="small"
-              @click="openViewModal(scope.row)"
-              :icon="ViewIcon"
-            >
-              详情
-            </el-button>
-            <el-button
-              link
-              type="danger"
-              size="small"
-              @click="handleCloseSession(scope.row)"
-              :icon="CloseIcon"
-            >
-              关闭会话
-            </el-button>
+            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
+            <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon"> 关闭会话 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,12 +44,7 @@
     </div>
 
     <!-- 会话详情模态框 -->
-    <el-dialog
-      v-model="detailsDialogVisible"
-      title="会话详情"
-      width="800px"
-      :close-on-click-modal="false"
-    >
+    <el-dialog v-model="detailsDialogVisible" title="会话详情" width="800px" :close-on-click-modal="false">
       <el-descriptions :column="1" border v-if="currentSessionDetails">
         <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
         <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
@@ -99,27 +52,15 @@
         <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
         <el-descriptions-item label="权限节点">
           <div v-if="currentSessionDetails.permissions && currentSessionDetails.permissions.length > 0">
-            <el-input 
-              v-model="permissionSearchKeyword" 
-              placeholder="搜索权限节点" 
-              clearable 
-              style="margin-bottom: 10px; width: 100%;"
-            />
-            <el-table 
-              :data="filteredPermissions" 
-              stripe 
-              max-height="300px"
-              style="width: 100%;"
-            >
+            <el-input v-model="permissionSearchKeyword" placeholder="搜索权限节点" clearable style="margin-bottom: 10px; width: 100%" />
+            <el-table :data="filteredPermissions" stripe max-height="300px" style="width: 100%">
               <el-table-column label="权限代码" min-width="500">
                 <template #default="scope">
                   {{ scope.row }}
                 </template>
               </el-table-column>
             </el-table>
-            <div style="margin-top: 10px; text-align: right;">
-              总权限数：{{ currentSessionDetails.permissions.length }}
-            </div>
+            <div style="margin-top: 10px; text-align: right">总权限数：{{ currentSessionDetails.permissions.length }}</div>
           </div>
           <el-tag v-else type="info">无权限</el-tag>
         </el-descriptions-item>
@@ -134,14 +75,10 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref, onMounted, markRaw, computed} from "vue";
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { View, CloseBold } from '@element-plus/icons-vue';
-import AdminSessionApi, {
-  type GetSessionDetailsVo,
-  type GetSessionListDto,
-  type GetSessionListVo
-} from "@/api/SessionApi.ts";
+import { reactive, ref, onMounted, markRaw, computed } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { View, CloseBold } from "@element-plus/icons-vue";
+import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/api/SessionApi.ts";
 
 const ViewIcon = markRaw(View);
 const CloseIcon = markRaw(CloseBold);
@@ -149,7 +86,7 @@ const CloseIcon = markRaw(CloseBold);
 const query = reactive<GetSessionListDto>({
   userName: null,
   pageNum: 1,
-  pageSize: 10
+  pageSize: 10,
 });
 
 const list = ref<GetSessionListVo[]>([]);
@@ -158,13 +95,11 @@ const loading = ref(false);
 
 const detailsDialogVisible = ref(false);
 const currentSessionDetails = ref<GetSessionDetailsVo | null>(null);
-const permissionSearchKeyword = ref('');
+const permissionSearchKeyword = ref("");
 const filteredPermissions = computed(() => {
   if (!currentSessionDetails.value?.permissions) return [];
-  
-  return currentSessionDetails.value.permissions.filter(permission => 
-    permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase())
-  );
+
+  return currentSessionDetails.value.permissions.filter((permission) => permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase()));
 });
 
 const loadSessionList = async () => {
@@ -174,7 +109,7 @@ const loadSessionList = async () => {
     list.value = res.data;
     total.value = res.total;
   } catch (e) {
-    ElMessage.error('加载会话列表失败');
+    ElMessage.error("加载会话列表失败");
     console.error("加载会话列表失败", e);
   } finally {
     loading.value = false;
@@ -192,11 +127,11 @@ const openViewModal = async (row: GetSessionListVo) => {
   try {
     const res = await AdminSessionApi.getSessionDetails({ id: row.id });
     currentSessionDetails.value = res;
-    permissionSearchKeyword.value = ''; // 重置搜索关键词
+    permissionSearchKeyword.value = ""; // 重置搜索关键词
     detailsDialogVisible.value = true;
   } catch (error) {
-    ElMessage.error('获取会话详情失败');
-    console.error('获取会话详情失败', error);
+    ElMessage.error("获取会话详情失败");
+    console.error("获取会话详情失败", error);
   } finally {
     loading.value = false;
   }
@@ -204,21 +139,17 @@ const openViewModal = async (row: GetSessionListVo) => {
 
 const handleCloseSession = async (row: GetSessionListVo) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要关闭用户 ${row.username} 的会话吗？`,
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    );
+    await ElMessageBox.confirm(`确定要关闭用户 ${row.username} 的会话吗？`, "警告", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
     await AdminSessionApi.closeSession({ id: row.id });
-    ElMessage.success('会话关闭成功');
+    ElMessage.success("会话关闭成功");
     loadSessionList(); // Refresh the list
   } catch (error) {
-    if (error !== 'cancel') {
-      const errorMsg = error instanceof Error ? error.message : '关闭会话失败';
+    if (error !== "cancel") {
+      const errorMsg = error instanceof Error ? error.message : "关闭会话失败";
       ElMessage.error(errorMsg);
     }
   }

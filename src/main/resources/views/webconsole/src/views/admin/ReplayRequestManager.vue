@@ -6,8 +6,8 @@
         <el-form-item label="原始请求ID">
           <el-input ref="originRequestIdInput" v-model="query.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" />
         </el-form-item>
-        <el-button type="primary" @click="loadOriginRequestList">查询</el-button>
-        <el-button @click="resetQuery">重置</el-button>
+        <el-button type="primary" @click="loadOriginRequestList" :disabled="loading">查询</el-button>
+        <el-button @click="resetQuery" :disabled="loading">重置</el-button>
       </el-form>
       <el-button type="success" @click="executeReplay" :disabled="executeLoading">
         <span v-show="!executeLoading">执行重放</span>

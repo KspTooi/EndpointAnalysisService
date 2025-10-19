@@ -1,16 +1,9 @@
 <template>
   <div class="user-manager-container">
-
-
     <div class="query-form">
       <el-form :model="queryForm" inline>
         <el-form-item label="用户名">
-          <el-input 
-            v-model="queryForm.username" 
-            placeholder="输入用户名查询" 
-            clearable 
-            style="width: 200px"
-          />
+          <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="queryForm.status" placeholder="选择状态" clearable style="width: 150px">
@@ -19,8 +12,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadUserList">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" @click="loadUserList" :disabled="loading">查询</el-button>
+          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
         </el-form-item>
       </el-form>
       <div class="add-button-container">
@@ -29,12 +22,7 @@
     </div>
 
     <div class="user-table">
-      <el-table
-          :data="userList"
-          stripe
-          v-loading="loading"
-          border
-      >
+      <el-table :data="userList" stripe v-loading="loading" border>
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="nickname" label="昵称" min-width="150" />
         <el-table-column prop="email" label="邮箱" min-width="160" />
@@ -43,30 +31,14 @@
         <el-table-column label="状态" min-width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
-              {{ scope.row.status === 0 ? '正常' : '封禁' }}
+              {{ scope.row.status === 0 ? "正常" : "封禁" }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button 
-              link
-              type="primary" 
-              size="small" 
-              @click="handleEdit(scope.row)"
-              :icon="EditIcon"
-            >
-              编辑
-            </el-button>
-            <el-button 
-              link
-              type="danger" 
-              size="small" 
-              @click="handleDelete(scope.row)"
-              :icon="DeleteIcon"
-            >
-              删除
-            </el-button>
+            <el-button link type="primary" size="small" @click="handleEdit(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -100,28 +72,12 @@
     </div>
 
     <!-- 用户编辑/新增模态框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="formType === 'add' ? '新增用户' : '编辑用户'"
-      width="500px"
-      :close-on-click-modal="false"
-    >
-      <el-form
-          v-if="dialogVisible"
-        ref="userFormRef"
-        :model="userForm"
-        :rules="userFormRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
+    <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增用户' : '编辑用户'" width="500px" :close-on-click-modal="false">
+      <el-form v-if="dialogVisible" ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="100px" :validate-on-rule-change="false">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="userForm.username" :disabled="formType === 'edit'" />
         </el-form-item>
-        <el-form-item 
-          label="密码" 
-          prop="password"
-          :rules="formType === 'add' ? userFormRules.password : []"
-        >
+        <el-form-item label="密码" prop="password" :rules="formType === 'add' ? userFormRules.password : []">
           <el-input v-model="userForm.password" type="password" show-password />
           <div v-if="formType === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
@@ -138,27 +94,15 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="所属用户组" prop="groupIds">
-          <el-select
-            v-model="userForm.groupIds"
-            multiple
-            placeholder="请选择用户组"
-            style="width: 100%"
-          >
-            <el-option
-              v-for="group in groupOptions"
-              :key="group.id"
-              :label="group.name"
-              :value="group.id"
-            />
+          <el-select v-model="userForm.groupIds" multiple placeholder="请选择用户组" style="width: 100%">
+            <el-option v-for="group in groupOptions" :key="group.id" :label="group.name" :value="group.id" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitLoading">
-            确定
-          </el-button>
+          <el-button type="primary" @click="submitForm" :loading="submitLoading"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>
@@ -166,18 +110,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from 'vue';
-import { Edit, Delete } from '@element-plus/icons-vue';
-import Http from '@/commons/Http';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import type { FormInstance } from 'element-plus';
-import AdminUserApi, {
-  type GetUserDetailsVo,
-  type GetUserListDto,
-  type GetUserListVo,
-  type SaveUserDto,
-  type UserGroupVo
-} from "@/api/UserApi.ts";
+import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { Edit, Delete } from "@element-plus/icons-vue";
+import Http from "@/commons/Http";
+import { ElMessage, ElMessageBox } from "element-plus";
+import type { FormInstance } from "element-plus";
+import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type SaveUserDto, type UserGroupVo } from "@/api/UserApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
@@ -194,8 +132,8 @@ const checkMobile = () => {
 const queryForm = reactive<GetUserListDto>({
   pageNum: 1,
   pageSize: 10,
-  username: '',
-  status: null
+  username: "",
+  status: null,
 });
 
 // 用户列表
@@ -205,7 +143,7 @@ const loading = ref(false);
 
 // 模态框相关
 const dialogVisible = ref(false);
-const formType = ref<'add' | 'edit'>('add');
+const formType = ref<"add" | "edit">("add");
 const submitLoading = ref(false);
 const userFormRef = ref<FormInstance>();
 
@@ -214,54 +152,49 @@ const groupOptions = ref<UserGroupVo[]>([]);
 
 // 表单数据
 const userForm = reactive<SaveUserDto>({
-  username: '',
-  password: '',
-  nickname: '',
-  email: '',
+  username: "",
+  password: "",
+  nickname: "",
+  email: "",
   status: 0,
-  groupIds: []
+  groupIds: [],
 });
 
 // 表单校验规则
 const userFormRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: '用户名只能包含4-20位字母、数字和下划线', trigger: 'blur' }
+    { required: true, message: "请输入用户名", trigger: "blur" },
+    { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },
   ],
   password: [
-    { 
+    {
       required: true,
-      message: '请输入密码', 
-      trigger: 'blur',
+      message: "请输入密码",
+      trigger: "blur",
       validator: (rule: any, value: string, callback: Function) => {
-        if (formType.value === 'add' && !value) {
-          callback(new Error('请输入密码'));
+        if (formType.value === "add" && !value) {
+          callback(new Error("请输入密码"));
         } else if (value && value.length < 6) {
-           callback(new Error('密码长度不能少于6位'));
+          callback(new Error("密码长度不能少于6位"));
         } else {
           callback();
         }
-      }
-    }
+      },
+    },
   ],
-  email: [
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
-  ]
+  email: [{ type: "email", message: "请输入正确的邮箱格式", trigger: "blur" }],
 };
 
 // 加载用户列表数据
 const loadUserList = async () => {
-
-  try{
-
+  try {
     loading.value = true;
     let vos = await AdminUserApi.getUserList(queryForm);
     userList.value = vos.data;
     total.value = Number(vos.total);
-
   } catch (error) {
-    ElMessage.error('加载用户列表失败');
-    console.error('加载用户列表失败', error);
+    ElMessage.error("加载用户列表失败");
+    console.error("加载用户列表失败", error);
   } finally {
     loading.value = false;
   }
@@ -269,7 +202,7 @@ const loadUserList = async () => {
 
 // 重置查询条件
 const resetQuery = () => {
-  queryForm.username = '';
+  queryForm.username = "";
   queryForm.status = null;
   queryForm.pageNum = 1;
   loadUserList();
@@ -290,13 +223,13 @@ const handleCurrentChange = (val: number) => {
 // 重置表单
 const resetForm = () => {
   userForm.id = undefined;
-  userForm.username = '';
-  userForm.password = '';
-  userForm.nickname = '';
-  userForm.email = '';
+  userForm.username = "";
+  userForm.password = "";
+  userForm.nickname = "";
+  userForm.email = "";
   userForm.status = 0;
   userForm.groupIds = [];
-  
+
   if (userFormRef.value) {
     userFormRef.value.resetFields();
   }
@@ -304,35 +237,33 @@ const resetForm = () => {
 
 // 处理新增用户
 const handleAdd = () => {
-  formType.value = 'add';
+  formType.value = "add";
   resetForm();
   dialogVisible.value = true;
 };
 
 // 处理编辑用户
 const handleEdit = async (row: GetUserListVo) => {
-  formType.value = 'edit';
+  formType.value = "edit";
   resetForm();
   loading.value = true;
-  
+
   try {
     const userDetails: GetUserDetailsVo = await AdminUserApi.getUserDetails({ id: row.id });
-    
+
     userForm.id = userDetails.id;
     userForm.username = userDetails.username;
-    userForm.nickname = userDetails.nickname || '';
-    userForm.email = userDetails.email || '';
+    userForm.nickname = userDetails.nickname || "";
+    userForm.email = userDetails.email || "";
     userForm.status = userDetails.status;
 
     groupOptions.value = userDetails.groups || [];
-    userForm.groupIds = userDetails.groups 
-      ? userDetails.groups.filter(group => group.hasGroup).map(group => group.id) 
-      : [];
+    userForm.groupIds = userDetails.groups ? userDetails.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
 
     dialogVisible.value = true;
   } catch (error) {
-    ElMessage.error('获取用户详情失败');
-    console.error('获取用户详情失败', error);
+    ElMessage.error("获取用户详情失败");
+    console.error("获取用户详情失败", error);
   } finally {
     loading.value = false;
   }
@@ -341,22 +272,22 @@ const handleEdit = async (row: GetUserListVo) => {
 // 提交表单
 const submitForm = async () => {
   if (!userFormRef.value) return;
-  
+
   await userFormRef.value.validate(async (valid) => {
     if (!valid) return;
-    
+
     submitLoading.value = true;
     try {
       const submitData = { ...userForm };
-      if (formType.value === 'edit' && !submitData.password) {
+      if (formType.value === "edit" && !submitData.password) {
         delete submitData.password;
       }
-      await Http.postEntity<string>('/user/saveUser', submitData);
-      ElMessage.success(formType.value === 'add' ? '新增用户成功' : '更新用户成功');
+      await Http.postEntity<string>("/user/saveUser", submitData);
+      ElMessage.success(formType.value === "add" ? "新增用户成功" : "更新用户成功");
       dialogVisible.value = false;
       loadUserList(); // 重新加载列表
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '操作失败';
+      const errorMsg = error instanceof Error ? error.message : "操作失败";
       ElMessage.error(errorMsg);
     } finally {
       submitLoading.value = false;
@@ -366,35 +297,33 @@ const submitForm = async () => {
 
 // 处理删除用户
 const handleDelete = (row: GetUserListVo) => {
-  ElMessageBox.confirm(
-    `确定要删除用户 ${row.username} 吗？`,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(async () => {
-    try {
-      const params: CommonIdDto = { id: row.id };
-      await Http.postEntity<string>('/user/removeUser', params);
-      ElMessage.success('删除用户成功');
-      loadUserList(); // 重新加载列表
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '删除失败';
-      ElMessage.error(errorMsg);
-    }
-  }).catch(() => {
-    // 用户取消删除操作
-  });
+  ElMessageBox.confirm(`确定要删除用户 ${row.username} 吗？`, "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        const params: CommonIdDto = { id: row.id };
+        await Http.postEntity<string>("/user/removeUser", params);
+        ElMessage.success("删除用户成功");
+        loadUserList(); // 重新加载列表
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : "删除失败";
+        ElMessage.error(errorMsg);
+      }
+    })
+    .catch(() => {
+      // 用户取消删除操作
+    });
 };
 
 // 页面加载和窗口大小变化时检测设备类型
 onMounted(() => {
   checkMobile();
-  window.addEventListener('resize', checkMobile);
+  window.addEventListener("resize", checkMobile);
   loadUserList();
-  
+
   // 不再需要模拟数据，用户组选项将在编辑时从详情接口获取
   // TODO: 如果需要在新增时也能选择用户组，需要独立获取用户组列表的逻辑
 });
@@ -423,12 +352,12 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .query-form :deep(.el-form-item) {
     margin-bottom: 10px;
     width: 100%;
   }
-  
+
   .user-manager-container {
     padding: 10px;
   }
