@@ -97,7 +97,7 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="140px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="115px" :validate-on-rule-change="false">
         <el-form-item label="名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入中继通道名称" />
         </el-form-item>
