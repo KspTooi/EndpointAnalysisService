@@ -1,25 +1,25 @@
 <template>
-  <div class="relay-server-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
+      <el-form :model="listQuery" inline>
         <el-form-item label="中继通道名称">
-          <el-input v-model="query.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
+          <el-input v-model="listQuery.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="桥接目标URL">
-          <el-input v-model="query.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
+          <el-input v-model="listQuery.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadRelayServerList">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" @click="loadList">查询</el-button>
+          <el-button @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="openAddModal">创建中继通道</el-button>
+      <el-button type="primary" @click="openModal('add', null)">创建中继通道</el-button>
     </div>
 
     <!-- 列表 -->
-    <div class="relay-server-table">
-      <el-table :data="list" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
         <el-table-column label="通道名称" prop="name" />
         <el-table-column label="主机" prop="host" />
         <el-table-column label="桥接目标URL" prop="forwardUrl" show-overflow-tooltip />
@@ -55,8 +55,8 @@
         <el-table-column label="创建时间" prop="createTime" />
         <el-table-column label="操作" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openEditModal(scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeRelayServer(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,21 +64,21 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listQuery.pageNum"
+          v-model:page-size="listQuery.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
-              loadRelayServerList();
+              listQuery.pageSize = val;
+              loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
-              loadRelayServerList();
+              listQuery.pageNum = val;
+              loadList();
             }
           "
           background
@@ -88,31 +88,31 @@
 
     <!-- 请求编辑模态框 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑中继通道' : '添加中继通道'"
       width="550px"
       :close-on-click-modal="false"
       @close="
-        resetForm();
-        loadRelayServerList();
+        resetModal();
+        loadList();
       "
     >
-      <el-form v-if="dialogVisible" ref="formRef" :model="details" :rules="rules" label-width="140px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="140px" :validate-on-rule-change="false">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="details.name" placeholder="请输入中继通道名称" />
+          <el-input v-model="modalForm.name" placeholder="请输入中继通道名称" />
         </el-form-item>
         <el-form-item label="主机" prop="host">
-          <el-input v-model="details.host" placeholder="192.168.1.1" />
+          <el-input v-model="modalForm.host" placeholder="192.168.1.1" />
         </el-form-item>
         <el-form-item label="端口" prop="port">
-          <el-input v-model="details.port" placeholder="8080" type="number" />
+          <el-input v-model="modalForm.port" placeholder="8080" type="number" />
         </el-form-item>
         <el-form-item label="桥接目标URL" prop="forwardUrl">
-          <el-input v-model="details.forwardUrl" placeholder="https://www.baidu.com" />
+          <el-input v-model="modalForm.forwardUrl" placeholder="https://www.baidu.com" />
         </el-form-item>
         <el-form-item label="自动运行" prop="autoStart">
-          <el-switch v-model="details.autoStart" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
-          <el-tooltip content="自动运行：如果勾选，则中继服务器启动后会自动运行，否则需要手动启动" placement="top">
+          <el-switch v-model="modalForm.autoStart" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
+          <el-tooltip content="自动运行：如果勾选，则中继服务器会在EAS系统启动后自动启动，否则当EAS系统停机后再运行时需要手动启动这些中继服务器" placement="top">
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
               <el-icon><InfoFilled /></el-icon>
@@ -120,7 +120,7 @@
           </el-tooltip>
         </el-form-item>
         <el-form-item label="重定向覆写" prop="overrideRedirect">
-          <el-switch v-model="details.overrideRedirect" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
+          <el-switch v-model="modalForm.overrideRedirect" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
           <el-tooltip
             content="当桥接目标响应30X重定向时,桥接通道会将其跳转地址统一改为下方填写的‘重定向覆写URL’；不勾选则原样返回目标站重定向。仅对重定向响应生效，普通 200 响应不受影响。"
             placement="top"
@@ -131,11 +131,11 @@
             </div>
           </el-tooltip>
         </el-form-item>
-        <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="details.overrideRedirect === 1">
-          <el-input v-model="details.overrideRedirectUrl" placeholder="例如：https://example.com/after-login 或 https://example.com/home" />
+        <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="modalForm.overrideRedirect === 1">
+          <el-input v-model="modalForm.overrideRedirectUrl" placeholder="例如：https://example.com/after-login 或 https://example.com/home" />
         </el-form-item>
         <el-form-item label="请求ID策略" prop="requestIdStrategy">
-          <el-switch v-model="details.requestIdStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
+          <el-switch v-model="modalForm.requestIdStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
           <el-tooltip content="请求ID策略：0-随机生成，1-从请求头获取。勾选表示从请求头获取，需要指定请求头名称" placement="top">
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
@@ -143,11 +143,11 @@
             </div>
           </el-tooltip>
         </el-form-item>
-        <el-form-item label="请求ID头名称" prop="requestIdHeaderName" v-show="details.requestIdStrategy === 1">
-          <el-input v-model="details.requestIdHeaderName" placeholder="例如：X-Request-ID 或 Request-ID" />
+        <el-form-item label="请求ID头名称" prop="requestIdHeaderName" v-show="modalForm.requestIdStrategy === 1">
+          <el-input v-model="modalForm.requestIdHeaderName" placeholder="例如：X-Request-ID 或 Request-ID" />
         </el-form-item>
         <el-form-item label="业务错误策略" prop="bizErrorStrategy">
-          <el-switch v-model="details.bizErrorStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
+          <el-switch v-model="modalForm.bizErrorStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
           <el-tooltip content="业务错误策略：0-由HTTP状态码决定，1-由业务错误码决定。勾选表示使用业务错误码判断" placement="top">
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
@@ -155,17 +155,17 @@
             </div>
           </el-tooltip>
         </el-form-item>
-        <el-form-item label="业务错误码字段" prop="bizErrorCodeField" v-show="details.bizErrorStrategy === 1">
-          <el-input v-model="details.bizErrorCodeField" placeholder="例如：$.code 或 $.result.errorCode" />
+        <el-form-item label="业务错误码字段" prop="bizErrorCodeField" v-show="modalForm.bizErrorStrategy === 1">
+          <el-input v-model="modalForm.bizErrorCodeField" placeholder="例如：$.code 或 $.result.errorCode" />
         </el-form-item>
-        <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="details.bizErrorStrategy === 1">
-          <el-input v-model="details.bizSuccessCodeValue" placeholder="例如：0 或 success" />
+        <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="modalForm.bizErrorStrategy === 1">
+          <el-input v-model="modalForm.bizSuccessCodeValue" placeholder="例如：0 或 success" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="saveRelayServer" :loading="submitLoading">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
@@ -183,21 +183,6 @@ import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } f
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
 
-//查询条件
-const query = reactive<GetRelayServerListDto>({
-  name: null,
-  forwardUrl: null,
-  pageNum: 1,
-  pageSize: 10,
-});
-
-//列表
-const list = ref<GetRelayServerListVo[]>([]);
-const total = ref(0);
-
-// 加载状态
-const loading = ref(false);
-
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const ViewIcon = markRaw(View);
@@ -205,235 +190,42 @@ const DeleteIcon = markRaw(Delete);
 const CaretTopIcon = markRaw(CaretTop);
 const CaretBottomIcon = markRaw(CaretBottom);
 
-// 模态框相关
-const dialogVisible = ref(false);
-const formRef = ref<FormInstance>();
-const submitLoading = ref(false);
-const modalMode = ref<"view" | "edit" | "add">("view"); //view:预览,edit:编辑,add:添加
-
-//表单数据
-const details = reactive<GetRelayServerDetailsVo>({
-  id: null,
+//列表内容
+const listQuery = reactive<GetRelayServerListDto>({
   name: null,
-  host: null,
-  port: null,
   forwardUrl: null,
-  autoStart: null,
-  status: null,
-  errorMessage: null,
-  overrideRedirect: null,
-  overrideRedirectUrl: null,
-  requestIdStrategy: null,
-  requestIdHeaderName: null,
-  bizErrorStrategy: null,
-  bizErrorCodeField: null,
-  bizSuccessCodeValue: null,
-  createTime: null,
+  pageNum: 1,
+  pageSize: 10,
 });
 
-// 表单校验规则
-const rules = {
-  name: [{ required: true, message: "请输入中继通道名称", trigger: "blur" }],
-  host: [
-    { required: true, message: "请输入中继服务器主机", trigger: "blur" },
-    { pattern: /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/, message: "主机名必须为有效IP地址", trigger: "blur" },
-  ],
-  port: [
-    { required: true, message: "请输入中继服务器端口", trigger: "blur" },
-    { pattern: /^[0-9]{1,5}$/, message: "端口必须为1-65535之间的整数", trigger: "blur" },
-  ],
-  forwardUrl: [
-    { required: true, message: "请输入桥接目标URL", trigger: "blur" },
-    { pattern: /^https?:\/\/[^\s/$.?#].[^\s]*$/i, message: "桥接目标URL必须为有效URL", trigger: "blur" },
-  ],
-  autoStart: [{ required: true, message: "请选择是否自动运行", trigger: "blur" }],
-  requestIdStrategy: [{ required: true, message: "请选择请求ID策略", trigger: "blur" }],
-  requestIdHeaderName: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (details.requestIdStrategy === 1 && !value) {
-          callback(new Error("当请求ID策略为从请求头获取时，请求ID头名称不能为空"));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur",
-    },
-  ],
-  bizErrorStrategy: [{ required: true, message: "请选择业务错误策略", trigger: "blur" }],
-  bizErrorCodeField: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (details.bizErrorStrategy === 1 && !value) {
-          callback(new Error("当业务错误策略为业务错误码决定时，业务错误码字段不能为空"));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur",
-    },
-  ],
-  bizErrorCodeValue: [
-    {
-      validator: (rule: any, value: any, callback: any) => {
-        if (details.bizErrorStrategy === 1 && !value) {
-          callback(new Error("当业务错误策略为业务错误码决定时，业务错误码值不能为空"));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur",
-    },
-  ],
-};
+//列表
+const listData = ref<GetRelayServerListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
-//页面加载时自动加载数据
-onMounted(() => {
-  loadRelayServerList();
-});
-
-const loadRelayServerList = async () => {
-  loading.value = true;
+const loadList = async () => {
+  listLoading.value = true;
   try {
-    const res = await RelayServerApi.getRelayServerList(query);
-    list.value = res.data;
-    total.value = res.total;
+    const res = await RelayServerApi.getRelayServerList(listQuery);
+    listData.value = res.data;
+    listTotal.value = res.total;
     console.log(res);
   } catch (e) {
     ElMessage.error("加载中继通道列表失败");
   } finally {
-    loading.value = false;
+    listLoading.value = false;
   }
 };
 
-const resetQuery = () => {
-  query.name = null;
-  query.forwardUrl = null;
-  query.pageNum = 1;
-  loadRelayServerList();
+const resetList = () => {
+  listQuery.name = null;
+  listQuery.forwardUrl = null;
+  listQuery.pageNum = 1;
+  listQuery.pageSize = 10;
+  loadList();
 };
 
-const resetForm = () => {
-  details.id = null;
-  details.name = null;
-  details.host = null;
-  details.port = null;
-  details.forwardUrl = null;
-  details.autoStart = null;
-  details.status = null;
-  details.errorMessage = null;
-  details.overrideRedirect = null;
-  details.overrideRedirectUrl = null;
-  details.requestIdStrategy = null;
-  details.requestIdHeaderName = null;
-  details.bizErrorStrategy = null;
-  details.bizErrorCodeField = null;
-  details.bizSuccessCodeValue = null;
-  details.createTime = null;
-};
-
-//打开添加中继服务器模态框
-const openAddModal = async () => {
-  modalMode.value = "add";
-  resetForm();
-  details.host = "0.0.0.0";
-  details.port = 8080;
-  details.autoStart = 1;
-  details.overrideRedirect = 0;
-  details.requestIdStrategy = 0;
-  details.bizErrorStrategy = 0;
-  dialogVisible.value = true;
-};
-
-//打开编辑中继服务器模态框
-const openEditModal = async (row: GetRelayServerListVo) => {
-  //无法修改一个正在运行中的中继通道
-  if (row.status === 2) {
-    ElMessage.error("无法修改一个正在运行中的中继通道");
-    return;
-  }
-
-  modalMode.value = "edit";
-  resetForm();
-  try {
-    //获取请求数据
-    const res = await RelayServerApi.getRelayServerDetails(row.id.toString());
-    details.id = res.id;
-    details.name = res.name;
-    details.host = res.host;
-    details.port = res.port;
-    details.forwardUrl = res.forwardUrl;
-    details.autoStart = res.autoStart;
-    details.status = res.status;
-    details.errorMessage = res.errorMessage;
-    details.overrideRedirect = res.overrideRedirect;
-    details.overrideRedirectUrl = res.overrideRedirectUrl;
-    details.requestIdStrategy = res.requestIdStrategy;
-    details.requestIdHeaderName = res.requestIdHeaderName;
-    details.bizErrorStrategy = res.bizErrorStrategy;
-    details.bizErrorCodeField = res.bizErrorCodeField;
-    details.bizSuccessCodeValue = res.bizSuccessCodeValue;
-    details.createTime = res.createTime;
-    dialogVisible.value = true;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-    console.error("获取请求详情失败", error);
-  }
-};
-
-const saveRelayServer = async () => {
-  //验证表单
-  if (formRef.value) {
-    await formRef.value.validate();
-  }
-
-  try {
-    if (modalMode.value === "add") {
-      await RelayServerApi.addRelayServer({
-        name: details.name,
-        host: details.host,
-        port: details.port,
-        forwardUrl: details.forwardUrl,
-        autoStart: details.autoStart,
-        overrideRedirect: details.overrideRedirect,
-        overrideRedirectUrl: details.overrideRedirectUrl,
-        requestIdStrategy: details.requestIdStrategy,
-        requestIdHeaderName: details.requestIdHeaderName,
-        bizErrorStrategy: details.bizErrorStrategy,
-        bizErrorCodeField: details.bizErrorCodeField,
-        bizSuccessCodeValue: details.bizSuccessCodeValue,
-      });
-      ElMessage.success("添加中继通道成功");
-    }
-
-    if (modalMode.value === "edit") {
-      await RelayServerApi.editRelayServer({
-        id: details.id,
-        name: details.name,
-        host: details.host,
-        port: details.port,
-        forwardUrl: details.forwardUrl,
-        autoStart: details.autoStart,
-        overrideRedirect: details.overrideRedirect,
-        overrideRedirectUrl: details.overrideRedirectUrl,
-        requestIdStrategy: details.requestIdStrategy,
-        requestIdHeaderName: details.requestIdHeaderName,
-        bizErrorStrategy: details.bizErrorStrategy,
-        bizErrorCodeField: details.bizErrorCodeField,
-        bizSuccessCodeValue: details.bizSuccessCodeValue,
-      });
-      ElMessage.success("编辑中继通道成功");
-    }
-
-    dialogVisible.value = false;
-    loadRelayServerList();
-  } catch (error: any) {
-    ElMessage.error(error.message);
-    console.error("操作中继通道失败", error);
-  }
-};
-
-const removeRelayServer = async (row: GetRelayServerListVo) => {
+const removeList = async (row: GetRelayServerListVo) => {
   //无法删除一个正在运行中的中继通道
   if (row.status === 2) {
     ElMessage.error("无法删除一个正在运行中的中继通道");
@@ -453,9 +245,203 @@ const removeRelayServer = async (row: GetRelayServerListVo) => {
   try {
     await RelayServerApi.removeRelayServer(row.id.toString());
     ElMessage.success("删除中继通道成功");
-    loadRelayServerList();
+    loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
+  }
+};
+
+loadList();
+
+//模态框内容
+const modalVisible = ref(false);
+const modalFormRef = ref<FormInstance>();
+const modalLoading = ref(false);
+const modalMode = ref<"view" | "edit" | "add">("view"); //view:预览,edit:编辑,add:添加
+const modalForm = reactive<GetRelayServerDetailsVo>({
+  id: null,
+  name: null,
+  host: null,
+  port: null,
+  forwardUrl: null,
+  autoStart: null,
+  status: null,
+  errorMessage: null,
+  overrideRedirect: null,
+  overrideRedirectUrl: null,
+  requestIdStrategy: null,
+  requestIdHeaderName: null,
+  bizErrorStrategy: null,
+  bizErrorCodeField: null,
+  bizSuccessCodeValue: null,
+  createTime: null,
+});
+
+// 表单校验规则
+const modalRules = {
+  name: [{ required: true, message: "请输入中继通道名称", trigger: "blur" }],
+  host: [
+    { required: true, message: "请输入中继服务器主机", trigger: "blur" },
+    { pattern: /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/, message: "主机名必须为有效IP地址", trigger: "blur" },
+  ],
+  port: [
+    { required: true, message: "请输入中继服务器端口", trigger: "blur" },
+    { pattern: /^[0-9]{1,5}$/, message: "端口必须为1-65535之间的整数", trigger: "blur" },
+  ],
+  forwardUrl: [
+    { required: true, message: "请输入桥接目标URL", trigger: "blur" },
+    { pattern: /^https?:\/\/[^\s/$.?#].[^\s]*$/i, message: "桥接目标URL必须为有效URL", trigger: "blur" },
+  ],
+  autoStart: [{ required: true, message: "请选择是否自动运行", trigger: "blur" }],
+  requestIdStrategy: [{ required: true, message: "请选择请求ID策略", trigger: "blur" }],
+  requestIdHeaderName: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (modalForm.requestIdStrategy === 1 && !value) {
+          callback(new Error("当请求ID策略为从请求头获取时，请求ID头名称不能为空"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  bizErrorStrategy: [{ required: true, message: "请选择业务错误策略", trigger: "blur" }],
+  bizErrorCodeField: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (modalForm.bizErrorStrategy === 1 && !value) {
+          callback(new Error("当业务错误策略为业务错误码决定时，业务错误码字段不能为空"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  bizErrorCodeValue: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (modalForm.bizErrorStrategy === 1 && !value) {
+          callback(new Error("当业务错误策略为业务错误码决定时，业务错误码值不能为空"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+};
+
+const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null) => {
+  modalMode.value = mode;
+  resetModal();
+
+  if (mode === "edit" && row) {
+    if (row.status === 2) {
+      ElMessage.error("无法修改一个正在运行中的中继通道");
+      return;
+    }
+
+    try {
+      //获取请求数据
+      const res = await RelayServerApi.getRelayServerDetails(row.id.toString());
+      modalForm.id = res.id;
+      modalForm.name = res.name;
+      modalForm.host = res.host;
+      modalForm.port = res.port;
+      modalForm.forwardUrl = res.forwardUrl;
+      modalForm.autoStart = res.autoStart;
+      modalForm.status = res.status;
+      modalForm.errorMessage = res.errorMessage;
+      modalForm.overrideRedirect = res.overrideRedirect;
+      modalForm.overrideRedirectUrl = res.overrideRedirectUrl;
+      modalForm.requestIdStrategy = res.requestIdStrategy;
+      modalForm.requestIdHeaderName = res.requestIdHeaderName;
+      modalForm.bizErrorStrategy = res.bizErrorStrategy;
+      modalForm.bizErrorCodeField = res.bizErrorCodeField;
+      modalForm.bizSuccessCodeValue = res.bizSuccessCodeValue;
+      modalForm.createTime = res.createTime;
+      modalVisible.value = true;
+    } catch (error: any) {
+      ElMessage.error(error.message);
+      console.error("获取请求详情失败", error);
+    }
+  }
+
+  modalVisible.value = true;
+};
+
+const resetModal = () => {
+  modalForm.id = null;
+  modalForm.name = null;
+  modalForm.host = "0.0.0.0";
+  modalForm.port = 8080;
+  modalForm.forwardUrl = null;
+  modalForm.autoStart = 1;
+  modalForm.status = null;
+  modalForm.errorMessage = null;
+  modalForm.overrideRedirect = 0;
+  modalForm.overrideRedirectUrl = null;
+  modalForm.requestIdStrategy = 0;
+  modalForm.requestIdHeaderName = null;
+  modalForm.bizErrorStrategy = null;
+  modalForm.bizErrorCodeField = null;
+  modalForm.bizSuccessCodeValue = null;
+  modalForm.createTime = null;
+};
+
+const submitModal = async () => {
+  //验证表单
+  try {
+    await modalFormRef.value?.validate();
+  } catch (error) {
+    return;
+  }
+
+  try {
+    if (modalMode.value === "add") {
+      await RelayServerApi.addRelayServer({
+        name: modalForm.name,
+        host: modalForm.host,
+        port: modalForm.port,
+        forwardUrl: modalForm.forwardUrl,
+        autoStart: modalForm.autoStart,
+        overrideRedirect: modalForm.overrideRedirect,
+        overrideRedirectUrl: modalForm.overrideRedirectUrl,
+        requestIdStrategy: modalForm.requestIdStrategy,
+        requestIdHeaderName: modalForm.requestIdHeaderName,
+        bizErrorStrategy: modalForm.bizErrorStrategy,
+        bizErrorCodeField: modalForm.bizErrorCodeField,
+        bizSuccessCodeValue: modalForm.bizSuccessCodeValue,
+      });
+      ElMessage.success("添加中继通道成功");
+    }
+
+    if (modalMode.value === "edit") {
+      await RelayServerApi.editRelayServer({
+        id: modalForm.id,
+        name: modalForm.name,
+        host: modalForm.host,
+        port: modalForm.port,
+        forwardUrl: modalForm.forwardUrl,
+        autoStart: modalForm.autoStart,
+        overrideRedirect: modalForm.overrideRedirect,
+        overrideRedirectUrl: modalForm.overrideRedirectUrl,
+        requestIdStrategy: modalForm.requestIdStrategy,
+        requestIdHeaderName: modalForm.requestIdHeaderName,
+        bizErrorStrategy: modalForm.bizErrorStrategy,
+        bizErrorCodeField: modalForm.bizErrorCodeField,
+        bizSuccessCodeValue: modalForm.bizSuccessCodeValue,
+      });
+      ElMessage.success("编辑中继通道成功");
+    }
+
+    modalVisible.value = false;
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    console.error("操作中继通道失败", error);
   }
 };
 
@@ -463,7 +449,7 @@ const startRelayServer = async (row: GetRelayServerListVo) => {
   try {
     await RelayServerApi.startRelayServer(row.id.toString());
     ElMessage.success("启动中继通道成功");
-    loadRelayServerList();
+    loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   }
@@ -473,7 +459,7 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
   try {
     await RelayServerApi.stopRelayServer(row.id.toString());
     ElMessage.success("停止中继通道成功");
-    loadRelayServerList();
+    loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   }
@@ -481,7 +467,7 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
 </script>
 
 <style scoped>
-.relay-server-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
@@ -492,7 +478,7 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
   margin-bottom: 20px;
 }
 
-.relay-server-table {
+.list-table {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;
@@ -507,5 +493,11 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
 
 .copy-icon {
   cursor: pointer;
+}
+
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
