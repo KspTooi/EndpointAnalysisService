@@ -203,6 +203,8 @@ const removeList = async (id: string) => {
     ElMessage.error(error.message);
     return;
   }
+  //通知左侧菜单重新加载
+  EventHolder().requestReloadLeftMenu();
   loadList();
 };
 
