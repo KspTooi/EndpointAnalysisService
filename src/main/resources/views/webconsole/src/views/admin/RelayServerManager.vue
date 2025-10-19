@@ -25,16 +25,16 @@
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
           <template #default="scope">
             <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
-            <span v-show="scope.row.forwardType === 1"> 已配置路由 </span>
+            <span v-show="scope.row.forwardType === 1" style="color: #7354af"> 已配置路由 </span>
           </template>
         </el-table-column>
-        <el-table-column label="自动运行" prop="autoStart" width="100">
+        <el-table-column label="自动运行" prop="autoStart" width="90" align="center">
           <template #default="scope">
             <span v-show="scope.row.autoStart === 1" style="color: #67c23a"> 已启用 </span>
             <span v-show="scope.row.autoStart === 0" style="color: #f56c6c"> 未启用 </span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" prop="status" min-width="70">
+        <el-table-column label="状态" prop="status" min-width="50">
           <template #default="scope">
             <span v-show="scope.row.status === 0" style="color: #999"> 已禁用 </span>
             <span v-show="scope.row.status === 1" style="color: #e6a23c"> 未启动 </span>
@@ -119,7 +119,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="路由规则" prop="routeRules" v-show="modalForm.forwardType === 1">
-          <el-select v-model="modalForm.routeRules" placeholder="请选择路由规则" multiple value-key="routeRuleId">
+          <el-select v-model="modalForm.routeRules" placeholder="请选择路由规则" multiple value-key="routeRuleId" :collapse-tags="2">
             <el-option
               v-for="item in modalRouteRuleData"
               :key="item.id"
