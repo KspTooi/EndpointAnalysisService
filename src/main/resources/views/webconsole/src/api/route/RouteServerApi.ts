@@ -29,11 +29,11 @@ import type CommonIdDto from "@/commons/entity/CommonIdDto";
 import type PageResult from "@/commons/entity/PageResult";
 
 export interface GetRouteServerListDto extends PageQuery {
-  name: string | null; //服务器名称
-  host: string | null; //服务器主机
-  port: number | null; //服务器端口
-  remark: string | null; //备注
-  status: number | null; //服务器状态 0:禁用 1:启用
+  name?: string | null; //服务器名称
+  host?: string | null; //服务器主机
+  port?: number | null; //服务器端口
+  remark?: string | null; //备注
+  status?: number | null; //服务器状态 0:禁用 1:启用
 }
 
 export interface GetRouteServerListVo {

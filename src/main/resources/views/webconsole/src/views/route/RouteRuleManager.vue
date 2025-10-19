@@ -106,8 +106,8 @@
           <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
         </el-form-item>
         <el-form-item label="目标服务器" prop="routeServerId">
-          <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器">
-            <el-option label="全部" :value="0" />
+          <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器" clearable filterable>
+            <el-option v-for="item in routeServerList" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="权重" prop="seq">
@@ -135,6 +135,8 @@ import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
 import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
+import type { GetRouteServerListVo } from "@/api/route/RouteServerApi";
+import RouteServerApi from "@/api/route/RouteServerApi";
 
 //列表内容
 const query = reactive<GetRouteRuleListDto>({
@@ -212,9 +214,9 @@ const modalForm = reactive<GetRouteRuleDetailsVo>({
   id: "",
   name: "",
   matchType: 0,
-  matchKey: "",
-  matchOperator: 0,
-  matchValue: "",
+  matchKey: null,
+  matchOperator: null,
+  matchValue: null,
   routeServerId: "",
   seq: 1,
   remark: "",
@@ -242,7 +244,7 @@ const modalRules = {
     { type: "number", min: 0, max: 100000, message: "权重必须在0-100000之间", trigger: "blur" },
   ],
   remark: [
-    { required: true, message: "请输入策略描述", trigger: "blur" },
+    { required: false, message: "请输入策略描述", trigger: "blur" },
     { max: 5000, message: "策略描述长度不能超过5000个字符", trigger: "blur" },
   ],
 };
@@ -250,6 +252,9 @@ const modalRules = {
 const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) => {
   modalMode.value = mode;
   resetModal();
+
+  //加载目标服务器列表
+  await loadRouteServerList();
 
   //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
@@ -281,9 +286,9 @@ const resetModal = () => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.matchType = 0;
-  modalForm.matchKey = "";
-  modalForm.matchOperator = 0;
-  modalForm.matchValue = "";
+  modalForm.matchKey = null;
+  modalForm.matchOperator = null;
+  modalForm.matchValue = null;
   modalForm.routeServerId = "";
   modalForm.seq = 1;
   modalForm.remark = "";
@@ -322,6 +327,31 @@ const submitModal = async () => {
   //modalVisible.value = false;
   loadList();
 };
+
+//目标服务器列表
+const routeServerList = ref<GetRouteServerListVo[]>([]);
+
+const loadRouteServerList = async () => {
+  const result = await RouteServerApi.getRouteServerList({
+    pageNum: 1,
+    pageSize: 100000,
+  });
+  if (Result.isSuccess(result)) {
+    routeServerList.value = result.data;
+  }
+};
+
+watch(
+  () => modalForm.matchType,
+  (newVal) => {
+    //如果匹配类型为全部 则清空
+    if (newVal === 0) {
+      modalForm.matchKey = null;
+      modalForm.matchOperator = null;
+      modalForm.matchValue = null;
+    }
+  }
+);
 </script>
 
 <style scoped>

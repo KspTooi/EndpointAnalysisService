@@ -23,39 +23,39 @@ export interface GetRouteRuleListVo {
 }
 
 export interface AddRouteRuleDto {
-  name?: string; // 路由规则名
-  matchType?: number; // 匹配类型 0:全部 1:IP地址
-  matchKey?: string; // 匹配键
-  matchOperator?: number; // 匹配操作 0:等于
-  matchValue?: string; // 匹配值
-  routeServerId?: string; // 目标服务器ID
-  seq?: number; // 权重
+  name?: string | null; // 路由规则名
+  matchType?: number | null; // 匹配类型 0:全部 1:IP地址
+  matchKey?: string | null; // 匹配键
+  matchOperator?: number | null; // 匹配操作 0:等于
+  matchValue?: string | null; // 匹配值
+  routeServerId?: string | null; // 目标服务器ID
+  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
 }
 
 export interface EditRouteRuleDto {
-  id?: string; // 路由规则ID
-  name?: string; // 路由规则名
-  matchType?: number; // 匹配类型 0:全部 1:IP地址
-  matchKey?: string; // 匹配键
-  matchOperator?: number; // 匹配操作 0:等于
-  matchValue?: string; // 匹配值
-  routeServerId?: string; // 目标服务器ID
-  seq?: number; // 权重
+  id?: string | null; // 路由规则ID
+  name?: string | null; // 路由规则名
+  matchType?: number | null; // 匹配类型 0:全部 1:IP地址
+  matchKey?: string | null; // 匹配键
+  matchOperator?: number | null; // 匹配操作 0:等于
+  matchValue?: string | null; // 匹配值
+  routeServerId?: string | null; // 目标服务器ID
+  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
 }
 
 export interface GetRouteRuleDetailsVo {
-  id?: string; // 路由规则ID
-  name?: string; // 路由规则名
-  matchType?: number; // 匹配类型 0:全部 1:IP地址
-  matchKey?: string; // 匹配键
-  matchOperator?: number; // 匹配操作 0:等于
-  matchValue?: string; // 匹配值
-  routeServerId?: string; // 目标服务器ID
-  seq?: number; // 权重
+  id?: string | null; // 路由规则ID
+  name?: string | null; // 路由规则名
+  matchType?: number | null; // 匹配类型 0:全部 1:IP地址
+  matchKey?: string | null; // 匹配键
+  matchOperator?: number | null; // 匹配操作 0:等于
+  matchValue?: string | null; // 匹配值
+  routeServerId?: string | null; // 目标服务器ID
+  seq?: number | null; // 权重
   remark?: string | null; // 策略描述
-  updateTime?: string; // 更新时间
+  updateTime?: string | null; // 更新时间
 }
 
 export default {
