@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column label="权重" prop="seq" width="100" show-overflow-tooltip />
         <el-table-column label="策略描述" prop="remark" show-overflow-tooltip />
-        <el-table-column label="更新时间" prop="updateTime" width="100" show-overflow-tooltip />
+        <el-table-column label="更新时间" prop="updateTime" width="200" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>

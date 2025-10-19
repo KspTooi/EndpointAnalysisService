@@ -27,4 +27,28 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<RouteRulePo> getRouteRuleList(@Param("po") RouteRulePo po, Pageable pageable);
+
+    
+    /**
+     * 根据名称统计路由规则数量
+     * @param name 路由规则名称
+     * @return 路由规则数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM RouteRulePo t
+            WHERE t.name = :name
+    """)
+    Long countByName(@Param("name") String name);
+
+    /**
+     * 根据名称统计路由规则数量 排除指定ID
+     * @param name 路由规则名称
+     * @param id 需排除的ID
+     * @return 路由规则数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM RouteRulePo t
+            WHERE t.name = :name AND t.id != :id
+    """)
+    Long countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 }

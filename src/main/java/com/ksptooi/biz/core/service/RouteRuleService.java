@@ -12,6 +12,8 @@ import com.ksptooi.biz.core.repository.RouteServerRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,12 @@ public class RouteRuleService {
     public void addRouteRule(AddRouteRuleDto dto) throws BizException {
         RouteRulePo insertPo = as(dto, RouteRulePo.class);
 
+        //检查路由策略名是否存在
+        String validate = checkRouteRuleName(dto.getName(), null);
+        if(StringUtils.isNotBlank(validate)){
+            throw new BizException(validate);
+        }
+
         //查询目标服务器
         RouteServerPo routeServer = routeServerRepository.findById(dto.getRouteServerId())
                 .orElseThrow(() -> new BizException("目标服务器不存在或无权限访问."));
@@ -61,6 +69,12 @@ public class RouteRuleService {
         RouteRulePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
+        //检查路由策略名是否存在
+        String validate = checkRouteRuleName(dto.getName(), updatePo.getId());
+        if(StringUtils.isNotBlank(validate)){
+            throw new BizException(validate);
+        }
+
         //查询目标服务器
         RouteServerPo routeServer = routeServerRepository.findById(dto.getRouteServerId())
                 .orElseThrow(() -> new BizException("目标服务器不存在或无权限访问."));
@@ -73,7 +87,10 @@ public class RouteRuleService {
     public GetRouteRuleDetailsVo getRouteRuleDetails(CommonIdDto dto) throws BizException {
         RouteRulePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("数据不存在或无权限访问."));
-        return as(po, GetRouteRuleDetailsVo.class);
+                
+        GetRouteRuleDetailsVo ret = as(po, GetRouteRuleDetailsVo.class);
+        ret.setRouteServerId(po.getRouteServer().getId());
+        return ret;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -84,6 +101,33 @@ public class RouteRuleService {
         if (!dto.isBatch()) {
             repository.deleteById(dto.getId());
         }
+    }
+
+
+
+    /**
+     * 检查路由策略名是否存在
+     * @param name 路由策略名
+     * @param id 路由策略ID(可选,用于排除当前路由策略)
+     * @return 错误信息 当参数合法时返回null
+     */
+    public String checkRouteRuleName(String name,Long id){
+
+        if(id == null){
+            Long count = repository.countByName(name);
+            if(count > 0){
+                return "路由规则:[" + name + "]已存在";
+            }
+        }
+
+        if(id != null){
+            Long count = repository.countByNameExcludeId(name, id);
+            if(count > 0){
+                return "路由规则:[" + name + "]已存在";
+            }
+        }
+
+        return null;
     }
 
 }
