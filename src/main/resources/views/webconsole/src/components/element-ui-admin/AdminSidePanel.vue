@@ -22,6 +22,14 @@
       :collapse="isCollapse"
       :unique-opened="false"
     >
+      <!-- Fallback for Maintenance Center -->
+      <el-menu-item v-if="!hasMaintainCenter" index="fallback-maintenance-center" @click="goToMaintainCenter">
+        <el-icon>
+          <component :is="getIconComponent('Setting')" />
+        </el-icon>
+        <span>维护中心(备用)</span>
+      </el-menu-item>
+
       <template v-for="item in filteredItems" :key="item.id">
         <!-- 目录类型 -->
         <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id">
@@ -76,6 +84,28 @@ const props = defineProps<{
   isCollapse?: boolean;
   version?: string;
 }>();
+
+const hasMaintainCenter = computed(() => {
+  const searchPath = "/application-maintain";
+  const findItemByPath = (items: GetUserMenuTreeVo[]): boolean => {
+    for (const item of items) {
+      if (item.menuPath === searchPath) {
+        return true;
+      }
+      if (item.children && item.children.length > 0) {
+        if (findItemByPath(item.children)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  return findItemByPath(props.items);
+});
+
+const goToMaintainCenter = () => {
+  router.push("/application-maintain");
+};
 
 const STORAGE_KEY = "admin_menu_opened_state";
 

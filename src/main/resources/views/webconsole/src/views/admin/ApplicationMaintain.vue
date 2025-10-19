@@ -138,7 +138,7 @@ const maintainOperations: MaintainOperation[] = [
     iconColor: "#F56C6C",
     action: () => executeMaintainOperation("menus", MaintainApi.resetMenus),
     key: "menus",
-    warning: "此操作将删除所有现有菜单并恢复为默认设置，该操作不可逆。是否确定要继续？",
+    warning: "这是一个危险操作! 这将会删除所有现有菜单并恢复为默认设置，该操作不可逆。是否确定要继续？",
     onComplete: () => {
       eventHolder.requestReloadLeftMenu();
     },
