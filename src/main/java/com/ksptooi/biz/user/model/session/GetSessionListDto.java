@@ -1,14 +1,15 @@
 package com.ksptooi.biz.user.model.session;
 
 import com.ksptooi.commons.utils.page.PageQuery;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 public class GetSessionListDto extends PageQuery {
 
-    //用户名
+    @Schema(description = "用户名")
     private String userName;
 
 }

@@ -13,6 +13,7 @@ import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.Result;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +33,7 @@ import java.util.Set;
 
 @PrintLog
 @Controller
+@Tag(name = "Auth", description = "认证管理")
 public class AuthController {
 
     @Autowired

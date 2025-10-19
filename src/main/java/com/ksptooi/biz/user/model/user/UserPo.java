@@ -21,11 +21,11 @@ public class UserPo {
     @Comment("用户名")
     private String username;
 
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(name = "password", nullable = false, length = 1280)
     @Comment("密码")
     private String password;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 64)
     @Comment("邮箱")
     private String email;
 

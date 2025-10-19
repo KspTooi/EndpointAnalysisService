@@ -1,10 +1,14 @@
 package com.ksptooi.biz.user.model.session;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
-@Data
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Getter
+@Setter
 public class GetSessionListVo {
 
     public GetSessionListVo(Long id, String username, Date createTime, Date expiresAt) {
@@ -14,19 +18,19 @@ public class GetSessionListVo {
         this.expiresAt = expiresAt;
     }
 
-    //会话ID
+    @Schema(description = "会话ID") 
     private Long id;
 
-    //用户名
+    @Schema(description = "用户名")
     private String username;
 
-    //权限节点数量
+    @Schema(description = "权限节点数量")
     private Integer permissionCount;
 
-    //登入时间
+    @Schema(description = "登入时间")
     private Date createTime;
 
-    //过期时间
+    @Schema(description = "过期时间")
     private Date expiresAt;
 
 }

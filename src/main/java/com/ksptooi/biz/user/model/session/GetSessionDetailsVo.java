@@ -1,26 +1,28 @@
 package com.ksptooi.biz.user.model.session;
 
-import lombok.Data;
-
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 public class GetSessionDetailsVo {
 
-    //会话ID
+    @Schema(description = "会话ID")
     private Long id;
 
-    //用户名
+    @Schema(description = "用户名")
     private String username;
 
-    //登入时间
+    @Schema(description = "登入时间")
     private Date createTime;
 
-    //过期时间
+    @Schema(description = "过期时间")
     private Date expiresAt;
 
-    //权限节点
+    @Schema(description = "权限节点")
     private Set<String> permissions;
 
 }

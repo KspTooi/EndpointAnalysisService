@@ -2,18 +2,16 @@ package com.ksptooi.biz.user.model.user;
 
 
 import com.ksptooi.commons.utils.page.PageQuery;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
 public class GetUserListDto extends PageQuery {
-    /**
-     * 用户名查询
-     */
+
+    @Schema(description = "用户名")
     private String username;
 
-    //0:正常 1:封禁
+    @Schema(description = "0:正常 1:封禁")
     private Integer status;
 }

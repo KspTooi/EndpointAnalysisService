@@ -1,14 +1,17 @@
 package com.ksptooi.biz.user.model.group;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@Data
+@Getter
+@Setter
 public class GetGroupDefinitionsVo {
 
-    //组ID
+    @Schema(description = "组ID")
     private Long id;
 
-    //组名称
+    @Schema(description = "组名称")
     private String name;
 
 }

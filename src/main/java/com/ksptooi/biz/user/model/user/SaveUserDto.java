@@ -2,48 +2,43 @@ package com.ksptooi.biz.user.model.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-@Getter@Setter
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
+
+@Getter
+@Setter
 public class SaveUserDto {
-    /**
-     * 用户ID，创建时为空
-     */
+
+    @Schema(description = "用户ID，创建时为空")
     private Long id;
     
-    /**
-     * 用户名
-     */
+    @Schema(description = "用户名")
     @Pattern(regexp = "^[a-zA-Z0-9_]{4,20}$", message = "用户名只能包含4-20位字母、数字和下划线")
     private String username;
     
-    /**
-     * 用户密码，创建时必填，编辑时可选
-     */
+    @Schema(description = "用户密码，创建时必填，编辑时可选")
+    @Length(max = 128, message = "用户密码长度不能超过128个字符")
     private String password;
     
-    /**
-     * 用户昵称
-     */
+    @Length(max = 50, message = "用户昵称长度不能超过50个字符")
+    @Schema(description = "用户昵称")
     private String nickname;
     
-    /**
-     * 用户邮箱
-     */
+    @Length(max = 64, message = "用户邮箱长度不能超过64个字符")
+    @Schema(description = "用户邮箱")
     @Email(message = "邮箱格式不正确")
     private String email;
     
-    /**
-     * 用户状态：0-禁用，1-启用
-     */
+    @Range(min = 0, max = 1, message = "用户状态只能在0或1之间")
+    @Schema(description = "用户状态：0-禁用，1-启用")
     private Integer status;
     
-    /**
-     * 用户组ID列表
-     */
+    @Schema(description = "用户组ID列表")
     private List<Long> groupIds;
 }
