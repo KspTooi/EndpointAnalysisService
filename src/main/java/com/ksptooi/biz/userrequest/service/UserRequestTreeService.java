@@ -504,7 +504,13 @@ public class UserRequestTreeService {
         if (sourceNodePo.getKind() == 1) {
             UserRequestPo newRequestPo = new UserRequestPo();
             newRequestPo.setTree(newNodePo);
-            newRequestPo.setGroup(sourceNodePo.getGroup());
+
+            //如果复制的是请求 应获取该请求上级的组并绑定到新的请求
+            UserRequestTreePo parentTree = sourceNodePo.getParent();
+            if (parentTree != null) {
+                newRequestPo.setGroup(parentTree.getGroup());
+            }
+
             newRequestPo.setUser(authService.requireUser());
             newRequestPo.setOriginalRequest(null);
             newRequestPo.setUser(authService.requireUser());

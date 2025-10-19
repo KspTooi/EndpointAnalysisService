@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -128,6 +129,7 @@ public class RequestSchema {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         builder.uri(URI.create(url));
         builder.method(method, HttpRequest.BodyPublishers.ofByteArray(body));
+        builder.timeout(Duration.ofSeconds(3));
 
         for (var it : headers) {
             builder.header(it.getK(), it.getV());
