@@ -18,7 +18,7 @@
           <el-button @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="openModal('add', null)">创建共享存储变量</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建共享存储变量</el-button>
     </div>
 
     <!-- 列表 -->

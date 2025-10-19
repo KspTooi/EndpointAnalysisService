@@ -9,7 +9,7 @@
         <el-button type="primary" @click="loadOriginRequestList">查询</el-button>
         <el-button @click="resetQuery">重置</el-button>
       </el-form>
-      <el-button type="primary" @click="executeReplay" :disabled="executeLoading">
+      <el-button type="success" @click="executeReplay" :disabled="executeLoading">
         <span v-show="!executeLoading">执行重放</span>
         <span v-show="executeLoading">正在处理</span>
       </el-button>
