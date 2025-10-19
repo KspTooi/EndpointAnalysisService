@@ -1,35 +1,30 @@
 package com.ksptooi.biz.core.service;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.*;
-import java.io.IOException;
-import java.net.URI;
-import java.time.LocalDateTime;
-
-import com.ksptooi.biz.core.model.replayrequest.GetReplayRequestDetailsVo;
-import com.ksptooi.biz.core.model.replayrequest.GetReplayRequestListDto;
-import com.ksptooi.biz.core.model.replayrequest.GetReplayRequestListVo;
-import com.ksptooi.biz.core.model.replayrequest.GetOriginRequestVo;
-import com.ksptooi.commons.utils.GsonUtils;
-import com.ksptooi.commons.utils.web.PageableResult;
-import jakarta.security.auth.message.AuthException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ksptooi.biz.core.model.replayrequest.ReplayRequestPo;
+import com.ksptooi.biz.core.model.replayrequest.*;
 import com.ksptooi.biz.core.model.request.RequestPo;
 import com.ksptooi.biz.core.repository.ReplayRequestRepository;
 import com.ksptooi.biz.core.repository.RequestRepository;
 import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.commons.exception.BizException;
-
+import com.ksptooi.commons.utils.GsonUtils;
+import com.ksptooi.commons.utils.web.PageableResult;
 import io.micrometer.common.util.StringUtils;
-
+import jakarta.security.auth.message.AuthException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -66,8 +61,8 @@ public class ReplayRequestService {
     public void replayRequest(String requestId) throws Exception {
 
         RequestPo originalRequest = requestRepository.getByRequestId(requestId);
-        
-        if(originalRequest == null){
+
+        if (originalRequest == null) {
             throw new BizException("原始请求不存在");
         }
 
@@ -86,34 +81,35 @@ public class ReplayRequestService {
         String requestType = originalRequest.getRequestBodyType();
 
         //只能重放json请求
-        if(!requestType.contains("application/json")){
+        if (!requestType.contains("application/json")) {
             throw new BizException("只能重放application/json请求");
         }
 
         //只支持post请求
-        if(!method.equalsIgnoreCase("POST")){
+        if (!method.equalsIgnoreCase("POST")) {
             throw new BizException("当前只支持重放POST请求");
         }
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest.Builder request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .method(method, HttpRequest.BodyPublishers.ofString(body));
+                .uri(URI.create(url))
+                .method(method, HttpRequest.BodyPublishers.ofString(body))
+                .timeout(Duration.ofSeconds(3));
 
         //将JSON格式的请求头处理为Map
         Map<String, String> headersMap = new HashMap<>();
-        if(StringUtils.isNotBlank(headers)){
+        if (StringUtils.isNotBlank(headers)) {
             headersMap = gson.fromJson(headers, Map.class);
         }
 
         //将请求头添加到请求中
-        for(Map.Entry<String, String> entry : headersMap.entrySet()){
-            if(HOP_BY_HOP_HEADERS.contains(entry.getKey().toLowerCase())){
+        for (Map.Entry<String, String> entry : headersMap.entrySet()) {
+            if (HOP_BY_HOP_HEADERS.contains(entry.getKey().toLowerCase())) {
                 continue;
             }
             request.header(entry.getKey(), entry.getValue());
         }
-        
+
         //创建重放记录
         ReplayRequestPo replayRequestPo = new ReplayRequestPo();
         replayRequestPo.setRelayServer(originalRequest.getRelayServer());
@@ -141,7 +137,7 @@ public class ReplayRequestService {
         try {
             //发送请求
             HttpResponse<String> response = client.send(request.build(), HttpResponse.BodyHandlers.ofString());
-        
+
             //解析响应
             String responseBody = response.body();
             replayRequestPo.setResponseBodyLength(responseBody.length());
@@ -153,19 +149,19 @@ public class ReplayRequestService {
             replayRequestPo.setResponseTime(LocalDateTime.now());
 
             //如果请求ID策略为1 则尝试从响应头中获取请求ID
-            if(originalRequest.getRelayServer().getRequestIdStrategy() == 1){
+            if (originalRequest.getRelayServer().getRequestIdStrategy() == 1) {
                 String replayRequestId = response.headers().firstValue(originalRequest.getRelayServer().getRequestIdHeaderName()).orElse(null);
-                if(replayRequestId != null){
+                if (replayRequestId != null) {
                     replayRequestPo.setRequestId(replayRequestId);
                 }
-                if(requestId == null){
+                if (requestId == null) {
                     log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", originalRequest.getRelayServer().getName(), replayRequestPo.getRequestId());
                 }
             }
 
             //如果业务错误策略为1 则尝试从响应体中获取业务错误码
-            if(originalRequest.getRelayServer().getBizErrorStrategy() == 1){
-                if(replayRequestPo.getResponseBodyType().contains("application/json")){
+            if (originalRequest.getRelayServer().getBizErrorStrategy() == 1) {
+                if (replayRequestPo.getResponseBodyType().contains("application/json")) {
 
                     JsonElement jsonTree = gson.fromJson(responseBody, JsonElement.class);
 
@@ -173,29 +169,25 @@ public class ReplayRequestService {
                     String bizErrorCode = GsonUtils.getFromPath(jsonTree, originalRequest.getRelayServer().getBizErrorCodeField());
 
                     //无法获取到错误码值 直接判定业务错误
-                    if(bizErrorCode == null){
+                    if (bizErrorCode == null) {
                         replayRequestPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                     }
-                    if(bizErrorCode != null){
-                        if(bizErrorCode.equals(successCode)){
+                    if (bizErrorCode != null) {
+                        if (bizErrorCode.equals(successCode)) {
                             replayRequestPo.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                         }
-                        if(!bizErrorCode.equals(successCode)){
+                        if (!bizErrorCode.equals(successCode)) {
                             replayRequestPo.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                        } 
+                        }
                     }
                 }
-                
+
             }
-
-
-
-
 
 
         } catch (IOException | InterruptedException e) {
             throw new BizException("发送请求失败", e);
-        }finally{
+        } finally {
             //保存重放记录
             replayRequestRepository.save(replayRequestPo);
         }
@@ -204,32 +196,33 @@ public class ReplayRequestService {
 
     public GetOriginRequestVo getOriginRequest(String requestId) throws Exception {
         GetOriginRequestVo originalRequest = requestRepository.getRequestByRequestId(requestId);
-        if(originalRequest == null){
+        if (originalRequest == null) {
             throw new BizException("原始请求不存在");
         }
         return originalRequest;
     }
 
 
-
     /**
      * 获取请求列表
+     *
      * @param dto 请求列表查询条件
      * @return 请求列表
      */
     public PageableResult<GetReplayRequestListVo> getReplayRequestList(GetReplayRequestListDto dto) throws AuthException {
-        Page<GetReplayRequestListVo> page = replayRequestRepository.getReplayRequestList(dto,AuthService.requireUserId(), dto.pageRequest());
+        Page<GetReplayRequestListVo> page = replayRequestRepository.getReplayRequestList(dto, AuthService.requireUserId(), dto.pageRequest());
         return PageableResult.success(page.getContent(), page.getTotalElements());
     }
 
     /**
      * 获取请求详情
+     *
      * @param id 请求ID
      * @return 请求详情
      */
     public GetReplayRequestDetailsVo getReplayRequestDetails(Long id) {
         ReplayRequestPo item = replayRequestRepository.findById(id).orElse(null);
-        if(item == null){
+        if (item == null) {
             return null;
         }
         GetReplayRequestDetailsVo vo = new GetReplayRequestDetailsVo();
@@ -254,7 +247,5 @@ public class ReplayRequestService {
         return vo;
     }
 
-
-    
 
 }

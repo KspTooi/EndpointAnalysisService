@@ -9,7 +9,10 @@
         <el-button type="primary" @click="loadOriginRequestList">查询</el-button>
         <el-button @click="resetQuery">重置</el-button>
       </el-form>
-      <el-button type="primary" @click="executeReplay">执行重放</el-button>
+      <el-button type="primary" @click="executeReplay" :disabled="executeLoading">
+        <span v-show="!executeLoading">执行重放</span>
+        <span v-show="executeLoading">正在处理</span>
+      </el-button>
     </div>
 
     <!-- 空状态提示 -->
@@ -385,8 +388,11 @@ const loadOriginRequestList = async () => {
   }
 };
 
+const executeLoading = ref(false);
+
 const executeReplay = async () => {
   try {
+    executeLoading.value = true;
     await ReplayRequestApi.replayRequest(query.originRequestId || "");
     ElMessage.success("执行重放成功");
     loadReplayRequestList();
@@ -394,6 +400,8 @@ const executeReplay = async () => {
   } catch (e: any) {
     ElMessage.error(e.message);
     console.error("执行重放失败", e);
+  } finally {
+    executeLoading.value = false;
   }
 };
 
