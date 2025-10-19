@@ -219,14 +219,18 @@ const onSendRequest = async () => {
   try {
     await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
     await urResponseListRef.value?.loadUserRequestLogList();
-
-    // 刷新最后一次响应
-    lastResponse.value = await UserRequestLogApi.getLastUserRequestLogDetails(RequestTreeHolder().getActiveRequestId || "");
   } catch (e) {
     ElMessage.error(`发送请求失败:${e}`);
   } finally {
     await urResponseListRef.value?.loadUserRequestLogList();
     loading.value = false;
+  }
+
+  try {
+    lastResponse.value = await UserRequestLogApi.getLastUserRequestLogDetails(RequestTreeHolder().getActiveRequestId || "");
+  } catch (e) {
+    //需要清空lastResponse
+    lastResponse.value = null;
   }
 };
 
