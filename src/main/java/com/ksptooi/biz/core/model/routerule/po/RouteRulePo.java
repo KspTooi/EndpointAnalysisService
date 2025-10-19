@@ -5,19 +5,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 
-/**
- * ${tableComment}
- *
- * @author: generator
- * @date: ${.now?string("yyyy年MM月dd日 HH:mm")}
- */
 @Getter
 @Setter
 @Entity
 @Table(name = "route_rule")
+@Comment("路由规则")
 public class RouteRulePo {
 
     @Id

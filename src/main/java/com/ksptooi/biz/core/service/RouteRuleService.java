@@ -6,7 +6,9 @@ import com.ksptooi.biz.core.model.routerule.dto.GetRouteRuleListDto;
 import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 import com.ksptooi.biz.core.model.routerule.vo.GetRouteRuleDetailsVo;
 import com.ksptooi.biz.core.model.routerule.vo.GetRouteRuleListVo;
+import com.ksptooi.biz.core.model.routeserver.po.RouteServerPo;
 import com.ksptooi.biz.core.repository.RouteRuleRepository;
+import com.ksptooi.biz.core.repository.RouteServerRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
@@ -26,6 +28,9 @@ public class RouteRuleService {
     @Autowired
     private RouteRuleRepository repository;
 
+    @Autowired
+    private RouteServerRepository routeServerRepository;
+
     public PageResult<GetRouteRuleListVo> getRouteRuleList(GetRouteRuleListDto dto) {
         RouteRulePo query = new RouteRulePo();
         assign(dto, query);
@@ -40,8 +45,14 @@ public class RouteRuleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addRouteRule(AddRouteRuleDto dto) {
+    public void addRouteRule(AddRouteRuleDto dto) throws BizException {
         RouteRulePo insertPo = as(dto, RouteRulePo.class);
+
+        //查询目标服务器
+        RouteServerPo routeServer = routeServerRepository.findById(dto.getRouteServerId())
+                .orElseThrow(() -> new BizException("目标服务器不存在或无权限访问."));
+        insertPo.setRouteServer(routeServer);
+
         repository.save(insertPo);
     }
 
@@ -50,20 +61,25 @@ public class RouteRuleService {
         RouteRulePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
+        //查询目标服务器
+        RouteServerPo routeServer = routeServerRepository.findById(dto.getRouteServerId())
+                .orElseThrow(() -> new BizException("目标服务器不存在或无权限访问."));
+        updatePo.setRouteServer(routeServer);
+
         assign(dto, updatePo);
         repository.save(updatePo);
     }
 
     public GetRouteRuleDetailsVo getRouteRuleDetails(CommonIdDto dto) throws BizException {
         RouteRulePo po = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
+                .orElseThrow(() -> new BizException("数据不存在或无权限访问."));
         return as(po, GetRouteRuleDetailsVo.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void removeRouteRule(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
+            throw new BizException("批量删除不支持.");
         }
         if (!dto.isBatch()) {
             repository.deleteById(dto.getId());

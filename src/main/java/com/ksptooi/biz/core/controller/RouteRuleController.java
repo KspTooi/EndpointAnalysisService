@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +41,14 @@ public class RouteRuleController {
     @Operation(summary = "新增路由规则")
     @PostMapping("/addRouteRule")
     public Result<String> addRouteRule(@RequestBody @Valid AddRouteRuleDto dto) throws Exception {
+
+        //验证参数
+        String validate = dto.validate();
+
+        if(StringUtils.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
         routeRuleService.addRouteRule(dto);
         return Result.success("新增成功");
     }
@@ -46,8 +56,16 @@ public class RouteRuleController {
     @Operation(summary = "编辑路由规则")
     @PostMapping("/editRouteRule")
     public Result<String> editRouteRule(@RequestBody @Valid EditRouteRuleDto dto) throws Exception {
+
+        //验证参数
+        String validate = dto.validate();
+
+        if(StringUtils.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
         routeRuleService.editRouteRule(dto);
-        return Result.success("修改成功");
+        return Result.success("编辑成功");
     }
 
     @Operation(summary = "查询路由规则详情")

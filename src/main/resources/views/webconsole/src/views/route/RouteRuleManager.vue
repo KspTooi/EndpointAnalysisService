@@ -84,7 +84,7 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="90px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="95px" :validate-on-rule-change="false">
         <el-form-item label="路由规则名" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入路由规则名" />
         </el-form-item>
@@ -94,15 +94,15 @@
             <el-option label="IP地址" :value="1" />
           </el-select>
         </el-form-item>
-        <el-form-item label="匹配键" prop="matchKey">
+        <el-form-item label="匹配键" prop="matchKey" v-if="modalForm.matchType == 2">
           <el-input v-model="modalForm.matchKey" placeholder="请输入匹配键" />
         </el-form-item>
-        <el-form-item label="匹配操作" prop="matchOperator">
+        <el-form-item label="匹配操作" prop="matchOperator" v-if="modalForm.matchType != 0">
           <el-select v-model="modalForm.matchOperator" placeholder="请选择匹配操作">
             <el-option label="等于" :value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item label="匹配值" prop="matchValue">
+        <el-form-item label="匹配值" prop="matchValue" v-if="modalForm.matchType != 0">
           <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
         </el-form-item>
         <el-form-item label="目标服务器" prop="routeServerId">
@@ -111,7 +111,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="权重" prop="seq">
-          <el-input v-model="modalForm.seq" placeholder="请输入权重" />
+          <el-input v-model.number="modalForm.seq" placeholder="请输入权重" type="number" :min="0" :max="100000" />
         </el-form-item>
         <el-form-item label="策略描述" prop="remark">
           <el-input v-model="modalForm.remark" placeholder="请输入策略描述" />
@@ -130,17 +130,10 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi";
-import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
-import IconPicker from "@/components/common/IconPicker.vue";
-import { Icon } from "@iconify/vue";
-import { EventHolder } from "@/store/EventHolder";
-import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi";
-import RouteServerApi from "@/api/route/RouteServerApi";
 import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
 
 //列表内容
@@ -223,12 +216,36 @@ const modalForm = reactive<GetRouteRuleDetailsVo>({
   matchOperator: 0,
   matchValue: "",
   routeServerId: "",
-  seq: 0,
+  seq: 1,
   remark: "",
   updateTime: "",
 });
 
-const modalRules = {};
+const modalRules = {
+  name: [
+    { required: true, message: "请输入路由规则名", trigger: "blur" },
+    { max: 32, message: "路由规则名长度不能超过32个字符", trigger: "blur" },
+  ],
+  matchType: [{ required: true, message: "请选择匹配类型", trigger: "change" }],
+  matchKey: [
+    { required: true, message: "请输入匹配键", trigger: "blur" },
+    { max: 255, message: "匹配键长度不能超过255个字符", trigger: "blur" },
+  ],
+  matchOperator: [{ required: true, message: "请选择匹配操作", trigger: "change" }],
+  matchValue: [
+    { required: true, message: "请输入匹配值", trigger: "blur" },
+    { max: 255, message: "匹配值长度不能超过255个字符", trigger: "blur" },
+  ],
+  routeServerId: [{ required: true, message: "请选择目标服务器", trigger: "change" }],
+  seq: [
+    { required: true, message: "请输入权重", trigger: "blur" },
+    { type: "number", min: 0, max: 100000, message: "权重必须在0-100000之间", trigger: "blur" },
+  ],
+  remark: [
+    { required: true, message: "请输入策略描述", trigger: "blur" },
+    { max: 5000, message: "策略描述长度不能超过5000个字符", trigger: "blur" },
+  ],
+};
 
 const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) => {
   modalMode.value = mode;
@@ -268,7 +285,7 @@ const resetModal = () => {
   modalForm.matchOperator = 0;
   modalForm.matchValue = "";
   modalForm.routeServerId = "";
-  modalForm.seq = 0;
+  modalForm.seq = 1;
   modalForm.remark = "";
   modalForm.updateTime = "";
 };
