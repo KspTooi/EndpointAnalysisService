@@ -47,7 +47,7 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
             t.description LIKE CONCAT('%',:#{#po.name},'%') )
         )
     )
-    AND (:#{#po.permission} IS NULL OR t.permission  LIKE CONCAT('%',:#{#po.permission},'%') )
+    AND (:#{#po.permission} IS NULL OR t.permission LIKE CONCAT('%',:#{#po.permission},'%') )
     ORDER BY t.seq ASC,t.updateTime DESC
     """)
     List<ResourcePo> getMenuTree(@Param("po") GetMenuTreeDto po);

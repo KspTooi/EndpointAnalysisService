@@ -81,6 +81,7 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑服务器' : '添加服务器'"
       width="550px"
+      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
@@ -333,5 +334,11 @@ const submitModal = async () => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
+}
+
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

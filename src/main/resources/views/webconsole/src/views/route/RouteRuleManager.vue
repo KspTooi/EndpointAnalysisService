@@ -27,15 +27,30 @@
     <div class="list-table">
       <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
         <el-table-column label="路由规则名" prop="name" width="300" show-overflow-tooltip />
+        <el-table-column label="目标服务器" prop="routeServerId" width="100" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
             <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{ scope.row.matchType === 0 ? "全部" : "IP地址" }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="匹配键" prop="matchKey" width="100" show-overflow-tooltip />
-        <el-table-column label="匹配操作" prop="matchOperator" width="100" show-overflow-tooltip />
-        <el-table-column label="匹配值" prop="matchValue" width="100" show-overflow-tooltip />
-        <el-table-column label="目标服务器" prop="routeServerId" width="100" show-overflow-tooltip />
+        <el-table-column label="匹配键" prop="matchKey" width="100" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.matchKey === null">--</span>
+            <span v-else>{{ scope.row.matchKey }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="匹配操作" prop="matchOperator" width="100" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.matchOperator === null">--</span>
+            <span v-else>{{ scope.row.matchOperator === 0 ? "等于" : "不等于" }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="匹配值" prop="matchValue" width="100" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.matchValue === null">--</span>
+            <span v-else>{{ scope.row.matchValue }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="权重" prop="seq" width="100" show-overflow-tooltip />
         <el-table-column label="策略描述" prop="remark" show-overflow-tooltip />
         <el-table-column label="更新时间" prop="updateTime" width="100" show-overflow-tooltip />
@@ -73,11 +88,12 @@
       </div>
     </div>
 
-    <!-- 菜单编辑模态框 -->
+    <!-- 路由规则编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑路由规则' : '添加路由规则'"
       width="550px"
+      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
@@ -107,7 +123,9 @@
         </el-form-item>
         <el-form-item label="目标服务器" prop="routeServerId">
           <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器" clearable filterable>
-            <el-option v-for="item in routeServerList" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="item in routeServerList" :key="item.id" :label="item.name" :value="item.id">
+              <span :style="{ color: item.status === 0 ? 'var(--el-color-danger)' : '' }">{{ item.name }}</span>
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="权重" prop="seq">
@@ -377,5 +395,11 @@ watch(
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
+}
+
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
