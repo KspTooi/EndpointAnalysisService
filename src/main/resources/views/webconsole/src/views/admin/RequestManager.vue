@@ -135,83 +135,7 @@
       </div>
     </div>
 
-    <!-- 请求编辑模态框 -->
-    <el-dialog v-model="dialogVisible" :title="modalMode === 'view' ? '预览请求' : '编辑请求'" width="800px" :close-on-click-modal="true" class="centered-dialog">
-      <el-form v-if="dialogVisible" ref="formRef" :model="details" :rules="rules" label-width="100px" :validate-on-rule-change="false">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="负载" name="payload">
-            <el-form-item label="请求体" prop="requestBody">
-              <el-input :model-value="formatJson(details.requestBody)" type="textarea" :rows="14" readonly />
-            </el-form-item>
-            <el-form-item label="响应体" prop="responseBody">
-              <el-input :model-value="formatJson(details.responseBody)" type="textarea" :rows="14" readonly />
-            </el-form-item>
-          </el-tab-pane>
-
-          <el-tab-pane label="标头" name="headers">
-            <el-form-item label="请求头" prop="requestHeaders">
-              <el-input v-model="details.requestHeaders" type="textarea" :rows="12" disabled />
-            </el-form-item>
-            <el-form-item label="响应头" prop="responseHeaders">
-              <el-input v-model="details.responseHeaders" type="textarea" :rows="12" disabled />
-            </el-form-item>
-          </el-tab-pane>
-
-          <el-tab-pane label="详情" name="meta">
-            <el-form-item label="请求ID" prop="requestId">
-              <el-input v-model="details.requestId" disabled />
-            </el-form-item>
-            <el-form-item label="请求方法" prop="method">
-              <el-input v-model="details.method" disabled />
-            </el-form-item>
-            <el-form-item label="请求URL" prop="url">
-              <el-input v-model="details.url" disabled />
-            </el-form-item>
-            <el-form-item label="来源" prop="source">
-              <el-input v-model="details.source" disabled />
-            </el-form-item>
-            <el-form-item label="请求体类型" prop="requestBodyType">
-              <el-input v-model="details.requestBodyType" disabled />
-            </el-form-item>
-            <el-form-item label="请求体长度" prop="requestBodyLength">
-              <el-input v-model="details.requestBodyLength" disabled />
-            </el-form-item>
-            <el-form-item label="响应体类型" prop="responseBodyType">
-              <el-input v-model="details.responseBodyType" disabled />
-            </el-form-item>
-            <el-form-item label="响应体长度" prop="responseBodyLength">
-              <el-input v-model="details.responseBodyLength" disabled />
-            </el-form-item>
-            <el-form-item label="HTTP状态码" prop="statusCode">
-              <el-input v-model="details.statusCode" disabled />
-            </el-form-item>
-            <el-form-item label="重定向URL" prop="redirectUrl">
-              <el-input v-model="details.redirectUrl" disabled />
-            </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="details.status" disabled>
-                <el-option label="正常" :value="0" />
-                <el-option label="HTTP失败" :value="1" />
-                <el-option label="业务失败" :value="2" />
-                <el-option label="连接超时" :value="3" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="请求时间" prop="requestTime">
-              <el-input v-model="details.requestTime" disabled />
-            </el-form-item>
-            <el-form-item label="响应时间" prop="responseTime">
-              <el-input v-model="details.responseTime" disabled />
-            </el-form-item>
-          </el-tab-pane>
-        </el-tabs>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="saveRequest(details)" :loading="submitLoading"> 保存请求 </el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <RequestPreviewModal ref="requestPreviewModalRef" />
 
     <!-- 保存请求对话框 -->
     <el-dialog v-model="saveDialogVisible" title="另存为" width="400px" :close-on-click-modal="false" :close-on-press-escape="false" class="modal-centered">
@@ -242,12 +166,15 @@ import { reactive, ref, onMounted } from "vue";
 import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/RequestApi.ts";
 import RequestApi from "@/api/RequestApi.ts";
 import { ElMessage } from "element-plus";
-import { Edit, DocumentCopy, View, Right } from "@element-plus/icons-vue";
+import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import QueryPersistService from "@/service/QueryPersistService";
 import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
+import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
+import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
+import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
 
 const router = useRouter();
 const queryPersistService = QueryPersistService;
@@ -272,16 +199,12 @@ const total = ref(0);
 const loading = ref(false);
 
 // 使用markRaw包装图标组件
-const EditIcon = markRaw(Edit);
 const ViewIcon = markRaw(View);
 const RightIcon = markRaw(Right);
 const SaveIcon = markRaw(DocumentCopy);
 
 // 模态框相关
-const dialogVisible = ref(false);
-const formRef = ref<FormInstance>();
-const submitLoading = ref(false);
-const modalMode = ref<"view" | "edit">("view"); //view:预览,edit:编辑
+const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
 
 // 保存请求对话框相关
 const saveDialogVisible = ref(false);
@@ -292,38 +215,6 @@ const saveForm = reactive({
   name: "",
   url: "",
 });
-
-// 预览Tab
-const activeTab = ref<"payload" | "headers" | "meta">("payload");
-
-//表单数据
-const details = reactive<GetRequestDetailsVo>({
-  id: 0,
-  requestId: "",
-  method: "",
-  url: "",
-  source: "",
-  requestHeaders: "",
-  requestBodyLength: 0,
-  requestBodyType: "",
-  requestBody: "",
-  responseHeaders: "",
-  responseBodyLength: 0,
-  responseBodyType: "",
-  responseBody: "",
-  statusCode: 0,
-  redirectUrl: "",
-  status: 0,
-  requestTime: "",
-  responseTime: "",
-});
-
-// 表单校验规则
-const rules = {
-  key: [{ required: true, message: "Please enter key", trigger: "blur" }],
-  value: [{ required: true, message: "Please enter value", trigger: "blur" }],
-  description: [{ max: 200, message: "Description cannot exceed 200 characters", trigger: "blur" }],
-};
 
 const timeRange = ref<[Date, Date] | null>(null);
 
@@ -376,28 +267,7 @@ const resetQuery = () => {
 };
 
 const resetForm = () => {
-  details.id = 0;
-  details.requestId = "";
-  details.method = "";
-  details.url = "";
-  details.source = "";
-  details.requestHeaders = "";
-  details.requestBodyLength = 0;
-  details.requestBodyType = "";
-  details.requestBody = "";
-  details.responseHeaders = "";
-  details.responseBodyLength = 0;
-  details.responseBodyType = "";
-  details.responseBody = "";
-  details.statusCode = 0;
-  details.redirectUrl = "";
-  details.status = 0;
-  details.requestTime = "";
-  details.responseTime = "";
-
-  if (formRef.value) {
-    formRef.value.resetFields();
-  }
+  // This function is no longer needed as the form is managed by RequestPreviewModal
 };
 
 //页面加载时自动加载数据
@@ -406,50 +276,55 @@ onMounted(() => {
   loadRequestList();
 });
 
+const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
+  if (!headers) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(headers);
+    if (typeof parsed === "object" && parsed !== null) {
+      if (Array.isArray(parsed)) {
+        // 如果已经是HttpHeaderVo[]格式
+        return parsed;
+      }
+      // 如果是 {k:v, k2:v2} 格式
+      return Object.entries(parsed).map(([k, v]) => ({ k, v: String(v) }));
+    }
+  } catch (e) {
+    console.warn("无法将标头解析为JSON，将返回空数组", headers, e);
+  }
+  return [];
+};
+
 //打开预览请求模态框
 const openViewModal = async (row: GetRequestListVo) => {
   try {
     //获取请求数据
     const res = await RequestApi.getRequestDetails(row.id.toString());
-    console.log(res);
-    details.id = res.id;
-    details.requestId = res.requestId;
-    details.method = res.method;
-    details.url = res.url;
-    details.source = res.source;
-    details.requestHeaders = res.requestHeaders;
-    details.requestBody = res.requestBody;
-    details.responseHeaders = res.responseHeaders;
-    details.responseBody = res.responseBody;
-    details.statusCode = res.statusCode;
-    details.redirectUrl = res.redirectUrl;
-    details.status = res.status;
-    details.requestTime = res.requestTime;
-    details.responseTime = res.responseTime;
-    details.requestBodyLength = res.requestBodyLength;
-    details.requestBodyType = res.requestBodyType;
-    details.responseBodyLength = res.responseBodyLength;
-    details.responseBodyType = res.responseBodyType;
-    modalMode.value = "view";
-    activeTab.value = "payload";
-    dialogVisible.value = true;
+    const previewData: RequestPreviewVo = {
+      id: res.id.toString(),
+      requestId: res.requestId,
+      method: res.method,
+      url: res.url,
+      source: res.source,
+      requestHeaders: parseHeadersFromString(res.requestHeaders),
+      requestBodyLength: res.requestBodyLength,
+      requestBodyType: res.requestBodyType,
+      requestBody: res.requestBody,
+      responseHeaders: parseHeadersFromString(res.responseHeaders),
+      responseBodyLength: res.responseBodyLength,
+      responseBodyType: res.responseBodyType,
+      responseBody: res.responseBody,
+      statusCode: res.statusCode,
+      redirectUrl: res.redirectUrl,
+      status: res.status,
+      requestTime: res.requestTime,
+      responseTime: res.responseTime,
+    };
+    requestPreviewModalRef.value?.openPreview(previewData);
   } catch (error) {
     ElMessage.error("获取请求详情失败");
     console.error("获取请求详情失败", error);
-  }
-};
-
-const openUpdateModal = async (row: GetRequestListVo) => {
-  try {
-    resetForm();
-
-    const res = await RequestApi.getRequestDetails(row.id.toString());
-    Object.assign(details, res);
-
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("Failed to get configuration details");
-    console.error("Failed to get configuration details", error);
   }
 };
 
@@ -565,49 +440,6 @@ const formatJson = (data: unknown): string => {
 
 .copy-icon {
   cursor: pointer;
-}
-
-/* 垂直居中对话框并在小屏自适应高度 */
-:deep(.centered-dialog) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 70vh;
-  max-height: 70vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 内容区滚动以防止超出屏幕 */
-:deep(.centered-dialog .el-dialog__body) {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* 表单充满对话框，便于内部滚动控制 */
-:deep(.centered-dialog .el-form) {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-}
-
-/* Tabs 使用列布局，头部固定，内容区自适应 */
-:deep(.centered-dialog .el-tabs) {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* 仅内容区滚动 */
-:deep(.centered-dialog .el-tabs__content) {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
 }
 
 /* 保存请求对话框垂直居中 */
