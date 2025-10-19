@@ -22,7 +22,12 @@
       <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
         <el-table-column label="通道名称" prop="name" />
         <el-table-column label="主机" prop="host" />
-        <el-table-column label="桥接目标URL" prop="forwardUrl" show-overflow-tooltip />
+        <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
+            <span v-show="scope.row.forwardType === 1"> 已配置路由 </span>
+          </template>
+        </el-table-column>
         <el-table-column label="自动运行" prop="autoStart" width="100">
           <template #default="scope">
             <span v-show="scope.row.autoStart === 1" style="color: #67c23a"> 已启用 </span>
@@ -107,7 +112,39 @@
         <el-form-item label="端口" prop="port">
           <el-input v-model="modalForm.port" placeholder="8080" type="number" />
         </el-form-item>
-        <el-form-item label="桥接目标URL" prop="forwardUrl">
+        <el-form-item label="桥接模式" prop="forwardType">
+          <el-select v-model="modalForm.forwardType" placeholder="请选择桥接目标类型">
+            <el-option label="直接" :value="0" />
+            <el-option label="路由" :value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="路由规则" prop="routeRules" v-show="modalForm.forwardType === 1">
+          <el-select v-model="modalForm.routeRules" placeholder="请选择路由规则" multiple value-key="routeRuleId">
+            <el-option
+              v-for="item in modalRouteRuleData"
+              :key="item.id"
+              :label="item.name"
+              :value="{
+                routeRuleId: item.id,
+                routeRuleName: item.name,
+                seq: 1,
+              }"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="路由权重" v-show="modalForm.forwardType === 1">
+          <el-table :data="modalForm.routeRules" style="width: 100%" max-height="250" border size="small">
+            <el-table-column prop="routeRuleName" label="路由规则名称" width="180" />
+            <el-table-column label="权重">
+              <template #default="scope">
+                <el-input-number v-model="scope.row.seq" :min="1" :max="100" size="small" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+
+        <el-form-item label="桥接目标URL" prop="forwardUrl" v-show="modalForm.forwardType === 0">
           <el-input v-model="modalForm.forwardUrl" placeholder="https://www.baidu.com" />
         </el-form-item>
         <el-form-item label="自动运行" prop="autoStart">
@@ -175,13 +212,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, watch } from "vue";
 import RelayServerApi, { type GetRelayServerListDto } from "@/api/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo } from "@/api/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo } from "@/api/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
+import type { GetRouteRuleListVo } from "@/api/route/RouteRuleApi";
+import { Result } from "@/commons/entity/Result";
+import RouteRuleApi from "@/api/route/RouteRuleApi";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -258,11 +298,14 @@ const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
 const modalMode = ref<"view" | "edit" | "add">("view"); //view:预览,edit:编辑,add:添加
+const modalRouteRuleData = ref<GetRouteRuleListVo[]>([]); //路由规则数据
 const modalForm = reactive<GetRelayServerDetailsVo>({
   id: null,
   name: null,
   host: null,
   port: null,
+  forwardType: 0, //桥接目标类型 0:直接 1:路由
+  routeRules: [] as RelayServerRouteRuleVo[],
   forwardUrl: null,
   autoStart: null,
   status: null,
@@ -288,9 +331,40 @@ const modalRules = {
     { required: true, message: "请输入中继服务器端口", trigger: "blur" },
     { pattern: /^[0-9]{1,5}$/, message: "端口必须为1-65535之间的整数", trigger: "blur" },
   ],
+  forwardType: [{ required: true, message: "请选择桥接目标类型", trigger: "blur" }],
+  routeRules: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (modalForm.forwardType === 1 && value.length === 0) {
+          callback(new Error("请选择路由规则"));
+          return;
+        }
+        callback();
+      },
+      trigger: "change",
+    },
+  ],
   forwardUrl: [
-    { required: true, message: "请输入桥接目标URL", trigger: "blur" },
-    { pattern: /^https?:\/\/[^\s/$.?#].[^\s]*$/i, message: "桥接目标URL必须为有效URL", trigger: "blur" },
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (modalForm.forwardType === 0) {
+          if (!value) {
+            callback(new Error("请输入桥接目标URL"));
+            return;
+          }
+          if (!/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(value)) {
+            callback(new Error("桥接目标URL必须为有效URL"));
+            return;
+          }
+          callback();
+          return;
+        }
+        if (modalForm.forwardType !== 0) {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
   ],
   autoStart: [{ required: true, message: "请选择是否自动运行", trigger: "blur" }],
   requestIdStrategy: [{ required: true, message: "请选择请求ID策略", trigger: "blur" }],
@@ -319,7 +393,7 @@ const modalRules = {
       trigger: "blur",
     },
   ],
-  bizErrorCodeValue: [
+  bizSuccessCodeValue: [
     {
       validator: (rule: any, value: any, callback: any) => {
         if (modalForm.bizErrorStrategy === 1 && !value) {
@@ -350,6 +424,8 @@ const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null)
       modalForm.name = res.name;
       modalForm.host = res.host;
       modalForm.port = res.port;
+      modalForm.forwardType = res.forwardType;
+      modalForm.routeRules = res.routeRules;
       modalForm.forwardUrl = res.forwardUrl;
       modalForm.autoStart = res.autoStart;
       modalForm.status = res.status;
@@ -369,6 +445,16 @@ const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null)
     }
   }
 
+  //加载路由规则数据
+  const res = await RouteRuleApi.getRouteRuleList({
+    pageNum: 1,
+    pageSize: 100000,
+  });
+
+  if (Result.isSuccess(res)) {
+    modalRouteRuleData.value = res.data;
+  }
+
   modalVisible.value = true;
 };
 
@@ -377,6 +463,8 @@ const resetModal = () => {
   modalForm.name = null;
   modalForm.host = "0.0.0.0";
   modalForm.port = 8080;
+  modalForm.forwardType = 0;
+  modalForm.routeRules = [];
   modalForm.forwardUrl = null;
   modalForm.autoStart = 1;
   modalForm.status = null;
@@ -405,6 +493,8 @@ const submitModal = async () => {
         name: modalForm.name,
         host: modalForm.host,
         port: modalForm.port,
+        forwardType: modalForm.forwardType,
+        routeRules: modalForm.routeRules,
         forwardUrl: modalForm.forwardUrl,
         autoStart: modalForm.autoStart,
         overrideRedirect: modalForm.overrideRedirect,
@@ -424,6 +514,8 @@ const submitModal = async () => {
         name: modalForm.name,
         host: modalForm.host,
         port: modalForm.port,
+        forwardType: modalForm.forwardType,
+        routeRules: modalForm.routeRules,
         forwardUrl: modalForm.forwardUrl,
         autoStart: modalForm.autoStart,
         overrideRedirect: modalForm.overrideRedirect,
@@ -464,6 +556,21 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
     ElMessage.error(error.message);
   }
 };
+
+watch(
+  () => modalForm.forwardType,
+  (newVal: number | null) => {
+    //如果桥接目标类型为直接，则清空路由规则
+    if (newVal === 0) {
+      modalForm.routeRules = [];
+    }
+
+    //如果桥接目标类型为路由，则清空桥接目标URL
+    if (newVal === 1) {
+      modalForm.forwardUrl = null;
+    }
+  }
+);
 </script>
 
 <style scoped>

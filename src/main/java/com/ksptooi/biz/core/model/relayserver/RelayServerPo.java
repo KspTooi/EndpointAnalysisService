@@ -5,9 +5,12 @@ import com.ksptooi.biz.core.model.request.RequestPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -94,6 +97,8 @@ public class RelayServerPo {
     @Comment("请求记录")
     private List<RequestPo> requestList;
 
+    @OrderBy("seq ASC")
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "relayServer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Comment("路由规则")
     private List<RelayServerRoutePo> routeRules;
@@ -115,6 +120,9 @@ public class RelayServerPo {
      * @param routeRule 路由规则
      */
     public void addRouteRule(RelayServerRoutePo routeRule) {
+        if(this.routeRules == null){
+            this.routeRules = new ArrayList<>();
+        }
         this.routeRules.add(routeRule);
         routeRule.setRelayServer(this);
     }

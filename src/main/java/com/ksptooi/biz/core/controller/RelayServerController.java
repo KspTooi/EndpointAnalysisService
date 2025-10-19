@@ -1,21 +1,16 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.core.model.relayserver.AddRelayServerDto;
-import com.ksptooi.biz.core.model.relayserver.EditRelayServerDto;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerListDto;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerListVo;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerDetailsVo;
+import com.ksptooi.biz.core.model.relayserver.*;
 import com.ksptooi.biz.core.service.RelayServerService;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageableResult;
 import com.ksptooi.commons.utils.web.Result;
-
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -29,6 +24,7 @@ public class RelayServerController {
 
     /**
      * 获取中继服务器列表
+     *
      * @param dto 查询条件
      * @return 中继服务器列表
      */
@@ -39,6 +35,7 @@ public class RelayServerController {
 
     /**
      * 添加中继服务器
+     *
      * @param dto 中继服务器信息
      * @throws BizException
      */
@@ -47,7 +44,7 @@ public class RelayServerController {
 
         String validate = dto.validate();
 
-        if(validate != null) {
+        if (validate != null) {
             throw new BizException(validate);
         }
 
@@ -57,6 +54,7 @@ public class RelayServerController {
 
     /**
      * 编辑中继服务器
+     *
      * @param dto 中继服务器信息
      * @throws BizException
      */
@@ -64,7 +62,7 @@ public class RelayServerController {
     public Result<String> editRelayServer(@RequestBody @Valid EditRelayServerDto dto) throws BizException {
 
         String validate = dto.validate();
-        if(validate != null) {
+        if (validate != null) {
             throw new BizException(validate);
         }
 
@@ -72,10 +70,11 @@ public class RelayServerController {
         return Result.success("编辑中继服务器成功");
     }
 
-    
+
     /**
      * 获取中继服务器详情
-     * @param id 中继服务器ID
+     *
+     * @param dto 中继服务器ID
      * @return 中继服务器详情
      */
     @PostMapping("/getRelayServerDetails")
@@ -85,6 +84,7 @@ public class RelayServerController {
 
     /**
      * 删除中继服务器
+     *
      * @param dto 中继服务器ID
      * @throws BizException
      */
@@ -92,10 +92,11 @@ public class RelayServerController {
     public Result<String> removeRelayServer(@RequestBody @Valid CommonIdDto dto) throws BizException {
         relayServerService.removeRelayServer(dto.getId());
         return Result.success("删除中继服务器成功");
-    }   
+    }
 
     /**
      * 启动中继服务器
+     *
      * @param dto 中继服务器ID
      * @throws BizException
      */
@@ -106,6 +107,7 @@ public class RelayServerController {
 
     /**
      * 停止中继服务器
+     *
      * @param dto 中继服务器ID
      * @throws BizException
      */

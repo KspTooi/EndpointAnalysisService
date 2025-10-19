@@ -38,7 +38,6 @@ public class EditRelayServerDto {
     private List<RelayServerRouteRuleDto> routeRules;
 
     @Schema(description = "桥接目标URL")
-    @NotBlank(message = "桥接目标URL不能为空")
     private String forwardUrl;
 
     @Schema(description = "自动运行 0:否 1:是")
@@ -91,12 +90,21 @@ public class EditRelayServerDto {
             return "当桥接目标类型为路由时，路由规则列表不能为空";
         }
 
-        //桥接目标类型为0时，桥接目标URL不能为空
+        //桥接目标类型为0时，校验桥接目标
         if(forwardType == 0 && StringUtils.isBlank(forwardUrl)) {
 
             //不允许传递路由规则列表
             if(!routeRules.isEmpty()) {
                 return "当桥接目标类型为直接时，不允许传递路由规则列表";
+            }
+
+            //桥接目标URL必须为有效URL http:// 或 https:// 且支持域名
+            if(StringUtils.isBlank(forwardUrl)) {
+                return "桥接目标URL不能为空";
+            }
+
+            if(!forwardUrl.matches("^https?://[A-Za-z0-9.-]+(?::\\d+)?(?:/\\S*)?$")) {
+                return "桥接目标URL必须为有效URL";
             }
 
             return "当桥接目标类型为直接时，桥接目标URL不能为空";
@@ -109,14 +117,6 @@ public class EditRelayServerDto {
         //端口必须为1-65535之间的整数
         if(port < 1 || port > 65535) {
             return "端口必须为1-65535之间的整数";
-        }
-
-        //桥接目标URL必须为有效URL http:// 或 https:// 且支持域名
-        if(StringUtils.isBlank(forwardUrl)) {
-            return "桥接目标URL不能为空";
-        }
-        if(!forwardUrl.matches("^https?://[A-Za-z0-9.-]+(?::\\d+)?(?:/\\S*)?$")) {
-            return "桥接目标URL必须为有效URL";
         }
 
         //当覆盖桥接目标的重定向为1时，覆盖桥接目标的重定向URL不能为空

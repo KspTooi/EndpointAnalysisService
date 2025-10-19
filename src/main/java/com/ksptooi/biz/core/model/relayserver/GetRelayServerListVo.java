@@ -16,6 +16,9 @@ public class GetRelayServerListVo {
 
     //中继服务器主机(与端口)
     private String host;
+
+    //桥接目标类型 0:直接 1:路由
+    private Integer forwardType;
     
     //桥接目标URL
     private String forwardUrl;

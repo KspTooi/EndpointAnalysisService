@@ -8,6 +8,7 @@ import com.ksptooi.biz.core.model.relayserver.GetRelayServerListDto;
 import com.ksptooi.biz.core.model.relayserver.GetRelayServerListVo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.core.model.relayserver.RelayServerRouteRuleDto;
+import com.ksptooi.biz.core.model.relayserver.RelayServerRouteRuleVo;
 import com.ksptooi.biz.core.model.relayserverroute.po.RelayServerRoutePo;
 import com.ksptooi.biz.core.model.routerule.po.RouteRulePo;
 import com.ksptooi.biz.core.repository.RelayServerRepository;
@@ -16,7 +17,6 @@ import com.ksptooi.commons.aop.HttpRelayServlet;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.Result;
 import com.ksptooi.commons.utils.web.PageableResult;
-
 import java.io.File;
 import java.net.http.HttpClient;
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -73,6 +72,7 @@ public class RelayServerService {
             vo.setId(item.getId());
             vo.setName(item.getName());
             vo.setHost(item.getHost() + ":" + item.getPort());
+            vo.setForwardType(item.getForwardType());
             vo.setForwardUrl(item.getForwardUrl());
             vo.setAutoStart(item.getAutoStart());
             vo.setStatus(item.getStatus());
@@ -109,6 +109,7 @@ public class RelayServerService {
         insertPo.setName(dto.getName());
         insertPo.setHost(dto.getHost());
         insertPo.setPort(dto.getPort());
+        insertPo.setForwardType(dto.getForwardType());
         insertPo.setForwardUrl(dto.getForwardUrl());
         insertPo.setAutoStart(dto.getAutoStart());
         insertPo.setStatus(1); //0:已禁用 1:未启动 2:运行中 3:启动失败
@@ -169,36 +170,6 @@ public class RelayServerService {
         relayServerRepository.save(insertPo);
     }
 
-
-    /**
-     * 获取中继服务器详情
-     * @param id 中继服务器ID
-     * @return 中继服务器详情
-     */
-    public GetRelayServerDetailsVo getRelayServerDetails(Long id) throws BizException{
-        RelayServerPo po = relayServerRepository.findById(id)
-            .orElseThrow(() -> new BizException("中继服务器不存在"));
-        GetRelayServerDetailsVo vo = new GetRelayServerDetailsVo();
-        vo.setId(po.getId());
-        vo.setName(po.getName());
-        vo.setHost(po.getHost());
-        vo.setPort(po.getPort());
-        vo.setForwardUrl(po.getForwardUrl());
-        vo.setAutoStart(po.getAutoStart());
-        vo.setStatus(po.getStatus());
-        vo.setCreateTime(po.getCreateTime());
-        vo.setOverrideRedirect(po.getOverrideRedirect());
-        vo.setOverrideRedirectUrl(po.getOverrideRedirectUrl());
-        vo.setRequestIdStrategy(po.getRequestIdStrategy());
-        vo.setRequestIdHeaderName(po.getRequestIdHeaderName());
-        vo.setBizErrorStrategy(po.getBizErrorStrategy());
-        vo.setBizErrorCodeField(po.getBizErrorCodeField());
-        vo.setBizSuccessCodeValue(po.getBizSuccessCodeValue());
-        return vo;
-    }
-
-
-
     /**
      * 编辑中继服务器
      * @param dto 中继服务器信息
@@ -231,6 +202,7 @@ public class RelayServerService {
         updatePo.setName(dto.getName());
         updatePo.setHost(dto.getHost());
         updatePo.setPort(dto.getPort());
+        updatePo.setForwardType(dto.getForwardType());
         updatePo.setForwardUrl(dto.getForwardUrl());
         updatePo.setAutoStart(dto.getAutoStart());
         updatePo.setOverrideRedirect(dto.getOverrideRedirect()); //重定向覆写 0:否 1:是
@@ -291,6 +263,49 @@ public class RelayServerService {
         
         relayServerRepository.save(updatePo);
     }
+
+
+    /**
+     * 获取中继服务器详情
+     * @param id 中继服务器ID
+     * @return 中继服务器详情
+     */
+    public GetRelayServerDetailsVo getRelayServerDetails(Long id) throws BizException{
+        RelayServerPo po = relayServerRepository.findById(id)
+            .orElseThrow(() -> new BizException("中继服务器不存在"));
+        GetRelayServerDetailsVo vo = new GetRelayServerDetailsVo();
+        vo.setId(po.getId());
+        vo.setName(po.getName());
+        vo.setHost(po.getHost());
+        vo.setPort(po.getPort());
+        vo.setForwardType(po.getForwardType());
+        vo.setForwardUrl(po.getForwardUrl());
+        vo.setAutoStart(po.getAutoStart());
+        vo.setStatus(po.getStatus());
+        vo.setCreateTime(po.getCreateTime());
+        vo.setOverrideRedirect(po.getOverrideRedirect());
+        vo.setOverrideRedirectUrl(po.getOverrideRedirectUrl());
+        vo.setRequestIdStrategy(po.getRequestIdStrategy());
+        vo.setRequestIdHeaderName(po.getRequestIdHeaderName());
+        vo.setBizErrorStrategy(po.getBizErrorStrategy());
+        vo.setBizErrorCodeField(po.getBizErrorCodeField());
+        vo.setBizSuccessCodeValue(po.getBizSuccessCodeValue());
+
+        //处理绑定的路由规则回显
+        List<RelayServerRouteRuleVo> routeRules = new ArrayList<>();
+        
+        for(RelayServerRoutePo item : po.getRouteRules()) {
+            RelayServerRouteRuleVo ruleVo = new RelayServerRouteRuleVo();
+            ruleVo.setRouteRuleId(item.getRouteRule().getId());
+            ruleVo.setRouteRuleName(item.getRouteRule().getName());
+            ruleVo.setSeq(item.getSeq());
+            routeRules.add(ruleVo);
+        }
+        vo.setRouteRules(routeRules);
+        return vo;
+    }
+
+
 
     /**
      * 删除中继服务器

@@ -5,9 +5,9 @@ import type CommonIdDto from "@/commons/entity/CommonIdDto";
 import type PageQuery from "@/commons/entity/PageQuery";
 
 export interface GetRouteRuleListDto extends PageQuery {
-  name: string | null; // 路由规则名
-  matchType: number | null; // 匹配类型 0:全部 1:IP地址
-  matchValue: string | null; // 匹配值
+  name?: string | null; // 路由规则名
+  matchType?: number | null; // 匹配类型 0:全部 1:IP地址
+  matchValue?: string | null; // 匹配值
 }
 
 export interface GetRouteRuleListVo {

@@ -26,7 +26,7 @@ public class GetRelayServerDetailsVo {
     private Integer forwardType;
 
     @Schema(description = "路由规则列表(桥接目标类型为1时必填)")
-    private List<RelayServerRouteRuleDto> routeRules;
+    private List<RelayServerRouteRuleVo> routeRules;
 
     @Schema(description = "桥接目标URL")
     private String forwardUrl;
