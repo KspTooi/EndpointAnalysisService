@@ -89,7 +89,7 @@
               </el-table-column>
               <el-table-column prop="tk" label="目标键" />
               <el-table-column prop="tv" label="比较值" />
-              <el-table-column label="操作">
+              <el-table-column label="操作" min-width="90">
                 <template #default="{ row, $index }">
                   <el-button type="primary" size="small" @click="() => triggerFormRef?.openWithEdit(formData.triggers[$index], $index)"> 编辑 </el-button>
                   <el-button type="danger" size="small" @click="removeTrigger($index)"> 删除 </el-button>
@@ -138,7 +138,7 @@
               </el-table-column>
               <el-table-column prop="f" label="原始键" />
               <el-table-column prop="t" label="目标键" />
-              <el-table-column label="操作">
+              <el-table-column label="操作" min-width="90">
                 <template #default="{ row, $index }">
                   <el-button type="primary" size="small" @click="() => operationFormRef?.openWithEdit(formData.operations[$index], $index)"> 编辑 </el-button>
                   <el-button type="danger" size="small" @click="removeOperation($index)"> 删除 </el-button>
@@ -445,7 +445,7 @@ watch(
 }
 
 .editor-content {
-  max-width: 1200px;
+  /* min-width: 1200px; */
   flex: 1;
   overflow: hidden;
 }

@@ -1,5 +1,8 @@
 <template>
   <div class="filter-item" :class="{ disabled: item.status === 1, selected: isSelected }" @click="handleClick">
+    <div class="item-actions">
+      <el-button type="danger" size="small" circle @click.stop="handleDelete" icon="Close" />
+    </div>
     <div class="item-header">
       <div class="item-title">
         <span class="name">{{ item.name }}</span>
@@ -10,9 +13,6 @@
         <el-tag :class="['status-tag', item.status === 0 ? 'status-enabled' : 'status-disabled']" size="small">
           {{ getStatusText(item.status) }}
         </el-tag>
-      </div>
-      <div class="item-actions">
-        <el-button type="danger" size="small" plain @click.stop="handleDelete" icon="Delete" />
       </div>
     </div>
 
@@ -25,10 +25,9 @@
         <span class="label">操作:</span>
         <span class="value">{{ item.operationCount }}</span>
       </div>
-    </div>
-
-    <div class="item-time">
-      <span class="create-time">{{ item.createTime }}</span>
+      <div class="info-item" style="justify-content: flex-end; align-items: center">
+        <span class="create-time">创建于:{{ item.createTime }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -81,11 +80,12 @@ const getStatusTagType = (status: number) => {
 
 <style scoped>
 .filter-item {
+  position: relative; /* 添加相对定位 */
   background: #ffffff;
   border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 8px;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
@@ -138,9 +138,11 @@ const getStatusTagType = (status: number) => {
 }
 
 .item-actions {
-  display: flex;
-  gap: 4px;
-  opacity: 0;
+  position: absolute; /* 绝对定位 */
+  top: 10px; /* 距离顶部10px */
+  right: 10px; /* 距离右侧10px */
+  z-index: 10; /* 确保在最上层 */
+  opacity: 0; /* 默认隐藏 */
   transition: opacity 0.2s ease;
 }
 
@@ -150,8 +152,9 @@ const getStatusTagType = (status: number) => {
 
 .item-info {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 8px;
+  justify-content: space-between;
 }
 
 .info-item {

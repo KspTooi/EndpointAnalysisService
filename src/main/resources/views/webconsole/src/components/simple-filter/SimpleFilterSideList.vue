@@ -6,7 +6,7 @@
         <IMdiLightChevronDoubleDown v-show="showMoreQuery" class="toggle-icon" />
       </div>
       <el-input v-model="searchForm.name" placeholder="输入任意字符查询" size="small" clearable @keyup.enter="loadData" />
-      <el-button type="primary" @click="loadData" size="small" :loading="loading">加载</el-button>
+      <el-button type="primary" @click="loadData(true)" size="small" :loading="loading">加载</el-button>
       <el-button type="primary" @click="handleAddFilter" size="small">新过滤器</el-button>
     </div>
 
@@ -96,7 +96,6 @@ const loadData = async (isReset = true) => {
   }
 
   try {
-    console.log("searchForm", searchForm);
     const result = await SimpleFilterApi.getSimpleFilterList(searchForm);
     const newData = result.data || [];
 
