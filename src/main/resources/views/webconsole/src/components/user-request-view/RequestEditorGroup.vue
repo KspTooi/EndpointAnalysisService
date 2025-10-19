@@ -22,6 +22,13 @@
       </div>
       <div
         class="tab-item"
+        :class="{ active: PreferenceHolder().getRequestGroupEditorTab === 'filter-group' }"
+        @click="PreferenceHolder().setRequestGroupEditorTab('filter-group')"
+      >
+        过滤器组
+      </div>
+      <div
+        class="tab-item"
         :class="{ active: PreferenceHolder().getRequestGroupEditorTab === 'request-list' }"
         @click="PreferenceHolder().setRequestGroupEditorTab('request-list')"
       >
@@ -38,8 +45,11 @@
               <IFeQuestion style="vertical-align: -18%; color: #0095ff; cursor: pointer" />
             </el-tooltip>
           </div>
+          <div style="margin-bottom: 15px">
+            <el-switch v-model="inheritParentFilters" active-text="继承父级过滤器" inactive-text="不继承" />
+          </div>
 
-          <el-table :data="appliedFilters" :border="true" size="small">
+          <el-table :data="appliedFilters" :border="true" size="small" :disabled="inheritParentFilters">
             <el-table-column prop="name" label="名称" />
             <el-table-column prop="direction" label="方向">
               <template #default="{ row }">
@@ -108,7 +118,17 @@
         <div class="section-header">
           <div class="section-title">请求列表</div>
           <div class="empty-state">
-            <p>此功能暂未实现</p>
+            <p>该功能不可用</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-filter-group" v-show="PreferenceHolder().getRequestGroupEditorTab === 'filter-group'">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">过滤器组</div>
+          <div class="empty-state">
+            <p>该功能不可用</p>
           </div>
         </div>
       </div>
@@ -131,6 +151,7 @@ const globalLoading = ref(false);
 const formData = ref<GetUserRequestGroupDetailsVo>();
 const appliedFilters = ref<GetSimpleFilterListVo[]>([]);
 const availableFilters = ref<GetSimpleFilterListVo[]>([]);
+const inheritParentFilters = ref(false); // 新增的继承父级过滤器选项
 
 const loadGroupDetail = async () => {
   if (RequestTreeHolder().getActiveGroupId == null) {
@@ -141,6 +162,7 @@ const loadGroupDetail = async () => {
     const res = await UserRequestGroupApi.getUserRequestGroupDetails({ id: RequestTreeHolder().getActiveGroupId });
     formData.value = res;
     appliedFilters.value = res.simpleFilters || [];
+    // inheritParentFilters.value = res.inheritParentFilters || false; // 从后端加载继承状态
   } catch (e) {
     ElMessage.error(`无法加载请求组配置:${e}`);
   } finally {
@@ -189,6 +211,7 @@ const saveGroup = async () => {
       name: formData.value.name,
       description: formData.value.description,
       simpleFilterIds: appliedFilters.value.map((f) => f.id),
+      // inheritParentFilters: inheritParentFilters.value, // 保存继承状态
     });
 
     //通知树重新加载

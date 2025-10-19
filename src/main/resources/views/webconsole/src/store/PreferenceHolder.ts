@@ -7,7 +7,7 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
     requestEditorTab: "header" as "header" | "body" | "response" | "lastResponse",
 
     //请求组编辑器Tab
-    requestGroupEditorTab: "filter" as "filter" | "request-list",
+    requestGroupEditorTab: "filter" as "filter" | "request-list" | "filter-group",
   }),
 
   getters: {
@@ -26,7 +26,7 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
       //直接从localStorage中加载 如果为空则返回simpleFilter
       const persistedRequestGroupEditorTab = localStorage.getItem("request_group_editor_tab");
       if (persistedRequestGroupEditorTab) {
-        state.requestGroupEditorTab = persistedRequestGroupEditorTab as "filter" | "request-list";
+        state.requestGroupEditorTab = persistedRequestGroupEditorTab as "filter" | "request-list" | "filter-group";
       }
       return state.requestGroupEditorTab;
     },
@@ -38,7 +38,7 @@ export const PreferenceHolder = defineStore("PreferenceHolder", {
       this.requestEditorTab = tab;
     },
 
-    setRequestGroupEditorTab(tab: "filter" | "request-list") {
+    setRequestGroupEditorTab(tab: "filter" | "request-list" | "filter-group") {
       localStorage.setItem("request_group_editor_tab", tab);
       this.requestGroupEditorTab = tab;
     },
