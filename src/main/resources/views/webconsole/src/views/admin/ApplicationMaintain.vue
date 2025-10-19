@@ -3,6 +3,9 @@ import { ref } from "vue";
 import MaintainApi from "@/api/MaintainApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu } from "@element-plus/icons-vue";
+import { EventHolder } from "@/store/EventHolder.ts";
+
+const eventHolder = EventHolder();
 
 // 定义维护操作接口类型
 interface MaintainOperation {
@@ -15,6 +18,7 @@ interface MaintainOperation {
   iconColor: string;
   key: keyof typeof operationLoading.value;
   warning?: string;
+  onComplete?: () => void;
 }
 
 // 维护操作状态
@@ -46,8 +50,15 @@ const executeMaintainOperation = async (operationKey: keyof typeof operationLoad
 };
 
 const handleOperationClick = (operation: MaintainOperation) => {
+  const performAction = async () => {
+    await operation.action();
+    if (operation.onComplete) {
+      operation.onComplete();
+    }
+  };
+
   if (!operation.warning) {
-    operation.action();
+    performAction();
     return;
   }
 
@@ -60,7 +71,7 @@ const handleOperationClick = (operation: MaintainOperation) => {
         instance.confirmButtonLoading = true;
         instance.confirmButtonText = "执行中...";
         try {
-          await operation.action();
+          await performAction();
         } finally {
           instance.confirmButtonLoading = false;
           instance.confirmButtonText = "确定执行";
@@ -128,6 +139,9 @@ const maintainOperations: MaintainOperation[] = [
     action: () => executeMaintainOperation("menus", MaintainApi.resetMenus),
     key: "menus",
     warning: "此操作将删除所有现有菜单并恢复为默认设置，该操作不可逆。是否确定要继续？",
+    onComplete: () => {
+      eventHolder.requestReloadLeftMenu();
+    },
   },
 ];
 </script>
