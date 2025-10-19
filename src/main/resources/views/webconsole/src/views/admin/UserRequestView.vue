@@ -17,11 +17,11 @@ import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
 import UserRequestTreeApi from "@/api/userrequest/UserRequestTreeApi.ts";
 
 onMounted(() => {
-  window.addEventListener("keydown", onKeyboardEvent);
+  window.addEventListener("keydown", onKeyboardEvent, { capture: true });
 });
 
 onUnmounted(() => {
-  window.removeEventListener("keydown", onKeyboardEvent);
+  window.removeEventListener("keydown", onKeyboardEvent, { capture: true });
 });
 
 //处理全局快捷键
