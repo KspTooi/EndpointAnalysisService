@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2025-10-19 04:16:20",
+  "updatedTime": "2025-10-19 11:55:55",
   "dbConns": [],
   "profile": {
     "default": {
@@ -8090,8 +8090,8 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_ROUTE",
-      "defName": "中继路由策略",
+      "defKey": "ROUTE_RULE",
+      "defName": "路由策略",
       "comment": "",
       "properties": {
         "partitioned by": "(date string)",
@@ -8265,8 +8265,116 @@
           "refDict": "",
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
           "id": "7C3953BD-B43D-49CB-8EE5-BD1012EA0DB9"
+        },
+        {
+          "defKey": "match_type",
+          "defName": "匹配类型 0:全部 1:IP地址",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
+          "extProps": {},
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
+          "id": "9C6E807E-F19B-4C6C-A215-A4C62E24A8E9"
+        },
+        {
+          "defKey": "match_key",
+          "defName": "匹配键",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "id": "89182A18-D5DD-4C6D-8F47-EF8910DD8D47"
+        },
+        {
+          "defKey": "match_operator",
+          "defName": "匹配操作 0:等于",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
+          "extProps": {},
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
+          "id": "EF080BBC-F7E2-4EA4-A41D-354A84E78D9D"
+        },
+        {
+          "defKey": "match_value",
+          "defName": "匹配值",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "id": "D23A10CB-8D24-472B-9BE4-367DE2BFFCF6"
+        },
+        {
+          "defKey": "route_server_id",
+          "defName": "目标服务器ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "CBBAE7DA-8C7F-474E-B0A1-73EC69BDE439"
+        },
+        {
+          "defKey": "seq",
+          "defName": "权重",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "extProps": {},
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "id": "F1ADA7A5-3EAF-43B8-A02F-3F4F3633D64E"
         },
         {
           "defKey": "remark",
@@ -8285,42 +8393,6 @@
           "extProps": {},
           "domain": "E67CDB2A-3452-4ACA-AB6A-FD59997D392D",
           "id": "1F55D251-43D3-415E-8185-EB1A90F5FC6A"
-        },
-        {
-          "defKey": "loadbalance",
-          "defName": "负载均衡 0:轮询 1:加权轮询",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
-          "extProps": {},
-          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
-          "id": "F1ADA7A5-3EAF-43B8-A02F-3F4F3633D64E"
-        },
-        {
-          "defKey": "auto_degradation",
-          "defName": "自动降级 0:开启 1:关闭",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
-          "extProps": {},
-          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
-          "id": "9C6E807E-F19B-4C6C-A215-A4C62E24A8E9"
         },
         {
           "defKey": "create_time",
@@ -8364,269 +8436,6 @@
       "type": "P"
     },
     {
-      "id": "34623EF4-79C4-4193-BD60-63C9DD237E0F",
-      "env": {
-        "base": {
-          "nameSpace": "",
-          "codeRoot": ""
-        }
-      },
-      "defKey": "RELAY_ROUTE_TARGET",
-      "defName": "中继路由策略目标",
-      "comment": "",
-      "properties": {
-        "partitioned by": "(date string)",
-        "row format delimited": "",
-        "fields terminated by ','": "",
-        "collection items terminated by '-'": "",
-        "map keys terminated by ':'": "",
-        "store as textfile;": ""
-      },
-      "sysProps": {
-        "nameTemplate": "{defKey}[{defName}]"
-      },
-      "notes": {},
-      "headers": [
-        {
-          "refKey": "hideInGraph",
-          "hideInGraph": true
-        },
-        {
-          "refKey": "defKey",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "defName",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "primaryKey",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "notNull",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "autoIncrement",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "domain",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "type",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "len",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "scale",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "comment",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "refDict",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "defaultValue",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "isStandard",
-          "freeze": false,
-          "hideInGraph": false
-        },
-        {
-          "refKey": "uiHint",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "extProps",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr1",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr2",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr3",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr4",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr5",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr6",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr7",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr8",
-          "freeze": false,
-          "hideInGraph": true
-        },
-        {
-          "refKey": "attr9",
-          "freeze": false,
-          "hideInGraph": true
-        }
-      ],
-      "fields": [
-        {
-          "defKey": "id",
-          "defName": "目标ID",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": true,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
-          "extProps": {},
-          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
-          "id": "0143D681-D8E7-4719-8C87-5826B7340C1F"
-        },
-        {
-          "defKey": "route_id",
-          "defName": "路由策略ID",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
-          "extProps": {},
-          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
-          "id": "B7640703-96AA-4B24-BCC5-DB85933600B5"
-        },
-        {
-          "defKey": "inbound",
-          "defName": "匹配入栈地址",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-          "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
-          "id": "49DBFA18-BD51-40AE-8501-1FD479368783"
-        },
-        {
-          "defKey": "target_id",
-          "defName": "中继目标ID",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-          "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
-          "id": "DB2C299B-5D2F-4B9E-B6A0-5115EA91BE0B"
-        },
-        {
-          "defKey": "create_time",
-          "defName": "创建时间",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5",
-          "extProps": {},
-          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
-          "id": "C4ED5B57-7E26-49D1-8ED1-8E1FB7538D0A"
-        },
-        {
-          "defKey": "update_time",
-          "defName": "更新时间",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5",
-          "extProps": {},
-          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
-          "id": "D5EF8304-0B10-4095-8A90-55FDBE2887E1"
-        }
-      ],
-      "correlations": [],
-      "indexes": [],
-      "type": "P"
-    },
-    {
       "id": "4EC9217F-1461-44C8-9A29-4186BC922189",
       "env": {
         "base": {
@@ -8634,8 +8443,8 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_TARGET",
-      "defName": "中继目标",
+      "defKey": "ROUTE_SERVER",
+      "defName": "路由服务器",
       "comment": "",
       "properties": {
         "partitioned by": "(date string)",
@@ -9408,7 +9217,6 @@
         "AD658D22-CBF1-48C5-850F-40E38EE57102",
         "51B9BD67-970C-4D1E-83FA-9C9CF09DFEFA",
         "2278D690-94F6-498F-9706-A8F3993C305D",
-        "34623EF4-79C4-4193-BD60-63C9DD237E0F",
         "4EC9217F-1461-44C8-9A29-4186BC922189"
       ],
       "refViews": [],

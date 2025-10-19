@@ -31,26 +31,26 @@ public class RouteRuleController {
     private RouteRuleService routeRuleService;
 
     @PostMapping("/getRouteRuleList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "列表查询路由规则")
     public PageResult<GetRouteRuleListVo> getRouteRuleList(@RequestBody @Valid GetRouteRuleListDto dto) throws Exception {
         return routeRuleService.getRouteRuleList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增路由规则")
     @PostMapping("/addRouteRule")
     public Result<String> addRouteRule(@RequestBody @Valid AddRouteRuleDto dto) throws Exception {
         routeRuleService.addRouteRule(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑路由规则")
     @PostMapping("/editRouteRule")
     public Result<String> editRouteRule(@RequestBody @Valid EditRouteRuleDto dto) throws Exception {
         routeRuleService.editRouteRule(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询路由规则详情")
     @PostMapping("/getRouteRuleDetails")
     public Result<GetRouteRuleDetailsVo> getRouteRuleDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetRouteRuleDetailsVo details = routeRuleService.getRouteRuleDetails(dto);
@@ -60,7 +60,7 @@ public class RouteRuleController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除路由规则")
     @PostMapping("/removeRouteRule")
     public Result<String> removeRouteRule(@RequestBody @Valid CommonIdDto dto) throws Exception {
         routeRuleService.removeRouteRule(dto);

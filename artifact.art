@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.routeserver.service",
-  "pkgNamePo": "com.ksptooi.biz.routeserver.model.po",
+  "pkgNameService": "com.ksptooi.biz.routerule.service",
+  "pkgNamePo": "com.ksptooi.biz.routerule.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,7 +9,7 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "路由服务器ID",
+        "comment": "路由规则ID",
         "primary": true
       },
       {
@@ -18,43 +18,70 @@
         "javaGetterName": "Name",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "服务器名称",
+        "comment": "",
         "primary": false
       },
       {
-        "name": "host",
-        "javaFieldName": "host",
-        "javaGetterName": "Host",
+        "name": "match_type",
+        "javaFieldName": "matchType",
+        "javaGetterName": "MatchType",
+        "type": "TINYINT",
+        "javaType": "Integer",
+        "comment": "",
+        "primary": false
+      },
+      {
+        "name": "match_key",
+        "javaFieldName": "matchKey",
+        "javaGetterName": "MatchKey",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "服务器主机",
+        "comment": "",
         "primary": false
       },
       {
-        "name": "port",
-        "javaFieldName": "port",
-        "javaGetterName": "Port",
+        "name": "match_operator",
+        "javaFieldName": "matchOperator",
+        "javaGetterName": "MatchOperator",
+        "type": "TINYINT",
+        "javaType": "Integer",
+        "comment": "",
+        "primary": false
+      },
+      {
+        "name": "match_value",
+        "javaFieldName": "matchValue",
+        "javaGetterName": "MatchValue",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "匹配来源IP 为null时匹配所有IP",
+        "primary": false
+      },
+      {
+        "name": "route_server_id",
+        "javaFieldName": "routeServerId",
+        "javaGetterName": "RouteServerId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "所属服务器ID",
+        "primary": false
+      },
+      {
+        "name": "seq",
+        "javaFieldName": "seq",
+        "javaGetterName": "Seq",
         "type": "INT",
         "javaType": "Integer",
-        "comment": "服务器端口",
+        "comment": "",
         "primary": false
       },
       {
         "name": "remark",
         "javaFieldName": "remark",
         "javaGetterName": "Remark",
-        "type": "VARCHAR",
+        "type": "TEXT",
         "javaType": "String",
-        "comment": "备注",
-        "primary": false
-      },
-      {
-        "name": "status",
-        "javaFieldName": "status",
-        "javaGetterName": "Status",
-        "type": "TINYINT",
-        "javaType": "Integer",
-        "comment": "服务器状态 0:禁用 1:启用",
+        "comment": "",
         "primary": false
       },
       {
@@ -79,33 +106,33 @@
     "options": [
       {
         "key": "tableName",
-        "val": "route_server",
-        "defaultVal": "route_server"
+        "val": "route_rule",
+        "defaultVal": "route_rule"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.routeserver.controller",
+  "pkgNameController": "com.ksptooi.biz.routerule.controller",
   "dirRoot": "src",
   "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "route_server",
-  "classNamePo": "RouteServerPo",
+  "tableName": "route_rule",
+  "classNamePo": "RouteRulePo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "routeServerService",
+  "fieldNameService": "routeRuleService",
   "password": "root",
-  "datetime": "2025-10-19 02:24:28",
+  "datetime": "2025-10-19 11:56:09",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "RouteServerVo",
+  "classNameVo": "RouteRuleVo",
   "driver": "com.mysql.cj.jdbc.Driver",
   "excludeNames": "sys_",
   "genPo": "true",
-  "table.name": "route_server",
-  "classNameService": "RouteServerService",
+  "table.name": "route_rule",
+  "classNameService": "RouteRuleService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -114,7 +141,7 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "路由服务器ID",
+      "comment": "路由规则ID",
       "primary": true
     },
     {
@@ -123,43 +150,70 @@
       "javaGetterName": "Name",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "服务器名称",
+      "comment": "",
       "primary": false
     },
     {
-      "name": "host",
-      "javaFieldName": "host",
-      "javaGetterName": "Host",
+      "name": "match_type",
+      "javaFieldName": "matchType",
+      "javaGetterName": "MatchType",
+      "type": "TINYINT",
+      "javaType": "Integer",
+      "comment": "",
+      "primary": false
+    },
+    {
+      "name": "match_key",
+      "javaFieldName": "matchKey",
+      "javaGetterName": "MatchKey",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "服务器主机",
+      "comment": "",
       "primary": false
     },
     {
-      "name": "port",
-      "javaFieldName": "port",
-      "javaGetterName": "Port",
+      "name": "match_operator",
+      "javaFieldName": "matchOperator",
+      "javaGetterName": "MatchOperator",
+      "type": "TINYINT",
+      "javaType": "Integer",
+      "comment": "",
+      "primary": false
+    },
+    {
+      "name": "match_value",
+      "javaFieldName": "matchValue",
+      "javaGetterName": "MatchValue",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "匹配来源IP 为null时匹配所有IP",
+      "primary": false
+    },
+    {
+      "name": "route_server_id",
+      "javaFieldName": "routeServerId",
+      "javaGetterName": "RouteServerId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "所属服务器ID",
+      "primary": false
+    },
+    {
+      "name": "seq",
+      "javaFieldName": "seq",
+      "javaGetterName": "Seq",
       "type": "INT",
       "javaType": "Integer",
-      "comment": "服务器端口",
+      "comment": "",
       "primary": false
     },
     {
       "name": "remark",
       "javaFieldName": "remark",
       "javaGetterName": "Remark",
-      "type": "VARCHAR",
+      "type": "TEXT",
       "javaType": "String",
-      "comment": "备注",
-      "primary": false
-    },
-    {
-      "name": "status",
-      "javaFieldName": "status",
-      "javaGetterName": "Status",
-      "type": "TINYINT",
-      "javaType": "Integer",
-      "comment": "服务器状态 0:禁用 1:启用",
+      "comment": "",
       "primary": false
     },
     {
@@ -181,28 +235,28 @@
       "primary": false
     }
   ],
-  "fieldNameController": "routeServerController",
-  "pkgNameVo": "com.ksptooi.biz.routeserver.model.vo",
-  "fieldNameDto": "routeServerDto",
+  "fieldNameController": "routeRuleController",
+  "pkgNameVo": "com.ksptooi.biz.routerule.model.vo",
+  "fieldNameDto": "routeRuleDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "RouteServer",
-  "fieldNamePo": "routeServerPo",
-  "classNameController": "RouteServerController",
-  "pkgNameDto": "com.ksptooi.biz.routeserver.model.dto",
-  "classNameRepository": "RouteServerRepository",
-  "pkgNameRepository": "com.ksptooi.biz.routeserver.repository",
-  "comments": "路由服务器",
-  "fieldNameRepository": "routeServerRepository",
+  "apiTagName": "RouteRule",
+  "fieldNamePo": "routeRulePo",
+  "classNameController": "RouteRuleController",
+  "pkgNameDto": "com.ksptooi.biz.routerule.model.dto",
+  "classNameRepository": "RouteRuleRepository",
+  "pkgNameRepository": "com.ksptooi.biz.routerule.repository",
+  "comments": "路由规则",
+  "fieldNameRepository": "routeRuleRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "routeServer",
+  "requestMappingName": "routeRule",
   "genController": "true",
-  "fieldNameVo": "routeServerVo",
-  "businessClassName": "RouteServer",
+  "fieldNameVo": "routeRuleVo",
+  "businessClassName": "RouteRule",
   "genVo": "true",
   "dirClasses": "main.java",
   "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
-  "classNameDto": "RouteServerDto",
+  "classNameDto": "RouteRuleDto",
   "username": "root"
 }

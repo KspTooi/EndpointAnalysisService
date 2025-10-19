@@ -13,14 +13,23 @@ public class GetRouteRuleDetailsVo {
     @Schema(description = "路由规则ID")
     private Long id;
 
-    @Schema(description = "所属组ID")
-    private Long groupId;
+    private String name;
+
+    private Integer matchType;
+
+    private String matchKey;
+
+    private Integer matchOperator;
 
     @Schema(description = "匹配来源IP 为null时匹配所有IP")
     private String matchValue;
 
     @Schema(description = "所属服务器ID")
     private Long routeServerId;
+
+    private Integer seq;
+
+    private String remark;
 
     @Schema(description = "创建时间")
     private Date createTime;
