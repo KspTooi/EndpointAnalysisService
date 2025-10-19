@@ -56,7 +56,7 @@
             <!-- 路由视图 -->
             <router-view v-slot="{ Component, route }">
               <transition name="fade" mode="out-in">
-                <div :key="route.fullPath">
+                <div :key="viewKey">
                   <keep-alive v-if="route.meta.keepAlive">
                     <component :is="Component" />
                   </keep-alive>
@@ -96,6 +96,8 @@ import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import MenuApi from "@/api/core/MenuApi";
 import { EventHolder } from "@/store/EventHolder";
+import { useTabStore } from "@/store/TabHolder";
+import { storeToRefs } from "pinia";
 
 // 定义组件props
 const props = defineProps<{
@@ -122,6 +124,9 @@ const emit = defineEmits<{
 
 const router = useRouter();
 const route = useRoute();
+const tabStore = useTabStore();
+const { refreshCounter } = storeToRefs(tabStore);
+const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 const menuTree = ref<GetUserMenuTreeVo[]>([]);
 
 const loadMenuTree = async () => {

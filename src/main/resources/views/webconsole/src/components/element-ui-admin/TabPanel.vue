@@ -11,6 +11,15 @@
       </template>
     </draggable>
 
+    <div class="tab-controls">
+      <el-icon class="control-btn" @click="handleRefresh" title="刷新">
+        <Refresh />
+      </el-icon>
+      <el-icon class="control-btn close-btn" @click="handleCloseCurrentTab" title="关闭标签页">
+        <Close />
+      </el-icon>
+    </div>
+
     <ul v-if="contextMenu.visible" class="context-menu" :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }">
       <li @click="closeCurrentTab">关闭当前标签页</li>
       <li @click="closeOtherTabs">关闭其他标签页</li>
@@ -23,16 +32,16 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { storeToRefs } from "pinia";
 import draggable from "vuedraggable";
 import { ElIcon } from "element-plus";
-import { Close } from "@element-plus/icons-vue";
+import { Refresh, Close } from "@element-plus/icons-vue";
 import { useTabStore, type Tab } from "@/store/TabHolder";
 
 const draggableRef = ref<any>(null);
 const tabStore = useTabStore();
-const { activeTabId } = storeToRefs(tabStore);
+const { activeTabId, tabs } = storeToRefs(tabStore);
 
 // Use a computed property with a setter for v-model with Pinia state
-const tabs = computed({
-  get: () => tabStore.tabs,
+const computedTabs = computed({
+  get: () => tabs.value,
   set: (value) => tabStore.setTabs(value),
 });
 
@@ -46,8 +55,18 @@ const handleTabClose = (tabId: string) => {
   }
 };
 
+const handleRefresh = () => {
+  tabStore.refreshActiveView();
+};
+
+const handleCloseCurrentTab = () => {
+  if (activeTabId.value && tabs.value.length > 1) {
+    tabStore.removeTab(activeTabId.value);
+  }
+};
+
 const onDragEnd = () => {
-  // The setter on the `tabs` computed property handles the update
+  // The setter on the `computedTabs` computed property handles the update
 };
 
 // Context Menu Logic
@@ -111,13 +130,17 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .tab-panel-container {
+  display: flex;
+  align-items: center;
   background-color: #f0f2f5;
-  padding: 1px 5px 0;
+  padding: 1px 0 0 5px;
   border-bottom: 1px solid var(--el-border-color-light);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .draggable-tabs {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: nowrap; /* Prevent wrapping */
   gap: 2px;
@@ -128,6 +151,32 @@ onBeforeUnmount(() => {
 
 .draggable-tabs::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
+}
+
+.tab-controls {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.2s ease;
+  height: 100%;
+}
+
+.control-btn:hover {
+  background-color: #d1d5db;
+}
+
+.close-btn:hover {
+  background-color: #e81123;
+  color: white;
 }
 
 .tab-item {

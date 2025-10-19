@@ -30,6 +30,7 @@ export const useTabStore = defineStore("tabStore", () => {
 
   const tabs = ref<Tab[]>(loadFromStorage(STORAGE_KEY_TABS, []));
   const activeTabId = ref<string | null>(loadFromStorage(STORAGE_KEY_ACTIVE_TAB, null));
+  const refreshCounter = ref(0);
 
   // Watch for changes and save to localStorage
   watch(
@@ -51,6 +52,10 @@ export const useTabStore = defineStore("tabStore", () => {
       console.error("Failed to save active tab state to localStorage:", error);
     }
   });
+
+  const refreshActiveView = () => {
+    refreshCounter.value++;
+  };
 
   const setActiveTab = (tabId: string) => {
     const tabToActivate = tabs.value.find((t) => t.id === tabId);
@@ -116,10 +121,12 @@ export const useTabStore = defineStore("tabStore", () => {
   return {
     tabs,
     activeTabId,
+    refreshCounter,
     addTab,
     removeTab,
     setActiveTab,
     closeOtherTabs,
     setTabs,
+    refreshActiveView,
   };
 });
