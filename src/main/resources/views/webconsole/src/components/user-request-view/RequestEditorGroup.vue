@@ -316,6 +316,11 @@ watch(
   background: #fff;
 }
 
+.content-filter {
+  flex: 1;
+  overflow-y: auto;
+}
+
 .section {
   padding: 20px;
   border-bottom: 1px solid #e9ecef;
