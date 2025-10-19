@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.controller;
 
+import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.user.model.permission.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.user.service.GroupService;
@@ -7,13 +8,22 @@ import com.ksptooi.biz.user.service.PermissionService;
 import com.ksptooi.biz.user.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
+import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.FileNotFoundException;
+import java.sql.Connection;
 
 /**
  * 维护工具控制器
@@ -36,6 +46,12 @@ public class MaintainController {
     @Autowired
     private GlobalConfigService globalConfigService;
 
+    @Autowired
+    private ResourceRepository resourceRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     /**
      * 校验系统内置权限节点
      * 检查数据库中是否存在所有系统内置权限，如果不存在则自动创建
@@ -46,15 +62,15 @@ public class MaintainController {
     public Result<ValidateSystemPermissionsVo> validateSystemPermissions() {
         try {
             ValidateSystemPermissionsVo result = adminPermissionService.validateSystemPermissions();
-            
+
             String message;
             if (result.getAddedCount() > 0) {
-                message = String.format("校验完成，已添加 %d 个缺失的权限节点，已存在 %d 个权限节点", 
+                message = String.format("校验完成，已添加 %d 个缺失的权限节点，已存在 %d 个权限节点",
                         result.getAddedCount(), result.getExistCount());
             } else {
                 message = String.format("校验完成，所有 %d 个系统权限节点均已存在", result.getExistCount());
             }
-            
+
             return Result.success(message, result);
         } catch (Exception e) {
             return Result.error("校验权限节点失败：" + e.getMessage());
@@ -71,7 +87,7 @@ public class MaintainController {
     public Result<String> validateSystemGroups() {
         try {
             String result = adminGroupService.validateSystemGroups();
-            return Result.success(result,null);
+            return Result.success(result, null);
         } catch (Exception e) {
             return Result.error("校验用户组失败：" + e.getMessage());
         }
@@ -87,7 +103,7 @@ public class MaintainController {
     public Result<String> validateSystemUsers() {
         try {
             String result = userService.validateSystemUsers();
-            return Result.success(result,null);
+            return Result.success(result, null);
         } catch (Exception e) {
             return Result.error("校验用户失败：" + e.getMessage());
         }
@@ -109,5 +125,34 @@ public class MaintainController {
         }
     }
 
+
+    /**
+     * 重置菜单
+     * 删除所有菜单并执行SQL脚本恢复默认菜单
+     */
+    @PostMapping("/resetMenus")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @RequirePermissionRest("admin:maintain:menu")
+    public Result<String> resetMenus() throws FileNotFoundException, BizException {
+
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus.sql");
+
+        if (!sqlScript.exists()) {
+            throw new BizException("SQL脚本文件 'sql/default_menus.sql' 不存在。请检查文件是否已正确放置。");
+        }
+
+        try {
+            resourceRepository.clearMenu();
+            // 使用JdbcTemplate执行回调，以确保使用的是当前事务的连接
+            jdbcTemplate.execute((Connection connection) -> {
+                ScriptUtils.executeSqlScript(connection, sqlScript);
+                return null;
+            });
+            return Result.success("重置菜单成功", null);
+        } catch (Exception e) {
+            throw new RuntimeException("重置菜单失败: " + e.getMessage(), e);
+        }
+    }
 
 } 

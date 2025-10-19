@@ -1,9 +1,14 @@
 <template>
   <div class="admin-side-panel">
     <!-- LOGO与标题区域 -->
-    <div v-if="title" class="panel-title">
-      <img :src="logoUrl" alt="EAS Logo" class="logo-image" />
-      {{ title }}
+    <div class="title-container">
+      <div v-if="title" class="panel-title">
+        <img :src="logoUrl" alt="EAS Logo" class="logo-image" />
+        {{ title }}
+      </div>
+      <div v-if="version" class="panel-version">
+        {{ version }}
+      </div>
     </div>
 
     <!-- 菜单区域 -->
@@ -69,6 +74,7 @@ const props = defineProps<{
   activeItemId?: string;
   title?: string;
   isCollapse?: boolean;
+  version?: string;
 }>();
 
 const STORAGE_KEY = "admin_menu_opened_state";
@@ -201,6 +207,13 @@ const handleSelect = (index: string) => {
   background: linear-gradient(to bottom, #f8f9fa, #ffffff);
 }
 
+.title-container {
+  padding: 8px 8px 12px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
 .logo-image:hover {
   transform: scale(1.05);
 }
@@ -211,19 +224,30 @@ const handleSelect = (index: string) => {
 }
 
 .panel-title {
-  padding: 8px;
+  padding: 0;
   font-size: 14px;
   font-weight: 600;
   text-align: center;
   color: #430675;
   flex-shrink: 0;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+.panel-version {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #868e96;
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  line-height: 1.5;
 }
 
 .panel-menu {
