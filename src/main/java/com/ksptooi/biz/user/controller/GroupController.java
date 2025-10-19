@@ -8,6 +8,8 @@ import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.Result;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,17 +26,20 @@ public class GroupController {
     @Autowired
     private GroupService service;
 
+    @Operation(summary = "获取组定义列表")
     @PostMapping("getGroupDefinitions")
     public Result<List<GetGroupDefinitionsVo>> getGroupDefinitions(){
         return Result.success(service.getGroupDefinitions());
     }
 
+    @Operation(summary = "获取组列表")
     @PostMapping("getGroupList")
     @RequirePermissionRest("admin:group:view")
     public PageResult<GetGroupListVo> getGroupList(@RequestBody @Valid GetGroupListDto dto){
         return service.getGroupList(dto);
     }
 
+    @Operation(summary = "获取组详情")
     @PostMapping("getGroupDetails")
     @RequirePermissionRest("admin:group:save")
     public Result<GetGroupDetailsVo> getGroupDetails(@RequestBody @Valid CommonIdDto dto){
@@ -45,6 +50,7 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "保存组")
     @PostMapping("saveGroup")
     @RequirePermissionRest("admin:group:save")
     public Result<String> saveGroup(@RequestBody @Valid SaveGroupDto dto){
@@ -56,6 +62,7 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "删除组")
     @PostMapping("removeGroup")
     @RequirePermissionRest("admin:group:delete")
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto){

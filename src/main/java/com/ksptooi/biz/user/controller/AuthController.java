@@ -11,6 +11,8 @@ import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.Result;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +42,7 @@ public class AuthController {
     @Autowired
     private GlobalConfigService globalConfigService;
 
+    @Operation(summary = "登录")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/login")
     public String login(@Valid LoginDto dto, HttpServletResponse response, RedirectAttributes ra) {
@@ -62,6 +65,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "注册")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/register")
     @ResponseBody
@@ -82,6 +86,7 @@ public class AuthController {
 
     }
 
+    @Operation(summary = "注册页面")
     @GetMapping("/register")
     public ModelAndView register(HttpServletRequest hsr, RedirectAttributes ra) {
         if (authService.verifyUser(hsr) != null) {
@@ -100,6 +105,7 @@ public class AuthController {
         return mav;
     }
 
+    @Operation(summary = "注销")
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -117,6 +123,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "用户注册")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("/userRegister")
     public ModelAndView userRegister(@Valid RegisterDto dto, BindingResult bindingResult, RedirectAttributes ra) {
@@ -147,6 +154,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "获取权限")
     @PostMapping("/getPermissions")
     @ResponseBody
     public Result<Set<String>> getPermissions() {

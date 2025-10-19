@@ -7,6 +7,8 @@ import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.Result;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,17 +27,20 @@ public class PermissionController {
     private PermissionService service;
 
 
+    @Operation(summary = "获取权限定义列表")
     @PostMapping("getPermissionDefinition")
     public Result<List<GetPermissionDefinitionVo>> getPermissionDefinition(){
         return Result.success(service.getPermissionDefinition());
     }
 
+    @Operation(summary = "获取权限列表")
     @PostMapping("getPermissionList")
     @RequirePermissionRest("admin:permission:view")
     public PageResult<GetPermissionListVo> getPermissionList(@RequestBody @Valid GetPermissionListDto dto){
         return service.getPermissionList(dto);
     }
 
+    @Operation(summary = "获取权限详情")
     @PostMapping("getPermissionDetails")
     @RequirePermissionRest("admin:permission:save")
     public Result<GetPermissionDetailsVo> getPermissionDetails(@RequestBody @Valid CommonIdDto dto){
@@ -46,6 +51,7 @@ public class PermissionController {
         }
     }
 
+    @Operation(summary = "保存权限")
     @PostMapping("savePermission")
     @RequirePermissionRest("admin:permission:save")
     public Result<String> savePermission(@RequestBody @Valid SavePermissionDto dto){
@@ -57,6 +63,7 @@ public class PermissionController {
         }
     }
 
+    @Operation(summary = "删除权限")
     @PostMapping("removePermission")
     @RequirePermissionRest("admin:permission:remove")
     public Result<String> removePermission(@RequestBody @Valid CommonIdDto dto){

@@ -10,6 +10,8 @@ import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptooi.commons.utils.web.CommonIdDto;
 import com.ksptooi.commons.utils.web.PageResult;
 import com.ksptooi.commons.utils.web.Result;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,13 +27,14 @@ public class UserController {
     @Autowired
     private UserService service;
 
-
+    @Operation(summary = "获取用户列表")
     @PostMapping("getUserList")
     @RequirePermissionRest("admin:user:view")
     public PageResult<GetUserListVo> getUserList(@RequestBody @Valid GetUserListDto dto){
         return service.getUserList(dto);
     }
 
+    @Operation(summary = "获取用户详情")
     @PostMapping("getUserDetails")
     @RequirePermissionRest("admin:user:save")
     public Result<GetUserDetailsVo> getUserDetails(@RequestBody @Valid CommonIdDto dto) {
@@ -42,6 +45,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "保存用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("saveUser")
     @RequirePermissionRest("admin:user:save")
@@ -54,6 +58,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "删除用户")
     @PostMapping("removeUser")
     @RequirePermissionRest("admin:user:delete")
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto){
