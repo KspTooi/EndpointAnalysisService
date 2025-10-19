@@ -337,6 +337,11 @@ const handleSelect = (index: string) => {
   position: relative;
 }
 
+.panel-menu :deep(.el-menu-item span),
+.panel-menu :deep(.el-sub-menu__title span) {
+  user-select: none; /* 防止文本被选中 */
+}
+
 /* 菜单项激活状态 */
 .panel-menu :deep(.el-menu-item.is-active) {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
