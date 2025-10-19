@@ -16,6 +16,9 @@ public class GetRouteRuleListVo {
     @Schema(description = "路由策略名")
     private String name;
 
+    @Schema(description = "目标服务器名称")
+    private String routeServerName;
+
     @Schema(description = "匹配类型 0:全部 1:IP地址")
     private Integer matchType;
 

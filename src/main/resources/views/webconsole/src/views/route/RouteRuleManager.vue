@@ -26,8 +26,8 @@
     <!-- 列表 -->
     <div class="list-table">
       <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
-        <el-table-column label="路由规则名" prop="name" width="300" show-overflow-tooltip />
-        <el-table-column label="目标服务器" prop="routeServerId" width="100" show-overflow-tooltip />
+        <el-table-column label="路由规则名" prop="name" width="220" show-overflow-tooltip />
+        <el-table-column label="目标服务器" prop="routeServerName" width="180" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
             <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{ scope.row.matchType === 0 ? "全部" : "IP地址" }}</el-tag>

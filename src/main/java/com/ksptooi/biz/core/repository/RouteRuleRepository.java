@@ -13,6 +13,7 @@ public interface RouteRuleRepository extends JpaRepository<RouteRulePo, Long> {
 
     @Query("""
             SELECT u FROM RouteRulePo u
+            LEFT JOIN FETCH u.routeServer
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.name} IS NULL OR u.name  = :#{#po.name} )

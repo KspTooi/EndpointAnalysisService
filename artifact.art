@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.routerule.service",
-  "pkgNamePo": "com.ksptooi.biz.routerule.model.po",
+  "pkgNameService": "com.ksptooi.biz.relayserverroute.service",
+  "pkgNamePo": "com.ksptooi.biz.relayserverroute.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,61 +9,25 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "路由规则ID",
+        "comment": "路由表ID",
         "primary": true
       },
       {
-        "name": "name",
-        "javaFieldName": "name",
-        "javaGetterName": "Name",
-        "type": "VARCHAR",
-        "javaType": "String",
-        "comment": "路由策略名",
-        "primary": false
-      },
-      {
-        "name": "match_type",
-        "javaFieldName": "matchType",
-        "javaGetterName": "MatchType",
-        "type": "TINYINT",
-        "javaType": "Integer",
-        "comment": "匹配类型 0:全部 1:IP地址",
-        "primary": false
-      },
-      {
-        "name": "match_key",
-        "javaFieldName": "matchKey",
-        "javaGetterName": "MatchKey",
-        "type": "VARCHAR",
-        "javaType": "String",
-        "comment": "匹配键",
-        "primary": false
-      },
-      {
-        "name": "match_operator",
-        "javaFieldName": "matchOperator",
-        "javaGetterName": "MatchOperator",
-        "type": "TINYINT",
-        "javaType": "Integer",
-        "comment": "匹配操作 0:等于",
-        "primary": false
-      },
-      {
-        "name": "match_value",
-        "javaFieldName": "matchValue",
-        "javaGetterName": "MatchValue",
-        "type": "VARCHAR",
-        "javaType": "String",
-        "comment": "匹配值",
-        "primary": false
-      },
-      {
-        "name": "route_server_id",
-        "javaFieldName": "routeServerId",
-        "javaGetterName": "RouteServerId",
+        "name": "relay_server_id",
+        "javaFieldName": "relayServerId",
+        "javaGetterName": "RelayServerId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "目标服务器ID",
+        "comment": "中继服务器ID",
+        "primary": false
+      },
+      {
+        "name": "route_rule_id",
+        "javaFieldName": "routeRuleId",
+        "javaGetterName": "RouteRuleId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "路由策略ID",
         "primary": false
       },
       {
@@ -73,15 +37,6 @@
         "type": "INT",
         "javaType": "Integer",
         "comment": "权重",
-        "primary": false
-      },
-      {
-        "name": "remark",
-        "javaFieldName": "remark",
-        "javaGetterName": "Remark",
-        "type": "TEXT",
-        "javaType": "String",
-        "comment": "策略描述",
         "primary": false
       },
       {
@@ -106,33 +61,33 @@
     "options": [
       {
         "key": "tableName",
-        "val": "route_rule",
-        "defaultVal": "route_rule"
+        "val": "relay_server_route",
+        "defaultVal": "relay_server_route"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.routerule.controller",
+  "pkgNameController": "com.ksptooi.biz.relayserverroute.controller",
   "dirRoot": "src",
   "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "route_rule",
-  "classNamePo": "RouteRulePo",
+  "tableName": "relay_server_route",
+  "classNamePo": "RelayServerRoutePo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "routeRuleService",
+  "fieldNameService": "relayServerRouteService",
   "password": "root",
-  "datetime": "2025-10-19 11:58:49",
+  "datetime": "2025-10-19 16:04:57",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "RouteRuleVo",
+  "classNameVo": "RelayServerRouteVo",
   "driver": "com.mysql.cj.jdbc.Driver",
   "excludeNames": "sys_",
   "genPo": "true",
-  "table.name": "route_rule",
-  "classNameService": "RouteRuleService",
+  "table.name": "relay_server_route",
+  "classNameService": "RelayServerRouteService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -141,61 +96,25 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "路由规则ID",
+      "comment": "路由表ID",
       "primary": true
     },
     {
-      "name": "name",
-      "javaFieldName": "name",
-      "javaGetterName": "Name",
-      "type": "VARCHAR",
-      "javaType": "String",
-      "comment": "路由策略名",
-      "primary": false
-    },
-    {
-      "name": "match_type",
-      "javaFieldName": "matchType",
-      "javaGetterName": "MatchType",
-      "type": "TINYINT",
-      "javaType": "Integer",
-      "comment": "匹配类型 0:全部 1:IP地址",
-      "primary": false
-    },
-    {
-      "name": "match_key",
-      "javaFieldName": "matchKey",
-      "javaGetterName": "MatchKey",
-      "type": "VARCHAR",
-      "javaType": "String",
-      "comment": "匹配键",
-      "primary": false
-    },
-    {
-      "name": "match_operator",
-      "javaFieldName": "matchOperator",
-      "javaGetterName": "MatchOperator",
-      "type": "TINYINT",
-      "javaType": "Integer",
-      "comment": "匹配操作 0:等于",
-      "primary": false
-    },
-    {
-      "name": "match_value",
-      "javaFieldName": "matchValue",
-      "javaGetterName": "MatchValue",
-      "type": "VARCHAR",
-      "javaType": "String",
-      "comment": "匹配值",
-      "primary": false
-    },
-    {
-      "name": "route_server_id",
-      "javaFieldName": "routeServerId",
-      "javaGetterName": "RouteServerId",
+      "name": "relay_server_id",
+      "javaFieldName": "relayServerId",
+      "javaGetterName": "RelayServerId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "目标服务器ID",
+      "comment": "中继服务器ID",
+      "primary": false
+    },
+    {
+      "name": "route_rule_id",
+      "javaFieldName": "routeRuleId",
+      "javaGetterName": "RouteRuleId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "路由策略ID",
       "primary": false
     },
     {
@@ -205,15 +124,6 @@
       "type": "INT",
       "javaType": "Integer",
       "comment": "权重",
-      "primary": false
-    },
-    {
-      "name": "remark",
-      "javaFieldName": "remark",
-      "javaGetterName": "Remark",
-      "type": "TEXT",
-      "javaType": "String",
-      "comment": "策略描述",
       "primary": false
     },
     {
@@ -235,28 +145,28 @@
       "primary": false
     }
   ],
-  "fieldNameController": "routeRuleController",
-  "pkgNameVo": "com.ksptooi.biz.routerule.model.vo",
-  "fieldNameDto": "routeRuleDto",
+  "fieldNameController": "relayServerRouteController",
+  "pkgNameVo": "com.ksptooi.biz.relayserverroute.model.vo",
+  "fieldNameDto": "relayServerRouteDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "RouteRule",
-  "fieldNamePo": "routeRulePo",
-  "classNameController": "RouteRuleController",
-  "pkgNameDto": "com.ksptooi.biz.routerule.model.dto",
-  "classNameRepository": "RouteRuleRepository",
-  "pkgNameRepository": "com.ksptooi.biz.routerule.repository",
-  "comments": "路由规则",
-  "fieldNameRepository": "routeRuleRepository",
+  "apiTagName": "RelayServerRoute",
+  "fieldNamePo": "relayServerRoutePo",
+  "classNameController": "RelayServerRouteController",
+  "pkgNameDto": "com.ksptooi.biz.relayserverroute.model.dto",
+  "classNameRepository": "RelayServerRouteRepository",
+  "pkgNameRepository": "com.ksptooi.biz.relayserverroute.repository",
+  "comments": "",
+  "fieldNameRepository": "relayServerRouteRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "routeRule",
+  "requestMappingName": "relayServerRoute",
   "genController": "true",
-  "fieldNameVo": "routeRuleVo",
-  "businessClassName": "RouteRule",
+  "fieldNameVo": "relayServerRouteVo",
+  "businessClassName": "RelayServerRoute",
   "genVo": "true",
   "dirClasses": "main.java",
   "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
-  "classNameDto": "RouteRuleDto",
+  "classNameDto": "RelayServerRouteDto",
   "username": "root"
 }

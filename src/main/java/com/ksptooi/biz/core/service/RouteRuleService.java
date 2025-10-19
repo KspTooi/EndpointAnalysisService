@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -42,7 +43,14 @@ public class RouteRuleService {
             return PageResult.successWithEmpty();
         }
 
-        List<GetRouteRuleListVo> vos = as(page.getContent(), GetRouteRuleListVo.class);
+        List<GetRouteRuleListVo> vos = new ArrayList<>();
+
+        for (RouteRulePo po : page.getContent()) {
+            GetRouteRuleListVo vo = as(po, GetRouteRuleListVo.class);
+            vo.setRouteServerName(po.getRouteServer().getName());
+            vos.add(vo);
+        }
+
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 

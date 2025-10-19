@@ -21,7 +21,7 @@ public class Launcher {
         // generateTable("EduExamProgress");
 
         // 根据表结构生成CRUD
-        generateJpaCrud("route_rule", "DEAN");
+        generateJpaCrud("relay_server_route", "DEAN");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
     }
 

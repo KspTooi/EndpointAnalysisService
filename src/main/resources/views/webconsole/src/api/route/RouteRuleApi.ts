@@ -13,6 +13,7 @@ export interface GetRouteRuleListDto extends PageQuery {
 export interface GetRouteRuleListVo {
   id: string; // 路由规则ID
   name: string; // 路由规则名
+  routeServerName: string; // 目标服务器名称
   matchType: number; // 匹配类型 0:全部 1:IP地址
   matchKey: string; // 匹配键
   matchOperator: number; // 匹配操作 0:等于
