@@ -1,3 +1,4 @@
 export default interface CommonIdDto {
-  id: string | null;
+  id?: string | null;
+  ids?: string[] | null;
 }

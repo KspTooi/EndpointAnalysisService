@@ -27,11 +27,13 @@
         </el-form-item>
       </el-form>
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
+      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="loading">删除选中项</el-button>
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
+      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
+        <el-table-column type="selection" width="40" />
         <el-table-column label="服务器名称" prop="name" show-overflow-tooltip />
         <el-table-column label="服务器主机" prop="host" show-overflow-tooltip />
         <el-table-column label="服务器端口" prop="port" show-overflow-tooltip />
@@ -145,6 +147,7 @@ const query = reactive<GetRouteServerListDto>({
 });
 
 const list = ref<GetRouteServerListVo[]>([]);
+const listSelected = ref<GetRouteServerListVo[]>([]);
 const total = ref(0);
 const loading = ref(false);
 
@@ -188,6 +191,33 @@ const removeList = async (id: string) => {
 
   try {
     const result = await RouteServerApi.removeRouteServer({ id });
+    if (Result.isSuccess(result)) {
+      ElMessage.success("删除成功");
+    }
+    if (Result.isError(result)) {
+      ElMessage.error(result.message);
+      return;
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  }
+  loadList();
+};
+
+const removeListBatch = async () => {
+  try {
+    await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    const result = await RouteServerApi.removeRouteServer({ ids: listSelected.value.map((item) => item.id) });
     if (Result.isSuccess(result)) {
       ElMessage.success("删除成功");
     }

@@ -32,7 +32,7 @@ public class RouteServerService {
 
         Page<RouteServerPo> page = repository.getRouteServerList(query, dto.pageRequest());
         if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
+            return PageResult.successWithEmpty((int) page.getTotalElements());
         }
 
         List<GetRouteServerListVo> vos = as(page.getContent(), GetRouteServerListVo.class);

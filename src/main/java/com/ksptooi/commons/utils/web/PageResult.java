@@ -74,6 +74,10 @@ public class PageResult<T> {
         return new PageResult<>(0, "无数据", Collections.emptyList(), 0);
     }
 
+    public static <T> PageResult<T> successWithEmpty(Integer total) {
+        return new PageResult<>(0, "无数据", Collections.emptyList(), total);
+    }
+
     public static <T> PageResult<T> success(String message, Collection<T> data, Integer total) {
         return new PageResult<>(0, message, data, total);
     }
