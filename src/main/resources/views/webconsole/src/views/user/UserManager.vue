@@ -117,6 +117,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
 import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type SaveUserDto, type UserGroupVo } from "@/api/UserApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import GroupApi from "@/api/GroupApi";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -236,10 +237,23 @@ const resetForm = () => {
 };
 
 // 处理新增用户
-const handleAdd = () => {
+const handleAdd = async () => {
   formType.value = "add";
   resetForm();
   dialogVisible.value = true;
+
+  const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
+  groupOptions.value = [];
+  groups.data.forEach((group) => {
+    groupOptions.value.push({
+      id: group.id,
+      name: group.name,
+      description: "",
+      sortOrder: 0,
+      isSystem: group.isSystem,
+      hasGroup: false,
+    });
+  });
 };
 
 // 处理编辑用户
