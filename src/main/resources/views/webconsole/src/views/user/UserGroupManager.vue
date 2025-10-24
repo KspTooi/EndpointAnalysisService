@@ -197,11 +197,20 @@ const groupForm = reactive<SaveGroupDto>({
 
 // 表单校验规则
 const groupFormRules = {
+  code: [
+    { required: true, message: "请输入组标识", trigger: "blur" },
+    { min: 2, max: 50, message: "组标识长度必须在2-50个字符之间", trigger: "blur" },
+    { pattern: /^[a-zA-Z][a-zA-Z_]*$/, message: "组标识只能包含英文字符和下划线，且必须以字母开头", trigger: "blur" },
+  ],
   name: [
     { required: true, message: "请输入组名称", trigger: "blur" },
-    { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" },
+    { min: 2, max: 50, message: "组名称长度必须在2-50个字符之间", trigger: "blur" },
   ],
   description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
+  sortOrder: [
+    { required: true, message: "请输入排序号", trigger: "blur" },
+    { min: 0, message: "排序号必须大于等于0", trigger: "blur" },
+  ],
 };
 
 // 在 script 部分添加
