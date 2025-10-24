@@ -77,7 +77,7 @@
         <el-form-item label="用户名" prop="username">
           <el-input v-model="userForm.username" :disabled="formType === 'edit'" />
         </el-form-item>
-        <el-form-item label="密码" prop="password" :rules="formType === 'add' ? userFormRules.password : []">
+        <el-form-item label="密码" prop="password">
           <el-input v-model="userForm.password" type="password" show-password />
           <div v-if="formType === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
@@ -161,29 +161,37 @@ const userForm = reactive<SaveUserDto>({
   groupIds: [],
 });
 
-// 表单校验规则
+// 表单校验规则 用户密码长度不能超过128个字符, 用户昵称长度不能超过50个字符
 const userFormRules = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" },
     { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },
   ],
+  nickname: [{ max: 50, message: "昵称长度不能超过50个字符", trigger: "blur" }],
   password: [
     {
-      required: true,
-      message: "请输入密码",
       trigger: "blur",
       validator: (rule: any, value: string, callback: Function) => {
         if (formType.value === "add" && !value) {
           callback(new Error("请输入密码"));
-        } else if (value && value.length < 6) {
-          callback(new Error("密码长度不能少于6位"));
-        } else {
-          callback();
+          return;
         }
+        if (value && value.length > 128) {
+          callback(new Error("密码长度不能超过128个字符"));
+          return;
+        }
+        if (value && value.length < 6) {
+          callback(new Error("密码长度不能少于6位"));
+          return;
+        }
+        callback();
       },
     },
   ],
-  email: [{ type: "email", message: "请输入正确的邮箱格式", trigger: "blur" }],
+  email: [
+    { type: "email", message: "请输入正确的邮箱格式", trigger: "blur" },
+    { max: 50, message: "邮箱长度不能超过50个字符", trigger: "blur" },
+  ],
 };
 
 // 加载用户列表数据
