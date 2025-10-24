@@ -23,7 +23,7 @@
         <el-table-column prop="permissionCount" label="权限数量" min-width="100" />
         <el-table-column label="系统组" min-width="80">
           <template #default="scope">
-            <el-tag :type="scope.row.isSystem ? 'info' : ''">
+            <el-tag :type="scope.row.isSystem ? 'info' : 'success'">
               {{ scope.row.isSystem ? "是" : "否" }}
             </el-tag>
           </template>
