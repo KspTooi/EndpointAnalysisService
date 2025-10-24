@@ -177,7 +177,10 @@ const rules = {
     { required: true, message: "请输入配置键", trigger: "blur" },
     { pattern: /^[a-zA-Z0-9_.]{2,50}$/, message: "配置键只能包含2-50位字母、数字、下划线和点", trigger: "blur" },
   ],
-  configValue: [{ required: true, message: "请输入配置值", trigger: "blur" }],
+  configValue: [
+    { required: true, message: "请输入配置值", trigger: "blur" },
+    { max: 500, message: "配置值长度不能超过500个字符", trigger: "blur" },
+  ],
   description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
 };
 
