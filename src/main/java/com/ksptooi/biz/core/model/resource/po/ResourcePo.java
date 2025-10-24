@@ -35,7 +35,7 @@ public class ResourcePo {
     @Comment("资源名")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 200)
     @Comment("资源描述")
     private String description;
 
@@ -51,11 +51,11 @@ public class ResourcePo {
     @Comment("菜单路径")
     private String menuPath;
 
-    @Column(name = "menu_query_param")
+    @Column(name = "menu_query_param", length = 512)
     @Comment("菜单查询参数")
     private String menuQueryParam;
 
-    @Column(name = "menu_icon")
+    @Column(name = "menu_icon", length = 64)
     @Comment("菜单图标")
     private String menuIcon;
 

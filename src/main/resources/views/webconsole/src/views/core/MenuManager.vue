@@ -108,7 +108,7 @@
           <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
-          <el-input-number v-model="modalForm.seq" placeholder="请输入排序" clearable />
+          <el-input-number v-model.number="modalForm.seq" :min="0" :max="655350" placeholder="请输入排序" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -230,11 +230,26 @@ const modalForm = reactive<GetMenuDetailsVo>({
 });
 
 const modalRules = {
-  name: [{ required: true, message: "请输入菜单名称", trigger: "blur" }],
+  name: [
+    { required: true, message: "请输入菜单名称", trigger: "blur" },
+    { min: 2, max: 32, message: "菜单名称长度必须在2-32个字符之间", trigger: "blur" },
+  ],
   menuKind: [{ required: true, message: "请选择菜单类型", trigger: "blur" }],
-  menuPath: [{ required: true, message: "请输入菜单路径", trigger: "blur" }],
-  permission: [{ required: true, message: "请输入所需权限", trigger: "blur" }],
-  seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
+  menuPath: [
+    { required: true, message: "请输入菜单路径", trigger: "blur" },
+    { max: 256, message: "菜单路径长度不能超过256个字符", trigger: "blur" },
+  ],
+  permission: [
+    { required: true, message: "请输入所需权限", trigger: "blur" },
+    { max: 320, message: "所需权限长度不能超过320个字符", trigger: "blur" },
+  ],
+  description: [{ max: 200, message: "菜单描述长度不能超过200个字符", trigger: "blur" }],
+  seq: [
+    { required: true, message: "请输入排序", trigger: "blur" },
+    { type: "number", min: 0, max: 655350, message: "排序只能在0-655350之间", trigger: "blur" },
+  ],
+  menuQueryParam: [{ max: 512, message: "菜单查询参数长度不能超过512个字符", trigger: "blur" }],
+  menuIcon: [{ max: 64, message: "菜单图标长度不能超过64个字符", trigger: "blur" }],
 };
 
 const openModal = async (mode: "add" | "edit" | "add-item", row: GetMenuTreeVo | null) => {
