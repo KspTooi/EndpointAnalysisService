@@ -2,21 +2,33 @@
   <div class="permission-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="权限代码">
-          <el-input v-model="query.code" placeholder="输入权限代码查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="权限名称">
-          <el-input v-model="query.name" placeholder="输入权限名称查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadPermissionList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="权限代码">
+              <el-input v-model="query.code" placeholder="输入权限代码查询" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="权限名称">
+              <el-input v-model="query.name" placeholder="输入权限名称查询" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadPermissionList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="add-button-container">
-        <el-button type="success" @click="openInsertModal">创建权限</el-button>
-      </div>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="success" @click="openInsertModal">创建权限</el-button>
     </div>
 
     <!-- 权限列表 -->
@@ -325,13 +337,10 @@ const removePermission = async (row: GetPermissionListVo) => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
-}
-
-.add-button-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .permission-table {

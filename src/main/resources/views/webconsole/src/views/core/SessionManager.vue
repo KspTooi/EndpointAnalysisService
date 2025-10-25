@@ -2,16 +2,30 @@
   <div class="session-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="用户名">
-          <el-input v-model="query.userName" placeholder="输入用户名查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadSessionList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="用户名">
+              <el-input v-model="query.userName" placeholder="输入用户名查询" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadSessionList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </div>
+
+    <div class="action-buttons"></div>
 
     <!-- 会话列表 -->
     <div class="session-table">
@@ -168,8 +182,10 @@ onMounted(() => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .session-table {

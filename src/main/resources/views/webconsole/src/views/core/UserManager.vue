@@ -1,24 +1,36 @@
 <template>
   <div class="user-manager-container">
     <div class="query-form">
-      <el-form :model="queryForm" inline>
-        <el-form-item label="用户名">
-          <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="选择状态" clearable style="width: 150px">
-            <el-option label="正常" :value="0" />
-            <el-option label="封禁" :value="1" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadUserList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="queryForm">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="用户名">
+              <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="状态">
+              <el-select v-model="queryForm.status" placeholder="选择状态" clearable style="width: 150px">
+                <el-option label="正常" :value="0" />
+                <el-option label="封禁" :value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadUserList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="add-button-container">
-        <el-button type="success" @click="handleAdd">创建用户</el-button>
-      </div>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="success" @click="handleAdd">创建用户</el-button>
     </div>
 
     <div class="user-table">
@@ -359,30 +371,10 @@ onMounted(() => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
-}
-
-.add-button-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-  .query-form :deep(.el-form) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .query-form :deep(.el-form-item) {
-    margin-bottom: 10px;
-    width: 100%;
-  }
-
-  .user-manager-container {
-    padding: 10px;
-  }
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .user-table {

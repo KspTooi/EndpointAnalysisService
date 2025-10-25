@@ -1,18 +1,31 @@
 <template>
   <div class="group-manager-container">
     <div class="query-form">
-      <el-form :model="queryForm" inline>
-        <el-form-item label="组名称" label-for="query-keyword">
-          <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" style="width: 200px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadGroupList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="queryForm">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="组名称" label-for="query-keyword">
+              <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadGroupList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="add-button-container">
-        <el-button type="success" @click="handleAdd">创建访问组</el-button>
-      </div>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="success" @click="handleAdd">创建访问组</el-button>
     </div>
 
     <div class="group-table">
@@ -418,29 +431,13 @@ onMounted(() => {
 }
 
 .query-form {
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
-.add-button-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-  .query-form :deep(.el-form) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .query-form :deep(.el-form-item) {
-    margin-bottom: 10px;
-    width: 100%;
-  }
-
-  .group-manager-container {
-    padding: 10px;
-  }
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .group-table {

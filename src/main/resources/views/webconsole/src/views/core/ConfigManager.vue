@@ -2,21 +2,33 @@
   <div class="config-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="关键字">
-          <el-input v-model="query.keyword" placeholder="配置键/值/描述" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="所有者名称">
-          <el-input v-model="query.userName" placeholder="输入所有者名称查询" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadConfigList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="关键字">
+              <el-input v-model="query.keyword" placeholder="配置键/值/描述" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="所有者名称">
+              <el-input v-model="query.userName" placeholder="输入所有者名称查询" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <!-- 占位，保持布局一致性 -->
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadConfigList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="add-button-container">
-        <el-button type="success" @click="openInsertModal">创建配置</el-button>
-      </div>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="success" @click="openInsertModal">创建配置</el-button>
     </div>
 
     <!-- 配置列表 -->
@@ -303,13 +315,10 @@ const removeConfig = async (row: GetConfigListVo) => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
-}
-
-.add-button-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .config-table {
