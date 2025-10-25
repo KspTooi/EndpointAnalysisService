@@ -2,26 +2,38 @@
   <div class="menu-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="菜单名称">
-          <el-input v-model="query.name" placeholder="请输入菜单名称" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="所需权限">
-          <el-input v-model="query.permission" placeholder="请输入所需权限" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="菜单类型">
-          <el-select v-model="query.menuKind" placeholder="请选择菜单类型" clearable style="width: 200px">
-            <el-option label="目录" value="0" />
-            <el-option label="菜单" value="1" />
-            <el-option label="按钮" value="2" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-          <el-button @click="resetList" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="菜单名称">
+              <el-input v-model="query.name" placeholder="请输入菜单名称" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="所需权限">
+              <el-input v-model="query.permission" placeholder="请输入所需权限" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="菜单类型">
+              <el-select v-model="query.menuKind" placeholder="请选择菜单类型" clearable style="width: 200px">
+                <el-option label="目录" value="0" />
+                <el-option label="菜单" value="1" />
+                <el-option label="按钮" value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+              <el-button @click="resetList" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>
     </div>
 
@@ -32,27 +44,42 @@
           <template #default="scope">
             <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
             {{ scope.row.name }}
+            <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px"> ({{ scope.row.menuBtnId }}) </span>
           </template>
         </el-table-column>
-        <el-table-column label="菜单类型" prop="menuKind" width="100">
+        <el-table-column label="类型" prop="menuKind" width="70">
           <template #default="scope">
             <el-tag v-if="scope.row.menuKind === 0">目录</el-tag>
             <el-tag v-if="scope.row.menuKind === 1" type="success">菜单</el-tag>
             <el-tag v-if="scope.row.menuKind === 2" type="info">按钮</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="菜单路径" prop="menuPath" show-overflow-tooltip />
-        <el-table-column label="所需权限" prop="permission" show-overflow-tooltip />
-        <el-table-column label="排序" prop="seq" width="100" />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column label="菜单路径" prop="menuPath" show-overflow-tooltip>
           <template #default="scope">
-            <el-button v-if="scope.row.parentId === '-1' && scope.row.menuKind !== 2" link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
-              新增子项
-            </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
-              删除
-            </el-button>
+            <span v-if="scope.row.menuKind === 0 || scope.row.menuKind === 2" style="color: #999; font-size: 12px">不适用</span>
+            <span v-else>{{ scope.row.menuPath }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="所需权限" prop="permission" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.menuKind === 0" style="color: #999; font-size: 12px">不适用</span>
+            <span v-else>{{ scope.row.permission }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="排序" prop="seq" width="100" />
+        <el-table-column label="操作" fixed="right" width="230">
+          <template #default="scope">
+            <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%">
+              <!-- 按钮下无法新增子项 -->
+              <el-button v-if="scope.row.parentId === null || scope.row.menuKind == 1" link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
+                新增子项
+              </el-button>
+
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
+              <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
+                删除
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -61,11 +88,11 @@
     <!-- 菜单编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑菜单' : '添加菜单'"
+      :title="modalMode === 'edit' ? '编辑' + modalFormLabel : '添加' + modalFormLabel"
       width="550px"
       :close-on-click-modal="false"
       @close="
-        resetModal();
+        resetModal(true);
         loadList();
       "
     >
@@ -82,30 +109,39 @@
             default-expand-all
           />
         </el-form-item>
-        <el-form-item label="菜单名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入菜单名称" clearable />
-        </el-form-item>
         <el-form-item label="菜单类型" prop="menuKind">
-          <el-select v-model="modalForm.menuKind" placeholder="请选择菜单类型" clearable>
-            <el-option label="目录" :value="0" />
-            <el-option label="菜单" :value="1" />
-            <el-option label="按钮" :value="2" />
+          <el-select v-model="modalForm.menuKind" placeholder="请选择菜单类型" clearable :disabled="modalMode === 'edit'">
+            <el-option label="目录" :value="0" :disabled="modalMode === 'add-item'" />
+            <el-option label="菜单" :value="1" :disabled="modalMode === 'add-item' && modalCurrentRow?.menuKind == 1" />
+            <el-option label="按钮" :value="2" :disabled="modalMode === 'add-item' && modalCurrentRow?.menuKind == 0" />
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单路径" prop="menuPath" v-if="modalForm.menuKind == 1">
+        <el-form-item :label="modalFormLabel + '名称'" prop="name">
+          <el-input v-model="modalForm.name" placeholder="请输入菜单名称" clearable />
+        </el-form-item>
+        <el-form-item label="按钮ID" prop="menuBtnId" v-if="modalForm.menuKind == 2">
+          <el-input v-model="modalForm.menuBtnId" placeholder="请输入按钮ID" clearable />
+        </el-form-item>
+        <el-form-item :label="modalFormLabel + '路径'" prop="menuPath" v-if="modalForm.menuKind == 1">
           <el-input v-model="modalForm.menuPath" placeholder="请输入菜单路径" clearable />
         </el-form-item>
         <el-form-item label="所需权限" prop="permission" v-if="modalForm.menuKind == 1 || modalForm.menuKind == 2">
           <el-input v-model="modalForm.permission" placeholder="请输入所需权限" clearable />
         </el-form-item>
-        <el-form-item label="菜单描述" prop="description">
+        <el-form-item :label="modalFormLabel + '描述'" prop="description">
           <el-input v-model="modalForm.description" placeholder="请输入菜单描述" clearable />
         </el-form-item>
-        <el-form-item label="菜单图标" prop="menuIcon">
+        <el-form-item :label="modalFormLabel + '图标'" prop="menuIcon" v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1">
           <IconPicker v-model="modalForm.menuIcon" />
         </el-form-item>
         <el-form-item label="查询参数" prop="menuQueryParam" v-if="modalForm.menuKind == 1">
           <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
+        </el-form-item>
+        <el-form-item label="是否隐藏" prop="menuHidden">
+          <el-radio-group v-model="modalForm.menuHidden">
+            <el-radio :value="0">不隐藏</el-radio>
+            <el-radio :value="1">隐藏</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input-number v-model.number="modalForm.seq" :min="0" :max="655350" placeholder="请输入排序" clearable />
@@ -144,25 +180,73 @@ const query = reactive<GetMenuTreeDto>({
 const list = ref<GetMenuTreeVo[]>([]);
 const loading = ref(false);
 
-const filterMenuTree = (menuTree: GetMenuTreeVo[], depth = 0): GetMenuTreeVo[] => {
-  return menuTree
-    .filter((item) => item.menuKind !== 2) // 过滤掉按钮
-    .map((item) => ({
-      ...item,
-      disabled: depth >= 1, // 只允许选择根节点和一级菜单作为父级
-      children: item.children ? filterMenuTree(item.children, depth + 1) : [],
-    }));
-};
+// 用于父级选择的完整菜单树
+const fullMenuTree = ref<GetMenuTreeVo[]>([]);
 
 const menuTreeForSelect = computed(() => {
+  const currentMenu = modalForm;
+  const isEditMode = modalMode.value === "edit";
+
+  const filter = (menuTree: GetMenuTreeVo[]): GetMenuTreeVo[] => {
+    return menuTree
+      .filter((item) => item.menuKind !== 2) // 按钮不能作为父级
+      .map((item) => {
+        let disabled = false;
+
+        // 编辑时，节点自身不能作为父级
+        if (isEditMode && item.id === currentMenu.id) {
+          disabled = true;
+        }
+
+        // 根据当前操作的菜单类型，判断父级是否可选
+        // 0-目录 1-菜单 2-按钮
+
+        // 当前是目录，父级只能是目录或根节点
+        if (currentMenu.menuKind === 0) {
+          if (item.menuKind === 1) disabled = true;
+        }
+
+        // 当前是菜单，父级只能是目录
+        if (currentMenu.menuKind === 1) {
+          if (item.menuKind !== 0) disabled = true;
+        }
+
+        // 当前是按钮，父级只能是菜单
+        if (currentMenu.menuKind === 2) {
+          if (item.menuKind !== 1) disabled = true;
+        }
+
+        return {
+          ...item,
+          disabled,
+          children: item.children ? filter(item.children) : [],
+        };
+      });
+  };
+
+  let rootDisabled = false;
+  // 菜单和按钮不能直接挂在根节点下
+  if (currentMenu.menuKind === 1 || currentMenu.menuKind === 2) {
+    rootDisabled = true;
+  }
+
   return [
     {
-      id: "-1",
+      id: null,
       name: "根节点",
-      children: filterMenuTree(list.value),
+      disabled: rootDisabled,
+      children: filter(fullMenuTree.value),
     },
   ];
 });
+
+// 加载完整菜单树用于父级选择
+const loadFullMenuTree = async () => {
+  const result = await MenuApi.getMenuTree({});
+  if (Result.isSuccess(result)) {
+    fullMenuTree.value = result.data;
+  }
+};
 
 const loadList = async () => {
   loading.value = true;
@@ -209,12 +293,14 @@ const removeList = async (id: string) => {
 };
 
 loadList();
+loadFullMenuTree();
 
 //模态框内容
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
 const modalMode = ref<"add" | "edit" | "add-item">("add"); //add:添加,edit:编辑,add-item:新增子项
+const modalCurrentRow = ref<GetMenuTreeVo | null>(null);
 const modalForm = reactive<GetMenuDetailsVo>({
   id: "",
   parentId: "",
@@ -225,10 +311,25 @@ const modalForm = reactive<GetMenuDetailsVo>({
   menuPath: "",
   menuQueryParam: "",
   menuIcon: "",
+  menuHidden: 0,
+  menuBtnId: "",
   permission: "",
   seq: 0,
 });
 
+//计算表单label
+const modalFormLabel = computed(() => {
+  if (modalForm.menuKind == 0) {
+    return "目录";
+  }
+  if (modalForm.menuKind == 1) {
+    return "菜单";
+  }
+  if (modalForm.menuKind == 2) {
+    return "按钮";
+  }
+  return "";
+});
 const modalRules = {
   name: [
     { required: true, message: "请输入菜单名称", trigger: "blur" },
@@ -239,10 +340,7 @@ const modalRules = {
     { required: true, message: "请输入菜单路径", trigger: "blur" },
     { max: 256, message: "菜单路径长度不能超过256个字符", trigger: "blur" },
   ],
-  permission: [
-    { required: true, message: "请输入所需权限", trigger: "blur" },
-    { max: 320, message: "所需权限长度不能超过320个字符", trigger: "blur" },
-  ],
+  permission: [{ max: 320, message: "所需权限长度不能超过320个字符", trigger: "blur" }],
   description: [{ max: 200, message: "菜单描述长度不能超过200个字符", trigger: "blur" }],
   seq: [
     { required: true, message: "请输入排序", trigger: "blur" },
@@ -250,23 +348,39 @@ const modalRules = {
   ],
   menuQueryParam: [{ max: 512, message: "菜单查询参数长度不能超过512个字符", trigger: "blur" }],
   menuIcon: [{ max: 64, message: "菜单图标长度不能超过64个字符", trigger: "blur" }],
+  menuHidden: [{ required: true, message: "请选择是否隐藏", trigger: "blur" }],
+  menuBtnId: [
+    { required: () => modalForm.menuKind == 2, message: "类型为按钮时，按钮ID不能为空", trigger: "blur" },
+    { max: 64, message: "按钮ID长度不能超过64个字符", trigger: "blur" },
+  ],
 };
 
-const openModal = async (mode: "add" | "edit" | "add-item", row: GetMenuTreeVo | null) => {
+const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetMenuTreeVo | null) => {
   modalMode.value = mode;
+  modalCurrentRow.value = currentRow;
   resetModal();
 
   if (mode === "add") {
-    modalForm.parentId = "-1";
+    modalForm.parentId = null;
   }
 
-  if (mode === "add-item" && row) {
-    modalForm.parentId = row.id;
+  if (mode === "add-item" && currentRow) {
+    modalForm.parentId = currentRow.id;
+
+    //当前选项是目录 则首选菜单
+    if (modalCurrentRow.value?.menuKind == 0) {
+      modalForm.menuKind = 1;
+    }
+
+    //当前选项是菜单 则首选按钮
+    if (modalCurrentRow.value?.menuKind == 1) {
+      modalForm.menuKind = 2;
+    }
   }
 
   //如果是编辑模式则需要加载详情数据
-  if (mode === "edit" && row) {
-    const ret = await MenuApi.getMenuDetails({ id: row.id });
+  if (mode === "edit" && currentRow) {
+    const ret = await MenuApi.getMenuDetails({ id: currentRow.id });
 
     if (Result.isSuccess(ret)) {
       modalForm.id = ret.data.id;
@@ -278,6 +392,8 @@ const openModal = async (mode: "add" | "edit" | "add-item", row: GetMenuTreeVo |
       modalForm.menuPath = ret.data.menuPath;
       modalForm.menuQueryParam = ret.data.menuQueryParam;
       modalForm.menuIcon = ret.data.menuIcon;
+      modalForm.menuHidden = ret.data.menuHidden;
+      modalForm.menuBtnId = ret.data.menuBtnId;
       modalForm.permission = ret.data.permission;
       modalForm.seq = ret.data.seq;
     }
@@ -291,18 +407,27 @@ const openModal = async (mode: "add" | "edit" | "add-item", row: GetMenuTreeVo |
   modalVisible.value = true;
 };
 
-const resetModal = () => {
+/**
+ * 重置模态框表单
+ * @param force 硬重置，不保留父级ID、菜单类型
+ */
+const resetModal = (force: boolean = false) => {
   modalForm.id = "";
-  modalForm.parentId = "";
   modalForm.name = "";
   modalForm.description = "";
   modalForm.kind = 0;
-  modalForm.menuKind = 0;
   modalForm.menuPath = "";
   modalForm.menuQueryParam = "";
   modalForm.menuIcon = "";
+  modalForm.menuHidden = 0;
+  modalForm.menuBtnId = "";
   modalForm.permission = "";
   modalForm.seq = 0;
+
+  if (force) {
+    modalForm.parentId = null;
+    modalForm.menuKind = 0;
+  }
 };
 
 const submitModal = async () => {
@@ -347,11 +472,12 @@ const submitModal = async () => {
   EventHolder().requestReloadLeftMenu();
 };
 
+/**
+ * 监听菜单类型变化
+ */
 watch(
   () => modalForm.menuKind,
-  (newVal: number) => {
-    console.log("modalForm.menuKind");
-    console.log(newVal);
+  (newVal: number | null | undefined) => {
     if (newVal == 0) {
       modalForm.menuPath = "";
       modalForm.menuQueryParam = "";
@@ -370,8 +496,10 @@ watch(
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .menu-tree-table {

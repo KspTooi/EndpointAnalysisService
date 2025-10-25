@@ -1,9 +1,6 @@
 package com.ksptooi.biz.core.service;
 
 
-import com.ksptooi.biz.core.model.menu.GetMenuTreeDto;
-import com.ksptooi.biz.core.model.menu.GetMenuTreeVo;
-import com.ksptooi.biz.core.model.menu.GetUserMenuTreeVo;
 import com.ksptooi.biz.core.model.resource.dto.AddResourceDto;
 import com.ksptooi.biz.core.model.resource.dto.EditResourceDto;
 import com.ksptooi.biz.core.model.resource.dto.GetResourceListDto;
@@ -21,10 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -91,6 +85,12 @@ public class ResourceService {
         repository.save(po);
     }
 
+    /**
+     * 编辑资源
+     *
+     * @param dto 编辑资源dto
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editResource(EditResourceDto dto) throws BizException {
 
@@ -151,90 +151,13 @@ public class ResourceService {
         repository.save(byId);
     }
 
-    public List<GetUserMenuTreeVo> getUserMenuTree() throws BizException {
 
-        List<ResourcePo> list = repository.getMenuTree(new GetMenuTreeDto());
-
-        List<GetUserMenuTreeVo> flatVos = new ArrayList<>();
-
-        //将list转换为平面vo
-        for (ResourcePo po : list) {
-            GetUserMenuTreeVo vo = as(po, GetUserMenuTreeVo.class);
-            vo.setChildren(new ArrayList<>());
-            vo.setParentId(-1L);
-            if (po.getParent() != null) {
-                vo.setParentId(po.getParent().getId());
-            }
-
-            flatVos.add(vo);
-        }
-
-        //将平面vo转换为tree
-        List<GetUserMenuTreeVo> treeVos = new ArrayList<>();
-        Map<Long, GetUserMenuTreeVo> map = new HashMap<>();
-
-        for (GetUserMenuTreeVo vo : flatVos) {
-            map.put(vo.getId(), vo);
-        }
-
-        for (GetUserMenuTreeVo vo : flatVos) {
-            if (vo.getParentId() == -1L) {
-                treeVos.add(vo);
-                continue;
-            }
-
-            GetUserMenuTreeVo parent = map.get(vo.getParentId());
-            if (parent != null) {
-                parent.getChildren().add(vo);
-            }
-        }
-
-        return treeVos;
-    }
-
-
-    public List<GetMenuTreeVo> getMenuTree(GetMenuTreeDto dto) throws BizException {
-
-        List<ResourcePo> list = repository.getMenuTree(dto);
-
-        List<GetMenuTreeVo> flatVos = new ArrayList<>();
-
-        //将list转换为平面vo
-        for (ResourcePo po : list) {
-            GetMenuTreeVo vo = as(po, GetMenuTreeVo.class);
-            vo.setChildren(new ArrayList<>());
-            vo.setParentId(-1L);
-            if (po.getParent() != null) {
-                vo.setParentId(po.getParent().getId());
-            }
-
-            flatVos.add(vo);
-        }
-
-        //将平面vo转换为tree
-        List<GetMenuTreeVo> treeVos = new ArrayList<>();
-        Map<Long, GetMenuTreeVo> map = new HashMap<>();
-
-        for (GetMenuTreeVo vo : flatVos) {
-            map.put(vo.getId(), vo);
-        }
-
-        for (GetMenuTreeVo vo : flatVos) {
-            if (vo.getParentId() == -1L) {
-                treeVos.add(vo);
-                continue;
-            }
-
-            GetMenuTreeVo parent = map.get(vo.getParentId());
-            if (parent != null) {
-                parent.getChildren().add(vo);
-            }
-        }
-
-        return treeVos;
-    }
-
-
+    /**
+     * 获取资源列表
+     *
+     * @param dto 获取资源列表dto
+     * @return 资源列表
+     */
     public PageableResult<GetResourceListVo> getResourceList(GetResourceListDto dto) {
         ResourcePo query = new ResourcePo();
         assign(dto, query);
@@ -249,8 +172,15 @@ public class ResourceService {
     }
 
 
+    /**
+     * 获取资源详情
+     *
+     * @param dto 获取资源详情dto
+     * @return 资源详情
+     * @throws BizException 业务异常
+     */
     public GetResourceDetailsVo getResourceDetails(CommonIdDto dto) throws BizException {
-        ResourcePo po = repository.findById(dto.getId()).orElseThrow(() -> new BizException("更新失败,数据不存在."));
+        ResourcePo po = repository.findById(dto.getId()).orElseThrow(() -> new BizException("获取详情失败,数据不存在或无权限访问."));
         GetResourceDetailsVo vo = as(po, GetResourceDetailsVo.class);
         if (po.getParent() != null) {
             vo.setParentId(po.getParent().getId());
@@ -258,6 +188,12 @@ public class ResourceService {
         return vo;
     }
 
+    /**
+     * 删除资源
+     *
+     * @param dto 删除资源dto
+     * @throws BizException 业务异常
+     */
     @Transactional
     public void removeResource(CommonIdDto dto) throws BizException {
 

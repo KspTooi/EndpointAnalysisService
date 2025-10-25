@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.menu;
+package com.ksptooi.biz.core.model.menu.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -30,6 +30,12 @@ public class GetMenuTreeVo {
 
     @Schema(description = "菜单路径(目录不能填写)")
     private String menuPath;
+
+    @Schema(description = "是否隐藏 0:否 1:是(menuKind = 1/2时生效)")
+    private Integer menuHidden;
+
+    @Schema(description = "按钮ID(menuKind = 2时必填)")
+    private String menuBtnId;
 
     @Schema(description = "所需权限(目录不能填写)")
     private String permission;

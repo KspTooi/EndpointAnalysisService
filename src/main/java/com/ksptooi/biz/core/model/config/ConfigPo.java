@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "config", uniqueConstraints = {
+@Table(name = "core_config", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "config_key"}, name = "uk_config")
 })
 @Comment("配置表")
@@ -22,7 +22,7 @@ public class ConfigPo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("用户ID 为空表示全局配置")
+    @Comment("用户ID 为null表示全局配置")
     private UserPo user;
 
     @Column(name = "config_key", nullable = false, length = 100)

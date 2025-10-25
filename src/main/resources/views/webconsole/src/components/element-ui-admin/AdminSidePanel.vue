@@ -68,7 +68,7 @@ import { useRouter } from "vue-router";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
-import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
+import type { GetMenuTreeVo } from "@/api/core/MenuApi";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
@@ -80,7 +80,7 @@ const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, com
 
 // 定义组件props
 const props = defineProps<{
-  items: GetUserMenuTreeVo[];
+  items: GetMenuTreeVo[];
   activeItemId?: string;
   title?: string;
   isCollapse?: boolean;
@@ -89,7 +89,7 @@ const props = defineProps<{
 
 const hasMaintainCenter = computed(() => {
   const searchPath = "/application-maintain";
-  const findItemByPath = (items: GetUserMenuTreeVo[]): boolean => {
+  const findItemByPath = (items: GetMenuTreeVo[]): boolean => {
     for (const item of items) {
       if (item.menuPath === searchPath) {
         return true;
@@ -159,7 +159,7 @@ const filteredItems = computed(() => {
 });
 
 // 过滤子菜单中的按钮
-const filterChildren = (children: GetUserMenuTreeVo[] | undefined) => {
+const filterChildren = (children: GetMenuTreeVo[] | undefined) => {
   if (!children) return [];
   return children.filter((child) => child.menuKind !== 2);
 };
@@ -189,7 +189,7 @@ const emit = defineEmits<{
 }>();
 
 // 处理菜单项点击
-const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
+const handleMenuItemClick = (item: GetMenuTreeVo) => {
   if (item.menuKind !== 1) {
     return;
   }
@@ -212,7 +212,7 @@ const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
 
 // 处理菜单选择
 const handleSelect = (index: string) => {
-  const findItem = (items: GetUserMenuTreeVo[], index: string): GetUserMenuTreeVo | null => {
+  const findItem = (items: GetMenuTreeVo[], index: string): GetMenuTreeVo | null => {
     for (const item of items) {
       if (item.id === index) {
         return item;

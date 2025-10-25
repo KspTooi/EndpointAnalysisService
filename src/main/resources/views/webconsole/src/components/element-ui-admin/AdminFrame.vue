@@ -92,7 +92,7 @@ import {
   ElButton,
   ElMessage,
 } from "element-plus";
-import type { GetUserMenuTreeVo } from "@/api/core/MenuApi";
+import type { GetMenuTreeVo } from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import MenuApi from "@/api/core/MenuApi";
 import { EventHolder } from "@/store/EventHolder";
@@ -127,11 +127,11 @@ const route = useRoute();
 const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
-const menuTree = ref<GetUserMenuTreeVo[]>([]);
+const menuTree = ref<GetMenuTreeVo[]>([]);
 
 const loadMenuTree = async () => {
   try {
-    const result = await MenuApi.getUserMenuTree();
+    const result = await MenuApi.getMenuTree({});
 
     if (!Result.isSuccess(result)) {
       ElMessage.error(result.message);
@@ -159,7 +159,7 @@ const handleMenuItemClick = (menuId: string) => {
 // 无移动端兼容逻辑
 
 // 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): string => {
+const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): string => {
   for (const item of items) {
     if (item.menuPath === path) {
       return item.id;

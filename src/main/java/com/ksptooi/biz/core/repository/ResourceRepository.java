@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.repository;
 
-import com.ksptooi.biz.core.model.menu.GetMenuTreeDto;
+import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
 import com.ksptooi.biz.core.model.resource.po.ResourcePo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,10 +38,17 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
     Page<ResourcePo> getResourceList(@Param("po") ResourcePo po, Pageable pageable);
 
 
+    /**
+     * 获取菜单与按钮树
+     *
+     * @param po 获取菜单与按钮树参数
+     * @return 菜单与按钮树
+     */
     @Query("""
             SELECT t FROM ResourcePo t
             LEFT JOIN FETCH t.parent
             WHERE (:#{#po.menuKind} IS NULL OR t.menuKind = :#{#po.menuKind})
+            AND t.kind = 0
             AND (
                 (
                     :#{#po.name} IS NULL OR (t.name LIKE CONCAT('%',:#{#po.name},'%') OR

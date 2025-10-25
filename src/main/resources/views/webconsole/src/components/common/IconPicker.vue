@@ -66,7 +66,7 @@ import { Icon } from "@iconify/vue";
 import { Search } from "@element-plus/icons-vue";
 
 const props = defineProps<{
-  modelValue?: string;
+  modelValue?: string | null;
 }>();
 
 const emit = defineEmits<{
