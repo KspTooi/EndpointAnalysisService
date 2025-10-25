@@ -1,5 +1,22 @@
 <template>
   <div class="endpoint-manager-container">
+    <!-- 说明文档 -->
+    <el-alert type="info" :closable="false" style="margin-bottom: 20px">
+      <template #title>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <el-icon><InfoFilled /></el-icon>
+          <span style="font-weight: bold">端点与权限配置指南</span>
+          <expand-button v-model="simpleHelpVisible" size="small" />
+          <el-button link type="primary" size="small" @click="helpVisible = true"> 端点鉴权系统是如何工作的?</el-button>
+        </div>
+      </template>
+      <div style="font-size: 13px; line-height: 1.6" v-if="simpleHelpVisible">
+        <div><strong>端点</strong>：定义系统中的接口路径（如 /user/list），每个端点可以配置所需的访问权限</div>
+        <div><strong>权限</strong>：定义权限代码（如 admin:user:view），用户拥有权限后才能访问配置了该权限的端点</div>
+        <div style="color: #e6a23c; margin-top: 4px">⚠️ 修改端点配置后，需要点击"清空权限数据缓存"按钮使配置立即生效</div>
+      </div>
+    </el-alert>
+
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="query">
@@ -120,6 +137,201 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 帮助文档对话框 -->
+    <el-dialog v-model="helpVisible" title="端点与权限配置详细说明" width="800px" :close-on-click-modal="false">
+      <div class="help-content">
+        <el-collapse v-model="activeHelp" accordion>
+          <el-collapse-item name="1">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Document /></el-icon>
+                一、什么是端点？
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>端点</strong>是系统中定义的接口访问路径，用于标识一个具体的API接口。</p>
+              <p><strong>示例：</strong></p>
+              <ul>
+                <li><code>/user/list</code> - 获取用户列表的接口</li>
+                <li><code>/user/add</code> - 添加用户的接口</li>
+                <li><code>/user/**</code> - 匹配所有以 /user/ 开头的接口</li>
+              </ul>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="2">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Key /></el-icon>
+                二、什么是权限？
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>权限</strong>是一个权限代码字符串，用于标识用户可以执行的操作。</p>
+              <p><strong>权限命名规范：</strong>通常采用"模块:资源:操作"的格式</p>
+              <ul>
+                <li><code>admin:user:view</code> - 管理员查看用户的权限</li>
+                <li><code>admin:user:edit</code> - 管理员编辑用户的权限</li>
+                <li><code>admin:user:delete</code> - 管理员删除用户的权限</li>
+              </ul>
+              <p style="margin-top: 12px"><strong>特殊权限：</strong></p>
+              <ul>
+                <li><code>*</code> - 表示该端点不需要权限验证，所有用户都可以访问</li>
+              </ul>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="3">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Connection /></el-icon>
+                三、端点与权限的关联关系
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>关联流程：</strong></p>
+              <ol style="line-height: 2">
+                <li><strong>创建端点</strong>：在本页面创建端点，配置接口路径和所需权限代码</li>
+                <li><strong>创建权限</strong>：在"权限管理"页面创建权限，定义权限代码和描述</li>
+                <li><strong>分配权限</strong>：在"组管理"页面将权限分配给用户组</li>
+                <li><strong>用户访问</strong>：用户访问接口时，系统自动验证用户是否拥有该端点要求的权限</li>
+              </ol>
+
+              <div style="background: #f5f7fa; padding: 12px; border-radius: 4px; margin-top: 16px">
+                <p style="margin: 0; font-weight: bold; color: #409eff">📌 示例说明：</p>
+                <p style="margin: 8px 0 0 0">假设你要保护 <code>/user/delete</code> 接口，只允许管理员删除用户：</p>
+                <ol style="margin: 8px 0 0 0; line-height: 2">
+                  <li>在<strong>端点管理</strong>创建端点：路径=/user/delete，权限=admin:user:delete</li>
+                  <li>在<strong>权限管理</strong>创建权限：代码=admin:user:delete，名称=删除用户</li>
+                  <li>在<strong>组管理</strong>将"admin:user:delete"权限分配给"管理员"组</li>
+                  <li>将用户加入"管理员"组，该用户就能访问 /user/delete 接口了</li>
+                </ol>
+              </div>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="4">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Setting /></el-icon>
+                四、权限验证流程
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>当用户访问接口时，系统按以下流程验证权限：</strong></p>
+              <ol style="line-height: 2">
+                <li>系统接收到请求，获取请求路径（如 /user/delete）</li>
+                <li>在端点缓存中查找匹配的端点配置</li>
+                <li>获取该端点要求的权限代码</li>
+                <li>检查用户的权限列表中是否包含该权限代码</li>
+                <li>如果有权限则允许访问，否则返回403禁止访问</li>
+              </ol>
+
+              <div style="background: #fff3e0; padding: 12px; border-radius: 4px; margin-top: 16px">
+                <p style="margin: 0; font-weight: bold; color: #e6a23c">⚠️ 特殊情况处理：</p>
+                <ul style="margin: 8px 0 0 0; line-height: 1.8">
+                  <li><strong>端点未配置：</strong>如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问</li>
+                  <li><strong>权限为*：</strong>如果端点的权限字段设置为"*"，表示该接口无需权限验证，所有用户都可以访问</li>
+                  <li><strong>多个匹配：</strong>如果多个端点都匹配请求路径，系统会选择最精确的匹配规则</li>
+                </ul>
+              </div>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="5">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Position /></el-icon>
+                五、端点路径匹配规则
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>端点路径支持 AntPathMatcher 通配符匹配：</strong></p>
+              <ul style="line-height: 2">
+                <li><code>?</code> - 匹配单个字符，如 /user/? 可以匹配 /user/1 但不能匹配 /user/12</li>
+                <li><code>*</code> - 匹配零个或多个字符，如 /user/* 可以匹配 /user/list 但不能匹配 /user/info/detail</li>
+                <li><code>**</code> - 匹配零个或多个目录，如 /user/** 可以匹配 /user/ 下的所有路径</li>
+              </ul>
+
+              <p style="margin-top: 12px"><strong>匹配优先级：</strong></p>
+              <p>当多个端点都匹配请求路径时，系统选择最精确的匹配</p>
+              <ul style="line-height: 1.8">
+                <li><code>/user/delete</code> 优先于 <code>/user/*</code></li>
+                <li><code>/user/*</code> 优先于 <code>/user/**</code></li>
+                <li><code>/**</code> 优先级最低</li>
+              </ul>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="6">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><Refresh /></el-icon>
+                六、为什么需要清空缓存？
+              </div>
+            </template>
+            <div class="help-section">
+              <p><strong>缓存机制：</strong>为了提高性能，系统会将端点配置缓存到内存中</p>
+
+              <p style="margin-top: 12px"><strong>需要清空缓存的情况：</strong></p>
+              <ul style="line-height: 1.8">
+                <li>修改了端点的路径或权限配置</li>
+                <li>新增或删除了端点</li>
+                <li>发现权限验证结果不符合预期</li>
+                <li>怀疑缓存数据与数据库不一致</li>
+              </ul>
+
+              <p style="margin-top: 12px"><strong>缓存状态：</strong></p>
+              <p>列表中的"已缓存"列显示该端点是否在内存缓存中：</p>
+              <ul style="line-height: 1.8">
+                <li><el-tag type="success" size="small">是</el-tag> - 该端点已缓存，当前正在使用</li>
+                <li><el-tag type="info" size="small">否</el-tag> - 该端点未缓存，需要清空缓存后才会生效</li>
+              </ul>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item name="7">
+            <template #title>
+              <div style="font-size: 15px; font-weight: bold">
+                <el-icon style="margin-right: 8px"><QuestionFilled /></el-icon>
+                七、常见问题
+              </div>
+            </template>
+            <div class="help-section">
+              <div class="qa-item">
+                <p class="question">Q1: 我创建了端点，为什么还是无法访问？</p>
+                <p class="answer">A: 请检查以下几点：</p>
+                <ul class="answer">
+                  <li>端点配置的路径是否与实际接口路径匹配</li>
+                  <li>是否在"权限管理"中创建了对应的权限</li>
+                  <li>是否在"组管理"中将权限分配给了用户所在的组</li>
+                  <li>是否点击了"清空权限数据缓存"按钮</li>
+                </ul>
+              </div>
+
+              <div class="qa-item">
+                <p class="question">Q2: 端点和权限的代码需要完全一致吗？</p>
+                <p class="answer">A: 是的。端点配置的"所需权限"字段必须与"权限管理"中的权限代码完全一致。</p>
+              </div>
+
+              <div class="qa-item">
+                <p class="question">Q3: 如何配置不需要权限验证的接口？</p>
+                <p class="answer">A: 将端点的"所需权限"字段设置为 * 即可。</p>
+              </div>
+
+              <div class="qa-item">
+                <p class="question">Q4: 清空缓存会影响系统运行吗？</p>
+                <p class="answer">A: 清空缓存后，系统会在下次请求时重新从数据库加载端点配置，可能会有轻微的性能影响，但不会影响系统正常运行。</p>
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+      <template #footer>
+        <el-button type="primary" @click="helpVisible = false">我知道了</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,7 +341,19 @@ import EndpointApi from "@/api/core/EndpointApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
+import {
+  Delete as DeleteIcon,
+  View as ViewIcon,
+  Plus as PlusIcon,
+  InfoFilled,
+  Document,
+  Key,
+  Connection,
+  Setting,
+  Position,
+  Refresh,
+  QuestionFilled,
+} from "@element-plus/icons-vue";
 
 //列表内容
 const query = reactive<GetEndpointTreeDto>({
@@ -139,7 +363,7 @@ const query = reactive<GetEndpointTreeDto>({
 
 const list = ref<GetEndpointTreeVo[]>([]);
 const loading = ref(false);
-
+const simpleHelpVisible = ref(false);
 // 用于父级选择的完整端点树
 const fullEndpointTree = ref<GetEndpointTreeVo[]>([]);
 
@@ -260,6 +484,10 @@ const clearEndpointCache = async () => {
 
 loadList();
 loadFullEndpointTree();
+
+//帮助文档
+const helpVisible = ref(false);
+const activeHelp = ref("1");
 
 //模态框内容
 const modalVisible = ref(false);
@@ -384,7 +612,7 @@ const submitModal = async () => {
 
 <style scoped>
 .endpoint-manager-container {
-  padding: 20px;
+  padding: 0 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
@@ -400,5 +628,58 @@ const submitModal = async () => {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;
+}
+
+.help-content {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.help-section {
+  padding: 12px;
+  line-height: 1.8;
+}
+
+.help-section p {
+  margin: 8px 0;
+}
+
+.help-section ul,
+.help-section ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.help-section li {
+  margin: 4px 0;
+}
+
+.help-section code {
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #e6a23c;
+  font-family: "Courier New", monospace;
+}
+
+.qa-item {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #dcdfe6;
+}
+
+.qa-item:last-child {
+  border-bottom: none;
+}
+
+.qa-item .question {
+  font-weight: bold;
+  color: #409eff;
+  margin: 0 0 8px 0;
+}
+
+.qa-item .answer {
+  margin: 4px 0;
+  color: #606266;
 }
 </style>
