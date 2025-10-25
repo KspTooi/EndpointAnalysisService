@@ -61,5 +61,12 @@ public class EndpointController {
         return Result.success("删除成功");
     }
 
+    @PostMapping("/clearEndpointCache")
+    @Operation(summary = "清空端点缓存")
+    public Result<String> clearEndpointCache() {
+        endpointService.clearEndpointCache();
+        return Result.success("缓存已清空");
+    }
+
 
 }

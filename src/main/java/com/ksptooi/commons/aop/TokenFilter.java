@@ -43,11 +43,12 @@ public class TokenFilter implements Filter {
             "/welcome",
             "/",
             "/favicon.ico",
-
             // springdoc / swagger
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/noPermission",
+            "/endpoint/**"
     );
 
     private static final Map<String, String> BLACK_LIST = Map.of(
@@ -105,7 +106,7 @@ public class TokenFilter implements Filter {
 
             if (pathMatcher.match(pattern, uri)) {
                 // 检查用户是否有访问权限
-                if (!AuthService.hasPermission(requiredPermission)) {
+                if (!authService.hasPermissionByUrlPath(uri)) {
                     // 检查是否为 AJAX 请求
                     String requestWithHeader = req.getHeader("AE-Request-With");
                     if ("XHR".equalsIgnoreCase(requestWithHeader)) {
@@ -126,6 +127,27 @@ public class TokenFilter implements Filter {
                 }
                 break; // 找到匹配的模式后退出循环
             }
+        }
+
+        // 检查用户是否有访问权限
+        if (!authService.hasPermissionByUrlPath(uri)) {
+            // 检查是否为 AJAX 请求
+            String requestWithHeader = req.getHeader("AE-Request-With");
+            if ("XHR".equalsIgnoreCase(requestWithHeader)) {
+                // AJAX 请求返回403状态码和JSON错误信息
+                res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                res.setContentType("application/json;charset=UTF-8");
+
+                Result<String> result = Result.error(403, "访问该端点所需的权限不足", null);
+
+                try (PrintWriter writer = res.getWriter()) {
+                    writer.write(gson.toJson(result));
+                }
+                return;
+            }
+            // 非AJAX请求重定向到无权限页面
+            res.sendRedirect("/noPermission");
+            return;
         }
 
         chain.doFilter(request, response);

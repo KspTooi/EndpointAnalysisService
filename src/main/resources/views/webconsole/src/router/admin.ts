@@ -175,6 +175,16 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/endpoint-manager",
+      name: "endpoint-manager",
+      component: () => import("@/views/core/EndpointManager.vue"),
+      meta: {
+        breadcrumb: {
+          title: "端点管理",
+        },
+      },
+    },
   ],
 });
 

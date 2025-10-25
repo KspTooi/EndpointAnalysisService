@@ -13,10 +13,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ksptool.entities.Entities.as;
@@ -27,6 +32,9 @@ public class EndpointService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+
+    private List<ResourcePo> endpointCache = null;
+
 
     /**
      * 添加端点
@@ -208,7 +216,15 @@ public class EndpointService {
         
         // 转换为VO
         List<GetEndpointTreeVo> allVos = as(allEndpoints, GetEndpointTreeVo.class);
-        
+
+        // 设置缓存状态
+        if (this.endpointCache != null) {
+            Set<Long> cachedIds = this.endpointCache.stream().map(ResourcePo::getId).collect(Collectors.toSet());
+            allVos.forEach(vo -> vo.setCached(cachedIds.contains(vo.getId()) ? 1 : 0));
+        } else {
+            allVos.forEach(vo -> vo.setCached(0));
+        }
+
         // 设置parentId
         for (int i = 0; i < allEndpoints.size(); i++) {
             ResourcePo po = allEndpoints.get(i);
@@ -252,4 +268,61 @@ public class EndpointService {
             buildChildren(child, parentIdMap);
         }
     }
+
+
+    /**
+     * 获取端点所需权限
+     *
+     * @param urlPath 请求路径
+     * @return 所需权限
+     */
+    public String getEndpointRequiredPermission(String urlPath) {
+
+        if (StringUtils.isBlank(urlPath)) {
+            return null;
+        }
+
+        if (this.endpointCache == null) {
+            this.endpointCache = resourceRepository.findByKind(1);
+        }
+
+        List<ResourcePo> endpoints = this.endpointCache;
+
+        if (endpoints.isEmpty()) {
+            return null;
+        }
+
+        PathMatcher pathMatcher = new AntPathMatcher();
+
+        List<ResourcePo> matchedEndpoints = new ArrayList<>();
+
+        for (ResourcePo endpoint : endpoints) {
+            if (StringUtils.isNotBlank(endpoint.getPath()) && pathMatcher.match(endpoint.getPath(), urlPath)) {
+                matchedEndpoints.add(endpoint);
+            }
+        }
+
+        if (matchedEndpoints.isEmpty()) {
+            return null;
+        }
+
+        if (matchedEndpoints.size() == 1) {
+            return matchedEndpoints.get(0).getPermission();
+        }
+
+        Comparator<ResourcePo> comparator = (e1, e2) -> pathMatcher.getPatternComparator(urlPath).compare(e1.getPath(), e2.getPath());
+        Optional<ResourcePo> bestMatch = matchedEndpoints.stream().min(comparator);
+
+        return bestMatch.map(ResourcePo::getPermission).orElse(null);
+    }
+
+
+    /**
+     * 清空端点缓存
+     */
+    public void clearEndpointCache() {
+        this.endpointCache = null;
+    }
+
+
 }

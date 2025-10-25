@@ -13,6 +13,7 @@ import com.ksptooi.commons.utils.SHA256;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -38,6 +39,9 @@ public class AuthService {
 
     @Value("${session.expires}")
     private long expiresInSeconds;
+
+    @Autowired
+    private EndpointService endpointService;
 
     /**
      * 用户使用用户名与密码登录系统
@@ -159,6 +163,43 @@ public class AuthService {
         return session != null ? session.getUserId() : null;
     }
 
+
+    /**
+     * 根据URL路径检查当前用户是否拥有权限
+     *
+     * @param urlPath 请求URL路径
+     * @return 如果用户拥有该权限返回true，否则返回false
+     */
+    public boolean hasPermissionByUrlPath(String urlPath) {
+
+        String requiredPermission = endpointService.getEndpointRequiredPermission(urlPath);
+
+        //如果端点未配置则默认拦截
+        if (requiredPermission == null) {
+            log.warn("端点: {} 未配置权限,请检查端点配置", urlPath);
+            return false;
+        }
+
+        // 如果端点不需要权限
+        if (StringUtils.isBlank(requiredPermission) || "*".equals(requiredPermission)) {
+            return true;
+        }
+
+        UserSessionVo session = getCurrentUserSession();
+
+        if (session == null || session.getPermissions() == null) {
+            return false;
+        }
+
+        if (session.getPermissions().contains(requiredPermission)) {
+            return true;
+        }
+
+        log.warn("用户ID: {} 访问端点: {} 时权限校验未通过,所需权限: {}", session.getUserId(), urlPath, requiredPermission);
+        return false;
+    }
+
+
     /**
      * 检查当前用户是否拥有指定权限
      *
@@ -166,6 +207,9 @@ public class AuthService {
      * @return 如果用户拥有该权限返回true，否则返回false
      */
     public static boolean hasPermission(String permission) {
+
+        UserSessionVo session = getCurrentUserSession();
+
 
         return true;
 

@@ -30,7 +30,11 @@ public class GetEndpointTreeVo {
     @Schema(description = "排序")
     private Integer seq;
 
+    @Schema(description = "是否已被缓存 0:否 1:是")
+    private Integer cached;
+
     @Schema(description = "子端点")
     private List<GetEndpointTreeVo> children;
+
 
 }

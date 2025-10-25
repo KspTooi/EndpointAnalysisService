@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/config")
-@Tag(name = "配置项管理1", description = "配置项管理")
+@Tag(name = "配置项管理", description = "配置项管理")
 public class ConfigController {
 
     @Autowired
@@ -34,14 +34,14 @@ public class ConfigController {
     @Operation(summary = "获取配置项列表")
     @PostMapping("getConfigList")
     @RequirePermissionRest("admin:config:view")
-    public PageResult<GetConfigListVo> getConfigList(@RequestBody @Valid GetConfigListDto dto) throws Exception{
+    public PageResult<GetConfigListVo> getConfigList(@RequestBody @Valid GetConfigListDto dto) throws Exception {
         return service.getConfigList(dto);
     }
-    
+
     @Operation(summary = "获取配置项详情")
     @PostMapping("getConfigDetails")
     @RequirePermissionRest("admin:config:save")
-    public Result<GetConfigDetailsVo> getConfigDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
+    public Result<GetConfigDetailsVo> getConfigDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         try {
             return Result.success(service.getConfigDetails(dto.getId()));
         } catch (BizException e) {
@@ -52,7 +52,7 @@ public class ConfigController {
     @Operation(summary = "保存配置项")
     @PostMapping("saveConfig")
     @RequirePermissionRest("admin:config:save")
-    public Result<String> saveConfig(@RequestBody @Valid SaveConfigDto dto) throws Exception{
+    public Result<String> saveConfig(@RequestBody @Valid SaveConfigDto dto) throws Exception {
         try {
             service.saveConfig(dto);
             return Result.success("success");
@@ -64,7 +64,7 @@ public class ConfigController {
     @Operation(summary = "删除配置项")
     @PostMapping("removeConfig")
     @RequirePermissionRest("admin:config:remove")
-    public Result<String> removeConfig(@RequestBody @Valid CommonIdDto dto) throws Exception{
+    public Result<String> removeConfig(@RequestBody @Valid CommonIdDto dto) throws Exception {
         try {
             service.removeConfig(dto.getId());
             return Result.success("success");
