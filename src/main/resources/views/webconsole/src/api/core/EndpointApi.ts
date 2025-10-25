@@ -44,6 +44,8 @@ export interface GetEndpointTreeVo {
   path?: string | null; // 端点路径
   permission?: string | null; // 所需权限
   seq?: number | null; // 排序
+  cached?: number | null; // 是否已被缓存 0:否 1:是
+  missingPermission?: number | null; // 是否缺失权限节点 0:否 1:完全缺失 2:部分缺失
   children: GetEndpointTreeVo[]; // 子端点
 }
 

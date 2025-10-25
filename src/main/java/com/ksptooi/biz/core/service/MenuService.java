@@ -6,16 +6,16 @@ import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuDetailsVo;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuTreeVo;
 import com.ksptooi.biz.core.model.resource.po.ResourcePo;
+import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.biz.core.repository.ResourceRepository;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.web.CommonIdDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -25,6 +25,9 @@ public class MenuService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+
+    @Autowired
+    private PermissionRepository permissionRepository;
 
     /**
      * 获取菜单与按钮树
@@ -71,6 +74,54 @@ public class MenuService {
             }else{
                 treeVos.add(vo);
             }
+        }
+
+        //搜集菜单中的权限列表
+        var permissions = new HashSet<String>();
+        for (ResourcePo menuPo : list) {
+            if (StringUtils.isNotBlank(menuPo.getPermission())) {
+                permissions.addAll(Str.safeSplit(menuPo.getPermission(), ";"));
+            }
+        }
+
+        //查找数据库中不存在的权限
+        Set<String> existingPermissions = permissionRepository.getExistingPermissionsByCode(permissions);
+        Set<String> missingPermissions = new HashSet<>(permissions);
+        missingPermissions.removeAll(existingPermissions);
+
+        // 设置缺失权限标记
+        for (GetMenuTreeVo vo : flatVos) {
+            if (Str.in(vo.getPermission(), "*")) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            if (StringUtils.isBlank(vo.getPermission())) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            List<String> perms = Str.safeSplit(vo.getPermission(), ";");
+            int missingCount = 0;
+            int totalCount = perms.size();
+
+            for (String perm : perms) {
+                if (missingPermissions.contains(perm)) {
+                    missingCount++;
+                }
+            }
+
+            if (missingCount == 0) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            if (missingCount == totalCount) {
+                vo.setMissingPermission(1);
+                continue;
+            }
+
+            vo.setMissingPermission(2);
         }
 
         return treeVos;
@@ -240,3 +291,4 @@ public class MenuService {
 
 
 }
+

@@ -40,6 +40,9 @@ public class GetMenuTreeVo {
     @Schema(description = "所需权限(目录不能填写)")
     private String permission;
 
+    @Schema(description = "是否缺失权限节点 0:否 1:是 2:部分缺失")
+    private Integer missingPermission;
+
     @Schema(description = "排序")
     private Integer seq;
 

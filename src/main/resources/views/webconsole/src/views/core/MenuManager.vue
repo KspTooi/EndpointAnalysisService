@@ -1,5 +1,22 @@
 <template>
   <div class="menu-manager-container">
+    <!-- 说明文档 -->
+    <el-alert type="info" :closable="false" style="margin-bottom: 20px">
+      <template #title>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <el-icon><InfoFilled /></el-icon>
+          <span style="font-weight: bold">权限节点缺失指示器</span>
+        </div>
+      </template>
+      <div style="font-size: 13px; line-height: 1.6">
+        <div>
+          <span style="color: #67c23a; font-weight: bold">● 绿色</span>：权限完整，所有权限节点已在系统中定义
+          <span style="margin-left: 16px; color: #e6a23c; font-weight: bold">● 橙色</span>：部分缺失，部分权限节点未在系统中定义
+          <span style="margin-left: 16px; color: #f56c6c; font-weight: bold">● 红色</span>：完全缺失，所有权限节点均未在系统中定义
+        </div>
+      </div>
+    </el-alert>
+
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="query">
@@ -63,7 +80,21 @@
         <el-table-column label="所需权限" prop="permission" show-overflow-tooltip>
           <template #default="scope">
             <span v-if="scope.row.menuKind === 0" style="color: #999; font-size: 12px">不适用</span>
-            <span v-else>{{ scope.row.permission }}</span>
+            <span
+              v-else
+              :style="{
+                color:
+                  scope.row.missingPermission === 1
+                    ? '#f56c6c'
+                    : scope.row.missingPermission === 2
+                      ? '#e6a23c'
+                      : scope.row.missingPermission === 0 && scope.row.permission !== '*'
+                        ? '#67c23a'
+                        : '',
+              }"
+            >
+              {{ scope.row.permission }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="排序" prop="seq" width="65" />
@@ -165,7 +196,7 @@ import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder";
@@ -490,7 +521,7 @@ watch(
 
 <style scoped>
 .menu-manager-container {
-  padding: 20px;
+  padding: 0 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;

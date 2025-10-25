@@ -67,6 +67,7 @@ export interface GetMenuTreeVo {
   menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
   menuBtnId?: string | null; // 按钮ID
   permission?: string | null; // 所需权限
+  missingPermission?: number | null; // 是否缺失权限节点 0:否 1:完全缺失 2:部分缺失
   seq?: number | null; // 排序
   children: GetMenuTreeVo[]; // 子菜单
 }

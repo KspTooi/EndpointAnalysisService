@@ -13,6 +13,11 @@
       <div style="font-size: 13px; line-height: 1.6" v-if="simpleHelpVisible">
         <div><strong>端点</strong>：定义系统中的接口路径（如 /user/list），每个端点可以配置所需的访问权限</div>
         <div><strong>权限</strong>：定义权限代码（如 admin:user:view），用户拥有权限后才能访问配置了该权限的端点</div>
+        <div style="margin-top: 8px">
+          <strong>权限缺失指示器</strong>： <span style="color: #67c23a; font-weight: bold">● 绿色</span>=权限完整
+          <span style="margin-left: 12px; color: #e6a23c; font-weight: bold">● 橙色</span>=部分缺失
+          <span style="margin-left: 12px; color: #f56c6c; font-weight: bold">● 红色</span>=完全缺失
+        </div>
         <div style="color: #e6a23c; margin-top: 4px">⚠️ 修改端点配置后，需要点击"清空权限数据缓存"按钮使配置立即生效</div>
       </div>
     </el-alert>
@@ -52,7 +57,24 @@
       <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
         <el-table-column label="端点名称" prop="name" />
         <el-table-column label="端点路径" prop="path" show-overflow-tooltip />
-        <el-table-column label="所需权限" prop="permission" show-overflow-tooltip />
+        <el-table-column label="所需权限" show-overflow-tooltip>
+          <template #default="scope">
+            <span
+              :style="{
+                color:
+                  scope.row.missingPermission === 1
+                    ? '#f56c6c'
+                    : scope.row.missingPermission === 2
+                      ? '#e6a23c'
+                      : scope.row.missingPermission === 0 && scope.row.permission !== '*'
+                        ? '#67c23a'
+                        : '',
+              }"
+            >
+              {{ scope.row.permission }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="端点描述" prop="description" show-overflow-tooltip />
         <el-table-column label="排序" prop="seq" width="100" />
         <el-table-column label="已缓存" width="100">
