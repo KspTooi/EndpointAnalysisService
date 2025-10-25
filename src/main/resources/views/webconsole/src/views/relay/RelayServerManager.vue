@@ -2,18 +2,27 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="listQuery" inline>
-        <el-form-item label="中继通道名称">
-          <el-input v-model="listQuery.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="桥接目标URL">
-          <el-input v-model="listQuery.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-          <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-        </el-form-item>
+      <el-form :model="listQuery">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="中继通道名称">
+              <el-input v-model="listQuery.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="桥接目标URL">
+              <el-input v-model="listQuery.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" :offset="4" style="display: flex; justify-content: flex-end">
+            <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+          </el-col>
+        </el-row>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建中继通道</el-button>
     </div>
 
@@ -581,8 +590,10 @@ watch(
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .list-table {

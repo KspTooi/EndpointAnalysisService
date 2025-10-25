@@ -2,24 +2,37 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item>
-          <el-form-item label="路由规则名" prop="name">
-            <el-input v-model="query.name" placeholder="请输入路由规则名" />
-          </el-form-item>
-          <el-form-item label="匹配类型" prop="matchType">
-            <el-select v-model="query.matchType" placeholder="请选择匹配类型" style="width: 200px">
-              <el-option label="全部" :value="0" />
-              <el-option label="IP地址" :value="1" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="匹配值" prop="matchValue">
-            <el-input v-model="query.matchValue" placeholder="请输入匹配值" />
-          </el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-          <el-button @click="resetList" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="路由规则名" prop="name">
+              <el-input v-model="query.name" placeholder="请输入路由规则名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="匹配类型" prop="matchType">
+              <el-select v-model="query.matchType" placeholder="请选择匹配类型">
+                <el-option label="全部" :value="0" />
+                <el-option label="IP地址" :value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="匹配值" prop="matchValue">
+              <el-input v-model="query.matchValue" placeholder="请输入匹配值" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+              <el-button @click="resetList" :disabled="loading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建路由规则</el-button>
     </div>
 
@@ -369,8 +382,10 @@ watch(
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .list-table {

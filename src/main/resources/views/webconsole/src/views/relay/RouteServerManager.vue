@@ -2,30 +2,54 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="服务器名称">
-          <el-input v-model="query.name" placeholder="请输入服务器名称" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="服务器主机">
-          <el-input v-model="query.host" placeholder="请输入服务器主机" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="服务器端口">
-          <el-input v-model="query.port" placeholder="请输入服务器端口" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="query.remark" placeholder="请输入备注" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="服务器状态">
-          <el-select v-model="query.status" placeholder="请选择服务器状态" clearable style="width: 200px">
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-          <el-button @click="resetList" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="服务器名称">
+              <el-input v-model="query.name" placeholder="请输入服务器名称" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="服务器主机">
+              <el-input v-model="query.host" placeholder="请输入服务器主机" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="服务器端口">
+              <el-input v-model="query.port" placeholder="请输入服务器端口" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+              <el-button @click="resetList" :disabled="loading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="loading" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <template v-if="uiState.isAdvancedSearch">
+          <el-row>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="备注">
+                <el-input v-model="query.remark" placeholder="请输入备注" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="服务器状态">
+                <el-select v-model="query.status" placeholder="请选择服务器状态" clearable style="width: 100%">
+                  <el-option label="启用" :value="1" />
+                  <el-option label="禁用" :value="0" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1"> </el-col>
+          </el-row>
+        </template>
       </el-form>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
       <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="loading">删除选中项</el-button>
     </div>
@@ -134,6 +158,11 @@ import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder.ts";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi.ts";
 import RouteServerApi from "@/api/route/RouteServerApi.ts";
+import ExpandButton from "@/components/common/ExpandButton.vue";
+
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
 
 //列表内容
 const query = reactive<GetRouteServerListDto>({
@@ -349,10 +378,6 @@ const submitModal = async () => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
-}
-
 .list-table {
   margin-bottom: 20px;
   width: 100%;
@@ -364,6 +389,12 @@ const submitModal = async () => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
+}
+
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 :deep(.modal-centered) {

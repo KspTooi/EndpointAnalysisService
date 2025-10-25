@@ -2,22 +2,31 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item>
-          <el-form-item label="变量名" prop="name">
-            <el-input v-model="query.name" placeholder="请输入变量名" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="query.status" placeholder="请选择状态" style="width: 200px">
-              <el-option label="全部" :value="null" />
-              <el-option label="启用" :value="0" />
-              <el-option label="禁用" :value="1" />
-            </el-select>
-          </el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-          <el-button @click="resetList" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="6" :offset="1">
+            <el-form-item label="变量名" prop="name">
+              <el-input v-model="query.name" placeholder="请输入变量名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" :offset="1">
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="query.status" placeholder="请选择状态">
+                <el-option label="全部" :value="-1" />
+                <el-option label="启用" :value="0" />
+                <el-option label="禁用" :value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" :offset="2" style="text-align: right">
+            <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
+            <el-button @click="resetList" :disabled="loading">重置</el-button>
+          </el-col>
+        </el-row>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建共享存储变量</el-button>
     </div>
 
@@ -335,9 +344,10 @@ const submitModal = async () => {
   flex-direction: column;
 }
 
-.query-form {
-  margin-bottom: 20px;
-  flex-shrink: 0;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .list-table {
