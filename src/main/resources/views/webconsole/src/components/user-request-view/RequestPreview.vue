@@ -159,7 +159,7 @@
 import { ref } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
-import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 
 const activeTab = ref<"payload" | "headers" | "meta">("payload");
 

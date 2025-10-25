@@ -127,9 +127,9 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import Http from "@/commons/Http.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type SaveUserDto, type UserGroupVo } from "@/api/UserApi.ts";
+import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type SaveUserDto, type UserGroupVo } from "@/api/core/UserApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
-import GroupApi from "@/api/GroupApi.ts";
+import GroupApi from "@/api/core/GroupApi.ts";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

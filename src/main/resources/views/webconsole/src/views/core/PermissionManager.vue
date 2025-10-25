@@ -163,7 +163,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import AdminPermissionApi, { type GetPermissionDetailsVo, type GetPermissionListDto, type GetPermissionListVo } from "@/api/PermissionApi.ts";
+import AdminPermissionApi, { type GetPermissionDetailsVo, type GetPermissionListDto, type GetPermissionListVo } from "@/api/core/PermissionApi.ts";
 
 const mode = ref<"insert" | "update">("insert");
 

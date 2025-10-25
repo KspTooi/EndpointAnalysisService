@@ -166,8 +166,8 @@ import { ref, reactive, onMounted, markRaw, computed } from "vue";
 import { Edit, Delete, Search } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminGroupApi, { type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto } from "@/api/GroupApi.ts";
-import AdminPermissionApi from "@/api/PermissionApi.ts";
+import AdminGroupApi, { type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto } from "@/api/core/GroupApi.ts";
+import AdminPermissionApi from "@/api/core/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 
 const EditIcon = markRaw(Edit);

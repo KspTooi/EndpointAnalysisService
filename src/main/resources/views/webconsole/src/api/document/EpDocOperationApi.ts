@@ -1,6 +1,6 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
-import type Result from "@/commons/entity/Result";
-import Http from "@/commons/Http";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type Result from "@/commons/entity/Result.ts";
+import Http from "@/commons/Http.ts";
 
 
 export interface GetEpDocOperationTagListDto {

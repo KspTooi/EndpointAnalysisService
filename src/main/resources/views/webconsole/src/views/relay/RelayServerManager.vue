@@ -222,15 +222,15 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
-import RelayServerApi, { type GetRelayServerListDto } from "@/api/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo } from "@/api/RelayServerApi.ts";
+import RelayServerApi, { type GetRelayServerListDto } from "@/api/relay/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo } from "@/api/relay/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import type { GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
+import type { GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
-import RouteRuleApi from "@/api/route/RouteRuleApi.ts";
+import RouteRuleApi from "@/api/relay/RouteRuleApi.ts";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);

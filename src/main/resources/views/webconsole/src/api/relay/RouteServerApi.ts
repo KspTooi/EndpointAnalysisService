@@ -22,11 +22,11 @@ public class GetRouteServerListDto extends PageQuery {
 
  */
 
-import type PageQuery from "@/commons/entity/PageQuery";
-import type Result from "@/commons/entity/Result";
-import Http from "@/commons/Http";
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
-import type PageResult from "@/commons/entity/PageResult";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
+import type Result from "@/commons/entity/Result.ts";
+import Http from "@/commons/Http.ts";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type PageResult from "@/commons/entity/PageResult.ts";
 
 export interface GetRouteServerListDto extends PageQuery {
   name?: string | null; //服务器名称

@@ -145,7 +145,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo } from "@/api/ConfigApi.ts";
+import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo } from "@/api/core/ConfigApi.ts";
 
 const mode = ref<"insert" | "update">("insert");
 

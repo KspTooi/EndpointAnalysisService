@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import EpDocOperationApi, { type GetEpDocOperationDetailsVo, type BodySchema } from '@/api/EpDocOperationApi';
+import EpDocOperationApi, { type GetEpDocOperationDetailsVo, type BodySchema } from '@/api/document/EpDocOperationApi.ts';
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{

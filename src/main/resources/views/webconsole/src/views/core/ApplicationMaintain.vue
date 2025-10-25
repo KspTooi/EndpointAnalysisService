@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import MaintainApi from "@/api/MaintainApi.ts";
+import MaintainApi from "@/api/core/MaintainApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu } from "@element-plus/icons-vue";
 import { EventHolder } from "@/store/EventHolder.ts";

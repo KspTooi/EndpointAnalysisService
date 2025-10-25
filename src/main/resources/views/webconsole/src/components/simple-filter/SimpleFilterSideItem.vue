@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { Delete } from "@element-plus/icons-vue";
-import type { GetSimpleFilterListVo } from "@/api/SimpleFilterApi";
+import type { GetSimpleFilterListVo } from "@/api/requestdebug/SimpleFilterApi.ts";
 import { computed } from "vue";
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 

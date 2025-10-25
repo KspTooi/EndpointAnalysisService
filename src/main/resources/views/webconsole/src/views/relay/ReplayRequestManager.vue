@@ -207,15 +207,15 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
-import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/api/ReplayRequestApi.ts";
-import ReplayRequestApi from "@/api/ReplayRequestApi.ts";
+import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/api/relay/ReplayRequestApi.ts";
+import ReplayRequestApi from "@/api/relay/ReplayRequestApi.ts";
 import { ElMessage } from "element-plus";
 import { View } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
-import RequestApi from "@/api/RequestApi.ts";
+import RequestApi from "@/api/relay/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
-import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 
 //原始请求列表
 const originRequestList = ref<GetOriginRequestVo[]>([]);

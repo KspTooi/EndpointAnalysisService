@@ -129,7 +129,7 @@ import UserRequestEnvStorageApi, {
   type GetUserRequestEnvStorageDetailsVo,
   type GetUserRequestEnvStorageListDto,
   type GetUserRequestEnvStorageListVo,
-} from "@/api/userrequest/UserRequestEnvStorageApi.ts";
+} from "@/api/requestdebug/UserRequestEnvStorageApi.ts";
 
 const props = defineProps<{
   requestEnvId: string | null;

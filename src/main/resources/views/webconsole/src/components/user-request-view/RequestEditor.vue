@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/api/userrequest/UserRequestApi.ts";
+import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/api/requestdebug/UserRequestApi.ts";
 import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
 import RequestPayload from "./RequestPayload.vue";
@@ -92,8 +92,8 @@ import { ElMessage } from "element-plus";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import { EventHolder } from "@/store/EventHolder";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
-import UserRequestLogApi from "@/api/userrequest/UserRequestLogApi";
-import type { GetUserRequestLogDetailsVo } from "@/api/userrequest/UserRequestLogApi";
+import UserRequestLogApi from "@/api/requestdebug/UserRequestLogApi.ts";
+import type { GetUserRequestLogDetailsVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 import RequestPreview from "@/components/user-request-view/RequestPreview.vue";
 
 //完整用户请求数据

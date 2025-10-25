@@ -92,7 +92,7 @@
 import { reactive, ref, onMounted, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
-import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/api/SessionApi.ts";
+import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/api/core/SessionApi.ts";
 
 const ViewIcon = markRaw(View);
 const CloseIcon = markRaw(CloseBold);

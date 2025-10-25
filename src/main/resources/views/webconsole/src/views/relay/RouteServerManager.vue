@@ -156,8 +156,8 @@ import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@eleme
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder.ts";
-import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi.ts";
-import RouteServerApi from "@/api/route/RouteServerApi.ts";
+import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
+import RouteServerApi from "@/api/relay/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
 const uiState = reactive({

@@ -70,11 +70,11 @@
 import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 import { Edit, Delete, Plus, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import UserRequestTreeApi from "@/api/userrequest/UserRequestTreeApi.ts";
-import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTreeDto, AddUserRequestTreeDto } from "@/api/userrequest/UserRequestTreeApi.ts";
-import UserRequestGroupApi from "@/api/userrequest/UserRequestGroupApi.ts";
-import type { AddUserRequestGroupDto } from "@/api/userrequest/UserRequestGroupApi.ts";
-import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
+import UserRequestTreeApi from "@/api/requestdebug/UserRequestTreeApi.ts";
+import type { GetUserRequestTreeVo, EditUserRequestTreeDto, RemoveUserRequestTreeDto, AddUserRequestTreeDto } from "@/api/requestdebug/UserRequestTreeApi.ts";
+import UserRequestGroupApi from "@/api/requestdebug/UserRequestGroupApi.ts";
+import type { AddUserRequestGroupDto } from "@/api/requestdebug/UserRequestGroupApi.ts";
+import UserRequestApi from "@/api/requestdebug/UserRequestApi.ts";
 import { EventHolder } from "@/store/EventHolder";
 
 interface Props {

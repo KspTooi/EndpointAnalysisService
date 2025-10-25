@@ -76,10 +76,10 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import UserRequestTreeApi from "@/api/userrequest/UserRequestTreeApi.ts";
-import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from "@/api/userrequest/UserRequestTreeApi.ts";
-import UserRequestGroupApi from "@/api/userrequest/UserRequestGroupApi.ts";
-import type { AddUserRequestGroupDto } from "@/api/userrequest/UserRequestGroupApi.ts";
+import UserRequestTreeApi from "@/api/requestdebug/UserRequestTreeApi.ts";
+import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from "@/api/requestdebug/UserRequestTreeApi.ts";
+import UserRequestGroupApi from "@/api/requestdebug/UserRequestGroupApi.ts";
+import type { AddUserRequestGroupDto } from "@/api/requestdebug/UserRequestGroupApi.ts";
 import RequestTreeItem from "./RequestTreeItem.vue";
 import RequestTreeItemRightMenu from "./RequestTreeItemRightMenu.vue";
 import { ElMessage, type FormInstance, type InputInstance } from "element-plus";

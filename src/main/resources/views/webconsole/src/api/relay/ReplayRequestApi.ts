@@ -1,7 +1,7 @@
-import type PageQuery from "@/commons/entity/PageQuery";
-import Http from "@/commons/Http";
-import type RestPageableView from "@/commons/entity/RestPageableView";
-import type Result from "@/commons/entity/Result";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
+import Http from "@/commons/Http.ts";
+import type RestPageableView from "@/commons/entity/RestPageableView.ts";
+import type Result from "@/commons/entity/Result.ts";
 
 
 export interface GetOriginRequestDto {

@@ -15,6 +15,12 @@ import java.util.List;
 @Repository
 public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
 
+    /**
+     * 获取资源列表
+     *
+     * @param po 获取资源列表参数
+     * @return 资源列表
+     */
     @Query("""
             SELECT u FROM ResourcePo u
             WHERE
@@ -60,14 +66,43 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
             """)
     List<ResourcePo> getMenuTree(@Param("po") GetMenuTreeDto po);
 
+    /**
+     * 获取菜单子级数量
+     *
+     * @param id 菜单ID
+     * @return 菜单子级数量
+     */
     @Query("""
             SELECT COUNT(t) FROM ResourcePo t
             WHERE t.parent.id = :id AND t.kind = 0
             """)
     int getMenuChildrenCount(@Param("id") Long id);
+    
+    /**
+     * 根据资源类型获取资源列表
+     *
+     * @param kind 资源类型
+     * @return 资源列表
+     */
+    @Query("""
+            SELECT t FROM ResourcePo t
+            WHERE t.kind = :kind
+            ORDER BY t.seq ASC, t.updateTime DESC
+            """)
+    List<ResourcePo> findByKind(@Param("kind") Integer kind);
 
+    /**
+     * 清空菜单
+     */
     @Modifying
     @Query("DELETE FROM ResourcePo WHERE kind = 0")
     void clearMenu();
+
+    /**
+     * 清空端点
+     */
+    @Modifying
+    @Query("DELETE FROM ResourcePo WHERE kind = 1")
+    void clearEndpoint();
 
 }

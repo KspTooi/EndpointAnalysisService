@@ -196,18 +196,18 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
-import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/RequestApi.ts";
-import RequestApi from "@/api/RequestApi.ts";
+import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/relay/RequestApi.ts";
+import RequestApi from "@/api/relay/RequestApi.ts";
 import { ElMessage } from "element-plus";
 import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import QueryPersistService from "@/service/QueryPersistService.ts";
-import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
+import UserRequestApi from "@/api/requestdebug/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
-import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
 const uiState = reactive({

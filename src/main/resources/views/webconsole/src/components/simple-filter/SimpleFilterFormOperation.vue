@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AddSimpleFilterOperationDto, EditSimpleFilterOperationDto } from "@/api/SimpleFilterApi";
+import type { AddSimpleFilterOperationDto, EditSimpleFilterOperationDto } from "@/api/requestdebug/SimpleFilterApi.ts";
 import { ref, watch } from "vue";
 
 const show = ref(false);

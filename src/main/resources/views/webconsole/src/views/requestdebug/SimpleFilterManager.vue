@@ -21,7 +21,7 @@ import { ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
 import SimpleFilterSideList from "@/components/simple-filter/SimpleFilterSideList.vue";
 import SimpleFilterEditor from "@/components/simple-filter/SimpleFilterEditor.vue";
-import type { GetSimpleFilterListVo } from "@/api/SimpleFilterApi.ts";
+import type { GetSimpleFilterListVo } from "@/api/requestdebug/SimpleFilterApi.ts";
 import { SimpleFilterStore } from "@/store/SimpleFilterStore.ts";
 
 const selectedItem = ref<GetSimpleFilterListVo | null>(null);

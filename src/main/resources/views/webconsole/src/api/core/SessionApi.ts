@@ -3,7 +3,7 @@ import Http from "@/commons/Http.ts";
 import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type PageQuery from "@/commons/entity/PageQuery.ts";
-import type Result from "@/commons/entity/Result";
+import type Result from "@/commons/entity/Result.ts";
 
 
 export interface GetSessionListDto extends PageQuery {

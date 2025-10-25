@@ -49,7 +49,7 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
-import UserRequestEnvApi, { type GetUserRequestEnvDetailsVo, type GetUserRequestEnvListDto, type GetUserRequestEnvListVo } from "@/api/userrequest/UserRequestEnvApi.ts";
+import UserRequestEnvApi, { type GetUserRequestEnvDetailsVo, type GetUserRequestEnvListDto, type GetUserRequestEnvListVo } from "@/api/requestdebug/UserRequestEnvApi.ts";
 import RequestEnvSideList from "@/components/user-request/RequestEnvSideList.vue";
 import RequestEnvStorageList from "@/components/user-request/RequestEnvStorageList.vue";
 
