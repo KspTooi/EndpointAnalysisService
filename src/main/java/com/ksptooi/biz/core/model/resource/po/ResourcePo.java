@@ -43,28 +43,36 @@ public class ResourcePo {
     @Comment("资源类型 0:菜单 1:接口")
     private Integer kind;
 
-    @Column(name = "menu_kind")
-    @Comment("菜单类型 0:目录 1:菜单 2:按钮")
+    @Column(name = "menu_kind",columnDefinition = "tinyint")
+    @Comment("菜单类型 0:目录 1:菜单 2:按钮(kind = 0时生效)")
     private Integer menuKind;
 
     @Column(name = "menu_path", length = 256)
-    @Comment("菜单路径")
+    @Comment("菜单路径(menuKind = 1时生效)")
     private String menuPath;
 
     @Column(name = "menu_query_param", length = 512)
-    @Comment("菜单查询参数")
+    @Comment("菜单查询参数(menuKind = 1时生效)")
     private String menuQueryParam;
 
     @Column(name = "menu_icon", length = 64)
-    @Comment("菜单图标")
+    @Comment("菜单图标(menuKind = 1时生效)")
     private String menuIcon;
+
+    @Column(name = "menu_hidden",columnDefinition = "tinyint")
+    @Comment("是否隐藏 0:否 1:是(menuKind = 1/2时生效)")
+    private Integer menuHidden;
+
+    @Column(name = "menu_btn_id", length = 64)
+    @Comment("按钮ID(menuKind = 2时必填)")
+    private String menuBtnId;
 
     @Column(name = "path", length = 256)
     @Comment("接口路径")
     private String path;
 
     @Column(name = "permission", nullable = false, length = 320)
-    @Comment("所需权限")
+    @Comment("所需权限 为*时表示不配置权限(所有用户均可访问)")
     private String permission;
 
     @Column(name = "seq", nullable = false)
