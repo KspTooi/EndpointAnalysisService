@@ -202,7 +202,7 @@ import ReplayRequestApi from "@/api/ReplayRequestApi.ts";
 import { ElMessage } from "element-plus";
 import { View } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
-import RequestApi from "@/api/RequestApi";
+import RequestApi from "@/api/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";

@@ -123,17 +123,17 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi";
-import MenuApi from "@/api/core/MenuApi";
-import { Result } from "@/commons/entity/Result";
+import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi.ts";
+import MenuApi from "@/api/core/MenuApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
-import { EventHolder } from "@/store/EventHolder";
-import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi";
-import RouteServerApi from "@/api/route/RouteServerApi";
+import { EventHolder } from "@/store/EventHolder.ts";
+import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/route/RouteServerApi.ts";
+import RouteServerApi from "@/api/route/RouteServerApi.ts";
 
 //列表内容
 const query = reactive<GetRouteServerListDto>({

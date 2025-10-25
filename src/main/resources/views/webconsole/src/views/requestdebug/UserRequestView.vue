@@ -10,7 +10,7 @@
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import RequestTree from "@/components/user-request-view/RequestTree.vue";
 import RequestEditor from "@/components/user-request-view/RequestEditor.vue";
-import { EventHolder } from "@/store/EventHolder";
+import { EventHolder } from "@/store/EventHolder.ts";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";

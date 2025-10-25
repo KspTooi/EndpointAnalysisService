@@ -219,9 +219,9 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import type { GetRouteRuleListVo } from "@/api/route/RouteRuleApi";
-import { Result } from "@/commons/entity/Result";
-import RouteRuleApi from "@/api/route/RouteRuleApi";
+import type { GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
+import RouteRuleApi from "@/api/route/RouteRuleApi.ts";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);

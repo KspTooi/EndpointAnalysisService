@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";

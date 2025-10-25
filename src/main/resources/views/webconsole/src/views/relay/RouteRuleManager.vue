@@ -144,13 +144,13 @@
 </template>
 
 <script setup lang="ts">
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, computed } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
 import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/route/RouteRuleApi.ts";
-import type { GetRouteServerListVo } from "@/api/route/RouteServerApi";
-import RouteServerApi from "@/api/route/RouteServerApi";
+import type { GetRouteServerListVo } from "@/api/route/RouteServerApi.ts";
+import RouteServerApi from "@/api/route/RouteServerApi.ts";
 
 //列表内容
 const query = reactive<GetRouteRuleListDto>({

@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: "/user-manager",
       name: "user-manager",
-      component: () => import("@/views/user/UserManager.vue"),
+      component: () => import("@/views/core/UserManager.vue"),
       meta: {
         breadcrumb: {
           title: "用户列表",
@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: "/group-manager",
       name: "group-manager",
-      component: () => import("@/views/user/UserGroupManager.vue"),
+      component: () => import("@/views/core/UserGroupManager.vue"),
       meta: {
         breadcrumb: {
           title: "用户组",
@@ -26,7 +26,7 @@ const router = createRouter({
     {
       path: "/permission-manager",
       name: "permission-manager",
-      component: () => import("@/views/user/PermissionManager.vue"),
+      component: () => import("@/views/core/PermissionManager.vue"),
       meta: {
         breadcrumb: {
           title: "权限管理",
@@ -36,7 +36,7 @@ const router = createRouter({
     {
       path: "/session-manager",
       name: "session-manager",
-      component: () => import("@/views/user/SessionManager.vue"),
+      component: () => import("@/views/core/SessionManager.vue"),
       meta: {
         breadcrumb: {
           title: "会话管理",
@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: "/config-manager",
       name: "config-manager",
-      component: () => import("@/views/admin/ConfigManager.vue"),
+      component: () => import("@/views/core/ConfigManager.vue"),
       meta: {
         breadcrumb: {
           title: "配置管理",
@@ -56,7 +56,7 @@ const router = createRouter({
     {
       path: "/application-maintain",
       name: "application-maintain",
-      component: () => import("@/views/admin/ApplicationMaintain.vue"),
+      component: () => import("@/views/core/ApplicationMaintain.vue"),
       meta: {
         breadcrumb: {
           title: "维护中心",
@@ -66,7 +66,7 @@ const router = createRouter({
     {
       path: "/request-manager",
       name: "request-manager",
-      component: () => import("@/views/admin/RequestManager.vue"),
+      component: () => import("@/views/relay/RequestManager.vue"),
       meta: {
         breadcrumb: {
           title: "中继请求记录",
@@ -76,7 +76,7 @@ const router = createRouter({
     {
       path: "/replay-request-manager",
       name: "replay-request-manager",
-      component: () => import("@/views/admin/ReplayRequestManager.vue"),
+      component: () => import("@/views/relay/ReplayRequestManager.vue"),
       meta: {
         breadcrumb: {
           title: "简单请求重放",
@@ -86,7 +86,7 @@ const router = createRouter({
     {
       path: "/user-request-manager",
       name: "user-request-manager",
-      component: () => import("@/views/admin/UserRequestView.vue"),
+      component: () => import("@/views/requestdebug/UserRequestView.vue"),
       meta: {
         breadcrumb: {
           title: "端点调试工作台",
@@ -96,7 +96,7 @@ const router = createRouter({
     {
       path: "/user-request-env-manager",
       name: "user-request-env-manager",
-      component: () => import("@/views/userrequest/UserRequestEnvManager.vue"),
+      component: () => import("@/views/requestdebug/UserRequestEnvManager.vue"),
       meta: {
         breadcrumb: {
           title: "用户请求环境管理",
@@ -107,7 +107,7 @@ const router = createRouter({
     {
       path: "/simple-filter-manager",
       name: "simple-filter-manager",
-      component: () => import("@/views/admin/SimpleFilterManager.vue"),
+      component: () => import("@/views/requestdebug/SimpleFilterManager.vue"),
       meta: {
         breadcrumb: {
           title: "基本过滤器",
@@ -118,7 +118,7 @@ const router = createRouter({
     {
       path: "/relay-server-manager",
       name: "relay-server-manager",
-      component: () => import("@/views/admin/RelayServerManager.vue"),
+      component: () => import("@/views/relay/RelayServerManager.vue"),
       meta: {
         breadcrumb: {
           title: "中继通道配置",
@@ -128,7 +128,7 @@ const router = createRouter({
     {
       path: "/ep-doc-manager",
       name: "ep-doc-manager",
-      component: () => import("@/views/admin/EpDocManager.vue"),
+      component: () => import("@/views/document/EpDocManager.vue"),
       meta: {
         breadcrumb: {
           title: "端点文档配置",
@@ -138,7 +138,7 @@ const router = createRouter({
     {
       path: "/ep-doc-viewer",
       name: "ep-doc-viewer",
-      component: () => import("@/views/admin/EpDocViewer.vue"),
+      component: () => import("@/views/document/EpDocViewer.vue"),
       meta: {
         breadcrumb: {
           title: "端点文档查看器",
@@ -158,7 +158,7 @@ const router = createRouter({
     {
       path: "/route-server",
       name: "route-server",
-      component: () => import("@/views/route/RouteServerManager.vue"),
+      component: () => import("@/views/relay/RouteServerManager.vue"),
       meta: {
         breadcrumb: {
           title: "路由服务器管理",
@@ -168,7 +168,7 @@ const router = createRouter({
     {
       path: "/route-group",
       name: "route-group",
-      component: () => import("@/views/route/RouteRuleManager.vue"),
+      component: () => import("@/views/relay/RouteRuleManager.vue"),
       meta: {
         breadcrumb: {
           title: "路由策略组管理",
