@@ -8,6 +8,7 @@ import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.commons.WebUtils;
+import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.SHA256;
 import jakarta.security.auth.message.AuthException;
@@ -42,6 +43,9 @@ public class AuthService {
 
     @Autowired
     private EndpointService endpointService;
+
+    @Autowired
+    private GlobalConfigService globalConfigService;
 
     /**
      * 用户使用用户名与密码登录系统
@@ -174,10 +178,18 @@ public class AuthService {
 
         String requiredPermission = endpointService.getEndpointRequiredPermission(urlPath);
 
-        //如果端点未配置则默认拦截
+        //如果端点未配置则读取配置项endpoint.access.denied 
         if (requiredPermission == null) {
-            log.warn("端点: {} 未配置权限,请检查端点配置", urlPath);
-            return false;
+
+            boolean denied = globalConfigService.getBoolean(GlobalConfigEnum.ENDPOINT_ACCESS_DENIED.getKey(), Boolean.parseBoolean(GlobalConfigEnum.ENDPOINT_ACCESS_DENIED.getDefaultValue()));
+
+            if (denied) {
+                log.warn("端点: {} 未配置权限,已默认禁止访问 请配置端点权限或修改配置项endpoint.access.denied", urlPath);
+                return false;
+            }
+
+            log.warn("端点: {} 未配置权限,已默认允许访问 请配置端点权限或修改配置项endpoint.access.denied", urlPath);
+            return true;
         }
 
         // 如果端点不需要权限

@@ -10,6 +10,10 @@ public enum GlobalConfigEnum {
 
     APPLICATION_VERSION("application.version","1.0A","应用程序版本"),
     ALLOW_USER_REGISTER("allow.user.register","false","允许用户注册账号 true-允许 -false禁止"),
+
+    ENDPOINT_ACCESS_DENIED("endpoint.access.denied","false","当端点未进行权限配置时禁止访问 true-禁止 false-允许"),
+
+
     ;
 
     /**
