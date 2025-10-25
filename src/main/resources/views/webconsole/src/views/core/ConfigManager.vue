@@ -276,7 +276,11 @@ const saveConfig = async () => {
       });
 
       ElMessage.success(mode.value === "insert" ? "新增配置成功" : "更新配置成功");
-      dialogVisible.value = false;
+      //dialogVisible.value = false;
+      //新增需要重置表单
+      if (mode.value === "insert") {
+        resetForm();
+      }
       loadConfigList();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "操作失败";

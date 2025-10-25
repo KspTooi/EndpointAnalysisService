@@ -515,6 +515,8 @@ const submitModal = async () => {
         bizSuccessCodeValue: modalForm.bizSuccessCodeValue,
       });
       ElMessage.success("添加中继通道成功");
+      //新增需要重置表单
+      resetModal();
     }
 
     if (modalMode.value === "edit") {
@@ -538,7 +540,8 @@ const submitModal = async () => {
       ElMessage.success("编辑中继通道成功");
     }
 
-    modalVisible.value = false;
+    //modalVisible.value = false;
+
     loadList();
   } catch (error: any) {
     ElMessage.error(error.message);

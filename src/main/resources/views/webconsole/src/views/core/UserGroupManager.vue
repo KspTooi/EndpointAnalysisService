@@ -370,7 +370,15 @@ const submitForm = async () => {
     try {
       await AdminGroupApi.saveGroup(groupForm);
       ElMessage.success(formType.value === "add" ? "新增访问组成功" : "更新访问组成功");
-      dialogVisible.value = false;
+      //dialogVisible.value = false;
+
+      //新增需要重置权限列表
+      if (formType.value === "add") {
+        resetForm();
+        //刷新权限
+        handleAdd();
+      }
+
       await loadGroupList();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "操作失败";

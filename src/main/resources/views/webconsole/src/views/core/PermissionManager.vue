@@ -297,7 +297,11 @@ const savePermission = async () => {
       });
 
       ElMessage.success(mode.value === "insert" ? "新增权限成功" : "更新权限成功");
-      dialogVisible.value = false;
+      //dialogVisible.value = false;
+      //新增需要重置表单
+      if (mode.value === "insert") {
+        resetForm();
+      }
       loadPermissionList();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "操作失败";

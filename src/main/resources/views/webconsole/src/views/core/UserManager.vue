@@ -87,20 +87,20 @@
     <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增用户' : '编辑用户'" width="500px" :close-on-click-modal="false">
       <el-form v-if="dialogVisible" ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="100px" :validate-on-rule-change="false">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="userForm.username" :disabled="formType === 'edit'" />
+          <el-input v-model="userForm.username" :disabled="formType === 'edit'" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="userForm.password" type="password" show-password />
+          <el-input v-model="userForm.password" type="password" show-password :placeholder="formType === 'add' ? '请输入密码' : '不修改密码请留空'" />
           <div v-if="formType === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="userForm.nickname" />
+          <el-input v-model="userForm.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" />
+          <el-input v-model="userForm.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="userForm.status">
+          <el-radio-group v-model="userForm.status" placeholder="请选择状态">
             <el-radio :label="0">正常</el-radio>
             <el-radio :label="1">封禁</el-radio>
           </el-radio-group>
@@ -318,7 +318,13 @@ const submitForm = async () => {
       }
       await Http.postEntity<string>("/user/saveUser", submitData);
       ElMessage.success(formType.value === "add" ? "新增用户成功" : "更新用户成功");
-      dialogVisible.value = false;
+      //dialogVisible.value = false;
+
+      //新增需要重置表单
+      if (formType.value === "add") {
+        resetForm();
+      }
+
       loadUserList(); // 重新加载列表
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "操作失败";
