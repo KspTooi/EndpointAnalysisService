@@ -1,6 +1,6 @@
 package com.ksptooi.biz.document.model.epdocoperation;
 
-import com.ksptooi.biz.core.model.BodySchema;
+import com.ksptooi.commons.model.BodySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,11 +1,11 @@
 package com.ksptooi.biz.core.controller;
 
+import com.ksptooi.biz.core.model.permission.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
-import com.ksptooi.biz.user.model.permission.ValidateSystemPermissionsVo;
-import com.ksptooi.biz.user.service.GroupService;
-import com.ksptooi.biz.user.service.PermissionService;
-import com.ksptooi.biz.user.service.UserService;
+import com.ksptooi.biz.core.service.GroupService;
+import com.ksptooi.biz.core.service.PermissionService;
+import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptooi.commons.exception.BizException;
@@ -15,7 +15,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,7 +1,7 @@
 package com.ksptooi.commons.utils;
 
-import com.ksptooi.biz.core.model.BodySchema;
-import com.ksptooi.biz.core.model.BodySchemaParam;
+import com.ksptooi.commons.model.BodySchema;
+import com.ksptooi.commons.model.BodySchemaParam;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -9,14 +9,16 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public final class JsonRequestBodySchemaParser {
 
-    private JsonRequestBodySchemaParser() {}
+    private JsonRequestBodySchemaParser() {
+    }
 
     public static BodySchema parse(Operation operation) {
         if (operation == null) {

@@ -1,7 +1,7 @@
 package com.ksptooi.commons.utils;
 
-import com.ksptooi.biz.core.model.BodySchema;
-import com.ksptooi.biz.core.model.BodySchemaParam;
+import com.ksptooi.commons.model.BodySchema;
+import com.ksptooi.commons.model.BodySchemaParam;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -10,16 +10,14 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 public final class JsonResponseBodySchemaParser {
 
-    private JsonResponseBodySchemaParser() {}
+    private JsonResponseBodySchemaParser() {
+    }
 
     public static BodySchema parse(Operation operation) {
         if (operation == null) {
@@ -256,8 +254,7 @@ public final class JsonResponseBodySchemaParser {
         }
         String ref = schema.get$ref();
         if (StringUtils.isNotBlank(ref)) {
-            int idx = ref.lastIndexOf('/')
-            ;
+            int idx = ref.lastIndexOf('/');
             if (idx >= 0 && idx < ref.length() - 1) {
                 return ref.substring(idx + 1);
             }

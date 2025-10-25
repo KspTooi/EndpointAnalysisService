@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.model.resource.po;
 
-import com.ksptooi.biz.user.service.AuthService;
+import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;

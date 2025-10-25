@@ -1,8 +1,8 @@
 package com.ksptooi.biz;
 
+import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.PanelInstallWizardService;
-import com.ksptooi.biz.user.service.AuthService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +27,7 @@ public class Router {
     public ModelAndView index(HttpServletRequest hsr) {
 
         //如果启用向导模式 跳转到向导
-        if(installWizardService.hasInstallWizardMode()){
+        if (installWizardService.hasInstallWizardMode()) {
             return new ModelAndView("redirect:/install-wizard/");
         }
 
@@ -38,7 +38,7 @@ public class Router {
     public ModelAndView login(HttpServletRequest hsr) {
 
         //如果启用向导模式 跳转到向导
-        if(installWizardService.hasInstallWizardMode()){
+        if (installWizardService.hasInstallWizardMode()) {
             return new ModelAndView("redirect:/install-wizard/");
         }
 
@@ -56,6 +56,5 @@ public class Router {
         return mav;
     }
 
-    
 
 }

@@ -2,12 +2,8 @@ package com.ksptooi.biz.core.controller;
 
 
 import com.ksptooi.EASRunner;
-import com.ksptooi.biz.core.service.GlobalConfigService;
-import com.ksptooi.biz.core.service.PanelInstallWizardService;
-import com.ksptooi.biz.user.model.permission.ValidateSystemPermissionsVo;
-import com.ksptooi.biz.user.service.GroupService;
-import com.ksptooi.biz.user.service.PermissionService;
-import com.ksptooi.biz.user.service.UserService;
+import com.ksptooi.biz.core.model.permission.ValidateSystemPermissionsVo;
+import com.ksptooi.biz.core.service.*;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.utils.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,7 @@ public class AdminInstallWizardController {
 
     @Autowired
     private PermissionService adminPermissionService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -53,11 +49,11 @@ public class AdminInstallWizardController {
         if (!service.hasInstallWizardMode()) {
             return new ModelAndView("redirect:/login");
         }
-        
+
         // 返回安装向导首页
         return new ModelAndView("install-wizard-index");
     }
-    
+
     /**
      * 数据初始化页面
      */
@@ -68,11 +64,11 @@ public class AdminInstallWizardController {
         if (!service.hasInstallWizardMode()) {
             return new ModelAndView("redirect:/login");
         }
-        
+
         // 返回数据初始化页面
         return new ModelAndView("install-wizard-data-init");
     }
-    
+
     /**
      * 安装完成页面
      */
@@ -83,11 +79,11 @@ public class AdminInstallWizardController {
         if (!service.hasInstallWizardMode()) {
             return new ModelAndView("redirect:/login");
         }
-        
+
         // 返回安装完成页面
         return new ModelAndView("install-wizard-finish");
     }
-    
+
     /**
      * 完成安装，设置allow.install.wizard为false
      */
@@ -120,38 +116,38 @@ public class AdminInstallWizardController {
         }
 
         List<String> results = new ArrayList<>();
-        
+
         try {
             // 1. 校验系统内置权限节点
             ValidateSystemPermissionsVo permissionResult = adminPermissionService.validateSystemPermissions();
             String permissionMessage;
             if (permissionResult.getAddedCount() > 0) {
-                permissionMessage = String.format("权限节点校验完成，已添加 %d 个缺失的权限节点，已存在 %d 个权限节点", 
+                permissionMessage = String.format("权限节点校验完成，已添加 %d 个缺失的权限节点，已存在 %d 个权限节点",
                         permissionResult.getAddedCount(), permissionResult.getExistCount());
             } else {
-                permissionMessage = String.format("权限节点校验完成，所有 %d 个系统权限节点均已存在", 
+                permissionMessage = String.format("权限节点校验完成，所有 %d 个系统权限节点均已存在",
                         permissionResult.getExistCount());
             }
             results.add(permissionMessage);
-            
+
             // 2. 校验系统内置用户组
             String groupResult = adminGroupService.validateSystemGroups();
             results.add(groupResult);
-            
+
             // 3. 校验系统内置用户
             String userResult = userService.validateSystemUsers();
             results.add(userResult);
-            
+
             // 4. 校验系统全局配置项
             String configResult = globalConfigService.validateSystemConfigs();
             results.add(configResult);
-            
+
             // 5. 校验系统内置模型变体
-            
+
             // 6. 更新应用版本号
             globalConfigService.setValue(GlobalConfigEnum.APPLICATION_VERSION.getKey(), EASRunner.getVersion());
             results.add("应用版本已更新为：" + EASRunner.getVersion());
-            
+
             return Result.success("系统数据初始化完成", results);
         } catch (Exception e) {
             results.add("系统数据初始化过程中发生错误：" + e.getMessage());

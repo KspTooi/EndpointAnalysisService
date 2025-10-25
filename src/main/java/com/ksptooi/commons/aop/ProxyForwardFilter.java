@@ -1,7 +1,8 @@
 package com.ksptooi.commons.aop;
 
-import com.ksptooi.biz.core.model.request.RequestPo;
-import com.ksptooi.biz.core.service.RequestService;
+import com.google.gson.Gson;
+import com.ksptooi.biz.relay.model.request.RequestPo;
+import com.ksptooi.biz.relay.service.RequestService;
 import com.ksptooi.commons.config.RepeaterConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,9 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,9 +22,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.time.LocalDateTime;
-import com.google.gson.Gson;
+import java.util.*;
 
 //@Component
 //@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -212,7 +209,7 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
             request.setResponseBody(new String(body));
             request.setResponseBodyType("application/json");
         }
-        
+
         request.setStatusCode(upstream.statusCode());
 
         //如果是重定向，则需要保存重定向URL
@@ -238,6 +235,7 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
     /**
      * 复制请求头到目标请求
+     *
      * @param request 请求
      * @param builder 请求构建器
      */
@@ -268,6 +266,7 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
     /**
      * 复制响应头到目标响应
+     *
      * @param upstream 上游响应
      * @param response 目标响应
      */
@@ -292,6 +291,7 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
     /**
      * 读取请求体
+     *
      * @param request 请求
      * @return 请求体
      * @throws IOException
@@ -322,8 +322,9 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
     /**
      * 写入响应体
+     *
      * @param response 响应
-     * @param bytes 响应体
+     * @param bytes    响应体
      * @throws IOException
      */
     private void writeBytes(HttpServletResponse response, byte[] bytes) throws IOException {
@@ -340,7 +341,8 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
     /**
      * 替换URL中的主机名、协议和端口号 例如:http://www.baidu.com/index.html 替换为 http://127.0.0.1:8080/index.html
-     * @param url 原始URL
+     *
+     * @param url       原始URL
      * @param targetUrl 目标URL
      * @return 替换后的URL
      */
@@ -365,7 +367,7 @@ public class ProxyForwardFilter extends OncePerRequestFilter {
 
         return false;
     }
-    
+
 }
 
 

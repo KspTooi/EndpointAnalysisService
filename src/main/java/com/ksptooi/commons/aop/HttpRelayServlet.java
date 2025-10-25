@@ -1,5 +1,19 @@
 package com.ksptooi.commons.aop;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.ksptooi.biz.relay.model.relayserver.GetRelayServerDetailsVo;
+import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
+import com.ksptooi.biz.relay.model.request.RequestPo;
+import com.ksptooi.biz.relay.service.RequestService;
+import com.ksptooi.commons.utils.GsonUtils;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,23 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.ksptooi.biz.core.model.relayserver.GetRelayServerDetailsVo;
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
-import com.ksptooi.biz.core.model.request.RequestPo;
-import com.ksptooi.biz.core.service.RequestService;
-import com.ksptooi.commons.utils.GsonUtils;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 @Slf4j
-public class HttpRelayServlet extends HttpServlet{
+public class HttpRelayServlet extends HttpServlet {
 
     //HTTP客户端
     private final HttpClient httpClient;
@@ -67,12 +66,13 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 构造函数
-     * @param relayServer 中继通道
-     * @param httpClient HTTP客户端
-     * @param gson Gson
+     *
+     * @param relayServer    中继通道
+     * @param httpClient     HTTP客户端
+     * @param gson           Gson
      * @param requestService 请求服务
      */
-    public HttpRelayServlet(GetRelayServerDetailsVo relayServer, HttpClient httpClient,Gson gson,RequestService requestService) {
+    public HttpRelayServlet(GetRelayServerDetailsVo relayServer, HttpClient httpClient, Gson gson, RequestService requestService) {
         this.relayServer = relayServer;
         this.httpClient = httpClient;
         this.gson = gson;
@@ -97,7 +97,7 @@ public class HttpRelayServlet extends HttpServlet{
         var contentType = hsr.getContentType();
         request.setRequestBodyType(contentType);
 
-        if(contentType == null){
+        if (contentType == null) {
             request.setRequestBodyType("UNKNOWN");
         }
 
@@ -112,11 +112,11 @@ public class HttpRelayServlet extends HttpServlet{
         request.setRequestTime(LocalDateTime.now());
         request.setResponseTime(null);
 
-        try{
+        try {
             byte[] requestBody = readRequestBody(hsr);
 
             //如果是JSON请求则需要记录请求体
-            if(contentType!= null && contentType.contains("application/json")){
+            if (contentType != null && contentType.contains("application/json")) {
                 request.setRequestBody(new String(requestBody, StandardCharsets.UTF_8));
             }
 
@@ -131,12 +131,12 @@ public class HttpRelayServlet extends HttpServlet{
             //获取响应头中的content-type
             var retContentType = upstream.headers().firstValue("content-type").orElse(null);
             request.setResponseBodyType(retContentType);
-            if(retContentType == null){
+            if (retContentType == null) {
                 request.setResponseBodyType("UNKNOWN");
             }
 
             //如果是JSON响应则需要记录响应体
-            if(retContentType != null && retContentType.contains("application/json")){
+            if (retContentType != null && retContentType.contains("application/json")) {
                 request.setResponseBody(new String(responseBody, StandardCharsets.UTF_8));
             }
 
@@ -148,7 +148,7 @@ public class HttpRelayServlet extends HttpServlet{
             //如果重定向的主机是中继服务器的目标地址 则将其变更为中继入口
             if (location != null) {
                 //如果重定向覆写为1 则覆写重定向URL
-                if(relayServer.getOverrideRedirect() == 1){
+                if (relayServer.getOverrideRedirect() == 1) {
                     var oldLocation = location;
                     location = replaceHostAndScheme(location, relayServer.getOverrideRedirectUrl());
                     log.info("中继通道:{} 已将重定向URL覆写为:{} 原重定向URL:{}", relayServer.getName(), location, oldLocation);
@@ -160,19 +160,19 @@ public class HttpRelayServlet extends HttpServlet{
             request.setResponseTime(LocalDateTime.now());
 
             //如果请求ID策略为1 则尝试从响应头中获取请求ID
-            if(relayServer.getRequestIdStrategy() == 1){
+            if (relayServer.getRequestIdStrategy() == 1) {
                 String requestId = upstream.headers().firstValue(relayServer.getRequestIdHeaderName()).orElse(null);
-                if(requestId != null){
+                if (requestId != null) {
                     request.setRequestId(requestId);
                 }
-                if(requestId == null){
+                if (requestId == null) {
                     log.warn("中继通道:{} 当前配置了从响应头中获取请求ID,但未能正常获取,已生成随机请求ID:{}", relayServer.getName(), request.getRequestId());
                 }
             }
 
             //如果业务错误策略为1 则尝试从响应体中获取业务错误码
-            if(relayServer.getBizErrorStrategy() == 1){
-                if(request.getResponseBodyType().contains("application/json")){
+            if (relayServer.getBizErrorStrategy() == 1) {
+                if (request.getResponseBodyType().contains("application/json")) {
 
                     JsonElement jsonTree = gson.fromJson(new String(responseBody, StandardCharsets.UTF_8), JsonElement.class);
 
@@ -180,38 +180,38 @@ public class HttpRelayServlet extends HttpServlet{
                     String bizErrorCode = GsonUtils.getFromPath(jsonTree, relayServer.getBizErrorCodeField());
 
                     //无法获取到错误码值 直接判定业务错误
-                    if(bizErrorCode == null){
+                    if (bizErrorCode == null) {
                         request.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                     }
-                    if(bizErrorCode != null){
-                        if(bizErrorCode.equals(successCode)){
+                    if (bizErrorCode != null) {
+                        if (bizErrorCode.equals(successCode)) {
                             request.setStatus(0); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
                         }
-                        if(!bizErrorCode.equals(successCode)){
+                        if (!bizErrorCode.equals(successCode)) {
                             request.setStatus(2); //0:正常 1:HTTP失败 2:业务失败 3:连接超时
-                        } 
+                        }
                     }
                 }
 
             }
 
             //如果有X-Real-IP则将源设置为X-Real-IP
-            if(hsr.getHeader("X-Real-IP") != null){
+            if (hsr.getHeader("X-Real-IP") != null) {
                 request.setSource(hsr.getHeader("X-Real-IP"));
             }
 
             //中继响应
-            doResponse(hsrp,upstream,responseBody);
+            doResponse(hsrp, upstream, responseBody);
 
-        }catch (ConnectException ex){
-            log.error(ex.getMessage(),ex);
+        } catch (ConnectException ex) {
+            log.error(ex.getMessage(), ex);
             hsrp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
             writeBytes(hsrp, ("中继错误,无法建立中继通道 - 目标服务器:'" + relayServer.getForwardUrl() + "'无响应或已超时").getBytes(StandardCharsets.UTF_8));
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             hsrp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
             writeBytes(hsrp, ("中继错误: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
-        }finally{
+        } finally {
             requestService.commitRequest(request);
         }
 
@@ -220,11 +220,12 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 处理请求
-     * @param hsr 请求
+     *
+     * @param hsr         请求
      * @param requestBody 请求体
      * @return 响应
      */
-    private HttpResponse<byte[]> doRequest(HttpServletRequest hsr,byte[] requestBody) throws Exception{
+    private HttpResponse<byte[]> doRequest(HttpServletRequest hsr, byte[] requestBody) throws Exception {
 
         //构建目标URI
         var targetUri = buildTargetUri(hsr);
@@ -235,7 +236,7 @@ public class HttpRelayServlet extends HttpServlet{
         copyRequestHeaders(hsr, builder);
 
         //无需发送请求体的请求
-        if(METHODS_WITHOUT_BODY.contains(method)){
+        if (METHODS_WITHOUT_BODY.contains(method)) {
             builder.method(method, HttpRequest.BodyPublishers.noBody());
         }
         //构建请求体
@@ -249,17 +250,18 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 处理响应
-     * @param hsrp 响应
+     *
+     * @param hsrp     响应
      * @param upstream 响应
-     * @param body 响应体
+     * @param body     响应体
      */
-    private void doResponse(HttpServletResponse hsrp,HttpResponse<byte[]> upstream,byte[] body) throws Exception{
+    private void doResponse(HttpServletResponse hsrp, HttpResponse<byte[]> upstream, byte[] body) throws Exception {
         hsrp.setStatus(upstream.statusCode());
         copyResponseHeaders(upstream, hsrp);
 
         //如果响应头中包含Location则需要覆写重定向URL
-        if(upstream.headers().firstValue("Location").isPresent()){
-            if(relayServer.getOverrideRedirect() == 1){
+        if (upstream.headers().firstValue("Location").isPresent()) {
+            if (relayServer.getOverrideRedirect() == 1) {
                 String location = upstream.headers().firstValue("Location").get();
                 var oldLocation = location;
                 location = replaceHostAndScheme(location, relayServer.getOverrideRedirectUrl());
@@ -278,6 +280,7 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 复制请求头到目标请求
+     *
      * @param request 请求
      * @param builder 请求构建器
      */
@@ -308,6 +311,7 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 复制响应头到目标响应
+     *
      * @param upstream 上游响应
      * @param response 目标响应
      */
@@ -332,6 +336,7 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 读取请求体
+     *
      * @param request 请求
      * @return 请求体
      * @throws IOException
@@ -362,8 +367,9 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 写入响应体
+     *
      * @param response 响应
-     * @param bytes 响应体
+     * @param bytes    响应体
      * @throws IOException
      */
     private void writeBytes(HttpServletResponse response, byte[] bytes) throws IOException {
@@ -380,7 +386,8 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 替换URL中的主机名、协议和端口号 例如:http://www.baidu.com/index.html 替换为 http://127.0.0.1:8080/index.html
-     * @param url 原始URL
+     *
+     * @param url       原始URL
      * @param targetUrl 目标URL
      * @return 替换后的URL
      */
@@ -417,11 +424,12 @@ public class HttpRelayServlet extends HttpServlet{
 
     /**
      * 获取请求头JSON
+     *
      * @param hsr 请求
      * @return 请求头JSON 当获取失败时返回空JSON
      */
-    public String getHeaderJson(HttpServletRequest hsr){
-        try{
+    public String getHeaderJson(HttpServletRequest hsr) {
+        try {
             Map<String, String> requestHeaders = new HashMap<>();
             Enumeration<String> headerNames = hsr.getHeaderNames();
             while (headerNames.hasMoreElements()) {
@@ -429,18 +437,19 @@ public class HttpRelayServlet extends HttpServlet{
                 requestHeaders.put(name, hsr.getHeader(name));
             }
             return gson.toJson(requestHeaders);
-        }catch (Exception e){
+        } catch (Exception e) {
             return "{}";
         }
     }
-    
+
     /**
      * 获取响应头JSON
+     *
      * @param hr 响应
      * @return 响应头JSON 当获取失败时返回空JSON
      */
-    public String getHeaderJson(HttpResponse<?> hr){
-        try{
+    public String getHeaderJson(HttpResponse<?> hr) {
+        try {
             Map<String, String> responseHeaders = new HashMap<>();
             for (var entry : hr.headers().map().entrySet()) {
                 String name = entry.getKey();
@@ -459,13 +468,10 @@ public class HttpRelayServlet extends HttpServlet{
                 }
             }
             return gson.toJson(responseHeaders);
-        }catch (Exception e){
+        } catch (Exception e) {
             return "{}";
         }
     }
-
-
-
 
 
 }

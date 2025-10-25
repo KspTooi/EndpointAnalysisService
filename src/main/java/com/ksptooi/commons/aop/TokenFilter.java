@@ -1,8 +1,8 @@
 package com.ksptooi.commons.aop;
 
 import com.google.gson.Gson;
-import com.ksptooi.biz.user.model.session.UserSessionVo;
-import com.ksptooi.biz.user.service.AuthService;
+import com.ksptooi.biz.core.model.session.UserSessionVo;
+import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.web.Result;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class TokenFilter implements Filter {
             "/swagger-ui/**"
     );
 
-    private static final Map<String,String> BLACK_LIST = Map.of(
+    private static final Map<String, String> BLACK_LIST = Map.of(
             "/actuator/**", "admin:maintain:actuator",
             "/actuator", "admin:maintain:actuator"
     );
@@ -102,7 +102,7 @@ public class TokenFilter implements Filter {
         for (Map.Entry<String, String> entry : BLACK_LIST.entrySet()) {
             String pattern = entry.getKey();
             String requiredPermission = entry.getValue();
-            
+
             if (pathMatcher.match(pattern, uri)) {
                 // 检查用户是否有访问权限
                 if (!AuthService.hasPermission(requiredPermission)) {
@@ -112,9 +112,9 @@ public class TokenFilter implements Filter {
                         // AJAX 请求返回403状态码和JSON错误信息
                         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         res.setContentType("application/json;charset=UTF-8");
-                        
+
                         Result<String> result = Result.error(403, "权限不足，需要权限：" + requiredPermission, null);
-                        
+
                         try (PrintWriter writer = res.getWriter()) {
                             writer.write(gson.toJson(result));
                         }

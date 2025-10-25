@@ -1,8 +1,8 @@
 package com.ksptooi.biz.document.model.epdoc;
 
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.document.model.epdocsynclog.EndpointDocSyncLogPo;
 import com.ksptooi.biz.document.model.epdocversion.EndpointDocVersionPo;
+import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

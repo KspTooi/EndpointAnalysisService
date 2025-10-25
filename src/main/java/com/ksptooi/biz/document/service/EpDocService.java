@@ -1,14 +1,14 @@
 package com.ksptooi.biz.document.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ksptooi.biz.core.model.relayserver.RelayServerPo;
-import com.ksptooi.biz.core.repository.RelayServerRepository;
 import com.ksptooi.biz.document.model.epdoc.*;
 import com.ksptooi.biz.document.model.epdocsynclog.EndpointDocSyncLogPo;
 import com.ksptooi.biz.document.model.epdocversion.EndpointDocVersionPo;
 import com.ksptooi.biz.document.repository.EndpointDocRepository;
 import com.ksptooi.biz.document.repository.EndpointDocSyncLogRepository;
 import com.ksptooi.biz.document.repository.EndpointDocVersionRepository;
+import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
+import com.ksptooi.biz.relay.repository.RelayServerRepository;
 import com.ksptooi.commons.exception.BizException;
 import com.ksptooi.commons.utils.OpenApiUtils;
 import com.ksptooi.commons.utils.web.PageResult;
