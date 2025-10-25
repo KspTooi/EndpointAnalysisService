@@ -38,7 +38,7 @@
     <template #footer>
       <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
         <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmEdit" :loading="editLoading">确定</el-button>
+        <el-button type="primary" @click="handleConfirmEdit" :loading="editLoading">保存</el-button>
       </span>
     </template>
   </el-dialog>
@@ -60,7 +60,7 @@
     <template #footer>
       <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
         <el-button @click="addSubGroupDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmAddSubGroup" :loading="addSubGroupLoading">确定</el-button>
+        <el-button type="primary" @click="handleConfirmAddSubGroup" :loading="addSubGroupLoading">创建</el-button>
       </span>
     </template>
   </el-dialog>

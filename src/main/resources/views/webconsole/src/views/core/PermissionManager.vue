@@ -149,8 +149,8 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="savePermission" :loading="submitLoading"> 确定 </el-button>
+          <el-button @click="dialogVisible = false">关闭</el-button>
+          <el-button type="primary" @click="savePermission" :loading="submitLoading"> 保存 </el-button>
         </span>
       </template>
     </el-dialog>

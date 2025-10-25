@@ -152,7 +152,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button @click="modalVisible = false">关闭</el-button>
           <el-button type="primary" @click="submitModal" :loading="modalLoading">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>

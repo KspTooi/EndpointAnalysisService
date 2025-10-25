@@ -67,7 +67,7 @@
       <template #footer>
         <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
           <el-button @click="createGroupDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">确定</el-button>
+          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">创建</el-button>
         </span>
       </template>
     </el-dialog>
