@@ -566,12 +566,13 @@ const resetModal = (force: boolean = false) => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.description = "";
-  modalForm.path = "";
+  //modalForm.path = "";
   modalForm.permission = "";
   modalForm.seq = 0;
 
   if (force) {
     modalForm.parentId = null;
+    modalForm.path = "";
   }
 };
 

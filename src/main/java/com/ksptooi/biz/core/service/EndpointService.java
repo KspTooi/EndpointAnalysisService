@@ -274,9 +274,9 @@ public class EndpointService {
      * 获取端点所需权限
      *
      * @param urlPath 请求路径
-     * @return 所需权限
+     * @return 所需权限列表
      */
-    public String getEndpointRequiredPermission(String urlPath) {
+    public List<String> getEndpointRequiredPermission(String urlPath) {
 
         if (StringUtils.isBlank(urlPath)) {
             return null;
@@ -306,14 +306,38 @@ public class EndpointService {
             return null;
         }
 
+        ResourcePo bestMatch;
+        
         if (matchedEndpoints.size() == 1) {
-            return matchedEndpoints.get(0).getPermission();
+            bestMatch = matchedEndpoints.get(0);
+        } else {
+            Comparator<ResourcePo> comparator = (e1, e2) -> pathMatcher.getPatternComparator(urlPath).compare(e1.getPath(), e2.getPath());
+            Optional<ResourcePo> bestMatchOpt = matchedEndpoints.stream().min(comparator);
+            if (!bestMatchOpt.isPresent()) {
+                return null;
+            }
+            bestMatch = bestMatchOpt.get();
         }
 
-        Comparator<ResourcePo> comparator = (e1, e2) -> pathMatcher.getPatternComparator(urlPath).compare(e1.getPath(), e2.getPath());
-        Optional<ResourcePo> bestMatch = matchedEndpoints.stream().min(comparator);
+        String permission = bestMatch.getPermission();
+        if (StringUtils.isBlank(permission)) {
+            return null;
+        }
 
-        return bestMatch.map(ResourcePo::getPermission).orElse(null);
+        if (permission.contains(";")) {
+            String[] permissions = permission.split(";");
+            List<String> result = new ArrayList<>();
+            for (String p : permissions) {
+                if (StringUtils.isNotBlank(p)) {
+                    result.add(p.trim());
+                }
+            }
+            return result.isEmpty() ? null : result;
+        }
+
+        List<String> result = new ArrayList<>();
+        result.add(permission);
+        return result;
     }
 
 

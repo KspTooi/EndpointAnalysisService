@@ -28,7 +28,7 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="openInsertModal">创建权限</el-button>
+      <el-button type="success" @click="openInsertModal">创建权限节点</el-button>
     </div>
 
     <!-- 权限列表 -->
@@ -108,7 +108,7 @@
     </div>
 
     <!-- 权限编辑/新增模态框 -->
-    <el-dialog v-model="dialogVisible" :title="mode === 'insert' ? '新增权限' : '编辑权限'" width="500px" :close-on-click-modal="false">
+    <el-dialog v-model="dialogVisible" :title="mode === 'insert' ? '新增权限节点' : '编辑权限节点'" width="500px" :close-on-click-modal="false">
       <el-form v-if="dialogVisible" ref="formRef" :model="details" :rules="rules" label-width="100px" :validate-on-rule-change="false">
         <!-- 编辑时显示的只读信息 -->
         <template v-if="mode === 'update'">

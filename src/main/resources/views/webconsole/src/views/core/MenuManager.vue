@@ -40,7 +40,7 @@
     <!-- 列表 -->
     <div class="menu-tree-table">
       <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
-        <el-table-column label="菜单名称" prop="name">
+        <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
             <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
             {{ scope.row.name }}
@@ -66,7 +66,7 @@
             <span v-else>{{ scope.row.permission }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="seq" width="100" />
+        <el-table-column label="排序" prop="seq" width="65" />
         <el-table-column label="操作" fixed="right" width="230">
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%">

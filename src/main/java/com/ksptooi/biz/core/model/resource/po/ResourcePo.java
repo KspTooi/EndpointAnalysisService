@@ -72,7 +72,7 @@ public class ResourcePo {
     private String path;
 
     @Column(name = "permission", nullable = false, length = 320)
-    @Comment("所需权限 为*时表示不配置权限(所有用户均可访问)")
+    @Comment("所需权限 为*时表示不配置权限(所有用户均可访问) 多个以;分隔")
     private String permission;
 
     @Column(name = "seq", nullable = false)
