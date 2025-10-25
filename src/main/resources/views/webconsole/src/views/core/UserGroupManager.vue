@@ -3,15 +3,15 @@
     <div class="query-form">
       <el-form :model="queryForm">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="组名称" label-for="query-keyword">
-              <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" style="width: 200px" />
+              <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="3" :offset="3">
@@ -428,10 +428,6 @@ onMounted(() => {
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
-}
-
-.query-form {
-  /* margin-bottom: 20px; */
 }
 
 .action-buttons {

@@ -2,13 +2,23 @@
   <div class="request-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="原始请求ID">
-          <el-input ref="originRequestIdInput" v-model="query.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" />
-        </el-form-item>
-        <el-button type="primary" @click="loadOriginRequestList" :disabled="loading">查询</el-button>
-        <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="原始请求ID">
+              <el-input ref="originRequestIdInput" v-model="query.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" /> </el-form-item
+          ></el-col>
+          <el-col :span="5" :offset="1"></el-col>
+          <el-col :span="5" :offset="1"></el-col>
+          <el-col :span="3" :offset="3">
+            <el-button type="primary" @click="loadOriginRequestList" :disabled="loading">查询</el-button>
+            <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+          </el-col>
+        </el-row>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
       <el-button type="success" @click="executeReplay" :disabled="executeLoading">
         <span v-show="!executeLoading">执行重放</span>
         <span v-show="executeLoading">正在处理</span>
@@ -459,8 +469,10 @@ const formatJson = (data: unknown): string => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .empty-state {

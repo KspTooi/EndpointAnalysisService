@@ -4,19 +4,19 @@
     <div class="query-form">
       <el-form :model="query">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="菜单名称">
-              <el-input v-model="query.name" placeholder="请输入菜单名称" clearable style="width: 200px" />
+              <el-input v-model="query.name" placeholder="请输入菜单名称" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="所需权限">
-              <el-input v-model="query.permission" placeholder="请输入所需权限" clearable style="width: 200px" />
+              <el-input v-model="query.permission" placeholder="请输入所需权限" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="菜单类型">
-              <el-select v-model="query.menuKind" placeholder="请选择菜单类型" clearable style="width: 200px">
+              <el-select v-model="query.menuKind" placeholder="请选择菜单类型" clearable>
                 <el-option label="目录" value="0" />
                 <el-option label="菜单" value="1" />
                 <el-option label="按钮" value="2" />

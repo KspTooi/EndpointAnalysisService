@@ -3,20 +3,20 @@
     <div class="query-form">
       <el-form :model="queryForm">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="用户名">
-              <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable style="width: 200px" />
+              <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="状态">
-              <el-select v-model="queryForm.status" placeholder="选择状态" clearable style="width: 150px">
+              <el-select v-model="queryForm.status" placeholder="选择状态" clearable>
                 <el-option label="正常" :value="0" />
                 <el-option label="封禁" :value="1" />
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="3" :offset="3">

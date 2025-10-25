@@ -4,17 +4,17 @@
     <div class="query-form">
       <el-form :model="query">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="关键字">
-              <el-input v-model="query.keyword" placeholder="配置键/值/描述" clearable style="width: 200px" />
+              <el-input v-model="query.keyword" placeholder="配置键/值/描述" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="所有者名称">
-              <el-input v-model="query.userName" placeholder="输入所有者名称查询" clearable style="width: 200px" />
+              <el-input v-model="query.userName" placeholder="输入所有者名称查询" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="3" :offset="3">

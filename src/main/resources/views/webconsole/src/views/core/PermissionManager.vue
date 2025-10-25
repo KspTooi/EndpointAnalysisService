@@ -4,17 +4,17 @@
     <div class="query-form">
       <el-form :model="query">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="权限代码">
-              <el-input v-model="query.code" placeholder="输入权限代码查询" clearable style="width: 200px" />
+              <el-input v-model="query.code" placeholder="输入权限代码查询" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="权限名称">
-              <el-input v-model="query.name" placeholder="输入权限名称查询" clearable style="width: 200px" />
+              <el-input v-model="query.name" placeholder="输入权限名称查询" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="3" :offset="3">

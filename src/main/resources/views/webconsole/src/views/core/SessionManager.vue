@@ -4,15 +4,15 @@
     <div class="query-form">
       <el-form :model="query">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <el-form-item label="用户名">
-              <el-input v-model="query.userName" placeholder="输入用户名查询" clearable style="width: 200px" />
+              <el-input v-model="query.userName" placeholder="输入用户名查询" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="3" :offset="3">

@@ -2,41 +2,74 @@
   <div class="request-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query" inline>
-        <el-form-item label="请求ID">
-          <el-input v-model="query.requestId" placeholder="请输入请求ID" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="请求方法">
-          <el-input v-model="query.method" placeholder="请输入请求方法" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="请求URL">
-          <el-input v-model="query.url" placeholder="请输入请求URL" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="来源">
-          <el-input v-model="query.source" placeholder="请输入来源" clearable style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="query.status" placeholder="请选择状态" clearable style="width: 200px">
-            <el-option label="正常" value="0" />
-            <el-option label="HTTP失败" value="1" />
-            <el-option label="业务失败" value="2" />
-            <el-option label="连接超时" value="3" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否重放">
-          <el-select v-model="query.replay" placeholder="请选择是否重放" clearable style="width: 80px">
-            <el-option label="全部" :value="0" />
-            <el-option label="是" :value="1" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="时间区间">
-          <el-date-picker v-model="timeRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" style="width: 360px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
-          <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-        </el-form-item>
+      <el-form :model="query">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="请求ID">
+              <el-input v-model="query.requestId" placeholder="请输入请求ID" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="请求方法">
+              <el-input v-model="query.method" placeholder="请输入请求方法" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="请求URL">
+              <el-input v-model="query.url" placeholder="请输入请求URL" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item>
+              <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
+              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="loading" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <template v-if="uiState.isAdvancedSearch">
+          <el-row>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="来源">
+                <el-input v-model="query.source" placeholder="请输入来源" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="状态">
+                <el-select v-model="query.status" placeholder="请选择状态" clearable>
+                  <el-option label="正常" value="0" />
+                  <el-option label="HTTP失败" value="1" />
+                  <el-option label="业务失败" value="2" />
+                  <el-option label="连接超时" value="3" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="是否重放">
+                <el-select v-model="query.replay" placeholder="请选择是否重放" clearable>
+                  <el-option label="全部" :value="0" />
+                  <el-option label="是" :value="1" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="时间区间">
+                <el-date-picker v-model="timeRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1"></el-col>
+            <el-col :span="5" :offset="1"></el-col>
+          </el-row>
+        </template>
       </el-form>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
+      <el-button @click="resetQuery" :disabled="loading">重置</el-button>
     </div>
 
     <!-- 配置列表 -->
@@ -175,7 +208,11 @@ import UserRequestApi from "@/api/userrequest/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/api/userrequest/UserRequestLogApi.ts";
+import ExpandButton from "@/components/common/ExpandButton.vue";
 
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
 const router = useRouter();
 const queryPersistService = QueryPersistService;
 
@@ -421,8 +458,10 @@ const formatJson = (data: unknown): string => {
   width: 100%;
 }
 
-.query-form {
-  margin-bottom: 20px;
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .request-table {
