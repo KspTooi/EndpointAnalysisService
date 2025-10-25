@@ -292,6 +292,7 @@
                 </includes>
                 <excludes>
                     <exclude>views/webconsole/node_modules/**</exclude>
+                    <exclude>views/webconsole/node/**</exclude>
                     <exclude>views/webconsole/dist/**</exclude>
                     <exclude>views/webconsole/*.json</exclude>
                     <exclude>views/webconsole/*.yaml</exclude>
