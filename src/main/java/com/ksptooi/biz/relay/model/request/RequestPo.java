@@ -42,12 +42,12 @@ import java.util.List;
  */
 @Entity
 @Table(name = "relay_request", indexes = {
-        @Index(name = "idx_create_time", columnList = "create_time")
+        @Index(name = "idx_create_time", columnList = "create_time"),
+        @Index(name = "idx_relay_server_id", columnList = "relay_server_id")
 })
 @Getter
 @Setter
 @Comment("请求表")
-
 public class RequestPo {
 
     @Id

@@ -33,6 +33,9 @@ ALTER TABLE `route_server` RENAME TO relay_route_server;
 ALTER TABLE `relay_server` RENAME TO relay_server;
 ALTER TABLE `relay_server_route` RENAME TO relay_server_route;
 
+--处理中继模块表索引
+ALTER TABLE `relay_request` ADD INDEX `idx_relay_server_id` (`relay_server_id`);
+
 
 
 -- 后处理资源表

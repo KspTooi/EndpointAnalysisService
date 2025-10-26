@@ -21,8 +21,8 @@ public class Launcher {
         // generateTable("EduExamProgress");
 
         // 根据表结构生成CRUD
-        generateJpaCrud("user_request_env", "DEAN");
-        generateJpaCrud("user_request_env_storage", "DEAN");
+        generateJpaCrud("core_company", "DEAN");
+        generateJpaCrud("core_company_member", "DEAN");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
     }
 
@@ -50,7 +50,7 @@ public class Launcher {
         genProc.set("dir.classes", "main.java");
         genProc.set("dir.xml", "src.main.resources.mapper");
         genProc.set("pkg.root", "com.ksptooi.biz");
-        genProc.set("exclude.names", "sys_");
+        genProc.set("exclude.names", "core_");
 
         genProc.set("gen.controller", "true");
         genProc.set("gen.service", "true");

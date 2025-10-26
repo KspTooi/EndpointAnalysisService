@@ -1,5 +1,7 @@
 package com.ksptooi.biz.core.model.user;
 
+import com.ksptooi.biz.core.model.company.CompanyPo;
+import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -67,6 +69,15 @@ public class UserPo {
     )
     @Comment("用户所属的用户组")
     private Set<GroupPo> groups = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
+    @Comment("创建的公司")
+    private Set<CompanyPo> createdCompanies = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Comment("加入的公司")
+    private Set<CompanyMemberPo> companyMemberships = new HashSet<>();
 
 
     @PrePersist

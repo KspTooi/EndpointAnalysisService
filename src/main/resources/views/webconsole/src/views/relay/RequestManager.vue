@@ -10,8 +10,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
-            <el-form-item label="请求方法">
-              <el-input v-model="query.method" placeholder="请输入请求方法" clearable />
+            <el-form-item label="中继服务器">
+              <el-select v-model="query.relayServerId" placeholder="请选择中继服务器" clearable filterable>
+                <el-option v-for="item in relayServerList" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -30,6 +32,11 @@
         <template v-if="uiState.isAdvancedSearch">
           <el-row>
             <el-col :span="5" :offset="1">
+              <el-form-item label="请求方法">
+                <el-input v-model="query.method" placeholder="请输入请求方法" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5" :offset="1">
               <el-form-item label="来源">
                 <el-input v-model="query.source" placeholder="请输入来源" clearable />
               </el-form-item>
@@ -44,14 +51,6 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="5" :offset="1">
-              <el-form-item label="是否重放">
-                <el-select v-model="query.replay" placeholder="请选择是否重放" clearable>
-                  <el-option label="全部" :value="0" />
-                  <el-option label="是" :value="1" />
-                </el-select>
-              </el-form-item>
-            </el-col>
           </el-row>
 
           <el-row>
@@ -60,7 +59,14 @@
                 <el-date-picker v-model="timeRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" />
               </el-form-item>
             </el-col>
-            <el-col :span="5" :offset="1"></el-col>
+            <el-col :span="5" :offset="1">
+              <el-form-item label="是否重放">
+                <el-select v-model="query.replay" placeholder="请选择是否重放" clearable>
+                  <el-option label="全部" :value="0" />
+                  <el-option label="是" :value="1" />
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="5" :offset="1"></el-col>
           </el-row>
         </template>
@@ -74,7 +80,10 @@
 
     <!-- 配置列表 -->
     <div class="request-table">
-      <el-table :data="list" stripe v-loading="loading" border>
+      <div v-if="!query.relayServerId" class="empty-state">
+        <el-empty description="请先选择中继服务器" />
+      </div>
+      <el-table v-else :data="list" stripe v-loading="loading" border>
         <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
           <template #default="scope">
             <el-tooltip content="点击复制" placement="top">
@@ -144,7 +153,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div v-if="query.relayServerId" class="pagination-container">
         <el-pagination
           v-model:current-page="query.pageNum"
           v-model:page-size="query.pageSize"
@@ -209,6 +218,9 @@ import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
+import type { GetRelayServerListVo } from "@/api/relay/RelayServerApi";
+import RelayServerApi from "@/api/relay/RelayServerApi";
+import { Result } from "@/commons/entity/Result";
 
 const uiState = reactive({
   isAdvancedSearch: false,
@@ -217,6 +229,7 @@ const router = useRouter();
 const queryPersistService = QueryPersistService;
 
 const query = reactive<GetRequestListDto>({
+  relayServerId: null,
   requestId: null,
   method: null,
   url: null,
@@ -231,6 +244,7 @@ const query = reactive<GetRequestListDto>({
 
 const list = ref<GetRequestListVo[]>([]);
 const total = ref(0);
+const relayServerList = ref<GetRelayServerListVo[]>([]); //中继通道列表
 
 // 加载状态
 const loading = ref(false);
@@ -266,6 +280,11 @@ const formatDateTime = (date: Date): string => {
 };
 
 const loadRequestList = async () => {
+  if (!query.relayServerId) {
+    ElMessage.warning("请先选择中继服务器");
+    return;
+  }
+
   if (timeRange.value) {
     query.startTime = formatDateTime(timeRange.value[0]);
     query.endTime = formatDateTime(timeRange.value[1]);
@@ -308,9 +327,10 @@ const resetForm = () => {
 };
 
 //页面加载时自动加载数据
-onMounted(() => {
+onMounted(async () => {
   queryPersistService.loadQuery("request-manager", query);
-  loadRequestList();
+  await loadRelayServerList();
+  await loadRequestList();
 });
 
 const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
@@ -430,22 +450,15 @@ const goToReplay = (row: GetRequestListVo) => {
   ElMessage.success("已跳转到重放请求页面");
 };
 
-const formatJson = (data: unknown): string => {
-  if (data === null || data === undefined) return "";
-  if (typeof data === "string") {
-    const trimmed = data.trim();
-    if (!trimmed) return "";
-    try {
-      const parsed = JSON.parse(trimmed);
-      return JSON.stringify(parsed, null, 2);
-    } catch (_) {
-      return data;
-    }
-  }
-  try {
-    return JSON.stringify(data, null, 2);
-  } catch (_) {
-    return String(data);
+const loadRelayServerList = async () => {
+  const res = await RelayServerApi.getRelayServerList({
+    pageNum: 1,
+    pageSize: 100000,
+    name: null,
+    forwardUrl: null,
+  });
+  if (Result.isSuccess(res)) {
+    relayServerList.value = res.data;
   }
 };
 </script>
@@ -468,6 +481,16 @@ const formatJson = (data: unknown): string => {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  background-color: var(--el-bg-color);
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-light);
 }
 
 .pagination-container {

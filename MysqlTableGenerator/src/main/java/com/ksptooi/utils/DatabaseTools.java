@@ -40,6 +40,7 @@ public class DatabaseTools {
         typeMapper.put("TINYINT", "Integer");
         typeMapper.put("TEXT", "String");
         typeMapper.put("JSON", "String");
+        typeMapper.put("LONGTEXT", "String");
 
         for (Map.Entry<String, String> entry : typeMapper.entrySet()) {
             reverseTypeMapper.put(entry.getValue(), entry.getKey());
