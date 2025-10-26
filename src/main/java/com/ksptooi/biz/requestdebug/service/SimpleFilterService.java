@@ -330,6 +330,12 @@ public class SimpleFilterService {
             throw new AuthException("无权限操作该过滤器");
         }
 
+        //获取有多少请求组在使用该过滤器
+        int groupCount = po.getGroups().size();
+        if (groupCount > 0) {
+            throw new BizException(String.format("该过滤器已被 %d 个请求组使用，请先取消所有关联关系后再尝试移除", groupCount));
+        }
+
         repository.delete(po);
     }
 

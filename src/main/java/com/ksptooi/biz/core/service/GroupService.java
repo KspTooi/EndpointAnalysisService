@@ -152,6 +152,14 @@ public class GroupService {
             throw new BizException("系统用户组不能删除");
         }
 
+        //获取有多少用户在该组下
+        int userCount = group.getUsers().size();
+
+        if (userCount > 0) {
+            throw new BizException(String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userCount));
+        }
+
+
         // 获取该用户组下所有在线用户的会话
         List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
 

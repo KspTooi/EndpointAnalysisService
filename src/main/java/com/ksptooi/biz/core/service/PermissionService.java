@@ -128,9 +128,11 @@ public class PermissionService {
             throw new BizException("系统权限不允许删除");
         }
 
-        // 检查权限是否被用户组使用
-        if (!permission.getGroups().isEmpty()) {
-            throw new BizException("该权限已被用户组使用，无法删除");
+        //获取有多少用户组在使用该权限
+        int groupCount = permission.getGroups().size();
+        
+        if (groupCount > 0) {
+            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupCount));
         }
 
         repository.deleteById(id);

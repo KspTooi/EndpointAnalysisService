@@ -142,7 +142,12 @@ const handleDelete = async (item: GetSimpleFilterListVo) => {
       cancelButtonText: "取消",
       type: "warning",
     });
+  } catch (error: any) {
+    ElMessage.error(error);
+    return;
+  }
 
+  try {
     await SimpleFilterApi.removeSimpleFilter({ id: item.id });
 
     //如果删除的是当前选中的过滤器，则清空选中
@@ -152,8 +157,9 @@ const handleDelete = async (item: GetSimpleFilterListVo) => {
 
     ElMessage.success("删除成功");
     await loadData();
-  } catch {
+  } catch (error: any) {
     // 用户取消删除
+    ElMessage.error(error.message);
   }
 };
 

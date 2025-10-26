@@ -106,6 +106,16 @@ public class RouteRuleService {
             throw new BizException("批量删除不支持.");
         }
         if (!dto.isBatch()) {
+
+            RouteRulePo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("操作失败,数据不存在或无权限访问."));
+
+            //获取有多少请求组在使用该路由规则
+            int groupCount = po.getRelayServerRoutes().size();
+            if (groupCount > 0) {
+                throw new BizException(String.format("该路由规则正在被 %d 个中继服务器使用，请先取消所有关联关系后再尝试移除", groupCount));
+            }
+
             repository.deleteById(dto.getId());
         }
     }

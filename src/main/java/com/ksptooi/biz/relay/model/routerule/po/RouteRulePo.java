@@ -1,12 +1,13 @@
 package com.ksptooi.biz.relay.model.routerule.po;
 
+import com.ksptooi.biz.relay.model.relayserverroute.po.RelayServerRoutePo;
 import com.ksptooi.biz.relay.model.routeserver.po.RouteServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -56,6 +57,11 @@ public class RouteRulePo {
     @Column(name = "update_time", nullable = false)
     @Comment("更新时间")
     private LocalDateTime updateTime;
+
+    @OneToMany(mappedBy = "routeRule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment("中继服务器路由规则")
+    private List<RelayServerRoutePo> relayServerRoutes;
+
 
     @PrePersist
     private void onCreate() {
