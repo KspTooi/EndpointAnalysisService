@@ -110,7 +110,7 @@ public class RelayServerPo {
 
     @OrderBy("seq ASC")
     @BatchSize(size = 20)
-    @OneToMany(mappedBy = "relayServer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
+    @OneToMany(mappedBy = "relayServer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @Comment("路由规则")
     private List<RelayServerRoutePo> routeRules;
 
@@ -144,14 +144,8 @@ public class RelayServerPo {
      * 清空路由规则
      */
     public void clearRouteRules() {
-        if (this.routeRules == null) {
-            return;
+        if (this.routeRules != null) {
+            this.routeRules.clear();
         }
-        for (RelayServerRoutePo item : this.routeRules) {
-            item.setRelayServer(null);
-            item.setRouteRule(null);
-        }
-        this.routeRules.clear();
     }
-
 }

@@ -87,6 +87,13 @@ export interface RelayServerRouteRuleVo {
   seq: number | null; //序号
 }
 
+export interface GetRelayServerRouteStateVo {
+  targetHost: string | null; //目标主机
+  targetPort: number | null; //目标端口
+  hitCount: number | null; //流过该规则的请求数量
+  isBreaked: number | null; //是否已熔断 0:否 1:是
+}
+
 export default {
   /**
    * 获取中继服务器列表
@@ -151,5 +158,15 @@ export default {
    */
   stopRelayServer: async (id: string): Promise<Result<void>> => {
     return await Http.postEntity<Result<void>>("/relayServer/stopRelayServer", { id: id });
+  },
+
+  /**
+   * 获取中继服务器路由状态
+   * @param id 中继服务器ID
+   * @returns 中继服务器路由状态
+   */
+  getRelayServerRouteState: async (id: string): Promise<GetRelayServerRouteStateVo[]> => {
+    const ret = await Http.postEntity<Result<GetRelayServerRouteStateVo[]>>("/relayServer/getRelayServerRouteState", { id: id });
+    return ret.data;
   },
 };

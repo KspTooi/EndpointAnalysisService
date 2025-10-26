@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/relayServer")
@@ -114,6 +116,17 @@ public class RelayServerController {
     @PostMapping("/stopRelayServer")
     public Result<String> stopRelayServer(@RequestBody @Valid CommonIdDto dto) throws BizException {
         return relayServerService.stopRelayServer(dto.getId());
+    }
+
+    /**
+     * 获取中继服务器路由状态
+     *
+     * @param dto 中继服务器ID
+     * @throws BizException
+     */
+    @PostMapping("/getRelayServerRouteState")
+    public Result<List<GetRelayServerRouteStateVo>> getRelayServerRouteState(@RequestBody @Valid CommonIdDto dto) throws BizException {
+        return Result.success(relayServerService.getRelayServerRouteState(dto.getId()));
     }
 
 

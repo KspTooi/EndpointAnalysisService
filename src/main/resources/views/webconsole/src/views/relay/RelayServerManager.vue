@@ -35,7 +35,7 @@
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
           <template #default="scope">
             <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
-            <span v-show="scope.row.forwardType === 1" style="color: #7354af"> 已配置路由 </span>
+            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)">已配置路由</el-button>
           </template>
         </el-table-column>
         <el-table-column label="自动运行" prop="autoStart" width="90" align="center">
@@ -100,6 +100,26 @@
         />
       </div>
     </div>
+
+    <!-- 路由状态模态框 -->
+    <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false" class="modal-centered">
+      <el-table :data="routeStateData" v-loading="routeStateLoading" border>
+        <el-table-column label="目标主机" prop="targetHost" />
+        <el-table-column label="目标端口" prop="targetPort" width="100" />
+        <el-table-column label="请求数量" prop="hitCount" width="120" />
+        <el-table-column label="熔断状态" prop="isBreaked" width="100" align="center">
+          <template #default="scope">
+            <span v-show="scope.row.isBreaked === 0" style="color: #67c23a">正常</span>
+            <span v-show="scope.row.isBreaked === 1" style="color: #f56c6c">已熔断</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="routeStateModalVisible = false">关闭</el-button>
+        </div>
+      </template>
+    </el-dialog>
 
     <!-- 请求编辑模态框 -->
     <el-dialog
@@ -224,7 +244,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import RelayServerApi, { type GetRelayServerListDto } from "@/api/relay/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo } from "@/api/relay/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/api/relay/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
@@ -302,6 +322,27 @@ const removeList = async (row: GetRelayServerListVo) => {
   } catch (error: any) {
     ElMessage.error(error.message);
   }
+};
+
+//路由状态模态框
+const routeStateModalVisible = ref(false);
+const routeStateData = ref<GetRelayServerRouteStateVo[]>([]);
+const routeStateLoading = ref(false);
+
+const showRouteStateModal = async (row: GetRelayServerListVo) => {
+  routeStateLoading.value = true;
+
+  try {
+    const res = await RelayServerApi.getRelayServerRouteState(row.id.toString());
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    routeStateLoading.value = false;
+  }
+
+  routeStateModalVisible.value = true;
 };
 
 //模态框内容

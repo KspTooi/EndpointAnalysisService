@@ -7,7 +7,6 @@ import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.service.RequestService;
 import com.ksptooi.commons.utils.GsonUtils;
-import com.ksptooi.commons.utils.RouteSelector;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
-public class HttpRelayServlet extends HttpServlet {
+public class HttpRouteRelayServlet extends HttpServlet {
 
     //HTTP客户端
     private final HttpClient httpClient;
@@ -47,9 +46,6 @@ public class HttpRelayServlet extends HttpServlet {
 
     //不需要发送请求体的请求方法
     private static final Set<String> METHODS_WITHOUT_BODY = new HashSet<>();
-
-    //路由选择器
-    private RouteSelector routeSelector;
 
     static {
         METHODS_WITHOUT_BODY.add("GET");
@@ -76,7 +72,7 @@ public class HttpRelayServlet extends HttpServlet {
      * @param gson           Gson
      * @param requestService 请求服务
      */
-    public HttpRelayServlet(GetRelayServerDetailsVo relayServer, HttpClient httpClient, Gson gson, RequestService requestService) {
+    public HttpRouteRelayServlet(GetRelayServerDetailsVo relayServer, HttpClient httpClient, Gson gson, RequestService requestService) {
         this.relayServer = relayServer;
         this.httpClient = httpClient;
         this.gson = gson;
@@ -89,20 +85,12 @@ public class HttpRelayServlet extends HttpServlet {
         RelayServerPo relayServerPo = new RelayServerPo();
         relayServerPo.setId(relayServer.getId());
 
-
-        String base = relayServer.getForwardUrl();
-
-        //如果路由选择器不为空 则选择目标URL
-        if (routeSelector != null) {
-            base = routeSelector.selectTargetUrl(hsr);
-        }
-
         //构建请求记录
         RequestPo request = new RequestPo();
         request.setRelayServer(relayServerPo);
         request.setRequestId(UUID.randomUUID().toString());
         request.setMethod(hsr.getMethod());
-        request.setUrl(replaceHostAndScheme(hsr.getRequestURL().toString(), base));
+        request.setUrl(replaceHostAndScheme(hsr.getRequestURL().toString(), relayServer.getForwardUrl()));
         request.setSource(hsr.getRemoteAddr());
         request.setRequestHeaders(getHeaderJson(hsr));
         request.setRequestBodyLength(hsr.getContentLength());
@@ -256,23 +244,7 @@ public class HttpRelayServlet extends HttpServlet {
             builder.method(method, HttpRequest.BodyPublishers.ofByteArray(requestBody));
         }
 
-        try {
-            return httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofByteArray());
-
-            //超时则需要报告熔断状态
-        } catch (Exception e) {
-
-            if (routeSelector != null) {
-                routeSelector.breakHostPort(targetUri.getHost(), targetUri.getPort());
-                log.error("doRequest 请求失败,目标URL: {} 已报告熔断状态", targetUri.toString());
-            }
-
-            if (routeSelector == null) {
-                log.error("doRequest 请求失败,目标URL: {} 错误信息: {}", targetUri.toString(), e.getMessage());
-            }
-
-            throw new Exception("doRequest 请求失败,目标URL: " + targetUri.toString(), e);
-        }
+        return httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofByteArray());
     }
 
     /**
@@ -428,25 +400,11 @@ public class HttpRelayServlet extends HttpServlet {
         }
     }
 
-    /**
-     * 构建目标URI
-     *
-     * @param request 请求
-     * @return 目标URI
-     */
     public URI buildTargetUri(HttpServletRequest request) {
-
         String base = relayServer.getForwardUrl();
-
-        //如果路由选择器不为空 则选择目标URL
-        if (routeSelector != null) {
-            base = routeSelector.selectTargetUrl(request);
-        }
-
         if (StringUtils.isBlank(base)) {
-            throw new IllegalStateException("buildTargetUri 未找到目标URL,请检查路由选择器配置");
+            throw new IllegalStateException("未配置repeater.proxy_pass");
         }
-
         if (!StringUtils.startsWithIgnoreCase(base, "http://") && !StringUtils.startsWithIgnoreCase(base, "https://")) {
             base = "http://" + base;
         }
@@ -514,22 +472,5 @@ public class HttpRelayServlet extends HttpServlet {
         }
     }
 
-    /**
-     * 设置路由选择器
-     *
-     * @param routeSelector 路由选择器
-     */
-    public void setRouteSelector(RouteSelector routeSelector) {
-        this.routeSelector = routeSelector;
-    }
-
-    /**
-     * 获得路由选择器
-     *
-     * @return 路由选择器
-     */
-    public RouteSelector getRouteSelector() {
-        return routeSelector;
-    }
 
 }

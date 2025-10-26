@@ -8,6 +8,8 @@ import com.ksptooi.biz.relay.repository.RelayServerRepository;
 import com.ksptooi.biz.relay.repository.RouteRuleRepository;
 import com.ksptooi.commons.aop.HttpRelayServlet;
 import com.ksptooi.commons.exception.BizException;
+import com.ksptooi.commons.routeselector.HttpRouteRule;
+import com.ksptooi.commons.utils.RouteSelector;
 import com.ksptooi.commons.utils.web.PageableResult;
 import com.ksptooi.commons.utils.web.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,11 @@ import static com.ksptool.entities.Entities.as;
 @Service
 public class RelayServerService {
 
+    //运行中的中继服务器 端口 -> Tomcat实例
     private final Map<Integer, Tomcat> runningServers = new ConcurrentHashMap<>();
+
+    //中继服务器实例 中继服务器ID -> 中继服务器实例(用于熔断处理)
+    private final Map<Long, HttpRelayServlet> realaySevletInstances = new ConcurrentHashMap<>();
 
     @Autowired
     private RelayServerRepository relayServerRepository;
@@ -357,6 +363,33 @@ public class RelayServerService {
 
             // 创建并注册我们的转发Servlet
             HttpRelayServlet servlet = new HttpRelayServlet(as(po, GetRelayServerDetailsVo.class), httpClient, gson, requestService);
+
+            if (po.getForwardType() == 1) { //0:直接 1:路由
+                List<RelayServerRoutePo> routeRules = po.getRouteRules();
+                if (routeRules == null || routeRules.isEmpty()) {
+                    throw new BizException("运行中继服务器失败，未找到有效的路由规则!");
+                }
+
+                //组装路由规则
+                List<HttpRouteRule> httpRouteRules = new ArrayList<>();
+
+                for (RelayServerRoutePo item : routeRules) {
+                    HttpRouteRule httpRouteRule = new HttpRouteRule();
+                    httpRouteRule.setTargetHost(item.getRouteRule().getRouteServer().getHost());
+                    httpRouteRule.setTargetPort(item.getRouteRule().getRouteServer().getPort());
+                    httpRouteRule.setMatchType(item.getRouteRule().getMatchType());
+                    httpRouteRule.setMatchKey(item.getRouteRule().getMatchKey());
+                    httpRouteRule.setMatchOperator(item.getRouteRule().getMatchOperator());
+                    httpRouteRule.setMatchValue(item.getRouteRule().getMatchValue());
+                    httpRouteRule.setSeq(item.getSeq());
+                    httpRouteRules.add(httpRouteRule);
+                }
+
+                //创建路由选择器
+                RouteSelector routeSelector = new RouteSelector(httpRouteRules);
+                servlet.setRouteSelector(routeSelector);
+            }
+
             Tomcat.addServlet(context, "proxyServlet", servlet);
             context.addServletMappingDecoded("/*", "proxyServlet"); // 匹配所有路径
             tomcat.start();
@@ -369,6 +402,9 @@ public class RelayServerService {
 
             runningServers.put(po.getPort(), tomcat);
             log.info("中继服务器在端口 {} 启动，转发至 {}", po.getPort(), po.getForwardUrl());
+
+            //注册中继服务器实例
+            realaySevletInstances.put(po.getId(), servlet);
 
             po.setStatus(2);
             relayServerRepository.save(po);
@@ -410,6 +446,10 @@ public class RelayServerService {
 
         po.setStatus(1);
         relayServerRepository.save(po);
+
+        //注销中继服务器实例
+        realaySevletInstances.remove(po.getId());
+
         return Result.success("停止中继通道成功");
     }
 
@@ -433,6 +473,23 @@ public class RelayServerService {
             }
         }
 
+    }
+
+    /**
+     * 获取中继服务器路由状态
+     *
+     * @param id 中继服务器ID
+     * @return 中继服务器路由状态
+     */
+    public List<GetRelayServerRouteStateVo> getRelayServerRouteState(Long id) throws BizException {
+
+        HttpRelayServlet servlet = realaySevletInstances.get(id);
+        if (servlet == null) {
+            throw new BizException("中继服务器实例不存在,这可能是因为中继服务器未启动或配置错误!");
+        }
+
+        List<HttpRouteRule> httpRouteRules = servlet.getRouteSelector().getRouteRules();
+        return as(httpRouteRules, GetRelayServerRouteStateVo.class);
     }
 
 
