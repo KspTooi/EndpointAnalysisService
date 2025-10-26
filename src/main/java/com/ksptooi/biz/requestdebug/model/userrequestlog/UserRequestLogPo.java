@@ -11,7 +11,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_request_log")
+@Table(name = "rdbg_request_log")
 @Getter
 @Setter
 @Comment("用户请求记录")

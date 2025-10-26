@@ -9,7 +9,7 @@ import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "simple_filter_trigger")
+@Table(name = "rdbg_simple_filter_trigger")
 @Getter
 @Setter
 @Comment("过滤器触发器")

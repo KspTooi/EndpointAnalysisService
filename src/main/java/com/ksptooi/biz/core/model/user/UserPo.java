@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "core_user")
 @Getter
 @Setter
 @Comment("用户表")
@@ -61,7 +61,7 @@ public class UserPo {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_group",
+            name = "core_user_group",
             joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )

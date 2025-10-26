@@ -16,7 +16,7 @@ import java.util.Set;
  * 例如：system:user:view, system:user:edit
  */
 @Entity
-@Table(name = "permissions")
+@Table(name = "core_permission")
 @Getter
 @Setter
 @Comment("权限表")

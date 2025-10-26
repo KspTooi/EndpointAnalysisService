@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "user_request_env_storage")
+@Table(name = "rdbg_user_env_storage")
 public class UserRequestEnvStoragePo {
 
     @Id

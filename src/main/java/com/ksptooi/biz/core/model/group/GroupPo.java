@@ -17,7 +17,7 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "`GROUPS`")
+@Table(name = "core_group")
 @Getter
 @Setter
 @Comment("用户组")
@@ -70,7 +70,7 @@ public class GroupPo {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "group_permission",
+            name = "core_group_permission",
             joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "permission_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )

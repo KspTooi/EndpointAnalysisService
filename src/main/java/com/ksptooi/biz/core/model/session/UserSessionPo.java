@@ -7,7 +7,7 @@ import org.hibernate.annotations.Comment;
 import java.util.Date;
 
 @Entity
-@Table(name = "user_session")
+@Table(name = "core_user_session")
 @Data
 @Comment("用户会话")
 public class UserSessionPo {

@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "user_request_env")
+@Table(name = "rdbg_user_env")
 public class UserRequestEnvPo {
 
     @Id

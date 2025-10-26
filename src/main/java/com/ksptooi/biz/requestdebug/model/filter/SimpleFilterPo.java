@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "simple_filter")
+@Table(name = "rdbg_simple_filter")
 @Getter
 @Setter
 @Comment("过滤器表")
@@ -59,7 +59,7 @@ public class SimpleFilterPo {
     @BatchSize(size = 20)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_request_group_simple_filter",
+            name = "rdbg_simple_filter_group",
             joinColumns = @JoinColumn(name = "simple_filter_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )

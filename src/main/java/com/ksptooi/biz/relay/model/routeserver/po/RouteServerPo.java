@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "route_server")
+@Table(name = "relay_route_server")
 @Comment("路由服务器")
 public class RouteServerPo {
 

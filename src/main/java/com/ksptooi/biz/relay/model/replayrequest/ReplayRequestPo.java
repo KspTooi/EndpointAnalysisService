@@ -14,7 +14,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "replay_requets")
+@Table(name = "relay_replay_request")
 @Getter
 @Setter
 @Comment("重放请求记录")

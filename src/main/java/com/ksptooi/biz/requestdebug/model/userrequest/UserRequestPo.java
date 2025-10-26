@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "user_request")
+@Table(name = "rdbg_request")
 @Getter
 @Setter
 @Comment("用户保存的请求")

@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "route_rule")
+@Table(name = "relay_route_rule")
 @Comment("路由规则")
 public class RouteRulePo {
 

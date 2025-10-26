@@ -8,7 +8,7 @@ import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "simple_filter_operation")
+@Table(name = "rdbg_simple_filter_operation")
 @Getter
 @Setter
 @Comment("过滤器操作")

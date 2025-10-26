@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "user_request_tree")
+@Table(name = "rdbg_request_tree")
 @Getter
 @Setter
 @Comment("用户请求树")

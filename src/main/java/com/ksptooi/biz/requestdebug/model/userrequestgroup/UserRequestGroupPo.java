@@ -15,7 +15,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "user_request_group")
+@Table(name = "rdbg_request_group")
 @Getter
 @Setter
 @Comment("用户请求组")
@@ -62,7 +62,7 @@ public class UserRequestGroupPo {
     @BatchSize(size = 20)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_request_group_simple_filter",
+            name = "rdbg_simple_filter_group",
             joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "simple_filter_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
