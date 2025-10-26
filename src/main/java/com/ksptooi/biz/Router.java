@@ -31,6 +31,11 @@ public class Router {
             return new ModelAndView("redirect:/install-wizard/");
         }
 
+        //用户未登录或登录失效 不再转发到SPA入口
+        if (authService.verifyUser(hsr) == null) {
+            return new ModelAndView("redirect:/login");
+        }
+
         return new ModelAndView("admin-ui-entry");
     }
 
