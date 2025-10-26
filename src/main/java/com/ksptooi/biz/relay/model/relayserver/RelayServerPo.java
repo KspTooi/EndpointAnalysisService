@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +19,12 @@ import java.util.List;
 @Getter
 @Setter
 @Comment("中继服务器")
+@SQLDelete(sql = """
+        UPDATE relay_server SET deleted_time = CURRENT_TIMESTAMP,
+        `name` = CONCAT(`name`, '_#DELETED_AT_', DATE_FORMAT(CURRENT_TIMESTAMP, '%Y%m%d%H%i%s'))
+        WHERE id = ?
+        """)
+@SQLRestriction("deleted_time IS NULL")
 public class RelayServerPo {
 
     @Id
@@ -92,13 +100,17 @@ public class RelayServerPo {
     @Comment("更新时间")
     private LocalDateTime updateTime;
 
-    @OneToMany(mappedBy = "relayServer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "deleted_time")
+    @Comment("移除时间 为null代表未删除")
+    private LocalDateTime deletedTime;
+
+    @OneToMany(mappedBy = "relayServer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     @Comment("请求记录")
     private List<RequestPo> requestList;
 
     @OrderBy("seq ASC")
     @BatchSize(size = 20)
-    @OneToMany(mappedBy = "relayServer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "relayServer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     @Comment("路由规则")
     private List<RelayServerRoutePo> routeRules;
 
@@ -113,6 +125,7 @@ public class RelayServerPo {
     public void preUpdate() {
         this.updateTime = LocalDateTime.now();
     }
+
 
     /**
      * 添加路由规则

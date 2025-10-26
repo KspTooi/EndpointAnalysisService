@@ -298,7 +298,7 @@ const loadRequestList = async () => {
     list.value = res.data;
     total.value = res.total;
     queryPersistService.persistQuery("request-manager", query);
-    console.log(res);
+    console.log(query);
   } catch (e) {
     ElMessage.error("Failed to load configuration list");
     console.error("Failed to load configuration list", e);

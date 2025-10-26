@@ -35,6 +35,7 @@ ALTER TABLE `relay_server_route` RENAME TO relay_server_route;
 
 --处理中继模块表索引
 ALTER TABLE `relay_request` ADD INDEX `idx_relay_server_id` (`relay_server_id`);
+ALTER TABLE `relay_server` ADD COLUMN `deleted_time` DATETIME DEFAULT NULL COMMENT '移除时间 为null代表未删除';
 
 
 
