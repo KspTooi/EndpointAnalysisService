@@ -9,7 +9,6 @@
     <el-empty description="请选择一个请求" v-show="RequestTreeHolder().getActiveRequestId == null || requestDetail.id == null" style="height: 100%; width: 100%" />
 
     <div v-show="RequestTreeHolder().getActiveRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
-      FDSFDS
       <div class="rb-header">
         <div class="rb-header-title">
           <input class="rb-name-input" v-model="requestDetail.name" />

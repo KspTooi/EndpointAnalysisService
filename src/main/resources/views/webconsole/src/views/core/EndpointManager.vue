@@ -1,7 +1,7 @@
 <template>
   <div class="endpoint-manager-container">
     <!-- 说明文档 -->
-    <el-alert type="info" :closable="false" style="margin-bottom: 20px">
+    <el-alert type="info" :closable="false" style="margin-bottom: 20px; padding: 0 8px 4px 8px" size="small">
       <template #title>
         <div style="display: flex; align-items: center; gap: 8px">
           <el-icon><InfoFilled /></el-icon>
@@ -25,6 +25,7 @@
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="query">
+        <QueryPersistTip />
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="端点名称">
@@ -362,7 +363,7 @@ import type { GetEndpointDetailsVo, GetEndpointTreeDto, GetEndpointTreeVo } from
 import EndpointApi from "@/api/core/EndpointApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import {
   Delete as DeleteIcon,
   View as ViewIcon,
@@ -376,6 +377,9 @@ import {
   Refresh,
   QuestionFilled,
 } from "@element-plus/icons-vue";
+import QueryPersistService from "@/service/QueryPersistService";
+import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
+import ExpandButton from "@/components/common/ExpandButton.vue";
 
 //列表内容
 const query = reactive<GetEndpointTreeDto>({
@@ -434,6 +438,7 @@ const loadList = async () => {
 
   if (Result.isSuccess(result)) {
     list.value = result.data;
+    QueryPersistService.persistQuery("endpoint-manager", query);
   }
 
   if (Result.isError(result)) {
@@ -446,6 +451,7 @@ const loadList = async () => {
 const resetList = () => {
   query.name = "";
   query.path = "";
+  QueryPersistService.clearQuery("endpoint-manager");
   loadList();
 };
 
@@ -504,8 +510,11 @@ const clearEndpointCache = async () => {
   }
 };
 
-loadList();
-loadFullEndpointTree();
+onMounted(async () => {
+  QueryPersistService.loadQuery("endpoint-manager", query);
+  await loadList();
+  await loadFullEndpointTree();
+});
 
 //帮助文档
 const helpVisible = ref(false);

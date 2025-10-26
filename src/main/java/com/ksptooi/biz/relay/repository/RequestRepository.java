@@ -29,7 +29,8 @@ public interface RequestRepository extends JpaRepository<RequestPo, Long> {
                     )
                     FROM RequestPo t
                     WHERE
-                    (:#{#dto.requestId} IS NULL OR t.requestId = :#{#dto.requestId})
+                    t.relayServer.deletedTime IS NULL
+                    AND (:#{#dto.requestId} IS NULL OR t.requestId = :#{#dto.requestId})
                     AND (:#{#dto.relayServerId} IS NULL OR t.relayServer.id = :#{#dto.relayServerId})
                     AND (:#{#dto.method} IS NULL OR t.method = :#{#dto.method})
                     AND (:#{#dto.url} IS NULL OR t.url LIKE CONCAT('%', :#{#dto.url}, '%'))

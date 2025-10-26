@@ -2,6 +2,7 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
+      <QueryPersistTip />
       <el-form :model="listQuery">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -231,6 +232,8 @@ import type { FormInstance } from "element-plus";
 import type { GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import RouteRuleApi from "@/api/relay/RouteRuleApi.ts";
+import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -258,7 +261,7 @@ const loadList = async () => {
     const res = await RelayServerApi.getRelayServerList(listQuery);
     listData.value = res.data;
     listTotal.value = res.total;
-    console.log(res);
+    QueryPersistService.persistQuery("relay-server-manager", listQuery);
   } catch (e) {
     ElMessage.error("加载中继通道列表失败");
   } finally {
@@ -272,6 +275,7 @@ const resetList = () => {
   listQuery.pageNum = 1;
   listQuery.pageSize = 10;
   loadList();
+  QueryPersistService.clearQuery("relay-server-manager");
 };
 
 const removeList = async (row: GetRelayServerListVo) => {
@@ -299,8 +303,6 @@ const removeList = async (row: GetRelayServerListVo) => {
     ElMessage.error(error.message);
   }
 };
-
-loadList();
 
 //模态框内容
 const modalVisible = ref(false);
@@ -583,6 +585,11 @@ watch(
     }
   }
 );
+
+onMounted(async () => {
+  QueryPersistService.loadQuery("relay-server-manager", listQuery);
+  await loadList();
+});
 </script>
 
 <style scoped>

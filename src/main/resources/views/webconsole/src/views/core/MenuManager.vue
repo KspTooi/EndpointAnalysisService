@@ -19,6 +19,7 @@
 
     <!-- 查询表单 -->
     <div class="query-form">
+      <QueryPersistTip />
       <el-form :model="query">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -195,11 +196,13 @@ import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core
 import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref, watch, computed } from "vue";
+import { reactive, ref, watch, computed, onMounted } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder";
+import QueryPersistService from "@/service/QueryPersistService";
+import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 //列表内容
 const query = reactive<GetMenuTreeDto>({
@@ -285,6 +288,7 @@ const loadList = async () => {
 
   if (Result.isSuccess(result)) {
     list.value = result.data;
+    QueryPersistService.persistQuery("menu-manager", query);
   }
 
   if (Result.isError(result)) {
@@ -298,6 +302,7 @@ const resetList = () => {
   query.name = "";
   query.menuKind = null;
   query.permission = "";
+  QueryPersistService.clearQuery("menu-manager");
   loadList();
 };
 
@@ -323,8 +328,11 @@ const removeList = async (id: string) => {
   loadList();
 };
 
-loadList();
-loadFullMenuTree();
+onMounted(async () => {
+  QueryPersistService.loadQuery("menu-manager", query);
+  await loadList();
+  await loadFullMenuTree();
+});
 
 //模态框内容
 const modalVisible = ref(false);

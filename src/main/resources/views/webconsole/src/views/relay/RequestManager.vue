@@ -2,6 +2,7 @@
   <div class="request-manager-container">
     <!-- 查询表单 -->
     <div class="query-form">
+      <QueryPersistTip />
       <el-form :model="query">
         <el-row>
           <el-col :span="5" :offset="1">
