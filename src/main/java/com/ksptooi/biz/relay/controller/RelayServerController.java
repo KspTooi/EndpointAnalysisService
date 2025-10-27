@@ -129,5 +129,16 @@ public class RelayServerController {
         return Result.success(relayServerService.getRelayServerRouteState(dto.getId()));
     }
 
+    /**
+     * 重置熔断状态
+     *
+     * @param dto 中继服务器ID
+     * @throws BizException
+     */
+    @PostMapping("/resetRelayServerBreaker")
+    public Result<String> resetRelayServerBreaker(@RequestBody @Valid ResetRelayServerBreakerDto dto) throws BizException {
+        relayServerService.resetRelayServerBreaker(dto);
+        return Result.success("重置中继服务器熔断器成功");
+    }
 
 }

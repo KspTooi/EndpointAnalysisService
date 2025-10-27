@@ -35,7 +35,7 @@
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
           <template #default="scope">
             <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
-            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)">已配置路由</el-button>
+            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)">已配置路由策略</el-button>
           </template>
         </el-table-column>
         <el-table-column label="自动运行" prop="autoStart" width="90" align="center">
@@ -113,9 +113,17 @@
             <span v-show="scope.row.isBreaked === 1" style="color: #f56c6c">已熔断</span>
           </template>
         </el-table-column>
+        <el-table-column label="操作" width="150" align="center">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="resetBreaker(scope.row)">复位熔断</el-button>
+            <el-button link type="danger" size="small" @click="breakHost(scope.row)">置为熔断</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <template #footer>
         <div class="dialog-footer">
+          <el-button @click="refreshRouteState" :loading="routeStateLoading">刷新</el-button>
+          <el-button type="primary" @click="resetAllBreaker">复位所有</el-button>
           <el-button @click="routeStateModalVisible = false">关闭</el-button>
         </div>
       </template>
@@ -244,7 +252,14 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import RelayServerApi, { type GetRelayServerListDto } from "@/api/relay/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleDto, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/api/relay/RelayServerApi.ts";
+import type {
+  GetRelayServerListVo,
+  GetRelayServerDetailsVo,
+  RelayServerRouteRuleDto,
+  RelayServerRouteRuleVo,
+  GetRelayServerRouteStateVo,
+  ResetRelayServerBreakerDto,
+} from "@/api/relay/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
@@ -328,9 +343,11 @@ const removeList = async (row: GetRelayServerListVo) => {
 const routeStateModalVisible = ref(false);
 const routeStateData = ref<GetRelayServerRouteStateVo[]>([]);
 const routeStateLoading = ref(false);
+const currentRelayServerId = ref<string>("");
 
 const showRouteStateModal = async (row: GetRelayServerListVo) => {
   routeStateLoading.value = true;
+  currentRelayServerId.value = row.id.toString();
 
   try {
     const res = await RelayServerApi.getRelayServerRouteState(row.id.toString());
@@ -343,6 +360,68 @@ const showRouteStateModal = async (row: GetRelayServerListVo) => {
   }
 
   routeStateModalVisible.value = true;
+};
+
+const resetBreaker = async (row: GetRelayServerRouteStateVo) => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: row.targetHost,
+      port: row.targetPort,
+      kind: 0,
+    });
+    ElMessage.success("复位熔断状态成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const resetAllBreaker = async () => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: null,
+      port: null,
+      kind: 0,
+    });
+    ElMessage.success("复位全部熔断状态成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const breakHost = async (row: GetRelayServerRouteStateVo) => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: row.targetHost,
+      port: row.targetPort,
+      kind: 1,
+    });
+    ElMessage.success("置为熔断成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const refreshRouteState = async () => {
+  routeStateLoading.value = true;
+
+  try {
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+    ElMessage.success("刷新成功");
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  } finally {
+    routeStateLoading.value = false;
+  }
 };
 
 //模态框内容

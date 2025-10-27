@@ -159,7 +159,7 @@ const handleMenuItemClick = (menuId: string) => {
 // 无移动端兼容逻辑
 
 // 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): string => {
+const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): any=> {
   for (const item of items) {
     if (item.menuPath === path) {
       return item.id;

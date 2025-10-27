@@ -94,6 +94,13 @@ export interface GetRelayServerRouteStateVo {
   isBreaked: number | null; //是否已熔断 0:否 1:是
 }
 
+export interface ResetRelayServerBreakerDto {
+  id: string; //中继服务器ID
+  host: string | null; //主机 不填写则重置所有主机的熔断状态
+  port: number | null; //端口
+  kind: number | null; //0:复位熔断 1:置为熔断
+}
+
 export default {
   /**
    * 获取中继服务器列表
@@ -168,5 +175,14 @@ export default {
   getRelayServerRouteState: async (id: string): Promise<GetRelayServerRouteStateVo[]> => {
     const ret = await Http.postEntity<Result<GetRelayServerRouteStateVo[]>>("/relayServer/getRelayServerRouteState", { id: id });
     return ret.data;
+  },
+
+  /**
+   * 重置中继服务器熔断器
+   * @param dto 重置参数
+   * @returns 重置结果
+   */
+  resetRelayServerBreaker: async (dto: ResetRelayServerBreakerDto): Promise<Result<void>> => {
+    return await Http.postEntity<Result<void>>("/relayServer/resetRelayServerBreaker", dto);
   },
 };

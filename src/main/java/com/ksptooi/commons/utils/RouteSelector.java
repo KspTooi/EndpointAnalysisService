@@ -112,18 +112,31 @@ public class RouteSelector {
 
 
     /**
-     * 重置熔断状态
+     * 重置所有主机的熔断状态
      */
     public void resetBreakStatus() {
         for (HttpRouteRule rule : routeRules) {
             rule.getIsBreaked().set(0);
         }
     }
+    
+    /**
+     * 重置指定主机的熔断状态 
+     * @param host 主机
+     * @param port 端口
+     */
+    public void resetBreakStatus(String host, Integer port) {
+        for (HttpRouteRule rule : routeRules) {
+            if (rule.getTargetHost().equals(host) && rule.getTargetPort().equals(port)) {
+                rule.getIsBreaked().set(0);
+            }
+        }
+    }
 
     /**
      * 熔断某个HOST:PORT组合
-     * @param host
-     * @param port
+     * @param host 主机
+     * @param port 端口
      */
     public void breakHostPort(String host, Integer port) {
         if ("DIRECT".equals(mode)) {

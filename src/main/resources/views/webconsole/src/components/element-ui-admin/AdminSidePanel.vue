@@ -32,7 +32,7 @@
 
       <template v-for="item in filteredItems" :key="item.id">
         <!-- 目录类型 -->
-        <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id">
+        <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id as any">
           <template #title>
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
@@ -200,14 +200,14 @@ const handleMenuItemClick = (item: GetMenuTreeVo) => {
 
   // Use the tab store to add a new tab
   tabStore.addTab({
-    id: item.id,
-    title: item.name,
+    id: item.id as any,
+    title: item.name as any,
     path: item.menuPath,
   });
 
   // Emit events for parent components if needed, but navigation is handled by the tab store
-  emit("item-click", item.id);
-  emit("update:activeItemId", item.id);
+  emit("item-click", item.id as any );
+  emit("update:activeItemId", item.id as any);
 };
 
 // 处理菜单选择

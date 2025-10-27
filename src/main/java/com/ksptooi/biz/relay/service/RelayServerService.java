@@ -492,5 +492,43 @@ public class RelayServerService {
         return as(httpRouteRules, GetRelayServerRouteStateVo.class);
     }
 
+    /**
+     * 重置熔断状态
+     *
+     * @param dto 中继服务器ID
+     * @throws BizException
+     */
+    public void resetRelayServerBreaker(ResetRelayServerBreakerDto dto) throws BizException {
+        HttpRelayServlet servlet = realaySevletInstances.get(dto.getId());
+
+        if (servlet == null) {
+            throw new BizException("中继服务器实例不存在,这可能是因为中继服务器未启动或配置错误!");
+        }
+
+        //0:复位熔断 1:置为熔断
+        if (dto.getKind() == 0) {
+            //如果主机和端口都填写，则重置指定主机的熔断状态
+            if (dto.getHost() != null && dto.getPort() != null) {
+                servlet.getRouteSelector().resetBreakStatus(dto.getHost(), dto.getPort());
+            }
+
+            //如果主机不填写，则重置所有主机的熔断状态
+            if (dto.getHost() == null) {
+                servlet.getRouteSelector().resetBreakStatus();
+            }
+        }
+
+        //1:置为熔断
+        if (dto.getKind() == 1) {
+
+            //必须填写主机和端口
+            if (dto.getHost() == null || dto.getPort() == null) {
+                throw new BizException("主机和端口不能为空");
+            }
+
+            servlet.getRouteSelector().breakHostPort(dto.getHost(), dto.getPort());
+        }
+        
+    }
 
 }
