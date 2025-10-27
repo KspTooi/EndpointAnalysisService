@@ -8,7 +8,7 @@
           :active-item-id="activeMenuId"
           :is-collapse="false"
           title="EAS服务管理控制台"
-          version="版本:1.2A-DevPreview 技术预览"
+          version="版本:1.2F-RC 预发布"
           @item-click="handleMenuClick"
           @action="handleMenuAction"
         />
@@ -159,7 +159,7 @@ const handleMenuItemClick = (menuId: string) => {
 // 无移动端兼容逻辑
 
 // 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): any=> {
+const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): any => {
   for (const item of items) {
     if (item.menuPath === path) {
       return item.id;
