@@ -1,12 +1,12 @@
 package com.ksptooi.commons.utils;
 
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SHA256 {

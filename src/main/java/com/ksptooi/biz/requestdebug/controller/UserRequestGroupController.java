@@ -4,8 +4,8 @@ import com.ksptooi.biz.requestdebug.model.userrequestgroup.EditUserRequestGroupD
 import com.ksptooi.biz.requestdebug.model.userrequestgroup.GetUserRequestGroupDetailsVo;
 import com.ksptooi.biz.requestdebug.service.UserRequestGroupService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

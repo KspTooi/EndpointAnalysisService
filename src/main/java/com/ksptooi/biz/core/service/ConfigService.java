@@ -3,9 +3,9 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.ConfigRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptool.entities.Any;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.entities.any.Any;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -41,7 +41,7 @@ public class ConfigService {
             }
         }
 
-        return new PageResult<>(vos, pPos.getTotalElements());
+        return PageResult.success(vos, pPos.getTotalElements());
     }
 
     public GetConfigDetailsVo getConfigDetails(Long id) throws BizException, AuthException {

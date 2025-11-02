@@ -9,9 +9,9 @@ import com.ksptooi.biz.relay.model.routerule.vo.GetRouteRuleListVo;
 import com.ksptooi.biz.relay.model.routeserver.po.RouteServerPo;
 import com.ksptooi.biz.relay.repository.RouteRuleRepository;
 import com.ksptooi.biz.relay.repository.RouteServerRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,10 +38,6 @@ public class RouteRuleService {
         assign(dto, query);
 
         Page<RouteRulePo> page = repository.getRouteRuleList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
         List<GetRouteRuleListVo> vos = new ArrayList<>();
 
         for (RouteRulePo po : page.getContent()) {
@@ -50,7 +46,7 @@ public class RouteRuleService {
             vos.add(vo);
         }
 
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)

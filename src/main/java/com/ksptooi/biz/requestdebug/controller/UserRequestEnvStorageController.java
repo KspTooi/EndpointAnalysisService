@@ -7,9 +7,9 @@ import com.ksptooi.biz.requestdebug.model.userrequestenvstorage.vo.GetUserReques
 import com.ksptooi.biz.requestdebug.model.userrequestenvstorage.vo.GetUserRequestEnvStorageListVo;
 import com.ksptooi.biz.requestdebug.service.UserRequestEnvStorageService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

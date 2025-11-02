@@ -4,7 +4,7 @@ import com.ksptooi.biz.document.model.epdocsynclog.EndpointDocSyncLogPo;
 import com.ksptooi.biz.document.model.epdocsynclog.GetEpDocSyncLogListDto;
 import com.ksptooi.biz.document.model.epdocsynclog.GetEpDocSyncLogListVo;
 import com.ksptooi.biz.document.repository.EndpointDocSyncLogRepository;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

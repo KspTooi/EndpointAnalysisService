@@ -5,7 +5,7 @@ import com.ksptooi.EASRunner;
 import com.ksptooi.biz.core.model.permission.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.core.service.*;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

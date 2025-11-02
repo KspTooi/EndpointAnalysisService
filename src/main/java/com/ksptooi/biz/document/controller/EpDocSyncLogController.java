@@ -4,7 +4,7 @@ import com.ksptooi.biz.document.model.epdocsynclog.GetEpDocSyncLogListDto;
 import com.ksptooi.biz.document.model.epdocsynclog.GetEpDocSyncLogListVo;
 import com.ksptooi.biz.document.service.EpDocSyncLogService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.web.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

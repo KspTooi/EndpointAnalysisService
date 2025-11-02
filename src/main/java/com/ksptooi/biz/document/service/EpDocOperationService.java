@@ -8,7 +8,7 @@ import com.ksptooi.biz.document.repository.EndpointDocOperationRepository;
 import com.ksptooi.biz.document.repository.EndpointDocRepository;
 import com.ksptooi.biz.document.repository.EndpointDocVersionRepository;
 import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.model.BodySchema;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;

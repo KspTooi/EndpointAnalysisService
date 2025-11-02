@@ -7,9 +7,9 @@ import com.ksptooi.biz.core.model.companymember.dto.GetCompanyMemberListDto;
 import com.ksptooi.biz.core.model.companymember.vo.GetCompanyMemberDetailsVo;
 import com.ksptooi.biz.core.model.companymember.vo.GetCompanyMemberListVo;
 import com.ksptooi.biz.core.repository.CompanyMemberRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,8 @@ public class CompanyMemberService {
         assign(dto, query);
 
         Page<CompanyMemberPo> page = repository.getCompanyMemberList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
         List<GetCompanyMemberListVo> vos = as(page.getContent(), GetCompanyMemberListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -8,9 +8,9 @@ import com.ksptooi.biz.requestdebug.model.userrequestenv.dto.GetUserRequestEnvLi
 import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvDetailsVo;
 import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvListVo;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestEnvRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,12 +36,8 @@ public class UserRequestEnvService {
         assign(dto, query);
 
         Page<UserRequestEnvPo> page = repository.getUserRequestEnvList(query, AuthService.requireUserId(), dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
         List<GetUserRequestEnvListVo> vos = as(page.getContent(), GetUserRequestEnvListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -9,9 +9,9 @@ import com.ksptooi.biz.core.model.company.vo.GetCurrentUserCompanyListVo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.repository.CompanyMemberRepository;
 import com.ksptooi.biz.core.repository.CompanyRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,11 +47,7 @@ public class CompanyService {
         Long userId = AuthService.requireUserId();
 
         Page<GetCurrentUserCompanyListVo> page = repository.getCurrentUserCompanyList(dto.getName(), userId, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
-        return PageResult.success(page.getContent(), (int) page.getTotalElements());
+        return PageResult.success(page.getContent(), page.getTotalElements());
     }
 
     /**

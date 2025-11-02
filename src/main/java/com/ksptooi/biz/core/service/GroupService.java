@@ -9,8 +9,8 @@ import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.commons.enums.GroupEnum;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -46,7 +46,7 @@ public class GroupService {
 
     public PageResult<GetGroupListVo> getGroupList(GetGroupListDto dto) {
         Page<GetGroupListVo> pagePos = repository.getGroupList(dto, dto.pageRequest());
-        return new PageResult<>(pagePos);
+        return PageResult.success(pagePos.getContent(), pagePos.getTotalElements());
     }
 
     public GetGroupDetailsVo getGroupDetails(long id) throws BizException {

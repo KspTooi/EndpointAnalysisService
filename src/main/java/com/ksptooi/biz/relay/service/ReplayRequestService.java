@@ -7,9 +7,9 @@ import com.ksptooi.biz.relay.model.replayrequest.*;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.repository.ReplayRequestRepository;
 import com.ksptooi.biz.relay.repository.RequestRepository;
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.GsonUtils;
-import com.ksptooi.commons.utils.web.PageableResult;
+import com.ksptool.assembly.entity.web.PageResult;
 import io.micrometer.common.util.StringUtils;
 import jakarta.security.auth.message.AuthException;
 import lombok.extern.slf4j.Slf4j;
@@ -209,9 +209,9 @@ public class ReplayRequestService {
      * @param dto 请求列表查询条件
      * @return 请求列表
      */
-    public PageableResult<GetReplayRequestListVo> getReplayRequestList(GetReplayRequestListDto dto) throws AuthException {
+    public PageResult<GetReplayRequestListVo> getReplayRequestList(GetReplayRequestListDto dto) throws AuthException {
         Page<GetReplayRequestListVo> page = replayRequestRepository.getReplayRequestList(dto, AuthService.requireUserId(), dto.pageRequest());
-        return PageableResult.success(page.getContent(), page.getTotalElements());
+        return PageResult.success(page.getContent(), page.getTotalElements());
     }
 
     /**

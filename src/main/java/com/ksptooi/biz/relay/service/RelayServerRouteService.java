@@ -7,9 +7,9 @@ import com.ksptooi.biz.relay.model.relayserverroute.po.RelayServerRoutePo;
 import com.ksptooi.biz.relay.model.relayserverroute.vo.GetRelayServerRouteDetailsVo;
 import com.ksptooi.biz.relay.model.relayserverroute.vo.GetRelayServerRouteListVo;
 import com.ksptooi.biz.relay.repository.RelayServerRouteRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,8 @@ public class RelayServerRouteService {
         assign(dto, query);
 
         Page<RelayServerRoutePo> page = repository.getRelayServerRouteList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
         List<GetRelayServerRouteListVo> vos = as(page.getContent(), GetRelayServerRouteListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)

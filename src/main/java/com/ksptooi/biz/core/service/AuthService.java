@@ -9,7 +9,7 @@ import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.commons.WebUtils;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.SHA256;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;

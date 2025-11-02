@@ -7,9 +7,9 @@ import com.ksptooi.biz.requestdebug.model.filter.dto.GetSimpleFilterTriggerListD
 import com.ksptooi.biz.requestdebug.model.filter.vo.GetSimpleFilterTriggerDetailsVo;
 import com.ksptooi.biz.requestdebug.model.filter.vo.GetSimpleFilterTriggerListVo;
 import com.ksptooi.biz.requestdebug.repoistory.SimpleFilterTriggerRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,8 @@ public class SimpleFilterTriggerService {
         assign(dto, query);
 
         Page<SimpleFilterTriggerPo> page = repository.getSimpleFilterTriggerList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
         List<GetSimpleFilterTriggerListVo> vos = as(page.getContent(), GetSimpleFilterTriggerListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -6,8 +6,8 @@ import com.ksptooi.biz.core.model.user.*;
 import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.enums.UserEnum;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,7 +76,7 @@ public class UserService {
         }
 
         // 返回分页视图
-        return new PageResult<>(voList, userPage.getTotalElements());
+        return PageResult.success(voList, userPage.getTotalElements());
     }
 
     public GetUserDetailsVo getUserDetails(long id) throws BizException {

@@ -1,6 +1,6 @@
 package com.ksptooi.biz.relay.model.replayrequest;
 
-import com.ksptooi.commons.utils.page.PageQuery;
+import com.ksptool.assembly.entity.web.PageQuery;
 import lombok.Getter;
 import lombok.Setter;
 

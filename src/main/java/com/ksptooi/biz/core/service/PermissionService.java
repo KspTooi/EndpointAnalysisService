@@ -4,8 +4,8 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.permission.*;
 import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.commons.enums.PermissionEnum;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -47,7 +47,7 @@ public class PermissionService {
         List<GetPermissionListVo> vos = as(pagePos.getContent(), GetPermissionListVo.class);
 
         // 返回结果
-        return new PageResult<>(vos, pagePos.getTotalElements());
+        return PageResult.success(vos, pagePos.getTotalElements());
     }
 
     /**

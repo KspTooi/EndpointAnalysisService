@@ -1,7 +1,7 @@
 package com.ksptooi.biz.core.model.config;
 
 
-import com.ksptooi.commons.utils.page.PageQuery;
+import com.ksptool.assembly.entity.web.PageQuery;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

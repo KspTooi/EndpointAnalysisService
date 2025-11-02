@@ -7,9 +7,9 @@ import com.ksptooi.biz.relay.model.routeserver.po.RouteServerPo;
 import com.ksptooi.biz.relay.model.routeserver.vo.GetRouteServerDetailsVo;
 import com.ksptooi.biz.relay.model.routeserver.vo.GetRouteServerListVo;
 import com.ksptooi.biz.relay.repository.RouteServerRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,7 @@ public class RouteServerService {
 
     /**
      * 获取路由服务器列表
+     *
      * @param dto 查询条件
      * @return 路由服务器列表
      */
@@ -36,16 +37,14 @@ public class RouteServerService {
         assign(dto, query);
 
         Page<RouteServerPo> page = repository.getRouteServerList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty((int) page.getTotalElements());
-        }
 
         List<GetRouteServerListVo> vos = as(page.getContent(), GetRouteServerListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, page.getTotalElements());
     }
 
     /**
      * 新增路由服务器
+     *
      * @param dto 新增路由服务器
      */
     @Transactional(rollbackFor = Exception.class)
@@ -56,6 +55,7 @@ public class RouteServerService {
 
     /**
      * 编辑路由服务器
+     *
      * @param dto 编辑路由服务器
      * @throws BizException 业务异常
      */
@@ -70,6 +70,7 @@ public class RouteServerService {
 
     /**
      * 获取路由服务器详情
+     *
      * @param dto 查询条件
      * @return 路由服务器详情
      * @throws BizException 业务异常
@@ -82,6 +83,7 @@ public class RouteServerService {
 
     /**
      * 删除路由服务器
+     *
      * @param dto 删除条件
      * @throws BizException 业务异常
      */
@@ -93,7 +95,7 @@ public class RouteServerService {
         if (!dto.isBatch()) {
 
             RouteServerPo po = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("操作失败,数据不存在或无权限访问."));
+                    .orElseThrow(() -> new BizException("操作失败,数据不存在或无权限访问."));
 
             //获取有多少路由规则在使用该路由服务器
             int routeRuleCount = po.getRouteRules().size();

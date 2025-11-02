@@ -7,9 +7,9 @@ import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointDetailsVo;
 import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointTreeVo;
 import com.ksptooi.biz.core.service.EndpointService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

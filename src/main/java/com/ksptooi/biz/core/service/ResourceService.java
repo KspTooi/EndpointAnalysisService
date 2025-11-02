@@ -8,9 +8,9 @@ import com.ksptooi.biz.core.model.resource.po.ResourcePo;
 import com.ksptooi.biz.core.model.resource.vo.GetResourceDetailsVo;
 import com.ksptooi.biz.core.model.resource.vo.GetResourceListVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageableResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -54,7 +55,7 @@ public class ResourceService {
                     .orElseThrow(() -> new BizException("新增失败,父级资源不存在."));
 
             //资源类型必须与父级资源类型一致
-            if (dto.getKind() != parent.getKind()) {
+            if (!Objects.equals(dto.getKind(), parent.getKind())) {
                 throw new BizException("新增失败,资源类型与父级资源类型不一致.");
             }
 
@@ -158,17 +159,15 @@ public class ResourceService {
      * @param dto 获取资源列表dto
      * @return 资源列表
      */
-    public PageableResult<GetResourceListVo> getResourceList(GetResourceListDto dto) {
+    public PageResult<GetResourceListVo> getResourceList(GetResourceListDto dto) {
         ResourcePo query = new ResourcePo();
         assign(dto, query);
 
         Page<ResourcePo> page = repository.getResourceList(query, PageRequest.of(dto.getPageNum() - 1, dto.getPageSize()));
-        if (page.isEmpty()) {
-            return PageableResult.successWithEmpty();
-        }
+
 
         List<GetResourceListVo> vos = as(page.getContent(), GetResourceListVo.class);
-        return PageableResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(vos, (int) page.getTotalElements());
     }
 
 
