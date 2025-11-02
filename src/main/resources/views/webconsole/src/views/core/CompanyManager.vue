@@ -157,7 +157,7 @@ const removeCompany = async (id: string) => {
     const result = await CompanyApi.removeCompany({ id });
     if (Result.isSuccess(result)) {
       ElMessage.success("删除成功");
-      loadList();
+      await loadList();
     }
   } catch (error: any) {
     ElMessage.error(error.message);
@@ -191,7 +191,7 @@ const leaveCompany = async (id: string) => {
     const result = await CompanyApi.leaveCompany({ id });
     if (Result.isSuccess(result)) {
       ElMessage.success(result.data || "退出成功");
-      loadList();
+      await loadList();
     }
   } catch (error: any) {
     ElMessage.error(error.message);
@@ -273,7 +273,7 @@ const submitModal = async () => {
     }
 
     modalVisible.value = false;
-    loadList();
+    await loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   } finally {

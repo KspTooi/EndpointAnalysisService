@@ -170,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
@@ -369,7 +369,7 @@ const removeList = async (id: string) => {
   try {
     await AdminPermissionApi.removePermission({ id });
     ElMessage.success("删除成功");
-    loadList();
+    await loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   }

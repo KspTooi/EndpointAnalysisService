@@ -171,7 +171,7 @@ const handleCloseSession = async (row: GetSessionListVo) => {
     });
     await AdminSessionApi.closeSession({ id: row.id });
     ElMessage.success("会话关闭成功");
-    loadList(); // Refresh the list
+    await loadList(); // Refresh the list
   } catch (error) {
     if (error !== "cancel") {
       const errorMsg = error instanceof Error ? error.message : "关闭会话失败";

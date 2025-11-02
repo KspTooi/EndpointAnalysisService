@@ -319,7 +319,7 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadList();
+  await loadList();
 };
 
 const removeList = async (id: string) => {
@@ -336,7 +336,7 @@ const removeList = async (id: string) => {
   try {
     await ConfigApi.removeConfig({ id });
     ElMessage.success("删除成功");
-    loadList();
+    await loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   }

@@ -418,7 +418,7 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadList();
+  await loadList();
 };
 
 const selectedPermissionIds = ref<string[]>([]);
@@ -445,7 +445,7 @@ const removeList = async (id: string) => {
   try {
     await AdminGroupApi.removeGroup({ id });
     ElMessage.success("删除成功");
-    loadList();
+    await loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
   }

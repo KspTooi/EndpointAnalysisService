@@ -469,7 +469,7 @@ const removeList = async (id: string) => {
     const result = await EndpointApi.removeEndpoint({ id });
     if (Result.isSuccess(result)) {
       ElMessage.success("删除成功");
-      loadList();
+      await loadList();
     }
   } catch (error: any) {
     ElMessage.error(error.message);
@@ -505,7 +505,7 @@ const clearEndpointCache = async () => {
   const result = await EndpointApi.clearEndpointCache();
   if (Result.isSuccess(result)) {
     ElMessage.success("权限数据缓存已清空");
-    loadList();
+    await loadList();
   }
 };
 
@@ -637,7 +637,7 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadList();
+  await loadList();
 };
 </script>
 

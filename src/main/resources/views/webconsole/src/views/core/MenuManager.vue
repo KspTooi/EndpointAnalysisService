@@ -324,7 +324,7 @@ const removeList = async (id: string) => {
   }
   //通知左侧菜单重新加载
   EventHolder().requestReloadLeftMenu();
-  loadList();
+  await loadList();
 };
 
 onMounted(async () => {
@@ -504,7 +504,7 @@ const submitModal = async () => {
   }
 
   //modalVisible.value = false;
-  loadList();
+  await loadList();
 
   //通知左侧菜单重新加载
   EventHolder().requestReloadLeftMenu();
