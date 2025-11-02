@@ -12,6 +12,9 @@
       <div class="rb-header">
         <div class="rb-header-title">
           <input class="rb-name-input" v-model="requestDetail.name" />
+          <div class="rb-header-env-selector">
+            <UserRequestEnvSelector />
+          </div>
         </div>
 
         <div class="rb-header-input" style="margin-top: 12px">
@@ -335,6 +338,10 @@ watch(
 }
 
 .rb-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
   font-weight: 600;
   color: #495057;
@@ -463,9 +470,14 @@ watch(
   font-size: 14px;
   font-weight: 600;
   color: #495057;
-  width: 100%;
+  flex: 1;
   background: transparent;
   height: 20px;
+  min-width: 0;
+}
+
+.rb-header-env-selector {
+  flex-shrink: 0;
 }
 
 .rb-editor-wrapper {

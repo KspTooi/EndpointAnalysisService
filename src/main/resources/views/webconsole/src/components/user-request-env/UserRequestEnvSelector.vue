@@ -1,15 +1,5 @@
 <template>
-  <el-select
-    v-model="selectedEnvId"
-    placeholder="选择环境"
-    filterable
-    clearable
-    :loading="loading"
-    size="small"
-    @change="handleChange"
-    @clear="handleClear"
-    class="user-request-env-selector"
-  >
+  <el-select v-model="selectedEnvId" placeholder="选择环境" filterable :loading="loading" @change="handleChange" @clear="handleClear" class="user-request-env-selector">
     <el-option v-for="env in envList" :key="env.id" :label="env.name" :value="env.id">
       <div class="env-option-item">
         <span class="env-name">{{ env.name }}</span>
