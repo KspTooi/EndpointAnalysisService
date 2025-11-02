@@ -91,7 +91,7 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="userFormRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="modalForm.username" :disabled="modalMode === 'edit'" placeholder="请输入用户名" />
         </el-form-item>
@@ -181,7 +181,7 @@ const modalFormPassword = ref("");
 const selectedGroupIds = ref<string[]>([]);
 
 // 表单校验规则 用户密码长度不能超过128个字符, 用户昵称长度不能超过50个字符
-const userFormRules = {
+const modalRules = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" },
     { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },

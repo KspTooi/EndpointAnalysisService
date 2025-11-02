@@ -119,7 +119,7 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="rules" label-width="100px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <!-- 编辑时显示的只读信息 -->
         <template v-if="modalMode === 'edit'">
           <el-form-item label="创建时间">
@@ -184,8 +184,6 @@ import AdminPermissionApi, {
 } from "@/api/core/PermissionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
-const modalMode = ref<"add" | "edit">("add");
-
 const listForm = reactive<GetPermissionListDto>({
   code: null,
   name: null,
@@ -196,6 +194,15 @@ const listData = ref<GetPermissionListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
+// 使用markRaw包装图标组件
+const EditIcon = markRaw(Edit);
+const DeleteIcon = markRaw(Delete);
+
+// 模态框相关
+const modalVisible = ref(false);
+const modalFormRef = ref<FormInstance>();
+const modalLoading = ref(false);
+const modalMode = ref<"add" | "edit">("add");
 const modalForm = reactive<GetPermissionDetailsVo>({
   code: "",
   createTime: "",
@@ -206,18 +213,7 @@ const modalForm = reactive<GetPermissionDetailsVo>({
   sortOrder: 0,
   updateTime: "",
 });
-
-// 使用markRaw包装图标组件
-const EditIcon = markRaw(Edit);
-const DeleteIcon = markRaw(Delete);
-
-// 模态框相关
-const modalVisible = ref(false);
-const modalFormRef = ref<FormInstance>();
-const modalLoading = ref(false);
-
-// 表单校验规则
-const rules = {
+const modalRules = {
   code: [
     { required: true, message: "请输入权限代码", trigger: "blur" },
     {

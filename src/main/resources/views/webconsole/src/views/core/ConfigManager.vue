@@ -114,7 +114,7 @@
       "
     >
       <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">提示：新建配置项时，所有者默认为当前用户，无法指定为他人。</div>
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="rules" label-width="100px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <!-- 编辑时显示的只读信息 -->
         <template v-if="modalMode === 'edit'">
           <el-form-item label="创建时间">
@@ -160,8 +160,6 @@ import type { FormInstance } from "element-plus";
 import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo, type AddConfigDto, type EditConfigDto } from "@/api/core/ConfigApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
-const modalMode = ref<"add" | "edit">("add");
-
 const listForm = reactive<GetConfigListDto>({
   keyword: null,
   userName: null,
@@ -181,8 +179,7 @@ const DeleteIcon = markRaw(Delete);
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
-
-//表单数据
+const modalMode = ref<"add" | "edit">("add");
 const modalForm = reactive<GetConfigDetailsVo>({
   id: "",
   userId: "",
@@ -193,9 +190,7 @@ const modalForm = reactive<GetConfigDetailsVo>({
   createTime: "",
   updateTime: "",
 });
-
-// 表单校验规则
-const rules = {
+const modalRules = {
   configKey: [
     { required: true, message: "请输入配置键", trigger: "blur" },
     { pattern: /^[a-zA-Z0-9_.]{2,50}$/, message: "配置键只能包含2-50位字母、数字、下划线和点", trigger: "blur" },

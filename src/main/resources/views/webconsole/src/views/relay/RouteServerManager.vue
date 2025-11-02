@@ -147,15 +147,10 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi.ts";
-import MenuApi from "@/api/core/MenuApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref, watch, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
-import IconPicker from "@/components/common/IconPicker.vue";
-import { Icon } from "@iconify/vue";
-import { EventHolder } from "@/store/EventHolder.ts";
+import { reactive, ref } from "vue";
+import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
 import RouteServerApi from "@/api/relay/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
@@ -231,7 +226,7 @@ const removeList = async (id: string) => {
     ElMessage.error(error.message);
     return;
   }
-  loadList();
+  await loadList();
 };
 
 const removeListBatch = async () => {
@@ -258,7 +253,7 @@ const removeListBatch = async () => {
     ElMessage.error(error.message);
     return;
   }
-  loadList();
+  await loadList();
 };
 
 loadList();
@@ -366,7 +361,7 @@ const submitModal = async () => {
   }
 
   //modalVisible.value = false;
-  loadList();
+  await loadList();
 };
 </script>
 

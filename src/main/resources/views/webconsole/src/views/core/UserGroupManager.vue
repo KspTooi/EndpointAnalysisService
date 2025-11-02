@@ -95,7 +95,7 @@
         })()
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <div class="form-two-columns">
           <div class="form-left-column">
             <el-form-item label="组标识" prop="code" label-for="group-code">
@@ -223,7 +223,7 @@ const modalForm = reactive<GetGroupDetailsVo>({
 });
 
 // 表单校验规则
-const groupFormRules = {
+const modalRules = {
   code: [
     { required: true, message: "请输入组标识", trigger: "blur" },
     { min: 2, max: 50, message: "组标识长度必须在2-50个字符之间", trigger: "blur" },

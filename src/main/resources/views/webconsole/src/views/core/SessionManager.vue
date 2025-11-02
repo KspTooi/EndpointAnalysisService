@@ -36,7 +36,7 @@
         <el-table-column prop="expiresAt" label="过期时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
+            <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
             <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon"> 关闭会话 </el-button>
           </template>
         </el-table-column>
@@ -66,7 +66,7 @@
     </div>
 
     <!-- 会话详情模态框 -->
-    <el-dialog v-model="detailsDialogVisible" title="会话详情" width="800px" :close-on-click-modal="false">
+    <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
       <el-descriptions :column="1" border v-if="currentSessionDetails">
         <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
         <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
@@ -89,7 +89,7 @@
       </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="detailsDialogVisible = false">关闭</el-button>
+          <el-button @click="modalVisible = false">关闭</el-button>
         </span>
       </template>
     </el-dialog>
@@ -116,7 +116,7 @@ const listData = ref<GetSessionListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const detailsDialogVisible = ref(false);
+const modalVisible = ref(false);
 const currentSessionDetails = ref<GetSessionDetailsVo | null>(null);
 const permissionSearchKeyword = ref("");
 const filteredPermissions = computed(() => {
@@ -148,13 +148,13 @@ const resetList = () => {
   loadList();
 };
 
-const openViewModal = async (row: GetSessionListVo) => {
+const openModal = async (row: GetSessionListVo) => {
   listLoading.value = true;
   try {
     const res = await AdminSessionApi.getSessionDetails({ id: row.id });
     currentSessionDetails.value = res;
     permissionSearchKeyword.value = ""; // 重置搜索关键词
-    detailsDialogVisible.value = true;
+    modalVisible.value = true;
   } catch (error: any) {
     ElMessage.error(error.message || "获取会话详情失败");
   } finally {
