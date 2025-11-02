@@ -313,7 +313,7 @@ const resetModal = async () => {
         has: 0,
       }));
     } catch (error) {
-      console.log(error);
+      // 权限列表加载失败，静默处理
     }
   }
   if (modalMode.value !== "add") {
