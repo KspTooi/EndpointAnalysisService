@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -39,15 +39,20 @@ public class ConfigPo {
 
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @PrePersist
     public void prePersist() {
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updateTime = LocalDateTime.now();
     }
 } 

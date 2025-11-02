@@ -40,6 +40,7 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private GlobalConfigService globalConfigService;
 

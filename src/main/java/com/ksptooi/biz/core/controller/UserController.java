@@ -1,9 +1,10 @@
 package com.ksptooi.biz.core.controller;
 
+import com.ksptooi.biz.core.model.user.AddUserDto;
+import com.ksptooi.biz.core.model.user.EditUserDto;
 import com.ksptooi.biz.core.model.user.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.GetUserListDto;
 import com.ksptooi.biz.core.model.user.GetUserListVo;
-import com.ksptooi.biz.core.model.user.SaveUserDto;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
@@ -46,14 +47,27 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "保存用户")
+    @Operation(summary = "新增用户")
     @PrintLog(sensitiveFields = "password")
-    @PostMapping("saveUser")
+    @PostMapping("addUser")
     @RequirePermissionRest("admin:user:save")
-    public Result<String> saveUser(@RequestBody @Valid SaveUserDto dto) {
+    public Result<String> addUser(@RequestBody @Valid AddUserDto dto) {
         try {
-            service.saveUser(dto);
-            return Result.success("success");
+            service.addUser(dto);
+            return Result.success("新增成功");
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+
+    @Operation(summary = "编辑用户")
+    @PrintLog(sensitiveFields = "password")
+    @PostMapping("editUser")
+    @RequirePermissionRest("admin:user:save")
+    public Result<String> editUser(@RequestBody @Valid EditUserDto dto) {
+        try {
+            service.editUser(dto);
+            return Result.success("修改成功");
         } catch (Exception ex) {
             return Result.error(ex.getMessage());
         }

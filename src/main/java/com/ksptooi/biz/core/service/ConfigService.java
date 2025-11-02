@@ -71,25 +71,21 @@ public class ConfigService {
     }
 
     @Transactional
-    public void saveConfig(SaveConfigDto dto) throws BizException, AuthException {
-
-        //创建
-        if (dto.getId() == null) {
-            if (repository.existsByUserIdAndConfigKey(AuthService.requireUserId(), dto.getConfigKey())) {
-                throw new RuntimeException("配置键已存在");
-            }
-            ConfigPo config = new ConfigPo();
-            assign(dto, config);
-            config.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
-            repository.save(config);
-            return;
+    public void addConfig(AddConfigDto dto) throws BizException, AuthException {
+        if (repository.existsByUserIdAndConfigKey(AuthService.requireUserId(), dto.getConfigKey())) {
+            throw new RuntimeException("配置键已存在");
         }
+        ConfigPo config = new ConfigPo();
+        assign(dto, config);
+        config.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+        repository.save(config);
+    }
 
-        //编辑
+    @Transactional
+    public void editConfig(EditConfigDto dto) throws BizException, AuthException {
         var query = new ConfigPo();
         query.setId(dto.getId());
 
-        //无全局数据权限时仅查询当前用户下的配置
         if (!AuthService.hasPermission("panel:config:view:global")) {
             query.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
         }

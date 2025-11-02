@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,10 +23,10 @@ public class GetCompanyMemberDetailsVo {
     private Integer role;
 
     @Schema(description = "加入时间")
-    private Date joinedTime;
+    private LocalDateTime joinedTime;
 
     @Schema(description = "删除时间 为NULL时代表未删除")
-    private Date deletedTime;
+    private LocalDateTime deletedTime;
 
 }
 

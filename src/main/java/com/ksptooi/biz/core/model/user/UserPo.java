@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,15 +50,15 @@ public class UserPo {
 
     @Column(name = "last_login_time")
     @Comment("最后登录时间")
-    private Date lastLoginTime;
+    private LocalDateTime lastLoginTime;
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -82,8 +82,8 @@ public class UserPo {
 
     @PrePersist
     public void prePersist() {
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
         if (loginCount == null) {
             loginCount = 0;
         }
@@ -94,7 +94,7 @@ public class UserPo {
 
     @PreUpdate
     public void preUpdate() {
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
     }
 
 

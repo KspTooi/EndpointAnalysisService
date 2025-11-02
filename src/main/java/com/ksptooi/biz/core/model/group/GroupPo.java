@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,11 +62,11 @@ public class GroupPo {
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -92,12 +92,12 @@ public class GroupPo {
         if (sortOrder == null) {
             sortOrder = 0; // 默认排序号
         }
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
     }
 } 

@@ -1,10 +1,11 @@
 package com.ksptooi.biz.core.controller;
 
 
+import com.ksptooi.biz.core.model.config.AddConfigDto;
+import com.ksptooi.biz.core.model.config.EditConfigDto;
 import com.ksptooi.biz.core.model.config.GetConfigDetailsVo;
 import com.ksptooi.biz.core.model.config.GetConfigListDto;
 import com.ksptooi.biz.core.model.config.GetConfigListVo;
-import com.ksptooi.biz.core.model.config.SaveConfigDto;
 import com.ksptooi.biz.core.service.ConfigService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
@@ -49,13 +50,25 @@ public class ConfigController {
         }
     }
 
-    @Operation(summary = "保存配置项")
-    @PostMapping("saveConfig")
+    @Operation(summary = "新增配置项")
+    @PostMapping("addConfig")
     @RequirePermissionRest("admin:config:save")
-    public Result<String> saveConfig(@RequestBody @Valid SaveConfigDto dto) throws Exception {
+    public Result<String> addConfig(@RequestBody @Valid AddConfigDto dto) throws Exception {
         try {
-            service.saveConfig(dto);
-            return Result.success("success");
+            service.addConfig(dto);
+            return Result.success("新增成功");
+        } catch (BizException ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+
+    @Operation(summary = "编辑配置项")
+    @PostMapping("editConfig")
+    @RequirePermissionRest("admin:config:save")
+    public Result<String> editConfig(@RequestBody @Valid EditConfigDto dto) throws Exception {
+        try {
+            service.editConfig(dto);
+            return Result.success("修改成功");
         } catch (BizException ex) {
             return Result.error(ex.getMessage());
         }

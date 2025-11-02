@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -18,10 +18,10 @@ public class GetSessionDetailsVo {
     private String username;
 
     @Schema(description = "登入时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Schema(description = "过期时间")
-    private Date expiresAt;
+    private LocalDateTime expiresAt;
 
     @Schema(description = "权限节点")
     private Set<String> permissions;

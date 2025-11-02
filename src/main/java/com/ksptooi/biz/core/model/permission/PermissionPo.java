@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -49,11 +49,11 @@ public class PermissionPo {
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     @Comment("拥有此权限的用户组")
@@ -64,12 +64,12 @@ public class PermissionPo {
         if (sortOrder == null) {
             sortOrder = 0;
         }
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
     }
 } 

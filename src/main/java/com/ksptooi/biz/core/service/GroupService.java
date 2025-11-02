@@ -78,44 +78,18 @@ public class GroupService {
     }
 
     @Transactional
-    public void saveGroup(SaveGroupDto dto) throws BizException {
-
-        GroupPo group = null;
-        boolean isUpdate = false;
-
-        //创建新用户组
-        if (dto.getId() == null) {
-            group = new GroupPo();
-            if (repository.existsByCode(dto.getCode())) {
-                throw new BizException("用户组标识已存在");
-            }
+    public void addGroup(AddGroupDto dto) throws BizException {
+        if (repository.existsByCode(dto.getCode())) {
+            throw new BizException("用户组标识已存在");
         }
 
-        //更新现有用户组
-        if (dto.getId() != null) {
-            group = repository.findById(dto.getId()).orElseThrow(() -> new BizException("用户组不存在"));
-
-            //判断是否修改了用户组Code 如果修改了Code判断是否重名
-            if (!group.getCode().equals(dto.getCode())) {
-                if (repository.existsByCode(dto.getCode())) {
-                    throw new BizException("用户组标识重复");
-                }
-            }
-
-            isUpdate = true;
-        }
-
-        //设置基础信息
+        GroupPo group = new GroupPo();
         group.setCode(dto.getCode());
         group.setName(dto.getName());
         group.setDescription(dto.getDescription());
         group.setStatus(dto.getStatus());
         group.setSortOrder(dto.getSortOrder());
 
-        //处理权限关联
-        group.getPermissions().clear();
-
-        //建立新的权限关联
         if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
             Set<PermissionPo> newPermissions = new HashSet<>(
                     permissionRepository.findAllById(dto.getPermissionIds())
@@ -123,20 +97,41 @@ public class GroupService {
             group.getPermissions().addAll(newPermissions);
         }
 
-        //保存所有更改
         repository.save(group);
+    }
 
-        //如果是更新用户组，刷新该组下所有在线用户的会话
-        if (isUpdate) {
-            // 获取该用户组下所有在线用户的会话
-            List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
+    @Transactional
+    public void editGroup(EditGroupDto dto) throws BizException {
+        GroupPo group = repository.findById(dto.getId()).orElseThrow(() -> new BizException("用户组不存在"));
 
-            // 刷新每个用户的会话
-            for (UserSessionPo session : activeSessions) {
-                authService.refreshUserSession(session.getUserId());
+        if (!group.getCode().equals(dto.getCode())) {
+            if (repository.existsByCode(dto.getCode())) {
+                throw new BizException("用户组标识重复");
             }
         }
 
+        group.setCode(dto.getCode());
+        group.setName(dto.getName());
+        group.setDescription(dto.getDescription());
+        group.setStatus(dto.getStatus());
+        group.setSortOrder(dto.getSortOrder());
+
+        group.getPermissions().clear();
+
+        if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
+            Set<PermissionPo> newPermissions = new HashSet<>(
+                    permissionRepository.findAllById(dto.getPermissionIds())
+            );
+            group.getPermissions().addAll(newPermissions);
+        }
+
+        repository.save(group);
+
+        List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
+
+        for (UserSessionPo session : activeSessions) {
+            authService.refreshUserSession(session.getUserId());
+        }
     }
 
     @Transactional

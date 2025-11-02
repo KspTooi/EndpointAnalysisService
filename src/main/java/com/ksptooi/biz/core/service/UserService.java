@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +38,7 @@ public class UserService {
     @Autowired
     private AuthService authService;
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public PageResult<GetUserListVo> getUserList(GetUserListDto dto) {
         // 创建分页对象
@@ -67,10 +68,10 @@ public class UserService {
             GetUserListVo vo = new GetUserListVo();
             assign(po, vo);
             if (po.getCreateTime() != null) {
-                vo.setCreateTime(dateFormat.format(po.getCreateTime()));
+                vo.setCreateTime(po.getCreateTime().format(DATE_TIME_FORMATTER));
             }
             if (po.getLastLoginTime() != null) {
-                vo.setLastLoginTime(dateFormat.format(po.getLastLoginTime()));
+                vo.setLastLoginTime(po.getLastLoginTime().format(DATE_TIME_FORMATTER));
             }
             voList.add(vo);
         }
@@ -85,10 +86,10 @@ public class UserService {
         assign(user, vo);
 
         if (user.getCreateTime() != null) {
-            vo.setCreateTime(dateFormat.format(user.getCreateTime()));
+            vo.setCreateTime(user.getCreateTime().format(DATE_TIME_FORMATTER));
         }
         if (user.getLastLoginTime() != null) {
-            vo.setLastLoginTime(dateFormat.format(user.getLastLoginTime()));
+            vo.setLastLoginTime(user.getLastLoginTime().format(DATE_TIME_FORMATTER));
         }
 
         // 获取用户组信息
@@ -115,34 +116,40 @@ public class UserService {
     }
 
     @Transactional
-    public void saveUser(SaveUserDto dto) throws BizException {
-        // 检查用户名是否已存在
+    public void addUser(AddUserDto dto) throws BizException {
         if (StringUtils.isBlank(dto.getUsername())) {
             throw new BizException("用户名不能为空");
         }
 
         UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
-        if (existingUserByName != null && (dto.getId() == null || !existingUserByName.getId().equals(dto.getId()))) {
+        if (existingUserByName != null) {
             throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
         }
 
-        // 处理新建用户
-        if (dto.getId() == null) {
-            if (StringUtils.isBlank(dto.getPassword())) {
-                throw new BizException("新建用户时密码不能为空");
-            }
-            UserPo user = new UserPo();
-            assign(dto, user);
-            user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
-            user.setGroups(getGroupSet(dto.getGroupIds()));
-            userRepository.save(user);
-            return;
+        if (StringUtils.isBlank(dto.getPassword())) {
+            throw new BizException("新建用户时密码不能为空");
         }
 
-        // 处理编辑用户
+        UserPo user = new UserPo();
+        assign(dto, user);
+        user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+        user.setGroups(getGroupSet(dto.getGroupIds()));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void editUser(EditUserDto dto) throws BizException {
+        if (StringUtils.isBlank(dto.getUsername())) {
+            throw new BizException("用户名不能为空");
+        }
+
+        UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
+        if (existingUserByName != null && !existingUserByName.getId().equals(dto.getId())) {
+            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
+        }
+
         UserPo user = userRepository.findById(dto.getId()).orElseThrow(() -> new BizException("用户不存在"));
 
-        // 处理密码(dto密码非空 代表用户修改了密码)
         if (StringUtils.isNotBlank(dto.getPassword())) {
             dto.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
         }
@@ -150,12 +157,10 @@ public class UserService {
             dto.setPassword(user.getPassword());
         }
 
-        // 更新用户信息
         assign(dto, user);
         user.setGroups(getGroupSet(dto.getGroupIds()));
         userRepository.save(user);
 
-        // 刷新用户的会话(如果在线)
         authService.refreshUserSession(user.getId());
     }
 

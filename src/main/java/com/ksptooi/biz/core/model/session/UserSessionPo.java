@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "core_user_session")
@@ -31,25 +31,25 @@ public class UserSessionPo {
 
     @Column(name = "expires_at", nullable = false)
     @Comment("过期时间")
-    private Date expiresAt;
+    private LocalDateTime expiresAt;
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
     @PrePersist
     public void prePersist() {
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
     }
 }

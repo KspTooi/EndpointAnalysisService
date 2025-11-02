@@ -3,7 +3,7 @@ package com.ksptooi.biz.core.model.group;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -31,11 +31,11 @@ public class GetGroupListVo {
     private Integer status;
 
     // 创建时间
-    private Date createTime;
+    private LocalDateTime createTime;
 
 
     public GetGroupListVo(Long id, String code, String name, Integer memberCount, Integer permissionCount,
-                          Boolean isSystem, Integer status, Date createTime) {
+                          Boolean isSystem, Integer status, LocalDateTime createTime) {
         this.id = id;
         this.code = code;
         this.name = name;
