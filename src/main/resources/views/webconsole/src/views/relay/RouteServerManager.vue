@@ -2,28 +2,28 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器名称">
-              <el-input v-model="query.name" placeholder="请输入服务器名称" clearable />
+              <el-input v-model="listForm.name" placeholder="请输入服务器名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器主机">
-              <el-input v-model="query.host" placeholder="请输入服务器主机" clearable />
+              <el-input v-model="listForm.host" placeholder="请输入服务器主机" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器端口">
-              <el-input v-model="query.port" placeholder="请输入服务器端口" clearable />
+              <el-input v-model="listForm.port" placeholder="请输入服务器端口" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="loading" />
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -31,12 +31,12 @@
           <el-row>
             <el-col :span="5" :offset="1">
               <el-form-item label="备注">
-                <el-input v-model="query.remark" placeholder="请输入备注" clearable />
+                <el-input v-model="listForm.remark" placeholder="请输入备注" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="1">
               <el-form-item label="服务器状态">
-                <el-select v-model="query.status" placeholder="请选择服务器状态" clearable style="width: 100%">
+                <el-select v-model="listForm.status" placeholder="请选择服务器状态" clearable style="width: 100%">
                   <el-option label="启用" :value="1" />
                   <el-option label="禁用" :value="0" />
                 </el-select>
@@ -51,12 +51,12 @@
     <!-- 操作按钮 -->
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
-      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="loading">删除选中项</el-button>
+      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading">删除选中项</el-button>
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
         <el-table-column type="selection" width="40" />
         <el-table-column label="服务器名称" prop="name" show-overflow-tooltip />
         <el-table-column label="服务器主机" prop="host" show-overflow-tooltip />
@@ -80,20 +80,20 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
+              listForm.pageSize = val;
               loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
+              listForm.pageNum = val;
               loadList();
             }
           "
@@ -165,7 +165,7 @@ const uiState = reactive({
 });
 
 //列表内容
-const query = reactive<GetRouteServerListDto>({
+const listForm = reactive<GetRouteServerListDto>({
   name: "",
   host: "",
   port: null,
@@ -175,35 +175,35 @@ const query = reactive<GetRouteServerListDto>({
   pageSize: 10,
 });
 
-const list = ref<GetRouteServerListVo[]>([]);
+const listData = ref<GetRouteServerListVo[]>([]);
 const listSelected = ref<GetRouteServerListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 const loadList = async () => {
-  loading.value = true;
-  const result = await RouteServerApi.getRouteServerList(query);
+  listLoading.value = true;
+  const result = await RouteServerApi.getRouteServerList(listForm);
 
   if (Result.isSuccess(result)) {
-    list.value = result.data;
-    total.value = result.total;
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
 
   if (Result.isError(result)) {
     ElMessage.error(result.message);
   }
 
-  loading.value = false;
+  listLoading.value = false;
 };
 
 const resetList = () => {
-  query.pageNum = 1;
-  query.pageSize = 10;
-  query.name = null;
-  query.host = null;
-  query.port = null;
-  query.remark = null;
-  query.status = null;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.name = null;
+  listForm.host = null;
+  listForm.port = null;
+  listForm.remark = null;
+  listForm.status = null;
   loadList();
 };
 
