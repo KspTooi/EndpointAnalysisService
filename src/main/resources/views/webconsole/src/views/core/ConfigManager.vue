@@ -28,7 +28,7 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="openInsertModal">创建配置</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建配置</el-button>
     </div>
 
     <!-- 配置列表 -->
@@ -70,7 +70,7 @@
         <el-table-column prop="userName" label="所有者" min-width="120" />
         <el-table-column label="操作" fixed="right" min-width="140">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openUpdateModal(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="removeConfig(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -102,38 +102,50 @@
     </div>
 
     <!-- 配置编辑/新增模态框 -->
-    <el-dialog v-model="dialogVisible" :title="mode === 'insert' ? '新增配置' : '编辑配置'" width="500px" :close-on-click-modal="false">
-      <div v-if="mode === 'insert'" style="color: #909399; font-size: 13px; margin-bottom: 10px">提示：新建配置项时，所有者默认为当前用户，无法指定为他人。</div>
-      <el-form v-if="dialogVisible" ref="formRef" :model="details" :rules="rules" label-width="100px" :validate-on-rule-change="false">
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'edit' ? '编辑配置' : '添加配置'"
+      width="500px"
+      class="modal-centered"
+      :close-on-click-modal="false"
+      @close="
+        resetModal();
+        loadConfigList();
+      "
+    >
+      <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">提示：新建配置项时，所有者默认为当前用户，无法指定为他人。</div>
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="rules" label-width="100px" :validate-on-rule-change="false">
         <!-- 编辑时显示的只读信息 -->
-        <template v-if="mode === 'update'">
+        <template v-if="modalMode === 'edit'">
           <el-form-item label="创建时间">
-            <el-input v-model="details.createTime" disabled />
+            <el-input v-model="modalForm.createTime" disabled />
           </el-form-item>
           <el-form-item label="修改时间">
-            <el-input v-model="details.updateTime" disabled />
+            <el-input v-model="modalForm.updateTime" disabled />
           </el-form-item>
           <el-form-item label="所有者名称">
-            <el-input v-model="details.userName" disabled />
+            <el-input v-model="modalForm.userName" disabled />
           </el-form-item>
         </template>
 
         <!-- 可编辑字段 -->
         <el-form-item label="配置键" prop="configKey">
-          <el-input v-model="details.configKey" placeholder="请输入配置键" :disabled="mode === 'update'" />
+          <el-input v-model="modalForm.configKey" placeholder="请输入配置键" :disabled="modalMode === 'edit'" />
         </el-form-item>
         <el-form-item label="配置值" prop="configValue">
-          <el-input v-model="details.configValue" type="textarea" :rows="3" placeholder="请输入配置值" />
+          <el-input v-model="modalForm.configValue" type="textarea" :rows="3" placeholder="请输入配置值" />
         </el-form-item>
         <el-form-item label="配置描述" prop="description">
-          <el-input v-model="details.description" type="textarea" :rows="3" placeholder="请输入配置描述" />
+          <el-input v-model="modalForm.description" type="textarea" :rows="3" placeholder="请输入配置描述" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="saveConfig" :loading="submitLoading"> 保存 </el-button>
-        </span>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -145,9 +157,10 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo } from "@/api/core/ConfigApi.ts";
+import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo, type AddConfigDto, type EditConfigDto } from "@/api/core/ConfigApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 
-const mode = ref<"insert" | "update">("insert");
+const modalMode = ref<"add" | "edit">("add");
 
 const query = reactive<GetConfigListDto>({
   keyword: null,
@@ -167,20 +180,20 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 模态框相关
-const dialogVisible = ref(false);
-const formRef = ref<FormInstance>();
-const submitLoading = ref(false);
+const modalVisible = ref(false);
+const modalFormRef = ref<FormInstance>();
+const modalLoading = ref(false);
 
 //表单数据
-const details = reactive<GetConfigDetailsVo>({
-  configKey: "",
-  configValue: "",
-  createTime: "",
-  description: "",
+const modalForm = reactive<GetConfigDetailsVo>({
   id: "",
-  updateTime: "",
   userId: "",
   userName: "",
+  configKey: "",
+  configValue: "",
+  description: "",
+  createTime: "",
+  updateTime: "",
 });
 
 // 表单校验规则
@@ -219,18 +232,18 @@ const resetQuery = () => {
   loadConfigList();
 };
 
-const resetForm = () => {
-  details.id = "";
-  details.configKey = "";
-  details.configValue = "";
-  details.description = "";
-  details.createTime = "";
-  details.updateTime = "";
-  details.userId = "";
-  details.userName = "";
+const resetModal = () => {
+  modalForm.id = "";
+  modalForm.configKey = "";
+  modalForm.configValue = "";
+  modalForm.description = "";
+  modalForm.createTime = "";
+  modalForm.updateTime = "";
+  modalForm.userId = "";
+  modalForm.userName = "";
 
-  if (formRef.value) {
-    formRef.value.resetFields();
+  if (modalFormRef.value) {
+    modalFormRef.value.resetFields();
   }
 };
 
@@ -239,56 +252,83 @@ onMounted(() => {
   loadConfigList();
 });
 
-const openInsertModal = () => {
-  mode.value = "insert";
-  resetForm();
-  dialogVisible.value = true;
-};
+const openModal = async (mode: "add" | "edit", row: GetConfigListVo | null) => {
+  modalMode.value = mode;
+  resetModal();
 
-const openUpdateModal = async (row: GetConfigListVo) => {
-  try {
-    mode.value = "update";
-    resetForm();
-
-    const res = await ConfigApi.getConfigDetails({ id: row.id });
-    Object.assign(details, res);
-
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("获取配置详情失败");
-    console.error("获取配置详情失败", error);
-  }
-};
-
-const saveConfig = async () => {
-  if (!formRef.value) return;
-
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-
-    submitLoading.value = true;
+  //如果是编辑模式则需要加载详情数据
+  if (mode === "edit" && row) {
     try {
-      await ConfigApi.saveConfig({
-        id: mode.value === "update" ? details.id : undefined,
-        configKey: details.configKey,
-        configValue: details.configValue,
-        description: details.description,
-      });
-
-      ElMessage.success(mode.value === "insert" ? "新增配置成功" : "更新配置成功");
-      //dialogVisible.value = false;
-      //新增需要重置表单
-      if (mode.value === "insert") {
-        resetForm();
-      }
-      loadConfigList();
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "操作失败";
-      ElMessage.error(errorMsg);
-    } finally {
-      submitLoading.value = false;
+      const ret = await ConfigApi.getConfigDetails({ id: row.id });
+      modalForm.id = ret.id;
+      modalForm.userId = ret.userId;
+      modalForm.userName = ret.userName;
+      modalForm.configKey = ret.configKey;
+      modalForm.configValue = ret.configValue;
+      modalForm.description = ret.description;
+      modalForm.createTime = ret.createTime;
+      modalForm.updateTime = ret.updateTime;
+    } catch (error: any) {
+      ElMessage.error(error.message || "获取配置详情失败");
+      return;
     }
-  });
+  }
+
+  modalVisible.value = true;
+};
+
+const submitModal = async () => {
+  //先校验表单
+  try {
+    await modalFormRef?.value?.validate();
+  } catch (error) {
+    return;
+  }
+
+  modalLoading.value = true;
+
+  //提交表单
+  try {
+    if (modalMode.value === "add") {
+      const addDto: AddConfigDto = {
+        configKey: modalForm.configKey,
+        configValue: modalForm.configValue,
+        description: modalForm.description,
+      };
+      const result = await ConfigApi.addConfig(addDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+        resetModal();
+      }
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
+    }
+
+    if (modalMode.value === "edit") {
+      const editDto: EditConfigDto = {
+        id: modalForm.id,
+        configValue: modalForm.configValue,
+        description: modalForm.description,
+      };
+      const result = await ConfigApi.editConfig(editDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+      }
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    modalLoading.value = false;
+  }
+
+  loadConfigList();
 };
 
 const removeConfig = async (row: GetConfigListVo) => {

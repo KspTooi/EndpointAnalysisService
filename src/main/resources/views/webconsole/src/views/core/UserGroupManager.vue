@@ -25,7 +25,7 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="handleAdd">创建访问组</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
     </div>
 
     <div class="group-table">
@@ -51,7 +51,7 @@
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="handleEdit(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -84,31 +84,41 @@
     </div>
 
     <!-- 用户组编辑/新增模态框 -->
-    <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增访问组' : '编辑访问组'" width="800px" :close-on-click-modal="false">
-      <el-form v-if="dialogVisible" ref="groupFormRef" :model="groupForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
+      width="800px"
+      class="modal-centered"
+      :close-on-click-modal="false"
+      @close="
+        resetModal();
+        loadGroupList();
+      "
+    >
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
         <div class="form-two-columns">
           <div class="form-left-column">
             <el-form-item label="组标识" prop="code" label-for="group-code">
               <el-input
-                v-model="groupForm.code"
-                :disabled="formType === 'edit' && isSystemGroup"
-                :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
+                v-model="modalForm.code"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
                 id="group-code"
               />
             </el-form-item>
             <el-form-item label="组名称" prop="name" label-for="group-name">
               <el-input
-                v-model="groupForm.name"
-                :disabled="formType === 'edit' && isSystemGroup"
-                :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
+                v-model="modalForm.name"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
                 id="group-name"
               />
             </el-form-item>
             <el-form-item label="描述" prop="description" label-for="group-description">
-              <el-input v-model="groupForm.description" type="textarea" :rows="3" id="group-description" />
+              <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
             </el-form-item>
             <el-form-item label="状态" prop="status" label-for="group-status">
-              <el-radio-group v-model="groupForm.status" id="group-status">
+              <el-radio-group v-model="modalForm.status" id="group-status">
                 <el-radio :value="1">启用</el-radio>
                 <el-radio :value="0">禁用</el-radio>
               </el-radio-group>
@@ -132,7 +142,7 @@
                   </div>
                 </div>
                 <div class="permission-list">
-                  <el-checkbox-group v-model="groupForm.permissionIds" id="permission-group" style="width: 240px">
+                  <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
                     <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
                       <el-checkbox :value="Number(permission.id)">
                         <div class="permission-info">
@@ -152,10 +162,12 @@
         </div>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitLoading"> 保存 </el-button>
-        </span>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -166,9 +178,17 @@ import { ref, reactive, onMounted, markRaw, computed } from "vue";
 import { Edit, Delete, Search } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminGroupApi, { type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto } from "@/api/core/GroupApi.ts";
+import AdminGroupApi, {
+  type GetGroupListDto,
+  type GetGroupListVo,
+  type GroupPermissionDefinitionVo,
+  type GetGroupDetailsVo,
+  type AddGroupDto,
+  type EditGroupDto,
+} from "@/api/core/GroupApi.ts";
 import AdminPermissionApi from "@/api/core/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import { Result } from "@/commons/entity/Result.ts";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -193,19 +213,21 @@ const total = ref(0);
 const loading = ref(false);
 
 // 模态框相关
-const dialogVisible = ref(false);
-const formType = ref<"add" | "edit">("add");
-const submitLoading = ref(false);
-const groupFormRef = ref<FormInstance>();
+const modalVisible = ref(false);
+const modalMode = ref<"add" | "edit">("add");
+const modalLoading = ref(false);
+const modalFormRef = ref<FormInstance>();
 
 // 表单数据
-const groupForm = reactive<SaveGroupDto>({
-  name: "",
+const modalForm = reactive<GetGroupDetailsVo>({
+  id: "",
   code: "",
+  name: "",
   description: "",
+  isSystem: false,
   status: 1,
   sortOrder: 0,
-  permissionIds: [],
+  permissions: [],
 });
 
 // 表单校验规则
@@ -284,15 +306,14 @@ const handleCurrentChange = (val: number) => {
 };
 
 // 重置表单
-const resetForm = () => {
-  // 重置表单数据
-  groupForm.id = undefined;
-  groupForm.name = "";
-  groupForm.code = "";
-  groupForm.description = "";
-  groupForm.status = 1;
-  groupForm.sortOrder = 0;
-  groupForm.permissionIds = [];
+const resetModal = () => {
+  modalForm.id = "";
+  modalForm.code = "";
+  modalForm.name = "";
+  modalForm.description = "";
+  modalForm.status = 1;
+  modalForm.sortOrder = 0;
+  modalForm.permissions = [];
 
   // 重置权限搜索
   permissionSearch.value = "";
@@ -300,93 +321,121 @@ const resetForm = () => {
   // 重置权限列表
   permissionList.value = [];
 
+  // 重置选中的权限ID
+  selectedPermissionIds.value = [];
+
   // 重置表单验证状态
-  if (groupFormRef.value) {
-    groupFormRef.value.resetFields();
+  if (modalFormRef.value) {
+    modalFormRef.value.resetFields();
   }
 };
 
-// 处理新增用户组
-const handleAdd = async () => {
-  formType.value = "add";
-  isSystemGroup.value = false;
-  resetForm();
+// 打开模态框
+const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null) => {
+  modalMode.value = mode;
+  resetModal();
 
-  try {
-    // 获取所有权限节点
-    const permissions = await AdminPermissionApi.getPermissionDefinition();
+  //如果是编辑模式则需要加载详情数据
+  if (mode === "edit" && row) {
+    isSystemGroup.value = row.isSystem;
+    try {
+      const ret = await AdminGroupApi.getGroupDetails({ id: row.id });
 
-    permissionList.value = permissions.map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.name,
-      has: 0,
-    }));
-  } catch (error) {
-    console.log(error);
-    ElMessage.error("获取权限节点列表失败");
+      modalForm.id = ret.id;
+      modalForm.code = ret.code;
+      modalForm.name = ret.name;
+      modalForm.description = ret.description;
+      modalForm.status = ret.status;
+      modalForm.sortOrder = ret.sortOrder;
+      modalForm.permissions = ret.permissions || [];
+
+      permissionList.value = ret.permissions || [];
+      selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => Number(p.id)) : [];
+    } catch (error: any) {
+      ElMessage.error(error.message || "获取访问组详情失败");
+      return;
+    }
+  } else {
+    isSystemGroup.value = false;
+    try {
+      // 获取所有权限节点
+      const permissions = await AdminPermissionApi.getPermissionDefinition();
+
+      permissionList.value = permissions.map((p) => ({
+        id: p.id,
+        code: p.code,
+        name: p.name,
+        has: 0,
+      }));
+    } catch (error) {
+      console.log(error);
+      ElMessage.error("获取权限节点列表失败");
+    }
   }
 
-  dialogVisible.value = true;
-};
-
-// 处理编辑用户组
-const handleEdit = async (row: GetGroupListVo) => {
-  formType.value = "edit";
-  resetForm();
-  isSystemGroup.value = row.isSystem;
-
-  try {
-    const details = await AdminGroupApi.getGroupDetails({ id: row.id });
-    groupForm.id = details.id;
-    groupForm.code = details.code;
-    groupForm.name = details.name;
-    groupForm.description = details.description;
-    groupForm.status = details.status;
-    groupForm.sortOrder = details.sortOrder;
-
-    // 设置权限列表
-    permissionList.value = details.permissions;
-    groupForm.permissionIds = details.permissions.filter((p) => p.has === 0).map((p) => Number(p.id));
-
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("获取访问组详情失败");
-  }
+  modalVisible.value = true;
 };
 
 // 提交表单
-const submitForm = async () => {
-  if (!groupFormRef.value) {
+const submitModal = async () => {
+  //先校验表单
+  try {
+    await modalFormRef?.value?.validate();
+  } catch (error) {
     return;
   }
 
-  await groupFormRef.value.validate(async (valid) => {
-    if (!valid) {
-      return;
-    }
+  modalLoading.value = true;
 
-    submitLoading.value = true;
-    try {
-      await AdminGroupApi.saveGroup(groupForm);
-      ElMessage.success(formType.value === "add" ? "新增访问组成功" : "更新访问组成功");
-      //dialogVisible.value = false;
-
-      //新增需要重置权限列表
-      if (formType.value === "add") {
-        resetForm();
-        //刷新权限
-        handleAdd();
+  //提交表单
+  try {
+    if (modalMode.value === "add") {
+      const addDto: AddGroupDto = {
+        code: modalForm.code,
+        name: modalForm.name,
+        description: modalForm.description,
+        status: modalForm.status,
+        sortOrder: modalForm.sortOrder,
+        permissionIds: selectedPermissionIds.value,
+      };
+      const result = await AdminGroupApi.addGroup(addDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+        resetModal();
       }
-
-      await loadGroupList();
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "操作失败";
-      ElMessage.error(errorMsg);
-    } finally {
-      submitLoading.value = false;
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
     }
-  });
+
+    if (modalMode.value === "edit") {
+      const editDto: EditGroupDto = {
+        id: modalForm.id,
+        code: modalForm.code,
+        name: modalForm.name,
+        description: modalForm.description,
+        status: modalForm.status,
+        sortOrder: modalForm.sortOrder,
+        permissionIds: selectedPermissionIds.value,
+      };
+      const result = await AdminGroupApi.editGroup(editDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+      }
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    modalLoading.value = false;
+  }
+
+  loadGroupList();
 };
 
 // 处理删除用户组
@@ -412,14 +461,16 @@ const handleDelete = (row: GetGroupListVo) => {
     });
 };
 
+const selectedPermissionIds = ref<number[]>([]);
+
 // 全选权限节点
 const selectAllPermissions = () => {
-  groupForm.permissionIds = filteredPermissions.value.map((p) => Number(p.id));
+  selectedPermissionIds.value = filteredPermissions.value.map((p) => Number(p.id));
 };
 
 // 取消全选权限节点
 const deselectAllPermissions = () => {
-  groupForm.permissionIds = [];
+  selectedPermissionIds.value = [];
 };
 
 // 页面加载和窗口大小变化时检测设备类型

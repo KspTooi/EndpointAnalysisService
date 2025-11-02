@@ -30,9 +30,14 @@ export interface GetConfigDetailsVo {
   updateTime: string; // 更新时间
 }
 
-export interface SaveConfigDto {
-  id?: string; // 配置ID
+export interface AddConfigDto {
   configKey: string; // 配置键
+  configValue: string; // 配置值
+  description?: string; // 配置描述
+}
+
+export interface EditConfigDto {
+  id: string; // 配置ID
   configValue: string; // 配置值
   description?: string; // 配置描述
 }
@@ -57,14 +62,17 @@ export default {
   },
 
   /**
-   * 保存配置
+   * 新增配置
    */
-  saveConfig: async (dto: SaveConfigDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/config/saveConfig", dto);
-    if (result.code == 0) {
-      return result.message;
-    }
-    throw new Error(result.message);
+  addConfig: async (dto: AddConfigDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/config/addConfig", dto);
+  },
+
+  /**
+   * 编辑配置
+   */
+  editConfig: async (dto: EditConfigDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/config/editConfig", dto);
   },
 
   /**
