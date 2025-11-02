@@ -1,32 +1,32 @@
 <template>
-  <div class="request-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
       <QueryPersistTip />
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="请求ID">
-              <el-input v-model="query.requestId" placeholder="请输入请求ID" clearable />
+              <el-input v-model="listForm.requestId" placeholder="请输入请求ID" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="中继服务器">
-              <el-select v-model="query.relayServerId" placeholder="请选择中继服务器" clearable filterable>
+              <el-select v-model="listForm.relayServerId" placeholder="请选择中继服务器" clearable filterable>
                 <el-option v-for="item in relayServerList" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="请求URL">
-              <el-input v-model="query.url" placeholder="请输入请求URL" clearable />
+              <el-input v-model="listForm.url" placeholder="请输入请求URL" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="loading" />
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -34,17 +34,17 @@
           <el-row>
             <el-col :span="5" :offset="1">
               <el-form-item label="请求方法">
-                <el-input v-model="query.method" placeholder="请输入请求方法" clearable />
+                <el-input v-model="listForm.method" placeholder="请输入请求方法" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="1">
               <el-form-item label="来源">
-                <el-input v-model="query.source" placeholder="请输入来源" clearable />
+                <el-input v-model="listForm.source" placeholder="请输入来源" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="1">
               <el-form-item label="状态">
-                <el-select v-model="query.status" placeholder="请选择状态" clearable>
+                <el-select v-model="listForm.status" placeholder="请选择状态" clearable>
                   <el-option label="正常" value="0" />
                   <el-option label="HTTP失败" value="1" />
                   <el-option label="业务失败" value="2" />
@@ -62,7 +62,7 @@
             </el-col>
             <el-col :span="5" :offset="1">
               <el-form-item label="是否重放">
-                <el-select v-model="query.replay" placeholder="请选择是否重放" clearable>
+                <el-select v-model="listForm.replay" placeholder="请选择是否重放" clearable>
                   <el-option label="全部" :value="0" />
                   <el-option label="是" :value="1" />
                 </el-select>
@@ -75,16 +75,16 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="primary" @click="loadRequestList" :disabled="loading">查询</el-button>
-      <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+      <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+      <el-button @click="resetList" :disabled="listLoading">重置</el-button>
     </div>
 
     <!-- 配置列表 -->
-    <div class="request-table">
-      <div v-if="!query.relayServerId" class="empty-state">
+    <div class="list-table">
+      <div v-if="!listForm.relayServerId" class="empty-state">
         <el-empty description="请先选择中继服务器" />
       </div>
-      <el-table v-else :data="list" stripe v-loading="loading" border>
+      <el-table v-else :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
           <template #default="scope">
             <el-tooltip content="点击复制" placement="top">
@@ -154,23 +154,23 @@
       </el-table>
 
       <!-- 分页 -->
-      <div v-if="query.relayServerId" class="pagination-container">
+      <div v-if="listForm.relayServerId" class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
-              loadRequestList();
+              listForm.pageSize = val;
+              loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
-              loadRequestList();
+              listForm.pageNum = val;
+              loadList();
             }
           "
           background
@@ -205,12 +205,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, markRaw } from "vue";
 import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/relay/RequestApi.ts";
 import RequestApi from "@/api/relay/RequestApi.ts";
 import { ElMessage } from "element-plus";
 import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
-import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import QueryPersistService from "@/service/QueryPersistService.ts";
@@ -223,13 +222,13 @@ import type { GetRelayServerListVo } from "@/api/relay/RelayServerApi";
 import RelayServerApi from "@/api/relay/RelayServerApi";
 import { Result } from "@/commons/entity/Result";
 
-const uiState = reactive({
-  isAdvancedSearch: false,
-});
-const router = useRouter();
-const queryPersistService = QueryPersistService;
+// 图标常量
+const ViewIcon = markRaw(View);
+const RightIcon = markRaw(Right);
+const SaveIcon = markRaw(DocumentCopy);
 
-const query = reactive<GetRequestListDto>({
+// 列表相关变量
+const listForm = reactive<GetRequestListDto>({
   relayServerId: null,
   requestId: null,
   method: null,
@@ -243,17 +242,20 @@ const query = reactive<GetRequestListDto>({
   pageSize: 10,
 });
 
-const list = ref<GetRequestListVo[]>([]);
-const total = ref(0);
-const relayServerList = ref<GetRelayServerListVo[]>([]); //中继通道列表
+const listData = ref<GetRequestListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
-// 加载状态
-const loading = ref(false);
+// UI状态变量
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
 
-// 使用markRaw包装图标组件
-const ViewIcon = markRaw(View);
-const RightIcon = markRaw(Right);
-const SaveIcon = markRaw(DocumentCopy);
+// 中继服务器列表
+const relayServerList = ref<GetRelayServerListVo[]>([]);
+
+// 时间范围
+const timeRange = ref<[Date, Date] | null>(null);
 
 // 模态框相关
 const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
@@ -268,8 +270,11 @@ const saveForm = reactive({
   url: "",
 });
 
-const timeRange = ref<[Date, Date] | null>(null);
+// 路由和服务
+const router = useRouter();
+const queryPersistService = QueryPersistService;
 
+// 格式化日期时间
 const formatDateTime = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -280,60 +285,7 @@ const formatDateTime = (date: Date): string => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const loadRequestList = async () => {
-  if (!query.relayServerId) {
-    ElMessage.warning("请先选择中继服务器");
-    return;
-  }
-
-  if (timeRange.value) {
-    query.startTime = formatDateTime(timeRange.value[0]);
-    query.endTime = formatDateTime(timeRange.value[1]);
-  } else {
-    query.startTime = null;
-    query.endTime = null;
-  }
-  loading.value = true;
-  try {
-    const res = await RequestApi.getRequestList(query);
-    list.value = res.data;
-    total.value = res.total;
-    queryPersistService.persistQuery("request-manager", query);
-    console.log(query);
-  } catch (e) {
-    ElMessage.error("Failed to load configuration list");
-    console.error("Failed to load configuration list", e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const resetQuery = () => {
-  query.requestId = null;
-  query.method = null;
-  query.url = null;
-  query.source = null;
-  query.status = null;
-  query.startTime = null;
-  query.endTime = null;
-  query.replay = 0;
-  timeRange.value = null;
-  query.pageNum = 1;
-  queryPersistService.clearQuery("request-manager");
-  loadRequestList();
-};
-
-const resetForm = () => {
-  // This function is no longer needed as the form is managed by RequestPreviewModal
-};
-
-//页面加载时自动加载数据
-onMounted(async () => {
-  queryPersistService.loadQuery("request-manager", query);
-  await loadRelayServerList();
-  await loadRequestList();
-});
-
+// 解析请求头
 const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
   if (!headers) {
     return [];
@@ -342,10 +294,8 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
     const parsed = JSON.parse(headers);
     if (typeof parsed === "object" && parsed !== null) {
       if (Array.isArray(parsed)) {
-        // 如果已经是HttpHeaderVo[]格式
         return parsed;
       }
-      // 如果是 {k:v, k2:v2} 格式
       return Object.entries(parsed).map(([k, v]) => ({ k, v: String(v) }));
     }
   } catch (e) {
@@ -354,7 +304,64 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
   return [];
 };
 
-//打开预览请求模态框
+// 加载列表
+const loadList = async () => {
+  if (!listForm.relayServerId) {
+    ElMessage.warning("请先选择中继服务器");
+    return;
+  }
+
+  if (timeRange.value) {
+    listForm.startTime = formatDateTime(timeRange.value[0]);
+    listForm.endTime = formatDateTime(timeRange.value[1]);
+  } else {
+    listForm.startTime = null;
+    listForm.endTime = null;
+  }
+  listLoading.value = true;
+  try {
+    const res = await RequestApi.getRequestList(listForm);
+    listData.value = res.data;
+    listTotal.value = res.total;
+    queryPersistService.persistQuery("request-manager", listForm);
+  } catch (e) {
+    ElMessage.error("Failed to load configuration list");
+    console.error("Failed to load configuration list", e);
+  } finally {
+    listLoading.value = false;
+  }
+};
+
+// 重置查询条件
+const resetList = () => {
+  listForm.requestId = null;
+  listForm.method = null;
+  listForm.url = null;
+  listForm.source = null;
+  listForm.status = null;
+  listForm.startTime = null;
+  listForm.endTime = null;
+  listForm.replay = 0;
+  timeRange.value = null;
+  listForm.pageNum = 1;
+  queryPersistService.clearQuery("request-manager");
+  loadList();
+};
+
+// 加载中继服务器列表
+const loadRelayServerList = async () => {
+  const res = await RelayServerApi.getRelayServerList({
+    pageNum: 1,
+    pageSize: 100000,
+    name: null,
+    forwardUrl: null,
+  });
+  if (Result.isSuccess(res)) {
+    relayServerList.value = res.data;
+  }
+};
+
+// 打开预览请求模态框
 const openViewModal = async (row: GetRequestListVo) => {
   try {
     //获取请求数据
@@ -386,15 +393,19 @@ const openViewModal = async (row: GetRequestListVo) => {
   }
 };
 
+// 保存请求
 const saveRequest = (row: GetRequestListVo | GetRequestDetailsVo) => {
   saveForm.requestId = row.id.toString();
   saveForm.url = row.url;
-  saveForm.name = row.url; // 默认使用URL作为名称
+  saveForm.name = row.url;
   saveDialogVisible.value = true;
 };
 
+// 确认保存请求
 const confirmSaveRequest = async () => {
-  if (!saveFormRef.value) return;
+  if (!saveFormRef.value) {
+    return;
+  }
 
   try {
     await saveFormRef.value.validate();
@@ -407,7 +418,7 @@ const confirmSaveRequest = async () => {
 
     ElMessage.success("保存成功");
     saveDialogVisible.value = false;
-    loadRequestList();
+    loadList();
   } catch (error) {
     console.error("保存失败:", error);
   } finally {
@@ -415,6 +426,7 @@ const confirmSaveRequest = async () => {
   }
 };
 
+// 复制文本
 const copyText = async (text: string) => {
   if (!text) {
     ElMessage.warning("内容为空，无法复制");
@@ -445,27 +457,23 @@ const copyText = async (text: string) => {
   }
 };
 
+// 跳转到重放页面
 const goToReplay = (row: GetRequestListVo) => {
   localStorage.setItem("originRequestId", row.requestId);
   router.push({ name: "replay-request-manager" });
   ElMessage.success("已跳转到重放请求页面");
 };
 
-const loadRelayServerList = async () => {
-  const res = await RelayServerApi.getRelayServerList({
-    pageNum: 1,
-    pageSize: 100000,
-    name: null,
-    forwardUrl: null,
-  });
-  if (Result.isSuccess(res)) {
-    relayServerList.value = res.data;
-  }
-};
+// 生命周期
+onMounted(async () => {
+  queryPersistService.loadQuery("request-manager", listForm);
+  await loadRelayServerList();
+  await loadList();
+});
 </script>
 
 <style scoped>
-.request-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
@@ -478,7 +486,7 @@ const loadRelayServerList = async () => {
   padding-top: 15px;
 }
 
-.request-table {
+.list-table {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;

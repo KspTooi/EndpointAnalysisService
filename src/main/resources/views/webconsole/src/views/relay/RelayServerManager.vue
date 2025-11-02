@@ -3,16 +3,16 @@
     <!-- 查询表单 -->
     <div class="query-form">
       <QueryPersistTip />
-      <el-form :model="listQuery">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="中继通道名称">
-              <el-input v-model="listQuery.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
+              <el-input v-model="listForm.name" placeholder="请输入中继通道名称" clearable style="width: 200px" />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="桥接目标URL">
-              <el-input v-model="listQuery.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
+              <el-input v-model="listForm.forwardUrl" placeholder="请输入桥接目标URL" clearable style="width: 200px" />
             </el-form-item>
           </el-col>
           <el-col :span="8" :offset="4" style="display: flex; justify-content: flex-end">
@@ -79,20 +79,20 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="listQuery.pageNum"
-          v-model:page-size="listQuery.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listTotal"
           @size-change="
             (val: number) => {
-              listQuery.pageSize = val;
+              listForm.pageSize = val;
               loadList();
             }
           "
           @current-change="
             (val: number) => {
-              listQuery.pageNum = val;
+              listForm.pageNum = val;
               loadList();
             }
           "
@@ -250,19 +250,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, watch } from "vue";
+import { reactive, ref, onMounted, watch, markRaw } from "vue";
 import RelayServerApi, { type GetRelayServerListDto } from "@/api/relay/RelayServerApi.ts";
-import type {
-  GetRelayServerListVo,
-  GetRelayServerDetailsVo,
-  RelayServerRouteRuleDto,
-  RelayServerRouteRuleVo,
-  GetRelayServerRouteStateVo,
-  ResetRelayServerBreakerDto,
-} from "@/api/relay/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/api/relay/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Edit, DocumentCopy, View, Delete, InfoFilled, CaretTop, CaretBottom } from "@element-plus/icons-vue";
-import { markRaw } from "vue";
+import { View, Delete, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import type { GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
@@ -270,172 +262,36 @@ import RouteRuleApi from "@/api/relay/RouteRuleApi.ts";
 import QueryPersistService from "@/service/QueryPersistService.ts";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
-// 使用markRaw包装图标组件
-const EditIcon = markRaw(Edit);
+// 图标常量
 const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 const CaretTopIcon = markRaw(CaretTop);
 const CaretBottomIcon = markRaw(CaretBottom);
 
-//列表内容
-const listQuery = reactive<GetRelayServerListDto>({
+// 列表相关变量
+const listForm = reactive<GetRelayServerListDto>({
   name: null,
   forwardUrl: null,
   pageNum: 1,
   pageSize: 10,
 });
 
-//列表
 const listData = ref<GetRelayServerListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const loadList = async () => {
-  listLoading.value = true;
-  try {
-    const res = await RelayServerApi.getRelayServerList(listQuery);
-    listData.value = res.data;
-    listTotal.value = res.total;
-    QueryPersistService.persistQuery("relay-server-manager", listQuery);
-  } catch (e) {
-    ElMessage.error("加载中继通道列表失败");
-  } finally {
-    listLoading.value = false;
-  }
-};
-
-const resetList = () => {
-  listQuery.name = null;
-  listQuery.forwardUrl = null;
-  listQuery.pageNum = 1;
-  listQuery.pageSize = 10;
-  loadList();
-  QueryPersistService.clearQuery("relay-server-manager");
-};
-
-const removeList = async (row: GetRelayServerListVo) => {
-  //无法删除一个正在运行中的中继通道
-  if (row.status === 2) {
-    ElMessage.error("无法删除一个正在运行中的中继通道");
-    return;
-  }
-
-  try {
-    await ElMessageBox.confirm("确定删除中继通道 [" + row.name + "] 吗？", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    });
-  } catch (error) {
-    return;
-  }
-
-  try {
-    await RelayServerApi.removeRelayServer(row.id.toString());
-    ElMessage.success("删除中继通道成功");
-    loadList();
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-//路由状态模态框
-const routeStateModalVisible = ref(false);
-const routeStateData = ref<GetRelayServerRouteStateVo[]>([]);
-const routeStateLoading = ref(false);
-const currentRelayServerId = ref<string>("");
-
-const showRouteStateModal = async (row: GetRelayServerListVo) => {
-  routeStateLoading.value = true;
-  currentRelayServerId.value = row.id.toString();
-
-  try {
-    const res = await RelayServerApi.getRelayServerRouteState(row.id.toString());
-    routeStateData.value = res;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-    return;
-  } finally {
-    routeStateLoading.value = false;
-  }
-
-  routeStateModalVisible.value = true;
-};
-
-const resetBreaker = async (row: GetRelayServerRouteStateVo) => {
-  try {
-    await RelayServerApi.resetRelayServerBreaker({
-      id: currentRelayServerId.value,
-      host: row.targetHost,
-      port: row.targetPort,
-      kind: 0,
-    });
-    ElMessage.success("复位熔断状态成功");
-    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
-    routeStateData.value = res;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-const resetAllBreaker = async () => {
-  try {
-    await RelayServerApi.resetRelayServerBreaker({
-      id: currentRelayServerId.value,
-      host: null,
-      port: null,
-      kind: 0,
-    });
-    ElMessage.success("复位全部熔断状态成功");
-    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
-    routeStateData.value = res;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-const breakHost = async (row: GetRelayServerRouteStateVo) => {
-  try {
-    await RelayServerApi.resetRelayServerBreaker({
-      id: currentRelayServerId.value,
-      host: row.targetHost,
-      port: row.targetPort,
-      kind: 1,
-    });
-    ElMessage.success("置为熔断成功");
-    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
-    routeStateData.value = res;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-const refreshRouteState = async () => {
-  routeStateLoading.value = true;
-
-  try {
-    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
-    routeStateData.value = res;
-    ElMessage.success("刷新成功");
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  } finally {
-    routeStateLoading.value = false;
-  }
-};
-
-//模态框内容
+// 模态框相关变量
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
-const modalMode = ref<"view" | "edit" | "add">("view"); //view:预览,edit:编辑,add:添加
-const modalRouteRuleData = ref<GetRouteRuleListVo[]>([]); //路由规则数据
+const modalMode = ref<"add" | "edit">("add");
+const modalRouteRuleData = ref<GetRouteRuleListVo[]>([]);
 const modalForm = reactive<GetRelayServerDetailsVo>({
   id: null,
   name: null,
   host: null,
   port: null,
-  forwardType: 0, //桥接目标类型 0:直接 1:路由
+  forwardType: 0,
   routeRules: [] as RelayServerRouteRuleVo[],
   forwardUrl: null,
   autoStart: null,
@@ -450,6 +306,12 @@ const modalForm = reactive<GetRelayServerDetailsVo>({
   bizSuccessCodeValue: null,
   createTime: null,
 });
+
+// 路由状态模态框相关变量
+const routeStateModalVisible = ref(false);
+const routeStateData = ref<GetRelayServerRouteStateVo[]>([]);
+const routeStateLoading = ref(false);
+const currentRelayServerId = ref<string>("");
 
 // 表单校验规则
 const modalRules = {
@@ -504,9 +366,9 @@ const modalRules = {
       validator: (rule: any, value: any, callback: any) => {
         if (modalForm.requestIdStrategy === 1 && !value) {
           callback(new Error("当请求ID策略为从请求头获取时，请求ID头名称不能为空"));
-        } else {
-          callback();
+          return;
         }
+        callback();
       },
       trigger: "blur",
     },
@@ -517,9 +379,9 @@ const modalRules = {
       validator: (rule: any, value: any, callback: any) => {
         if (modalForm.bizErrorStrategy === 1 && !value) {
           callback(new Error("当业务错误策略为业务错误码决定时，业务错误码字段不能为空"));
-        } else {
-          callback();
+          return;
         }
+        callback();
       },
       trigger: "blur",
     },
@@ -529,15 +391,67 @@ const modalRules = {
       validator: (rule: any, value: any, callback: any) => {
         if (modalForm.bizErrorStrategy === 1 && !value) {
           callback(new Error("当业务错误策略为业务错误码决定时，业务错误码值不能为空"));
-        } else {
-          callback();
+          return;
         }
+        callback();
       },
       trigger: "blur",
     },
   ],
 };
 
+// 加载列表
+const loadList = async () => {
+  listLoading.value = true;
+  try {
+    const res = await RelayServerApi.getRelayServerList(listForm);
+    listData.value = res.data;
+    listTotal.value = res.total;
+    QueryPersistService.persistQuery("relay-server-manager", listForm);
+  } catch (e) {
+    ElMessage.error("加载中继通道列表失败");
+  } finally {
+    listLoading.value = false;
+  }
+};
+
+// 重置查询条件
+const resetList = () => {
+  listForm.name = null;
+  listForm.forwardUrl = null;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  loadList();
+  QueryPersistService.clearQuery("relay-server-manager");
+};
+
+// 删除单条记录
+const removeList = async (row: GetRelayServerListVo) => {
+  if (row.status === 2) {
+    ElMessage.error("无法删除一个正在运行中的中继通道");
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm("确定删除中继通道 [" + row.name + "] 吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await RelayServerApi.removeRelayServer(row.id.toString());
+    ElMessage.success("删除中继通道成功");
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+// 打开模态框
 const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null) => {
   modalMode.value = mode;
   resetModal();
@@ -549,7 +463,6 @@ const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null)
     }
 
     try {
-      //获取请求数据
       const res = await RelayServerApi.getRelayServerDetails(row.id.toString());
       modalForm.id = res.id;
       modalForm.name = res.name;
@@ -576,7 +489,6 @@ const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null)
     }
   }
 
-  //加载路由规则数据
   const res = await RouteRuleApi.getRouteRuleList({
     pageNum: 1,
     pageSize: 100000,
@@ -589,6 +501,7 @@ const openModal = async (mode: "add" | "edit", row: GetRelayServerListVo | null)
   modalVisible.value = true;
 };
 
+// 重置模态框表单
 const resetModal = () => {
   modalForm.id = null;
   modalForm.name = null;
@@ -610,8 +523,8 @@ const resetModal = () => {
   modalForm.createTime = null;
 };
 
+// 提交模态框表单
 const submitModal = async () => {
-  //验证表单
   try {
     await modalFormRef.value?.validate();
   } catch (error) {
@@ -637,7 +550,6 @@ const submitModal = async () => {
         bizSuccessCodeValue: modalForm.bizSuccessCodeValue,
       });
       ElMessage.success("添加中继通道成功");
-      //新增需要重置表单
       resetModal();
     }
 
@@ -662,8 +574,6 @@ const submitModal = async () => {
       ElMessage.success("编辑中继通道成功");
     }
 
-    //modalVisible.value = false;
-
     loadList();
   } catch (error: any) {
     ElMessage.error(error.message);
@@ -671,6 +581,7 @@ const submitModal = async () => {
   }
 };
 
+// 启动中继服务器
 const startRelayServer = async (row: GetRelayServerListVo) => {
   try {
     await RelayServerApi.startRelayServer(row.id.toString());
@@ -681,6 +592,7 @@ const startRelayServer = async (row: GetRelayServerListVo) => {
   }
 };
 
+// 停止中继服务器
 const stopRelayServer = async (row: GetRelayServerListVo) => {
   try {
     await RelayServerApi.stopRelayServer(row.id.toString());
@@ -691,23 +603,107 @@ const stopRelayServer = async (row: GetRelayServerListVo) => {
   }
 };
 
+// 显示路由状态模态框
+const showRouteStateModal = async (row: GetRelayServerListVo) => {
+  routeStateLoading.value = true;
+  currentRelayServerId.value = row.id.toString();
+
+  try {
+    const res = await RelayServerApi.getRelayServerRouteState(row.id.toString());
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    routeStateLoading.value = false;
+  }
+
+  routeStateModalVisible.value = true;
+};
+
+// 复位熔断
+const resetBreaker = async (row: GetRelayServerRouteStateVo) => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: row.targetHost,
+      port: row.targetPort,
+      kind: 0,
+    });
+    ElMessage.success("复位熔断状态成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+// 复位所有熔断
+const resetAllBreaker = async () => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: null,
+      port: null,
+      kind: 0,
+    });
+    ElMessage.success("复位全部熔断状态成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+// 置为熔断
+const breakHost = async (row: GetRelayServerRouteStateVo) => {
+  try {
+    await RelayServerApi.resetRelayServerBreaker({
+      id: currentRelayServerId.value,
+      host: row.targetHost,
+      port: row.targetPort,
+      kind: 1,
+    });
+    ElMessage.success("置为熔断成功");
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+// 刷新路由状态
+const refreshRouteState = async () => {
+  routeStateLoading.value = true;
+
+  try {
+    const res = await RelayServerApi.getRelayServerRouteState(currentRelayServerId.value);
+    routeStateData.value = res;
+    ElMessage.success("刷新成功");
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  } finally {
+    routeStateLoading.value = false;
+  }
+};
+
+// 监听器
 watch(
   () => modalForm.forwardType,
   (newVal: number | null) => {
-    //如果桥接目标类型为直接，则清空路由规则
     if (newVal === 0) {
       modalForm.routeRules = [];
     }
 
-    //如果桥接目标类型为路由，则清空桥接目标URL
     if (newVal === 1) {
       modalForm.forwardUrl = null;
     }
   }
 );
 
+// 生命周期
 onMounted(async () => {
-  QueryPersistService.loadQuery("relay-server-manager", listQuery);
+  QueryPersistService.loadQuery("relay-server-manager", listForm);
   await loadList();
 });
 </script>

@@ -149,17 +149,17 @@
 <script setup lang="ts">
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
+import { reactive, ref, onMounted, markRaw } from "vue";
+import { Delete, View } from "@element-plus/icons-vue";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
 import RouteServerApi from "@/api/relay/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
-const uiState = reactive({
-  isAdvancedSearch: false,
-});
+// 图标常量
+const ViewIcon = markRaw(View);
+const DeleteIcon = markRaw(Delete);
 
-//列表内容
+// 列表相关变量
 const listForm = reactive<GetRouteServerListDto>({
   name: "",
   host: "",
@@ -175,6 +175,49 @@ const listSelected = ref<GetRouteServerListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
+// UI状态变量
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
+
+// 模态框相关变量
+const modalVisible = ref(false);
+const modalFormRef = ref<FormInstance>();
+const modalLoading = ref(false);
+const modalMode = ref<"add" | "edit">("add");
+const modalForm = reactive<GetRouteServerDetailsVo>({
+  id: "",
+  name: "",
+  host: "",
+  port: 0,
+  remark: "",
+  status: 0,
+  createTime: "",
+  updateTime: "",
+});
+
+// 表单校验规则
+const modalRules = {
+  name: [
+    { required: true, message: "请输入服务器名称", trigger: "blur" },
+    { max: 32, message: "服务器名称长度不能超过32个字符", trigger: "blur" },
+  ],
+  host: [
+    { required: true, message: "请输入服务器主机", trigger: "blur" },
+    { max: 32, message: "服务器主机长度不能超过32个字符", trigger: "blur" },
+  ],
+  remark: [{ max: 5000, message: "备注长度不能超过5000个字符", trigger: "blur" }],
+  port: [
+    { required: true, message: "请输入服务器端口", trigger: "blur" },
+    { type: "number", min: 1, max: 65535, message: "端口号必须在1-65535之间", trigger: "blur" },
+  ],
+  status: [
+    { required: true, message: "请选择服务器状态", trigger: "blur" },
+    { type: "number", min: 0, max: 1, message: "服务器状态只能在0或1之间", trigger: "blur" },
+  ],
+};
+
+// 加载列表
 const loadList = async () => {
   listLoading.value = true;
   const result = await RouteServerApi.getRouteServerList(listForm);
@@ -191,6 +234,7 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
+// 重置查询条件
 const resetList = () => {
   listForm.pageNum = 1;
   listForm.pageSize = 10;
@@ -202,6 +246,7 @@ const resetList = () => {
   loadList();
 };
 
+// 删除单条记录
 const removeList = async (id: string) => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
@@ -229,6 +274,7 @@ const removeList = async (id: string) => {
   await loadList();
 };
 
+// 批量删除
 const removeListBatch = async () => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
@@ -256,49 +302,11 @@ const removeListBatch = async () => {
   await loadList();
 };
 
-loadList();
-
-//模态框内容
-const modalVisible = ref(false);
-const modalFormRef = ref<FormInstance>();
-const modalLoading = ref(false);
-const modalMode = ref<"add" | "edit">("add"); //add:添加,edit:编辑
-const modalForm = reactive<GetRouteServerDetailsVo>({
-  id: "",
-  name: "",
-  host: "",
-  port: 0,
-  remark: "",
-  status: 0,
-  createTime: "",
-  updateTime: "",
-});
-
-const modalRules = {
-  name: [
-    { required: true, message: "请输入服务器名称", trigger: "blur" },
-    { max: 32, message: "服务器名称长度不能超过32个字符", trigger: "blur" },
-  ],
-  host: [
-    { required: true, message: "请输入服务器主机", trigger: "blur" },
-    { max: 32, message: "服务器主机长度不能超过32个字符", trigger: "blur" },
-  ],
-  remark: [{ max: 5000, message: "备注长度不能超过5000个字符", trigger: "blur" }],
-  port: [
-    { required: true, message: "请输入服务器端口", trigger: "blur" },
-    { type: "number", min: 1, max: 65535, message: "端口号必须在1-65535之间", trigger: "blur" },
-  ],
-  status: [
-    { required: true, message: "请选择服务器状态", trigger: "blur" },
-    { type: "number", min: 0, max: 1, message: "服务器状态只能在0或1之间", trigger: "blur" },
-  ],
-};
-
+// 打开模态框
 const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null) => {
   modalMode.value = mode;
   resetModal();
 
-  //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
     const ret = await RouteServerApi.getRouteServerDetails({ id: row.id });
 
@@ -322,6 +330,7 @@ const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null)
   modalVisible.value = true;
 };
 
+// 重置模态框表单
 const resetModal = () => {
   modalForm.id = "";
   modalForm.name = "";
@@ -331,8 +340,8 @@ const resetModal = () => {
   modalForm.status = 1;
 };
 
+// 提交模态框表单
 const submitModal = async () => {
-  //先校验表单
   try {
     await modalFormRef?.value?.validate();
   } catch (error) {
@@ -341,7 +350,6 @@ const submitModal = async () => {
 
   modalLoading.value = true;
 
-  //提交表单
   try {
     if (modalMode.value === "add") {
       await RouteServerApi.addRouteServer(modalForm);
@@ -360,9 +368,13 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  //modalVisible.value = false;
   await loadList();
 };
+
+// 生命周期
+onMounted(() => {
+  loadList();
+});
 </script>
 
 <style scoped>
