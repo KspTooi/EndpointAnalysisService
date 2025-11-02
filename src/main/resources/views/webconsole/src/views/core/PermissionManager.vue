@@ -1,17 +1,17 @@
 <template>
-  <div class="permission-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="权限代码">
-              <el-input v-model="query.code" placeholder="输入权限代码查询" clearable />
+              <el-input v-model="listForm.code" placeholder="输入权限代码查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="权限名称">
-              <el-input v-model="query.name" placeholder="输入权限名称查询" clearable />
+              <el-input v-model="listForm.name" placeholder="输入权限名称查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -19,8 +19,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -32,8 +32,8 @@
     </div>
 
     <!-- 权限列表 -->
-    <div class="permission-table">
-      <el-table :data="list" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column
           prop="code"
           label="权限代码"
@@ -77,7 +77,7 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removePermission(scope.row)" :icon="DeleteIcon" :disabled="scope.row.isSystem === 1"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem === 1"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -85,20 +85,20 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
+              listForm.pageSize = val;
               loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
+              listForm.pageNum = val;
               loadList();
             }
           "
@@ -186,16 +186,16 @@ import { Result } from "@/commons/entity/Result.ts";
 
 const modalMode = ref<"add" | "edit">("add");
 
-const query = reactive<GetPermissionListDto>({
+const listForm = reactive<GetPermissionListDto>({
   code: null,
   name: null,
   pageNum: 1,
   pageSize: 10,
 });
-const list = ref<GetPermissionListVo[]>([]);
-const total = ref(0);
+const listData = ref<GetPermissionListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
-//用户表单数据
 const modalForm = reactive<GetPermissionDetailsVo>({
   code: "",
   createTime: "",
@@ -206,9 +206,6 @@ const modalForm = reactive<GetPermissionDetailsVo>({
   sortOrder: 0,
   updateTime: "",
 });
-
-// 加载状态
-const loading = ref(false);
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -237,24 +234,26 @@ const rules = {
 };
 
 const loadList = async () => {
-  loading.value = true;
-  try {
-    const res = await AdminPermissionApi.getPermissionList(query);
-    list.value = res.data;
-    total.value = res.total;
-  } catch (e) {
-    ElMessage.error("加载权限列表失败");
-    console.error("加载权限列表失败", e);
-  } finally {
-    loading.value = false;
+  listLoading.value = true;
+  const result = await AdminPermissionApi.getPermissionList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-// 重置查询条件
-const resetQuery = () => {
-  query.code = null;
-  query.name = null;
-  query.pageNum = 1;
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.code = null;
+  listForm.name = null;
   loadList();
 };
 
@@ -274,10 +273,7 @@ const resetModal = () => {
   }
 };
 
-//页面加载时自动加载数据
-onMounted(() => {
-  loadList();
-});
+loadList();
 
 //打开模态框
 const openModal = async (mode: "add" | "edit", row: GetPermissionListVo | null) => {
@@ -363,42 +359,36 @@ const submitModal = async () => {
   loadList();
 };
 
-//删除权限
-const removePermission = async (row: GetPermissionListVo) => {
+const removeList = async (id: string) => {
   try {
-    await ElMessageBox.confirm(`确定要删除权限 ${row.name} 吗？`, "警告", {
+    await ElMessageBox.confirm("确定删除该权限吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-
-    await AdminPermissionApi.removePermission({ id: row.id });
-    ElMessage.success("删除权限成功");
-    loadList();
   } catch (error) {
-    if (error !== "cancel") {
-      const errorMsg = error instanceof Error ? error.message : "删除失败";
-      ElMessage.error(errorMsg);
-    }
+    return;
+  }
+
+  try {
+    await AdminPermissionApi.removePermission({ id });
+    ElMessage.success("删除成功");
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
   }
 };
 </script>
 
 <style scoped>
-.permission-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.permission-table {
+.list-table {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;
@@ -409,5 +399,17 @@ const removePermission = async (row: GetPermissionListVo) => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
+}
+
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
+}
+
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

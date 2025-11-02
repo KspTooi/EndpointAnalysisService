@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-manager-container">
+  <div class="list-container">
     <!-- 说明文档 -->
     <el-alert type="info" :closable="false" style="margin-bottom: 20px">
       <template #title>
@@ -20,21 +20,21 @@
     <!-- 查询表单 -->
     <div class="query-form">
       <QueryPersistTip />
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="菜单名称">
-              <el-input v-model="query.name" placeholder="请输入菜单名称" clearable />
+              <el-input v-model="listForm.name" placeholder="请输入菜单名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="所需权限">
-              <el-input v-model="query.permission" placeholder="请输入所需权限" clearable />
+              <el-input v-model="listForm.permission" placeholder="请输入所需权限" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="菜单类型">
-              <el-select v-model="query.menuKind" placeholder="请选择菜单类型" clearable>
+              <el-select v-model="listForm.menuKind" placeholder="请选择菜单类型" clearable>
                 <el-option label="目录" value="0" />
                 <el-option label="菜单" value="1" />
                 <el-option label="按钮" value="2" />
@@ -43,8 +43,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -56,8 +56,8 @@
     </div>
 
     <!-- 列表 -->
-    <div class="menu-tree-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
+    <div class="list-table">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
         <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
             <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
@@ -204,15 +204,14 @@ import { EventHolder } from "@/store/EventHolder";
 import QueryPersistService from "@/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
-//列表内容
-const query = reactive<GetMenuTreeDto>({
+const listForm = reactive<GetMenuTreeDto>({
   name: "",
   menuKind: null,
   permission: "",
 });
 
-const list = ref<GetMenuTreeVo[]>([]);
-const loading = ref(false);
+const listData = ref<GetMenuTreeVo[]>([]);
+const listLoading = ref(false);
 
 // 用于父级选择的完整菜单树
 const fullMenuTree = ref<GetMenuTreeVo[]>([]);
@@ -283,25 +282,25 @@ const loadFullMenuTree = async () => {
 };
 
 const loadList = async () => {
-  loading.value = true;
-  const result = await MenuApi.getMenuTree(query);
+  listLoading.value = true;
+  const result = await MenuApi.getMenuTree(listForm);
 
   if (Result.isSuccess(result)) {
-    list.value = result.data;
-    QueryPersistService.persistQuery("menu-manager", query);
+    listData.value = result.data;
+    QueryPersistService.persistQuery("menu-manager", listForm);
   }
 
   if (Result.isError(result)) {
     ElMessage.error(result.message);
   }
 
-  loading.value = false;
+  listLoading.value = false;
 };
 
 const resetList = () => {
-  query.name = "";
-  query.menuKind = null;
-  query.permission = "";
+  listForm.name = "";
+  listForm.menuKind = null;
+  listForm.permission = "";
   QueryPersistService.clearQuery("menu-manager");
   loadList();
 };
@@ -329,7 +328,7 @@ const removeList = async (id: string) => {
 };
 
 onMounted(async () => {
-  QueryPersistService.loadQuery("menu-manager", query);
+  QueryPersistService.loadQuery("menu-manager", listForm);
   await loadList();
   await loadFullMenuTree();
 });
@@ -528,23 +527,23 @@ watch(
 </script>
 
 <style scoped>
-.menu-manager-container {
+.list-container {
   padding: 0 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
 .action-buttons {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-.menu-tree-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
 }
 
 .pagination-container {

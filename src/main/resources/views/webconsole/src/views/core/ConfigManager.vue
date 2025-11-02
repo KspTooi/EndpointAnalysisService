@@ -1,17 +1,17 @@
 <template>
-  <div class="config-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="关键字">
-              <el-input v-model="query.keyword" placeholder="配置键/值/描述" clearable />
+              <el-input v-model="listForm.keyword" placeholder="配置键/值/描述" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="所有者名称">
-              <el-input v-model="query.userName" placeholder="输入所有者名称查询" clearable />
+              <el-input v-model="listForm.userName" placeholder="输入所有者名称查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -19,8 +19,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadConfigList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -32,8 +32,8 @@
     </div>
 
     <!-- 配置列表 -->
-    <div class="config-table">
-      <el-table :data="list" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column
           prop="configKey"
           label="配置键"
@@ -71,7 +71,7 @@
         <el-table-column label="操作" fixed="right" min-width="140">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeConfig(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,21 +79,21 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
-              loadConfigList();
+              listForm.pageSize = val;
+              loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
-              loadConfigList();
+              listForm.pageNum = val;
+              loadList();
             }
           "
           background
@@ -110,7 +110,7 @@
       :close-on-click-modal="false"
       @close="
         resetModal();
-        loadConfigList();
+        loadList();
       "
     >
       <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">提示：新建配置项时，所有者默认为当前用户，无法指定为他人。</div>
@@ -152,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
@@ -162,18 +162,16 @@ import { Result } from "@/commons/entity/Result.ts";
 
 const modalMode = ref<"add" | "edit">("add");
 
-const query = reactive<GetConfigListDto>({
+const listForm = reactive<GetConfigListDto>({
   keyword: null,
   userName: null,
   pageNum: 1,
   pageSize: 10,
 });
 
-const list = ref<GetConfigListVo[]>([]);
-const total = ref(0);
-
-// 加载状态
-const loading = ref(false);
+const listData = ref<GetConfigListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -209,27 +207,28 @@ const rules = {
   description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
 };
 
-const loadConfigList = async () => {
-  loading.value = true;
-  try {
-    const res = await ConfigApi.getConfigList(query);
-    list.value = res.data;
-    total.value = res.total;
+const loadList = async () => {
+  listLoading.value = true;
+  const result = await ConfigApi.getConfigList(listForm);
 
-    console.log(list.value);
-  } catch (e) {
-    ElMessage.error("加载配置列表失败");
-    console.error("加载配置列表失败", e);
-  } finally {
-    loading.value = false;
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-const resetQuery = () => {
-  query.keyword = null;
-  query.userName = null;
-  query.pageNum = 1;
-  loadConfigList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.keyword = null;
+  listForm.userName = null;
+  loadList();
 };
 
 const resetModal = () => {
@@ -247,10 +246,7 @@ const resetModal = () => {
   }
 };
 
-//页面加载时自动加载数据
-onMounted(() => {
-  loadConfigList();
-});
+loadList();
 
 const openModal = async (mode: "add" | "edit", row: GetConfigListVo | null) => {
   modalMode.value = mode;
@@ -328,44 +324,39 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadConfigList();
+  loadList();
 };
 
-const removeConfig = async (row: GetConfigListVo) => {
+const removeList = async (id: string) => {
   try {
-    await ElMessageBox.confirm(`确定要删除配置 ${row.configKey} 吗？`, "警告", {
+    await ElMessageBox.confirm("确定删除该配置吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-
-    await ConfigApi.removeConfig({ id: row.id });
-    ElMessage.success("删除配置成功");
-    loadConfigList();
   } catch (error) {
-    if (error !== "cancel") {
-      const errorMsg = error instanceof Error ? error.message : "删除失败";
-      ElMessage.error(errorMsg);
-    }
+    return;
+  }
+
+  try {
+    await ConfigApi.removeConfig({ id });
+    ElMessage.success("删除成功");
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
   }
 };
 </script>
 
 <style scoped>
-.config-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.config-table {
+.list-table {
   margin-bottom: 20px;
   width: 100%;
   overflow-x: auto;
@@ -376,5 +367,17 @@ const removeConfig = async (row: GetConfigListVo) => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
+}
+
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
+}
+
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

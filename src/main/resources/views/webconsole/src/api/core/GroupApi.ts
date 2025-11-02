@@ -49,7 +49,7 @@ export interface AddGroupDto {
   description?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
   sortOrder: number; // 排序号
-  permissionIds?: number[]; // 权限ID列表
+  permissionIds?: string[]; // 权限ID列表
 }
 
 export interface EditGroupDto {
@@ -59,7 +59,7 @@ export interface EditGroupDto {
   description?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
   sortOrder: number; // 排序号
-  permissionIds?: number[]; // 权限ID列表
+  permissionIds?: string[]; // 权限ID列表
 }
 
 export default {

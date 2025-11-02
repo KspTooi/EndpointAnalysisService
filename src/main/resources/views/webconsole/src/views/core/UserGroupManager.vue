@@ -1,11 +1,11 @@
 <template>
-  <div class="group-manager-container">
+  <div class="list-container">
     <div class="query-form">
-      <el-form :model="queryForm">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="组名称" label-for="query-keyword">
-              <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
+              <el-input v-model="listForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -16,8 +16,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadGroupList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -28,8 +28,8 @@
       <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
     </div>
 
-    <div class="group-table">
-      <el-table :data="groupList" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="code" label="组标识" min-width="120" />
         <el-table-column prop="name" label="组名称" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
@@ -52,32 +52,30 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination-container">
         <el-pagination
-          v-if="!isMobile"
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          background
-        />
-        <el-pagination
-          v-else
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-          :pager-count="5"
-          size="small"
+          :total="listTotal"
+          @size-change="
+            (val: number) => {
+              listForm.pageSize = val;
+              loadList();
+            }
+          "
+          @current-change="
+            (val: number) => {
+              listForm.pageNum = val;
+              loadList();
+            }
+          "
           background
         />
       </div>
@@ -91,8 +89,10 @@
       class="modal-centered"
       :close-on-click-modal="false"
       @close="
-        resetModal();
-        loadGroupList();
+        (async () => {
+          await resetModal();
+          loadList();
+        })()
       "
     >
       <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
@@ -144,7 +144,7 @@
                 <div class="permission-list">
                   <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
                     <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
-                      <el-checkbox :value="Number(permission.id)">
+                      <el-checkbox :value="permission.id">
                         <div class="permission-info">
                           <span class="permission-name">{{ permission.name }}</span>
                           <span class="permission-code">{{ permission.code }}</span>
@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { ref, reactive, markRaw, computed } from "vue";
 import { Edit, Delete, Search } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
@@ -193,24 +193,16 @@ import { Result } from "@/commons/entity/Result.ts";
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 检测是否为移动设备
-const isMobile = ref(false);
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
-
-// 查询表单
-const queryForm = reactive<GetGroupListDto>({
+const listForm = reactive<GetGroupListDto>({
   pageNum: 1,
   pageSize: 10,
   keyword: "",
   status: undefined,
 });
 
-// 用户组列表
-const groupList = ref<GetGroupListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetGroupListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 // 模态框相关
 const modalVisible = ref(false);
@@ -266,47 +258,36 @@ const filteredPermissions = computed(() => {
   return permissionList.value.filter((permission) => permission.name.toLowerCase().includes(search) || permission.code.toLowerCase().includes(search));
 });
 
-// 加载用户组列表数据
-const loadGroupList = async () => {
-  if (loading.value) {
+const loadList = async () => {
+  if (listLoading.value) {
     return;
   }
 
-  try {
-    loading.value = true;
-    const vos = await AdminGroupApi.getGroupList(queryForm);
-    groupList.value = vos.data;
-    total.value = Number(vos.total);
-  } catch (error) {
-    ElMessage.error("加载访问组列表失败");
-    console.error("加载访问组列表失败", error);
-  } finally {
-    loading.value = false;
+  listLoading.value = true;
+  const result = await AdminGroupApi.getGroupList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-// 重置查询条件
-const resetQuery = () => {
-  queryForm.keyword = "";
-  queryForm.status = undefined;
-  queryForm.pageNum = 1;
-  loadGroupList();
-};
-
-// 处理每页大小变化
-const handleSizeChange = (val: number) => {
-  queryForm.pageSize = val;
-  loadGroupList();
-};
-
-// 处理页码变化
-const handleCurrentChange = (val: number) => {
-  queryForm.pageNum = val;
-  loadGroupList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.keyword = "";
+  listForm.status = undefined;
+  loadList();
 };
 
 // 重置表单
-const resetModal = () => {
+const resetModal = async () => {
   modalForm.id = "";
   modalForm.code = "";
   modalForm.name = "";
@@ -318,11 +299,26 @@ const resetModal = () => {
   // 重置权限搜索
   permissionSearch.value = "";
 
-  // 重置权限列表
-  permissionList.value = [];
-
   // 重置选中的权限ID
   selectedPermissionIds.value = [];
+
+  // 如果是新增模式，总是加载权限列表
+  if (modalMode.value === "add") {
+    try {
+      const permissions = await AdminPermissionApi.getPermissionDefinition();
+      permissionList.value = permissions.map((p) => ({
+        id: p.id,
+        code: p.code,
+        name: p.name,
+        has: 0,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  if (modalMode.value !== "add") {
+    permissionList.value = [];
+  }
 
   // 重置表单验证状态
   if (modalFormRef.value) {
@@ -333,7 +329,7 @@ const resetModal = () => {
 // 打开模态框
 const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null) => {
   modalMode.value = mode;
-  resetModal();
+  await resetModal();
 
   //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
@@ -350,27 +346,14 @@ const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null) => {
       modalForm.permissions = ret.permissions || [];
 
       permissionList.value = ret.permissions || [];
-      selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => Number(p.id)) : [];
+      selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => p.id) : [];
     } catch (error: any) {
       ElMessage.error(error.message || "获取访问组详情失败");
       return;
     }
-  } else {
+  }
+  if (mode !== "edit" || !row) {
     isSystemGroup.value = false;
-    try {
-      // 获取所有权限节点
-      const permissions = await AdminPermissionApi.getPermissionDefinition();
-
-      permissionList.value = permissions.map((p) => ({
-        id: p.id,
-        code: p.code,
-        name: p.name,
-        has: 0,
-      }));
-    } catch (error) {
-      console.log(error);
-      ElMessage.error("获取权限节点列表失败");
-    }
   }
 
   modalVisible.value = true;
@@ -401,7 +384,7 @@ const submitModal = async () => {
       const result = await AdminGroupApi.addGroup(addDto);
       if (Result.isSuccess(result)) {
         ElMessage.success("操作成功");
-        resetModal();
+        await resetModal();
       }
       if (Result.isError(result)) {
         ElMessage.error(result.message);
@@ -435,57 +418,60 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadGroupList();
+  loadList();
 };
 
-// 处理删除用户组
-const handleDelete = (row: GetGroupListVo) => {
-  ElMessageBox.confirm(`确定要删除访问组 ${row.name} 吗？`, "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      try {
-        const params: CommonIdDto = { id: row.id };
-        await AdminGroupApi.removeGroup(params);
-        ElMessage.success("删除访问组成功");
-        loadGroupList();
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "删除失败";
-        ElMessage.error(errorMsg);
-      }
-    })
-    .catch(() => {
-      // 用户取消删除操作
-    });
-};
+const selectedPermissionIds = ref<string[]>([]);
 
-const selectedPermissionIds = ref<number[]>([]);
-
-// 全选权限节点
 const selectAllPermissions = () => {
-  selectedPermissionIds.value = filteredPermissions.value.map((p) => Number(p.id));
+  selectedPermissionIds.value = filteredPermissions.value.map((p) => p.id);
 };
 
-// 取消全选权限节点
 const deselectAllPermissions = () => {
   selectedPermissionIds.value = [];
 };
 
-// 页面加载和窗口大小变化时检测设备类型
-onMounted(() => {
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-  loadGroupList();
-});
+const removeList = async (id: string) => {
+  try {
+    await ElMessageBox.confirm("确定删除该访问组吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await AdminGroupApi.removeGroup({ id });
+    ElMessage.success("删除成功");
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+loadList();
 </script>
 
 <style scoped>
-.group-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
+}
+
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -495,32 +481,12 @@ onMounted(() => {
   padding-top: 15px;
 }
 
-.group-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .pagination-container {
-    justify-content: flex-end;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-/* 两列布局样式 */
 .form-two-columns {
   display: flex;
   flex-direction: row;
@@ -587,22 +553,6 @@ onMounted(() => {
 :deep(.el-checkbox__label) {
   display: flex;
   align-items: flex-start;
-}
-
-/* 响应式处理 */
-@media (max-width: 768px) {
-  .form-two-columns {
-    flex-direction: column;
-  }
-
-  .form-left-column,
-  .form-right-column {
-    width: 100%;
-  }
-
-  .permission-list {
-    max-height: 200px;
-  }
 }
 
 .permission-select-buttons {

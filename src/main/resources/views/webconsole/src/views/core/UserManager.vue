@@ -1,16 +1,16 @@
 <template>
-  <div class="user-manager-container">
+  <div class="list-container">
     <div class="query-form">
-      <el-form :model="queryForm">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="用户名">
-              <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable />
+              <el-input v-model="listForm.username" placeholder="输入用户名查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="状态">
-              <el-select v-model="queryForm.status" placeholder="选择状态" clearable>
+              <el-select v-model="listForm.status" placeholder="选择状态" clearable>
                 <el-option label="正常" :value="0" />
                 <el-option label="封禁" :value="1" />
               </el-select>
@@ -21,8 +21,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadUserList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -33,8 +33,8 @@
       <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
     </div>
 
-    <div class="user-table">
-      <el-table :data="userList" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="nickname" label="昵称" min-width="150" />
         <el-table-column prop="email" label="邮箱" min-width="160" />
@@ -50,34 +50,30 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination-container">
-        <!-- 桌面端分页 -->
         <el-pagination
-          v-if="!isMobile"
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          background
-        />
-        <!-- 移动端分页 -->
-        <el-pagination
-          v-else
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-          :pager-count="5"
-          small
+          :total="listTotal"
+          @size-change="
+            (val: number) => {
+              listForm.pageSize = val;
+              loadList();
+            }
+          "
+          @current-change="
+            (val: number) => {
+              listForm.pageNum = val;
+              loadList();
+            }
+          "
           background
         />
       </div>
@@ -92,7 +88,7 @@
       :close-on-click-modal="false"
       @close="
         resetModal();
-        loadUserList();
+        loadList();
       "
     >
       <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="userFormRules" label-width="100px" :validate-on-rule-change="false">
@@ -134,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { ref, reactive, onMounted, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import Http from "@/commons/Http.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -148,24 +144,17 @@ import GroupApi from "@/api/core/GroupApi.ts";
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 检测是否为移动设备
-const isMobile = ref(false);
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
-
-// 查询表单
-const queryForm = reactive<GetUserListDto>({
+//列表内容
+const listForm = reactive<GetUserListDto>({
   pageNum: 1,
   pageSize: 10,
   username: "",
   status: null,
 });
 
-// 用户列表
-const userList = ref<GetUserListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetUserListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 // 模态框相关
 const modalVisible = ref(false);
@@ -225,39 +214,28 @@ const userFormRules = {
   ],
 };
 
-// 加载用户列表数据
-const loadUserList = async () => {
-  try {
-    loading.value = true;
-    let vos = await AdminUserApi.getUserList(queryForm);
-    userList.value = vos.data;
-    total.value = Number(vos.total);
-  } catch (error) {
-    ElMessage.error("加载用户列表失败");
-    console.error("加载用户列表失败", error);
-  } finally {
-    loading.value = false;
+const loadList = async () => {
+  listLoading.value = true;
+  const result = await AdminUserApi.getUserList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-// 重置查询条件
-const resetQuery = () => {
-  queryForm.username = "";
-  queryForm.status = null;
-  queryForm.pageNum = 1;
-  loadUserList();
-};
-
-// 处理每页大小变化
-const handleSizeChange = (val: number) => {
-  queryForm.pageSize = val;
-  loadUserList();
-};
-
-// 处理页码变化
-const handleCurrentChange = (val: number) => {
-  queryForm.pageNum = val;
-  loadUserList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.username = "";
+  listForm.status = null;
+  loadList();
 };
 
 // 重置表单
@@ -283,27 +261,24 @@ const openModal = async (mode: "add" | "edit", row: GetUserListVo | null) => {
 
   //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
-    loading.value = true;
     try {
-      const userDetails: GetUserDetailsVo = await AdminUserApi.getUserDetails({ id: row.id });
+      const ret = await AdminUserApi.getUserDetails({ id: row.id });
 
-      modalForm.id = userDetails.id;
-      modalForm.username = userDetails.username;
-      modalForm.nickname = userDetails.nickname || "";
-      modalForm.email = userDetails.email || "";
-      modalForm.status = userDetails.status;
-      modalForm.groups = userDetails.groups || [];
+      modalForm.id = ret.id;
+      modalForm.username = ret.username;
+      modalForm.nickname = ret.nickname || "";
+      modalForm.email = ret.email || "";
+      modalForm.status = ret.status;
+      modalForm.groups = ret.groups || [];
 
-      groupOptions.value = userDetails.groups || [];
-      selectedGroupIds.value = userDetails.groups ? userDetails.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
-    } catch (error) {
-      ElMessage.error("获取用户详情失败");
-      console.error("获取用户详情失败", error);
+      groupOptions.value = ret.groups || [];
+      selectedGroupIds.value = ret.groups ? ret.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
+    } catch (error: any) {
+      ElMessage.error(error.message);
       return;
-    } finally {
-      loading.value = false;
     }
-  } else {
+  }
+  if (mode !== "edit" || !row) {
     // 新增模式，获取用户组列表
     const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
     groupOptions.value = [];
@@ -383,48 +358,50 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  loadUserList();
+  await loadList();
 };
 
-// 处理删除用户
-const handleDelete = (row: GetUserListVo) => {
-  ElMessageBox.confirm(`确定要删除用户 ${row.username} 吗？`, "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      try {
-        const params: CommonIdDto = { id: row.id };
-        await Http.postEntity<string>("/user/removeUser", params);
-        ElMessage.success("删除用户成功");
-        loadUserList(); // 重新加载列表
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "删除失败";
-        ElMessage.error(errorMsg);
-      }
-    })
-    .catch(() => {
-      // 用户取消删除操作
+const removeList = async (id: string) => {
+  try {
+    await ElMessageBox.confirm("确定删除该用户吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await AdminUserApi.removeUser({ id });
+    ElMessage.success("删除成功");
+    loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
 };
 
-// 页面加载和窗口大小变化时检测设备类型
-onMounted(() => {
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-  loadUserList();
-
-  // 不再需要模拟数据，用户组选项将在编辑时从详情接口获取
-  // TODO: 如果需要在新增时也能选择用户组，需要独立获取用户组列表的逻辑
-});
+loadList();
 </script>
 
 <style scoped>
-.user-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
+}
+
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -434,34 +411,9 @@ onMounted(() => {
   padding-top: 15px;
 }
 
-.user-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .pagination-container {
-    justify-content: flex-end;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.form-tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="endpoint-manager-container">
+  <div class="list-container">
     <!-- 说明文档 -->
     <el-alert type="info" :closable="false" style="margin-bottom: 20px; padding: 0 8px 4px 8px" size="small">
       <template #title>
@@ -24,24 +24,24 @@
 
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <QueryPersistTip />
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="端点名称">
-              <el-input v-model="query.name" placeholder="请输入端点名称" clearable />
+              <el-input v-model="listForm.name" placeholder="请输入端点名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="端点路径">
-              <el-input v-model="query.path" placeholder="请输入端点路径" clearable />
+              <el-input v-model="listForm.path" placeholder="请输入端点路径" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1"> </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -54,8 +54,8 @@
     </div>
 
     <!-- 列表 -->
-    <div class="endpoint-tree-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
+    <div class="list-table">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
         <el-table-column label="端点名称" prop="name" />
         <el-table-column label="端点路径" prop="path" show-overflow-tooltip />
         <el-table-column label="所需权限" show-overflow-tooltip>
@@ -381,14 +381,13 @@ import QueryPersistService from "@/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
-//列表内容
-const query = reactive<GetEndpointTreeDto>({
+const listForm = reactive<GetEndpointTreeDto>({
   name: "",
   path: "",
 });
 
-const list = ref<GetEndpointTreeVo[]>([]);
-const loading = ref(false);
+const listData = ref<GetEndpointTreeVo[]>([]);
+const listLoading = ref(false);
 const simpleHelpVisible = ref(false);
 // 用于父级选择的完整端点树
 const fullEndpointTree = ref<GetEndpointTreeVo[]>([]);
@@ -433,24 +432,24 @@ const loadFullEndpointTree = async () => {
 };
 
 const loadList = async () => {
-  loading.value = true;
-  const result = await EndpointApi.getEndpointTree(query);
+  listLoading.value = true;
+  const result = await EndpointApi.getEndpointTree(listForm);
 
   if (Result.isSuccess(result)) {
-    list.value = result.data;
-    QueryPersistService.persistQuery("endpoint-manager", query);
+    listData.value = result.data;
+    QueryPersistService.persistQuery("endpoint-manager", listForm);
   }
 
   if (Result.isError(result)) {
     ElMessage.error(result.message);
   }
 
-  loading.value = false;
+  listLoading.value = false;
 };
 
 const resetList = () => {
-  query.name = "";
-  query.path = "";
+  listForm.name = "";
+  listForm.path = "";
   QueryPersistService.clearQuery("endpoint-manager");
   loadList();
 };
@@ -511,7 +510,7 @@ const clearEndpointCache = async () => {
 };
 
 onMounted(async () => {
-  QueryPersistService.loadQuery("endpoint-manager", query);
+  QueryPersistService.loadQuery("endpoint-manager", listForm);
   await loadList();
   await loadFullEndpointTree();
 });
@@ -643,23 +642,23 @@ const submitModal = async () => {
 </script>
 
 <style scoped>
-.endpoint-manager-container {
+.list-container {
   padding: 0 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
 .action-buttons {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-.endpoint-tree-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
 }
 
 .help-content {

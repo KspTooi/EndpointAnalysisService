@@ -1,12 +1,12 @@
 <template>
-  <div class="team-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="团队名称">
-              <el-input v-model="query.name" placeholder="请输入团队名称" clearable />
+              <el-input v-model="listForm.name" placeholder="请输入团队名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -17,8 +17,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -30,8 +30,8 @@
     </div>
 
     <!-- 列表 -->
-    <div class="company-table">
-      <el-table :data="list" v-loading="loading" border row-key="id">
+    <div class="list-table">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id">
         <el-table-column label="团队名称" prop="name" show-overflow-tooltip />
         <el-table-column label="团队描述" prop="description" show-overflow-tooltip />
         <el-table-column label="创始人" prop="founderName" width="120" />
@@ -54,13 +54,21 @@
     <!-- 分页 -->
     <div class="pagination-container">
       <el-pagination
-        v-model:current-page="query.pageNum"
-        v-model:page-size="query.pageSize"
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="loadList"
-        @current-change="loadList"
+        :total="listTotal"
+        @size-change="
+          () => {
+            loadList();
+          }
+        "
+        @current-change="
+          () => {
+            loadList();
+          }
+        "
       />
     </div>
 
@@ -101,36 +109,36 @@ import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton } from "@element-plus/icons-vue";
 
-// 列表内容
-const query = reactive<GetCurrentUserCompanyListDto>({
+const listForm = reactive<GetCurrentUserCompanyListDto>({
   name: "",
   pageNum: 1,
   pageSize: 10,
 });
 
-const list = ref<GetCurrentUserCompanyListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetCurrentUserCompanyListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 const loadList = async () => {
-  loading.value = true;
-  try {
-    const result = await CompanyApi.getCurrentUserCompanyList(query);
-    if (Result.isSuccess(result)) {
-      list.value = result.data;
-      total.value = result.total;
-    }
-    if (Result.isError(result)) {
-      ElMessage.error(result.message);
-    }
-  } finally {
-    loading.value = false;
+  listLoading.value = true;
+  const result = await CompanyApi.getCurrentUserCompanyList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
 const resetList = () => {
-  query.name = "";
-  query.pageNum = 1;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.name = "";
   loadList();
 };
 
@@ -275,23 +283,23 @@ const submitModal = async () => {
 </script>
 
 <style scoped>
-.team-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
 .action-buttons {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-.team-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
 }
 
 .pagination-container {
