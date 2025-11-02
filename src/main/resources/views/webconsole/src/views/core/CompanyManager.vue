@@ -26,7 +26,7 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="openModal('add')">创建团队</el-button>
+      <el-button type="success" @click="openModal('add')">创建新团队</el-button>
     </div>
 
     <!-- 列表 -->
@@ -39,10 +39,12 @@
         <el-table-column label="成员数量" prop="memberCount" width="100" align="center" />
         <el-table-column label="创建时间" prop="createTime" width="180" />
         <el-table-column label="更新时间" prop="updateTime" width="180" />
-        <el-table-column label="操作" fixed="right" width="280">
+        <el-table-column label="操作" fixed="right" width="320">
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 2px; width: 100%">
+              <el-button v-if="scope.row.isActive !== 1" link type="success" size="small" @click="activateCompany(scope.row.id)" :icon="Refresh">激活</el-button>
               <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">编辑</el-button>
+              <el-button v-if="scope.row.isCeo === 1" link type="danger" size="small" @click="openResignCeoModal(scope.row)" :icon="SwitchButton">辞去CEO职位</el-button>
               <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton">退出</el-button>
               <!-- <el-button link type="danger" size="small" @click="removeCompany(scope.row.id)" :icon="DeleteIcon">删除</el-button> -->
             </div>
@@ -98,16 +100,21 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 成员选择模态框 -->
+    <CompanyMemberModal v-model="memberModalVisible" :company-id="currentResignCompanyId" :allow-select="true" :role="1" @on-member-selected="handleMemberSelected" />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { GetCurrentUserCompanyListDto, GetCurrentUserCompanyListVo, AddCompanyDto, EditCompanyDto, GetCompanyDetailsVo } from "@/api/core/CompanyApi";
+import type { GetCurrentUserCompanyListDto, GetCurrentUserCompanyListVo, AddCompanyDto, EditCompanyDto, GetCompanyDetailsVo, ResignCeoDto } from "@/api/core/CompanyApi";
 import CompanyApi from "@/api/core/CompanyApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, SwitchButton } from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";
+import CompanyMemberModal from "./modal/CompanyMemberModal.vue";
+import type { GetCompanyMemberListVo } from "@/api/core/CompanyMemberApi";
 
 const listForm = reactive<GetCurrentUserCompanyListDto>({
   name: "",
@@ -157,6 +164,28 @@ const removeCompany = async (id: string) => {
     const result = await CompanyApi.removeCompany({ id });
     if (Result.isSuccess(result)) {
       ElMessage.success("删除成功");
+      await loadList();
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const activateCompany = async (id: string) => {
+  try {
+    await ElMessageBox.confirm("确定激活该团队吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    const result = await CompanyApi.activateCompany({ id });
+    if (Result.isSuccess(result)) {
+      ElMessage.success(result.data || "激活成功");
       await loadList();
     }
   } catch (error: any) {
@@ -278,6 +307,79 @@ const submitModal = async () => {
     ElMessage.error(error.message);
   } finally {
     modalLoading.value = false;
+  }
+};
+
+// 辞去CEO职位相关
+const memberModalVisible = ref(false);
+const currentResignCompanyId = ref<string | null>(null);
+
+const openResignCeoModal = async (row: GetCurrentUserCompanyListVo) => {
+  if (!row.id) {
+    ElMessage.error("公司ID不能为空");
+    return;
+  }
+
+  if (row.memberCount !== undefined && row.memberCount !== null && row.memberCount <= 1) {
+    try {
+      await ElMessageBox.alert(
+        `<div style="padding: 10px 0;">
+          <p style="font-size: 16px; margin-bottom: 15px; line-height: 1.5;">当前团队仅您一人，无法进行CEO职位移交。</p>
+          <p style="font-size: 14px; color: #909399; margin-bottom: 10px; line-height: 1.5;">毕竟总不能把职位移交给空气吧？😊</p>
+          <p style="font-size: 14px; color: #909399; line-height: 1.5;">如果您想关闭公司，请使用"退出"功能，退出后公司将被注销。</p>
+        </div>`,
+        "⚠️ 无法辞去CEO职位",
+        {
+          confirmButtonText: "我知道了",
+          type: "warning",
+          dangerouslyUseHTMLString: true,
+        }
+      );
+    } catch (error) {
+      // 用户点击确认，不需要处理
+    }
+    return;
+  }
+
+  currentResignCompanyId.value = row.id;
+  memberModalVisible.value = true;
+};
+
+const handleMemberSelected = async (member: GetCompanyMemberListVo) => {
+  if (!currentResignCompanyId.value || !member.userId) {
+    ElMessage.error("缺少必要参数");
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(`确定将CEO职位移交给 <strong>${member.username}</strong> 吗？`, "确认辞职", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+      dangerouslyUseHTMLString: true,
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    const dto: ResignCeoDto = {
+      companyId: currentResignCompanyId.value,
+      newCeoUserId: member.userId,
+    };
+    const result = await CompanyApi.resignCEO(dto);
+    if (Result.isSuccess(result)) {
+      ElMessage.success(result.data || "您已经辞去CEO职位");
+      await loadList();
+    }
+    if (Result.isError(result)) {
+      ElMessage.error(result.message);
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "操作失败");
+  } finally {
+    memberModalVisible.value = false;
+    currentResignCompanyId.value = null;
   }
 };
 </script>

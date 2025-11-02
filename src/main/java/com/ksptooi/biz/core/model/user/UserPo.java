@@ -3,6 +3,7 @@ package com.ksptooi.biz.core.model.user;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.requestdebug.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +52,16 @@ public class UserPo {
     @Column(name = "last_login_time")
     @Comment("最后登录时间")
     private LocalDateTime lastLoginTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "active_company_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("已激活的公司 为null时表示未激活任何公司")
+    private CompanyPo activeCompany;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "active_env_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("已激活的环境 为null时表示未激活任何环境")
+    private UserRequestEnvPo activeEnv;
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")

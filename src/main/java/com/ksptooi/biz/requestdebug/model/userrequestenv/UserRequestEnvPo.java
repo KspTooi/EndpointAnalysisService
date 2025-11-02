@@ -35,10 +35,6 @@ public class UserRequestEnvPo {
     @Comment("描述")
     private String remark;
 
-    @Column(name = "active", columnDefinition = "tinyint", nullable = false)
-    @Comment("激活状态 0:启用 1:禁用")
-    private Integer active;
-
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
     private LocalDateTime createTime;

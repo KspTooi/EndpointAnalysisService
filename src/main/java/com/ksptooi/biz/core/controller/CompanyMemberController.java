@@ -3,8 +3,11 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.companymember.dto.AddCompanyMemberDto;
 import com.ksptooi.biz.core.model.companymember.dto.EditCompanyMemberDto;
 import com.ksptooi.biz.core.model.companymember.dto.GetCompanyMemberListDto;
+import com.ksptooi.biz.core.model.companymember.dto.GetCurrentUserActiveCompanyMemberListDto;
+import com.ksptooi.biz.core.model.companymember.dto.FireCompanyMemberDto;
 import com.ksptooi.biz.core.model.companymember.vo.GetCompanyMemberDetailsVo;
 import com.ksptooi.biz.core.model.companymember.vo.GetCompanyMemberListVo;
+import com.ksptooi.biz.core.model.companymember.vo.GetCurrentUserActiveCompanyMemberListVo;
 import com.ksptooi.biz.core.service.CompanyMemberService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -36,6 +39,12 @@ public class CompanyMemberController {
         return companyMemberService.getCompanyMemberList(dto);
     }
 
+    @Operation(summary = "获取当前用户激活的公司成员列表")
+    @PostMapping("/getCurrentUserActiveCompanyMemberList")
+    public Result<GetCurrentUserActiveCompanyMemberListVo> getCurrentUserActiveCompanyMemberList(@RequestBody @Valid GetCurrentUserActiveCompanyMemberListDto dto) throws Exception {
+        return companyMemberService.getCurrentUserActiveCompanyMemberList(dto);
+    }
+
     @Operation(summary = "新增公司成员")
     @PostMapping("/addCompanyMember")
     public Result<String> addCompanyMember(@RequestBody @Valid AddCompanyMemberDto dto) throws Exception {
@@ -65,6 +74,13 @@ public class CompanyMemberController {
     public Result<String> removeCompanyMember(@RequestBody @Valid CommonIdDto dto) throws Exception {
         companyMemberService.removeCompanyMember(dto);
         return Result.success("操作成功");
+    }
+
+    @Operation(summary = "开除成员")
+    @PostMapping("/fireCompanyMember")
+    public Result<String> fireCompanyMember(@RequestBody @Valid FireCompanyMemberDto dto) throws Exception {
+        companyMemberService.fireCompanyMember(dto);
+        return Result.success("开除成功");
     }
 
 }

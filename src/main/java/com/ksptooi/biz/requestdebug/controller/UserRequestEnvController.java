@@ -67,4 +67,11 @@ public class UserRequestEnvController {
         return Result.success("操作成功");
     }
 
+    @Operation(summary = "激活环境")
+    @PostMapping("/activateUserRequestEnv")
+    public Result<String> activateUserRequestEnv(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        userRequestEnvService.activateUserRequestEnv(dto);
+        return Result.success("激活成功");
+    }
+
 }

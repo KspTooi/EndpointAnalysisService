@@ -8,12 +8,15 @@ import lombok.Setter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "core_company_member")
+@Table(name = "core_company_member", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_company_user", columnNames = {"company_id", "user_id", "deleted_time"})
+})
 @SQLDelete(sql = "UPDATE core_company_member SET deleted_time = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted_time IS NULL")
 public class CompanyMemberPo {

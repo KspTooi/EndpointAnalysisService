@@ -3,6 +3,7 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.company.dto.AddCompanyDto;
 import com.ksptooi.biz.core.model.company.dto.EditCompanyDto;
 import com.ksptooi.biz.core.model.company.dto.GetCurrentUserCompanyListDto;
+import com.ksptooi.biz.core.model.company.dto.ResignCeoDto;
 import com.ksptooi.biz.core.model.company.vo.GetCompanyDetailsVo;
 import com.ksptooi.biz.core.model.company.vo.GetCurrentUserCompanyListVo;
 import com.ksptooi.biz.core.service.CompanyService;
@@ -29,6 +30,7 @@ public class CompanyController {
 
     @Autowired
     private CompanyService companyService;
+    
 
     @PostMapping("/getCurrentUserCompanyList")
     @Operation(summary = "获取我的/我加入的团队列表")
@@ -73,6 +75,21 @@ public class CompanyController {
     public Result<String> removeCompany(@RequestBody @Valid CommonIdDto dto) throws Exception {
         companyService.removeCompany(dto);
         return Result.success("操作成功");
+    }
+
+    
+    @Operation(summary = "激活团队")
+    @PostMapping("/activateCompany")
+    public Result<String> activateCompany(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        companyService.activateCompany(dto);
+        return Result.success("激活成功");
+    }
+
+    @Operation(summary = "辞去CEO职位")
+    @PostMapping("/resignCEO")
+    public Result<String> resignCEO(@RequestBody @Valid ResignCeoDto dto) throws Exception {
+        companyService.resignCEO(dto);
+        return Result.success("您已经辞去CEO职位");
     }
 
 }
