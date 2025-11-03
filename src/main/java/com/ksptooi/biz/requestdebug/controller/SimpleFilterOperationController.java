@@ -7,9 +7,9 @@ import com.ksptooi.biz.requestdebug.model.filter.vo.GetSimpleFilterOperationDeta
 import com.ksptooi.biz.requestdebug.model.filter.vo.GetSimpleFilterOperationListVo;
 import com.ksptooi.biz.requestdebug.service.SimpleFilterOperationService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/simpleFilterOperation")
-@Tag(name = "SimpleFilterOperation", description = "${comments}")
+@Tag(name = "简单过滤器操作")
 @Slf4j
 public class SimpleFilterOperationController {
 

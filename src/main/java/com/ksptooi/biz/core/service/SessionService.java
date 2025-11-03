@@ -7,9 +7,10 @@ import com.ksptooi.biz.core.model.session.GetSessionListVo;
 import com.ksptooi.biz.core.model.session.UserSessionPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -25,7 +26,8 @@ public class SessionService {
 
 
     public PageResult<GetSessionListVo> getSessionList(GetSessionListDto dto) {
-        return new PageResult<>(repository.getSessionList(dto, dto.pageRequest()));
+        Page<GetSessionListVo> pPos = repository.getSessionList(dto, dto.pageRequest());
+        return PageResult.success(pPos.getContent(), pPos.getTotalElements());
     }
 
     public GetSessionDetailsVo getSessionDetails(Long id) throws BizException {

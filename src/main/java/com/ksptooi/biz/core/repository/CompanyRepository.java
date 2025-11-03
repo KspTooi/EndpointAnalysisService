@@ -16,9 +16,9 @@ public interface CompanyRepository extends JpaRepository<CompanyPo, Long> {
     /**
      * 获取当前用户加入的公司列表
      *
-     * @param name     公司名称
-     * @param userId   用户ID
-     * @param pageable 分页信息
+     * @param name          公司名称
+     * @param currentUserId 当前用户ID
+     * @param pageable      分页信息
      * @return 公司列表
      */
     @Query("""
@@ -28,18 +28,20 @@ public interface CompanyRepository extends JpaRepository<CompanyPo, Long> {
                 (SELECT u2.username FROM CompanyMemberPo m2 JOIN m2.user u2 WHERE m2.company.id = t.id AND m2.role = 0),
                 t.name,
                 t.description,
-                COUNT(m.id),
+                SIZE(t.members),
                 t.createTime,
-                t.updateTime
+                t.updateTime,
+                CASE WHEN EXISTS(SELECT 1 FROM UserPo u3 WHERE u3.id = :currentUserId AND u3.activeCompany.id = t.id) THEN 1 ELSE 0 END,
+                CASE WHEN EXISTS(SELECT 1 FROM CompanyMemberPo m3 WHERE m3.company.id = t.id AND m3.user.id = :currentUserId AND m3.role = 0) THEN 1 ELSE 0 END
             )
             FROM CompanyPo t
             LEFT JOIN t.members m
             LEFT JOIN m.user u
-            WHERE u.id = :userId AND ( :name IS NULL OR t.name LIKE CONCAT('%', :name, '%') )
+            WHERE u.id = :currentUserId AND ( :name IS NULL OR t.name LIKE CONCAT('%', :name, '%') )
             GROUP BY t.id, t.founder.username, t.name, t.description, t.createTime, t.updateTime
             ORDER BY t.updateTime DESC
             """)
-    Page<GetCurrentUserCompanyListVo> getCurrentUserCompanyList(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);
+    Page<GetCurrentUserCompanyListVo> getCurrentUserCompanyList(@Param("name") String name, @Param("currentUserId") Long currentUserId, Pageable pageable);
 
 
     /**

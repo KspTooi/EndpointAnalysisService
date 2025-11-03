@@ -3,9 +3,9 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.ConfigRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptool.entities.Any;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.entities.any.Any;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -41,7 +41,7 @@ public class ConfigService {
             }
         }
 
-        return new PageResult<>(vos, pPos.getTotalElements());
+        return PageResult.success(vos, pPos.getTotalElements());
     }
 
     public GetConfigDetailsVo getConfigDetails(Long id) throws BizException, AuthException {
@@ -71,25 +71,21 @@ public class ConfigService {
     }
 
     @Transactional
-    public void saveConfig(SaveConfigDto dto) throws BizException, AuthException {
-
-        //创建
-        if (dto.getId() == null) {
-            if (repository.existsByUserIdAndConfigKey(AuthService.requireUserId(), dto.getConfigKey())) {
-                throw new RuntimeException("配置键已存在");
-            }
-            ConfigPo config = new ConfigPo();
-            assign(dto, config);
-            config.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
-            repository.save(config);
-            return;
+    public void addConfig(AddConfigDto dto) throws BizException, AuthException {
+        if (repository.existsByUserIdAndConfigKey(AuthService.requireUserId(), dto.getConfigKey())) {
+            throw new RuntimeException("配置键已存在");
         }
+        ConfigPo config = new ConfigPo();
+        assign(dto, config);
+        config.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+        repository.save(config);
+    }
 
-        //编辑
+    @Transactional
+    public void editConfig(EditConfigDto dto) throws BizException, AuthException {
         var query = new ConfigPo();
         query.setId(dto.getId());
 
-        //无全局数据权限时仅查询当前用户下的配置
         if (!AuthService.hasPermission("panel:config:view:global")) {
             query.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
         }

@@ -9,7 +9,7 @@ import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.commons.WebUtils;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.SHA256;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -68,7 +69,7 @@ public class AuthService {
 
         // 更新登录次数和最后登录时间
         user.setLoginCount(user.getLoginCount() + 1);
-        user.setLastLoginTime(new Date());
+        user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
 
         // 登录成功，创建或返回 token
@@ -274,7 +275,7 @@ public class AuthService {
 
     public Long verifyToken(String token) {
         UserSessionPo userSession = userSessionRepository.findByToken(token);
-        if (userSession == null || userSession.getExpiresAt().before(new Date())) {
+        if (userSession == null || userSession.getExpiresAt().isBefore(LocalDateTime.now())) {
             return null; // Token无效
         } else {
             return userSession.getUserId();
@@ -293,7 +294,7 @@ public class AuthService {
      */
     public UserSessionVo getUserSessionByToken(String token) {
         UserSessionPo session = userSessionRepository.findByToken(token);
-        if (session == null || session.getExpiresAt().before(new Date())) {
+        if (session == null || session.getExpiresAt().isBefore(LocalDateTime.now())) {
             return null;
         }
         return new UserSessionVo(session);
@@ -327,12 +328,12 @@ public class AuthService {
     }
 
     public UserSessionVo createUserSession(Long userId) {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         // 查询当前用户是否已有会话
         UserSessionPo existingSession = userSessionRepository.findByUserId(userId);
         if (existingSession != null) {
             // 如果 token 未过期，则直接返回当前 token
-            if (existingSession.getExpiresAt().after(now)) {
+            if (existingSession.getExpiresAt().isAfter(now)) {
                 return new UserSessionVo(existingSession);
             } else {
                 // 已过期，删除旧记录
@@ -352,7 +353,7 @@ public class AuthService {
         UserSessionPo newSession = new UserSessionPo();
         newSession.setUserId(userId);
         newSession.setToken(token);
-        newSession.setExpiresAt(new Date(System.currentTimeMillis() + expiresInSeconds * 1000));
+        newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
 
         //序列化权限
         newSession.setPermissions(gson.toJson(permissionCodes));
@@ -374,7 +375,7 @@ public class AuthService {
         }
 
         // 检查会话是否过期
-        if (existingSession.getExpiresAt().before(new Date())) {
+        if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
             return null; // 会话已过期，直接返回
         }
 
@@ -389,7 +390,7 @@ public class AuthService {
 
         // 更新会话信息
         existingSession.setPermissions(gson.toJson(permissionCodes));
-        existingSession.setExpiresAt(new Date(System.currentTimeMillis() + expiresInSeconds * 1000));
+        existingSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         userSessionRepository.save(existingSession);
         return new UserSessionVo(existingSession);
     }

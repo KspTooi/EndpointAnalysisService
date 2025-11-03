@@ -10,15 +10,17 @@ import java.time.LocalDateTime;
 @Setter
 public class GetCurrentUserCompanyListVo {
 
-    public GetCurrentUserCompanyListVo(Long id, String founderName, String ceoName, String name, String description, Long memberCount, LocalDateTime createTime, LocalDateTime updateTime) {
+    public GetCurrentUserCompanyListVo(Long id, String founderName, String ceoName, String name, String description, Integer memberCount, LocalDateTime createTime, LocalDateTime updateTime, Integer isActive, Integer isCeo) {
         this.id = id;
         this.founderName = founderName;
         this.ceoName = ceoName;
         this.name = name;
         this.description = description;
-        this.memberCount = memberCount.intValue();
+        this.memberCount = memberCount;
         this.createTime = createTime;
         this.updateTime = updateTime;
+        this.isActive = isActive;
+        this.isCeo = isCeo;
     }
 
     @Schema(description = "公司ID")
@@ -44,6 +46,12 @@ public class GetCurrentUserCompanyListVo {
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
+
+    @Schema(description = "当前用户是否已激活 0:否 1:是")
+    private Integer isActive;
+
+    @Schema(description = "当前用户是否是该公司CEO 0:否 1:是")
+    private Integer isCeo;
 
 }
 

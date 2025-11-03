@@ -9,8 +9,8 @@ import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -40,6 +40,7 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private GlobalConfigService globalConfigService;
 

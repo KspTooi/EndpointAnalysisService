@@ -3,12 +3,13 @@ package com.ksptooi.biz.core.model.user;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.requestdebug.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,15 +51,25 @@ public class UserPo {
 
     @Column(name = "last_login_time")
     @Comment("最后登录时间")
-    private Date lastLoginTime;
+    private LocalDateTime lastLoginTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "active_company_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("已激活的公司 为null时表示未激活任何公司")
+    private CompanyPo activeCompany;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "active_env_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("已激活的环境 为null时表示未激活任何环境")
+    private UserRequestEnvPo activeEnv;
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -82,8 +93,8 @@ public class UserPo {
 
     @PrePersist
     public void prePersist() {
-        createTime = new Date();
-        updateTime = new Date();
+        createTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
         if (loginCount == null) {
             loginCount = 0;
         }
@@ -94,7 +105,7 @@ public class UserPo {
 
     @PreUpdate
     public void preUpdate() {
-        updateTime = new Date();
+        updateTime = LocalDateTime.now();
     }
 
 

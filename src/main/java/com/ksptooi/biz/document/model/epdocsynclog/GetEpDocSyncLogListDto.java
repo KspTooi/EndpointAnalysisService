@@ -1,6 +1,6 @@
 package com.ksptooi.biz.document.model.epdocsynclog;
 
-import com.ksptooi.commons.utils.page.PageQuery;
+import com.ksptool.assembly.entity.web.PageQuery;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;

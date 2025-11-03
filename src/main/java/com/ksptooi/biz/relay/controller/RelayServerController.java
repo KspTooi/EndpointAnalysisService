@@ -2,10 +2,10 @@ package com.ksptooi.biz.relay.controller;
 
 import com.ksptooi.biz.relay.model.relayserver.*;
 import com.ksptooi.biz.relay.service.RelayServerService;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageableResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +31,7 @@ public class RelayServerController {
      * @return 中继服务器列表
      */
     @PostMapping("/getRelayServerList")
-    public PageableResult<GetRelayServerListVo> getRelayServerList(@RequestBody @Valid GetRelayServerListDto dto) {
+    public PageResult<GetRelayServerListVo> getRelayServerList(@RequestBody @Valid GetRelayServerListDto dto) {
         return relayServerService.getRelayServerList(dto);
     }
 

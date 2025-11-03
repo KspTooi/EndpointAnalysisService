@@ -1,13 +1,18 @@
 package com.ksptooi.biz.core.controller;
 
 
-import com.ksptooi.biz.core.model.group.*;
+import com.ksptooi.biz.core.model.group.AddGroupDto;
+import com.ksptooi.biz.core.model.group.EditGroupDto;
+import com.ksptooi.biz.core.model.group.GetGroupDefinitionsVo;
+import com.ksptooi.biz.core.model.group.GetGroupDetailsVo;
+import com.ksptooi.biz.core.model.group.GetGroupListDto;
+import com.ksptooi.biz.core.model.group.GetGroupListVo;
 import com.ksptooi.biz.core.service.GroupService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,13 +57,25 @@ public class GroupController {
         }
     }
 
-    @Operation(summary = "保存组")
-    @PostMapping("saveGroup")
+    @Operation(summary = "新增组")
+    @PostMapping("addGroup")
     @RequirePermissionRest("admin:group:save")
-    public Result<String> saveGroup(@RequestBody @Valid SaveGroupDto dto) {
+    public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) {
         try {
-            service.saveGroup(dto);
-            return Result.success("success");
+            service.addGroup(dto);
+            return Result.success("新增成功");
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+
+    @Operation(summary = "编辑组")
+    @PostMapping("editGroup")
+    @RequirePermissionRest("admin:group:save")
+    public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) {
+        try {
+            service.editGroup(dto);
+            return Result.success("修改成功");
         } catch (Exception ex) {
             return Result.error(ex.getMessage());
         }

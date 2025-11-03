@@ -23,9 +23,6 @@ public class GetUserRequestEnvDetailsVo {
     @Schema(description = "描述")
     private String remark;
 
-    @Schema(description = "激活 0:启用 1:禁用")
-    private Integer active;
-
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 

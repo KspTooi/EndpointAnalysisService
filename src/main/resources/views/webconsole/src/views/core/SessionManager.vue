@@ -1,12 +1,12 @@
 <template>
-  <div class="session-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="用户名">
-              <el-input v-model="query.userName" placeholder="输入用户名查询" clearable />
+              <el-input v-model="listForm.userName" placeholder="输入用户名查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -17,8 +17,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadSessionList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -28,15 +28,15 @@
     <div class="action-buttons"></div>
 
     <!-- 会话列表 -->
-    <div class="session-table">
-      <el-table :data="list" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="id" label="会话ID" min-width="100" />
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="createTime" label="登入时间" min-width="180" />
         <el-table-column prop="expiresAt" label="过期时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
+            <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
             <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon"> 关闭会话 </el-button>
           </template>
         </el-table-column>
@@ -45,20 +45,28 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="loadSessionList"
-          @current-change="loadSessionList"
+          :total="listTotal"
+          @size-change="
+            () => {
+              loadList();
+            }
+          "
+          @current-change="
+            () => {
+              loadList();
+            }
+          "
           background
         />
       </div>
     </div>
 
     <!-- 会话详情模态框 -->
-    <el-dialog v-model="detailsDialogVisible" title="会话详情" width="800px" :close-on-click-modal="false">
+    <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
       <el-descriptions :column="1" border v-if="currentSessionDetails">
         <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
         <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
@@ -81,7 +89,7 @@
       </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="detailsDialogVisible = false">关闭</el-button>
+          <el-button @click="modalVisible = false">关闭</el-button>
         </span>
       </template>
     </el-dialog>
@@ -93,21 +101,22 @@ import { reactive, ref, onMounted, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
 import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/api/core/SessionApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 
 const ViewIcon = markRaw(View);
 const CloseIcon = markRaw(CloseBold);
 
-const query = reactive<GetSessionListDto>({
+const listForm = reactive<GetSessionListDto>({
   userName: null,
   pageNum: 1,
   pageSize: 10,
 });
 
-const list = ref<GetSessionListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetSessionListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
-const detailsDialogVisible = ref(false);
+const modalVisible = ref(false);
 const currentSessionDetails = ref<GetSessionDetailsVo | null>(null);
 const permissionSearchKeyword = ref("");
 const filteredPermissions = computed(() => {
@@ -116,38 +125,40 @@ const filteredPermissions = computed(() => {
   return currentSessionDetails.value.permissions.filter((permission) => permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase()));
 });
 
-const loadSessionList = async () => {
-  loading.value = true;
-  try {
-    const res = await AdminSessionApi.getSessionList(query);
-    list.value = res.data;
-    total.value = res.total;
-  } catch (e) {
-    ElMessage.error("加载会话列表失败");
-    console.error("加载会话列表失败", e);
-  } finally {
-    loading.value = false;
+const loadList = async () => {
+  listLoading.value = true;
+  const result = await AdminSessionApi.getSessionList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-const resetQuery = () => {
-  query.userName = null;
-  query.pageNum = 1;
-  loadSessionList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.userName = null;
+  loadList();
 };
 
-const openViewModal = async (row: GetSessionListVo) => {
-  loading.value = true;
+const openModal = async (row: GetSessionListVo) => {
+  listLoading.value = true;
   try {
     const res = await AdminSessionApi.getSessionDetails({ id: row.id });
     currentSessionDetails.value = res;
     permissionSearchKeyword.value = ""; // 重置搜索关键词
-    detailsDialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("获取会话详情失败");
-    console.error("获取会话详情失败", error);
+    modalVisible.value = true;
+  } catch (error: any) {
+    ElMessage.error(error.message || "获取会话详情失败");
   } finally {
-    loading.value = false;
+    listLoading.value = false;
   }
 };
 
@@ -160,7 +171,7 @@ const handleCloseSession = async (row: GetSessionListVo) => {
     });
     await AdminSessionApi.closeSession({ id: row.id });
     ElMessage.success("会话关闭成功");
-    loadSessionList(); // Refresh the list
+    await loadList(); // Refresh the list
   } catch (error) {
     if (error !== "cancel") {
       const errorMsg = error instanceof Error ? error.message : "关闭会话失败";
@@ -169,29 +180,27 @@ const handleCloseSession = async (row: GetSessionListVo) => {
   }
 };
 
-onMounted(() => {
-  loadSessionList();
-});
+loadList();
 </script>
 
 <style scoped>
-.session-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
 }
 
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
 .action-buttons {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-.session-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto; /* Ensures table is scrollable on smaller screens */
 }
 
 .pagination-container {

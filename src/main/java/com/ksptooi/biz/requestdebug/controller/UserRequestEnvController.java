@@ -7,9 +7,9 @@ import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvDet
 import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvListVo;
 import com.ksptooi.biz.requestdebug.service.UserRequestEnvService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -65,6 +65,13 @@ public class UserRequestEnvController {
     public Result<String> removeUserRequestEnv(@RequestBody @Valid CommonIdDto dto) throws Exception {
         userRequestEnvService.removeUserRequestEnv(dto);
         return Result.success("操作成功");
+    }
+
+    @Operation(summary = "激活环境")
+    @PostMapping("/activateUserRequestEnv")
+    public Result<String> activateUserRequestEnv(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        userRequestEnvService.activateUserRequestEnv(dto);
+        return Result.success("激活成功");
     }
 
 }

@@ -5,8 +5,8 @@ import com.ksptooi.biz.requestdebug.model.userrequest.GetUserRequestDetailsVo;
 import com.ksptooi.biz.requestdebug.model.userrequest.SaveAsUserRequestDto;
 import com.ksptooi.biz.requestdebug.service.UserRequestService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/userRequest")
-@Tag(name = "用户请求", description = "用户请求记录")
+@Tag(name = "用户请求")
 @Slf4j
 public class UserRequestController {
 
     @Autowired
     private UserRequestService userRequestService;
 
-    @Operation(summary = "保存原始请求为用户请求")
+    @Operation(summary = "保存原始请求为新用户请求")
     @PostMapping("/saveAsUserRequest")
     public Result<String> saveAsUserRequest(@RequestBody @Valid SaveAsUserRequestDto dto) throws Exception {
         userRequestService.saveAsUserRequest(dto);

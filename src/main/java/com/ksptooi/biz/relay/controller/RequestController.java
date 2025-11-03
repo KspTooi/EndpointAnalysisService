@@ -4,9 +4,9 @@ import com.ksptooi.biz.relay.model.request.GetRequestDetailsVo;
 import com.ksptooi.biz.relay.model.request.GetRequestListDto;
 import com.ksptooi.biz.relay.model.request.GetRequestListVo;
 import com.ksptooi.biz.relay.service.RequestService;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageableResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ public class RequestController {
 
     @PostMapping("/getRequestList")
     @Operation(summary = "获取中继器请求列表")
-    public PageableResult<GetRequestListVo> getRequestList(@RequestBody @Valid GetRequestListDto dto) {
+    public PageResult<GetRequestListVo> getRequestList(@RequestBody @Valid GetRequestListDto dto) {
         return requestService.getRequestList(dto);
     }
 

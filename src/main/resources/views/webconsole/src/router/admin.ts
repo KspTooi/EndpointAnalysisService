@@ -195,6 +195,16 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/company-member-manager",
+      name: "company-member-manager",
+      component: () => import("@/views/core/CompanyMember.vue"),
+      meta: {
+        breadcrumb: {
+          title: "公司成员管理",
+        },
+      },
+    },
   ],
 });
 

@@ -2,14 +2,14 @@ package com.ksptooi.biz.core.model.company;
 
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.commons.exception.BizException;
-
+import com.ksptool.assembly.entity.exception.BizException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,12 +61,13 @@ public class CompanyPo {
 
     /**
      * 添加公司成员
+     *
      * @param user 用户
      * @param role 角色 0:CEO 1:成员
      */
     public void addMember(UserPo user, Integer role) throws BizException {
 
-        if(members == null){
+        if (members == null) {
             members = new HashSet<>();
         }
 

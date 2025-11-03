@@ -13,8 +13,8 @@ import com.ksptooi.biz.requestdebug.model.userrequesttree.vo.GetUserRequestTreeV
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestGroupRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestTreeRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -2,16 +2,16 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="路由规则名" prop="name">
-              <el-input v-model="query.name" placeholder="请输入路由规则名" />
+              <el-input v-model="listForm.name" placeholder="请输入路由规则名" />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="匹配类型" prop="matchType">
-              <el-select v-model="query.matchType" placeholder="请选择匹配类型">
+              <el-select v-model="listForm.matchType" placeholder="请选择匹配类型">
                 <el-option label="全部" :value="0" />
                 <el-option label="IP地址" :value="1" />
               </el-select>
@@ -19,13 +19,13 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="匹配值" prop="matchValue">
-              <el-input v-model="query.matchValue" placeholder="请输入匹配值" />
+              <el-input v-model="listForm.matchValue" placeholder="请输入匹配值" />
             </el-form-item>
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -38,7 +38,7 @@
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
         <el-table-column label="路由规则名" prop="name" width="220" show-overflow-tooltip />
         <el-table-column label="目标服务器" prop="routeServerName" width="180" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
@@ -78,20 +78,20 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
+              listForm.pageSize = val;
               loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
+              listForm.pageNum = val;
               loadList();
             }
           "
@@ -159,14 +159,18 @@
 <script setup lang="ts">
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref, watch, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
+import { reactive, ref, watch, markRaw, onMounted } from "vue";
+import { Delete, View } from "@element-plus/icons-vue";
 import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
 import type { GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
 import RouteServerApi from "@/api/relay/RouteServerApi.ts";
 
-//列表内容
-const query = reactive<GetRouteRuleListDto>({
+// 图标常量
+const ViewIcon = markRaw(View);
+const DeleteIcon = markRaw(Delete);
+
+// 列表相关变量
+const listForm = reactive<GetRouteRuleListDto>({
   name: null,
   matchType: null,
   matchValue: null,
@@ -174,35 +178,38 @@ const query = reactive<GetRouteRuleListDto>({
   pageSize: 10,
 });
 
-const list = ref<GetRouteRuleListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetRouteRuleListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
+// 加载列表
 const loadList = async () => {
-  loading.value = true;
-  const result = await RouteRuleApi.getRouteRuleList(query);
+  listLoading.value = true;
+  const result = await RouteRuleApi.getRouteRuleList(listForm);
 
   if (Result.isSuccess(result)) {
-    list.value = result.data;
-    total.value = result.total;
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
 
   if (Result.isError(result)) {
     ElMessage.error(result.message);
   }
 
-  loading.value = false;
+  listLoading.value = false;
 };
 
+// 重置查询条件
 const resetList = () => {
-  query.name = null;
-  query.matchType = null;
-  query.matchValue = null;
-  query.pageNum = 1;
-  query.pageSize = 10;
+  listForm.name = null;
+  listForm.matchType = null;
+  listForm.matchValue = null;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
   loadList();
 };
 
+// 删除单条记录
 const removeList = async (id: string) => {
   try {
     await ElMessageBox.confirm("确定删除该路由规则吗？", "提示", {
@@ -230,13 +237,11 @@ const removeList = async (id: string) => {
   loadList();
 };
 
-loadList();
-
-//模态框内容
+// 模态框相关变量
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
 const modalLoading = ref(false);
-const modalMode = ref<"add" | "edit">("add"); //add:添加,edit:编辑
+const modalMode = ref<"add" | "edit">("add");
 const modalForm = reactive<GetRouteRuleDetailsVo>({
   id: "",
   name: "",
@@ -271,14 +276,13 @@ const modalRules = {
   ],
 };
 
+// 打开模态框
 const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) => {
   modalMode.value = mode;
   resetModal();
 
-  //加载目标服务器列表
   await loadRouteServerList();
 
-  //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
     const ret = await RouteRuleApi.getRouteRuleDetails({ id: row.id });
 
@@ -303,6 +307,7 @@ const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) =
   modalVisible.value = true;
 };
 
+// 重置模态框表单
 const resetModal = () => {
   modalForm.id = "";
   modalForm.name = "";
@@ -315,8 +320,8 @@ const resetModal = () => {
   modalForm.updateTime = "";
 };
 
+// 提交模态框表单
 const submitModal = async () => {
-  //先校验表单
   try {
     await modalFormRef?.value?.validate();
   } catch (error) {
@@ -325,7 +330,6 @@ const submitModal = async () => {
 
   modalLoading.value = true;
 
-  //提交表单
   try {
     if (modalMode.value === "add") {
       await RouteRuleApi.addRouteRule(modalForm);
@@ -344,13 +348,13 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  //modalVisible.value = false;
   loadList();
 };
 
-//目标服务器列表
+// 目标服务器列表
 const routeServerList = ref<GetRouteServerListVo[]>([]);
 
+// 加载目标服务器列表
 const loadRouteServerList = async () => {
   const result = await RouteServerApi.getRouteServerList({
     pageNum: 1,
@@ -361,10 +365,10 @@ const loadRouteServerList = async () => {
   }
 };
 
+// 监听器
 watch(
   () => modalForm.matchType,
   (newVal) => {
-    //如果匹配类型为全部 则清空
     if (newVal === 0) {
       modalForm.matchKey = null;
       modalForm.matchOperator = null;
@@ -372,6 +376,11 @@ watch(
     }
   }
 );
+
+// 生命周期
+onMounted(() => {
+  loadList();
+});
 </script>
 
 <style scoped>

@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,10 +32,10 @@ public class GlobalConfigService {
             config = new ConfigPo();
             config.setConfigKey(key);
             config.setUser(null);
-            config.setCreateTime(new Date());
+            config.setCreateTime(LocalDateTime.now());
         }
         config.setConfigValue(value);
-        config.setUpdateTime(new Date());
+        config.setUpdateTime(LocalDateTime.now());
         configRepository.save(config);
     }
 
@@ -128,8 +128,8 @@ public class GlobalConfigService {
                 newConfig.setConfigKey(config.getKey());
                 newConfig.setConfigValue(config.getDefaultValue());
                 newConfig.setDescription(config.getDescription());
-                newConfig.setCreateTime(new Date());
-                newConfig.setUpdateTime(new Date());
+                newConfig.setCreateTime(LocalDateTime.now());
+                newConfig.setUpdateTime(LocalDateTime.now());
                 addedConfigs.add(newConfig);
             } else {
                 existCount++;

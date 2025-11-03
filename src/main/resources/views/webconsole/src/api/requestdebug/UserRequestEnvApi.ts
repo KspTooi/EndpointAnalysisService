@@ -12,28 +12,25 @@ export interface GetUserRequestEnvListDto extends PageQuery {
 export interface GetUserRequestEnvListVo {
   id: string; // 用户请求环境ID
   name: string; // 用户请求环境名称
-  active: number; // 是否激活 0:是 1:否
+  active: number; // 当前用户是否已激活 0:否 1:是
   remark: string | null; // 备注
   updateTime: string; // 更新时间
 }
 
 export interface AddUserRequestEnvDto {
   name?: string | null; // 用户请求环境名称
-  active?: number | null; // 是否激活 0:是 1:否
   remark?: string | null; // 备注
 }
 
 export interface EditUserRequestEnvDto {
   id?: string | null; // 用户请求环境ID
   name?: string | null; // 用户请求环境名称
-  active?: number | null; // 是否激活 0:是 1:否
   remark?: string | null; // 备注
 }
 
 export interface GetUserRequestEnvDetailsVo {
   id?: string | null; // 用户请求环境ID
   name?: string | null; // 用户请求环境名称
-  active?: number | null; // 是否激活 0:是 1:否
   remark?: string | null; // 备注
   updateTime?: string | null; // 更新时间
 }
@@ -71,5 +68,12 @@ export default {
    */
   removeUserRequestEnv: async (dto: CommonIdDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/userRequestEnv/removeUserRequestEnv", dto);
+  },
+
+  /**
+   * 激活环境
+   */
+  activateUserRequestEnv: async (dto: CommonIdDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/userRequestEnv/activateUserRequestEnv", dto);
   },
 };

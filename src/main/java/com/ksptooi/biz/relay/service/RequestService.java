@@ -5,7 +5,7 @@ import com.ksptooi.biz.relay.model.request.GetRequestListDto;
 import com.ksptooi.biz.relay.model.request.GetRequestListVo;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.repository.RequestRepository;
-import com.ksptooi.commons.utils.web.PageableResult;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Async;
@@ -24,9 +24,9 @@ public class RequestService {
      * @param dto 请求列表查询条件
      * @return 请求列表
      */
-    public PageableResult<GetRequestListVo> getRequestList(GetRequestListDto dto) {
+    public PageResult<GetRequestListVo> getRequestList(GetRequestListDto dto) {
         Page<GetRequestListVo> page = requestRepository.getRequestList(dto, dto.pageRequest());
-        var ret = PageableResult.success(page.getContent(), page.getTotalElements());
+        var ret = PageResult.success(page.getContent(), page.getTotalElements());
         return ret;
     }
 

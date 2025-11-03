@@ -2,28 +2,28 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器名称">
-              <el-input v-model="query.name" placeholder="请输入服务器名称" clearable />
+              <el-input v-model="listForm.name" placeholder="请输入服务器名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器主机">
-              <el-input v-model="query.host" placeholder="请输入服务器主机" clearable />
+              <el-input v-model="listForm.host" placeholder="请输入服务器主机" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="服务器端口">
-              <el-input v-model="query.port" placeholder="请输入服务器端口" clearable />
+              <el-input v-model="listForm.port" placeholder="请输入服务器端口" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="loading">查询</el-button>
-              <el-button @click="resetList" :disabled="loading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="loading" />
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -31,12 +31,12 @@
           <el-row>
             <el-col :span="5" :offset="1">
               <el-form-item label="备注">
-                <el-input v-model="query.remark" placeholder="请输入备注" clearable />
+                <el-input v-model="listForm.remark" placeholder="请输入备注" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="1">
               <el-form-item label="服务器状态">
-                <el-select v-model="query.status" placeholder="请选择服务器状态" clearable style="width: 100%">
+                <el-select v-model="listForm.status" placeholder="请选择服务器状态" clearable style="width: 100%">
                   <el-option label="启用" :value="1" />
                   <el-option label="禁用" :value="0" />
                 </el-select>
@@ -51,12 +51,12 @@
     <!-- 操作按钮 -->
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
-      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="loading">删除选中项</el-button>
+      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading">删除选中项</el-button>
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
         <el-table-column type="selection" width="40" />
         <el-table-column label="服务器名称" prop="name" show-overflow-tooltip />
         <el-table-column label="服务器主机" prop="host" show-overflow-tooltip />
@@ -80,20 +80,20 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="query.pageNum"
-          v-model:page-size="query.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="listTotal"
           @size-change="
             (val: number) => {
-              query.pageSize = val;
+              listForm.pageSize = val;
               loadList();
             }
           "
           @current-change="
             (val: number) => {
-              query.pageNum = val;
+              listForm.pageNum = val;
               loadList();
             }
           "
@@ -147,25 +147,20 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi.ts";
-import MenuApi from "@/api/core/MenuApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import { reactive, ref, watch, computed } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon } from "@element-plus/icons-vue";
-import IconPicker from "@/components/common/IconPicker.vue";
-import { Icon } from "@iconify/vue";
-import { EventHolder } from "@/store/EventHolder.ts";
+import { reactive, ref, onMounted, markRaw } from "vue";
+import { Delete, View } from "@element-plus/icons-vue";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
 import RouteServerApi from "@/api/relay/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
-const uiState = reactive({
-  isAdvancedSearch: false,
-});
+// 图标常量
+const ViewIcon = markRaw(View);
+const DeleteIcon = markRaw(Delete);
 
-//列表内容
-const query = reactive<GetRouteServerListDto>({
+// 列表相关变量
+const listForm = reactive<GetRouteServerListDto>({
   name: "",
   host: "",
   port: null,
@@ -175,38 +170,83 @@ const query = reactive<GetRouteServerListDto>({
   pageSize: 10,
 });
 
-const list = ref<GetRouteServerListVo[]>([]);
+const listData = ref<GetRouteServerListVo[]>([]);
 const listSelected = ref<GetRouteServerListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
+// UI状态变量
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
+
+// 模态框相关变量
+const modalVisible = ref(false);
+const modalFormRef = ref<FormInstance>();
+const modalLoading = ref(false);
+const modalMode = ref<"add" | "edit">("add");
+const modalForm = reactive<GetRouteServerDetailsVo>({
+  id: "",
+  name: "",
+  host: "",
+  port: 0,
+  remark: "",
+  status: 0,
+  createTime: "",
+  updateTime: "",
+});
+
+// 表单校验规则
+const modalRules = {
+  name: [
+    { required: true, message: "请输入服务器名称", trigger: "blur" },
+    { max: 32, message: "服务器名称长度不能超过32个字符", trigger: "blur" },
+  ],
+  host: [
+    { required: true, message: "请输入服务器主机", trigger: "blur" },
+    { max: 32, message: "服务器主机长度不能超过32个字符", trigger: "blur" },
+  ],
+  remark: [{ max: 5000, message: "备注长度不能超过5000个字符", trigger: "blur" }],
+  port: [
+    { required: true, message: "请输入服务器端口", trigger: "blur" },
+    { type: "number", min: 1, max: 65535, message: "端口号必须在1-65535之间", trigger: "blur" },
+  ],
+  status: [
+    { required: true, message: "请选择服务器状态", trigger: "blur" },
+    { type: "number", min: 0, max: 1, message: "服务器状态只能在0或1之间", trigger: "blur" },
+  ],
+};
+
+// 加载列表
 const loadList = async () => {
-  loading.value = true;
-  const result = await RouteServerApi.getRouteServerList(query);
+  listLoading.value = true;
+  const result = await RouteServerApi.getRouteServerList(listForm);
 
   if (Result.isSuccess(result)) {
-    list.value = result.data;
-    total.value = result.total;
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
 
   if (Result.isError(result)) {
     ElMessage.error(result.message);
   }
 
-  loading.value = false;
+  listLoading.value = false;
 };
 
+// 重置查询条件
 const resetList = () => {
-  query.pageNum = 1;
-  query.pageSize = 10;
-  query.name = null;
-  query.host = null;
-  query.port = null;
-  query.remark = null;
-  query.status = null;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.name = null;
+  listForm.host = null;
+  listForm.port = null;
+  listForm.remark = null;
+  listForm.status = null;
   loadList();
 };
 
+// 删除单条记录
 const removeList = async (id: string) => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
@@ -231,9 +271,10 @@ const removeList = async (id: string) => {
     ElMessage.error(error.message);
     return;
   }
-  loadList();
+  await loadList();
 };
 
+// 批量删除
 const removeListBatch = async () => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
@@ -258,52 +299,14 @@ const removeListBatch = async () => {
     ElMessage.error(error.message);
     return;
   }
-  loadList();
+  await loadList();
 };
 
-loadList();
-
-//模态框内容
-const modalVisible = ref(false);
-const modalFormRef = ref<FormInstance>();
-const modalLoading = ref(false);
-const modalMode = ref<"add" | "edit">("add"); //add:添加,edit:编辑
-const modalForm = reactive<GetRouteServerDetailsVo>({
-  id: "",
-  name: "",
-  host: "",
-  port: 0,
-  remark: "",
-  status: 0,
-  createTime: "",
-  updateTime: "",
-});
-
-const modalRules = {
-  name: [
-    { required: true, message: "请输入服务器名称", trigger: "blur" },
-    { max: 32, message: "服务器名称长度不能超过32个字符", trigger: "blur" },
-  ],
-  host: [
-    { required: true, message: "请输入服务器主机", trigger: "blur" },
-    { max: 32, message: "服务器主机长度不能超过32个字符", trigger: "blur" },
-  ],
-  remark: [{ max: 5000, message: "备注长度不能超过5000个字符", trigger: "blur" }],
-  port: [
-    { required: true, message: "请输入服务器端口", trigger: "blur" },
-    { type: "number", min: 1, max: 65535, message: "端口号必须在1-65535之间", trigger: "blur" },
-  ],
-  status: [
-    { required: true, message: "请选择服务器状态", trigger: "blur" },
-    { type: "number", min: 0, max: 1, message: "服务器状态只能在0或1之间", trigger: "blur" },
-  ],
-};
-
+// 打开模态框
 const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null) => {
   modalMode.value = mode;
   resetModal();
 
-  //如果是编辑模式则需要加载详情数据
   if (mode === "edit" && row) {
     const ret = await RouteServerApi.getRouteServerDetails({ id: row.id });
 
@@ -327,6 +330,7 @@ const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null)
   modalVisible.value = true;
 };
 
+// 重置模态框表单
 const resetModal = () => {
   modalForm.id = "";
   modalForm.name = "";
@@ -336,8 +340,8 @@ const resetModal = () => {
   modalForm.status = 1;
 };
 
+// 提交模态框表单
 const submitModal = async () => {
-  //先校验表单
   try {
     await modalFormRef?.value?.validate();
   } catch (error) {
@@ -346,7 +350,6 @@ const submitModal = async () => {
 
   modalLoading.value = true;
 
-  //提交表单
   try {
     if (modalMode.value === "add") {
       await RouteServerApi.addRouteServer(modalForm);
@@ -365,9 +368,13 @@ const submitModal = async () => {
     modalLoading.value = false;
   }
 
-  //modalVisible.value = false;
-  loadList();
+  await loadList();
 };
+
+// 生命周期
+onMounted(() => {
+  loadList();
+});
 </script>
 
 <style scoped>

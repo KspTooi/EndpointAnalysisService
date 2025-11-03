@@ -1,16 +1,16 @@
 <template>
-  <div class="user-manager-container">
+  <div class="list-container">
     <div class="query-form">
-      <el-form :model="queryForm">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="用户名">
-              <el-input v-model="queryForm.username" placeholder="输入用户名查询" clearable />
+              <el-input v-model="listForm.username" placeholder="输入用户名查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="状态">
-              <el-select v-model="queryForm.status" placeholder="选择状态" clearable>
+              <el-select v-model="listForm.status" placeholder="选择状态" clearable>
                 <el-option label="正常" :value="0" />
                 <el-option label="封禁" :value="1" />
               </el-select>
@@ -21,8 +21,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadUserList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -30,11 +30,11 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="handleAdd">创建用户</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
     </div>
 
-    <div class="user-table">
-      <el-table :data="userList" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="nickname" label="昵称" min-width="150" />
         <el-table-column prop="email" label="邮箱" min-width="160" />
@@ -49,85 +49,94 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="handleEdit(scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination-container">
-        <!-- 桌面端分页 -->
         <el-pagination
-          v-if="!isMobile"
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          background
-        />
-        <!-- 移动端分页 -->
-        <el-pagination
-          v-else
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-          :pager-count="5"
-          small
+          :total="listTotal"
+          @size-change="
+            (val: number) => {
+              listForm.pageSize = val;
+              loadList();
+            }
+          "
+          @current-change="
+            (val: number) => {
+              listForm.pageNum = val;
+              loadList();
+            }
+          "
           background
         />
       </div>
     </div>
 
     <!-- 用户编辑/新增模态框 -->
-    <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增用户' : '编辑用户'" width="500px" :close-on-click-modal="false">
-      <el-form v-if="dialogVisible" ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="100px" :validate-on-rule-change="false">
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'edit' ? '编辑用户' : '添加用户'"
+      width="500px"
+      class="modal-centered"
+      :close-on-click-modal="false"
+      @close="
+        resetModal();
+        loadList();
+      "
+    >
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="userForm.username" :disabled="formType === 'edit'" placeholder="请输入用户名" />
+          <el-input v-model="modalForm.username" :disabled="modalMode === 'edit'" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="userForm.password" type="password" show-password :placeholder="formType === 'add' ? '请输入密码' : '不修改密码请留空'" />
-          <div v-if="formType === 'edit'" class="form-tip">不修改密码请留空</div>
+          <el-input v-model="modalFormPassword" type="password" show-password :placeholder="modalMode === 'add' ? '请输入密码' : '不修改密码请留空'" />
+          <div v-if="modalMode === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="userForm.nickname" placeholder="请输入昵称" />
+          <el-input v-model="modalForm.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" placeholder="请输入邮箱" />
+          <el-input v-model="modalForm.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="userForm.status" placeholder="请选择状态">
+          <el-radio-group v-model="modalForm.status" placeholder="请选择状态">
             <el-radio :label="0">正常</el-radio>
             <el-radio :label="1">封禁</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="所属用户组" prop="groupIds">
-          <el-select v-model="userForm.groupIds" multiple placeholder="请选择用户组" style="width: 100%">
+          <el-select v-model="selectedGroupIds" multiple placeholder="请选择用户组" style="width: 100%">
             <el-option v-for="group in groupOptions" :key="group.id" :label="group.name" :value="group.id" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitLoading"> 保存 </el-button>
-        </span>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { ref, reactive, onMounted, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import Http from "@/commons/Http.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type SaveUserDto, type UserGroupVo } from "@/api/core/UserApi.ts";
+import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type AddUserDto, type EditUserDto, type UserGroupVo } from "@/api/core/UserApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import GroupApi from "@/api/core/GroupApi.ts";
 
@@ -135,46 +144,44 @@ import GroupApi from "@/api/core/GroupApi.ts";
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 检测是否为移动设备
-const isMobile = ref(false);
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
-
-// 查询表单
-const queryForm = reactive<GetUserListDto>({
+//列表内容
+const listForm = reactive<GetUserListDto>({
   pageNum: 1,
   pageSize: 10,
   username: "",
   status: null,
 });
 
-// 用户列表
-const userList = ref<GetUserListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetUserListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 // 模态框相关
-const dialogVisible = ref(false);
-const formType = ref<"add" | "edit">("add");
-const submitLoading = ref(false);
-const userFormRef = ref<FormInstance>();
+const modalVisible = ref(false);
+const modalMode = ref<"add" | "edit">("add");
+const modalLoading = ref(false);
+const modalFormRef = ref<FormInstance>();
 
 // 用户组选项，将从 API 获取
 const groupOptions = ref<UserGroupVo[]>([]);
 
 // 表单数据
-const userForm = reactive<SaveUserDto>({
+const modalForm = reactive<GetUserDetailsVo>({
+  id: "",
   username: "",
-  password: "",
   nickname: "",
   email: "",
   status: 0,
-  groupIds: [],
+  createTime: "",
+  lastLoginTime: "",
+  groups: [],
+  permissions: [],
 });
+const modalFormPassword = ref("");
+const selectedGroupIds = ref<string[]>([]);
 
 // 表单校验规则 用户密码长度不能超过128个字符, 用户昵称长度不能超过50个字符
-const userFormRules = {
+const modalRules = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" },
     { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },
@@ -184,15 +191,16 @@ const userFormRules = {
     {
       trigger: "blur",
       validator: (rule: any, value: string, callback: Function) => {
-        if (formType.value === "add" && !value) {
+        const password = modalFormPassword.value;
+        if (modalMode.value === "add" && !password) {
           callback(new Error("请输入密码"));
           return;
         }
-        if (value && value.length > 128) {
+        if (password && password.length > 128) {
           callback(new Error("密码长度不能超过128个字符"));
           return;
         }
-        if (value && value.length < 6) {
+        if (password && password.length < 6) {
           callback(new Error("密码长度不能少于6位"));
           return;
         }
@@ -206,174 +214,194 @@ const userFormRules = {
   ],
 };
 
-// 加载用户列表数据
-const loadUserList = async () => {
-  try {
-    loading.value = true;
-    let vos = await AdminUserApi.getUserList(queryForm);
-    userList.value = vos.data;
-    total.value = Number(vos.total);
-  } catch (error) {
-    ElMessage.error("加载用户列表失败");
-    console.error("加载用户列表失败", error);
-  } finally {
-    loading.value = false;
+const loadList = async () => {
+  listLoading.value = true;
+  const result = await AdminUserApi.getUserList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-// 重置查询条件
-const resetQuery = () => {
-  queryForm.username = "";
-  queryForm.status = null;
-  queryForm.pageNum = 1;
-  loadUserList();
-};
-
-// 处理每页大小变化
-const handleSizeChange = (val: number) => {
-  queryForm.pageSize = val;
-  loadUserList();
-};
-
-// 处理页码变化
-const handleCurrentChange = (val: number) => {
-  queryForm.pageNum = val;
-  loadUserList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.username = "";
+  listForm.status = null;
+  loadList();
 };
 
 // 重置表单
-const resetForm = () => {
-  userForm.id = undefined;
-  userForm.username = "";
-  userForm.password = "";
-  userForm.nickname = "";
-  userForm.email = "";
-  userForm.status = 0;
-  userForm.groupIds = [];
+const resetModal = () => {
+  modalForm.id = "";
+  modalForm.username = "";
+  modalForm.nickname = "";
+  modalForm.email = "";
+  modalForm.status = 0;
+  modalForm.groups = [];
+  modalFormPassword.value = "";
+  selectedGroupIds.value = [];
 
-  if (userFormRef.value) {
-    userFormRef.value.resetFields();
+  if (modalFormRef.value) {
+    modalFormRef.value.resetFields();
   }
 };
 
-// 处理新增用户
-const handleAdd = async () => {
-  formType.value = "add";
-  resetForm();
-  dialogVisible.value = true;
+// 打开模态框
+const openModal = async (mode: "add" | "edit", row: GetUserListVo | null) => {
+  modalMode.value = mode;
+  resetModal();
 
-  const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
-  groupOptions.value = [];
-  groups.data.forEach((group) => {
-    groupOptions.value.push({
-      id: group.id,
-      name: group.name,
-      description: "",
-      sortOrder: 0,
-      isSystem: group.isSystem,
-      hasGroup: false,
+  //如果是编辑模式则需要加载详情数据
+  if (mode === "edit" && row) {
+    try {
+      const ret = await AdminUserApi.getUserDetails({ id: row.id });
+
+      modalForm.id = ret.id;
+      modalForm.username = ret.username;
+      modalForm.nickname = ret.nickname || "";
+      modalForm.email = ret.email || "";
+      modalForm.status = ret.status;
+      modalForm.groups = ret.groups || [];
+
+      groupOptions.value = ret.groups || [];
+      selectedGroupIds.value = ret.groups ? ret.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
+    } catch (error: any) {
+      ElMessage.error(error.message);
+      return;
+    }
+  }
+  if (mode !== "edit" || !row) {
+    // 新增模式，获取用户组列表
+    const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
+    groupOptions.value = [];
+    groups.data.forEach((group) => {
+      groupOptions.value.push({
+        id: group.id,
+        name: group.name,
+        description: "",
+        sortOrder: 0,
+        isSystem: group.isSystem,
+        hasGroup: false,
+      });
     });
-  });
-};
-
-// 处理编辑用户
-const handleEdit = async (row: GetUserListVo) => {
-  formType.value = "edit";
-  resetForm();
-  loading.value = true;
-
-  try {
-    const userDetails: GetUserDetailsVo = await AdminUserApi.getUserDetails({ id: row.id });
-
-    userForm.id = userDetails.id;
-    userForm.username = userDetails.username;
-    userForm.nickname = userDetails.nickname || "";
-    userForm.email = userDetails.email || "";
-    userForm.status = userDetails.status;
-
-    groupOptions.value = userDetails.groups || [];
-    userForm.groupIds = userDetails.groups ? userDetails.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
-
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("获取用户详情失败");
-    console.error("获取用户详情失败", error);
-  } finally {
-    loading.value = false;
   }
+
+  modalVisible.value = true;
 };
 
 // 提交表单
-const submitForm = async () => {
-  if (!userFormRef.value) return;
+const submitModal = async () => {
+  //先校验表单
+  try {
+    await modalFormRef?.value?.validate();
+  } catch (error) {
+    return;
+  }
 
-  await userFormRef.value.validate(async (valid) => {
-    if (!valid) return;
+  modalLoading.value = true;
 
-    submitLoading.value = true;
-    try {
-      const submitData = { ...userForm };
-      if (formType.value === "edit" && !submitData.password) {
-        delete submitData.password;
+  //提交表单
+  try {
+    if (modalMode.value === "add") {
+      const addDto: AddUserDto = {
+        username: modalForm.username,
+        password: modalFormPassword.value,
+        nickname: modalForm.nickname,
+        email: modalForm.email,
+        status: modalForm.status,
+        groupIds: selectedGroupIds.value,
+      };
+      const result = await AdminUserApi.addUser(addDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+        resetModal();
       }
-      await Http.postEntity<string>("/user/saveUser", submitData);
-      ElMessage.success(formType.value === "add" ? "新增用户成功" : "更新用户成功");
-      //dialogVisible.value = false;
-
-      //新增需要重置表单
-      if (formType.value === "add") {
-        resetForm();
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
       }
-
-      loadUserList(); // 重新加载列表
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "操作失败";
-      ElMessage.error(errorMsg);
-    } finally {
-      submitLoading.value = false;
     }
-  });
-};
 
-// 处理删除用户
-const handleDelete = (row: GetUserListVo) => {
-  ElMessageBox.confirm(`确定要删除用户 ${row.username} 吗？`, "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      try {
-        const params: CommonIdDto = { id: row.id };
-        await Http.postEntity<string>("/user/removeUser", params);
-        ElMessage.success("删除用户成功");
-        loadUserList(); // 重新加载列表
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "删除失败";
-        ElMessage.error(errorMsg);
+    if (modalMode.value === "edit") {
+      const editDto: EditUserDto = {
+        id: modalForm.id,
+        username: modalForm.username,
+        nickname: modalForm.nickname,
+        email: modalForm.email,
+        status: modalForm.status,
+        groupIds: selectedGroupIds.value,
+      };
+      if (modalFormPassword.value) {
+        editDto.password = modalFormPassword.value;
       }
-    })
-    .catch(() => {
-      // 用户取消删除操作
-    });
+      const result = await AdminUserApi.editUser(editDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+      }
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    modalLoading.value = false;
+  }
+
+  await loadList();
 };
 
-// 页面加载和窗口大小变化时检测设备类型
-onMounted(() => {
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-  loadUserList();
+const removeList = async (id: string) => {
+  try {
+    await ElMessageBox.confirm("确定删除该用户吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
 
-  // 不再需要模拟数据，用户组选项将在编辑时从详情接口获取
-  // TODO: 如果需要在新增时也能选择用户组，需要独立获取用户组列表的逻辑
-});
+  try {
+    await AdminUserApi.removeUser({ id });
+    ElMessage.success("删除成功");
+    await loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+loadList();
 </script>
 
 <style scoped>
-.user-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
+}
+
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -383,34 +411,9 @@ onMounted(() => {
   padding-top: 15px;
 }
 
-.user-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .pagination-container {
-    justify-content: flex-end;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.form-tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

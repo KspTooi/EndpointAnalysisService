@@ -3,7 +3,7 @@ package com.ksptooi.commons.aop;
 import com.google.gson.Gson;
 import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.service.AuthService;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.Result;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -84,7 +84,7 @@ public class TokenFilter implements Filter {
                 res.setHeader("Location", "/login");
 
                 // 创建 Result 对象
-                Result<String> result = Result.error(1, "会话已失效，请重新登录", "/login");
+                Result<String> result = Result.error(1, "会话已失效，请重新登录");
 
                 try (PrintWriter writer = res.getWriter()) {
                     writer.write(gson.toJson(result));
@@ -114,7 +114,7 @@ public class TokenFilter implements Filter {
                         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         res.setContentType("application/json;charset=UTF-8");
 
-                        Result<String> result = Result.error(403, "权限不足，需要权限：" + requiredPermission, null);
+                        Result<String> result = Result.error(403, "权限不足，需要权限：" + requiredPermission);
 
                         try (PrintWriter writer = res.getWriter()) {
                             writer.write(gson.toJson(result));
@@ -138,7 +138,7 @@ public class TokenFilter implements Filter {
                 res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 res.setContentType("application/json;charset=UTF-8");
 
-                Result<String> result = Result.error(403, "访问该端点所需的权限不足", null);
+                Result<String> result = Result.error(403, "访问该端点所需的权限不足");
 
                 try (PrintWriter writer = res.getWriter()) {
                     writer.write(gson.toJson(result));

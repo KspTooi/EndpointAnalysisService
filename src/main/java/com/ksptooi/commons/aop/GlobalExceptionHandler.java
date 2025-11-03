@@ -1,9 +1,9 @@
 package com.ksptooi.commons.aop;
 
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.Result;
-import lombok.extern.slf4j.Slf4j;
 
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BizException.class)
     public Result<Object> handleBizException(BizException ex) {
-        log.error(ex.getMessage(),ex);
+        log.error(ex.getMessage(), ex);
         return Result.error(ex);
     }
 
@@ -49,23 +49,21 @@ public class GlobalExceptionHandler {
     }
 
 
-
     /**
      * 打印增强型请求日志
+     *
      * @param ex 异常
      */
-    public void printEnhancedRequestLog(Exception ex){
+    public void printEnhancedRequestLog(Exception ex) {
         var requestInfo = RequestLogFilter.getRequestInfo();
-        if(requestInfo != null){
+        if (requestInfo != null) {
             var appendMsg = "";
-            if(StringUtils.isNotBlank(requestInfo.getGatewayRequestId())){
+            if (StringUtils.isNotBlank(requestInfo.getGatewayRequestId())) {
                 appendMsg = " 网关请求ID:" + requestInfo.getGatewayRequestId() + " ";
             }
-            log.error("请求处理失败=>{}[{}]{}载荷:{} 原因:{}",requestInfo.getUri(),requestInfo.getMethod(),appendMsg,requestInfo.getBodySupplier().get(),ex.getMessage(),ex);
+            log.error("请求处理失败=>{}[{}]{}载荷:{} 原因:{}", requestInfo.getUri(), requestInfo.getMethod(), appendMsg, requestInfo.getBodySupplier().get(), ex.getMessage(), ex);
         }
     }
-
-
 
 
 }

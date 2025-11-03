@@ -17,6 +17,8 @@ export interface GetCurrentUserCompanyListVo {
   memberCount?: number | null; // 成员数量
   createTime?: string | null; // 创建时间
   updateTime?: string | null; // 更新时间
+  isActive?: number | null; // 当前用户是否已激活 0:否 1:是
+  isCeo?: number | null; // 当前用户是否是该公司CEO 0:否 1:是
 }
 
 export interface AddCompanyDto {
@@ -36,6 +38,11 @@ export interface GetCompanyDetailsVo {
   description?: string | null; // 公司描述
   createTime?: string | null; // 创建时间
   updateTime?: string | null; // 更新时间
+}
+
+export interface ResignCeoDto {
+  companyId?: string | null; // 公司ID
+  newCeoUserId?: string | null; // CEO移交用户ID
 }
 
 export default {
@@ -79,5 +86,19 @@ export default {
    */
   removeCompany: async (dto: CommonIdDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/company/removeCompany", dto);
+  },
+
+  /**
+   * 激活团队
+   */
+  activateCompany: async (dto: CommonIdDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/company/activateCompany", dto);
+  },
+
+  /**
+   * 辞去CEO职位
+   */
+  resignCEO: async (dto: ResignCeoDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/company/resignCEO", dto);
   },
 };

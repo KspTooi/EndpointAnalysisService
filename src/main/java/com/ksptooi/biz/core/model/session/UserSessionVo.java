@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,9 +20,9 @@ public class UserSessionVo {
     private String playerAvatarUrl;
     private String token;
     private Set<String> permissions;
-    private Date expiresAt;
-    private Date createTime;
-    private Date updateTime;
+    private LocalDateTime expiresAt;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
     public UserSessionVo(UserSessionPo po) {
         // 复制基本字段

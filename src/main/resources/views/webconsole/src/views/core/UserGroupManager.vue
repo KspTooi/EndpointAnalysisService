@@ -1,11 +1,11 @@
 <template>
-  <div class="group-manager-container">
+  <div class="list-container">
     <div class="query-form">
-      <el-form :model="queryForm">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="组名称" label-for="query-keyword">
-              <el-input v-model="queryForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
+              <el-input v-model="listForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -16,8 +16,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadGroupList" :disabled="loading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -25,11 +25,11 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="handleAdd">创建访问组</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
     </div>
 
-    <div class="group-table">
-      <el-table :data="groupList" stripe v-loading="loading" border>
+    <div class="list-table">
+      <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="code" label="组标识" min-width="120" />
         <el-table-column prop="name" label="组名称" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
@@ -51,64 +51,74 @@
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="handleEdit(scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(scope.row)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination-container">
         <el-pagination
-          v-if="!isMobile"
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          background
-        />
-        <el-pagination
-          v-else
-          v-model:current-page="queryForm.pageNum"
-          v-model:page-size="queryForm.pageSize"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-          :pager-count="5"
-          size="small"
+          :total="listTotal"
+          @size-change="
+            (val: number) => {
+              listForm.pageSize = val;
+              loadList();
+            }
+          "
+          @current-change="
+            (val: number) => {
+              listForm.pageNum = val;
+              loadList();
+            }
+          "
           background
         />
       </div>
     </div>
 
     <!-- 用户组编辑/新增模态框 -->
-    <el-dialog v-model="dialogVisible" :title="formType === 'add' ? '新增访问组' : '编辑访问组'" width="800px" :close-on-click-modal="false">
-      <el-form v-if="dialogVisible" ref="groupFormRef" :model="groupForm" :rules="groupFormRules" label-width="100px" :validate-on-rule-change="false">
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
+      width="800px"
+      class="modal-centered"
+      :close-on-click-modal="false"
+      @close="
+        (async () => {
+          await resetModal();
+          loadList();
+        })()
+      "
+    >
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
         <div class="form-two-columns">
           <div class="form-left-column">
             <el-form-item label="组标识" prop="code" label-for="group-code">
               <el-input
-                v-model="groupForm.code"
-                :disabled="formType === 'edit' && isSystemGroup"
-                :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
+                v-model="modalForm.code"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
                 id="group-code"
               />
             </el-form-item>
             <el-form-item label="组名称" prop="name" label-for="group-name">
               <el-input
-                v-model="groupForm.name"
-                :disabled="formType === 'edit' && isSystemGroup"
-                :placeholder="formType === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
+                v-model="modalForm.name"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
                 id="group-name"
               />
             </el-form-item>
             <el-form-item label="描述" prop="description" label-for="group-description">
-              <el-input v-model="groupForm.description" type="textarea" :rows="3" id="group-description" />
+              <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
             </el-form-item>
             <el-form-item label="状态" prop="status" label-for="group-status">
-              <el-radio-group v-model="groupForm.status" id="group-status">
+              <el-radio-group v-model="modalForm.status" id="group-status">
                 <el-radio :value="1">启用</el-radio>
                 <el-radio :value="0">禁用</el-radio>
               </el-radio-group>
@@ -132,9 +142,9 @@
                   </div>
                 </div>
                 <div class="permission-list">
-                  <el-checkbox-group v-model="groupForm.permissionIds" id="permission-group" style="width: 240px">
+                  <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
                     <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
-                      <el-checkbox :value="Number(permission.id)">
+                      <el-checkbox :value="permission.id">
                         <div class="permission-info">
                           <span class="permission-name">{{ permission.name }}</span>
                           <span class="permission-code">{{ permission.code }}</span>
@@ -152,64 +162,68 @@
         </div>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitLoading"> 保存 </el-button>
-        </span>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw, computed } from "vue";
+import { ref, reactive, markRaw, computed } from "vue";
 import { Edit, Delete, Search } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminGroupApi, { type GetGroupListDto, type GetGroupListVo, type GroupPermissionDefinitionVo, type SaveGroupDto } from "@/api/core/GroupApi.ts";
+import AdminGroupApi, {
+  type GetGroupListDto,
+  type GetGroupListVo,
+  type GroupPermissionDefinitionVo,
+  type GetGroupDetailsVo,
+  type AddGroupDto,
+  type EditGroupDto,
+} from "@/api/core/GroupApi.ts";
 import AdminPermissionApi from "@/api/core/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import { Result } from "@/commons/entity/Result.ts";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 检测是否为移动设备
-const isMobile = ref(false);
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
-
-// 查询表单
-const queryForm = reactive<GetGroupListDto>({
+const listForm = reactive<GetGroupListDto>({
   pageNum: 1,
   pageSize: 10,
   keyword: "",
   status: undefined,
 });
 
-// 用户组列表
-const groupList = ref<GetGroupListVo[]>([]);
-const total = ref(0);
-const loading = ref(false);
+const listData = ref<GetGroupListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
 // 模态框相关
-const dialogVisible = ref(false);
-const formType = ref<"add" | "edit">("add");
-const submitLoading = ref(false);
-const groupFormRef = ref<FormInstance>();
+const modalVisible = ref(false);
+const modalMode = ref<"add" | "edit">("add");
+const modalLoading = ref(false);
+const modalFormRef = ref<FormInstance>();
 
 // 表单数据
-const groupForm = reactive<SaveGroupDto>({
-  name: "",
+const modalForm = reactive<GetGroupDetailsVo>({
+  id: "",
   code: "",
+  name: "",
   description: "",
+  isSystem: false,
   status: 1,
   sortOrder: 0,
-  permissionIds: [],
+  permissions: [],
 });
 
 // 表单校验规则
-const groupFormRules = {
+const modalRules = {
   code: [
     { required: true, message: "请输入组标识", trigger: "blur" },
     { min: 2, max: 50, message: "组标识长度必须在2-50个字符之间", trigger: "blur" },
@@ -244,197 +258,220 @@ const filteredPermissions = computed(() => {
   return permissionList.value.filter((permission) => permission.name.toLowerCase().includes(search) || permission.code.toLowerCase().includes(search));
 });
 
-// 加载用户组列表数据
-const loadGroupList = async () => {
-  if (loading.value) {
+const loadList = async () => {
+  if (listLoading.value) {
     return;
   }
 
-  try {
-    loading.value = true;
-    const vos = await AdminGroupApi.getGroupList(queryForm);
-    groupList.value = vos.data;
-    total.value = Number(vos.total);
-  } catch (error) {
-    ElMessage.error("加载访问组列表失败");
-    console.error("加载访问组列表失败", error);
-  } finally {
-    loading.value = false;
+  listLoading.value = true;
+  const result = await AdminGroupApi.getGroupList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
   }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
 };
 
-// 重置查询条件
-const resetQuery = () => {
-  queryForm.keyword = "";
-  queryForm.status = undefined;
-  queryForm.pageNum = 1;
-  loadGroupList();
-};
-
-// 处理每页大小变化
-const handleSizeChange = (val: number) => {
-  queryForm.pageSize = val;
-  loadGroupList();
-};
-
-// 处理页码变化
-const handleCurrentChange = (val: number) => {
-  queryForm.pageNum = val;
-  loadGroupList();
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.keyword = "";
+  listForm.status = undefined;
+  loadList();
 };
 
 // 重置表单
-const resetForm = () => {
-  // 重置表单数据
-  groupForm.id = undefined;
-  groupForm.name = "";
-  groupForm.code = "";
-  groupForm.description = "";
-  groupForm.status = 1;
-  groupForm.sortOrder = 0;
-  groupForm.permissionIds = [];
+const resetModal = async () => {
+  modalForm.id = "";
+  modalForm.code = "";
+  modalForm.name = "";
+  modalForm.description = "";
+  modalForm.status = 1;
+  modalForm.sortOrder = 0;
+  modalForm.permissions = [];
 
   // 重置权限搜索
   permissionSearch.value = "";
 
-  // 重置权限列表
-  permissionList.value = [];
+  // 重置选中的权限ID
+  selectedPermissionIds.value = [];
+
+  // 如果是新增模式，总是加载权限列表
+  if (modalMode.value === "add") {
+    try {
+      const permissions = await AdminPermissionApi.getPermissionDefinition();
+      permissionList.value = permissions.map((p) => ({
+        id: p.id,
+        code: p.code,
+        name: p.name,
+        has: 0,
+      }));
+    } catch (error) {
+      // 权限列表加载失败，静默处理
+    }
+  }
+  if (modalMode.value !== "add") {
+    permissionList.value = [];
+  }
 
   // 重置表单验证状态
-  if (groupFormRef.value) {
-    groupFormRef.value.resetFields();
+  if (modalFormRef.value) {
+    modalFormRef.value.resetFields();
   }
 };
 
-// 处理新增用户组
-const handleAdd = async () => {
-  formType.value = "add";
-  isSystemGroup.value = false;
-  resetForm();
+// 打开模态框
+const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null) => {
+  modalMode.value = mode;
+  await resetModal();
 
-  try {
-    // 获取所有权限节点
-    const permissions = await AdminPermissionApi.getPermissionDefinition();
+  //如果是编辑模式则需要加载详情数据
+  if (mode === "edit" && row) {
+    isSystemGroup.value = row.isSystem;
+    try {
+      const ret = await AdminGroupApi.getGroupDetails({ id: row.id });
 
-    permissionList.value = permissions.map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.name,
-      has: 0,
-    }));
-  } catch (error) {
-    console.log(error);
-    ElMessage.error("获取权限节点列表失败");
+      modalForm.id = ret.id;
+      modalForm.code = ret.code;
+      modalForm.name = ret.name;
+      modalForm.description = ret.description;
+      modalForm.status = ret.status;
+      modalForm.sortOrder = ret.sortOrder;
+      modalForm.permissions = ret.permissions || [];
+
+      permissionList.value = ret.permissions || [];
+      selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => p.id) : [];
+    } catch (error: any) {
+      ElMessage.error(error.message || "获取访问组详情失败");
+      return;
+    }
+  }
+  if (mode !== "edit" || !row) {
+    isSystemGroup.value = false;
   }
 
-  dialogVisible.value = true;
-};
-
-// 处理编辑用户组
-const handleEdit = async (row: GetGroupListVo) => {
-  formType.value = "edit";
-  resetForm();
-  isSystemGroup.value = row.isSystem;
-
-  try {
-    const details = await AdminGroupApi.getGroupDetails({ id: row.id });
-    groupForm.id = details.id;
-    groupForm.code = details.code;
-    groupForm.name = details.name;
-    groupForm.description = details.description;
-    groupForm.status = details.status;
-    groupForm.sortOrder = details.sortOrder;
-
-    // 设置权限列表
-    permissionList.value = details.permissions;
-    groupForm.permissionIds = details.permissions.filter((p) => p.has === 0).map((p) => Number(p.id));
-
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error("获取访问组详情失败");
-  }
+  modalVisible.value = true;
 };
 
 // 提交表单
-const submitForm = async () => {
-  if (!groupFormRef.value) {
+const submitModal = async () => {
+  //先校验表单
+  try {
+    await modalFormRef?.value?.validate();
+  } catch (error) {
     return;
   }
 
-  await groupFormRef.value.validate(async (valid) => {
-    if (!valid) {
-      return;
+  modalLoading.value = true;
+
+  //提交表单
+  try {
+    if (modalMode.value === "add") {
+      const addDto: AddGroupDto = {
+        code: modalForm.code,
+        name: modalForm.name,
+        description: modalForm.description,
+        status: modalForm.status,
+        sortOrder: modalForm.sortOrder,
+        permissionIds: selectedPermissionIds.value,
+      };
+      const result = await AdminGroupApi.addGroup(addDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
+        await resetModal();
+      }
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
     }
 
-    submitLoading.value = true;
-    try {
-      await AdminGroupApi.saveGroup(groupForm);
-      ElMessage.success(formType.value === "add" ? "新增访问组成功" : "更新访问组成功");
-      //dialogVisible.value = false;
-
-      //新增需要重置权限列表
-      if (formType.value === "add") {
-        resetForm();
-        //刷新权限
-        handleAdd();
+    if (modalMode.value === "edit") {
+      const editDto: EditGroupDto = {
+        id: modalForm.id,
+        code: modalForm.code,
+        name: modalForm.name,
+        description: modalForm.description,
+        status: modalForm.status,
+        sortOrder: modalForm.sortOrder,
+        permissionIds: selectedPermissionIds.value,
+      };
+      const result = await AdminGroupApi.editGroup(editDto);
+      if (Result.isSuccess(result)) {
+        ElMessage.success("操作成功");
       }
-
-      await loadGroupList();
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "操作失败";
-      ElMessage.error(errorMsg);
-    } finally {
-      submitLoading.value = false;
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+        return;
+      }
     }
-  });
+  } catch (error: any) {
+    ElMessage.error(error.message);
+    return;
+  } finally {
+    modalLoading.value = false;
+  }
+
+  await loadList();
 };
 
-// 处理删除用户组
-const handleDelete = (row: GetGroupListVo) => {
-  ElMessageBox.confirm(`确定要删除访问组 ${row.name} 吗？`, "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      try {
-        const params: CommonIdDto = { id: row.id };
-        await AdminGroupApi.removeGroup(params);
-        ElMessage.success("删除访问组成功");
-        loadGroupList();
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "删除失败";
-        ElMessage.error(errorMsg);
-      }
-    })
-    .catch(() => {
-      // 用户取消删除操作
-    });
-};
+const selectedPermissionIds = ref<string[]>([]);
 
-// 全选权限节点
 const selectAllPermissions = () => {
-  groupForm.permissionIds = filteredPermissions.value.map((p) => Number(p.id));
+  selectedPermissionIds.value = filteredPermissions.value.map((p) => p.id);
 };
 
-// 取消全选权限节点
 const deselectAllPermissions = () => {
-  groupForm.permissionIds = [];
+  selectedPermissionIds.value = [];
 };
 
-// 页面加载和窗口大小变化时检测设备类型
-onMounted(() => {
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-  loadGroupList();
-});
+const removeList = async (id: string) => {
+  try {
+    await ElMessageBox.confirm("确定删除该访问组吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await AdminGroupApi.removeGroup({ id });
+    ElMessage.success("删除成功");
+    await loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+loadList();
 </script>
 
 <style scoped>
-.group-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
+}
+
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -444,32 +481,12 @@ onMounted(() => {
   padding-top: 15px;
 }
 
-.group-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
+:deep(.modal-centered) {
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .pagination-container {
-    justify-content: flex-end;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-/* 两列布局样式 */
 .form-two-columns {
   display: flex;
   flex-direction: row;
@@ -536,22 +553,6 @@ onMounted(() => {
 :deep(.el-checkbox__label) {
   display: flex;
   align-items: flex-start;
-}
-
-/* 响应式处理 */
-@media (max-width: 768px) {
-  .form-two-columns {
-    flex-direction: column;
-  }
-
-  .form-left-column,
-  .form-right-column {
-    width: 100%;
-  }
-
-  .permission-list {
-    max-height: 200px;
-  }
 }
 
 .permission-select-buttons {

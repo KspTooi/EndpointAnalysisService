@@ -1,19 +1,19 @@
 <template>
-  <div class="request-manager-container">
+  <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
       <QueryPersistTip />
-      <el-form :model="query">
+      <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="原始请求ID">
-              <el-input ref="originRequestIdInput" v-model="query.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" /> </el-form-item
+              <el-input ref="originRequestIdInput" v-model="listForm.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" /> </el-form-item
           ></el-col>
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="3" :offset="3">
-            <el-button type="primary" @click="loadOriginRequestList" :disabled="loading">查询</el-button>
-            <el-button @click="resetQuery" :disabled="loading">重置</el-button>
+            <el-button type="primary" @click="loadOriginRequestList" :disabled="listLoading">查询</el-button>
+            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -27,7 +27,7 @@
     </div>
 
     <!-- 空状态提示 -->
-    <div class="empty-state" v-if="originRequestList.length === 0 && !loading">
+    <div class="empty-state" v-if="originRequestList.length === 0 && !listLoading">
       <el-empty description="请输入原始请求ID进行查询">
         <el-button type="primary" @click="originRequestIdInput?.focus()">开始查询</el-button>
       </el-empty>
@@ -35,11 +35,11 @@
 
     <div class="request-area" v-if="originRequestList.length > 0">
       <div class="origin-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac" v-if="originRequestList.length > 0">
-        原始请求ID: {{ query.originRequestId }}
+        原始请求ID: {{ listForm.originRequestId }}
       </div>
       <!-- 原始请求列表 -->
       <div class="origin-request-table">
-        <el-table :data="originRequestList" v-loading="loading" border>
+        <el-table :data="originRequestList" v-loading="listLoading" border>
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -110,7 +110,7 @@
 
       <!-- 回放请求列表 -->
       <div class="replay-request-table">
-        <el-table :data="list" stripe v-loading="loading" border>
+        <el-table :data="listData" stripe v-loading="listLoading" border>
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -179,21 +179,21 @@
         <!-- 分页 -->
         <div class="pagination-container">
           <el-pagination
-            v-model:current-page="query.pageNum"
-            v-model:page-size="query.pageSize"
+            v-model:current-page="listForm.pageNum"
+            v-model:page-size="listForm.pageSize"
             :page-sizes="[10, 20, 50, 100]"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
+            :total="listTotal"
             @size-change="
               (val: number) => {
-                query.pageSize = val;
-                loadReplayRequestList();
+                listForm.pageSize = val;
+                loadList();
               }
             "
             @current-change="
               (val: number) => {
-                query.pageNum = val;
-                loadReplayRequestList();
+                listForm.pageNum = val;
+                loadList();
               }
             "
             background
@@ -207,25 +207,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, markRaw } from "vue";
 import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/api/relay/ReplayRequestApi.ts";
 import ReplayRequestApi from "@/api/relay/ReplayRequestApi.ts";
 import { ElMessage } from "element-plus";
 import { View } from "@element-plus/icons-vue";
-import { markRaw } from "vue";
 import RequestApi from "@/api/relay/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 
-//原始请求列表
-const originRequestList = ref<GetOriginRequestVo[]>([]);
+// 图标常量
+const ViewIcon = markRaw(View);
 
-//输入框引用
-const originRequestIdInput = ref();
-
-//回放请求列表查询条件
-const query = reactive<GetReplayRequestListDto>({
+// 列表相关变量
+const listForm = reactive<GetReplayRequestListDto>({
   originRequestId: null,
   relayServerId: null,
   requestId: null,
@@ -237,64 +233,75 @@ const query = reactive<GetReplayRequestListDto>({
   pageSize: 10,
 });
 
-//回放请求列表
-const list = ref<GetReplayRequestListVo[]>([]);
+const listData = ref<GetReplayRequestListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
 
-//回放请求列表总条数
-const total = ref(0);
-
-// 加载状态
-const loading = ref(false);
-
-// 使用markRaw包装图标组件
-const ViewIcon = markRaw(View);
+// 原始请求列表相关变量
+const originRequestList = ref<GetOriginRequestVo[]>([]);
+const originRequestIdInput = ref();
 
 // 模态框相关
 const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
 
-/**
- * 加载回放请求列表
- */
-const loadReplayRequestList = async () => {
-  loading.value = true;
+// 执行重放加载状态
+const executeLoading = ref(false);
+
+// 加载列表
+const loadList = async () => {
+  listLoading.value = true;
   try {
-    const res = await ReplayRequestApi.getReplayRequestList(query);
-    list.value = res.data;
-    total.value = res.total;
+    const res = await ReplayRequestApi.getReplayRequestList(listForm);
+    listData.value = res.data;
+    listTotal.value = res.total;
   } catch (e) {
     ElMessage.error("无法获取回放请求");
     console.error("无法获取回放请求", e);
   } finally {
-    loading.value = false;
+    listLoading.value = false;
   }
 };
 
-/**
- * 加载原始请求列表
- */
+// 加载原始请求列表
 const loadOriginRequestList = async () => {
-  loading.value = true;
+  listLoading.value = true;
   try {
-    localStorage.setItem("originRequestId", query.originRequestId || "");
-    const res = await ReplayRequestApi.getOriginRequest({ requestId: query.originRequestId });
+    localStorage.setItem("originRequestId", listForm.originRequestId || "");
+    const res = await ReplayRequestApi.getOriginRequest({ requestId: listForm.originRequestId });
     originRequestList.value = [res];
-    loadReplayRequestList();
+    loadList();
   } catch (e) {
     ElMessage.error("无法获取原始请求");
     console.error("无法获取原始请求", e);
   } finally {
-    loading.value = false;
+    listLoading.value = false;
   }
 };
 
-const executeLoading = ref(false);
+// 重置查询条件
+const resetList = () => {
+  listForm.originRequestId = null;
+  listForm.requestId = null;
+  listForm.method = null;
+  listForm.url = null;
+  listForm.source = null;
+  listForm.status = null;
+  listForm.relayServerId = null;
+  localStorage.removeItem("originRequestId");
+  originRequestList.value = [];
+  listData.value = [];
+  listTotal.value = 0;
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+};
 
+// 执行重放
 const executeReplay = async () => {
   try {
     executeLoading.value = true;
-    await ReplayRequestApi.replayRequest(query.originRequestId || "");
+    await ReplayRequestApi.replayRequest(listForm.originRequestId || "");
     ElMessage.success("执行重放成功");
-    loadReplayRequestList();
+    loadList();
     loadOriginRequestList();
   } catch (e: any) {
     ElMessage.error(e.message);
@@ -304,30 +311,13 @@ const executeReplay = async () => {
   }
 };
 
-const resetQuery = () => {
-  query.originRequestId = null;
-  query.requestId = null;
-  query.method = null;
-  query.url = null;
-  query.source = null;
-  query.status = null;
-  query.relayServerId = null;
-  localStorage.removeItem("originRequestId");
-  originRequestList.value = [];
-  list.value = [];
-  total.value = 0;
-  query.pageNum = 1;
-  query.pageSize = 10;
-};
-
-//页面加载时自动加载数据
+// 生命周期
 onMounted(() => {
-  //从localStorage获取保存的原始请求ID
   const originRequestId = localStorage.getItem("originRequestId");
   if (originRequestId) {
-    query.originRequestId = originRequestId;
+    listForm.originRequestId = originRequestId;
     loadOriginRequestList();
-    loadReplayRequestList();
+    loadList();
   }
 });
 
@@ -351,6 +341,7 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
   return [];
 };
 
+// 打开原始请求预览模态框
 const openOriginViewModal = async (row: GetOriginRequestVo) => {
   try {
     const res = await RequestApi.getRequestDetails(row.id.toString());
@@ -380,7 +371,7 @@ const openOriginViewModal = async (row: GetOriginRequestVo) => {
   }
 };
 
-//打开预览请求模态框
+// 打开预览请求模态框
 const openViewModal = async (row: GetReplayRequestListVo) => {
   try {
     //获取请求数据
@@ -463,7 +454,7 @@ const formatJson = (data: unknown): string => {
 </script>
 
 <style scoped>
-.request-manager-container {
+.list-container {
   padding: 20px;
   max-width: 100%;
   overflow-x: auto;

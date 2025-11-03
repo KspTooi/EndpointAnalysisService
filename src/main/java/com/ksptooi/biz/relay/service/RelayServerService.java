@@ -7,11 +7,11 @@ import com.ksptooi.biz.relay.model.routerule.po.RouteRulePo;
 import com.ksptooi.biz.relay.repository.RelayServerRepository;
 import com.ksptooi.biz.relay.repository.RouteRuleRepository;
 import com.ksptooi.commons.aop.HttpRelayServlet;
-import com.ksptooi.commons.exception.BizException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.routeselector.HttpRouteRule;
 import com.ksptooi.commons.utils.RouteSelector;
-import com.ksptooi.commons.utils.web.PageableResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -63,7 +63,7 @@ public class RelayServerService {
      * @param dto 查询条件
      * @return 中继服务器列表
      */
-    public PageableResult<GetRelayServerListVo> getRelayServerList(GetRelayServerListDto dto) {
+    public PageResult<GetRelayServerListVo> getRelayServerList(GetRelayServerListDto dto) {
 
         Page<RelayServerPo> pPos = relayServerRepository.getRelayServerList(dto, dto.pageRequest());
         List<GetRelayServerListVo> vos = new ArrayList<>();
@@ -81,7 +81,7 @@ public class RelayServerService {
             vos.add(vo);
         }
 
-        return PageableResult.success(vos, pPos.getTotalElements());
+        return PageResult.success(vos, pPos.getTotalElements());
     }
 
     /**

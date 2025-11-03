@@ -19,6 +19,9 @@ public class GetCompanyMemberListVo {
     @Schema(description = "用户ID")
     private Long userId;
 
+    @Schema(description = "用户名称")
+    private String username;
+
     @Schema(description = "职务 0:CEO 1:成员")
     private Integer role;
 

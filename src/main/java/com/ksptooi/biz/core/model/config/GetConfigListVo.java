@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter@Setter
 public class GetConfigListVo {
@@ -25,17 +25,17 @@ public class GetConfigListVo {
     private String description;
 
     // 创建时间
-    private Date createTime;
+    private LocalDateTime createTime;
 
     // 更新时间
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     // 无参构造函数
     public GetConfigListVo() {
     }
 
 
-    public GetConfigListVo(Long id, String userName, String configKey, String configValue, String description, Date createTime, Date updateTime) {
+    public GetConfigListVo(Long id, String userName, String configKey, String configValue, String description, LocalDateTime createTime, LocalDateTime updateTime) {
         this.id = id;
         this.userName = userName;
         this.configKey = configKey;

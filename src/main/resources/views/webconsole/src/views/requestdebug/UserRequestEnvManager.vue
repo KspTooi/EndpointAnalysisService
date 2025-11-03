@@ -22,12 +22,6 @@
         <el-form-item label="环境名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入环境名称" />
         </el-form-item>
-        <el-form-item label="是否激活" prop="active">
-          <el-select v-model="modalForm.active" placeholder="请选择是否激活">
-            <el-option label="是" :value="0" />
-            <el-option label="否" :value="1" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="modalForm.remark" placeholder="请输入备注" />
         </el-form-item>
@@ -72,7 +66,6 @@ const modalMode = ref<"add" | "edit">("add"); //add:添加,edit:编辑
 const modalForm = reactive<GetUserRequestEnvDetailsVo>({
   id: null,
   name: "",
-  active: 0,
   remark: "",
   updateTime: "",
 });
@@ -99,7 +92,6 @@ const openModal = async (mode: "add" | "edit", row: GetUserRequestEnvListVo | nu
     if (Result.isSuccess(ret)) {
       modalForm.id = ret.data.id;
       modalForm.name = ret.data.name;
-      modalForm.active = ret.data.active;
       modalForm.remark = ret.data.remark;
       modalForm.updateTime = ret.data.updateTime;
     }
@@ -116,7 +108,6 @@ const openModal = async (mode: "add" | "edit", row: GetUserRequestEnvListVo | nu
 const resetModal = () => {
   modalForm.id = null;
   modalForm.name = "";
-  modalForm.active = 1;
   modalForm.remark = "";
   modalForm.updateTime = "";
 };

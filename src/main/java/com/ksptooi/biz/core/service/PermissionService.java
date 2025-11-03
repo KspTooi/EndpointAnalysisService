@@ -4,8 +4,8 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.permission.*;
 import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.commons.enums.PermissionEnum;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -47,7 +47,7 @@ public class PermissionService {
         List<GetPermissionListVo> vos = as(pagePos.getContent(), GetPermissionListVo.class);
 
         // 返回结果
-        return new PageResult<>(vos, pagePos.getTotalElements());
+        return PageResult.success(vos, pagePos.getTotalElements());
     }
 
     /**
@@ -63,11 +63,8 @@ public class PermissionService {
         return vo;
     }
 
-    /**
-     * 保存权限
-     */
     @Transactional(rollbackFor = Exception.class)
-    public void savePermission(SavePermissionDto dto) throws BizException {
+    public void addPermission(AddPermissionDto dto) throws BizException {
         if (StringUtils.isBlank(dto.getCode())) {
             throw new BizException("权限标识不能为空");
         }
@@ -76,7 +73,44 @@ public class PermissionService {
             throw new BizException("权限名称不能为空");
         }
 
-        // 检查权限标识是否已存在
+        PermissionPo query = new PermissionPo();
+        query.setCode(dto.getCode());
+
+        Example<PermissionPo> example = Example.of(query);
+        List<PermissionPo> existingPerms = repository.findAll(example);
+        if (!existingPerms.isEmpty()) {
+            throw new BizException("权限标识已存在");
+        }
+
+        PermissionPo permission = new PermissionPo();
+        permission.setIsSystem(0);
+
+        if (dto.getSortOrder() == null) {
+            dto.setSortOrder(getNextSortOrder());
+        }
+
+        assign(dto, permission);
+        repository.save(permission);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void editPermission(EditPermissionDto dto) throws BizException {
+        if (StringUtils.isBlank(dto.getCode())) {
+            throw new BizException("权限标识不能为空");
+        }
+
+        if (StringUtils.isBlank(dto.getName())) {
+            throw new BizException("权限名称不能为空");
+        }
+
+        PermissionPo permission = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("权限不存在"));
+
+        if (permission.getIsSystem() != null && permission.getIsSystem() == 1) {
+            dto.setCode(permission.getCode());
+            dto.setName(permission.getName());
+        }
+
         PermissionPo query = new PermissionPo();
         query.setCode(dto.getCode());
 
@@ -84,33 +118,14 @@ public class PermissionService {
         List<PermissionPo> existingPerms = repository.findAll(example);
         PermissionPo existingPermByCode = existingPerms.isEmpty() ? null : existingPerms.getFirst();
 
-        if (existingPermByCode != null && (dto.getId() == null || !existingPermByCode.getId().equals(dto.getId()))) {
+        if (existingPermByCode != null && !existingPermByCode.getId().equals(dto.getId())) {
             throw new BizException("权限标识已存在");
         }
 
-        PermissionPo permission;
-        if (dto.getId() == null) {
-            // 创建新权限
-            permission = new PermissionPo();
-            permission.setIsSystem(0); // 非系统权限
-        } else {
-            // 更新现有权限
-            permission = repository.findById(dto.getId())
-                    .orElseThrow(() -> new BizException("权限不存在"));
-
-            // 如果是系统权限，不允许修改code和name
-            if (permission.getIsSystem() != null && permission.getIsSystem() == 1) {
-                dto.setCode(permission.getCode());
-                dto.setName(permission.getName());
-            }
-        }
-
-        // 设置排序顺序
         if (dto.getSortOrder() == null) {
             dto.setSortOrder(getNextSortOrder());
         }
 
-        // 更新权限信息
         assign(dto, permission);
         repository.save(permission);
     }

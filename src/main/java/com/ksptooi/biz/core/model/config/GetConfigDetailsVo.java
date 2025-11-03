@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter@Setter
 @Schema(name = "GetConfigDetailsVo")
@@ -30,9 +30,9 @@ public class GetConfigDetailsVo {
     private String description;
 
     // 创建时间
-    private Date createTime;
+    private LocalDateTime createTime;
 
     // 更新时间
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 }

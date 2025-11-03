@@ -1,5 +1,7 @@
 package com.ksptooi.biz.requestdebug.service;
 
+import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.requestdebug.model.userrequestenv.dto.AddUserRequestEnvDto;
@@ -8,16 +10,14 @@ import com.ksptooi.biz.requestdebug.model.userrequestenv.dto.GetUserRequestEnvLi
 import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvDetailsVo;
 import com.ksptooi.biz.requestdebug.model.userrequestenv.vo.GetUserRequestEnvListVo;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestEnvRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -31,17 +31,15 @@ public class UserRequestEnvService {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) throws AuthException {
         UserRequestEnvPo query = new UserRequestEnvPo();
         assign(dto, query);
 
-        Page<UserRequestEnvPo> page = repository.getUserRequestEnvList(query, AuthService.requireUserId(), dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
-        List<GetUserRequestEnvListVo> vos = as(page.getContent(), GetUserRequestEnvListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        Page<GetUserRequestEnvListVo> page = repository.getUserRequestEnvList(query, AuthService.requireUserId(), dto.pageRequest());
+        return PageResult.success(page.getContent(), page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -73,6 +71,34 @@ public class UserRequestEnvService {
         if (!dto.isBatch()) {
             repository.deleteById(dto.getId());
         }
+    }
+
+    /**
+     * 激活环境
+     *
+     * @param dto 环境ID
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void activateUserRequestEnv(CommonIdDto dto) throws Exception {
+        Long userId = AuthService.requireUserId();
+
+        //查询环境
+        UserRequestEnvPo env = repository.getByIdAndUserId(dto.getId(), userId);
+        if (env == null) {
+            throw new BizException("环境不存在或您无权访问此环境");
+        }
+
+        //更新用户已激活的环境
+        UserPo user = authService.requireUser();
+
+        //检查是否已重复激活相同环境
+        if (user.getActiveEnv() != null && user.getActiveEnv().getId().equals(env.getId())) {
+            throw new BizException("您已激活此环境");
+        }
+
+        user.setActiveEnv(env);
+        userRepository.save(user);
     }
 
 }

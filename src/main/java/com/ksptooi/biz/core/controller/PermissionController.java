@@ -1,12 +1,17 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.core.model.permission.*;
+import com.ksptooi.biz.core.model.permission.AddPermissionDto;
+import com.ksptooi.biz.core.model.permission.EditPermissionDto;
+import com.ksptooi.biz.core.model.permission.GetPermissionDefinitionVo;
+import com.ksptooi.biz.core.model.permission.GetPermissionDetailsVo;
+import com.ksptooi.biz.core.model.permission.GetPermissionListDto;
+import com.ksptooi.biz.core.model.permission.GetPermissionListVo;
 import com.ksptooi.biz.core.service.PermissionService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,13 +57,25 @@ public class PermissionController {
         }
     }
 
-    @Operation(summary = "保存权限")
-    @PostMapping("savePermission")
+    @Operation(summary = "新增权限")
+    @PostMapping("addPermission")
     @RequirePermissionRest("admin:permission:save")
-    public Result<String> savePermission(@RequestBody @Valid SavePermissionDto dto) {
+    public Result<String> addPermission(@RequestBody @Valid AddPermissionDto dto) {
         try {
-            service.savePermission(dto);
-            return Result.success("success");
+            service.addPermission(dto);
+            return Result.success("新增成功");
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+
+    @Operation(summary = "编辑权限")
+    @PostMapping("editPermission")
+    @RequirePermissionRest("admin:permission:save")
+    public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) {
+        try {
+            service.editPermission(dto);
+            return Result.success("修改成功");
         } catch (Exception ex) {
             return Result.error(ex.getMessage());
         }

@@ -12,16 +12,16 @@
         <div v-for="item in paginatedList" :key="item.id" class="side-list-item" :class="{ active: selectedId === item.id }" @click="handleSelect(item)">
           <span class="item-name">{{ item.name }}</span>
           <div class="item-actions">
-            <div class="item-actions-button-active" v-if="item.active === 0">
+            <div class="item-actions-button-active" v-if="item.active === 1">
               <IIcRoundCheckCircle />
             </div>
-            <div class="item-actions-button item-action-edit" @click="emit('onActive', item.id)">
+            <div class="item-actions-button item-action-edit" @click.stop="handleActivate(item.id)">
               <IIcRoundCheckCircle />
             </div>
-            <div class="item-actions-button item-action-edit" @click="emit('onEdit', item)">
+            <div class="item-actions-button item-action-edit" @click.stop="emit('onEdit', item)">
               <IIcBaselineBuildCircle />
             </div>
-            <div class="item-actions-button item-action-remove" @click="removeList(item.id)">
+            <div class="item-actions-button item-action-remove" @click.stop="removeList(item.id)">
               <IIcSharpRemoveCircle />
             </div>
           </div>
@@ -49,7 +49,6 @@ const emit = defineEmits<{
   (e: "onSelect", item: GetUserRequestEnvListVo): void;
   (e: "onAdd"): void;
   (e: "onEdit", item: GetUserRequestEnvListVo): void;
-  (e: "onActive", id: string): void;
 }>();
 
 //列表内容
@@ -172,6 +171,21 @@ const handlePageChange = (page: number) => {
   query.pageNum = page;
 };
 
+const handleActivate = async (id: string) => {
+  try {
+    const result = await UserRequestEnvApi.activateUserRequestEnv({ id });
+    if (Result.isSuccess(result)) {
+      ElMessage.success("激活成功");
+      loadList();
+    }
+    if (Result.isError(result)) {
+      ElMessage.error(result.message);
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
 loadList();
 
 defineExpose({
@@ -241,6 +255,7 @@ defineExpose({
   align-items: center;
   font-size: 14px;
   height: 30px;
+  user-select: none;
 }
 
 .side-list-item:hover {

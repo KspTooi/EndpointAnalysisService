@@ -5,9 +5,9 @@ import com.ksptooi.biz.document.model.epdocoperation.GetEpDocOperationTagListDto
 import com.ksptooi.biz.document.model.epdocoperation.GetEpDocOperationTagListVo;
 import com.ksptooi.biz.document.service.EpDocOperationService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.Result;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
