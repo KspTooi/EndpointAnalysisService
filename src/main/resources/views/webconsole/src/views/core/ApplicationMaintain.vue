@@ -28,6 +28,7 @@ const operationLoading = ref<{ [key: string]: boolean }>({
   users: false,
   configs: false,
   menus: false,
+  endpoints: false,
 });
 
 // 执行维护操作的通用方法
@@ -69,7 +70,7 @@ const handleOperationClick = (operation: MaintainOperation) => {
     beforeClose: async (action, instance, done) => {
       if (action === "confirm") {
         instance.confirmButtonLoading = true;
-        instance.confirmButtonText = "执行中...";
+        instance.confirmButtonText = "正在处理...";
         try {
           await performAction();
         } finally {
@@ -142,6 +143,17 @@ const maintainOperations: MaintainOperation[] = [
     onComplete: () => {
       eventHolder.requestReloadLeftMenu();
     },
+  },
+  {
+    title: "端点权限重置",
+    description: "删除所有端点权限配置并恢复为默认配置。这是一个危险操作，请谨慎使用。",
+    icon: Cpu,
+    buttonText: "端点权限重置",
+    bgColor: "rgba(245, 108, 108, 0.1)",
+    iconColor: "#F56C6C",
+    action: () => executeMaintainOperation("endpoints", MaintainApi.resetEndpointPermissionConfig),
+    key: "endpoints",
+    warning: "这是一个危险操作! 这将会删除所有现有端点权限配置并恢复为默认设置，该操作不可逆。是否确定要继续？",
   },
 ];
 </script>

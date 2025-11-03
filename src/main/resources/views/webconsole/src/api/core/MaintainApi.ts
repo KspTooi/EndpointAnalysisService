@@ -40,4 +40,12 @@ export default {
     const result = await Http.postRaw<string>("/maintain/resetMenus", {});
     return result.message || "菜单重置完成";
   },
+
+  /**
+   * 重置端点权限配置
+   */
+  resetEndpointPermissionConfig: async (): Promise<string> => {
+    const result = await Http.postRaw<string>("/maintain/resetEndpointPermissionConfig", {});
+    return result.message || "端点权限配置重置完成";
+  },
 };

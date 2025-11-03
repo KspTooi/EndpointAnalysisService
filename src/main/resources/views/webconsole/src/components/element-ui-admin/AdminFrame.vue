@@ -8,7 +8,7 @@
           :active-item-id="activeMenuId"
           :is-collapse="false"
           title="EAS服务管理控制台"
-          version="版本:1.2F-RC 预发布"
+          version="版本:1.2G 预发布"
           @item-click="handleMenuClick"
           @action="handleMenuAction"
         />

@@ -135,10 +135,10 @@ public class MaintainController {
     @RequirePermissionRest("admin:maintain:menu")
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
-        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus.sql");
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_2G.sql");
 
         if (!sqlScript.exists()) {
-            throw new BizException("SQL脚本文件 'sql/default_menus.sql' 不存在。请检查文件是否已正确放置。");
+            throw new BizException("SQL脚本文件 'sql/default_menus_1_2G.sql' 不存在。请检查文件是否已正确放置。");
         }
 
         try {
@@ -151,6 +151,34 @@ public class MaintainController {
             return Result.success("重置菜单成功", null);
         } catch (Exception e) {
             throw new RuntimeException("重置菜单失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 重置端点权限配置
+     * 删除所有菜单并执行SQL脚本恢复默认菜单
+     */
+    @PostMapping("/resetEndpointPermissionConfig")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public Result<String> resetEndpointPermissionConfig() throws FileNotFoundException, BizException {
+
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_endpoints_1_2G.sql");
+
+        if (!sqlScript.exists()) {
+            throw new BizException("SQL脚本文件 'sql/default_endpoints_1_2G.sql' 不存在。请检查文件是否已正确放置。");
+        }
+
+        try {
+            resourceRepository.clearEndpoint();
+            // 使用JdbcTemplate执行回调，以确保使用的是当前事务的连接
+            jdbcTemplate.execute((Connection connection) -> {
+                ScriptUtils.executeSqlScript(connection, sqlScript);
+                return null;
+            });
+            return Result.success("重置接口权限配置成功", null);
+        } catch (Exception e) {
+            throw new RuntimeException("重置接口权限配置失败: " + e.getMessage(), e);
         }
     }
 
