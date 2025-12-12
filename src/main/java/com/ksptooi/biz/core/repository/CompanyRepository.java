@@ -14,6 +14,21 @@ public interface CompanyRepository extends JpaRepository<CompanyPo, Long> {
 
 
     /**
+     * 获取用户担任指定职务的公司数量
+     *
+     * @param userId 用户ID
+     * @param role 职务 0:CEO 1:成员
+     * @return 公司数量
+     */
+    @Query("""
+            SELECT COUNT(t.id) FROM CompanyPo t
+            LEFT JOIN t.members m
+            WHERE m.id = :userId AND m.role = :role
+            """)
+    Long getCompanyCountByUserRole(@Param("userId") Long userId,@Param("role") Integer role);
+
+
+    /**
      * 获取当前用户加入的公司列表
      *
      * @param name          公司名称

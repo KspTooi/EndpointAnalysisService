@@ -52,6 +52,7 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 分配权限 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>

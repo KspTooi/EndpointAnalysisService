@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompanyMemberRepository extends JpaRepository<CompanyMemberPo, Long> {
 
+
     /**
      * 查询指定公司和用户的成员关系
      *

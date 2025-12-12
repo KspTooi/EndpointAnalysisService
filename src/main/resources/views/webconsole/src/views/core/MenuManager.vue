@@ -1,7 +1,7 @@
 <template>
   <div class="list-container">
     <!-- 说明文档 -->
-    <el-alert type="info" :closable="false" style="margin-bottom: 20px">
+    <el-alert type="info" :closable="false" style="margin-bottom: 20px; margin-top: 20px">
       <template #title>
         <div style="display: flex; align-items: center; gap: 8px">
           <el-icon><InfoFilled /></el-icon>
@@ -53,11 +53,12 @@
 
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>
+      <el-button type="primary" @click="listExpandToggle()"> {{ listExpand ? "收起全部" : "展开全部" }} </el-button>
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all ref="listTableRef">
         <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
             <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
@@ -195,7 +196,7 @@
 import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi";
 import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
-import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 import { reactive, ref, watch, computed, onMounted } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
@@ -209,9 +210,10 @@ const listForm = reactive<GetMenuTreeDto>({
   menuKind: null,
   permission: "",
 });
-
+const listExpand = ref(false);
+const listTableRef = ref<TableInstance>();
 const listData = ref<GetMenuTreeVo[]>([]);
-const listLoading = ref(false);
+const listLoading = ref(true);
 
 // 用于父级选择的完整菜单树
 const fullMenuTree = ref<GetMenuTreeVo[]>([]);
@@ -325,6 +327,26 @@ const removeList = async (id: string) => {
   //通知左侧菜单重新加载
   EventHolder().requestReloadLeftMenu();
   await loadList();
+};
+
+const listExpandToggle = () => {
+  //收起所有子级
+  if (listExpand.value) {
+    listExpand.value = false;
+    listExpandToggleInner(listData.value, false);
+    return;
+  }
+  listExpandToggleInner(listData.value, true);
+  listExpand.value = true;
+};
+
+const listExpandToggleInner = (data: GetMenuTreeVo[], expand: boolean) => {
+  for (let item of data) {
+    listTableRef.value?.toggleRowExpansion(item, expand);
+    if (item.children != undefined && item.children.length > 0) {
+      listExpandToggleInner(item.children, expand);
+    }
+  }
 };
 
 onMounted(async () => {

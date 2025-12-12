@@ -1,5 +1,17 @@
 <template>
-  <div class="list-container">
+  <div class="no-active-company" v-if="noActiveCompany" style="width: 100%">
+    <el-empty description="暂无激活的团队">
+      <template #description>
+        <div class="empty-description">
+          <h3>您还没有激活或创建团队</h3>
+          <p>请先激活或创建一个公司，然后才能管理团队成员</p>
+        </div>
+      </template>
+      <el-button type="primary" @click="goToCompanySetup">前往设置</el-button>
+    </el-empty>
+  </div>
+
+  <div class="list-container" v-if="!noActiveCompany">
     <!-- 公司信息展示 -->
     <div v-if="companyName" class="company-info">
       <span>当前管理的团队：{{ companyName }}</span>
@@ -90,6 +102,7 @@ import CompanyMemberApi from "@/api/core/CompanyMemberApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { reactive, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { Delete as DeleteIcon } from "@element-plus/icons-vue";
 import UserModal from "./modal/UserModal.vue";
 import type { GetUserListVo } from "@/api/core/UserApi";
@@ -107,7 +120,13 @@ const listLoading = ref(false);
 const companyName = ref<string | null>(null);
 const companyId = ref<string | null>(null);
 const userModalVisible = ref(false);
+const router = useRouter();
 
+const noActiveCompany = ref(false); // 没有激活的公司
+
+/**
+ * 加载列表
+ */
 const loadList = async () => {
   listLoading.value = true;
 
@@ -124,10 +143,12 @@ const loadList = async () => {
     }
 
     if (Result.isError(result)) {
-      ElMessage.error(result.message);
+      //ElMessage.error(result.message);
+      noActiveCompany.value = true;
     }
   } catch (error: any) {
-    ElMessage.error(error.message || "加载失败");
+    //ElMessage.error(error.message || "加载失败");
+    noActiveCompany.value = true;
   } finally {
     listLoading.value = false;
   }
@@ -215,6 +236,10 @@ const handleFireMember = async (member: GetCompanyMemberListVo) => {
   }
 };
 
+const goToCompanySetup = () => {
+  router.push({ name: "company-manager" });
+};
+
 onMounted(() => {
   loadList();
 });
@@ -257,5 +282,29 @@ onMounted(() => {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
+}
+
+.no-active-company {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+.empty-description {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.empty-description h3 {
+  color: #303133;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.empty-description p {
+  color: #909399;
+  font-size: 14px;
 }
 </style>

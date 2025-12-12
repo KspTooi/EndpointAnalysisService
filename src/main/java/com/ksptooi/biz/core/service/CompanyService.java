@@ -58,6 +58,7 @@ public class CompanyService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addCompany(AddCompanyDto dto) throws Exception {
+        UserPo user = authService.requireUser();
         CompanyPo insertPo = as(dto, CompanyPo.class);
 
         Long count = repository.countByCompanyName(dto.getName());
@@ -65,11 +66,22 @@ public class CompanyService {
         if (count > 0) {
             throw new BizException("公司名称已存在");
         }
-        insertPo.setFounder(authService.requireUser());
+        insertPo.setFounder(user);
 
         //新增成功以后，将当前用户加入公司
-        insertPo.addMember(authService.requireUser(), 0); //0:CEO 1:成员
+        insertPo.addMember(user, 0); //0:CEO 1:成员
+        
+
+        //如果该用户名下没有担任CEO的公司，则将当前公司设置为激活公司
+        Long ceoCompanyCount = repository.getCompanyCountByUserRole(user.getId(), 0);
+
+        if (ceoCompanyCount < 1) {
+            //将当前公司设置为激活公司
+            user.setActiveCompany(insertPo);
+        }
+
         repository.save(insertPo);
+        userRepository.save(user);
     }
 
     /**
