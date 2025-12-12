@@ -52,7 +52,7 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 分配权限 </el-button>
+            <el-button link type="primary" size="small" @click="openPermissionEditModal(scope.row)" :icon="EditIcon"> 管理权限 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -81,6 +81,8 @@
         />
       </div>
     </div>
+
+    <UserGroupPermissionModal :visible="modalPermissionEditVisible" :row="modalPermissionEditRow" @close="modalPermissionEditVisible = false" />
 
     <!-- 用户组编辑/新增模态框 -->
     <el-dialog
@@ -190,6 +192,7 @@ import AdminGroupApi, {
 import AdminPermissionApi from "@/api/core/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import UserGroupPermissionModal from "./modal/UserGroupPermissionModal.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -211,6 +214,8 @@ const modalMode = ref<"add" | "edit">("add");
 const modalLoading = ref(false);
 const modalFormRef = ref<FormInstance>();
 
+const modalPermissionEditVisible = ref(false);
+const modalPermissionEditRow = ref<GetGroupListVo | null>(null);
 // 表单数据
 const modalForm = reactive<GetGroupDetailsVo>({
   id: "",
@@ -325,6 +330,11 @@ const resetModal = async () => {
   if (modalFormRef.value) {
     modalFormRef.value.resetFields();
   }
+};
+
+const openPermissionEditModal = (row: GetGroupListVo) => {
+  modalPermissionEditRow.value = row;
+  modalPermissionEditVisible.value = true;
 };
 
 // 打开模态框
