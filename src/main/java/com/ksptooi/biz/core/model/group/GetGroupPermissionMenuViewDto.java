@@ -15,7 +15,7 @@ public class GetGroupPermissionMenuViewDto {
     @Schema(description = "模糊匹配 菜单名称、菜单路径")
     private String keyword;
 
-    @Schema(description = "是否已授权 0:否 1:是")
+    @Schema(description = "是否已授权 0:否 1:是 2:部分授权")
     private Integer hasPermission;
 
 }

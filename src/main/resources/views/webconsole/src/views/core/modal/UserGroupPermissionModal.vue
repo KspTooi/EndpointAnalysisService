@@ -71,12 +71,13 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column label="状态" prop="hasPermission" width="75">
+              <el-table-column label="状态" prop="hasPermission" width="85">
                 <template #default="scope">
                   <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
                   <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
                   <span v-else-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
                   <span v-else-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
+                  <span v-else-if="scope.row.hasPermission === 2" style="color: #e6a23c">部分授权</span>
                   <span v-else style="color: #999">未知</span>
                 </template>
               </el-table-column>
@@ -84,7 +85,7 @@
                 <template #default="scope">
                   <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
                   <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
-                  <el-button v-else-if="scope.row.hasPermission === 0" type="primary" @click="grandAndRevoke(scope.row, 0)" link>授权</el-button>
+                  <el-button v-else-if="scope.row.hasPermission === 0 || scope.row.hasPermission === 2" type="primary" @click="grandAndRevoke(scope.row, 0)" link>授权</el-button>
                   <el-button v-else-if="scope.row.hasPermission === 1" type="danger" @click="grandAndRevoke(scope.row, 1)" link>取消授权</el-button>
                   <span v-else style="color: #999">未知</span>
                 </template>

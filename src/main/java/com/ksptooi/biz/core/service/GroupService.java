@@ -260,6 +260,10 @@ public class GroupService {
             if(has >= total){
                 vo.setHasPermission(1);
             }
+            //部分授权
+            if(has > 0 && has < total){
+                vo.setHasPermission(2);
+            }
 
         }
         

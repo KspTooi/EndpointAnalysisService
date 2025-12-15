@@ -43,7 +43,7 @@ public class GetGroupPermissionMenuViewVo {
     @Schema(description = "是否缺失权限节点 0:否 1:是 2:部分缺失")
     private Integer missingPermission;
 
-    @Schema(description = "当前用户是否有权限 0:否 1:是")
+    @Schema(description = "当前用户是否有权限 0:否 1:是 2:部分授权")
     private Integer hasPermission;
 
     @Schema(description = "排序")
