@@ -33,10 +33,11 @@
               ref="listTableRef"
               max-height="500"
               height="500"
+              :row-class-name="getMenuRowClassName"
               @selection-change="(val: GetGroupPermissionMenuViewVo[]) => (listSelected = val)"
               @row-click="handleRowClick"
             >
-              <el-table-column type="selection" width="40" />
+              <el-table-column type="selection" width="40" :selectable="isMenuRowSelectable" />
               <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
                 <template #default="scope">
                   <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
@@ -312,6 +313,31 @@ const resetList = () => {
   loadList();
 };
 
+/**
+ * 判断菜单行是否可选择
+ * permission 为 * 或 menuKind 为 0（目录）的行不可选择
+ */
+const isMenuRowSelectable = (row: GetGroupPermissionMenuViewVo): boolean => {
+  if (row.menuKind === 0) {
+    return false;
+  }
+  if (row.permission === "*") {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * 获取菜单行的类名
+ * 不可选择的行添加 disabled-row 类名
+ */
+const getMenuRowClassName = ({ row }: { row: GetGroupPermissionMenuViewVo }): string => {
+  if (!isMenuRowSelectable(row)) {
+    return "disabled-row";
+  }
+  return "";
+};
+
 const loadNodeList = async () => {
   listNodeLoading.value = true;
   const result = await GroupApi.getGroupPermissionNodeView(listNodeForm);
@@ -342,9 +368,14 @@ const resetModal = () => {
 /**
  * 处理行点击事件
  */
-const handleRowClick = (row: GetMenuTreeVo, column: any, event: Event) => {
+const handleRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event) => {
   const target = event.target as HTMLElement;
   if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
+    return;
+  }
+
+  // 如果行不可选择，直接返回
+  if (!isMenuRowSelectable(row)) {
     return;
   }
 
@@ -513,6 +544,10 @@ watch(
 
 :deep(.el-table__body tr) {
   cursor: pointer;
+}
+
+:deep(.el-table__body tr.disabled-row) {
+  cursor: not-allowed;
 }
 
 .menu-filter-container,
