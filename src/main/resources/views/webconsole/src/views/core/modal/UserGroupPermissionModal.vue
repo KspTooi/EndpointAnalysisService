@@ -13,6 +13,7 @@
               ref="listTableRef"
               max-height="500"
               @selection-change="(val: GetMenuTreeVo[]) => (listSelected = val)"
+              @row-click="handleRowClick"
             >
               <el-table-column type="selection" width="40" />
               <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
@@ -203,6 +204,19 @@ const selectRow = (vo: GetMenuTreeVo) => {
 };
 
 /**
+ * 处理行点击事件
+ */
+const handleRowClick = (row: GetMenuTreeVo, column: any, event: Event) => {
+  const target = event.target as HTMLElement;
+  if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
+    return;
+  }
+
+  const isSelected = listSelected.value.some((item) => item.id === row.id);
+  listTableRef.value?.toggleRowSelection(row, !isSelected);
+};
+
+/**
  * 应用权限
  */
 const submitModal = async () => {
@@ -256,5 +270,9 @@ watch(
   margin: 0 auto;
   top: 50%;
   transform: translateY(-50%);
+}
+
+:deep(.el-table__body tr) {
+  cursor: pointer;
 }
 </style>
