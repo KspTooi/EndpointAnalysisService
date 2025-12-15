@@ -2,6 +2,7 @@ package com.ksptooi.biz.core.controller;
 
 
 import com.ksptooi.biz.core.model.group.AddGroupDto;
+import com.ksptooi.biz.core.model.group.ApplyPermissionDto;
 import com.ksptooi.biz.core.model.group.EditGroupDto;
 import com.ksptooi.biz.core.model.group.GetGroupDefinitionsVo;
 import com.ksptooi.biz.core.model.group.GetGroupDetailsVo;
@@ -9,7 +10,6 @@ import com.ksptooi.biz.core.model.group.GetGroupListDto;
 import com.ksptooi.biz.core.model.group.GetGroupListVo;
 import com.ksptooi.biz.core.service.GroupService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -41,14 +41,12 @@ public class GroupController {
 
     @Operation(summary = "获取组列表")
     @PostMapping("getGroupList")
-    @RequirePermissionRest("admin:group:view")
     public PageResult<GetGroupListVo> getGroupList(@RequestBody @Valid GetGroupListDto dto) {
         return service.getGroupList(dto);
     }
 
     @Operation(summary = "获取组详情")
     @PostMapping("getGroupDetails")
-    @RequirePermissionRest("admin:group:save")
     public Result<GetGroupDetailsVo> getGroupDetails(@RequestBody @Valid CommonIdDto dto) {
         try {
             return Result.success(service.getGroupDetails(dto.getId()));
@@ -59,7 +57,6 @@ public class GroupController {
 
     @Operation(summary = "新增组")
     @PostMapping("addGroup")
-    @RequirePermissionRest("admin:group:save")
     public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) {
         try {
             service.addGroup(dto);
@@ -71,7 +68,6 @@ public class GroupController {
 
     @Operation(summary = "编辑组")
     @PostMapping("editGroup")
-    @RequirePermissionRest("admin:group:save")
     public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) {
         try {
             service.editGroup(dto);
@@ -81,9 +77,19 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "应用权限到组")
+    @PostMapping("applyPermission")
+    public Result<String> applyPermission(@RequestBody @Valid ApplyPermissionDto dto) {
+        try {
+            service.applyPermission(dto);
+            return Result.success("应用权限成功");
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
-    @RequirePermissionRest("admin:group:delete")
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) {
         try {
             service.removeGroup(dto.getId());

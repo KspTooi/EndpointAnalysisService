@@ -62,6 +62,11 @@ export interface EditGroupDto {
   permissionIds?: string[]; // 权限ID列表
 }
 
+export interface ApplyPermissionDto {
+  groupId: string; // 组ID
+  permissionCodes: string[]; // 权限代码列表
+}
+
 export default {
   /**
    * 获取组定义列表
@@ -104,6 +109,13 @@ export default {
    */
   editGroup: async (dto: EditGroupDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/group/editGroup", dto);
+  },
+
+  /**
+   * 应用权限到组
+   */
+  applyPermission: async (dto: ApplyPermissionDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/group/applyPermission", dto);
   },
 
   /**

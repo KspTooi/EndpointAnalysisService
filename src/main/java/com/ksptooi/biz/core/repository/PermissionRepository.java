@@ -30,6 +30,14 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             """)
     Set<String> getExistingPermissionsByCode(@Param("codes") Set<String> codes);
 
+
+    @Query("""
+            SELECT DISTINCT p
+            FROM PermissionPo p
+            WHERE p.code IN :codes
+            """)
+    Set<PermissionPo> getPermissionsByCodes(@Param("codes") Set<String> codes);
+
     /**
      * 检查权限标识是否存在
      *

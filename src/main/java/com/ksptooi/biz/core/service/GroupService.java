@@ -135,6 +135,39 @@ public class GroupService {
     }
 
     @Transactional
+    public void applyPermission(ApplyPermissionDto dto) throws BizException {
+
+        GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
+        if (group == null) {
+            throw new BizException("用户组不存在");
+        }
+    
+        //去重权限代码
+        var pSet = new HashSet<>(dto.getPermissionCodes());
+
+        //获取权限列表
+        var permPos = permissionRepository.getPermissionsByCodes(pSet);
+
+        //if(pSet.size() != permPos.size()){
+        //    throw new BizException("无法完成应用,至少有一个或多个权限不存在，请刷新页面重试。");
+        //}
+
+        //清空用户组与权限的关联关系
+        group.getPermissions().clear();
+        group.getPermissions().addAll(permPos);
+        repository.save(group);
+
+        //处理在线用户会话
+        List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
+        for (UserSessionPo session : activeSessions) {
+            authService.refreshUserSession(session.getUserId());
+        }
+    }
+
+
+
+
+    @Transactional
     public void removeGroup(long id) throws BizException {
 
         GroupPo group = repository.getGroupWithUserAndPermission(id);
