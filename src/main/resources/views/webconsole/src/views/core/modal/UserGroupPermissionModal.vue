@@ -2,14 +2,26 @@
   <el-dialog v-model="props.visible" title="管理权限" width="1000px" :close-on-click-modal="false" class="modal-centered" @close="resetModal">
     <div class="modal-content">
       <el-tabs v-model="tab">
-        <el-tab-pane label="菜单视图" name="menu">
-          <div class="filter-container" style="margin-bottom: 16px">
-            <el-input v-model="menuFilterKeyword" placeholder="根据名称或所需权限过滤" clearable style="width: 300px">
-              <template #prefix>
-                <Icon icon="mdi:magnify" :width="16" :height="16" />
-              </template>
-            </el-input>
-            <el-button type="primary" @click="loadList" style="margin-left: 10px">查询</el-button>
+        <el-tab-pane :label="'菜单视图(' + menuTotalCount + ')'" name="menu">
+          <div class="menu-filter-container">
+            <div class="filter-item">
+              <el-input v-model="menuFilterKeyword" placeholder="根据名称或所需权限过滤" clearable>
+                <template #prefix>
+                  <Icon icon="mdi:magnify" :width="16" :height="16" />
+                </template>
+              </el-input>
+            </div>
+            <div class="filter-item">
+              <el-select v-model="menuFilterHasPermission" placeholder="是否已授权">
+                <el-option label="全部" :value="null" />
+                <el-option label="已授权" :value="1" />
+                <el-option label="未授权" :value="0" />
+              </el-select>
+            </div>
+            <div class="filter-item">
+              <el-button type="primary" @click="loadList">查询</el-button>
+              <el-button @click="resetList">重置</el-button>
+            </div>
           </div>
           <div class="list-table">
             <el-table
@@ -74,7 +86,7 @@
             </el-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="节点视图" name="node">
+        <el-tab-pane :label="listNodeTotal > 0 ? '节点视图(' + listNodeTotal + ')' : '节点视图'" name="node">
           <div class="node-filter-container">
             <div class="filter-item">
               <el-input v-model="listNodeForm.keyword" placeholder="根据名称或权限代码过滤" clearable>
@@ -239,13 +251,48 @@ const listData = ref<GetGroupPermissionMenuViewVo[]>([]);
 const listSelected = ref<GetGroupPermissionMenuViewVo[]>([]);
 const listLoading = ref(true);
 const menuFilterKeyword = ref("");
+const menuFilterHasPermission = ref<number | null>(null);
 const groupDetails = ref<GetGroupDetailsVo | null>(null);
+
+/**
+ * 递归计算菜单树中的所有节点数量
+ */
+const countMenuNodes = (menus: GetGroupPermissionMenuViewVo[]): number => {
+  if (!menus || menus.length === 0) {
+    return 0;
+  }
+  let count = 0;
+  for (const menu of menus) {
+    count++;
+    if (menu.children && menu.children.length > 0) {
+      count += countMenuNodes(menu.children);
+    }
+  }
+  return count;
+};
+
+/**
+ * 菜单视图总数量（递归计算）
+ */
+const menuTotalCount = computed(() => {
+  return countMenuNodes(listData.value);
+});
 
 const loadList = async () => {
   listLoading.value = true;
-  const result = await GroupApi.getGroupPermissionMenuView({ groupId: props.row?.id || "", keyword: menuFilterKeyword.value });
+  const result = await GroupApi.getGroupPermissionMenuView({
+    groupId: props.row?.id || "",
+    keyword: menuFilterKeyword.value || undefined,
+    hasPermission: menuFilterHasPermission.value,
+  });
   listData.value = result;
   listLoading.value = false;
+};
+
+const resetList = () => {
+  menuFilterKeyword.value = "";
+  menuFilterHasPermission.value = null;
+  loadList();
 };
 
 const loadNodeList = async () => {
@@ -271,6 +318,7 @@ const resetModal = () => {
   listNodeTableRef.value?.clearSelection();
   listNodeSelectedGlobal.value.clear();
   menuFilterKeyword.value = "";
+  menuFilterHasPermission.value = null;
   emit("close");
 };
 
@@ -384,6 +432,7 @@ watch(
   cursor: pointer;
 }
 
+.menu-filter-container,
 .node-filter-container {
   display: flex;
   align-items: center;
@@ -392,15 +441,18 @@ watch(
   flex-wrap: wrap;
 }
 
+.menu-filter-container .filter-item,
 .node-filter-container .filter-item {
   display: flex;
   align-items: center;
 }
 
+.menu-filter-container .filter-item .el-input,
 .node-filter-container .filter-item .el-input {
   width: 300px;
 }
 
+.menu-filter-container .filter-item .el-select,
 .node-filter-container .filter-item .el-select {
   width: 150px;
 }

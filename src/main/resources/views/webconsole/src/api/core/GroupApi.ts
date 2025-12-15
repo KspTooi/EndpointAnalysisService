@@ -70,6 +70,7 @@ export interface ApplyPermissionDto {
 export interface GetGroupPermissionMenuViewDto {
   groupId: string; // 组ID
   keyword?: string; // 模糊匹配 菜单名称、菜单路径
+  hasPermission?: number | null; // 是否已授权 0:否 1:是
 }
 
 export interface GetGroupPermissionMenuViewVo {

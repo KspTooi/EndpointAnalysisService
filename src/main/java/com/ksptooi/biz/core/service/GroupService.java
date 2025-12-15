@@ -291,8 +291,44 @@ public class GroupService {
             }
 
         }
+        
+        //如果hasPermission不为空，则递归过滤出hasPermission为hasPermission的菜单
+        if(dto.getHasPermission() != null){
+            treeVos = filterMenuTreeByHasPermission(treeVos, dto.getHasPermission());
+        }
 
         return treeVos;
+    }
+
+    /**
+     * 递归过滤菜单树，只保留hasPermission匹配的节点
+     * 如果父节点不符合条件但子节点符合，子节点会被保留
+     */
+    private List<GetGroupPermissionMenuViewVo> filterMenuTreeByHasPermission(List<GetGroupPermissionMenuViewVo> treeVos, Integer hasPermission) {
+        if (treeVos == null || treeVos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<GetGroupPermissionMenuViewVo> filtered = new ArrayList<>();
+
+        for (GetGroupPermissionMenuViewVo vo : treeVos) {
+            // 递归过滤子节点
+            List<GetGroupPermissionMenuViewVo> filteredChildren = filterMenuTreeByHasPermission(vo.getChildren(), hasPermission);
+
+            // 如果当前节点符合条件
+            if (vo.getHasPermission() != null && vo.getHasPermission().equals(hasPermission)) {
+                vo.setChildren(filteredChildren);
+                filtered.add(vo);
+                continue;
+            }
+
+            // 如果当前节点不符合条件，但子节点符合，保留子节点
+            if (!filteredChildren.isEmpty()) {
+                filtered.addAll(filteredChildren);
+            }
+        }
+
+        return filtered;
     }
 
     /**
