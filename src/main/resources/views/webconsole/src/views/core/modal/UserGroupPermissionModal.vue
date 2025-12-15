@@ -73,14 +73,20 @@
               </el-table-column>
               <el-table-column label="状态" prop="hasPermission" width="75">
                 <template #default="scope">
-                  <span v-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
-                  <span v-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
+                  <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
+                  <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
+                  <span v-else-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
+                  <span v-else-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
+                  <span v-else style="color: #999">未知</span>
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <el-button type="primary" @click="" link v-if="scope.row.hasPermission === 0">授权</el-button>
-                  <el-button type="danger" @click="" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
+                  <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
+                  <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
+                  <el-button v-else-if="scope.row.hasPermission === 0" type="primary" @click="grandAndRevoke(scope.row, 0)" link>授权</el-button>
+                  <el-button v-else-if="scope.row.hasPermission === 1" type="danger" @click="grandAndRevoke(scope.row, 1)" link>取消授权</el-button>
+                  <span v-else style="color: #999">未知</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -161,8 +167,8 @@
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <el-button type="primary" @click="" link v-if="scope.row.hasPermission === 0">授权</el-button>
-                  <el-button type="danger" @click="" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
+                  <el-button type="primary" @click="grandAndRevoke(scope.row, 0)" link v-if="scope.row.hasPermission === 0">授权</el-button>
+                  <el-button type="danger" @click="grandAndRevoke(scope.row, 1)" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -195,8 +201,9 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="resetModal">取消</el-button>
-        <el-button type="primary" @click="submitModal">应用权限</el-button>
+        <el-button type="primary" @click="batchGrant">批量授权</el-button>
+        <el-button type="danger" @click="batchRevoke">批量取消授权</el-button>
+        <el-button @click="resetModal">关闭</el-button>
       </div>
     </template>
   </el-dialog>
@@ -278,6 +285,15 @@ const menuTotalCount = computed(() => {
   return countMenuNodes(listData.value);
 });
 
+const loadListByTab = async () => {
+  if (tab.value === "menu") {
+    await loadList();
+  }
+  if (tab.value === "node") {
+    await loadNodeList();
+  }
+};
+
 const loadList = async () => {
   listLoading.value = true;
   const result = await GroupApi.getGroupPermissionMenuView({
@@ -349,57 +365,124 @@ const handleNodeRowClick = (row: GetPermissionListVo, column: any, event: Event)
 };
 
 /**
- * 应用权限
+ * 批量授权或取消授权
+ * @param row 菜单或节点对象
+ * @param type 0:授权 1:取消授权
  */
-const submitModal = async () => {
-  let permissionCodes: string[] = [];
-
-  if (tab.value === "menu") {
-    //permissionCodes = grabSelectedPermissionCodes(listSelected.value);
+const grandAndRevoke = async (row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo, type: number) => {
+  const permissionCodes = getSelectedPermissionCodes(row);
+  if (permissionCodes.length === 0) {
+    ElMessage.warning("没有可操作的权限");
+    return;
   }
-
-  if (tab.value === "node") {
-    permissionCodes = Array.from(listNodeSelectedGlobal.value);
-  }
-
-  //应用权限
-  const result = await GroupApi.applyPermission({
+  const result = await GroupApi.grantAndRevoke({
     groupId: props.row?.id || "",
     permissionCodes: permissionCodes,
+    type: type,
   });
-
   if (Result.isSuccess(result)) {
-    ElMessage.success("应用权限成功");
-    if (tab.value === "menu") {
-      await loadList();
-    }
-    if (tab.value === "node") {
-      await loadNodeList();
-    }
+    ElMessage.success(type === 0 ? "授权成功" : "取消授权成功");
+    loadListByTab();
   }
 };
 
+/**
+ * 批量授权
+ */
+const batchGrant = async () => {
+  const permissionCodes = getSelectedPermissionCodes();
+  const result = await GroupApi.grantAndRevoke({
+    groupId: props.row?.id || "",
+    permissionCodes: permissionCodes,
+    type: 0,
+  });
+  if (Result.isSuccess(result)) {
+    ElMessage.success("批量授权成功");
+    loadListByTab();
+  }
+};
+
+/**
+ * 批量取消授权
+ */
+const batchRevoke = async () => {
+  const permissionCodes = getSelectedPermissionCodes();
+  const result = await GroupApi.grantAndRevoke({
+    groupId: props.row?.id || "",
+    permissionCodes: permissionCodes,
+    type: 1,
+  });
+  if (Result.isSuccess(result)) {
+    ElMessage.success("批量取消授权成功");
+    loadListByTab();
+  }
+};
+
+const getSelectedPermissionCodes = (row?: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo): string[] => {
+  if (!row) {
+    let permissionCodes: string[] = [];
+    if (tab.value === "menu") {
+      for (const item of listSelected.value) {
+        //忽略空和*
+        if (item.permission === "" || item.permission === "*") {
+          continue;
+        }
+
+        //如果有;代表有多个权限，需要分割
+        if (item.permission.includes(";")) {
+          permissionCodes.push(...item.permission.split(";"));
+        }
+
+        //只有一个权限，直接添加
+        if (!item.permission.includes(";")) {
+          permissionCodes.push(item.permission);
+        }
+      }
+    }
+    if (tab.value === "node") {
+      for (const item of listNodeSelected.value) {
+        permissionCodes.push(item.code);
+      }
+    }
+    return permissionCodes;
+  }
+
+  // 根据row的类型获取权限代码
+  if ("code" in row) {
+    // GetGroupPermissionNodeVo类型，直接返回code
+    return [row.code];
+  }
+
+  // GetGroupPermissionMenuViewVo类型，处理permission字段
+  if ("permission" in row) {
+    const permission = row.permission;
+    //忽略空和*
+    if (!permission || permission === "" || permission === "*") {
+      return [];
+    }
+
+    //如果有;代表有多个权限，需要分割
+    if (permission.includes(";")) {
+      return permission.split(";").filter((p) => p.trim() !== "");
+    }
+
+    //只有一个权限，直接返回
+    return [permission];
+  }
+
+  return [];
+};
 watch(
   () => props.visible,
   async (newVal) => {
     if (newVal) {
-      if (tab.value === "menu") {
-        await loadList();
-      }
-      if (tab.value === "node") {
-        await loadNodeList();
-      }
+      await loadListByTab();
     }
   }
 );
 
 watch(tab, async (newVal) => {
-  if (newVal === "menu") {
-    await loadList();
-  }
-  if (newVal === "node") {
-    await loadNodeList();
-  }
+  loadListByTab();
 });
 
 watch(menuFilterKeyword, () => {
@@ -415,7 +498,6 @@ watch(
   () => {
     if (props.row) {
       listNodeForm.groupId = props.row.id;
-      console.log(props.row);
     }
   }
 );

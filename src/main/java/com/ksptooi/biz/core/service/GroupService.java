@@ -139,35 +139,6 @@ public class GroupService {
         }
     }
 
-    @Transactional
-    public void applyPermission(ApplyPermissionDto dto) throws BizException {
-
-        GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
-        if (group == null) {
-            throw new BizException("用户组不存在");
-        }
-    
-        //去重权限代码
-        var pSet = new HashSet<>(dto.getPermissionCodes());
-
-        //获取权限列表
-        var permPos = permissionRepository.getPermissionsByCodes(pSet);
-
-        //if(pSet.size() != permPos.size()){
-        //    throw new BizException("无法完成应用,至少有一个或多个权限不存在，请刷新页面重试。");
-        //}
-
-        //清空用户组与权限的关联关系
-        group.getPermissions().clear();
-        group.getPermissions().addAll(permPos);
-        repository.save(group);
-
-        //处理在线用户会话
-        List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
-        for (UserSessionPo session : activeSessions) {
-            authService.refreshUserSession(session.getUserId());
-        }
-    }
 
     
     public List<GetGroupPermissionMenuViewVo> getGroupPermissionMenuView(GetGroupPermissionMenuViewDto dto) throws BizException {
@@ -363,6 +334,35 @@ public class GroupService {
         return PageResult.success(vos, pPos.getTotalElements());
     }
 
+    @Transactional
+    public void grantAndRevoke(GrantAndRevokeDto dto) throws BizException {
+
+        GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
+
+        if (group == null) {
+            throw new BizException("用户组不存在");
+        }
+
+        //加载全部权限列表
+        var allPermPos = permissionRepository.getPermissionsByCodes(dto.getPermissionCodes());
+
+        //获取当前组拥有的权限
+        var groupPerms = group.getPermissions();
+
+        //模式授权 0:授权 1:取消授权
+        if(dto.getType() == 0){
+            groupPerms.addAll(allPermPos);
+        }
+
+        //取消授权
+        if(dto.getType() == 1){
+            groupPerms.removeAll(allPermPos);
+        }
+    
+        //保存更改
+        repository.save(group);
+    }
+
 
 
     @Transactional
@@ -413,6 +413,8 @@ public class GroupService {
             authService.refreshUserSession(session.getUserId());
         }
     }
+
+
 
     /**
      * 校验系统内置组

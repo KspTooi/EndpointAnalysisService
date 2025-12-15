@@ -103,6 +103,12 @@ export interface GetGroupPermissionNodeVo {
   hasPermission: number; // 是否已授权 0:否 1:是
 }
 
+export interface GrantAndRevokeDto {
+  groupId: string; // 组ID
+  permissionCodes: string[]; // 权限代码列表
+  type: number; // 类型 0:授权 1:取消授权
+}
+
 export default {
   /**
    * 获取组定义列表
@@ -148,10 +154,10 @@ export default {
   },
 
   /**
-   * 应用权限到组
+   * 批量授权或取消授权
    */
-  applyPermission: async (dto: ApplyPermissionDto): Promise<Result<string>> => {
-    return await Http.postEntity<Result<string>>("/group/applyPermission", dto);
+  grantAndRevoke: async (dto: GrantAndRevokeDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/group/grantAndRevoke", dto);
   },
 
   /**

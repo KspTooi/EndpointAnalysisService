@@ -2,7 +2,6 @@ package com.ksptooi.biz.core.controller;
 
 
 import com.ksptooi.biz.core.model.group.AddGroupDto;
-import com.ksptooi.biz.core.model.group.ApplyPermissionDto;
 import com.ksptooi.biz.core.model.group.EditGroupDto;
 import com.ksptooi.biz.core.model.group.GetGroupDefinitionsVo;
 import com.ksptooi.biz.core.model.group.GetGroupDetailsVo;
@@ -12,6 +11,7 @@ import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewDto;
 import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewVo;
 import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeDto;
 import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeVo;
+import com.ksptooi.biz.core.model.group.GrantAndRevokeDto;
 import com.ksptooi.biz.core.service.GroupService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -81,17 +81,6 @@ public class GroupController {
         }
     }
 
-    @Operation(summary = "应用权限到组")
-    @PostMapping("applyPermission")
-    public Result<String> applyPermission(@RequestBody @Valid ApplyPermissionDto dto) {
-        try {
-            service.applyPermission(dto);
-            return Result.success("应用权限成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
-    }
-
 
     @Operation(summary = "获取组权限菜单视图")
     @PostMapping("getGroupPermissionMenuView")
@@ -113,8 +102,16 @@ public class GroupController {
         }
     }
 
-
-
+    @Operation(summary = "批量授权或取消授权")
+    @PostMapping("grantAndRevoke")
+    public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) {
+        try {
+            service.grantAndRevoke(dto);
+            return Result.success("授权或取消授权成功");
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
 
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
