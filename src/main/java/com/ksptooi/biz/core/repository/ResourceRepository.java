@@ -66,6 +66,31 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
             """)
     List<ResourcePo> getMenuTree(@Param("po") GetMenuTreeDto po);
 
+
+
+    /**
+     * 根据关键字获取菜单与按钮树
+     *
+     * @param keyword 模糊匹配 菜单名称、菜单描述
+     * @return 菜单与按钮树
+     */
+    @Query("""
+            SELECT t FROM ResourcePo t
+            LEFT JOIN FETCH t.parent
+            WHERE t.kind = 0
+            AND (
+                (
+                    :keyword IS NULL OR ((t.name LIKE CONCAT('%',:keyword,'%') OR
+                    t.description LIKE CONCAT('%',:keyword,'%') ) OR
+                    t.permission LIKE CONCAT('%',:keyword,'%'))
+                )
+            )
+            ORDER BY t.seq ASC,t.updateTime DESC
+            """)
+    List<ResourcePo> getMenuTreeByKeyword(@Param("keyword") String keyword);
+
+    
+
     /**
      * 获取菜单子级数量
      *

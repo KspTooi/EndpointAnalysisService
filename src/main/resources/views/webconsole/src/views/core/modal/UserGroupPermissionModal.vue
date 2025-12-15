@@ -3,6 +3,14 @@
     <div class="modal-content">
       <el-tabs v-model="tab">
         <el-tab-pane label="菜单视图" name="menu">
+          <div class="filter-container" style="margin-bottom: 16px">
+            <el-input v-model="menuFilterKeyword" placeholder="根据名称或所需权限过滤" clearable style="width: 300px">
+              <template #prefix>
+                <Icon icon="mdi:magnify" :width="16" :height="16" />
+              </template>
+            </el-input>
+            <el-button type="primary" @click="loadList" style="margin-left: 10px">查询</el-button>
+          </div>
           <div class="list-table">
             <el-table
               :data="listData"
@@ -12,7 +20,8 @@
               default-expand-all
               ref="listTableRef"
               max-height="500"
-              @selection-change="(val: GetMenuTreeVo[]) => (listSelected = val)"
+              height="500"
+              @selection-change="(val: GetGroupPermissionMenuViewVo[]) => (listSelected = val)"
               @row-click="handleRowClick"
             >
               <el-table-column type="selection" width="40" />
@@ -23,11 +32,11 @@
                   <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px"> ({{ scope.row.menuBtnId }}) </span>
                 </template>
               </el-table-column>
-              <el-table-column label="类型" prop="menuKind" width="70">
+              <el-table-column label="类型" prop="menuKind" width="60">
                 <template #default="scope">
-                  <el-tag v-if="scope.row.menuKind === 0">目录</el-tag>
-                  <el-tag v-if="scope.row.menuKind === 1" type="success">菜单</el-tag>
-                  <el-tag v-if="scope.row.menuKind === 2" type="info">按钮</el-tag>
+                  <span v-if="scope.row.menuKind === 0" style="color: var(--el-color-info)">目录</span>
+                  <span v-if="scope.row.menuKind === 1" style="color: var(--el-color-success)">菜单</span>
+                  <span v-if="scope.row.menuKind === 2" style="color: var(--el-color-primary)">按钮</span>
                 </template>
               </el-table-column>
               <el-table-column label="所需权限" prop="permission" show-overflow-tooltip>
@@ -50,10 +59,126 @@
                   </span>
                 </template>
               </el-table-column>
+              <el-table-column label="状态" prop="hasPermission" width="75">
+                <template #default="scope">
+                  <span v-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
+                  <span v-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100">
+                <template #default="scope">
+                  <el-button type="primary" @click="" link v-if="scope.row.hasPermission === 0">授权</el-button>
+                  <el-button type="danger" @click="" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="节点视图" name="node"></el-tab-pane>
+        <el-tab-pane label="节点视图" name="node">
+          <div class="node-filter-container">
+            <div class="filter-item">
+              <el-input v-model="listNodeForm.keyword" placeholder="根据名称或权限代码过滤" clearable>
+                <template #prefix>
+                  <Icon icon="mdi:magnify" :width="16" :height="16" />
+                </template>
+              </el-input>
+            </div>
+            <div class="filter-item">
+              <el-select v-model="listNodeForm.hasPermission" placeholder="是否已授权">
+                <el-option label="全部" :value="null" />
+                <el-option label="已授权" :value="1" />
+                <el-option label="未授权" :value="0" />
+              </el-select>
+            </div>
+            <div class="filter-item">
+              <el-button type="primary" @click="loadNodeList">查询</el-button>
+              <el-button @click="resetNodeList">重置</el-button>
+            </div>
+          </div>
+          <div class="list-table">
+            <el-table
+              :data="listNodeData"
+              v-loading="listNodeLoading"
+              border
+              row-key="id"
+              ref="listNodeTableRef"
+              max-height="450"
+              height="450"
+              @selection-change="(val: GetGroupPermissionNodeVo[]) => (listNodeSelected = val)"
+              @row-click="handleNodeRowClick"
+            >
+              <el-table-column type="selection" width="40" />
+              <el-table-column
+                prop="code"
+                label="权限代码"
+                min-width="150"
+                show-overflow-tooltip
+                :show-overflow-tooltip-props="{
+                  effect: 'dark',
+                  placement: 'top',
+                  enterable: false,
+                }"
+              />
+              <el-table-column
+                prop="name"
+                label="权限名称"
+                min-width="150"
+                show-overflow-tooltip
+                :show-overflow-tooltip-props="{
+                  effect: 'dark',
+                  placement: 'top',
+                  enterable: false,
+                }"
+              />
+              <el-table-column
+                prop="description"
+                label="权限描述"
+                min-width="200"
+                show-overflow-tooltip
+                :show-overflow-tooltip-props="{
+                  effect: 'dark',
+                  placement: 'top',
+                  enterable: false,
+                }"
+              />
+              <el-table-column label="状态" prop="hasPermission" width="75">
+                <template #default="scope">
+                  <span v-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
+                  <span v-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100">
+                <template #default="scope">
+                  <el-button type="primary" @click="" link v-if="scope.row.hasPermission === 0">授权</el-button>
+                  <el-button type="danger" @click="" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+
+            <div class="pagination-container">
+              <el-pagination
+                v-model:current-page="listNodeForm.pageNum"
+                v-model:page-size="listNodeForm.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="listNodeTotal"
+                @size-change="
+                  (val: number) => {
+                    listNodeForm.pageSize = val;
+                    loadNodeList();
+                  }
+                "
+                @current-change="
+                  (val: number) => {
+                    listNodeForm.pageNum = val;
+                    loadNodeList();
+                  }
+                "
+                background
+              />
+            </div>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <template #footer>
@@ -66,14 +191,22 @@
 </template>
 
 <script setup lang="ts">
-import type { GetGroupDetailsVo, GetGroupListVo, GroupPermissionDefinitionVo } from "@/api/core/GroupApi";
+import type {
+  GetGroupDetailsVo,
+  GetGroupListVo,
+  GetGroupPermissionMenuViewVo,
+  GetGroupPermissionNodeDto,
+  GetGroupPermissionNodeVo,
+  GroupPermissionDefinitionVo,
+} from "@/api/core/GroupApi";
 import type { GetMenuTreeVo } from "@/api/core/MenuApi";
 import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, type TableInstance } from "element-plus";
-import { nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch, reactive, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import GroupApi from "@/api/core/GroupApi";
+import PermissionApi, { type GetPermissionListVo, type GetPermissionListDto } from "@/api/core/PermissionApi";
 
 const props = defineProps<{
   visible: boolean;
@@ -87,120 +220,58 @@ const emit = defineEmits<{
 //node显示权限节点，menu显示菜单
 const tab = ref<"node" | "menu">("menu");
 
-const listTableRef = ref<TableInstance>();
-const listData = ref<GetMenuTreeVo[]>([]);
-const listSelected = ref<GetMenuTreeVo[]>([]);
-const listLoading = ref(true);
+const listNodeTableRef = ref<TableInstance>();
+const listNodeData = ref<GetGroupPermissionNodeVo[]>([]);
+const listNodeSelected = ref<GetGroupPermissionNodeVo[]>([]);
+const listNodeSelectedGlobal = ref<Set<string>>(new Set());
+const listNodeLoading = ref(false);
+const listNodeTotal = ref(0);
+const listNodeForm = reactive<GetGroupPermissionNodeDto>({
+  groupId: props.row?.id || "",
+  keyword: null,
+  hasPermission: null,
+  pageNum: 1,
+  pageSize: 20,
+});
 
+const listTableRef = ref<TableInstance>();
+const listData = ref<GetGroupPermissionMenuViewVo[]>([]);
+const listSelected = ref<GetGroupPermissionMenuViewVo[]>([]);
+const listLoading = ref(true);
+const menuFilterKeyword = ref("");
 const groupDetails = ref<GetGroupDetailsVo | null>(null);
 
 const loadList = async () => {
   listLoading.value = true;
-  const result = await MenuApi.getMenuTree({});
-
-  if (Result.isSuccess(result)) {
-    listData.value = result.data;
-  }
-
-  if (Result.isError(result)) {
-    ElMessage.error(result.message);
-  }
-
+  const result = await GroupApi.getGroupPermissionMenuView({ groupId: props.row?.id || "", keyword: menuFilterKeyword.value });
+  listData.value = result;
   listLoading.value = false;
 };
 
-const onLoad = async () => {
-  //查询组详情
-  const ret = await GroupApi.getGroupDetails({ id: props.row?.id });
-  groupDetails.value = ret;
-
-  //查询菜单树
-  await loadList();
-  selectMenuByHasPermission(listData.value, ret.permissions);
+const loadNodeList = async () => {
+  listNodeLoading.value = true;
+  const result = await GroupApi.getGroupPermissionNodeView(listNodeForm);
+  listNodeData.value = result.data;
+  listNodeTotal.value = result.total;
+  listNodeLoading.value = false;
 };
 
-const selectMenuByHasPermission = (menu: GetMenuTreeVo[], exisisPermissions: GroupPermissionDefinitionVo[]) => {
-  //更新已有的权限为菜单选中
-  for (let item of menu) {
-    let originPermissions = item.permission;
-
-    if (originPermissions == null || originPermissions.length == 0) {
-      //如果菜单有子级需要递归
-      if (item.children && item.children.length > 0) {
-        selectMenuByHasPermission(item.children, exisisPermissions);
-      }
-      continue;
-    }
-
-    //如果权限为*，默认拥有
-    if (originPermissions == "*") {
-      selectRow(item);
-      //如果菜单有子级需要递归
-      if (item.children && item.children.length > 0) {
-        selectMenuByHasPermission(item.children, exisisPermissions);
-      }
-      continue;
-    }
-
-    //有；代表有多个权限，需要分割
-    if (originPermissions.includes(";")) {
-      let permissions = originPermissions.split(";");
-
-      let has = 0;
-      let total = permissions.length;
-
-      for (let permission of permissions) {
-        for (let details of exisisPermissions) {
-          if (permission.includes(details.code) && details.has === 0) {
-            has++;
-          }
-        }
-      }
-
-      if (has >= total) {
-        selectRow(item);
-      }
-
-      continue;
-    }
-
-    //无;代表只有一个权限，直接判断
-    let has = false;
-    for (let details of exisisPermissions) {
-      if (originPermissions.includes(details.code) && details.has === 0) {
-        has = true;
-        break;
-      }
-    }
-    if (has) {
-      selectRow(item);
-    }
-
-    //如果菜单有子级需要递归
-    if (item.children && item.children.length > 0) {
-      selectMenuByHasPermission(item.children, exisisPermissions);
-    }
-  }
+const resetNodeList = () => {
+  listNodeForm.keyword = null;
+  listNodeForm.hasPermission = null;
+  listNodeForm.pageNum = 1;
+  listNodeForm.pageSize = 20;
+  loadNodeList();
 };
 
 const resetModal = () => {
   listSelected.value = [];
   listTableRef.value?.clearSelection();
+  listNodeSelected.value = [];
+  listNodeTableRef.value?.clearSelection();
+  listNodeSelectedGlobal.value.clear();
+  menuFilterKeyword.value = "";
   emit("close");
-};
-
-/**
- * 选择行但不选择子级
- * @param vo 菜单树
- */
-const selectRow = (vo: GetMenuTreeVo) => {
-  listTableRef.value?.toggleRowSelection(vo, true);
-
-  if (vo.children && vo.children.length > 0) {
-    for (let child of vo.children) {
-      listTableRef.value?.toggleRowSelection(child, false);
-    }
-  }
 };
 
 /**
@@ -217,11 +288,31 @@ const handleRowClick = (row: GetMenuTreeVo, column: any, event: Event) => {
 };
 
 /**
+ * 处理节点行点击事件
+ */
+const handleNodeRowClick = (row: GetPermissionListVo, column: any, event: Event) => {
+  const target = event.target as HTMLElement;
+  if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
+    return;
+  }
+
+  const isSelected = listNodeSelected.value.some((item) => item.id === row.id);
+  listNodeTableRef.value?.toggleRowSelection(row, !isSelected);
+};
+
+/**
  * 应用权限
  */
 const submitModal = async () => {
-  //搜集选中的权限代码
-  const permissionCodes = grabSelectedPermissionCodes(listSelected.value);
+  let permissionCodes: string[] = [];
+
+  if (tab.value === "menu") {
+    //permissionCodes = grabSelectedPermissionCodes(listSelected.value);
+  }
+
+  if (tab.value === "node") {
+    permissionCodes = Array.from(listNodeSelectedGlobal.value);
+  }
 
   //应用权限
   const result = await GroupApi.applyPermission({
@@ -231,35 +322,52 @@ const submitModal = async () => {
 
   if (Result.isSuccess(result)) {
     ElMessage.success("应用权限成功");
-    await onLoad();
-  }
-};
-
-const grabSelectedPermissionCodes = (menus: GetMenuTreeVo[]): string[] => {
-  const permissions: string[] = [];
-
-  for (const menu of menus) {
-    if (!menu.permission || menu.permission === "*" || menu.permission.trim() === "") {
-      continue;
+    if (tab.value === "menu") {
+      await loadList();
     }
-
-    const permParts = menu.permission.split(";");
-    for (const part of permParts) {
-      const trimmed = part.trim();
-      if (trimmed && trimmed !== "*") {
-        permissions.push(trimmed);
-      }
+    if (tab.value === "node") {
+      await loadNodeList();
     }
   }
-
-  return permissions;
 };
 
 watch(
   () => props.visible,
   async (newVal) => {
     if (newVal) {
-      await onLoad();
+      if (tab.value === "menu") {
+        await loadList();
+      }
+      if (tab.value === "node") {
+        await loadNodeList();
+      }
+    }
+  }
+);
+
+watch(tab, async (newVal) => {
+  if (newVal === "menu") {
+    await loadList();
+  }
+  if (newVal === "node") {
+    await loadNodeList();
+  }
+});
+
+watch(menuFilterKeyword, () => {
+  if (tab.value === "menu" && groupDetails.value) {
+    nextTick(() => {
+      listTableRef.value?.clearSelection();
+    });
+  }
+});
+
+watch(
+  () => props.row,
+  () => {
+    if (props.row) {
+      listNodeForm.groupId = props.row.id;
+      console.log(props.row);
     }
   }
 );
@@ -274,5 +382,33 @@ watch(
 
 :deep(.el-table__body tr) {
   cursor: pointer;
+}
+
+.node-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.node-filter-container .filter-item {
+  display: flex;
+  align-items: center;
+}
+
+.node-filter-container .filter-item .el-input {
+  width: 300px;
+}
+
+.node-filter-container .filter-item .el-select {
+  width: 150px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
 }
 </style>

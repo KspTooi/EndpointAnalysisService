@@ -8,6 +8,10 @@ import com.ksptooi.biz.core.model.group.GetGroupDefinitionsVo;
 import com.ksptooi.biz.core.model.group.GetGroupDetailsVo;
 import com.ksptooi.biz.core.model.group.GetGroupListDto;
 import com.ksptooi.biz.core.model.group.GetGroupListVo;
+import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewDto;
+import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewVo;
+import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeDto;
+import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeVo;
 import com.ksptooi.biz.core.service.GroupService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -87,6 +91,30 @@ public class GroupController {
             return Result.error(ex.getMessage());
         }
     }
+
+
+    @Operation(summary = "获取组权限菜单视图")
+    @PostMapping("getGroupPermissionMenuView")
+    public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) {
+        try {
+            return Result.success(service.getGroupPermissionMenuView(dto));
+        } catch (Exception ex) {
+            return Result.error(ex.getMessage());
+        }
+    }
+    
+    @Operation(summary = "获取组权限节点视图")
+    @PostMapping("getGroupPermissionNodeView")
+    public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) {
+        try {
+            return service.getGroupPermissionNodeView(dto);
+        } catch (Exception ex) {
+            return PageResult.error(ex.getMessage());
+        }
+    }
+
+
+
 
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")

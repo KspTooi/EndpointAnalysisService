@@ -3,24 +3,25 @@ package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.group.*;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
+import com.ksptooi.biz.core.model.resource.po.ResourcePo;
 import com.ksptooi.biz.core.model.session.UserSessionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
+import com.ksptooi.biz.core.repository.ResourceRepository;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
 
@@ -38,6 +39,10 @@ public class GroupService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private ResourceRepository resourceRepository;
+
 
     public List<GetGroupDefinitionsVo> getGroupDefinitions() {
         List<GroupPo> pos = repository.findAll(Sort.by(Sort.Direction.DESC, "createTime"));
@@ -164,6 +169,163 @@ public class GroupService {
         }
     }
 
+    
+    public List<GetGroupPermissionMenuViewVo> getGroupPermissionMenuView(GetGroupPermissionMenuViewDto dto) throws BizException {
+        
+        GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
+        if (group == null) {
+            throw new BizException("用户组不存在");
+        }
+
+        //查找菜单树
+        var menuPos = resourceRepository.getMenuTreeByKeyword(dto.getKeyword());
+
+        List<GetGroupPermissionMenuViewVo> flatVos = new ArrayList<>();
+
+        //将menuPos转换为flatVos
+        for (ResourcePo po : menuPos) {
+            GetGroupPermissionMenuViewVo vo = as(po, GetGroupPermissionMenuViewVo.class);
+            vo.setChildren(new ArrayList<>());
+            vo.setParentId(null);
+            if (po.getParent() != null) {
+                vo.setParentId(po.getParent().getId());
+            }
+            flatVos.add(vo);
+        }
+
+        //将平面vo转换为tree
+        List<GetGroupPermissionMenuViewVo> treeVos = new ArrayList<>();
+        Map<Long, GetGroupPermissionMenuViewVo> map = new HashMap<>();
+
+        for (GetGroupPermissionMenuViewVo vo : flatVos) {
+            map.put(vo.getId(), vo);
+        }
+
+        for (GetGroupPermissionMenuViewVo vo : flatVos) {
+            if (vo.getParentId() == null) {
+                treeVos.add(vo);
+                continue;
+            }
+
+            GetGroupPermissionMenuViewVo parent = map.get(vo.getParentId());
+            if (parent != null) {
+                parent.getChildren().add(vo);
+            }else{
+                treeVos.add(vo);
+            }
+        }
+
+        //搜集菜单中的权限列表
+        var permissions = new HashSet<String>();
+        for (ResourcePo menuPo : menuPos) {
+            if (StringUtils.isNotBlank(menuPo.getPermission())) {
+                permissions.addAll(Str.safeSplit(menuPo.getPermission(), ";"));
+            }
+        }
+
+        //查找数据库中不存在的权限
+        Set<String> existingPermissions = permissionRepository.getExistingPermissionsByCode(permissions);
+        Set<String> missingPermissions = new HashSet<>(permissions);
+        missingPermissions.removeAll(existingPermissions);
+
+        // 设置缺失权限标记
+        for (GetGroupPermissionMenuViewVo vo : flatVos) {
+            if (Str.in(vo.getPermission(), "*")) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            if (StringUtils.isBlank(vo.getPermission())) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            List<String> perms = Str.safeSplit(vo.getPermission(), ";");
+            int missingCount = 0;
+            int totalCount = perms.size();
+
+            for (String perm : perms) {
+                if (missingPermissions.contains(perm)) {
+                    missingCount++;
+                }
+            }
+
+            if (missingCount == 0) {
+                vo.setMissingPermission(0);
+                continue;
+            }
+
+            if (missingCount == totalCount) {
+                vo.setMissingPermission(1);
+                continue;
+            }
+
+            vo.setMissingPermission(2);
+        }
+
+        //获取该组拥有的权限
+        var groupPerms = group.getPermissions();
+
+        //设置菜单当前用户是否有权限
+        for (var vo : flatVos) {
+
+            //获取菜单权限列表
+            var menuPerms = vo.getPermissions();
+
+            var total = menuPerms.size();
+            var has = 0;
+
+            for(var menuPerm : menuPerms){
+                for(var groupPerm : groupPerms){
+                    if(menuPerm.contains(groupPerm.getCode())){
+                        has++;
+                    }
+                }
+            }
+
+            //0:没有权限 1:有权限
+            vo.setHasPermission(0);
+            
+            if(has >= total){
+                vo.setHasPermission(1);
+            }
+
+        }
+
+        return treeVos;
+    }
+
+    /**
+     * 获取组权限节点视图
+     * @param dto 获取组权限节点视图参数
+     * @return 组权限节点视图列表
+     * @throws BizException 业务异常
+     */
+    public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(GetGroupPermissionNodeDto dto) throws BizException {
+
+        GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
+        if (group == null) {
+            throw new BizException("用户组不存在");
+        }
+
+        //查找权限节点
+        var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(),dto.getHasPermission(), dto.pageRequest());
+        List<GetGroupPermissionNodeVo> vos = as(pPos.getContent(), GetGroupPermissionNodeVo.class);
+
+        var groupPerms = group.getPermissions();
+
+        for (var vo : vos) {
+            vo.setHasPermission(0);
+            for (var groupPerm : groupPerms) {
+                if (vo.getCode().equals(groupPerm.getCode())) {
+                    vo.setHasPermission(1);
+                    break;
+                }
+            }
+        }
+
+        return PageResult.success(vos, pPos.getTotalElements());
+    }
 
 
 

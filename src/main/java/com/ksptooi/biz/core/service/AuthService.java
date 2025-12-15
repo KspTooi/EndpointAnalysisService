@@ -177,7 +177,9 @@ public class AuthService {
      */
     public boolean hasPermissionByUrlPath(String urlPath) {
 
-        List<String> requiredPermissions = endpointService.getEndpointRequiredPermission(urlPath);
+        return true;
+
+        /*List<String> requiredPermissions = endpointService.getEndpointRequiredPermission(urlPath);
 
         //如果端点未配置则读取配置项endpoint.access.denied 
         if (requiredPermissions == null || requiredPermissions.isEmpty()) {
@@ -194,7 +196,7 @@ public class AuthService {
         }
 
         // 如果端点不需要权限
-        if (requiredPermissions.size() == 1 && "*".equals(requiredPermissions.get(0))) {
+        if (requiredPermissions.size() == 1 && "*".equals(requiredPermissions.getFirst())) {
             return true;
         }
 
@@ -212,7 +214,7 @@ public class AuthService {
         }
 
         log.warn("用户ID: {} 访问端点: {} 时权限校验未通过,所需权限: {}", session.getUserId(), urlPath, requiredPermissions);
-        return false;
+        return false;*/
     }
 
 

@@ -67,6 +67,41 @@ export interface ApplyPermissionDto {
   permissionCodes: string[]; // 权限代码列表
 }
 
+export interface GetGroupPermissionMenuViewDto {
+  groupId: string; // 组ID
+  keyword?: string; // 模糊匹配 菜单名称、菜单路径
+}
+
+export interface GetGroupPermissionMenuViewVo {
+  id: string; // 菜单ID
+  parentId: string; // 父级ID
+  name: string; // 菜单名称
+  menuIcon: string; // 菜单图标
+  menuKind: number; // 菜单类型
+  menuPath: string; // 菜单路径
+  menuBtnId: string; // 按钮ID
+  permission: string; // 所需权限
+  missingPermission: number; // 是否缺失权限节点 0:否 1:是 2:部分缺失
+  hasPermission: number; // 当前用户是否有权限 0:否 1:是
+  seq: number; // 排序
+  children: GetGroupPermissionMenuViewVo[]; // 子菜单
+}
+
+export interface GetGroupPermissionNodeDto extends PageQuery {
+  groupId: string; // 组ID
+  keyword?: string | null; // 模糊匹配 权限节点名称
+  hasPermission?: number | null; // 是否已授权 0:否 1:是
+}
+
+export interface GetGroupPermissionNodeVo {
+  id: string; // 权限ID
+  code: string; // 权限标识
+  name: string; // 权限名称
+  description: string; // 权限描述
+  sortOrder: number; // 排序号
+  hasPermission: number; // 是否已授权 0:否 1:是
+}
+
 export default {
   /**
    * 获取组定义列表
@@ -116,6 +151,24 @@ export default {
    */
   applyPermission: async (dto: ApplyPermissionDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/group/applyPermission", dto);
+  },
+
+  /**
+   * 获取组权限菜单视图
+   */
+  getGroupPermissionMenuView: async (dto: GetGroupPermissionMenuViewDto): Promise<GetGroupPermissionMenuViewVo[]> => {
+    var result = await Http.postEntity<Result<GetGroupPermissionMenuViewVo[]>>("/group/getGroupPermissionMenuView", dto);
+    if (result.code == 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 获取组权限节点视图
+   */
+  getGroupPermissionNodeView: async (dto: GetGroupPermissionNodeDto): Promise<PageResult<GetGroupPermissionNodeVo>> => {
+    return await Http.postEntity<PageResult<GetGroupPermissionNodeVo>>("/group/getGroupPermissionNodeView", dto);
   },
 
   /**

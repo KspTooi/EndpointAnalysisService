@@ -1,11 +1,11 @@
 <template>
   <div class="list-container">
     <!-- 说明文档 -->
-    <el-alert type="info" :closable="false" style="margin-bottom: 20px; padding: 0 8px 4px 8px" size="small">
+    <el-alert type="info" :closable="false" style="margin-bottom: 25px; margin-top: 15px; padding: 4px 8px 2px 8px" size="small">
       <template #title>
         <div style="display: flex; align-items: center; gap: 8px">
           <el-icon><InfoFilled /></el-icon>
-          <span style="font-weight: bold">端点与权限配置指南</span>
+          <span style="font-weight: bold; font-size: 13px">端点与权限配置指南</span>
           <expand-button v-model="simpleHelpVisible" size="small" />
           <el-button link type="primary" size="small" @click="helpVisible = true"> 端点鉴权系统是如何工作的?</el-button>
         </div>

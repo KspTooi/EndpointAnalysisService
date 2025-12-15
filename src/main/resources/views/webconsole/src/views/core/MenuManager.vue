@@ -210,7 +210,7 @@ const listForm = reactive<GetMenuTreeDto>({
   menuKind: null,
   permission: "",
 });
-const listExpand = ref(false);
+const listExpand = ref(true);
 const listTableRef = ref<TableInstance>();
 const listData = ref<GetMenuTreeVo[]>([]);
 const listLoading = ref(true);

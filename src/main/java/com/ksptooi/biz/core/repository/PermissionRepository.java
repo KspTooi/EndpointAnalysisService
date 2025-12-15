@@ -38,6 +38,19 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             """)
     Set<PermissionPo> getPermissionsByCodes(@Param("codes") Set<String> codes);
 
+
+    @Query("""
+            SELECT DISTINCT p
+            FROM PermissionPo p
+            WHERE
+            (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            AND (:groupId IS NULL OR :hasPermission IS NULL OR 
+                 ((:hasPermission = 1 AND EXISTS (SELECT 1 FROM p.groups g WHERE g.id = :groupId))
+                  OR (:hasPermission = 0 AND NOT EXISTS (SELECT 1 FROM p.groups g WHERE g.id = :groupId))))
+            ORDER BY p.sortOrder ASC
+            """)
+    Page<PermissionPo> getPermissionsByKeywordAndGroup(@Param("keyword") String keyword, @Param("groupId") Long groupId, @Param("hasPermission") Integer hasPermission, Pageable pageable);
+
     /**
      * 检查权限标识是否存在
      *
