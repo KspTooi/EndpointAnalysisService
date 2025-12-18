@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.attach;
 
+import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,6 +83,7 @@ public class AttachPo {
         }
 
         var chunk = new AttachChunkPo();
+        chunk.setId(IdWorker.nextId());
         chunk.setAttach(this);
         chunk.setChunkId(chunkId);
         chunk.setCreateTime(LocalDateTime.now());

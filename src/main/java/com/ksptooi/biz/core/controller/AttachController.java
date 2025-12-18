@@ -50,7 +50,7 @@ public class AttachController {
             throw new BizException("预检ID或区块ID不能为空");
         }
 
-
+        attachService.applyChunk(preCheckId,chunkId,file);
 
         return Result.success("应用分块成功");
     }

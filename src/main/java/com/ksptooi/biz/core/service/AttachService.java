@@ -121,7 +121,7 @@ public class AttachService {
             long chunkCount = getChunkCount(attach.getTotalSize(), getChunkSize());
             Set<Long> existChunkIds = new HashSet<>();
             for(var chunk : attach.getChunks()){
-                existChunkIds.add(chunk.getId());
+                existChunkIds.add(chunk.getChunkId());
             }
             List<Long> missingChunkIds = new ArrayList<>();
 
@@ -165,8 +165,8 @@ public class AttachService {
         var chunkSize = file.getSize();
         var chunkCount = getChunkCount(attach.getTotalSize(), getChunkSize());
 
-        if(attach.getStatus() == 2){
-            throw new BizException("附件已完整,无法应用区块!");
+        if(attach.getStatus() == 2 || attach.getStatus() == 3){
+            throw new BizException("附件已完整或正在进行校验,无法应用区块!");
         }
 
         if(chunkSize > attach.getTotalSize()){
@@ -227,13 +227,17 @@ public class AttachService {
         //检查是否所有分块都已上传完成
         var chunkPos = attach.getChunks();
 
+        if(chunkPos.size() != chunkCount){
+            return;
+        }
+
         //所有分块都已上传完成 更新为校验中状态
         if(chunkPos.size() == chunkCount){
             attach.setStatus(2);
+            //异步校验
+            self.verifyAttach(attach);
         }
 
-        //异步校验
-        self.verifyAttach(attach);
         repository.save(attach);
     }
 

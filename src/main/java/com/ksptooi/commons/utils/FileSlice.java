@@ -207,19 +207,108 @@ public class FileSlice {
     }
 
     /**
+     * 将文件分片并输出到指定文件夹
+     *
+     * @param filePath 源文件路径
+     * @param sliceSize 分片大小
+     * @param outputDir 输出文件夹路径
+     * @param slicePrefix 分片文件前缀，如果为null则使用源文件名
+     * @return 生成的分片文件路径列表
+     * @throws IOException 分片失败
+     */
+    public static List<Path> sliceFileToDirectory(Path filePath, long sliceSize, Path outputDir, String slicePrefix) throws IOException {
+        if (!Files.exists(filePath)) {
+            throw new IOException("文件不存在: " + filePath);
+        }
+
+        if (sliceSize <= 0) {
+            throw new IllegalArgumentException("分片大小必须大于0");
+        }
+
+        if (!Files.exists(outputDir)) {
+            Files.createDirectories(outputDir);
+        }
+
+        if (!Files.isDirectory(outputDir)) {
+            throw new IOException("输出路径不是文件夹: " + outputDir);
+        }
+
+        long fileSize = Files.size(filePath);
+        long sliceCount = calculateSliceCount(fileSize, sliceSize);
+        List<Path> sliceFiles = new ArrayList<>();
+
+        String baseName = slicePrefix;
+        if (baseName == null || baseName.isEmpty()) {
+            String fileName = filePath.getFileName().toString();
+            int lastDotIndex = fileName.lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                baseName = fileName.substring(0, lastDotIndex);
+            } else {
+                baseName = fileName;
+            }
+        }
+
+        try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r")) {
+            byte[] buffer = new byte[8192];
+
+            for (long i = 0; i < sliceCount; i++) {
+                long offset = i * sliceSize;
+                long actualSize = Math.min(sliceSize, fileSize - offset);
+                Path sliceFile = outputDir.resolve(String.format("%s.slice_%d", baseName, i));
+
+                raf.seek(offset);
+                long remaining = actualSize;
+
+                try (RandomAccessFile sliceRaf = new RandomAccessFile(sliceFile.toFile(), "rw")) {
+                    while (remaining > 0) {
+                        int readLen = (int) Math.min(buffer.length, remaining);
+                        int bytesRead = raf.read(buffer, 0, readLen);
+                        if (bytesRead == -1) {
+                            break;
+                        }
+                        sliceRaf.write(buffer, 0, bytesRead);
+                        remaining -= bytesRead;
+                    }
+                }
+
+                sliceFiles.add(sliceFile);
+            }
+        }
+
+        return sliceFiles;
+    }
+
+    /**
+     * 将文件分片并输出到指定文件夹（使用默认前缀）
+     *
+     * @param filePath 源文件路径
+     * @param sliceSize 分片大小
+     * @param outputDir 输出文件夹路径
+     * @return 生成的分片文件路径列表
+     * @throws IOException 分片失败
+     */
+    public static List<Path> sliceFileToDirectory(Path filePath, long sliceSize, Path outputDir) throws IOException {
+        return sliceFileToDirectory(filePath, sliceSize, outputDir, null);
+    }
+
+    /**
      * 主函数 - 测试文件分片工具
      *
-     * @param args 命令行参数 [文件路径] [分片大小(字节)]
+     * @param args 命令行参数 [文件路径] [分片大小(字节)] [输出文件夹(可选)]
      */
     public static void main(String[] args) {
+
+        args = new String[]{"C:\\Users\\kspto\\Desktop\\FileSlice\\com.rar","5242880","C:\\Users\\kspto\\Desktop\\FileSlice\\slices"};
+
         if (args.length == 0) {
             testBasicFunctions();
             return;
         }
 
         if (args.length < 2) {
-            System.out.println("用法: java FileSlice <文件路径> <分片大小(字节)>");
+            System.out.println("用法: java FileSlice <文件路径> <分片大小(字节)> [输出文件夹]");
             System.out.println("示例: java FileSlice test.txt 1024");
+            System.out.println("示例: java FileSlice test.txt 1024 ./slices");
             return;
         }
 
@@ -254,6 +343,20 @@ public class FileSlice {
             for (SliceInfo info : sliceInfos) {
                 System.out.printf("  分片[%d]: 偏移量=%d, 大小=%d%n", 
                     info.getIndex(), info.getOffset(), info.getSize());
+            }
+
+            if (args.length >= 3) {
+                String outputDir = args[2];
+                Path outputPath = Paths.get(outputDir);
+                System.out.println("----------------------------------------");
+                System.out.println("开始分片文件到文件夹: " + outputDir);
+                
+                List<Path> sliceFiles = sliceFileToDirectory(path, sliceSize, outputPath);
+                System.out.println("分片完成，共生成 " + sliceFiles.size() + " 个文件:");
+                for (Path sliceFile : sliceFiles) {
+                    long sliceFileSize = Files.size(sliceFile);
+                    System.out.printf("  %s (%d 字节)%n", sliceFile.getFileName(), sliceFileSize);
+                }
             }
 
             if (sliceCount > 0) {
