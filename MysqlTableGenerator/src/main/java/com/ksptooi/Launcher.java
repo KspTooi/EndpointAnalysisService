@@ -21,8 +21,7 @@ public class Launcher {
         // generateTable("EduExamProgress");
 
         // 根据表结构生成CRUD
-        generateJpaCrud("core_company", "DEAN");
-        generateJpaCrud("core_company_member", "DEAN");
+        generateJpaCrud("drive_entry", "DEAN");
 //        generateJpaCrud("sys_tag_rel", "wangshuailong");
     }
 
@@ -34,11 +33,11 @@ public class Launcher {
         // 使用Mysql数据源
         var ds = new MysqlDataSource();
         ds.set("driver", "com.mysql.cj.jdbc.Driver");
-        ds.set("host", "127.0.0.1:3306");
+        ds.set("host", "192.168.10.202:3306");
         ds.set("username", "root");
         ds.set("password", "root");
         ds.set("params", "?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8");
-        ds.set("dbName", "endpoint_analysis_service");
+        ds.set("dbName", "endpoint_analysis_service_test");
 
         // DDL解析器 用于将MYSQL表转换为Mybatis生成器需要的数据格式
         var ddlProc = new MysqlDdlProc();
@@ -50,7 +49,7 @@ public class Launcher {
         genProc.set("dir.classes", "main.java");
         genProc.set("dir.xml", "src.main.resources.mapper");
         genProc.set("pkg.root", "com.ksptooi.biz");
-        genProc.set("exclude.names", "core_");
+        genProc.set("exclude.names", "drive_");
 
         genProc.set("gen.controller", "true");
         genProc.set("gen.service", "true");

@@ -13,26 +13,25 @@ public class DatabaseTools {
     private final Connection conn;
 
 
-    // 类型映射表
-    private final HashMap<String, String> typeMapper = new HashMap<>();
+    //类型映射表
+    private final HashMap<String,String> typeMapper = new HashMap<>();
 
-    private final HashMap<String, String> reverseTypeMapper = new HashMap<>();
+    private final HashMap<String,String> reverseTypeMapper = new HashMap<>();
 
-    public DatabaseTools(Connection conn) {
+    public DatabaseTools(Connection conn){
         this.conn = conn;
         initTypeMapper();
     }
 
-    private void initTypeMapper() {
+    private void initTypeMapper(){
 
-        // MySQL to Java Type Mapping
+        //MySQL to Java Type Mapping
         typeMapper.put("VARCHAR", "String");
         typeMapper.put("INT", "Integer");
         typeMapper.put("BIT", "Boolean");
         typeMapper.put("SMALLINT", "Short");
         typeMapper.put("REAL", "Float");
         typeMapper.put("DOUBLE", "Double");
-        typeMapper.put("CHAR", "Integer");
         typeMapper.put("BIGINT", "Long");
         typeMapper.put("DECIMAL", "BigDecimal");
         typeMapper.put("BINARY", "Byte[]");
@@ -40,26 +39,25 @@ public class DatabaseTools {
         typeMapper.put("TINYINT", "Integer");
         typeMapper.put("TEXT", "String");
         typeMapper.put("JSON", "String");
-        typeMapper.put("LONGTEXT", "String");
 
-        for (Map.Entry<String, String> entry : typeMapper.entrySet()) {
-            reverseTypeMapper.put(entry.getValue(), entry.getKey());
+        for(Map.Entry<String,String> entry : typeMapper.entrySet()){
+            reverseTypeMapper.put(entry.getValue(),entry.getKey());
         }
 
     }
 
-    public String typeToDatabase(String s) {
+    public String typeToDatabase(String s){
         return reverseTypeMapper.get(s);
     }
 
-    public List<TableField> getFieldsByTable(String dbName, String tableName) {
+    public List<TableField> getFieldsByTable(String dbName,String tableName){
 
         List<TableField> tableFields = new ArrayList<>();
         try {
             DatabaseMetaData databaseMetaData = conn.getMetaData();
 
             ResultSet resultSet = databaseMetaData.getColumns(dbName, dbName, tableName, null);
-            while (resultSet.next()) {
+            while(resultSet.next()){
 
                 String name = resultSet.getString("COLUMN_NAME");
                 String type = resultSet.getString("TYPE_NAME");
@@ -72,7 +70,7 @@ public class DatabaseTools {
                 tableField.setType(type);
                 tableField.setJavaType(typeMapper.get(type));
                 tableField.setComment(comment);
-                if (comment == null || comment.isBlank()) {
+                if(comment == null || comment.isBlank()){
                     tableField.setComment("");
                 }
                 tableFields.add(tableField);
@@ -85,13 +83,13 @@ public class DatabaseTools {
     }
 
 
-    private String toJavaGetterName(String fieldName) {
+    private String toJavaGetterName(String fieldName){
         char[] chars = fieldName.toCharArray();
         chars[0] = Character.toUpperCase(chars[0]);
         return new String(chars);
     }
 
-    private String toJavaName(String fieldName) {
+    private String toJavaName(String fieldName){
         String[] words = fieldName.split("_");
         StringBuilder javaName = new StringBuilder(words[0].toLowerCase());
         for (int i = 1; i < words.length; i++) {
@@ -106,7 +104,7 @@ public class DatabaseTools {
      */
     public boolean tableExist(String tableName) throws SQLException {
         DatabaseMetaData metaData = conn.getMetaData();
-        try (ResultSet resultSet = metaData.getTables(null, null, tableName.toUpperCase(), new String[]{"TABLE"})) {
+        try (ResultSet resultSet = metaData.getTables(null, null, tableName, new String[]{"TABLE"})) {
             return resultSet.next();
         }
     }
