@@ -284,6 +284,7 @@ public class AttachService {
 
             // 校验成功
             attach.setStatus(3); // 3:有效
+            attach.setVerifyTime(LocalDateTime.now());
             repository.save(attach);
             log.info("文件校验成功 ID:{} SHA256:{}", attach.getId(), actualSha256);
 

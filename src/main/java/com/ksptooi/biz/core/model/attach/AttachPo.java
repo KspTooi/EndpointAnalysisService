@@ -62,6 +62,10 @@ public class AttachPo {
     @Comment("状态 0:预检文件 1:区块不完整 2:校验中 3:有效")
     private Integer status;
 
+    @Column(name = "verify_time")
+    @Comment("校验时间")
+    private LocalDateTime verifyTime;
+
     @Column(name = "create_time", nullable = false)
     @Comment("创建时间")
     private LocalDateTime createTime;
