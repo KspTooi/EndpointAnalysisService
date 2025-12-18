@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,5 +204,120 @@ public class FileSlice {
         long offset = sliceIndex * sliceSize;
         long size = Math.min(sliceSize, fileSize - offset);
         return new SliceInfo(sliceIndex, offset, size);
+    }
+
+    /**
+     * 主函数 - 测试文件分片工具
+     *
+     * @param args 命令行参数 [文件路径] [分片大小(字节)]
+     */
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            testBasicFunctions();
+            return;
+        }
+
+        if (args.length < 2) {
+            System.out.println("用法: java FileSlice <文件路径> <分片大小(字节)>");
+            System.out.println("示例: java FileSlice test.txt 1024");
+            return;
+        }
+
+        String filePath = args[0];
+        long sliceSize;
+        try {
+            sliceSize = Long.parseLong(args[1]);
+        } catch (NumberFormatException e) {
+            System.err.println("分片大小必须是数字: " + args[1]);
+            return;
+        }
+
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            System.err.println("文件不存在: " + filePath);
+            return;
+        }
+
+        try {
+            long fileSize = Files.size(path);
+            System.out.println("文件路径: " + filePath);
+            System.out.println("文件大小: " + fileSize + " 字节");
+            System.out.println("分片大小: " + sliceSize + " 字节");
+            System.out.println("----------------------------------------");
+
+            long sliceCount = calculateSliceCount(fileSize, sliceSize);
+            System.out.println("分片数量: " + sliceCount);
+            System.out.println("----------------------------------------");
+
+            List<SliceInfo> sliceInfos = getSliceInfos(fileSize, sliceSize);
+            System.out.println("分片信息列表:");
+            for (SliceInfo info : sliceInfos) {
+                System.out.printf("  分片[%d]: 偏移量=%d, 大小=%d%n", 
+                    info.getIndex(), info.getOffset(), info.getSize());
+            }
+
+            if (sliceCount > 0) {
+                System.out.println("----------------------------------------");
+                System.out.println("读取第一个分片数据:");
+                byte[] firstSlice = readSlice(path, 0, sliceSize, fileSize);
+                System.out.println("  读取字节数: " + firstSlice.length);
+                System.out.println("  前10个字节: " + bytesToHex(firstSlice, Math.min(10, firstSlice.length)));
+            }
+
+        } catch (IOException e) {
+            System.err.println("处理文件时出错: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            System.err.println("参数错误: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 测试基本功能
+     */
+    private static void testBasicFunctions() {
+        System.out.println("=== 文件分片工具测试 ===");
+        System.out.println();
+
+        long fileSize = 10240L;
+        long sliceSize = 1024L;
+
+        System.out.println("测试参数:");
+        System.out.println("  文件大小: " + fileSize + " 字节");
+        System.out.println("  分片大小: " + sliceSize + " 字节");
+        System.out.println();
+
+        long sliceCount = calculateSliceCount(fileSize, sliceSize);
+        System.out.println("计算结果:");
+        System.out.println("  分片数量: " + sliceCount);
+        System.out.println();
+
+        List<SliceInfo> sliceInfos = getSliceInfos(fileSize, sliceSize);
+        System.out.println("分片信息:");
+        for (SliceInfo info : sliceInfos) {
+            System.out.printf("  分片[%d]: 偏移量=%d, 大小=%d%n", 
+                info.getIndex(), info.getOffset(), info.getSize());
+        }
+        System.out.println();
+
+        if (sliceCount > 0) {
+            SliceInfo firstSlice = getSliceInfo(fileSize, sliceSize, 0);
+            System.out.println("第一个分片信息:");
+            System.out.printf("  索引: %d%n", firstSlice.getIndex());
+            System.out.printf("  偏移量: %d%n", firstSlice.getOffset());
+            System.out.printf("  大小: %d%n", firstSlice.getSize());
+        }
+    }
+
+    /**
+     * 将字节数组转换为十六进制字符串
+     */
+    private static String bytesToHex(byte[] bytes, int length) {
+        StringBuilder sb = new StringBuilder();
+        int len = Math.min(length, bytes.length);
+        for (int i = 0; i < len; i++) {
+            sb.append(String.format("%02X ", bytes[i]));
+        }
+        return sb.toString().trim();
     }
 }
