@@ -1,0 +1,38 @@
+package com.ksptooi.biz.core.repository;
+
+import com.ksptooi.biz.core.model.attach.AttachChunkPo;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface AttachChunkRepository extends JpaRepository<AttachChunkPo, Long> {
+
+    /**
+     * 查询指定附件和分块ID的重复应用次数
+     *
+     * @param attachId 附件ID
+     * @param chunkId 分块ID
+     * @return 记录数
+     */
+    @Query("""
+    SELECT COUNT(t) FROM AttachChunkPo t
+    WHERE
+    t.attach.id = :attachId AND
+    t.chunkId = :chunkId
+    """)
+    Long countByAttachIdAndChunkId(@Param("attachId") Long attachId, @Param("chunkId") Long chunkId);
+
+    /**
+     * 统计指定附件的分块数量
+     *
+     * @param attachId 附件ID
+     * @return 分块数量
+     */
+    @Query("""
+    SELECT COUNT(t) FROM AttachChunkPo t
+    WHERE t.attach.id = :attachId
+    """)
+    Long countByAttachId(@Param("attachId") Long attachId);
+
+}

@@ -39,7 +39,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -73,3 +73,15 @@ knife4j:
 
 application:
   version: 1.2G # 应用版本号
+
+#文件存储配置
+file-attach:
+
+  #默认存储类型
+  default: LOCAL
+
+  #本地文件存储配置
+  local:
+    linux: /Docker/DockerData/
+    windows: C:\EAS
+    auto-create: true
