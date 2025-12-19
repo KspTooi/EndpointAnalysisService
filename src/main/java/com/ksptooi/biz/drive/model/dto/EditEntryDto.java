@@ -1,6 +1,6 @@
 package com.ksptooi.biz.drive.model.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -34,13 +34,13 @@ public class EditEntryDto {
     private String attachSuffix;
 
     @Schema(description="创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Schema(description="更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @Schema(description="删除时间 为NULL未删除")
-    private Date deleteTime;
+    private LocalDateTime deleteTime;
 
     @Schema(description="创建人")
     private Long creatorId;

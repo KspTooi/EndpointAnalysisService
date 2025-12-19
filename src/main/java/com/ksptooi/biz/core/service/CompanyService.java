@@ -227,6 +227,9 @@ public class CompanyService {
         }
 
         user.setActiveCompany(company);
+
+        //激活团队后，刷新用户会话
+        authService.refreshUserSession(user.getId());
         userRepository.save(user);
     }
 

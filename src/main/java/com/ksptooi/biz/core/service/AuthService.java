@@ -167,7 +167,29 @@ public class AuthService {
         UserSessionVo session = getCurrentUserSession();
         return session != null ? session.getUserId() : null;
     }
+    
+    /**
+     * 获取当前用户激活的公司ID
+     *
+     * @return 当前用户激活的公司ID，如果未激活则返回null
+     */
+    public static Long requireCompanyId() throws AuthException {
+        var companyId = getCurrentCompanyId();
+        if (companyId == null) {
+            throw new AuthException("require company active");
+        }
+        return companyId;
+    }
 
+    /**
+     * 获取当前用户激活的公司ID
+     *
+     * @return 当前用户激活的公司ID，如果未激活则返回null
+     */
+    public static Long getCurrentCompanyId() {
+        UserSessionVo session = getCurrentUserSession();
+        return session != null ? session.getCompanyId() : null;
+    }
 
     /**
      * 根据URL路径检查当前用户是否拥有权限
@@ -330,6 +352,9 @@ public class AuthService {
     }
 
     public UserSessionVo createUserSession(Long userId) {
+
+        var userPo = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
+
         LocalDateTime now = LocalDateTime.now();
         // 查询当前用户是否已有会话
         UserSessionPo existingSession = userSessionRepository.findByUserId(userId);
@@ -354,6 +379,7 @@ public class AuthService {
         String token = UUID.randomUUID().toString();
         UserSessionPo newSession = new UserSessionPo();
         newSession.setUserId(userId);
+        newSession.setCompanyId(userPo.getActiveCompanyId());
         newSession.setToken(token);
         newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
 
@@ -370,6 +396,9 @@ public class AuthService {
      * @return 更新后的会话信息，如果会话不存在或已过期则返回null
      */
     public UserSessionVo refreshUserSession(Long userId) {
+
+        var userPo = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
+        
         // 查询当前用户是否已有会话
         UserSessionPo existingSession = userSessionRepository.findByUserId(userId);
         if (existingSession == null) {
@@ -389,8 +418,8 @@ public class AuthService {
             permissionCodes.add(permission.getCode());
         }
 
-
         // 更新会话信息
+        existingSession.setCompanyId(userPo.getActiveCompanyId());
         existingSession.setPermissions(gson.toJson(permissionCodes));
         existingSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         userSessionRepository.save(existingSession);

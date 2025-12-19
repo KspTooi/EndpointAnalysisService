@@ -109,4 +109,16 @@ public class UserPo {
     }
 
 
+    /**
+     * 获取当前用户激活的公司ID
+     *
+     * @return 当前用户激活的公司ID，如果未激活任何公司则返回null
+     */
+    public Long getActiveCompanyId() {
+        if (activeCompany == null) {
+            return null;
+        }
+        return activeCompany.getId();
+    }
+
 }

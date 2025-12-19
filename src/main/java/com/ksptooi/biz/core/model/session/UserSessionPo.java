@@ -21,6 +21,10 @@ public class UserSessionPo {
     @Comment("用户ID")
     private Long userId;
 
+    @Column(name = "company_id", nullable = false)
+    @Comment("公司ID")
+    private Long companyId;
+
     @Column(name = "token", nullable = false, unique = true, length = 100)
     @Comment("Token")
     private String token;

@@ -15,6 +15,7 @@ import static com.ksptool.entities.Entities.assign;
 public class UserSessionVo {
     private Long id;
     private Long userId;
+    private Long companyId;
     private Long playerId;
     private String playerName;
     private String playerAvatarUrl;

@@ -6,14 +6,17 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
-
-import java.util.Date;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 
 @Getter
 @Setter
 @Entity
 @Table(name = "drive_entry")
+@SQLDelete(sql = "UPDATE drive_entry SET delete_time = now() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class EntryPo {
 
     @Column(name = "id")
@@ -51,15 +54,15 @@ public class EntryPo {
 
     @Column(name = "create_time",nullable = false)
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "update_time",nullable = false)
     @Comment("更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @Column(name = "delete_time")
     @Comment("删除时间 为NULL未删除")
-    private Date deleteTime;
+    private LocalDateTime deleteTime;
 
     @Column(name = "creator_id",nullable = false)
     @Comment("创建人")
@@ -75,7 +78,7 @@ public class EntryPo {
             this.id = IdWorker.nextId();
         }
         
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         if (this.createTime == null) {
             this.createTime = now;
         }
@@ -93,7 +96,7 @@ public class EntryPo {
 
     @PreUpdate
     private void onUpdate() {
-        this.updateTime = new Date();
+        this.updateTime = LocalDateTime.now();
         if (this.updaterId == null) {
             this.updaterId = AuthService.getCurrentUserId();
         }
