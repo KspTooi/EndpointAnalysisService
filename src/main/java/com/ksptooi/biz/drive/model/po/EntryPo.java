@@ -1,12 +1,12 @@
 package com.ksptooi.biz.drive.model.po;
 
-
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
+import java.util.Set;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -28,9 +28,10 @@ public class EntryPo {
     @Comment("团队ID")
     private Long companyId;
 
-    @Column(name = "parent_id")
     @Comment("父级ID 为NULL顶级")
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    private EntryPo parent;
 
     @Column(name = "name",length = 128,nullable = false)
     @Comment("条目名称")
@@ -71,6 +72,10 @@ public class EntryPo {
     @Column(name = "updater_id",nullable = false)
     @Comment("更新人")
     private Long updaterId;
+    
+    //子级条目
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EntryPo> children;
 
     @PrePersist
     private void onCreate() {

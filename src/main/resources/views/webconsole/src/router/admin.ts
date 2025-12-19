@@ -205,6 +205,16 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/drive",
+      name: "drive",
+      component: () => import("@/views/drive/Drive.vue"),
+      meta: {
+        breadcrumb: {
+          title: "团队云盘",
+        },
+      },
+    },
   ],
 });
 

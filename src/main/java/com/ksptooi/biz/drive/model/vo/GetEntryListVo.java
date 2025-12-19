@@ -1,7 +1,6 @@
 package com.ksptooi.biz.drive.model.vo;
 
 import java.time.LocalDateTime;
-import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +10,6 @@ public class GetEntryListVo{
 
     @Schema(description="条目ID")
     private Long id;
-
-    @Schema(description="团队ID")
-    private Long companyId;
 
     @Schema(description="父级ID 为NULL顶级")
     private Long parentId;
@@ -35,18 +31,6 @@ public class GetEntryListVo{
 
     @Schema(description="创建时间")
     private LocalDateTime createTime;
-
-    @Schema(description="更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description="删除时间 为NULL未删除")
-    private LocalDateTime deleteTime;
-
-    @Schema(description="创建人")
-    private Long creatorId;
-
-    @Schema(description="更新人")
-    private Long updaterId;
 
 }
 

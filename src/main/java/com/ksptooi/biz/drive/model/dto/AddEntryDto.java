@@ -1,52 +1,53 @@
 package com.ksptooi.biz.drive.model.dto;
 
-import java.time.LocalDateTime;
-import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
 public class AddEntryDto {
 
-    @Schema(description="条目ID")
-    private Long id;
-
-    @Schema(description="团队ID")
-    private Long companyId;
-
     @Schema(description="父级ID 为NULL顶级")
     private Long parentId;
 
     @Schema(description="条目名称")
+    @NotBlank(message = "条目名称不能为空")
+    @Length(min = 1, max = 128, message = "条目名称长度必须在1-128个字符之间")
     private String name;
 
     @Schema(description="条目类型 0:文件 1:文件夹")
+    @NotNull(message = "条目类型不能为空")
+    @Range(min = 0, max = 1, message = "条目类型只能在0-1之间")
     private Integer kind;
 
     @Schema(description="文件附件ID 文件夹为NULL")
     private Long attachId;
 
-    @Schema(description="文件附件大小 文件夹为0")
-    private Long attachSize;
 
-    @Schema(description="文件附件类型 文件夹为NULL")
-    private String attachSuffix;
 
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
+    public String validate() {
 
-    @Schema(description="更新时间")
-    private LocalDateTime updateTime;
+        //文件夹不能有文件附件
+        if (kind == 1) {
+            if (attachId != null) {
+                return "文件夹不能有文件附件";
+            }
+        }
 
-    @Schema(description="删除时间 为NULL未删除")
-    private LocalDateTime deleteTime;
+        //文件附件ID不能为空
+        if (kind == 0) {
+            if (attachId == null) {
+                return "文件附件ID不能为空";
+            }
+        }
 
-    @Schema(description="创建人")
-    private Long creatorId;
-
-    @Schema(description="更新人")
-    private Long updaterId;
+        return null;
+    }
 
 }
 

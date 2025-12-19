@@ -11,23 +11,34 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface EntryRepository extends JpaRepository<EntryPo, Long>{
 
+
     @Query("""
     SELECT u FROM EntryPo u
     WHERE
-    (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-    AND (:#{#po.companyId} IS NULL OR u.companyId  = :#{#po.companyId} )
-    AND (:#{#po.parentId} IS NULL OR u.parentId  = :#{#po.parentId} )
-    AND (:#{#po.name} IS NULL OR u.name  = :#{#po.name} )
-    AND (:#{#po.kind} IS NULL OR u.kind  = :#{#po.kind} )
-    AND (:#{#po.attachId} IS NULL OR u.attachId  = :#{#po.attachId} )
-    AND (:#{#po.attachSize} IS NULL OR u.attachSize  = :#{#po.attachSize} )
-    AND (:#{#po.attachSuffix} IS NULL OR u.attachSuffix  = :#{#po.attachSuffix} )
-    AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
-    AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
-    AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
-    AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
-    AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
+    (:parentId IS NULL OR u.parentId = :parentId) AND 
+    u.companyId = :companyId AND 
+    (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
     ORDER BY u.updateTime DESC
     """)
-    Page<EntryPo> getEntryList(@Param("po") EntryPo po, Pageable pageable);
+    Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
+
+    @Query("""
+    SELECT COUNT(u) FROM EntryPo u
+    WHERE 
+    u.parentId = :parentId AND 
+    u.companyId = :companyId AND
+    u.name = :name
+    """)
+    long countByName(@Param("companyId") Long companyId,@Param("parentId") Long parentId, @Param("name") String name);
+
+    @Query("""
+    SELECT COUNT(u) FROM EntryPo u
+    WHERE 
+    u.parentId = :parentId AND 
+    u.companyId = :companyId AND
+    u.name = :name AND
+    u.id != :id
+    """)
+    long countByNameIgnoreId(@Param("companyId") Long companyId,@Param("parentId") Long parentId, @Param("name") String name, @Param("id") Long id);
+
 }

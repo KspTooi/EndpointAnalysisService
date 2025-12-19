@@ -36,6 +36,13 @@ public class EntryController {
     @Operation(summary ="新增条目")
     @PostMapping("/addEntry")
     public Result<String> addEntry(@RequestBody @Valid AddEntryDto dto) throws Exception{
+
+        //验证输入参数
+        if (dto.validate() != null) {
+            return Result.error(dto.validate());
+        }
+
+        //新增条目
         entryService.addEntry(dto);
         return Result.success("新增成功");
     }

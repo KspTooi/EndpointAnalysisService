@@ -53,4 +53,11 @@ public interface AttachRepository extends JpaRepository<AttachPo, Long> {
     """)
     Long countByKind(@Param("kind") String kind);
 
+
+    @Query("""
+    SELECT COUNT(t) FROM AttachPo t
+    WHERE t.id = :id
+    """)
+    Long countById(@Param("id") Long id);
+
 }
