@@ -197,7 +197,7 @@ import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core
 import MenuApi from "@/api/core/MenuApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
-import { reactive, ref, watch, computed, onMounted } from "vue";
+import { reactive, ref, watch, computed, onMounted, nextTick } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";

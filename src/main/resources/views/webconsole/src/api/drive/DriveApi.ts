@@ -33,7 +33,7 @@ export default {
    * @returns 驱动器条目列表
    */
   getEntryList: async (dto: GetEntryListDto): Promise<RestPageableView<GetEntryListVo>> => {
-    const ret = await Http.postEntity<RestPageableView<GetEntryListVo>>("/drive/getEntryList", dto);
+    const ret = await Http.postEntity<RestPageableView<GetEntryListVo>>("/drive/entry/getEntryList", dto);
     return ret;
   },
 
@@ -43,7 +43,7 @@ export default {
    * @returns 新增结果
    */
   addEntry: async (dto: AddEntryDto): Promise<Result<string>> => {
-    const ret = await Http.postEntity<Result<string>>("/drive/addEntry", dto);
+    const ret = await Http.postEntity<Result<string>>("/drive/entry/addEntry", dto);
     return ret;
   },
 };

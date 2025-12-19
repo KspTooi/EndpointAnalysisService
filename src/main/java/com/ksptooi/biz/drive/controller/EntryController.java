@@ -19,7 +19,7 @@ import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 
 @PrintLog
 @RestController
-@RequestMapping("/entry")
+@RequestMapping("/drive/entry")
 @Tag(name = "Entry", description = "驱动器条目管理")
 @Slf4j
 public class EntryController {
