@@ -15,8 +15,8 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>{
     @Query("""
     SELECT u FROM EntryPo u
     WHERE
-    (:parentId IS NULL OR u.parentId = :parentId) AND 
-    u.companyId = :companyId AND 
+    (:parentId IS NULL OR u.parent.id = :parentId) AND
+    u.companyId = :companyId AND
     (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
     ORDER BY u.updateTime DESC
     """)
@@ -24,8 +24,8 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>{
 
     @Query("""
     SELECT COUNT(u) FROM EntryPo u
-    WHERE 
-    u.parentId = :parentId AND 
+    WHERE
+    u.parent.id = :parentId AND
     u.companyId = :companyId AND
     u.name = :name
     """)
@@ -33,8 +33,8 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>{
 
     @Query("""
     SELECT COUNT(u) FROM EntryPo u
-    WHERE 
-    u.parentId = :parentId AND 
+    WHERE
+    u.parent.id = :parentId AND
     u.companyId = :companyId AND
     u.name = :name AND
     u.id != :id
