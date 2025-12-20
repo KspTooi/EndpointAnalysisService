@@ -62,6 +62,7 @@ const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null
 const createEntryModalRef = ref<InstanceType<typeof DriveModalCreateDir> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
+const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
@@ -149,7 +150,7 @@ const onCreateFolder = () => {
  * 右键菜单->上传文件
  */
 const onUploadFile = () => {
-  fileInput.value?.click();
+  fileSelectorRef.value?.openSelector();
 };
 
 /**
