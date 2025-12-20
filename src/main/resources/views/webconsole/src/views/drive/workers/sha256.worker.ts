@@ -1,68 +1,62 @@
+/// <reference lib="webworker" />
 import { createSHA256 } from "hash-wasm";
+import type { IHasher } from "hash-wasm/dist/lib/WASMInterface";
 
-const CHUNK_SIZE = 10 * 1024 * 1024; // 10MB - 增大分片以提升性能
+// 50MB 分片：平衡内存占用与调用开销的最佳甜点
+const CHUNK_SIZE = 50 * 1024 * 1024;
 
 interface HashMessage {
   type: "start" | "chunk" | "end";
   file?: File;
-  chunk?: ArrayBuffer;
-  chunkIndex?: number;
-  totalChunks?: number;
 }
 
-interface HashResponse {
-  type: "progress" | "completed" | "error";
-  progress?: number;
-  hash?: string;
-  error?: string;
-}
+let hasher: IHasher | null = null;
 
 self.onmessage = async (e: MessageEvent<HashMessage>) => {
   const { type, file } = e.data;
 
   if (type === "start" && file) {
     try {
-      const sha256 = await createSHA256();
+      // 懒加载单例模式：只编译一次 WASM
+      if (!hasher) {
+        hasher = await createSHA256();
+      }
+      hasher.init(); // 每次计算新文件必须重置
+
       const fileSize = file.size;
       const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
-      let processedChunks = 0;
       let lastReportedProgress = 0;
+
+      // 使用同步读取器 (Worker 专属神器)
+      // 这行代码现在不会报错了，因为顶部的 <reference /> 引入了 Worker 类型定义
+      const reader = new FileReaderSync();
 
       for (let i = 0; i < totalChunks; i++) {
         const start = i * CHUNK_SIZE;
         const end = Math.min(start + CHUNK_SIZE, fileSize);
-        const fileChunk = file.slice(start, end);
-        const arrayBuffer = await fileChunk.arrayBuffer();
 
-        sha256.update(new Uint8Array(arrayBuffer));
-        processedChunks++;
+        // 切片（仅是指针操作，不耗时）
+        const blob = file.slice(start, end);
 
-        const progress = Math.round((processedChunks / totalChunks) * 100);
-        
-        // 只在进度变化超过 5% 或完成时才报告，减少消息传递开销
-        if (progress - lastReportedProgress >= 5 || progress === 100) {
+        // 同步读取：阻塞线程直到数据读入内存。
+        // 在 Worker 中阻塞是好对，因为这意味着 CPU 在全力跑 I/O，没有异步调度的空隙。
+        const buffer = reader.readAsArrayBuffer(blob);
+
+        // 传入 Uint8Array 视图，避免拷贝
+        hasher.update(new Uint8Array(buffer));
+
+        // 进度汇报：减少通信频率
+        const progress = Math.round(((i + 1) / totalChunks) * 100);
+        if (progress - lastReportedProgress >= 2 || progress === 100) {
           lastReportedProgress = progress;
-          const response: HashResponse = {
-            type: "progress",
-            progress: progress,
-          };
-          self.postMessage(response);
+          self.postMessage({ type: "progress", progress });
         }
       }
 
-      const hash = sha256.digest("hex");
-      const response: HashResponse = {
-        type: "completed",
-        hash: hash,
-      };
-      self.postMessage(response);
+      const hash = hasher.digest("hex");
+      self.postMessage({ type: "completed", hash });
     } catch (error: any) {
-      const response: HashResponse = {
-        type: "error",
-        error: error.message || "计算哈希失败",
-      };
-      self.postMessage(response);
+      self.postMessage({ type: "error", error: error.message || "计算哈希失败" });
     }
-    return;
   }
 };
