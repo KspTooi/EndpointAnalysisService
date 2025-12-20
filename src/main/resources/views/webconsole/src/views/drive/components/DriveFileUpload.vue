@@ -33,11 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
 import AttachApi, { type PreCheckAttachDto, type ApplyChunkVo } from "@/api/core/AttachApi.ts";
 import DriveApi, { type AddEntryDto } from "@/api/drive/DriveApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import Sha256Worker from "../workers/sha256.worker.ts?worker";
 
 export interface UploadQueueItem {
   file: File;
@@ -64,6 +65,7 @@ const uploadQueue = ref<UploadQueueItem[]>([]);
 const uploading = ref(false);
 const currentIndex = ref(-1);
 const isCancelled = ref(false);
+const hashWorker = ref<Worker | null>(null);
 
 const completedCount = computed(() => {
   return uploadQueue.value.filter((item) => item.status === "completed").length;
@@ -136,7 +138,9 @@ const uploadFile = async (item: UploadQueueItem) => {
   item.statusText = "正在计算哈希...";
 
   try {
-    const sha256 = await computeSHA256(item.file);
+    const sha256 = await computeSHA256(item.file, (progress) => {
+      item.statusText = `正在计算哈希... ${progress}%`;
+    });
     item.statusText = "正在预检...";
 
     const preCheckDto: PreCheckAttachDto = {
@@ -221,11 +225,46 @@ const uploadFile = async (item: UploadQueueItem) => {
   }
 };
 
-const computeSHA256 = async (file: File): Promise<string> => {
-  const arrayBuffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+const getHashWorker = (): Worker => {
+  if (!hashWorker.value) {
+    hashWorker.value = new Sha256Worker();
+  }
+  return hashWorker.value;
+};
+
+const computeSHA256 = async (file: File, onProgress?: (progress: number) => void): Promise<string> => {
+  const worker = getHashWorker();
+
+  return new Promise((resolve, reject) => {
+    const messageHandler = (e: MessageEvent) => {
+      const { type, progress, hash, error } = e.data;
+
+      if (type === "progress" && progress !== undefined) {
+        if (onProgress) {
+          onProgress(progress);
+        }
+        return;
+      }
+
+      if (type === "completed" && hash) {
+        worker.removeEventListener("message", messageHandler);
+        resolve(hash);
+        return;
+      }
+
+      if (type === "error") {
+        worker.removeEventListener("message", messageHandler);
+        reject(new Error(error || "计算哈希失败"));
+        return;
+      }
+    };
+
+    worker.addEventListener("message", messageHandler);
+    worker.postMessage({
+      type: "start",
+      file: file,
+    });
+  });
 };
 
 const uploadChunk = async (preCheckId: string, chunkId: number, chunk: Blob): Promise<ApplyChunkVo | null> => {
@@ -265,6 +304,13 @@ const formatFileSize = (bytes: number): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 };
+
+onUnmounted(() => {
+  if (hashWorker.value) {
+    hashWorker.value.terminate();
+    hashWorker.value = null;
+  }
+});
 
 defineExpose({
   toUploadQueue,
