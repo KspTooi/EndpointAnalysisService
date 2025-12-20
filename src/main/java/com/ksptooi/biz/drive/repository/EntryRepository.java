@@ -49,7 +49,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
      * 根据条目IDS更新文件附件状态
      *
      * @param entryIds 条目IDS
-     * @param status 文件附件状态
+     * @param status   文件附件状态
      * @return 更新条数
      */
     @Modifying
@@ -68,6 +68,23 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
     @Query("""
             UPDATE EntryPo u SET u.deleteTime = now() WHERE u.id IN :entryIds AND u.deleteTime IS NULL
             """)
-    long removeEntryByEntryIds(@Param("entryIds") List<Long> entryIds);
+    int removeEntryByEntryIds(@Param("entryIds") List<Long> entryIds);
+
+    /**
+     * 查询需要同步的云盘条目
+     *
+     * @param limit 查询条数
+     * @return 云盘条目列表
+     */
+    @Query("""
+            SELECT t FROM EntryPo t
+            WHERE
+            t.kind = 0 AND
+            t.attachStatus != 3 AND
+            t.deleteTime IS NULL
+            ORDER BY t.createTime DESC
+            LIMIT :limit
+            """)
+    List<EntryPo> getNeedSyncEntryList(@Param("limit") int limit);
 
 }

@@ -43,9 +43,6 @@ public class EntryService {
     @Autowired
     private AttachRepository attachRepository;
 
-    //云盘条目同步队列(当用户上传完文件附件后,需要等待文件附件校验完成并同步到云盘条目)
-    private List<EntrySyncVo> entrySyncList = new CopyOnWriteArrayList<>();
-
     /**
      * 查询条目列表
      *
@@ -175,16 +172,20 @@ public class EntryService {
     @Scheduled(fixedDelay = 5000)
     public void syncEntry() {
 
-        if (entrySyncList.isEmpty()) {
+        //查询全部需要同步的云盘条目
+        var entryPos = repository.getNeedSyncEntryList(500);
+
+        if (entryPos.isEmpty()) {
             return;
         }
+
+        log.info("正在检查:{} 个云盘条目", entryPos.size());
 
         var attachIds = new ArrayList<Long>();
 
         //获取所有需要同步的文件附件ID
-        for (EntrySyncVo entrySyncVo : entrySyncList) {
-            attachIds.add(entrySyncVo.getAttachId());
-            entrySyncVo.setCheckCount(entrySyncVo.getCheckCount() + 1);
+        for (EntryPo entryPo : entryPos) {
+            attachIds.add(entryPo.getAttachId());
         }
 
         //获取所有需要同步的文件附件
@@ -196,12 +197,12 @@ public class EntryService {
         //校验成功的条目
         var successEntries = new ArrayList<Long>();
 
-        for (var entry : entrySyncList) {
+        for (var entryPo : entryPos) {
 
             AttachPo attach = null;
 
             for (var item : attachList) {
-                if (Objects.equals(item.getId(), entry.getAttachId())) {
+                if (Objects.equals(item.getId(), entryPo.getAttachId())) {
                     attach = item;
                     break;
                 }
@@ -209,15 +210,13 @@ public class EntryService {
 
             //文件附件不存在
             if (attach == null) {
-                errorEntries.add(entry.getEntryId());
-                entrySyncList.remove(entry);
+                errorEntries.add(entryPo.getId());
                 continue;
             }
 
             //文件附件校验通过
             if (attach.getStatus() == 3) {
-                successEntries.add(entry.getEntryId());
-                entrySyncList.remove(entry);
+                successEntries.add(entryPo.getId());
                 continue;
             }
 
@@ -227,8 +226,7 @@ public class EntryService {
             }
 
             //其他异常状态
-            errorEntries.add(entry.getEntryId());
-            entrySyncList.remove(entry);
+            errorEntries.add(entryPo.getId());
         }
 
         //更新云盘条目状态
