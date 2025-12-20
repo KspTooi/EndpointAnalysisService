@@ -18,6 +18,7 @@
       <el-icon class="control-btn close-btn" @click="handleCloseCurrentTab" title="关闭标签页">
         <Close />
       </el-icon>
+      <slot name="controls"></slot>
     </div>
 
     <ul v-if="contextMenu.visible" class="context-menu" :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }">

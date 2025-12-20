@@ -16,10 +16,33 @@
 
       <el-container>
         <!-- 多标签页区域 -->
-        <tab-panel />
+        <tab-panel>
+          <template #controls>
+            <div class="header-right">
+              <!-- 系统导航按钮区域 -->
+              <div class="nav-buttons"></div>
+
+              <!-- 用户自定义操作区域 -->
+              <slot name="header-actions"></slot>
+
+              <!-- 用户信息和下拉菜单-->
+              <el-dropdown trigger="click">
+                <div class="user-info" style="display: flex; align-items: center; height: 100%">
+                  <div class="color-block" style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"></div>
+                  <div style="line-height: 1">Operator Options</div>
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>No options</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </template>
+        </tab-panel>
 
         <!-- 头部区域 -->
-        <el-header class="admin-header" height="30px">
+        <el-header class="admin-header" height="10px">
           <div class="header-left">
             <!-- 面包屑导航，放在头部区域 -->
             <el-breadcrumb v-if="autoBreadcrumbs.length" separator="/" class="admin-breadcrumb">
@@ -27,26 +50,6 @@
                 {{ item.text }}
               </el-breadcrumb-item>
             </el-breadcrumb>
-          </div>
-          <div class="header-right">
-            <!-- 系统导航按钮区域 -->
-            <div class="nav-buttons"></div>
-
-            <!-- 用户自定义操作区域 -->
-            <slot name="header-actions"></slot>
-
-            <!-- 用户信息和下拉菜单-->
-            <el-dropdown trigger="click">
-              <div class="user-info" style="display: flex; align-items: center; height: 100%">
-                <div class="color-block" style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"></div>
-                <div style="line-height: 1">Operator Options</div>
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>No options</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
           </div>
         </el-header>
 
@@ -290,7 +293,7 @@ watch(
   justify-content: space-between;
   padding: 0 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  height: 50px;
+  height: 35px;
   flex-shrink: 0;
 }
 
@@ -327,6 +330,7 @@ watch(
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-right: 15px;
 }
 
 .nav-buttons {
