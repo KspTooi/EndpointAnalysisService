@@ -56,7 +56,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
     @Query("""
             UPDATE EntryPo u SET u.attachStatus = :status WHERE u.id IN :entryIds
             """)
-    long updateEntryAttachStatusByEntryIds(@Param("entryIds") List<Long> entryIds, @Param("status") Integer status);
+    int updateEntryAttachStatusByEntryIds(@Param("entryIds") List<Long> entryIds, @Param("status") Integer status);
 
     /**
      * 根据条目IDS删除条目

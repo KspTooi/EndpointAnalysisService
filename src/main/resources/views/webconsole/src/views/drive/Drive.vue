@@ -1,10 +1,10 @@
 <template>
   <div class="list-container">
     <!-- 控制面板 -->
-    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" @open-upload-queue="openFileUploadModal" />
+    <DriveContrlPanel :entry-count="listTotal" :upload-count="inQueueUploadCount" @on-search="loadList" @open-upload-queue="openFileUploadModal" />
 
     <!-- 文件选择器 -->
-    <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected">
+    <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
       <!-- 条目列表 -->
       <DriveEntryGrid
         :data="listData"
@@ -35,10 +35,8 @@
     <!-- 创建文件夹模态框 -->
     <DriveCreateEntryModal ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
 
-    <!-- 文件上传队列模态框 -->
-    <DriveFileUpload ref="fileUploadRef" kind="drive" @success="loadList" />
-
-    <input type="file" ref="fileInput" style="display: none" @change="onFileSelected" />
+    <!-- 文件上传队列组件 -->
+    <DriveFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadList" @on-queue-update="onQueueUpdate" />
   </div>
 </template>
 
@@ -49,13 +47,13 @@ import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive
 import DriveCreateEntryModal from "@/views/drive/components/DriveCreateEntryModal.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
-import DriveFileUpload from "@/views/drive/components/DriveFileUpload.vue";
+import DriveFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveFileUpload.vue";
 import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 
+const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileInput = ref<HTMLInputElement | null>(null);
-const uploadFile = ref<File | null>(null);
 const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
 const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
@@ -195,6 +193,20 @@ const openFileUploadModal = () => {
  */
 const openCreateEntryModal = () => {
   createEntryModalRef.value?.openModal();
+};
+
+/**
+ * 上传队列更新
+ * @param queue 上传队列
+ */
+const onQueueUpdate = (queue: UploadQueueItem[]) => {
+  let count = 0;
+  queue.forEach((item) => {
+    if (item.status === "uploading") {
+      count++;
+    }
+  });
+  inQueueUploadCount.value = count;
 };
 </script>
 

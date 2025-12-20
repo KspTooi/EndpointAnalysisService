@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="!uploading" class="modal-centered">
+  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" class="modal-centered">
     <div class="upload-content">
       <div class="queue-header">
         <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件，已完成 {{ completedCount }} 个</span>
@@ -55,8 +55,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "queue-update", queue: UploadQueueItem[]): void;
-  (e: "success"): void;
+  (e: "on-queue-update", queue: UploadQueueItem[]): void;
+  (e: "on-upload-success"): void;
 }>();
 
 const modalVisible = ref(false);
@@ -86,7 +86,7 @@ const toUploadQueue = (files: File | File[], parentId?: string | null) => {
   }));
 
   uploadQueue.value.push(...items);
-  emit("queue-update", uploadQueue.value);
+  emit("on-queue-update", uploadQueue.value);
 
   if (!uploading.value) {
     processQueue();
@@ -114,7 +114,7 @@ const processQueue = async () => {
   if (pendingIndex === -1) {
     uploading.value = false;
     currentIndex.value = -1;
-    emit("success");
+    emit("on-upload-success");
     return;
   }
 
@@ -124,6 +124,7 @@ const processQueue = async () => {
 
   await uploadFile(item);
 
+  uploading.value = false;
   if (!isCancelled.value) {
     processQueue();
   }
