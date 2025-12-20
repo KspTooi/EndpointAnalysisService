@@ -1,44 +1,73 @@
 package com.ksptooi.biz.drive.repository;
 
-import com.ksptooi.biz.drive.model.po.EntryPo;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.ksptooi.biz.drive.model.EntryPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
-public interface EntryRepository extends JpaRepository<EntryPo, Long>{
+public interface EntryRepository extends JpaRepository<EntryPo, Long> {
 
 
     @Query("""
-    SELECT u FROM EntryPo u
-    WHERE
-    (:parentId IS NULL OR u.parent.id = :parentId) AND
-    u.companyId = :companyId AND
-    (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
-    ORDER BY u.updateTime DESC
-    """)
+            SELECT u FROM EntryPo u
+            WHERE
+            (:parentId IS NULL OR u.parent.id = :parentId) AND
+            u.companyId = :companyId AND
+            (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
+            ORDER BY u.updateTime DESC
+            """)
     Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
 
     @Query("""
-    SELECT COUNT(u) FROM EntryPo u
-    WHERE
-    u.parent.id = :parentId AND
-    u.companyId = :companyId AND
-    u.name = :name
-    """)
-    long countByName(@Param("companyId") Long companyId,@Param("parentId") Long parentId, @Param("name") String name);
+            SELECT COUNT(u) FROM EntryPo u
+            WHERE
+            u.parent.id = :parentId AND
+            u.companyId = :companyId AND
+            u.name = :name
+            """)
+    long countByName(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
 
     @Query("""
-    SELECT COUNT(u) FROM EntryPo u
-    WHERE
-    u.parent.id = :parentId AND
-    u.companyId = :companyId AND
-    u.name = :name AND
-    u.id != :id
-    """)
-    long countByNameIgnoreId(@Param("companyId") Long companyId,@Param("parentId") Long parentId, @Param("name") String name, @Param("id") Long id);
+            SELECT COUNT(u) FROM EntryPo u
+            WHERE
+            u.parent.id = :parentId AND
+            u.companyId = :companyId AND
+            u.name = :name AND
+            u.id != :id
+            """)
+    long countByNameIgnoreId(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name, @Param("id") Long id);
+
+
+    /**
+     * 根据条目IDS更新文件附件状态
+     *
+     * @param entryIds 条目IDS
+     * @param status 文件附件状态
+     * @return 更新条数
+     */
+    @Modifying
+    @Query("""
+            UPDATE EntryPo u SET u.attachStatus = :status WHERE u.id IN :entryIds
+            """)
+    long updateEntryAttachStatusByEntryIds(@Param("entryIds") List<Long> entryIds, @Param("status") Integer status);
+
+    /**
+     * 根据条目IDS删除条目
+     *
+     * @param entryIds 条目IDS
+     * @return 删除条数
+     */
+    @Modifying
+    @Query("""
+            UPDATE EntryPo u SET u.deleteTime = now() WHERE u.id IN :entryIds AND u.deleteTime IS NULL
+            """)
+    long removeEntryByEntryIds(@Param("entryIds") List<Long> entryIds);
 
 }

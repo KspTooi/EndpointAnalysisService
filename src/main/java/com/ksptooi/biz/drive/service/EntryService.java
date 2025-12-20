@@ -1,11 +1,13 @@
 package com.ksptooi.biz.drive.service;
 
+import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.drive.model.EntryPo;
+import com.ksptooi.biz.drive.model.EntrySyncVo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
-import com.ksptooi.biz.drive.model.po.EntryPo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
@@ -13,16 +15,22 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import jakarta.security.auth.message.AuthException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
+@Slf4j
 @Service
 public class EntryService {
 
@@ -34,6 +42,9 @@ public class EntryService {
 
     @Autowired
     private AttachRepository attachRepository;
+
+    //云盘条目同步队列(当用户上传完文件附件后,需要等待文件附件校验完成并同步到云盘条目)
+    private List<EntrySyncVo> entrySyncList = new CopyOnWriteArrayList<>();
 
     /**
      * 查询条目列表
@@ -89,11 +100,7 @@ public class EntryService {
         if (dto.getKind() == 0) {
             var attachPo = attachRepository.findById(dto.getAttachId()).orElseThrow(() -> new BizException("指定的文件附件不存在."));
 
-            if (attachPo.getStatus() != 3) {
-                throw new BizException("指定的文件附件尚未校验完成,无法新增驱动器条目.");
-            }
-
-            if (attachPo.getCreatorId() != userId) {
+            if (!Objects.equals(attachPo.getCreatorId(), userId)) {
                 throw new BizException("指定的文件附件不属于当前用户,无法新增驱动器条目.");
             }
 
@@ -101,6 +108,7 @@ public class EntryService {
             insertPo.setAttachId(attachPo.getId());
             insertPo.setAttachSize(attachPo.getTotalSize());
             insertPo.setAttachSuffix(attachPo.getSuffix());
+            insertPo.setAttachStatus(attachPo.getStatus());
         }
 
         //挂载到父级条目
@@ -157,6 +165,84 @@ public class EntryService {
         }
         if (!dto.isBatch()) {
             repository.deleteById(dto.getId());
+        }
+    }
+
+
+    /**
+     * 定时任务 5秒执行一次,检查entrySyncList中的数据,如果存在数据,则执行同步操作
+     */
+    @Scheduled(fixedDelay = 5000)
+    public void syncEntry() {
+
+        if (entrySyncList.isEmpty()) {
+            return;
+        }
+
+        var attachIds = new ArrayList<Long>();
+
+        //获取所有需要同步的文件附件ID
+        for (EntrySyncVo entrySyncVo : entrySyncList) {
+            attachIds.add(entrySyncVo.getAttachId());
+            entrySyncVo.setCheckCount(entrySyncVo.getCheckCount() + 1);
+        }
+
+        //获取所有需要同步的文件附件
+        var attachList = attachRepository.findAllById(attachIds);
+
+        //校验失败或错误的条目IDS
+        var errorEntries = new ArrayList<Long>();
+
+        //校验成功的条目
+        var successEntries = new ArrayList<Long>();
+
+        for (var entry : entrySyncList) {
+
+            AttachPo attach = null;
+
+            for (var item : attachList) {
+                if (Objects.equals(item.getId(), entry.getAttachId())) {
+                    attach = item;
+                    break;
+                }
+            }
+
+            //文件附件不存在
+            if (attach == null) {
+                errorEntries.add(entry.getEntryId());
+                entrySyncList.remove(entry);
+                continue;
+            }
+
+            //文件附件校验通过
+            if (attach.getStatus() == 3) {
+                successEntries.add(entry.getEntryId());
+                entrySyncList.remove(entry);
+                continue;
+            }
+
+            //文件附件校验中
+            if (attach.getStatus() == 2) {
+                continue;
+            }
+
+            //其他异常状态
+            errorEntries.add(entry.getEntryId());
+            entrySyncList.remove(entry);
+        }
+
+        //更新云盘条目状态
+        if (!errorEntries.isEmpty()) {
+            var count = repository.removeEntryByEntryIds(errorEntries);
+            if (count > 0) {
+                log.info("已有 {} 个条云盘条目因文件附件不存在或校验失败被删除", errorEntries.size());
+            }
+        }
+        if (!successEntries.isEmpty()) {
+            var count = repository.updateEntryAttachStatusByEntryIds(successEntries, 3);
+            if (count > 0) {
+                log.info("已有 {} 个条云盘条目校验通过", successEntries.size());
+            }
         }
     }
 
