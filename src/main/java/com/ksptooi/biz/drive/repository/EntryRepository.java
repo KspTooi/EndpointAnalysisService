@@ -44,11 +44,11 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
     Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
 
     @Query("""
-            SELECT COUNT(u) FROM EntryPo u
+            SELECT COUNT(t) FROM EntryPo t
             WHERE
-            u.parent.id = :parentId AND
-            u.companyId = :companyId AND
-            u.name = :name
+            ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
+            t.companyId = :companyId AND
+            t.name = :name
             """)
     long countByName(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
 
