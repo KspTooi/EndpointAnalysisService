@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="props.visible" title="创建文件夹" width="500px" :close-on-click-modal="false" class="modal-centered" @close="closeModal">
+  <el-dialog v-model="modalVisible" title="创建文件夹" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent>
     <div class="modal-content">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="文件夹名称" prop="name">
@@ -23,18 +23,17 @@
 import DriveApi, { type AddEntryDto } from "@/api/drive/DriveApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, nextTick } from "vue";
 
 const props = defineProps<{
-  visible: boolean;
   parentId?: string | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "close"): void;
   (e: "success"): void;
 }>();
 
+const modalVisible = ref(false);
 const formRef = ref<FormInstance>();
 const submitLoading = ref(false);
 
@@ -52,10 +51,10 @@ const rules = reactive<FormRules>({
   ],
 });
 
-const handleVisibleChange = (val: boolean) => {
-  if (!val) {
-    resetModal();
-  }
+const openModal = () => {
+  //清空表单
+  resetModal();
+  modalVisible.value = true;
 };
 
 const resetModal = () => {
@@ -68,7 +67,7 @@ const resetModal = () => {
 };
 
 const closeModal = () => {
-  emit("close");
+  modalVisible.value = false;
 };
 
 const handleSubmit = async () => {
@@ -92,6 +91,7 @@ const handleSubmit = async () => {
     if (Result.isSuccess(result)) {
       ElMessage.success("创建文件夹成功");
       resetModal();
+      closeModal();
       emit("success");
     }
     if (Result.isError(result)) {
@@ -101,23 +101,23 @@ const handleSubmit = async () => {
   });
 };
 
-watch(
-  () => props.visible,
-  (newVal) => {
-    if (newVal) {
-      form.parentId = props.parentId || null;
-    }
-  }
-);
+defineExpose({
+  openModal,
+});
 
-watch(
-  () => props.parentId,
-  (newVal) => {
-    if (props.visible) {
-      form.parentId = newVal || null;
-    }
+watch(modalVisible, (val) => {
+  if (val) {
+    nextTick(() => {
+      const overlay = document.querySelector(".el-overlay");
+      if (overlay) {
+        overlay.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+    });
   }
-);
+});
 </script>
 
 <style scoped>
@@ -125,6 +125,14 @@ watch(
   margin: 0 auto;
   top: 50%;
   transform: translateY(-50%);
+}
+
+:deep(.el-overlay) {
+  user-select: none;
+}
+
+:deep(.el-overlay) * {
+  user-select: none;
 }
 
 .modal-content {

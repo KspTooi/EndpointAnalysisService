@@ -1,7 +1,7 @@
 <template>
   <div class="list-container">
     <!-- 控制面板 -->
-    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" />
+    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" @on-upload-queue="openFileUploadModal" />
 
     <!-- 条目列表 -->
     <DriveEntryGrid
@@ -22,7 +22,7 @@
       :y="rightMenuY"
       :current-entry="rightMenuCurrentEntry"
       @close="handleRightMenuClose"
-      @create-folder="handleCreateFolder"
+      @create-folder="openCreateEntryModal"
       @upload-file="handleUploadFile"
       @preview="handlePreview"
       @download="handleDownload"
@@ -33,24 +33,9 @@
       @properties="handleProperties"
     />
 
-    <DriveCreateEntryModal
-      :visible="modalCreateEntryVisible"
-      @close="
-        () => {
-          modalCreateEntryVisible = false;
-        }
-      "
-      @success="loadList"
-    />
+    <DriveCreateEntryModal ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
 
-    <DriveFileUpload
-      :visible="modalUploadVisible"
-      :parent-id="listForm.parentId"
-      :file="uploadFile"
-      kind="drive"
-      @update:visible="modalUploadVisible = $event"
-      @success="loadList"
-    />
+    <DriveFileUpload ref="fileUploadRef" kind="drive" @success="loadList" />
 
     <input type="file" ref="fileInput" style="display: none" @change="onFileSelected" />
   </div>
@@ -69,6 +54,8 @@ import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploadFile = ref<File | null>(null);
+const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
+const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
 
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
@@ -80,9 +67,6 @@ const listForm = reactive<GetEntryListDto>({
 const listData = ref<GetEntryListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
-
-const modalCreateEntryVisible = ref(false);
-const modalUploadVisible = ref(false);
 
 const rightMenuVisible = ref(false);
 const rightMenuX = ref(0);
@@ -147,18 +131,6 @@ const loadList = async (keyword: string | null = null) => {
   }
 };
 
-const resetList = () => {
-  listForm.pageNum = 1;
-  listForm.pageSize = 50000;
-  listForm.keyword = null;
-  listForm.parentId = null;
-  loadList();
-};
-
-const handleCreateFolder = () => {
-  modalCreateEntryVisible.value = true;
-};
-
 const handleUploadFile = () => {
   fileInput.value?.click();
 };
@@ -167,7 +139,6 @@ const onFileSelected = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     uploadFile.value = input.files[0];
-    modalUploadVisible.value = true;
   }
   input.value = "";
 };
@@ -221,6 +192,20 @@ const listReturnParentDir = async (parentId: string | null) => {
   }
 
   ElMessage.error(result.message);
+};
+
+/**
+ * 打开文件上传弹窗
+ */
+const openFileUploadModal = () => {
+  fileUploadRef.value?.openModal();
+};
+
+/**
+ * 打开创建文件夹弹窗
+ */
+const openCreateEntryModal = () => {
+  createEntryModalRef.value?.openModal();
 };
 </script>
 
