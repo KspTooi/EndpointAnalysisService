@@ -2,7 +2,6 @@ package com.ksptooi.biz.drive.repository;
 
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,7 +39,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
             ((:parentId IS NULL AND u.parent IS NULL) OR u.parent.id = :parentId) AND
             u.companyId = :companyId AND
             (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
-            ORDER BY u.updateTime DESC
+            ORDER BY u.kind DESC,u.updateTime DESC
             """)
     Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
 
