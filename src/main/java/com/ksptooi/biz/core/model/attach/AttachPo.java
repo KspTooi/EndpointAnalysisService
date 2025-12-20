@@ -96,6 +96,11 @@ public class AttachPo {
 
     @PrePersist
     public void prePersist() {
+
+        if(this.id == null){
+            this.id = IdWorker.nextId();
+        }
+
         createTime = LocalDateTime.now();
         if (this.creatorId == null) {
             this.creatorId = AuthService.getCurrentUserId();

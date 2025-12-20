@@ -1,7 +1,6 @@
 package com.ksptooi.biz.core.service;
 
 
-import com.ksptooi.biz.core.model.attach.AttachChunkPo;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.attach.dto.PreCheckAttachDto;
 import com.ksptooi.biz.core.model.attach.vo.ApplyChunkVo;
@@ -11,7 +10,6 @@ import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.commons.config.AttachConfig;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,15 +63,15 @@ public class AttachService {
     public PreCheckAttachVo preCheckAttach(PreCheckAttachDto dto) throws BizException {
 
         var ret = new PreCheckAttachVo();
-        ret.setPreCheckId(IdWorker.nextId());
-        
+        //ret.setPreCheckId(IdWorker.nextId());
+
         //校验文件是否存在
         var attach = repository.getBySha256AndKind(dto.getSha256(), dto.getKind());
 
-        if(attach == null){
+        if (attach == null) {
             var relativePath = getAttachRelativePath(dto.getSha256(), getSuffix(dto.getName()));
 
-            if(relativePath == null){
+            if (relativePath == null) {
                 throw new BizException("获取附件本地路径失败");
             }
 
@@ -100,7 +98,7 @@ public class AttachService {
             ret.setStatus(0);
             long chunkCount = getChunkCount(dto.getTotalSize(), getChunkSize());
             List<Long> missingChunkIds = new ArrayList<>();
-            for(long i = 0; i < chunkCount; i++){
+            for (long i = 0; i < chunkCount; i++) {
                 missingChunkIds.add(i);
             }
             ret.setMissingChunkIds(missingChunkIds);
@@ -110,24 +108,26 @@ public class AttachService {
             return ret;
         }
 
+        ret.setPreCheckId(attach.getId());
+
         //0:预检文件 1:区块不完整 2:有效
-        if(attach.getStatus() == 0 || attach.getStatus() == 1){
+        if (attach.getStatus() == 0 || attach.getStatus() == 1) {
             ret.setPreCheckId(attach.getId());
             ret.setName(attach.getName());
             ret.setKind(attach.getKind());
             ret.setPath(Paths.get(attach.getPath()).toString());
             ret.setStatus(1);
-            
+
             //计算缺失分块
             long chunkCount = getChunkCount(attach.getTotalSize(), getChunkSize());
             Set<Long> existChunkIds = new HashSet<>();
-            for(var chunk : attach.getChunks()){
+            for (var chunk : attach.getChunks()) {
                 existChunkIds.add(chunk.getChunkId());
             }
             List<Long> missingChunkIds = new ArrayList<>();
 
-            for(long i = 0; i < chunkCount; i++){
-                if(!existChunkIds.contains(i)){
+            for (long i = 0; i < chunkCount; i++) {
+                if (!existChunkIds.contains(i)) {
                     missingChunkIds.add(i);
                 }
             }
@@ -136,7 +136,7 @@ public class AttachService {
         }
 
         //2:有效
-        if(attach.getStatus() == 2){
+        if (attach.getStatus() == 2) {
             ret.setName(attach.getName());
             ret.setKind(attach.getKind());
             ret.setPath(Paths.get(attach.getPath()).toString());
@@ -146,7 +146,7 @@ public class AttachService {
         }
 
         //3:校验中
-        if(attach.getStatus() == 3){
+        if (attach.getStatus() == 3) {
             ret.setName(attach.getName());
             ret.setKind(attach.getKind());
             ret.setPath(Paths.get(attach.getPath()).toString());
@@ -166,46 +166,46 @@ public class AttachService {
         var chunkSize = file.getSize();
         var chunkCount = getChunkCount(attach.getTotalSize(), getChunkSize());
 
-        if(attach.getStatus() == 2 || attach.getStatus() == 3){
+        if (attach.getStatus() == 2 || attach.getStatus() == 3) {
             throw new BizException("附件已完整或正在进行校验,无法应用区块!");
         }
 
-        if(chunkSize > attach.getTotalSize()){
+        if (chunkSize > attach.getTotalSize()) {
             throw new BizException("区块大小超过文件总大小!");
         }
 
-        if(chunkId >= chunkCount || chunkId < 0){
+        if (chunkId >= chunkCount || chunkId < 0) {
             throw new BizException("区块ID范围错误! 最大为:" + chunkCount);
         }
 
-        if((attach.getReceiveSize() + chunkSize) > attach.getTotalSize()){
+        if ((attach.getReceiveSize() + chunkSize) > attach.getTotalSize()) {
             throw new BizException("应用该区块后,文件大小将超过总大小!");
         }
 
         //查询是否已重复应用
         var count = chunkRepository.countByAttachIdAndChunkId(attach.getId(), chunkId);
 
-        if(count > 0){
+        if (count > 0) {
             throw new BizException("该区块已被应用.");
         }
 
         var absolutePath = getAttachLocalPath(Paths.get(attach.getPath()));
 
-        if(!Files.exists(absolutePath)){
+        if (!Files.exists(absolutePath)) {
             throw new BizException("文件系统错误,文件不存在,请确认该附件已预检过: " + absolutePath.toString());
         }
-        
+
         //计算写入位置
         long offset = chunkId * getChunkSize();
-        
+
         //写入区块到文件中
         try (RandomAccessFile raf = new RandomAccessFile(absolutePath.toString(), "rw");
              InputStream inputStream = file.getInputStream()) {
-            
+
             raf.seek(offset);
             byte[] buffer = new byte[8192];
             long remaining = chunkSize;
-            
+
             while (remaining > 0) {
                 int bytesRead = inputStream.read(buffer, 0, (int) Math.min(buffer.length, remaining));
                 if (bytesRead == -1) {
@@ -219,28 +219,28 @@ public class AttachService {
             throw new BizException("写入区块失败: " + e.getMessage());
         }
 
-        
+
         var ret = new ApplyChunkVo();
         ret.setAttachId(attach.getId());
         ret.setChunkTotal(chunkCount.intValue());
 
         //保存分块记录
         attach.addChunk(chunkId);
-        
+
         //更新已接收大小
         attach.setReceiveSize(attach.getReceiveSize() + chunkSize);
-        
+
         //检查是否所有分块都已上传完成
         var chunkPos = attach.getChunks();
 
         ret.setChunkApplied(chunkPos.size());
 
-        if(chunkPos.size() != chunkCount){
+        if (chunkPos.size() != chunkCount) {
             return ret;
         }
 
         //所有分块都已上传完成 更新为校验中状态
-        if(chunkPos.size() == chunkCount){
+        if (chunkPos.size() == chunkCount) {
             attach.setStatus(2);
             //异步校验
             self.verifyAttach(attach);
@@ -249,7 +249,6 @@ public class AttachService {
         repository.save(attach);
         return ret;
     }
-
 
 
     @Async
@@ -267,20 +266,20 @@ public class AttachService {
         }
 
         try (InputStream is = Files.newInputStream(absolutePath)) {
-            
+
             var digest = MessageDigest.getInstance("SHA-256");
             byte[] buffer = new byte[8192];
             int read;
             while ((read = is.read(buffer)) != -1) {
                 digest.update(buffer, 0, read);
             }
-            
+
             byte[] hashBytes = digest.digest();
             StringBuilder sb = new StringBuilder();
             for (byte b : hashBytes) {
                 sb.append(String.format("%02x", b));
             }
-            
+
             String actualSha256 = sb.toString();
 
             // 校验失败
@@ -306,26 +305,23 @@ public class AttachService {
     }
 
 
-
-
-
     /**
      * 根据文件大小和分块大小计算分块数量
      *
-     * @param bytes 文件大小
+     * @param bytes     文件大小
      * @param chunkSize 分块大小
      * @return 分块数量
      */
     public static Long getChunkCount(Long bytes, Long chunkSize) {
         return (bytes + chunkSize - 1) / chunkSize;
     }
-    
+
     /**
      * 获取分块大小
      *
      * @return 分块大小 5MB
      */
-    public static long getChunkSize(){
+    public static long getChunkSize() {
         return 5 * 1024 * 1024;
     }
 
@@ -371,14 +367,14 @@ public class AttachService {
             return null;
         }
 
-        if(storePath == null){
+        if (storePath == null) {
             return null;
         }
 
         var _suffix = StringUtils.isBlank(suffix) ? "" : "." + suffix;
 
         var rootPath = Paths.get(storePath);
-        var relativePathFile = rootPath.resolve(dateFormat.format(LocalDateTime.now())).resolve(sha256+_suffix);
+        var relativePathFile = rootPath.resolve(dateFormat.format(LocalDateTime.now())).resolve(sha256 + _suffix);
         var relativePathDir = rootPath.resolve(dateFormat.format(LocalDateTime.now()));
 
         if (!Files.exists(relativePathDir)) {
@@ -404,17 +400,18 @@ public class AttachService {
         if (StringUtils.isBlank(name)) {
             return "";
         }
-        
+
         int lastDotIndex = name.lastIndexOf('.');
         if (lastDotIndex == -1 || lastDotIndex == name.length() - 1) {
             return "";
         }
-        
+
         return name.substring(lastDotIndex + 1);
     }
 
     /**
      * 预分配文件 写入一个指定大小的占位文件
+     *
      * @throws BizException 预分配文件失败
      */
     public void preAllocateAttach(Path path, Long totalSize) throws BizException {
@@ -422,21 +419,21 @@ public class AttachService {
         if (path == null || path.toString().isBlank()) {
             throw new BizException("附件路径不能为空");
         }
-        
+
         if (totalSize == null || totalSize <= 0) {
             throw new BizException("附件大小无效");
         }
 
-        if(Files.exists(path)){
+        if (Files.exists(path)) {
             throw new BizException("无法预分配文件,文件已存在: " + path.toString());
         }
-        
+
         try {
             var parentDir = path.getParent();
             if (parentDir != null && !Files.exists(parentDir)) {
                 Files.createDirectories(parentDir);
             }
-            
+
             try (RandomAccessFile raf = new RandomAccessFile(path.toString(), "rw")) {
                 raf.setLength(totalSize);
             }
