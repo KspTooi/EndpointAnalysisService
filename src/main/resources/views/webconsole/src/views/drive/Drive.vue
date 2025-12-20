@@ -28,57 +28,50 @@
     </div>
 
     <!-- 条目列表 -->
-    <div class="list-table">
-      <el-table :data="listData" stripe v-loading="listLoading" border>
-        <el-table-column
-          prop="name"
-          label="条目名称"
-          min-width="210"
-          show-overflow-tooltip
-          :show-overflow-tooltip-props="{
-            effect: 'dark',
-            placement: 'top',
-            enterable: false,
-          }"
-        />
-        <el-table-column prop="kind" label="类型" min-width="100">
-          <template #default="scope">
-            {{ scope.row.kind === 0 ? "文件" : "文件夹" }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="attachSize" label="文件大小" min-width="120">
-          <template #default="scope">
-            {{ formatFileSize(scope.row.attachSize) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="attachSuffix" label="文件类型" min-width="120" />
-        <el-table-column prop="createTime" label="创建时间" min-width="180" />
-      </el-table>
+    <div class="list-grid" v-loading="listLoading" @contextmenu.prevent="handleGridRightClick">
+      <DriveEntryParentItem :target-id="listForm.parentId" name="上级目录" v-show="listForm.parentId" @dblclick="listReturnParentDir" />
 
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
+      <DriveEntryItem
+        v-for="item in listData"
+        :key="item.id"
+        :id="item.id"
+        :name="item.name"
+        :kind="item.kind"
+        :attach-id="item.attachId"
+        :attach-size="item.attachSize"
+        :attach-suffix="item.attachSuffix"
+        @click="handleEntryClick"
+        @dblclick="handleEntryDoubleClick"
+        @contextmenu="(event: MouseEvent) => handleEntryRightClick(event, item)"
+      />
     </div>
+
+    <!-- 右键菜单 -->
+    <DriveEntryRightMenu
+      :visible="rightMenuVisible"
+      :x="rightMenuX"
+      :y="rightMenuY"
+      :current-entry="rightMenuCurrentEntry"
+      @close="handleRightMenuClose"
+      @create-folder="handleCreateFolder"
+      @preview="handlePreview"
+      @download="handleDownload"
+      @cut="handleCut"
+      @copy="handleCopy"
+      @delete="handleDelete"
+      @rename="handleRename"
+      @properties="handleProperties"
+    />
+
+    <DriveCreateEntryModal
+      :visible="modalCreateEntryVisible"
+      @close="
+        () => {
+          modalCreateEntryVisible = false;
+        }
+      "
+      @success="loadList"
+    />
   </div>
 </template>
 
@@ -86,32 +79,67 @@
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import DriveCreateEntryModal from "@/views/drive/components/DriveCreateEntryModal.vue";
+import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
+import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
+import DriveEntryParentItem from "@/views/drive/components/DriveEntryParentItem.vue";
+import { Result } from "@/commons/entity/Result";
 
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
   keyword: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 50000,
 });
 
 const listData = ref<GetEntryListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const formatFileSize = (bytes: number): string => {
-  if (!bytes || bytes === 0) {
-    return "-";
+const modalCreateEntryVisible = ref(false);
+
+const rightMenuVisible = ref(false);
+const rightMenuX = ref(0);
+const rightMenuY = ref(0);
+const rightMenuCurrentEntry = ref<GetEntryListVo | null>(null);
+const currentSelectedEntry = ref<GetEntryListVo | null>(null);
+
+const handleEntryClick = (id: string) => {
+  const entry = listData.value.find((item) => item.id === id);
+  if (entry) {
+    currentSelectedEntry.value = entry;
   }
-  if (bytes < 1024) {
-    return bytes + " B";
+};
+
+const handleGridRightClick = (event: MouseEvent) => {
+  rightMenuX.value = event.clientX;
+  rightMenuY.value = event.clientY;
+  rightMenuCurrentEntry.value = null;
+  rightMenuVisible.value = true;
+};
+
+const handleEntryRightClick = (event: MouseEvent, entry: GetEntryListVo) => {
+  rightMenuX.value = event.clientX;
+  rightMenuY.value = event.clientY;
+  rightMenuCurrentEntry.value = entry;
+  currentSelectedEntry.value = entry;
+  rightMenuVisible.value = true;
+};
+
+const handleRightMenuClose = () => {
+  rightMenuVisible.value = false;
+};
+
+const handleEntryDoubleClick = (id: string, kind: number) => {
+  if (kind === 1) {
+    // 双击文件夹，进入文件夹
+    listForm.parentId = id;
+    listForm.pageNum = 1;
+    loadList();
   }
-  if (bytes < 1024 * 1024) {
-    return (bytes / 1024).toFixed(2) + " KB";
+  if (kind === 0) {
+    // 双击文件，可根据需要实现下载或预览
   }
-  if (bytes < 1024 * 1024 * 1024) {
-    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-  }
-  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
 };
 
 const loadList = async () => {
@@ -134,13 +162,66 @@ const loadList = async () => {
 
 const resetList = () => {
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 50000;
   listForm.keyword = null;
   listForm.parentId = null;
   loadList();
 };
 
+const handleCreateFolder = () => {
+  modalCreateEntryVisible.value = true;
+};
+
+const handlePreview = (entry: GetEntryListVo) => {
+  // 预览逻辑，可根据需要实现
+  ElMessage.info("预览功能待实现");
+};
+
+const handleDownload = (entry: GetEntryListVo) => {
+  // 下载逻辑，可根据需要实现
+  ElMessage.info("下载功能待实现");
+};
+
+const handleCut = (entry: GetEntryListVo) => {
+  // 剪切逻辑，可根据需要实现
+  ElMessage.info("剪切功能待实现");
+};
+
+const handleCopy = (entry: GetEntryListVo) => {
+  // 复制逻辑，可根据需要实现
+  ElMessage.info("复制功能待实现");
+};
+
+const handleDelete = (entry: GetEntryListVo) => {
+  // 删除逻辑，可根据需要实现
+  ElMessage.info("删除功能待实现");
+};
+
+const handleRename = (entry: GetEntryListVo) => {
+  // 重命名逻辑，可根据需要实现
+  ElMessage.info("重命名功能待实现");
+};
+
+const handleProperties = (entry: GetEntryListVo) => {
+  // 属性逻辑，可根据需要实现
+  ElMessage.info("属性功能待实现");
+};
+
 loadList();
+
+const listReturnParentDir = async (parentId: string | null) => {
+  const result = await DriveApi.getEntryDetails({ id: parentId });
+
+  if (Result.isSuccess(result)) {
+    listForm.parentId = result.data.parentId;
+    listForm.pageNum = 1;
+    listForm.pageSize = 50000;
+    await loadList();
+    return;
+  }
+
+  ElMessage.error(result.message);
+};
 </script>
 
 <style scoped>
@@ -151,10 +232,15 @@ loadList();
   width: 100%;
 }
 
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
+.list-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  padding: 10px 0;
+  width: calc(100% - 2px);
+  height: calc(100vh - 200px);
+  border: 1px solid var(--el-border-color);
+  overflow-y: auto;
 }
 
 .pagination-container {
@@ -162,12 +248,6 @@ loadList();
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
 }
 
 :deep(.modal-centered) {

@@ -39,9 +39,6 @@ public class GetEntryDetailsVo{
     @Schema(description="更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description="删除时间 为NULL未删除")
-    private LocalDateTime deleteTime;
-
     @Schema(description="创建人")
     private Long creatorId;
 
