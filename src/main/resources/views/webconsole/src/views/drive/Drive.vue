@@ -1,31 +1,7 @@
 <template>
   <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
-      <el-form :model="listForm">
-        <el-row>
-          <el-col :span="5" :offset="1">
-            <el-form-item label="关键字">
-              <el-input v-model="listForm.keyword" placeholder="条目名称" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="5" :offset="1">
-            <el-form-item label="父级ID">
-              <el-input v-model="listForm.parentId" placeholder="输入父级ID查询" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="5" :offset="1">
-            <!-- 占位，保持布局一致性 -->
-          </el-col>
-          <el-col :span="3" :offset="3">
-            <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
+    <!-- 控制面板 -->
+    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" />
 
     <!-- 条目列表 -->
     <DriveEntryGrid
@@ -89,6 +65,7 @@ import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
 import DriveFileUpload from "@/views/drive/components/DriveFileUpload.vue";
 import { Result } from "@/commons/entity/Result";
+import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploadFile = ref<File | null>(null);
@@ -151,9 +128,10 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
   }
 };
 
-const loadList = async () => {
+const loadList = async (keyword: string | null = null) => {
   listLoading.value = true;
   try {
+    listForm.keyword = keyword;
     const res = await DriveApi.getEntryList(listForm);
     if (res.code === 0) {
       listData.value = res.data;
