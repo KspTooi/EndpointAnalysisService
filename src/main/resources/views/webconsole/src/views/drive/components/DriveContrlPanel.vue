@@ -41,7 +41,7 @@ const props = withDefaults(
 //定义emits
 const emit = defineEmits<{
   (e: "on-search", keyword: string): void; //搜索时触发
-  (e: "on-upload-queue"): void; //打开上传队列
+  (e: "open-upload-queue"): void; //打开上传队列
 }>();
 
 const keyword = ref("");
@@ -62,7 +62,7 @@ const handleSearchInput = () => {
 };
 
 const handleUploadQueue = () => {
-  emit("on-upload-queue");
+  emit("open-upload-queue");
 };
 </script>
 

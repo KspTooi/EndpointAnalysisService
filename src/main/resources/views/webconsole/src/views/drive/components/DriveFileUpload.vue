@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="!uploading">
+  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="!uploading" class="modal-centered">
     <div class="upload-content">
       <div class="queue-header">
         <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件，已完成 {{ completedCount }} 个</span>

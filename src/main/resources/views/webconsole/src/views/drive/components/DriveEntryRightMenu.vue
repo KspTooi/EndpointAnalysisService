@@ -54,15 +54,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload } from "@element-plus/icons-vue";
 import type { GetEntryListVo } from "@/api/drive/DriveApi";
 
-const props = defineProps<{
-  visible: boolean;
-  x: number;
-  y: number;
-  currentEntry: GetEntryListVo | null; //当前选择的条目
-}>();
-
 const emit = defineEmits<{
-  (e: "close"): void;
   (e: "createFolder"): void;
   (e: "uploadFile"): void;
   (e: "preview", entry: GetEntryListVo): void;
@@ -74,77 +66,92 @@ const emit = defineEmits<{
   (e: "properties", entry: GetEntryListVo): void;
 }>();
 
+const visible = ref(false);
+const x = ref(0);
+const y = ref(0);
+const currentEntry = ref<GetEntryListVo | null>(null);
 const menuRef = ref<HTMLElement>();
+
+const openMenu = (event: MouseEvent, entry: GetEntryListVo | null = null) => {
+  x.value = event.clientX;
+  y.value = event.clientY;
+  currentEntry.value = entry;
+  visible.value = true;
+};
+
+const closeMenu = () => {
+  visible.value = false;
+};
 
 const handleCreateFolder = () => {
   emit("createFolder");
-  emit("close");
+  closeMenu();
 };
 
 const handleUploadFile = () => {
   emit("uploadFile");
-  emit("close");
+  closeMenu();
 };
 
 const handlePreview = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("preview", props.currentEntry);
-  emit("close");
+  emit("preview", currentEntry.value);
+  closeMenu();
 };
 
 const handleDownload = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("download", props.currentEntry);
-  emit("close");
+  emit("download", currentEntry.value);
+  closeMenu();
 };
 
 const handleCut = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("cut", props.currentEntry);
-  emit("close");
+  emit("cut", currentEntry.value);
+  closeMenu();
 };
 
 const handleCopy = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("copy", props.currentEntry);
-  emit("close");
+  emit("copy", currentEntry.value);
+  closeMenu();
 };
 
 const handleDelete = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("delete", props.currentEntry);
-  emit("close");
+  emit("delete", currentEntry.value);
+  closeMenu();
 };
 
 const handleRename = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("rename", props.currentEntry);
-  emit("close");
+  emit("rename", currentEntry.value);
+  closeMenu();
 };
 
 const handleProperties = () => {
-  if (!props.currentEntry) {
+  if (!currentEntry.value) {
     return;
   }
-  emit("properties", props.currentEntry);
-  emit("close");
+  emit("properties", currentEntry.value);
+  closeMenu();
 };
 
 const handleClickOutside = (event: MouseEvent) => {
   if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
-    emit("close");
+    closeMenu();
   }
 };
 
@@ -154,6 +161,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
+});
+
+defineExpose({
+  openMenu,
 });
 </script>
 

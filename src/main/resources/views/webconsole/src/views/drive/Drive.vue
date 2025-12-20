@@ -1,7 +1,7 @@
 <template>
   <div class="list-container">
     <!-- 控制面板 -->
-    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" @on-upload-queue="openFileUploadModal" />
+    <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" @open-upload-queue="openFileUploadModal" />
 
     <!-- 条目列表 -->
     <DriveEntryGrid
@@ -17,11 +17,7 @@
 
     <!-- 右键菜单 -->
     <DriveEntryRightMenu
-      :visible="rightMenuVisible"
-      :x="rightMenuX"
-      :y="rightMenuY"
-      :current-entry="rightMenuCurrentEntry"
-      @close="handleRightMenuClose"
+      ref="rightMenuRef"
       @create-folder="openCreateEntryModal"
       @upload-file="handleUploadFile"
       @preview="handlePreview"
@@ -33,8 +29,10 @@
       @properties="handleProperties"
     />
 
+    <!-- 创建文件夹模态框 -->
     <DriveCreateEntryModal ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
 
+    <!-- 文件上传队列模态框 -->
     <DriveFileUpload ref="fileUploadRef" kind="drive" @success="loadList" />
 
     <input type="file" ref="fileInput" style="display: none" @change="onFileSelected" />
@@ -56,6 +54,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const uploadFile = ref<File | null>(null);
 const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
 const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
+const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
@@ -68,10 +67,6 @@ const listData = ref<GetEntryListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const rightMenuVisible = ref(false);
-const rightMenuX = ref(0);
-const rightMenuY = ref(0);
-const rightMenuCurrentEntry = ref<GetEntryListVo | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 
 const handleEntryClick = (id: string) => {
@@ -82,22 +77,12 @@ const handleEntryClick = (id: string) => {
 };
 
 const handleGridRightClick = (event: MouseEvent) => {
-  rightMenuX.value = event.clientX;
-  rightMenuY.value = event.clientY;
-  rightMenuCurrentEntry.value = null;
-  rightMenuVisible.value = true;
+  rightMenuRef.value?.openMenu(event, null);
 };
 
 const handleEntryRightClick = (event: MouseEvent, entry: GetEntryListVo) => {
-  rightMenuX.value = event.clientX;
-  rightMenuY.value = event.clientY;
-  rightMenuCurrentEntry.value = entry;
   currentSelectedEntry.value = entry;
-  rightMenuVisible.value = true;
-};
-
-const handleRightMenuClose = () => {
-  rightMenuVisible.value = false;
+  rightMenuRef.value?.openMenu(event, entry);
 };
 
 const handleEntryDoubleClick = (id: string, kind: number) => {
