@@ -2,6 +2,14 @@
   <div v-show="visible" ref="menuRef" class="context-menu" :style="{ left: x + 'px', top: y + 'px' }" @click.stop @contextmenu.prevent>
     <!-- 当没有选中条目时，只显示新建文件夹和上传文件 -->
     <template v-if="!currentEntry">
+      <div class="menu-item" @click="onRefresh">
+        <el-icon><Refresh /></el-icon>
+        <span>刷新</span>
+      </div>
+      <div class="menu-item" :class="{ disabled: !hasClipboard }" @click="onPaste">
+        <el-icon><DocumentCopy /></el-icon>
+        <span>粘贴</span>
+      </div>
       <div class="menu-item" @click="onCreateFolder">
         <el-icon><FolderAdd /></el-icon>
         <span>新建文件夹</span>
@@ -49,6 +57,10 @@
 
     <!-- 当多选条目时，显示完整菜单 -->
     <template v-if="isMultiSelect">
+      <div class="menu-item" @click="onCopy">
+        <el-icon><DocumentCopy /></el-icon>
+        <span>复制</span>
+      </div>
       <div class="menu-item" @click="onDelete">
         <el-icon><Delete /></el-icon>
         <span>删除</span>
@@ -59,10 +71,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload } from "@element-plus/icons-vue";
+import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload, Refresh } from "@element-plus/icons-vue";
 import type { GetEntryListVo } from "@/api/drive/DriveApi";
+import { DriveHolder } from "@/store/DriveHolder.ts";
+
+const driveHolder = DriveHolder();
 
 const emit = defineEmits<{
+  (e: "on-refresh"): void; //刷新
+  (e: "on-paste"): void; //粘贴
   (e: "on-create-folder"): void; //创建文件夹
   (e: "on-upload-file"): void; //上传文件
   (e: "on-preview", entry: GetEntryListVo): void; //预览
@@ -88,6 +105,10 @@ const currentEntry = computed(() => {
 const isMultiSelect = computed(() => {
   return currentEntries.value.length > 1;
 });
+//是否有粘贴板内容
+const hasClipboard = computed(() => {
+  return driveHolder.getClipBoardEntry.length > 0;
+});
 const menuRef = ref<HTMLElement>();
 
 /**
@@ -107,6 +128,25 @@ const openMenu = (event: MouseEvent, entries: GetEntryListVo[] | null = null) =>
  */
 const closeMenu = () => {
   visible.value = false;
+};
+
+/**
+ * 刷新
+ */
+const onRefresh = () => {
+  emit("on-refresh");
+  closeMenu();
+};
+
+/**
+ * 粘贴
+ */
+const onPaste = () => {
+  if (!hasClipboard.value) {
+    return;
+  }
+  emit("on-paste");
+  closeMenu();
 };
 
 /**
@@ -262,5 +302,16 @@ defineExpose({
   height: 1px;
   background: #e5e5e5;
   margin: 2px 0;
+}
+
+.menu-item.disabled {
+  color: #a8a8a8;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.menu-item.disabled:hover {
+  background: transparent;
+  color: #a8a8a8;
 }
 </style>

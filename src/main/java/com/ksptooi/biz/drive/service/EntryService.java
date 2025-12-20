@@ -5,12 +5,14 @@ import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
+import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -134,6 +136,62 @@ public class EntryService {
         //保存条目
         repository.save(insertPo);
     }
+
+    /**
+     * 复制条目
+     *
+     * @param dto 复制条目
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void copyEntry(CopyEntryDto dto) throws BizException, AuthException {
+
+        var companyId = AuthService.requireCompanyId();
+
+        //查询要复制的条目
+        var entryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
+
+        if (entryPos.isEmpty()) {
+            throw new BizException("要复制的条目不存在或无权限访问");
+        }
+
+        //查找父级条目
+        EntryPo parentPo = null;
+
+        if (dto.getParentId() != null) {
+            parentPo = repository.getByIdAndCompanyId(dto.getParentId(), companyId);
+
+            if (parentPo == null) {
+                throw new BizException("指定的父级条目不存在或无权限访问");
+            }
+
+            if (parentPo.getKind() != 1) {
+                throw new BizException("指定的挂载父级目录必须是文件夹。");
+            }
+
+        }
+
+        //组装复制数据
+        var copyPos = new ArrayList<EntryPo>();
+
+        for (var entryPo : entryPos) {
+            var newEntryPo = as(entryPo, EntryPo.class);
+            newEntryPo.setId(IdWorker.nextId());
+            newEntryPo.setCompanyId(companyId);
+            newEntryPo.setParent(parentPo);
+            copyPos.add(newEntryPo);
+
+            //判断目标目录中是否有同名文件
+            if (repository.countByNameParentIdAndCompanyId(companyId, dto.getParentId(), newEntryPo.getName()) > 0) {
+                newEntryPo.setName(newEntryPo.getName() + "-副本");
+            }
+
+        }
+
+        //保存复制条目
+        repository.saveAll(copyPos);
+    }
+
+
 
     /**
      * 编辑条目

@@ -1,6 +1,7 @@
 package com.ksptooi.biz.drive.controller;
 
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
+import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
@@ -56,6 +57,14 @@ public class EntryController {
         entryService.addEntry(dto);
         return Result.success("新增成功");
     }
+    
+    @Operation(summary = "复制条目")
+    @PostMapping("/copyEntry")
+    public Result<String> copyEntry(@RequestBody @Valid CopyEntryDto dto) throws Exception {
+        entryService.copyEntry(dto);
+        return Result.success("复制成功");
+    }
+
 
     @Operation(summary = "编辑条目")
     @PostMapping("/editEntry")

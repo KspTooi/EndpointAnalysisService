@@ -48,6 +48,11 @@ export interface GetDriveInfoVo {
   objectCount: string; //对象数量
 }
 
+export interface CopyEntryDto {
+  entryIds: string[]; //条目ID列表
+  parentId: string | null; //父级ID
+}
+
 export default {
   /**
    * 获取云盘信息
@@ -75,6 +80,16 @@ export default {
    */
   addEntry: async (dto: AddEntryDto): Promise<Result<string>> => {
     const ret = await Http.postEntity<Result<string>>("/drive/entry/addEntry", dto);
+    return ret;
+  },
+
+  /**
+   * 复制云盘条目
+   * @param dto 复制条目
+   * @returns 复制结果
+   */
+  copyEntry: async (dto: CopyEntryDto): Promise<Result<string>> => {
+    const ret = await Http.postEntity<Result<string>>("/drive/entry/copyEntry", dto);
     return ret;
   },
 

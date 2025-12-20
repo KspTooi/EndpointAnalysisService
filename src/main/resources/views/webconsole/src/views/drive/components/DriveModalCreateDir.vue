@@ -1,9 +1,9 @@
 <template>
-  <el-dialog v-model="modalVisible" title="创建文件夹" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent>
+  <el-dialog v-model="modalVisible" title="创建文件夹" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent @opened="handleDialogOpened">
     <div class="modal-content">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="文件夹名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入文件夹名称" clearable maxlength="128" show-word-limit />
+          <el-input ref="nameInputRef" v-model="form.name" placeholder="请输入文件夹名称" clearable maxlength="128" show-word-limit />
         </el-form-item>
       </el-form>
     </div>
@@ -32,6 +32,7 @@ const emit = defineEmits<{
 
 const modalVisible = ref(false);
 const formRef = ref<FormInstance>();
+const nameInputRef = ref();
 const submitLoading = ref(false);
 
 const form = reactive<AddEntryDto>({
@@ -52,6 +53,10 @@ const openModal = () => {
   //清空表单
   resetModal();
   modalVisible.value = true;
+};
+
+const handleDialogOpened = () => {
+  nameInputRef.value?.focus();
 };
 
 const resetModal = () => {
@@ -78,23 +83,31 @@ const handleSubmit = async () => {
     }
 
     submitLoading.value = true;
-    const result = await DriveApi.addEntry({
-      parentId: form.parentId || null,
-      name: form.name.trim(),
-      kind: 1,
-      attachId: null,
-    });
 
-    if (Result.isSuccess(result)) {
-      ElMessage.success("创建文件夹成功");
-      resetModal();
-      closeModal();
-      emit("success");
+    try {
+      const result = await DriveApi.addEntry({
+        parentId: form.parentId || null,
+        name: form.name.trim(),
+        kind: 1,
+        attachId: null,
+      });
+
+      if (Result.isSuccess(result)) {
+        ElMessage.success("创建文件夹成功");
+        resetModal();
+        closeModal();
+        emit("success");
+      }
+
+      if (Result.isError(result)) {
+        ElMessage.error(result.message || "创建文件夹失败");
+      }
+    } catch (error: any) {
+      ElMessage.error(error.message || "创建文件夹失败");
+      return;
+    } finally {
+      submitLoading.value = false;
     }
-    if (Result.isError(result)) {
-      ElMessage.error(result.message || "创建文件夹失败");
-    }
-    submitLoading.value = false;
   });
 };
 

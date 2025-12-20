@@ -27,6 +27,7 @@
       @on-download="onDownload"
       @on-cut="onCut"
       @on-copy="onCopy"
+      @on-paste="onPaste"
       @on-delete="onDelete"
       @on-rename="onRename"
       @on-properties="onProperties"
@@ -55,6 +56,7 @@ import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
+import { DriveHolder } from "@/store/DriveHolder.ts";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -64,6 +66,8 @@ const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
+const driveHolder = DriveHolder();
+
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
   keyword: null,
@@ -185,8 +189,27 @@ const onCut = (entries: GetEntryListVo[]) => {
  * @param entries 条目列表
  */
 const onCopy = (entries: GetEntryListVo[]) => {
-  // 复制逻辑，可根据需要实现
-  ElMessage.info("复制功能待实现");
+  driveHolder.setClipBoardEntry(entries);
+};
+
+/**
+ * 右键菜单->粘贴
+ * @param entries 条目列表
+ */
+const onPaste = async () => {
+  const entries = driveHolder.getClipBoardEntry;
+  if (entries.length === 0) {
+    return;
+  }
+  //调用后端粘贴接口
+  const result = await DriveApi.copyEntry({
+    entryIds: entries.map((item) => item.id),
+    parentId: listForm.parentId,
+  });
+  if (Result.isSuccess(result)) {
+    ElMessage.success("粘贴成功");
+    loadList();
+  }
 };
 
 /**

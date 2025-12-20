@@ -105,4 +105,45 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
             """)
     List<EntryPo> getNeedSyncEntryList(@Param("limit") int limit);
 
+    /**
+     * 根据ID和公司ID查询条目
+     *
+     * @param id 条目ID
+     * @param companyId 公司ID
+     * @return 条目
+     */
+    @Query("""
+            SELECT t FROM EntryPo t
+            WHERE t.id IN :ids AND t.companyId = :companyId
+            """)
+    List<EntryPo> getByIdAndCompanyIds(@Param("ids") List<Long> ids, @Param("companyId") Long companyId);
+
+    /**
+     * 根据ID和公司ID查询条目
+     *
+     * @param id 条目ID
+     * @param companyId 公司ID
+     * @return 条目
+     */
+    @Query("""
+            SELECT t FROM EntryPo t WHERE t.id = :id AND t.companyId = :companyId
+            """)  
+    EntryPo getByIdAndCompanyId(@Param("id") Long id, @Param("companyId") Long companyId);
+
+    /**
+     * 根据名称和父级目录ID和公司ID统计条目数量
+     *
+     * @param companyId 公司ID
+     * @param parentId 父级目录ID
+     * @param name 名称
+     * @return 条目数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM EntryPo t
+            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND 
+            t.companyId = :companyId AND        
+            t.name = :name
+            """)
+    Long countByNameParentIdAndCompanyId(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
+
 }
