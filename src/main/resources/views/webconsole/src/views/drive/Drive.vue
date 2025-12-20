@@ -11,9 +11,9 @@
         :loading="listLoading"
         :parent-id="listForm.parentId"
         @grid-right-click="handleGridRightClick"
+        @entry-right-click="onEntryRightClick"
         @entry-click="handleEntryClick"
         @entry-dblclick="handleEntryDoubleClick"
-        @entry-right-click="handleEntryRightClick"
         @return-parent-dir="listReturnParentDir"
       />
     </DriveFileSelector>
@@ -21,15 +21,15 @@
     <!-- 右键菜单 -->
     <DriveEntryRightMenu
       ref="rightMenuRef"
-      @create-folder="openCreateEntryModal"
-      @upload-file="handleUploadFile"
-      @preview="handlePreview"
-      @download="handleDownload"
-      @cut="handleCut"
-      @copy="handleCopy"
-      @delete="handleDelete"
-      @rename="handleRename"
-      @properties="handleProperties"
+      @on-create-folder="onCreateFolder"
+      @on-upload-file="onUploadFile"
+      @on-preview="onPreview"
+      @on-download="onDownload"
+      @on-cut="onCut"
+      @on-copy="onCopy"
+      @on-delete="onDelete"
+      @on-rename="onRename"
+      @on-properties="onProperties"
     />
 
     <!-- 创建文件夹模态框 -->
@@ -99,9 +99,13 @@ const handleGridRightClick = (event: MouseEvent) => {
   rightMenuRef.value?.openMenu(event, null);
 };
 
-const handleEntryRightClick = (event: MouseEvent, entry: GetEntryListVo) => {
-  currentSelectedEntry.value = entry;
-  rightMenuRef.value?.openMenu(event, entry);
+/**
+ * 条目右键点击
+ * @param event 鼠标事件
+ * @param entries 当前选中的条目列表
+ */
+const onEntryRightClick = (event: MouseEvent, entries: GetEntryListVo[]) => {
+  rightMenuRef.value?.openMenu(event, entries);
 };
 
 const handleEntryDoubleClick = (id: string, kind: number) => {
@@ -116,52 +120,86 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
   }
 };
 
-const handleUploadFile = () => {
+loadList();
+
+//右键菜单操作
+
+/**
+ * 右键菜单->创建文件夹
+ */
+const onCreateFolder = () => {
+  createEntryModalRef.value?.openModal();
+};
+
+/**
+ * 右键菜单->上传文件
+ */
+const onUploadFile = () => {
   fileInput.value?.click();
 };
 
-const onFileSelected = (files: File[]) => {
-  ElMessage.info(`正在处理 ${files.length} 个文件`);
-  //添加到上传队列
-  fileUploadRef.value?.toUploadQueue(files, listForm.parentId);
-};
-
-const handlePreview = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->预览
+ * @param entry 单个条目
+ */
+const onPreview = (entry: GetEntryListVo) => {
   // 预览逻辑，可根据需要实现
   ElMessage.info("预览功能待实现");
 };
 
-const handleDownload = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->下载
+ * @param entries 条目列表
+ */
+const onDownload = (entries: GetEntryListVo[]) => {
   // 下载逻辑，可根据需要实现
   ElMessage.info("下载功能待实现");
 };
 
-const handleCut = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->剪切
+ * @param entries 条目列表
+ */
+const onCut = (entries: GetEntryListVo[]) => {
   // 剪切逻辑，可根据需要实现
   ElMessage.info("剪切功能待实现");
 };
 
-const handleCopy = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->复制
+ * @param entries 条目列表
+ */
+const onCopy = (entries: GetEntryListVo[]) => {
   // 复制逻辑，可根据需要实现
   ElMessage.info("复制功能待实现");
 };
 
-const handleDelete = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->删除
+ * @param entries 条目列表
+ */
+const onDelete = (entries: GetEntryListVo[]) => {
   // 删除逻辑，可根据需要实现
   ElMessage.info("删除功能待实现");
 };
 
-const handleRename = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->重命名
+ * @param entry 单个条目
+ */
+const onRename = (entry: GetEntryListVo) => {
   // 重命名逻辑，可根据需要实现
   ElMessage.info("重命名功能待实现");
 };
 
-const handleProperties = (entry: GetEntryListVo) => {
+/**
+ * 右键菜单->属性
+ * @param entry 单个条目
+ */
+const onProperties = (entry: GetEntryListVo) => {
   // 属性逻辑，可根据需要实现
   ElMessage.info("属性功能待实现");
 };
-
-loadList();
 
 /**
  * 返回上级目录

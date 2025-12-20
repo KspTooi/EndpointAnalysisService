@@ -2,153 +2,207 @@
   <div v-show="visible" ref="menuRef" class="context-menu" :style="{ left: x + 'px', top: y + 'px' }" @click.stop @contextmenu.prevent>
     <!-- 当没有选中条目时，只显示新建文件夹和上传文件 -->
     <template v-if="!currentEntry">
-      <div class="menu-item" @click="handleCreateFolder">
+      <div class="menu-item" @click="onCreateFolder">
         <el-icon><FolderAdd /></el-icon>
         <span>新建文件夹</span>
       </div>
-      <div class="menu-item" @click="handleUploadFile">
+      <div class="menu-item" @click="onUploadFile">
         <el-icon><Upload /></el-icon>
         <span>上传文件</span>
       </div>
     </template>
 
-    <!-- 当选中条目时，显示完整菜单 -->
-    <template v-else>
-      <div v-if="currentEntry.kind === 0" class="menu-item" @click="handlePreview">
+    <!-- 当单选条目时，显示完整菜单 -->
+    <template v-if="currentEntry && !isMultiSelect">
+      <div v-if="isMultiSelect && currentEntry.kind === 0" class="menu-item" @click="onPreview">
         <el-icon><View /></el-icon>
         <span>预览</span>
       </div>
-      <div v-if="currentEntry.kind === 0" class="menu-item" @click="handleDownload">
+      <div v-if="currentEntry.kind === 0" class="menu-item" @click="onDownload">
         <el-icon><Download /></el-icon>
         <span>下载</span>
       </div>
       <div v-if="currentEntry.kind === 0" class="menu-divider"></div>
-      <div class="menu-item" @click="handleCut">
+      <div class="menu-item" @click="onCut">
         <el-icon><Scissor /></el-icon>
         <span>剪切</span>
       </div>
-      <div class="menu-item" @click="handleCopy">
+      <div class="menu-item" @click="onCopy">
         <el-icon><DocumentCopy /></el-icon>
         <span>复制</span>
       </div>
       <div class="menu-divider"></div>
-      <div class="menu-item" @click="handleDelete">
+      <div class="menu-item" @click="onDelete">
         <el-icon><Delete /></el-icon>
         <span>删除</span>
       </div>
-      <div class="menu-item" @click="handleRename">
+      <div class="menu-item" @click="onRename">
         <el-icon><Edit /></el-icon>
         <span>重命名</span>
       </div>
       <div class="menu-divider"></div>
-      <div class="menu-item" @click="handleProperties">
+      <div class="menu-item" @click="onProperties">
         <el-icon><InfoFilled /></el-icon>
         <span>属性</span>
+      </div>
+    </template>
+
+    <!-- 当多选条目时，显示完整菜单 -->
+    <template v-if="isMultiSelect">
+      <div class="menu-item" @click="onDelete">
+        <el-icon><Delete /></el-icon>
+        <span>删除</span>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload } from "@element-plus/icons-vue";
 import type { GetEntryListVo } from "@/api/drive/DriveApi";
 
 const emit = defineEmits<{
-  (e: "createFolder"): void;
-  (e: "uploadFile"): void;
-  (e: "preview", entry: GetEntryListVo): void;
-  (e: "download", entry: GetEntryListVo): void;
-  (e: "cut", entry: GetEntryListVo): void;
-  (e: "copy", entry: GetEntryListVo): void;
-  (e: "delete", entry: GetEntryListVo): void;
-  (e: "rename", entry: GetEntryListVo): void;
-  (e: "properties", entry: GetEntryListVo): void;
+  (e: "on-create-folder"): void; //创建文件夹
+  (e: "on-upload-file"): void; //上传文件
+  (e: "on-preview", entry: GetEntryListVo): void; //预览
+  (e: "on-download", entries: GetEntryListVo[]): void; //下载
+  (e: "on-cut", entries: GetEntryListVo[]): void; //剪切
+  (e: "on-copy", entries: GetEntryListVo[]): void; //复制
+  (e: "on-delete", entries: GetEntryListVo[]): void; //删除
+  (e: "on-rename", entry: GetEntryListVo): void; //重命名
+  (e: "on-properties", entry: GetEntryListVo): void; //属性
 }>();
 
 const visible = ref(false);
 const x = ref(0);
 const y = ref(0);
-const currentEntry = ref<GetEntryListVo | null>(null);
+
+//选择的条目列表
+const currentEntries = ref<GetEntryListVo[]>([]);
+//当前选中的条目
+const currentEntry = computed(() => {
+  return currentEntries.value[0] || null;
+});
+//是否多选
+const isMultiSelect = computed(() => {
+  return currentEntries.value.length > 1;
+});
 const menuRef = ref<HTMLElement>();
 
-const openMenu = (event: MouseEvent, entry: GetEntryListVo | null = null) => {
+/**
+ * 打开右键菜单
+ * @param event 鼠标事件
+ * @param entries 当前条目，可以为空，表示没有选中条目
+ */
+const openMenu = (event: MouseEvent, entries: GetEntryListVo[] | null = null) => {
   x.value = event.clientX;
   y.value = event.clientY;
-  currentEntry.value = entry;
+  currentEntries.value = entries || [];
   visible.value = true;
 };
 
+/**
+ * 关闭右键菜单
+ */
 const closeMenu = () => {
   visible.value = false;
 };
 
-const handleCreateFolder = () => {
-  emit("createFolder");
+/**
+ * 创建文件夹
+ */
+const onCreateFolder = () => {
+  emit("on-create-folder");
   closeMenu();
 };
 
-const handleUploadFile = () => {
-  emit("uploadFile");
+/**
+ * 上传文件
+ */
+const onUploadFile = () => {
+  emit("on-upload-file");
   closeMenu();
 };
 
-const handlePreview = () => {
+/**
+ * 预览
+ */
+const onPreview = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("preview", currentEntry.value);
+  emit("on-preview", currentEntry.value);
   closeMenu();
 };
 
-const handleDownload = () => {
+//下载
+const onDownload = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("download", currentEntry.value);
+  emit("on-download", currentEntries.value);
   closeMenu();
 };
 
-const handleCut = () => {
+/**
+ * 剪切
+ */
+const onCut = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("cut", currentEntry.value);
+  emit("on-cut", currentEntries.value);
   closeMenu();
 };
 
-const handleCopy = () => {
+/**
+ * 复制
+ */
+const onCopy = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("copy", currentEntry.value);
+  emit("on-copy", currentEntries.value);
   closeMenu();
 };
 
-const handleDelete = () => {
+/**
+ * 删除
+ */
+const onDelete = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("delete", currentEntry.value);
+  emit("on-delete", currentEntries.value);
   closeMenu();
 };
 
-const handleRename = () => {
+/**
+ * 重命名
+ */
+const onRename = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("rename", currentEntry.value);
+  emit("on-rename", currentEntry.value);
   closeMenu();
 };
 
-const handleProperties = () => {
+/**
+ * 属性
+ */
+const onProperties = () => {
   if (!currentEntry.value) {
     return;
   }
-  emit("properties", currentEntry.value);
+  emit("on-properties", currentEntry.value);
   closeMenu();
 };
 
+/**
+ * 点击外部关闭菜单
+ */
 const handleClickOutside = (event: MouseEvent) => {
   if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
     closeMenu();
