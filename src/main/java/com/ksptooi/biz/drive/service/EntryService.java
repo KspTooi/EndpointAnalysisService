@@ -4,7 +4,6 @@ import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
-import com.ksptooi.biz.drive.model.EntrySyncVo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -52,9 +50,6 @@ public class EntryService {
     public PageResult<GetEntryListVo> getEntryList(GetEntryListDto dto) throws AuthException {
 
         Long companyId = AuthService.requireCompanyId();
-
-        EntryPo query = new EntryPo();
-        assign(dto, query);
 
         Page<EntryPo> page = repository.getEntryList(dto.getParentId(), dto.getKeyword(), companyId, dto.pageRequest());
 

@@ -51,6 +51,7 @@ const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
 
 const props = defineProps<{
   kind: string;
+  defaultParentId?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -68,13 +69,23 @@ const completedCount = computed(() => {
   return uploadQueue.value.filter((item) => item.status === "completed").length;
 });
 
-const toUploadQueue = (item: UploadQueueItem) => {
-  uploadQueue.value.push({
-    ...item,
-    status: "pending",
+const toUploadQueue = (files: File | File[], parentId?: string | null) => {
+  const targetParentId = parentId !== undefined ? parentId : props.defaultParentId || null;
+
+  const fileArray = Array.isArray(files) ? files : [files];
+  if (fileArray.length === 0) {
+    return;
+  }
+
+  const items: UploadQueueItem[] = fileArray.map((file) => ({
+    file: file,
+    parentId: targetParentId,
+    status: "pending" as const,
     progress: 0,
     statusText: "等待中...",
-  });
+  }));
+
+  uploadQueue.value.push(...items);
   emit("queue-update", uploadQueue.value);
 
   if (!uploading.value) {

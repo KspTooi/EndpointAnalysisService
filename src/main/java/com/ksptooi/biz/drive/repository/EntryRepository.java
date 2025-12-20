@@ -18,7 +18,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
     @Query("""
             SELECT u FROM EntryPo u
             WHERE
-            (:parentId IS NULL OR u.parent.id = :parentId) AND
+            ((:parentId IS NULL AND u.parent IS NULL) OR u.parent.id = :parentId) AND
             u.companyId = :companyId AND
             (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
             ORDER BY u.updateTime DESC

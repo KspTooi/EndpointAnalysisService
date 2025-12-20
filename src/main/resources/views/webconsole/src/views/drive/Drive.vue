@@ -3,17 +3,20 @@
     <!-- 控制面板 -->
     <DriveContrlPanel :entry-count="listTotal" :upload-count="1" @on-search="loadList" @open-upload-queue="openFileUploadModal" />
 
-    <!-- 条目列表 -->
-    <DriveEntryGrid
-      :data="listData"
-      :loading="listLoading"
-      :parent-id="listForm.parentId"
-      @grid-right-click="handleGridRightClick"
-      @entry-click="handleEntryClick"
-      @entry-dblclick="handleEntryDoubleClick"
-      @entry-right-click="handleEntryRightClick"
-      @return-parent-dir="listReturnParentDir"
-    />
+    <!-- 文件选择器 -->
+    <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected">
+      <!-- 条目列表 -->
+      <DriveEntryGrid
+        :data="listData"
+        :loading="listLoading"
+        :parent-id="listForm.parentId"
+        @grid-right-click="handleGridRightClick"
+        @entry-click="handleEntryClick"
+        @entry-dblclick="handleEntryDoubleClick"
+        @entry-right-click="handleEntryRightClick"
+        @return-parent-dir="listReturnParentDir"
+      />
+    </DriveFileSelector>
 
     <!-- 右键菜单 -->
     <DriveEntryRightMenu
@@ -49,13 +52,14 @@ import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vu
 import DriveFileUpload from "@/views/drive/components/DriveFileUpload.vue";
 import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
+import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploadFile = ref<File | null>(null);
 const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
 const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
-
+const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
   keyword: null,
@@ -67,7 +71,24 @@ const listData = ref<GetEntryListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const currentSelectedEntry = ref<GetEntryListVo | null>(null);
+const loadList = async (keyword: string | null = null) => {
+  listLoading.value = true;
+  try {
+    listForm.keyword = keyword;
+    const res = await DriveApi.getEntryList(listForm);
+    if (res.code === 0) {
+      listData.value = res.data;
+      listTotal.value = res.total;
+    }
+    if (res.code !== 0) {
+      ElMessage.error(res.message || "加载列表失败");
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "加载列表失败");
+  } finally {
+    listLoading.value = false;
+  }
+};
 
 const handleEntryClick = (id: string) => {
   const entry = listData.value.find((item) => item.id === id);
@@ -97,35 +118,14 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
   }
 };
 
-const loadList = async (keyword: string | null = null) => {
-  listLoading.value = true;
-  try {
-    listForm.keyword = keyword;
-    const res = await DriveApi.getEntryList(listForm);
-    if (res.code === 0) {
-      listData.value = res.data;
-      listTotal.value = res.total;
-    }
-    if (res.code !== 0) {
-      ElMessage.error(res.message || "加载列表失败");
-    }
-  } catch (error: any) {
-    ElMessage.error(error.message || "加载列表失败");
-  } finally {
-    listLoading.value = false;
-  }
-};
-
 const handleUploadFile = () => {
   fileInput.value?.click();
 };
 
-const onFileSelected = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    uploadFile.value = input.files[0];
-  }
-  input.value = "";
+const onFileSelected = (files: File[]) => {
+  ElMessage.info(`正在处理 ${files.length} 个文件`);
+  //添加到上传队列
+  fileUploadRef.value?.toUploadQueue(files, listForm.parentId);
 };
 
 const handlePreview = (entry: GetEntryListVo) => {
@@ -165,6 +165,10 @@ const handleProperties = (entry: GetEntryListVo) => {
 
 loadList();
 
+/**
+ * 返回上级目录
+ * @param parentId 父级ID
+ */
 const listReturnParentDir = async (parentId: string | null) => {
   const result = await DriveApi.getEntryDetails({ id: parentId });
 
