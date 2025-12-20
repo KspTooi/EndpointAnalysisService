@@ -41,6 +41,9 @@
 
     <!-- 删除确认对话框 -->
     <DriveModalRemove ref="removeConfirmRef" @success="loadList" />
+
+    <!-- 重命名模态框 -->
+    <DriveModalRename ref="renameModalRef" @success="loadList" />
   </div>
 </template>
 
@@ -56,6 +59,7 @@ import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
+import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import { DriveHolder } from "@/store/DriveHolder.ts";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
@@ -64,6 +68,7 @@ const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null
 const createEntryModalRef = ref<InstanceType<typeof DriveModalCreateDir> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
+const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const driveHolder = DriveHolder();
@@ -233,8 +238,10 @@ const onDelete = async (entries: GetEntryListVo[]) => {
  * @param entry 单个条目
  */
 const onRename = (entry: GetEntryListVo) => {
-  // 重命名逻辑，可根据需要实现
-  ElMessage.info("重命名功能待实现");
+  if (!renameModalRef.value) {
+    return;
+  }
+  renameModalRef.value.openModal(entry);
 };
 
 /**

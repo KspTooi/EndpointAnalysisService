@@ -2,8 +2,8 @@ package com.ksptooi.biz.drive.controller;
 
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
-import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
+import com.ksptooi.biz.drive.model.dto.RenameEntry;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
@@ -65,11 +65,12 @@ public class EntryController {
         return Result.success("复制成功");
     }
 
-    @Operation(summary = "编辑条目")
-    @PostMapping("/editEntry")
-    public Result<String> editEntry(@RequestBody @Valid EditEntryDto dto) throws Exception {
-        entryService.editEntry(dto);
-        return Result.success("修改成功");
+
+    @Operation(summary = "重命名条目")
+    @PostMapping("/renameEntry")
+    public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
+        entryService.renameEntry(dto);
+        return Result.success("重命名成功");
     }
 
     @Operation(summary = "查询条目详情")

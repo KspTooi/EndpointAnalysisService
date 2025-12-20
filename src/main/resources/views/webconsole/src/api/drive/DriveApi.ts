@@ -53,6 +53,11 @@ export interface CopyEntryDto {
   parentId: string | null; //父级ID
 }
 
+export interface RenameEntryDto {
+  entryId: string; //条目ID
+  name: string; //条目名称
+}
+
 export default {
   /**
    * 获取云盘信息
@@ -90,6 +95,16 @@ export default {
    */
   copyEntry: async (dto: CopyEntryDto): Promise<Result<string>> => {
     const ret = await Http.postEntity<Result<string>>("/drive/entry/copyEntry", dto);
+    return ret;
+  },
+
+  /**
+   * 重命名云盘条目
+   * @param dto 重命名条目
+   * @returns 重命名结果
+   */
+  renameEntry: async (dto: RenameEntryDto): Promise<Result<string>> => {
+    const ret = await Http.postEntity<Result<string>>("/drive/entry/renameEntry", dto);
     return ret;
   },
 

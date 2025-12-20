@@ -6,8 +6,8 @@ import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
-import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
+import com.ksptooi.biz.drive.model.dto.RenameEntry;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
@@ -24,6 +24,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -196,11 +197,29 @@ public class EntryService {
      * @param dto 编辑条目
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editEntry(EditEntryDto dto) throws BizException {
-        EntryPo updatePo = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
+    public void renameEntry(RenameEntry dto) throws BizException, AuthException {
 
-        assign(dto, updatePo);
+        var companyId = AuthService.requireCompanyId();
+
+        EntryPo updatePo = repository.findById(dto.getEntryId())
+                .orElseThrow(() -> new BizException("重命名失败,数据不存在."));
+
+        if (!Objects.equals(updatePo.getCompanyId(), companyId)) {
+            throw new BizException("重命名失败,无权限访问.");
+        }
+
+        Long parentId = null;
+
+        if (updatePo.getParent() != null) {
+            parentId = updatePo.getParent().getId();
+        }
+
+        if (repository.countByNameParentIdAndCompanyId(companyId, parentId, dto.getName()) > 0) {
+            throw new BizException("此位置已存在同名文件,无法重命名.");
+        }
+        updatePo.setName(dto.getName());
+        updatePo.setUpdaterId(AuthService.requireUserId());
+        updatePo.setUpdateTime(LocalDateTime.now());
         repository.save(updatePo);
     }
 
