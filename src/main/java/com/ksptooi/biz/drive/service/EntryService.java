@@ -165,6 +165,7 @@ public class EntryService {
      * 定时任务 5秒执行一次,检查entrySyncList中的数据,如果存在数据,则执行同步操作
      */
     @Scheduled(fixedDelay = 5000)
+    @Transactional(rollbackFor = Exception.class)
     public void syncEntry() {
 
         //查询全部需要同步的云盘条目

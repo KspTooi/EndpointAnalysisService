@@ -306,6 +306,7 @@
                     <include>**/**.woff2</include>
                     <include>**/**.jpeg</include>
                     <include>**/**.sql</include>
+                    <include>**/**.worker.ts</include>
                 </includes>
                 <excludes>
                     <exclude>views/webconsole/node_modules/**</exclude>
