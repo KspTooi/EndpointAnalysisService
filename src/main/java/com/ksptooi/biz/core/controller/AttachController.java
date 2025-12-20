@@ -1,6 +1,7 @@
 package com.ksptooi.biz.core.controller;
 
 import com.ksptooi.biz.core.model.attach.dto.PreCheckAttachDto;
+import com.ksptooi.biz.core.model.attach.vo.ApplyChunkVo;
 import com.ksptooi.biz.core.model.attach.vo.PreCheckAttachVo;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.commons.annotation.PrintLog;
@@ -33,7 +34,7 @@ public class AttachController {
 
     @PostMapping("/applyChunk")
     @Operation(summary = "应用区块")
-    public Result<String> applyChunk(@RequestParam("file") MultipartFile file, @RequestParam("preCheckId") Long preCheckId,@RequestParam("chunkId") Long chunkId) throws BizException {
+    public Result<ApplyChunkVo> applyChunk(@RequestParam("file") MultipartFile file, @RequestParam("preCheckId") Long preCheckId,@RequestParam("chunkId") Long chunkId) throws BizException {
 
         if(file.isEmpty()){
             throw new BizException("区块数据不能为空");
@@ -48,8 +49,6 @@ public class AttachController {
             throw new BizException("预检ID或区块ID不能为空");
         }
 
-        attachService.applyChunk(preCheckId,chunkId,file);
-
-        return Result.success("应用分块成功");
+        return Result.success(attachService.applyChunk(preCheckId,chunkId,file));
     }
 }

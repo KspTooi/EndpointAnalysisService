@@ -4,6 +4,7 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.attach.AttachChunkPo;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.attach.dto.PreCheckAttachDto;
+import com.ksptooi.biz.core.model.attach.vo.ApplyChunkVo;
 import com.ksptooi.biz.core.model.attach.vo.PreCheckAttachVo;
 import com.ksptooi.biz.core.repository.AttachChunkRepository;
 import com.ksptooi.biz.core.repository.AttachRepository;
@@ -159,7 +160,7 @@ public class AttachService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void applyChunk(Long preCheckId, Long chunkId, MultipartFile file) throws BizException {
+    public ApplyChunkVo applyChunk(Long preCheckId, Long chunkId, MultipartFile file) throws BizException {
 
         var attach = repository.findById(preCheckId).orElseThrow(() -> new BizException("预检文件不存在"));
         var chunkSize = file.getSize();
@@ -217,7 +218,12 @@ public class AttachService {
             log.error("写入区块失败 附件ID:{} 区块ID:{} 错误:{}", attach.getId(), chunkId, e.getMessage(), e);
             throw new BizException("写入区块失败: " + e.getMessage());
         }
+
         
+        var ret = new ApplyChunkVo();
+        ret.setAttachId(attach.getId());
+        ret.setChunkTotal(chunkCount.intValue());
+
         //保存分块记录
         attach.addChunk(chunkId);
         
@@ -227,8 +233,10 @@ public class AttachService {
         //检查是否所有分块都已上传完成
         var chunkPos = attach.getChunks();
 
+        ret.setChunkApplied(chunkPos.size());
+
         if(chunkPos.size() != chunkCount){
-            return;
+            return ret;
         }
 
         //所有分块都已上传完成 更新为校验中状态
@@ -239,6 +247,7 @@ public class AttachService {
         }
 
         repository.save(attach);
+        return ret;
     }
 
 
