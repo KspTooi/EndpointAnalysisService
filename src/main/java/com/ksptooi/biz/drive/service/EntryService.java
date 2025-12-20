@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +51,7 @@ public class EntryService {
      * @return 云盘信息
      */
     public GetDriveInfo getDriveInfo() throws AuthException {
-        
+
         var companyId = AuthService.requireCompanyId();
         var ret = repository.getDriveInfo(companyId);
 
@@ -171,18 +172,15 @@ public class EntryService {
         }
 
         //组装复制数据
-        var copyPos = new ArrayList<EntryPo>();
+        var copyPos = copyEntry(entryPos);
 
-        for (var entryPo : entryPos) {
-            var newEntryPo = as(entryPo, EntryPo.class);
-            newEntryPo.setId(IdWorker.nextId());
-            newEntryPo.setCompanyId(companyId);
-            newEntryPo.setParent(parentPo);
-            copyPos.add(newEntryPo);
+        for (var entryPo : copyPos) {
+
+            entryPo.setParent(parentPo);
 
             //判断目标目录中是否有同名文件
-            if (repository.countByNameParentIdAndCompanyId(companyId, dto.getParentId(), newEntryPo.getName()) > 0) {
-                newEntryPo.setName(newEntryPo.getName() + "-副本");
+            if (repository.countByNameParentIdAndCompanyId(companyId, dto.getParentId(), entryPo.getName()) > 0) {
+                entryPo.setName(entryPo.getName() + "-副本");
             }
 
         }
@@ -190,7 +188,6 @@ public class EntryService {
         //保存复制条目
         repository.saveAll(copyPos);
     }
-
 
 
     /**
@@ -313,5 +310,53 @@ public class EntryService {
             }
         }
     }
+
+
+    public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
+
+        var companyId = AuthService.requireCompanyId();
+        var result = new ArrayList<EntryPo>();
+
+        for (var entryPo : entryPos) {
+            var newEntry = copyEntryRecursive(entryPo, null, companyId);
+            result.add(newEntry);
+        }
+
+        return result;
+    }
+
+    /**
+     * 递归复制条目
+     *
+     * @param sourcePo  源条目
+     * @param parentPo  父级条目
+     * @param companyId 公司ID
+     * @return 新条目
+     */
+    private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo, Long companyId) throws BizException {
+
+        var newEntry = new EntryPo();
+        newEntry.setId(IdWorker.nextId());
+        newEntry.setCompanyId(companyId);
+        newEntry.setParent(parentPo);
+        newEntry.setName(sourcePo.getName());
+        newEntry.setKind(sourcePo.getKind());
+        newEntry.setAttachId(sourcePo.getAttachId());
+        newEntry.setAttachSize(sourcePo.getAttachSize());
+        newEntry.setAttachSuffix(sourcePo.getAttachSuffix());
+        newEntry.setAttachStatus(sourcePo.getAttachStatus());
+
+        if (sourcePo.getChildren() != null && !sourcePo.getChildren().isEmpty()) {
+            var children = new ArrayList<EntryPo>();
+            for (var child : sourcePo.getChildren()) {
+                var newChild = copyEntryRecursive(child, newEntry, companyId);
+                children.add(newChild);
+            }
+            newEntry.setChildren(new HashSet<>(children));
+        }
+
+        return newEntry;
+    }
+
 
 }

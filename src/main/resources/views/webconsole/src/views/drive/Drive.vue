@@ -201,14 +201,18 @@ const onPaste = async () => {
   if (entries.length === 0) {
     return;
   }
-  //调用后端粘贴接口
-  const result = await DriveApi.copyEntry({
-    entryIds: entries.map((item) => item.id),
-    parentId: listForm.parentId,
-  });
-  if (Result.isSuccess(result)) {
-    ElMessage.success("粘贴成功");
-    loadList();
+  try {
+    //调用后端粘贴接口
+    const result = await DriveApi.copyEntry({
+      entryIds: entries.map((item) => item.id),
+      parentId: listForm.parentId,
+    });
+    if (Result.isSuccess(result)) {
+      ElMessage.success("粘贴成功");
+      loadList();
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "粘贴失败");
   }
 };
 

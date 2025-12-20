@@ -57,14 +57,13 @@ public class EntryController {
         entryService.addEntry(dto);
         return Result.success("新增成功");
     }
-    
+
     @Operation(summary = "复制条目")
     @PostMapping("/copyEntry")
     public Result<String> copyEntry(@RequestBody @Valid CopyEntryDto dto) throws Exception {
         entryService.copyEntry(dto);
         return Result.success("复制成功");
     }
-
 
     @Operation(summary = "编辑条目")
     @PostMapping("/editEntry")

@@ -5,6 +5,7 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -80,11 +81,13 @@ public class EntryPo {
     private Long updaterId;
 
     //子级条目
+    @BatchSize(size = 100)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntryPo> children;
 
     @PrePersist
     private void onCreate() {
+
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
