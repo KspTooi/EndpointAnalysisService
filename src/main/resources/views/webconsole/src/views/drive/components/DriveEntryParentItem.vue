@@ -18,8 +18,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "click", targetId: string): void;
-  (e: "dblclick", targetId: string): void;
+  (e: "click", targetId: string | null): void;
+  (e: "dblclick", targetId: string | null): void;
   (e: "contextmenu", event: MouseEvent): void;
 }>();
 

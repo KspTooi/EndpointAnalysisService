@@ -125,4 +125,41 @@ export default {
     // 抛出其他业务错误信息 (code != 0 且非权限不足)
     throw new Error(result.message || "请求失败或数据无效");
   },
+
+  /**
+   * 发送POST请求(FormData)
+   * @param url 请求URL
+   * @param body 请求体
+   * @returns 响应数据
+   */
+  async postForm<T>(url: string, body: any): Promise<T> {
+    try {
+      const formData = new FormData();
+      Object.keys(body).forEach((key) => {
+        if (body[key] === null || body[key] === undefined || body[key] === "") {
+          return;
+        }
+        formData.append(key, body[key]);
+      });
+
+      const response = await axiosInstance.post<Result<T>>(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const result = response.data;
+
+      if (result.code === 0) {
+        return result as T;
+      }
+
+      throw new Error(result.message || "请求失败或数据无效");
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("请求失败或数据无效");
+    }
+  },
 };

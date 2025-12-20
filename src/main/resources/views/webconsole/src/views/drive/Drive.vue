@@ -28,23 +28,16 @@
     </div>
 
     <!-- 条目列表 -->
-    <div class="list-grid" v-loading="listLoading" @contextmenu.prevent="handleGridRightClick">
-      <DriveEntryParentItem :target-id="listForm.parentId" name="上级目录" v-show="listForm.parentId" @dblclick="listReturnParentDir" />
-
-      <DriveEntryItem
-        v-for="item in listData"
-        :key="item.id"
-        :id="item.id"
-        :name="item.name"
-        :kind="item.kind"
-        :attach-id="item.attachId"
-        :attach-size="item.attachSize"
-        :attach-suffix="item.attachSuffix"
-        @click="handleEntryClick"
-        @dblclick="handleEntryDoubleClick"
-        @contextmenu="(event: MouseEvent) => handleEntryRightClick(event, item)"
-      />
-    </div>
+    <DriveEntryGrid
+      :data="listData"
+      :loading="listLoading"
+      :parent-id="listForm.parentId"
+      @grid-right-click="handleGridRightClick"
+      @entry-click="handleEntryClick"
+      @entry-dblclick="handleEntryDoubleClick"
+      @entry-right-click="handleEntryRightClick"
+      @return-parent-dir="listReturnParentDir"
+    />
 
     <!-- 右键菜单 -->
     <DriveEntryRightMenu
@@ -80,9 +73,8 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive/DriveApi.ts";
 import DriveCreateEntryModal from "@/views/drive/components/DriveCreateEntryModal.vue";
-import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
+import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
-import DriveEntryParentItem from "@/views/drive/components/DriveEntryParentItem.vue";
 import { Result } from "@/commons/entity/Result";
 
 const listForm = reactive<GetEntryListDto>({
@@ -226,21 +218,10 @@ const listReturnParentDir = async (parentId: string | null) => {
 
 <style scoped>
 .list-container {
-  padding: 20px;
+  padding: 10px;
   max-width: 100%;
   overflow-x: auto;
   width: 100%;
-}
-
-.list-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  padding: 10px 0;
-  width: calc(100% - 2px);
-  height: calc(100vh - 200px);
-  border: 1px solid var(--el-border-color);
-  overflow-y: auto;
 }
 
 .pagination-container {
