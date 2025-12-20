@@ -47,6 +47,7 @@
       :current-entry="rightMenuCurrentEntry"
       @close="handleRightMenuClose"
       @create-folder="handleCreateFolder"
+      @upload-file="handleUploadFile"
       @preview="handlePreview"
       @download="handleDownload"
       @cut="handleCut"
@@ -65,6 +66,17 @@
       "
       @success="loadList"
     />
+
+    <DriveFileUpload
+      :visible="modalUploadVisible"
+      :parent-id="listForm.parentId"
+      :file="uploadFile"
+      kind="drive"
+      @update:visible="modalUploadVisible = $event"
+      @success="loadList"
+    />
+
+    <input type="file" ref="fileInput" style="display: none" @change="onFileSelected" />
   </div>
 </template>
 
@@ -75,7 +87,11 @@ import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive
 import DriveCreateEntryModal from "@/views/drive/components/DriveCreateEntryModal.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
+import DriveFileUpload from "@/views/drive/components/DriveFileUpload.vue";
 import { Result } from "@/commons/entity/Result";
+
+const fileInput = ref<HTMLInputElement | null>(null);
+const uploadFile = ref<File | null>(null);
 
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
@@ -89,6 +105,7 @@ const listTotal = ref(0);
 const listLoading = ref(false);
 
 const modalCreateEntryVisible = ref(false);
+const modalUploadVisible = ref(false);
 
 const rightMenuVisible = ref(false);
 const rightMenuX = ref(0);
@@ -162,6 +179,19 @@ const resetList = () => {
 
 const handleCreateFolder = () => {
   modalCreateEntryVisible.value = true;
+};
+
+const handleUploadFile = () => {
+  fileInput.value?.click();
+};
+
+const onFileSelected = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    uploadFile.value = input.files[0];
+    modalUploadVisible.value = true;
+  }
+  input.value = "";
 };
 
 const handlePreview = (entry: GetEntryListVo) => {

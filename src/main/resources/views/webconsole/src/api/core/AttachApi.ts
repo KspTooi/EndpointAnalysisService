@@ -1,3 +1,4 @@
+import type Result from "@/commons/entity/Result";
 import Http from "@/commons/Http";
 
 export interface PreCheckAttachDto {
@@ -16,14 +17,20 @@ export interface PreCheckAttachVo {
   missingChunkIds: string[]; //缺失的分块ID
 }
 
+export interface ApplyChunkVo {
+  attachId: string; //附件ID
+  chunkTotal: number; //分块总数
+  chunkApplied: number; //分块已应用数量
+}
+
 export default {
   /**
    * 预检附件
    * @param dto 预检附件参数
    * @returns 预检附件结果
    */
-  preCheckAttach: async (dto: PreCheckAttachDto): Promise<PreCheckAttachVo> => {
-    return await Http.postEntity<PreCheckAttachVo>("/attach/preCheckAttach", dto);
+  preCheckAttach: async (dto: PreCheckAttachDto): Promise<Result<PreCheckAttachVo>> => {
+    return await Http.postEntity<Result<PreCheckAttachVo>>("/attach/preCheckAttach", dto);
   },
 
   /**
@@ -33,7 +40,7 @@ export default {
    * @param file 区块文件
    * @returns 应用区块结果
    */
-  applyChunk: async (preCheckId: string, chunkId: string, file: File): Promise<string> => {
-    return await Http.postForm<string>("/attach/applyChunk", { preCheckId, chunkId, file });
+  applyChunk: async (preCheckId: string, chunkId: string, file: File): Promise<Result<ApplyChunkVo>> => {
+    return await Http.postForm<Result<ApplyChunkVo>>("/attach/applyChunk", { preCheckId, chunkId, file });
   },
 };

@@ -68,7 +68,7 @@ const handleReturnParentDir = (parentId: string | null) => {
   padding: 10px 0;
   width: calc(100% - 2px);
   height: calc(100vh - 180px);
-  border: 1px solid var(--el-border-color);
+  /* border: 1px solid var(--el-border-color); */
   overflow-y: auto;
 }
 </style>

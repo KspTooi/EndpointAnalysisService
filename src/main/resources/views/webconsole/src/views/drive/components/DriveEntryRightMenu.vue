@@ -1,10 +1,14 @@
 <template>
   <div v-show="visible" ref="menuRef" class="context-menu" :style="{ left: x + 'px', top: y + 'px' }" @click.stop @contextmenu.prevent>
-    <!-- 当没有选中条目时，只显示新建文件夹 -->
+    <!-- 当没有选中条目时，只显示新建文件夹和上传文件 -->
     <template v-if="!currentEntry">
       <div class="menu-item" @click="handleCreateFolder">
         <el-icon><FolderAdd /></el-icon>
         <span>新建文件夹</span>
+      </div>
+      <div class="menu-item" @click="handleUploadFile">
+        <el-icon><Upload /></el-icon>
+        <span>上传文件</span>
       </div>
     </template>
 
@@ -47,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled } from "@element-plus/icons-vue";
+import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload } from "@element-plus/icons-vue";
 import type { GetEntryListVo } from "@/api/drive/DriveApi";
 
 const props = defineProps<{
@@ -60,6 +64,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "createFolder"): void;
+  (e: "uploadFile"): void;
   (e: "preview", entry: GetEntryListVo): void;
   (e: "download", entry: GetEntryListVo): void;
   (e: "cut", entry: GetEntryListVo): void;
@@ -73,6 +78,11 @@ const menuRef = ref<HTMLElement>();
 
 const handleCreateFolder = () => {
   emit("createFolder");
+  emit("close");
+};
+
+const handleUploadFile = () => {
+  emit("uploadFile");
   emit("close");
 };
 
