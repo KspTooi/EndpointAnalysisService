@@ -72,4 +72,14 @@ export default {
     const ret = await Http.postEntity<Result<GetEntryDetailsVo>>("/drive/entry/getEntryDetails", dto);
     return ret;
   },
+
+  /**
+   * 删除云盘条目
+   * @param dto 删除条件
+   * @returns 删除结果
+   */
+  deleteEntry: async (dto: CommonIdDto): Promise<Result<string>> => {
+    const ret = await Http.postEntity<Result<string>>("/drive/entry/removeEntry", dto);
+    return ret;
+  },
 };

@@ -37,6 +37,9 @@
 
     <!-- 文件上传队列组件 -->
     <DriveFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadList" @on-queue-update="onQueueUpdate" />
+
+    <!-- 删除确认对话框 -->
+    <DriveEntryRemoveConfirm ref="removeConfirmRef" @success="loadList" />
   </div>
 </template>
 
@@ -51,12 +54,14 @@ import DriveFileUpload, { type UploadQueueItem } from "@/views/drive/components/
 import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
+import DriveEntryRemoveConfirm from "@/views/drive/components/DriveEntryRemoveConfirm.vue";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileInput = ref<HTMLInputElement | null>(null);
 const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
 const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
+const removeConfirmRef = ref<InstanceType<typeof DriveEntryRemoveConfirm> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const listForm = reactive<GetEntryListDto>({
   parentId: null,
@@ -122,6 +127,15 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
 
 loadList();
 
+/**
+ * 文件选择器->文件选择
+ */
+const onFileSelected = (files: File[]) => {
+  ElMessage.info(`正在处理 ${files.length} 个文件`);
+  //添加到上传队列
+  fileUploadRef.value?.toUploadQueue(files, listForm.parentId);
+};
+
 //右键菜单操作
 
 /**
@@ -178,9 +192,12 @@ const onCopy = (entries: GetEntryListVo[]) => {
  * 右键菜单->删除
  * @param entries 条目列表
  */
-const onDelete = (entries: GetEntryListVo[]) => {
-  // 删除逻辑，可根据需要实现
-  ElMessage.info("删除功能待实现");
+const onDelete = async (entries: GetEntryListVo[]) => {
+  if (!removeConfirmRef.value) {
+    return;
+  }
+
+  await removeConfirmRef.value.openConfirm(entries);
 };
 
 /**
