@@ -11,6 +11,25 @@
         <span class="entry-count">共 {{ entryCount }} 项</span>
       </div>
 
+      <!-- 云盘信息区域 -->
+      <div class="drive-info-section" @click="handleRefreshDriveInfo">
+        <el-tooltip effect="dark" placement="bottom">
+          <template #content>
+            <div class="drive-info-tooltip">
+              <div>总容量: {{ formatSize(driveInfo.totalCapacity) }}</div>
+              <div>已使用: {{ formatSize(driveInfo.usedCapacity) }}</div>
+              <div>对象数量: {{ driveInfo.objectCount }}</div>
+              <div style="margin-top: 8px; color: #909399">点击刷新云盘信息</div>
+            </div>
+          </template>
+          <div class="drive-info-display">
+            <el-icon><Coin /></el-icon>
+            <span class="drive-info-text">{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span>
+            <el-progress :percentage="usagePercentage" :stroke-width="4" :show-text="false" :color="progressColor" class="drive-progress" />
+          </div>
+        </el-tooltip>
+      </div>
+
       <!-- 右侧操作区域 -->
       <div class="action-section">
         <el-button type="success" @click="handleUploadQueue" class="action-btn">
@@ -25,8 +44,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { Search, Upload } from "@element-plus/icons-vue";
+import { ref, computed, onMounted } from "vue";
+import { Search, Upload, Coin } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import DriveApi from "@/api/drive/DriveApi";
+import type { GetDriveInfoVo } from "@/api/drive/DriveApi";
+import { Result } from "@/commons/entity/Result";
 
 //定义props
 const props = withDefaults(
@@ -49,6 +72,63 @@ const emit = defineEmits<{
 const keyword = ref("");
 let searchTimer: number | null = null;
 
+const driveInfo = ref<GetDriveInfoVo>({
+  totalCapacity: "0",
+  usedCapacity: "0",
+  objectCount: "0",
+});
+
+const usagePercentage = computed(() => {
+  const total = Number(driveInfo.value.totalCapacity);
+  const used = Number(driveInfo.value.usedCapacity);
+
+  if (!total || total === 0) {
+    return 0;
+  }
+
+  return Math.round((used / total) * 100);
+});
+
+const progressColor = computed(() => {
+  if (usagePercentage.value >= 90) {
+    return "#f56c6c";
+  }
+  if (usagePercentage.value >= 70) {
+    return "#e6a23c";
+  }
+  return "#67c23a";
+});
+
+const formatSize = (bytes: string | number | null | undefined): string => {
+  const numBytes = Number(bytes);
+
+  if (!numBytes || numBytes === 0 || isNaN(numBytes)) {
+    return "0 B";
+  }
+
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(numBytes) / Math.log(k));
+  return Math.round((numBytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+};
+
+const loadDriveInfo = async () => {
+  const result = await DriveApi.getDriveInfo();
+  if (Result.isSuccess(result)) {
+    driveInfo.value = result.data;
+  }
+};
+
+const handleRefreshDriveInfo = async () => {
+  const result = await DriveApi.getDriveInfo();
+  if (Result.isSuccess(result)) {
+    driveInfo.value = result.data;
+    ElMessage.success("云盘信息已刷新");
+    return;
+  }
+  ElMessage.error("刷新云盘信息失败");
+};
+
 const handleSearch = () => {
   emit("on-search", keyword.value);
 };
@@ -66,6 +146,10 @@ const handleSearchInput = () => {
 const handleUploadQueue = () => {
   emit("open-upload-queue");
 };
+
+onMounted(() => {
+  loadDriveInfo();
+});
 </script>
 
 <style scoped>
@@ -136,6 +220,50 @@ const handleUploadQueue = () => {
   font-size: 14px;
 }
 
+.drive-info-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.drive-info-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.drive-info-display:hover {
+  background: var(--el-fill-color-light);
+  border-color: var(--el-border-color-hover);
+}
+
+.drive-info-display .el-icon {
+  font-size: 14px;
+  color: var(--el-color-primary);
+}
+
+.drive-info-text {
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
+}
+
+.drive-progress {
+  width: 60px;
+}
+
+.drive-info-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
 .action-section {
   display: flex;
   align-items: center;
@@ -167,6 +295,14 @@ const handleUploadQueue = () => {
 
   .search-input {
     max-width: 100%;
+  }
+
+  .drive-info-section {
+    width: 100%;
+  }
+
+  .drive-info-display {
+    width: 100%;
   }
 
   .action-section {

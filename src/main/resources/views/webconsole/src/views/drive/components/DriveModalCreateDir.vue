@@ -5,9 +5,6 @@
         <el-form-item label="文件夹名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入文件夹名称" clearable maxlength="128" show-word-limit />
         </el-form-item>
-        <el-form-item label="父级ID" prop="parentId">
-          <el-input v-model="form.parentId" placeholder="留空表示创建在根目录" clearable />
-        </el-form-item>
       </el-form>
     </div>
     <template #footer>

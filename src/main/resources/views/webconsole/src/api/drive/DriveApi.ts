@@ -42,7 +42,22 @@ export interface GetEntryDetailsVo {
   updaterId: string; //更新人
 }
 
+export interface GetDriveInfoVo {
+  totalCapacity: string; //总容量
+  usedCapacity: string; //已使用容量
+  objectCount: string; //对象数量
+}
+
 export default {
+  /**
+   * 获取云盘信息
+   * @returns 云盘信息
+   */
+  getDriveInfo: async (): Promise<Result<GetDriveInfoVo>> => {
+    const ret = await Http.postEntity<Result<GetDriveInfoVo>>("/drive/entry/getDriveInfo", {});
+    return ret;
+  },
+
   /**
    * 获取云盘条目列表
    * @param dto 查询条件

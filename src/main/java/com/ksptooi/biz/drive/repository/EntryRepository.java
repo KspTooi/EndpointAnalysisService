@@ -1,6 +1,8 @@
 package com.ksptooi.biz.drive.repository;
 
 import com.ksptooi.biz.drive.model.EntryPo;
+import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +15,23 @@ import java.util.List;
 
 @Repository
 public interface EntryRepository extends JpaRepository<EntryPo, Long> {
+
+    /**
+     * 获取云盘信息
+     *
+     * @param companyId 团队ID
+     * @return 云盘信息
+     */
+    @Query("""
+            SELECT new com.ksptooi.biz.drive.model.vo.GetDriveInfo(
+                CAST(0 AS long),
+                CAST(COALESCE(SUM(CASE WHEN u.kind = 0 THEN u.attachSize ELSE CAST(0 AS long) END), CAST(0 AS long)) AS long),
+                COUNT(u)
+            )
+            FROM EntryPo u
+            WHERE u.companyId = :companyId
+            """)
+    GetDriveInfo getDriveInfo(@Param("companyId") Long companyId);
 
 
     @Query("""

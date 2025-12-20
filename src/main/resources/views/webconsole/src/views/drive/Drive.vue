@@ -33,13 +33,13 @@
     />
 
     <!-- 创建文件夹模态框 -->
-    <DriveCreateEntryModal ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
+    <DriveModalCreateDir ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
 
     <!-- 文件上传队列组件 -->
-    <DriveFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadList" @on-queue-update="onQueueUpdate" />
+    <DriveModalFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadList" @on-queue-update="onQueueUpdate" />
 
     <!-- 删除确认对话框 -->
-    <DriveEntryRemoveConfirm ref="removeConfirmRef" @success="loadList" />
+    <DriveModalRemove ref="removeConfirmRef" @success="loadList" />
   </div>
 </template>
 
@@ -47,21 +47,21 @@
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive/DriveApi.ts";
-import DriveCreateEntryModal from "@/views/drive/components/DriveCreateEntryModal.vue";
+import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
-import DriveFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveFileUpload.vue";
+import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
 import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
-import DriveEntryRemoveConfirm from "@/views/drive/components/DriveEntryRemoveConfirm.vue";
+import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileInput = ref<HTMLInputElement | null>(null);
-const fileUploadRef = ref<InstanceType<typeof DriveFileUpload> | null>(null);
-const createEntryModalRef = ref<InstanceType<typeof DriveCreateEntryModal> | null>(null);
+const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null);
+const createEntryModalRef = ref<InstanceType<typeof DriveModalCreateDir> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
-const removeConfirmRef = ref<InstanceType<typeof DriveEntryRemoveConfirm> | null>(null);
+const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const listForm = reactive<GetEntryListDto>({
   parentId: null,

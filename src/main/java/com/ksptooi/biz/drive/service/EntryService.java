@@ -7,6 +7,7 @@ import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.EditEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
+import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
@@ -40,6 +41,21 @@ public class EntryService {
 
     @Autowired
     private AttachRepository attachRepository;
+
+    /**
+     * 获取云盘信息
+     *
+     * @return 云盘信息
+     */
+    public GetDriveInfo getDriveInfo() throws AuthException {
+        
+        var companyId = AuthService.requireCompanyId();
+        var ret = repository.getDriveInfo(companyId);
+
+        //总容量为2TB
+        ret.setTotalCapacity(2L * 1024 * 1024 * 1024 * 1024);
+        return ret;
+    }
 
     /**
      * 查询条目列表
