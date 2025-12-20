@@ -27,7 +27,7 @@
 
           <!-- 文件列表 -->
           <div class="file-list">
-            <div v-for="item in entries" :key="item.id" class="file-item" :class="{ 'item-deleted': deletedIds.has(item.id), 'item-error': errorIds.has(item.id) }">
+            <div v-for="item in entries" :key="item.id" class="file-item">
               <el-icon class="file-icon" :class="{ 'folder-icon': item.kind === 1, 'file-icon-type': item.kind === 0 }">
                 <Folder v-if="item.kind === 1" />
                 <Document v-else />
@@ -38,17 +38,6 @@
                   <span>{{ item.kind === 1 ? "文件夹" : getFileType(item.attachSuffix) }}</span>
                   <span v-if="item.kind === 0 && item.attachSize" class="file-size">{{ formatFileSize(item.attachSize) }}</span>
                 </div>
-              </div>
-              <div class="file-status">
-                <el-icon v-if="loading && !deletedIds.has(item.id) && !errorIds.has(item.id)" class="is-loading">
-                  <Loading />
-                </el-icon>
-                <el-icon v-if="deletedIds.has(item.id)" color="#67c23a">
-                  <CircleCheck />
-                </el-icon>
-                <el-icon v-if="errorIds.has(item.id)" color="#f56c6c">
-                  <CircleClose />
-                </el-icon>
               </div>
             </div>
           </div>
@@ -62,7 +51,7 @@
 
         <!-- 按钮区域 -->
         <div class="dialog-footer">
-          <el-button @click="handleCancel" :disabled="loading">{{ loading ? "处理中..." : "取消" }}</el-button>
+          <el-button @click="handleCancel" :disabled="loading">取消</el-button>
           <el-button type="danger" @click="handleConfirm" :loading="loading" :disabled="loading">确定删除</el-button>
         </div>
       </div>
@@ -73,7 +62,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { Close, Delete, Folder, Document, Loading, CircleCheck, CircleClose, WarningFilled } from "@element-plus/icons-vue";
+import { Close, Delete, Folder, Document, WarningFilled } from "@element-plus/icons-vue";
 import DriveApi, { type GetEntryListVo } from "@/api/drive/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
 
@@ -84,8 +73,6 @@ const emit = defineEmits<{
 const isVisible = ref(false);
 const loading = ref(false);
 const entries = ref<GetEntryListVo[]>([]);
-const deletedIds = ref<Set<string>>(new Set());
-const errorIds = ref<Set<string>>(new Set());
 const errorMessage = ref("");
 let resolvePromise: ((value: boolean) => void) | null = null;
 
@@ -93,8 +80,6 @@ const openConfirm = (vos: GetEntryListVo[]): Promise<boolean> => {
   entries.value = vos;
   isVisible.value = true;
   loading.value = false;
-  deletedIds.value.clear();
-  errorIds.value.clear();
   errorMessage.value = "";
 
   return new Promise<boolean>((resolve) => {
@@ -109,51 +94,33 @@ const handleConfirm = async () => {
 
   loading.value = true;
   errorMessage.value = "";
-  deletedIds.value.clear();
-  errorIds.value.clear();
 
-  let successCount = 0;
-  let failCount = 0;
+  try {
+    const ids = entries.value.map((entry) => entry.id);
+    const result = await DriveApi.deleteEntry({ ids });
 
-  for (const entry of entries.value) {
-    try {
-      const result = await DriveApi.deleteEntry({ id: entry.id });
-      if (Result.isSuccess(result)) {
-        deletedIds.value.add(entry.id);
-        successCount++;
+    if (Result.isSuccess(result)) {
+      ElMessage.success(`成功删除 ${entries.value.length} 个项目`);
+      isVisible.value = false;
+      loading.value = false;
+      if (resolvePromise) {
+        resolvePromise(true);
+        resolvePromise = null;
       }
-      if (Result.isError(result)) {
-        errorIds.value.add(entry.id);
-        failCount++;
-        errorMessage.value = `删除失败: ${result.message}`;
-      }
-    } catch (error: any) {
-      errorIds.value.add(entry.id);
-      failCount++;
-      errorMessage.value = `删除失败: ${error.message || "未知错误"}`;
+      emit("success");
+      return;
     }
+
+    if (Result.isError(result)) {
+      errorMessage.value = result.message || "删除失败";
+      ElMessage.error(errorMessage.value);
+    }
+  } catch (error: any) {
+    errorMessage.value = error.message || "删除失败";
+    ElMessage.error(errorMessage.value);
   }
 
   loading.value = false;
-
-  if (failCount === 0) {
-    ElMessage.success(`成功删除 ${successCount} 个项目`);
-    isVisible.value = false;
-    if (resolvePromise) {
-      resolvePromise(true);
-      resolvePromise = null;
-    }
-    emit("success");
-    return;
-  }
-
-  if (successCount > 0) {
-    ElMessage.warning(`成功删除 ${successCount} 个项目，失败 ${failCount} 个`);
-    emit("success");
-    return;
-  }
-
-  ElMessage.error(`删除失败: ${failCount} 个项目`);
 };
 
 const handleCancel = () => {
@@ -314,15 +281,6 @@ defineExpose({
   background: var(--el-fill-color-light);
 }
 
-.item-deleted {
-  opacity: 0.6;
-  background: rgba(103, 194, 58, 0.05);
-}
-
-.item-error {
-  background: rgba(245, 108, 108, 0.05);
-}
-
 .file-icon {
   flex-shrink: 0;
   font-size: 18px;
@@ -360,14 +318,6 @@ defineExpose({
 .file-size::before {
   content: "•";
   margin: 0 3px;
-}
-
-.file-status {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
 }
 
 .error-message {
