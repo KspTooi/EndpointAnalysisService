@@ -15,7 +15,9 @@
       <div class="action-section">
         <el-button type="success" @click="handleUploadQueue" class="action-btn">
           <el-icon><Upload /></el-icon>
-          <span>上传队列({{ uploadCount }})</span>
+          <span
+            >查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span
+          >
         </el-button>
       </div>
     </div>
@@ -68,10 +70,11 @@ const handleUploadQueue = () => {
 
 <style scoped>
 .control-panel {
-  background: #f5f7fa;
-  border: 1px solid #dcdfe6;
-  padding: 12px;
-  margin-bottom: 12px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 0;
 }
 
 .panel-content {
@@ -92,38 +95,45 @@ const handleUploadQueue = () => {
 
 .search-input {
   flex: 1;
-  max-width: 500px;
+  max-width: 450px;
 }
 
 .entry-count {
-  color: #606266;
-  font-size: 14px;
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
   white-space: nowrap;
 }
 
 .search-input :deep(.el-input__wrapper) {
-  background: #ffffff;
-  border: 1px solid #dcdfe6;
-  padding: 1px 11px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  padding: 0px 10px;
   box-shadow: none;
   transition: border-color 0.2s;
+  border-radius: 0;
 }
 
 .search-input :deep(.el-input__wrapper:hover) {
-  border-color: #c0c4cc;
+  border-color: var(--el-border-color-hover);
 }
 
 .search-input :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
+  border-color: var(--el-color-primary);
 }
 
 .search-input :deep(.el-input__inner) {
-  color: #333;
-  font-size: 14px;
+  color: var(--el-text-color-primary);
+  font-size: 13px;
+  height: 28px;
+  line-height: 28px;
 }
 
 .search-input :deep(.el-input__inner::placeholder) {
-  color: #a8abb2;
+  color: var(--el-text-color-placeholder);
+}
+
+.search-input :deep(.el-input__prefix) {
+  font-size: 14px;
 }
 
 .action-section {
@@ -133,13 +143,16 @@ const handleUploadQueue = () => {
 }
 
 .action-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: normal;
+  border-radius: 0;
+  height: 30px;
 }
 
 .action-btn .el-icon {
   margin-right: 4px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {

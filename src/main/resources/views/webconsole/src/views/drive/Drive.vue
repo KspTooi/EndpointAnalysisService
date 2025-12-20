@@ -244,20 +244,13 @@ const openFileUploadModal = () => {
 };
 
 /**
- * 打开创建文件夹弹窗
- */
-const openCreateEntryModal = () => {
-  createEntryModalRef.value?.openModal();
-};
-
-/**
  * 上传队列更新
  * @param queue 上传队列
  */
 const onQueueUpdate = (queue: UploadQueueItem[]) => {
   let count = 0;
   queue.forEach((item) => {
-    if (item.status === "uploading") {
+    if (item.status === "uploading" || item.status === "pending") {
       count++;
     }
   });

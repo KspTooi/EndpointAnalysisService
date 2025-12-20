@@ -2,24 +2,18 @@
   <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" class="modal-centered">
     <div class="upload-content">
       <div class="queue-header">
-        <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件，已完成 {{ completedCount }} 个</span>
+        <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件</span>
         <el-button v-if="uploading" type="danger" size="small" @click="handleCancelAll">取消全部</el-button>
       </div>
 
       <div class="queue-list">
-        <div
-          v-for="(item, index) in uploadQueue"
-          :key="index"
-          class="queue-item"
-          :class="{ active: index === currentIndex, completed: item.status === 'completed', failed: item.status === 'failed' }"
-        >
+        <div v-for="(item, index) in uploadQueue" :key="index" class="queue-item" :class="{ active: index === currentIndex, failed: item.status === 'failed' }">
           <div class="item-info">
             <span class="item-name">{{ item.file.name }}</span>
             <span class="item-size">{{ formatFileSize(item.file.size) }}</span>
           </div>
           <div class="item-progress">
             <el-progress v-if="item.status === 'uploading'" :percentage="item.progress" :stroke-width="6" />
-            <el-progress v-if="item.status === 'completed'" :percentage="100" status="success" :stroke-width="6" />
             <el-progress v-if="item.status === 'failed'" :percentage="item.progress" status="exception" :stroke-width="6" />
             <span v-if="item.status === 'pending'" class="pending-text">等待中...</span>
           </div>
@@ -33,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from "vue";
+import { ref, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
 import AttachApi, { type PreCheckAttachDto, type ApplyChunkVo } from "@/api/core/AttachApi.ts";
 import DriveApi, { type AddEntryDto } from "@/api/drive/DriveApi.ts";
@@ -66,10 +60,6 @@ const uploading = ref(false);
 const currentIndex = ref(-1);
 const isCancelled = ref(false);
 const hashWorker = ref<Worker | null>(null);
-
-const completedCount = computed(() => {
-  return uploadQueue.value.filter((item) => item.status === "completed").length;
-});
 
 const toUploadQueue = (files: File | File[], parentId?: string | null) => {
   const targetParentId = parentId !== undefined ? parentId : props.defaultParentId || null;
@@ -104,6 +94,7 @@ const handleCancelAll = () => {
       item.statusText = "已取消";
     }
   });
+  emit("on-queue-update", uploadQueue.value);
   ElMessage.info("已取消全部上传");
 };
 
@@ -136,12 +127,14 @@ const uploadFile = async (item: UploadQueueItem) => {
   item.status = "uploading";
   item.progress = 0;
   item.statusText = "正在计算哈希...";
+  emit("on-queue-update", uploadQueue.value);
 
   try {
     const sha256 = await computeSHA256(item.file, (progress) => {
       item.statusText = `正在计算哈希... ${progress}%`;
     });
     item.statusText = "正在预检...";
+    emit("on-queue-update", uploadQueue.value);
 
     const preCheckDto: PreCheckAttachDto = {
       name: item.file.name,
@@ -160,8 +153,7 @@ const uploadFile = async (item: UploadQueueItem) => {
     if (status === 3) {
       item.progress = 100;
       await createEntry(item.file, preCheckId, item.parentId);
-      item.status = "completed";
-      item.statusText = "上传完成";
+      removeFromQueue(item);
       return;
     }
 
@@ -171,8 +163,7 @@ const uploadFile = async (item: UploadQueueItem) => {
     if (totalChunks === 0) {
       item.progress = 100;
       await createEntry(item.file, preCheckId, item.parentId);
-      item.status = "completed";
-      item.statusText = "上传完成";
+      removeFromQueue(item);
       return;
     }
 
@@ -189,6 +180,7 @@ const uploadFile = async (item: UploadQueueItem) => {
       const chunk = item.file.slice(start, end);
 
       item.statusText = `正在上传区块 ${chunkId + 1}/${totalChunks}`;
+      emit("on-queue-update", uploadQueue.value);
       const result = await uploadChunk(preCheckId, chunkId, chunk);
       if (!result) {
         throw new Error("上传区块失败");
@@ -200,29 +192,39 @@ const uploadFile = async (item: UploadQueueItem) => {
 
       uploadedCount++;
       item.progress = Math.round((uploadedCount / totalChunks) * 100);
+      emit("on-queue-update", uploadQueue.value);
 
       if (result.attachId && result.chunkApplied === result.chunkTotal) {
         await createEntry(item.file, result.attachId, item.parentId);
-        item.status = "completed";
-        item.statusText = "上传完成";
+        removeFromQueue(item);
         return;
       }
     }
 
     await createEntry(item.file, finalAttachId, item.parentId);
-    item.status = "completed";
-    item.statusText = "上传完成";
+    removeFromQueue(item);
   } catch (error: any) {
     if (isCancelled.value) {
       item.status = "failed";
       item.statusText = "已取消";
+      emit("on-queue-update", uploadQueue.value);
       return;
     }
 
     item.status = "failed";
     item.statusText = error.message || "上传失败";
+    emit("on-queue-update", uploadQueue.value);
     ElMessage.error(`${item.file.name} 上传失败: ${error.message}`);
   }
+};
+
+const removeFromQueue = (item: UploadQueueItem) => {
+  const index = uploadQueue.value.indexOf(item);
+  if (index === -1) {
+    return;
+  }
+  uploadQueue.value.splice(index, 1);
+  emit("on-queue-update", uploadQueue.value);
 };
 
 const getHashWorker = (): Worker => {
@@ -356,11 +358,6 @@ defineExpose({
 .queue-item.active {
   border-color: #409eff;
   background: #ecf5ff;
-}
-
-.queue-item.completed {
-  background: #f0f9ff;
-  border-color: #b3e19d;
 }
 
 .queue-item.failed {
