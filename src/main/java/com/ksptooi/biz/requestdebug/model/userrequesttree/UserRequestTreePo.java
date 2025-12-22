@@ -66,12 +66,12 @@ public class UserRequestTreePo {
 
     //挂载的请求组
     @OneToOne(mappedBy = "tree", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Comment("挂载的请求组")
+    //@Comment("挂载的请求组")
     private UserRequestGroupPo group;
 
     //挂载的请求
     @OneToOne(mappedBy = "tree", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Comment("挂载的请求")
+    //@Comment("挂载的请求")
     private UserRequestPo request;
 
 

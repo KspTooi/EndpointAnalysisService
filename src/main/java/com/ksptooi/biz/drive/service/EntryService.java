@@ -23,15 +23,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-
 import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
 
 @Slf4j
 @Service
