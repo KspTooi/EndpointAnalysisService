@@ -4,37 +4,33 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
-import com.ksptooi.biz.drive.model.vo.MultiEntrySignVo;
-import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.AuthService;
 import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import com.ksptooi.biz.drive.repository.EntryRepository;
+import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptooi.commons.config.DriveConfig;
 import com.ksptooi.commons.utils.Base64;
-import com.ksptooi.commons.utils.SHA256;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 @Service
 public class EntryAccessService {
 
     @Autowired
     private AttachService attachService;        
-
-    @Autowired
-    private AttachRepository attachRepository;
 
     @Autowired
     private EntryRepository entryRepository;
@@ -45,73 +41,49 @@ public class EntryAccessService {
     private static final Gson gson = new Gson();
 
     /**
-     * 获取条目对象签名(单个)
+     * 获取条目对象签名 支持单个和多个
      * @param id 条目ID
-     * @return 条目对象签名
-     * @throws BizException
-     * @throws AuthException
-     */
-    public String getEntrySign(Long id) throws BizException,AuthException {
-
-        var entryPo = entryRepository.getByIdAndCompanyId(id, AuthService.requireCompanyId());
-
-        if(entryPo == null){
-            throw new BizException("条目不存在!");
-        }
-
-        if(entryPo.getKind() == 1){
-            throw new BizException("条目类型为文件夹,无法执行签名操作!");
-        }
-
-        var attach = entryPo.getAttach();
-
-        if(attach == null){
-            throw new BizException("条目中的附件不存在!");
-        }
-
-        var cid = entryPo.getCompanyId();
-        var eid = entryPo.getId();
-        var aid = attach.getId();
-        var ek = entryPo.getKind();
-        var aPath = attach.getPath();
-        var eName = entryPo.getName();
-        var t = System.currentTimeMillis();
-        var s = driveConfig.getSignSecretKey();
-
-        //生成签名
-        var params = new HashMap<String, Object>();
-        params.put("cid", cid);
-        params.put("eid", eid);
-        params.put("aid", aid);
-        params.put("ek", ek);
-        params.put("aPath", aPath);
-        params.put("eName", eName);
-        params.put("t", t);
-        params.put("s", s);
-        params.put("pSign", SHA256.hex(cid + eid + aid + ek + aPath + eName + t + s));
-
-        var ret = new EntrySignVo();
-        ret.setCid(cid);
-        ret.setEid(eid);
-        ret.setAid(aid);
-        ret.setEk(ek);
-        ret.setAPath(aPath);
-        ret.setEName(eName);
-        ret.setT(t);
-        ret.setParams(Base64.encodeUrlSafe(gson.toJson(params)));
-        return ret.getParams();
-    }
-
-
-    /**
-     * 获取条目对象签名(多个)
-     * @param ids 条目ID列表
      * @return 条目对象签名
      * @throws BizException
      * @throws AuthException
      */
     public String getEntrySign(List<Long> ids) throws BizException,AuthException {
 
+        //单文件签名
+        if(ids.size() < 2){
+
+            var entryPo = entryRepository.getByIdAndCompanyId(ids.getFirst(), AuthService.requireCompanyId());
+
+            if(entryPo == null){
+                throw new BizException("条目不存在!");
+            }
+
+            if(entryPo.getKind() == 1){
+                throw new BizException("条目类型为文件夹,无法执行签名操作!");
+            }
+
+            var attach = entryPo.getAttach();
+
+            if(attach == null){
+                throw new BizException("条目中的附件不存在!");
+            }
+
+            //生成签名
+            var params = new HashMap<String, Object>();
+            params.put("cid", entryPo.getCompanyId());
+            params.put("eid", entryPo.getId());
+            params.put("aid", attach.getId());
+            params.put("ek", entryPo.getKind());
+            params.put("aPath", attach.getPath());
+            params.put("eName", entryPo.getName());
+            params.put("t", System.currentTimeMillis());
+            params.put("s", driveConfig.getSignSecretKey());
+            params.put("isBatch", 0);
+            params.put("sign", DriveEntrySignUtils.generateSign(params, driveConfig.getSignSecretKey()));
+            return Base64.encodeUrlSafe(gson.toJson(params));
+        }
+
+        //多文件签名
         var entryPos = entryRepository.getByIdAndCompanyIds(ids, AuthService.requireCompanyId());
 
         if(entryPos.isEmpty() || ( entryPos.size() != ids.size() )){
@@ -129,25 +101,16 @@ public class EntryAccessService {
             }
         }
 
-        var cid = AuthService.requireCompanyId();
-        var eids = entryPos.stream().map(EntryPo::getId).map(String::valueOf).collect(Collectors.joining(","));
-        var t = System.currentTimeMillis();
-        var s = driveConfig.getSignSecretKey();
-
         var params = new HashMap<String, Object>();
-        params.put("cid", cid);
-        params.put("eids", eids);
+        params.put("cid", AuthService.requireCompanyId());
+        params.put("eids", entryPos.stream().map(EntryPo::getId).map(String::valueOf).collect(Collectors.joining(",")));
         params.put("t", System.currentTimeMillis());
         params.put("s", driveConfig.getSignSecretKey());
-        params.put("pSign", SHA256.hex(cid + eids + t + s));
-
-        var ret = new MultiEntrySignVo();
-        ret.setCid(cid);
-        ret.setEids(eids);
-        ret.setT(t);
-        ret.setParams(Base64.encodeUrlSafe(gson.toJson(params)));
-        return ret.getParams();
+        params.put("isBatch", 1);
+        params.put("sign", DriveEntrySignUtils.generateSign(params, driveConfig.getSignSecretKey()));
+        return Base64.encodeUrlSafe(gson.toJson(params));
     }
+
 
     /**
      * 下载条目(单个)
@@ -173,60 +136,59 @@ public class EntryAccessService {
         return new FileSystemResource(absolutePath);
     }
 
-
-
     /**
-     * 验证签名
-     * 
-     * @param base64 签名参数串
-     * @return 签名信息
-     * @throws BizException
+     * 批量下载并打包为ZIP
      */
-    public EntrySignVo verify(String base64) throws BizException,AuthException {
+    public void downloadBatchEntry(EntrySignVo signVo, OutputStream os) throws BizException {
+        var idList = Arrays.stream(signVo.getEids().split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
 
-        try {
-            var paramsJson = Base64.decodeUrlSafe(base64);
-            var params = gson.fromJson(paramsJson, JsonObject.class);
-    
-            var cid = params.get("cid").getAsLong();
-            var eid = params.get("eid").getAsLong();
-            var aid = params.get("aid").getAsLong();
-            var ek = params.get("ek").getAsInt();
-            var aPath = params.get("aPath").getAsString();
-            var eName = params.get("eName").getAsString();
-            var t = params.get("t").getAsLong();
-            var s = driveConfig.getSignSecretKey();
-            var pSign = params.get("pSign").getAsString();
-    
-            var calcSign = SHA256.hex(cid + eid + aid + ek + aPath + eName + t + s);
-    
-            if (!pSign.equals(calcSign)) {
-                throw new BizException("签名校验失败,提供的签名与计算签名不一致");
-            }
-    
-    
-            //判断是否过期
-            var ttl = driveConfig.getTtl();
-    
-            var expireTime = t + ttl * 1000;
-    
-            if (System.currentTimeMillis() > expireTime) {
-                throw new BizException("签名已过期");
-            }
-    
-            var ret = new EntrySignVo();
-            ret.setCid(cid);
-            ret.setEid(eid);
-            ret.setAid(aid);
-            ret.setEk(ek);
-            ret.setAPath(aPath);
-            ret.setEName(eName);
-            ret.setT(t);
-            ret.setParams(base64);
-            return ret;
+        var entries = entryRepository.getByIdAndCompanyIds(idList, signVo.getCid());
 
-        } catch (Exception e) {
-            throw new BizException("解析签名时发生异常,签名可能不完整或格式错误!", e);
+        if(entries.isEmpty() || (entries.size() != idList.size())){
+            throw new BizException("至少有一个文件不存在或无权限访问!");
+        }
+
+        try (var zos = new ZipOutputStream(os)) {
+
+            var nameMap = new HashMap<String, Integer>();
+
+            for (var entry : entries) {
+
+                var attach = entry.getAttach();
+
+                if (attach == null) {
+                    throw new BizException("条目中的附件不存在!");
+                }
+
+                var path = attachService.getAttachLocalPath(Paths.get(attach.getPath()));
+                if (!Files.exists(path)){
+                    throw new BizException("文件在本地存储中不存在! 请重新生成签名并尝试下载.");
+                }
+
+                // 处理重名文件
+                var name = entry.getName();
+                if (nameMap.containsKey(name)) {
+                    int count = nameMap.get(name) + 1;
+                    nameMap.put(name, count);
+                    var dotIndex = name.lastIndexOf(".");
+                    if (dotIndex > 0) {
+                        name = name.substring(0, dotIndex) + "(" + count + ")" + name.substring(dotIndex);
+                    } else {
+                        name = name + "(" + count + ")";
+                    }
+                } else {
+                    nameMap.put(name, 0);
+                }
+
+                var zipEntry = new ZipEntry(name);
+                zos.putNextEntry(zipEntry);
+                Files.copy(path, zos);
+                zos.closeEntry();
+            }
+        } catch (IOException e) {
+            throw new BizException("文件打包下载失败", e);
         }
     }
 
