@@ -16,13 +16,19 @@ public class DriveSignVo {
     @Schema(description="文件附件ID")
     private Long aid;
 
+    @Schema(description="条目类型 0:文件 1:文件夹")
+    private Integer ek;
+
     @Schema(description="文件附件路径")
     private String aPath;
+
+    @Schema(description="条目名称")
+    private String eName;
 
     @Schema(description="签名时间")
     private Long t;
 
-    @Schema(description="签名")
-    private String sign;
+    @Schema(description="最终参数串")
+    private String params;
 
 }

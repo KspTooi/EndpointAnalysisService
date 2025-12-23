@@ -372,14 +372,15 @@ public class AttachService {
         }
 
         var _suffix = StringUtils.isBlank(suffix) ? "" : "." + suffix;
+        var _date = dateFormat.format(LocalDateTime.now());
 
         var rootPath = Paths.get(storePath);
-        var relativePathFile = rootPath.resolve(dateFormat.format(LocalDateTime.now())).resolve(sha256 + _suffix);
-        var relativePathDir = rootPath.resolve(dateFormat.format(LocalDateTime.now()));
+        var absolutePathDir = rootPath.resolve(_date);
+        var relativePathFile = Paths.get(_date).resolve(sha256 + _suffix);
 
-        if (!Files.exists(relativePathDir)) {
+        if (!Files.exists(absolutePathDir)) {
             try {
-                Files.createDirectories(relativePathDir);
+                Files.createDirectories(absolutePathDir);
             } catch (IOException e) {
                 log.error("自动创建资源文件夹失败 路径:{} 错误:{}", storePath, e.getMessage(), e);
                 return null;

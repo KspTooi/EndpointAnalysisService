@@ -18,6 +18,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,9 +45,6 @@ public class EntryController {
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
         return Result.success(entryService.getDriveInfo());
     }
-
-
-
 
 
     @PostMapping("/getEntryList")
@@ -100,11 +100,16 @@ public class EntryController {
     }
 
 
-
     @Operation(summary = "生成条目签名")
     @PostMapping("/generateEntrySign")
     public Result<DriveSignVo> generateEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(entrySignService.sign(dto.getId()));
+    }
+
+    @Operation(summary = "验证条目签名")
+    @PostMapping("/verifyEntrySign")
+    public Result<DriveSignVo> verifyEntrySign(@RequestBody @Valid Map<String, String> params) throws Exception {
+        return Result.success(entrySignService.verify(params.get("sign")));
     }
 
 }
