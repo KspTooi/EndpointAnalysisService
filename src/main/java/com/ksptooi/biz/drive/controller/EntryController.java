@@ -9,7 +9,6 @@ import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.service.EntryService;
-import com.ksptooi.biz.drive.service.EntrySignService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -35,22 +34,18 @@ import org.springframework.web.bind.annotation.*;
 @PrintLog
 @RestController
 @RequestMapping("/drive/entry")
-@Tag(name = "Entry", description = "驱动器条目管理")
+@Tag(name = "Entry", description = "团队云盘接口")
 @Slf4j
 public class EntryController {
 
     @Autowired
     private EntryService entryService;
 
-    @Autowired
-    private EntrySignService entrySignService;
-
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
         return Result.success(entryService.getDriveInfo());
     }
-
 
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
@@ -79,7 +74,6 @@ public class EntryController {
         return Result.success("复制成功");
     }
 
-
     @Operation(summary = "重命名条目")
     @PostMapping("/renameEntry")
     public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
@@ -103,42 +97,4 @@ public class EntryController {
         entryService.removeEntry(dto);
         return Result.success("操作成功");
     }
-
-    @Operation(summary = "下载条目")
-    @GetMapping("/downloadEntry")
-    @PostMapping("/downloadEntry")
-    public ResponseEntity<Resource> downloadEntry(@RequestParam("sign") String sign) throws Exception {
-
-        if(StringUtils.isBlank(sign)){
-            throw new BizException("签名参数不能为空");
-        }
-
-        //验证签名
-        var signVo = entrySignService.verify(sign);
-
-        if(signVo == null){
-            throw new BizException("签名验证失败");
-        }
-
-        var resource = entryService.downloadEntry(signVo);
-        var filename = URLEncoder.encode(signVo.getEName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + filename)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }
-    
-    @Operation(summary = "生成条目签名")
-    @PostMapping("/generateEntrySign")
-    public Result<EntrySignVo> generateEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        return Result.success(entrySignService.sign(dto.getId()));
-    }
-
-    @Operation(summary = "验证条目签名")
-    @PostMapping("/verifyEntrySign")
-    public Result<EntrySignVo> verifyEntrySign(@RequestBody @Valid Map<String, String> params) throws Exception {
-        return Result.success(entrySignService.verify(params.get("sign")));
-    }
-
 }

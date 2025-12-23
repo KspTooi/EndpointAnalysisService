@@ -387,31 +387,6 @@ public class EntryService {
     }
 
 
-    /**
-     * 下载条目
-     * 
-     * @param entryId 条目ID
-     * @return 资源
-     * @throws BizException
-     * @throws AuthException
-     */
-    public Resource downloadEntry(EntrySignVo signVo) throws BizException, AuthException {
-
-        if(signVo.getEk() != 0){
-            throw new BizException("不支持的条目类型! ");
-        }
-
-
-        //查找文件
-        var absolutePath = attachService.getAttachLocalPath(Paths.get(signVo.getAPath()));
-        
-        if(!Files.exists(absolutePath)){
-            throw new BizException("文件在本地存储中不存在! 请重新生成签名并尝试下载.");
-        }
-
- 
-        return new FileSystemResource(absolutePath);
-    }
 
 
 }
