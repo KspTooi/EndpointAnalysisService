@@ -16,6 +16,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -100,6 +101,11 @@ public class RequestLogAspect {
         if(ret == null){
             return "无";
         }
+
+        if(ret instanceof ResponseEntity<?> e){
+            return "ResponseEntity:" + e.getStatusCode();
+        }
+
         JsonElement json = gson.toJsonTree(ret);
         return filterSensitiveFields(json, sensitiveFields).toString();
     }
