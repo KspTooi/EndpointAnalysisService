@@ -20,13 +20,11 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.http.HttpHeaderVo;
 import com.ksptooi.commons.http.RequestSchema;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import jakarta.security.auth.message.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.http.HttpClient;
@@ -37,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import static com.ksptool.entities.Entities.as;
+import com.ksptool.assembly.entity.exception.AuthException;
 
 @Slf4j
 @Service

@@ -6,16 +6,14 @@ import com.ksptooi.biz.core.repository.ConfigRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.entities.any.Any;
-import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import com.ksptool.assembly.entity.exception.AuthException;
 
 @Service
 public class ConfigService {

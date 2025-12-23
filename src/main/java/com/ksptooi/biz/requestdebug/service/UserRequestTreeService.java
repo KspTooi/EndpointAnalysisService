@@ -15,7 +15,7 @@ import com.ksptooi.biz.requestdebug.repoistory.UserRequestRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestTreeRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import jakarta.security.auth.message.AuthException;
+import com.ksptool.assembly.entity.exception.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

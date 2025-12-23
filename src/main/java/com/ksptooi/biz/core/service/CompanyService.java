@@ -15,7 +15,7 @@ import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-import jakarta.security.auth.message.AuthException;
+import com.ksptool.assembly.entity.exception.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

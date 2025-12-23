@@ -9,6 +9,7 @@ import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.service.EntryService;
+import com.ksptooi.biz.drive.service.EntrySignService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -32,6 +33,9 @@ public class EntryController {
 
     @Autowired
     private EntryService entryService;
+
+    @Autowired
+    private EntrySignService entrySignService;
 
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
@@ -100,7 +104,7 @@ public class EntryController {
     @Operation(summary = "生成条目签名")
     @PostMapping("/generateEntrySign")
     public Result<DriveSignVo> generateEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        return Result.success(entryService.generateEntrySign(dto));
+        return Result.success(entrySignService.sign(dto.getId()));
     }
 
 }

@@ -11,7 +11,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.GsonUtils;
 import com.ksptool.assembly.entity.web.PageResult;
 import io.micrometer.common.util.StringUtils;
-import jakarta.security.auth.message.AuthException;
+import com.ksptool.assembly.entity.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -1,27 +1,21 @@
 package com.ksptooi.biz.drive.service;
 
-import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.DriveSignVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
 import com.ksptooi.commons.config.DriveConfig;
 import com.ksptooi.commons.utils.SHA256;
-import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ksptool.assembly.entity.exception.AuthException;
 
 @Service
 public class EntrySignService {
 
     @Autowired
     private DriveConfig driveConfig;
-
-    @Autowired
-    private AttachRepository attachRepository;
 
     @Autowired
     private EntryRepository entryRepository;
