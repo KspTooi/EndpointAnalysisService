@@ -58,6 +58,11 @@ export interface RenameEntryDto {
   name: string; //条目名称
 }
 
+export interface GetEntrySignVo {
+  params: string; //签名参数串
+  isBatch: number; //是否批量签名 0:否 1:是
+}
+
 export default {
   /**
    * 获取云盘信息
@@ -125,6 +130,16 @@ export default {
    */
   deleteEntry: async (dto: CommonIdDto): Promise<Result<string>> => {
     const ret = await Http.postEntity<Result<string>>("/drive/entry/removeEntry", dto);
+    return ret;
+  },
+
+  /**
+   * 获取条目对象签名
+   * @param dto 查询条件
+   * @returns 条目对象签名
+   */
+  getEntrySign: async (dto: CommonIdDto): Promise<Result<GetEntrySignVo>> => {
+    const ret = await Http.postEntity<Result<GetEntrySignVo>>("/drive/object/access/getEntrySign", dto);
     return ret;
   },
 };

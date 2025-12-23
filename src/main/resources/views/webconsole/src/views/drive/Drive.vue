@@ -175,9 +175,23 @@ const onPreview = (entry: GetEntryListVo) => {
  * 右键菜单->下载
  * @param entries 条目列表
  */
-const onDownload = (entries: GetEntryListVo[]) => {
-  // 下载逻辑，可根据需要实现
-  ElMessage.info("下载功能待实现");
+const onDownload = async (entries: GetEntryListVo[]) => {
+  //不支持文件夹与文件混选下载
+  if (entries.some((item) => item.kind === 1)) {
+    ElMessage.error("不支持文件与文件夹打包下载！请选择同类型条目打包下载！");
+    return;
+  }
+
+  //获取签名
+  try {
+    const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id) });
+    if (Result.isSuccess(result)) {
+      const params = result.data.params;
+      window.open(`/drive/object/access/downloadEntry?sign=${params}`, "_blank");
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "下载失败");
+  }
 };
 
 /**

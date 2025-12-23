@@ -57,6 +57,10 @@
 
     <!-- 当多选条目时，显示完整菜单 -->
     <template v-if="isMultiSelect">
+      <div v-if="currentEntries.every((item) => item.kind === 0)" class="menu-item" @click="onDownload">
+        <el-icon><Download /></el-icon>
+        <span>下载({{ currentEntries.length }})</span>
+      </div>
       <div class="menu-item" @click="onCopy">
         <el-icon><DocumentCopy /></el-icon>
         <span>复制</span>
