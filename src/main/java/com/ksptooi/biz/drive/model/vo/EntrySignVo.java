@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
-public class DriveSignVo {
+public class EntrySignVo {
 
     @Schema(description="团队ID")
     private Long cid;

@@ -1,8 +1,7 @@
 package com.ksptooi.biz.drive.service;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ksptooi.biz.drive.model.vo.DriveSignVo;
+import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
 import com.ksptooi.commons.config.DriveConfig;
 import com.ksptooi.commons.utils.Base64;
@@ -14,7 +13,6 @@ import com.ksptool.assembly.entity.exception.BizException;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,7 @@ public class EntrySignService {
      * @return 签名
      * @throws BizException
      */
-    public DriveSignVo sign(Long id) throws BizException,AuthException {
+    public EntrySignVo sign(Long id) throws BizException,AuthException {
 
         var entryPo = entryRepository.getByIdAndCompanyId(id, AuthService.requireCompanyId());
 
@@ -77,7 +75,7 @@ public class EntrySignService {
         params.put("s", s);
         params.put("pSign", SHA256.hex(cid + eid + aid + ek + aPath + eName + t + s));
 
-        var ret = new DriveSignVo();
+        var ret = new EntrySignVo();
         ret.setCid(cid);
         ret.setEid(eid);
         ret.setAid(aid);
@@ -97,9 +95,11 @@ public class EntrySignService {
      * @return 签名信息
      * @throws BizException
      */
-    public DriveSignVo verify(String base64) throws BizException,AuthException {
+    public EntrySignVo verify(String base64) throws BizException,AuthException {
+
         try {
 
+        
             var paramsJson = Base64.decodeUrlSafe(base64);
             var params = gson.fromJson(paramsJson, JsonObject.class);
     
@@ -129,7 +129,7 @@ public class EntrySignService {
                 throw new BizException("签名已过期");
             }
     
-            var ret = new DriveSignVo();
+            var ret = new EntrySignVo();
             ret.setCid(cid);
             ret.setEid(eid);
             ret.setAid(aid);

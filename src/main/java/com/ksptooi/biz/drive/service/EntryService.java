@@ -2,12 +2,14 @@ package com.ksptooi.biz.drive.service;
 
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.repository.AttachRepository;
+import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
 import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
@@ -19,10 +21,15 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,6 +49,9 @@ public class EntryService {
 
     @Autowired
     private AttachRepository attachRepository;
+
+    @Autowired
+    private AttachService attachService;
 
     /**
      * 获取云盘信息
@@ -374,6 +384,33 @@ public class EntryService {
         }
 
         return newEntry;
+    }
+
+
+    /**
+     * 下载条目
+     * 
+     * @param entryId 条目ID
+     * @return 资源
+     * @throws BizException
+     * @throws AuthException
+     */
+    public Resource downloadEntry(EntrySignVo signVo) throws BizException, AuthException {
+
+        if(signVo.getEk() != 0){
+            throw new BizException("不支持的条目类型! ");
+        }
+
+
+        //查找文件
+        var absolutePath = attachService.getAttachLocalPath(Paths.get(signVo.getAPath()));
+        
+        if(!Files.exists(absolutePath)){
+            throw new BizException("文件在本地存储中不存在! 请重新生成签名并尝试下载.");
+        }
+
+ 
+        return new FileSystemResource(absolutePath);
     }
 
 

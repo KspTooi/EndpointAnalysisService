@@ -332,7 +332,7 @@ public class AttachService {
      * @return 文件本地路径 如果获取失败返回null
      * 按日期创建文件夹 /root/2025_12_18/SHA256
      */
-    private Path getAttachLocalPath(Path relativePath) {
+    public Path getAttachLocalPath(Path relativePath) {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("win")) {
             return Paths.get(attachConfig.getLocalWindowsPath()).resolve(relativePath);
@@ -349,7 +349,7 @@ public class AttachService {
      * @return 文件相对路径 如果获取失败返回null
      * 按日期创建文件夹 /2025_12_18/SHA256
      */
-    private Path getAttachRelativePath(String sha256, String suffix) {
+    public Path getAttachRelativePath(String sha256, String suffix) {
 
         String osName = System.getProperty("os.name").toLowerCase();
 
