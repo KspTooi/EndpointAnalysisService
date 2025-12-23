@@ -11,22 +11,22 @@ import org.springframework.context.annotation.Configuration;
 public class AttachConfig {
 
     //默认存储类型
-    @Value("${file-attach.default}")
+    @Value("${module-attach.default}")
     private String defaultAttachType;
 
     /**
      * 本地文件配置
      */
     //本地文件存储路径LINUX
-    @Value("${file-attach.local.linux}")
+    @Value("${module-attach.local.linux}")
     private String localLinuxPath;
 
     //本地文件存储路径WINDOWS
-    @Value("${file-attach.local.windows}")
+    @Value("${module-attach.local.windows}")
     private String localWindowsPath;
 
     //是否自动创建文件夹
-    @Value("${file-attach.local.auto-create}")
+    @Value("${module-attach.local.auto-create}")
     private Boolean localAutoCreate;
 
     //MINIO存储端点

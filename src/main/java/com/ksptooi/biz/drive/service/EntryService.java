@@ -100,7 +100,7 @@ public class EntryService {
         //文件夹
         if (dto.getKind() == 1) {
             insertPo.setKind(1);
-            insertPo.setAttachId(null);
+            insertPo.setAttach(null);
             insertPo.setAttachSize(0L);
             insertPo.setAttachSuffix(null);
         }
@@ -114,7 +114,7 @@ public class EntryService {
             }
 
             insertPo.setKind(0);
-            insertPo.setAttachId(attachPo.getId());
+            insertPo.setAttach(attachPo);
             insertPo.setAttachSize(attachPo.getTotalSize());
             insertPo.setAttachSuffix(attachPo.getSuffix());
             insertPo.setAttachStatus(attachPo.getStatus());
@@ -268,7 +268,9 @@ public class EntryService {
 
         //获取所有需要同步的文件附件ID
         for (EntryPo entryPo : entryPos) {
-            attachIds.add(entryPo.getAttachId());
+            if (entryPo.getAttach() != null) {
+                attachIds.add(entryPo.getAttach().getId());
+            }
         }
 
         //获取所有需要同步的文件附件
@@ -285,7 +287,7 @@ public class EntryService {
             AttachPo attach = null;
 
             for (var item : attachList) {
-                if (Objects.equals(item.getId(), entryPo.getAttachId())) {
+                if (entryPo.getAttach() != null && Objects.equals(item.getId(), entryPo.getAttach().getId())) {
                     attach = item;
                     break;
                 }
@@ -357,7 +359,7 @@ public class EntryService {
         newEntry.setParent(parentPo);
         newEntry.setName(sourcePo.getName());
         newEntry.setKind(sourcePo.getKind());
-        newEntry.setAttachId(sourcePo.getAttachId());
+        newEntry.setAttach(sourcePo.getAttach());
         newEntry.setAttachSize(sourcePo.getAttachSize());
         newEntry.setAttachSuffix(sourcePo.getAttachSuffix());
         newEntry.setAttachStatus(sourcePo.getAttachStatus());

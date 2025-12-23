@@ -8,7 +8,7 @@ spring:
   threads:
     virtual:
       enabled: true
-  
+
   # 文件上传配置
   servlet:
     multipart:
@@ -47,7 +47,7 @@ spring:
         format_sql: false
 
   thymeleaf:
-    cache: false  # 开发环境禁用模板缓存
+    cache: false # 开发环境禁用模板缓存
     prefix: classpath:/views/
     suffix: .html
 
@@ -74,9 +74,8 @@ knife4j:
 application:
   version: 1.2G # 应用版本号
 
-#文件存储配置
-file-attach:
-
+#附件模块配置
+module-attach:
   #默认存储类型
   default: LOCAL
 
@@ -85,3 +84,11 @@ file-attach:
     linux: /Docker/DockerData/
     windows: C:\EAS
     auto-create: true
+
+#驱动器模块配置
+module-drive:
+  #签名SecretKey
+  sign-secret-key: 550e8400-e29b-41d4-a716-446655440000-7c9e6679-7425-40de-944b-e07fc1f90ae7-6ba7b810-9dad-11d1-80b4-00c04fd430c8
+
+  #签名有效时间(秒)
+  ttl: 3600

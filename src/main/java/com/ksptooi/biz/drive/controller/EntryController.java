@@ -4,6 +4,7 @@ import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
 import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.vo.DriveSignVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
@@ -37,6 +38,10 @@ public class EntryController {
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
         return Result.success(entryService.getDriveInfo());
     }
+
+
+
+
 
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
@@ -88,6 +93,14 @@ public class EntryController {
     public Result<String> removeEntry(@RequestBody @Valid CommonIdDto dto) throws Exception {
         entryService.removeEntry(dto);
         return Result.success("操作成功");
+    }
+
+
+
+    @Operation(summary = "生成条目签名")
+    @PostMapping("/generateEntrySign")
+    public Result<DriveSignVo> generateEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(entryService.generateEntrySign(dto));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ksptooi.biz.drive.model;
 
+import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
@@ -44,9 +45,10 @@ public class EntryPo {
     @Comment("条目类型 0:文件 1:文件夹")
     private Integer kind;
 
-    @Column(name = "attach_id")
     @Comment("文件附件ID 文件夹为NULL")
-    private Long attachId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attach_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    private AttachPo attach;
 
     @Column(name = "attach_size")
     @Comment("文件附件大小 文件夹为0")
