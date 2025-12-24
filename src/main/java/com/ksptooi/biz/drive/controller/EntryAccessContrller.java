@@ -17,9 +17,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptooi.biz.drive.model.vo.GetEntrySignVo;
 import com.ksptooi.biz.drive.service.EntryAccessService;
-import com.ksptooi.biz.drive.service.EntryService;
 import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.core.io.Resource;
@@ -44,7 +42,6 @@ public class EntryAccessContrller {
 
     @Autowired
     private DriveConfig driveConfig;
-
 
     @Operation(summary = "获取条目对象签名")
     @PostMapping("/getEntrySign")

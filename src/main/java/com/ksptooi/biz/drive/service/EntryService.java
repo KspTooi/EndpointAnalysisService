@@ -8,7 +8,9 @@ import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
+import com.ksptooi.biz.drive.model.dto.MoveEntryDto;
 import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
 import static com.ksptool.entities.Entities.as;
 
 @Slf4j
@@ -199,9 +203,9 @@ public class EntryService {
 
 
     /**
-     * 编辑条目
+     * 重命名条目
      *
-     * @param dto 编辑条目
+     * @param dto 重命名条目
      */
     @Transactional(rollbackFor = Exception.class)
     public void renameEntry(RenameEntry dto) throws BizException, AuthException {
@@ -229,6 +233,62 @@ public class EntryService {
         updatePo.setUpdateTime(LocalDateTime.now());
         repository.save(updatePo);
     }
+
+    /**
+     * 条目移动检测
+     *
+     * @param dto 条目移动检测
+     */
+    public CheckEntryMoveVo checkEntryMove(MoveEntryDto dto) throws BizException, AuthException {
+
+        var ret = new CheckEntryMoveVo();
+        ret.setCanMove(2); //0:可以移动 1:名称冲突 2:不可移动
+
+        var companyId = AuthService.requireCompanyId();
+        var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+
+        if (targetEntryPo == null) {
+            ret.setCanMove(2);
+            ret.setMessage("目标条目不存在或无权限访问");
+            return ret;
+        }
+
+        if (targetEntryPo.getKind() != 1) {
+            ret.setCanMove(2);
+            ret.setMessage("目标条目必须是文件夹");
+            return ret;
+        }
+
+        //检测是否有自身移动
+        if (dto.getEntryIds().contains(dto.getTargetId())) {
+            ret.setCanMove(2);
+            ret.setMessage("不能将条目移动到自身内部");
+            return ret;
+        }
+
+        Set<String> names = repository.getNamesByIds(dto.getEntryIds(), companyId);
+
+        if (names.isEmpty()) {
+            throw new BizException("要移动的条目不存在或无权限访问");
+        }
+
+        //查找出目标条目下的重复项
+        var matchNames = repository.matchNamesByParentId(names, dto.getTargetId());
+        
+        if (!matchNames.isEmpty()) {
+            ret.setCanMove(1);
+            ret.setMessage("目标条目下存在同名条目.");
+            ret.setConflictNames(matchNames);
+            return ret;
+        }
+
+        ret.setCanMove(0);
+        ret.setMessage("可以移动");
+        return ret;
+    }
+
+
+
 
     /**
      * 查询条目详情

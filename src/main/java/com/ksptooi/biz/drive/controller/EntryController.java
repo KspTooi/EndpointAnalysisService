@@ -3,14 +3,13 @@ package com.ksptooi.biz.drive.controller;
 import com.ksptooi.biz.drive.model.dto.AddEntryDto;
 import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
+import com.ksptooi.biz.drive.model.dto.MoveEntryDto;
 import com.ksptooi.biz.drive.model.dto.RenameEntry;
-import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.service.EntryService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -18,17 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @PrintLog
@@ -79,6 +68,19 @@ public class EntryController {
     public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
         entryService.renameEntry(dto);
         return Result.success("重命名成功");
+    }
+
+    @Operation(summary = "移动检测")
+    @PostMapping("/checkEntryMove")
+    public Result<String> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
+        return Result.success("移动检测成功");
+    }
+
+
+    @Operation(summary = "移动条目")
+    @PostMapping("/moveEntry")
+    public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
+        return Result.success("移动成功");
     }
 
     @Operation(summary = "查询条目详情")

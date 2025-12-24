@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface EntryRepository extends JpaRepository<EntryPo, Long> {
@@ -145,5 +146,34 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
             t.name = :name
             """)
     Long countByNameParentIdAndCompanyId(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
+
+
+    /**
+     * 根据给定的名称查找父级ID下是否存在同名条目
+     *
+     * @param names 名称列表
+     * @param parentId 父级目录ID
+     * @return 匹配的同名条目名称列表
+     */
+    @Query("""
+            SELECT DISTINCT t.name FROM EntryPo t
+            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
+            t.name IN :names
+            ORDER BY t.name ASC
+            """)
+    Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId);
+    
+
+    /**
+     * 根据ID列表获取名称列表
+     *
+     * @param ids ID列表
+     * @param companyId 公司ID
+     * @return 名称列表
+     */
+    @Query("""
+            SELECT DISTINCT t.name FROM EntryPo t WHERE t.id IN :ids AND t.companyId = :companyId
+            """)
+    Set<String> getNamesByIds(@Param("ids") List<Long> ids,@Param("companyId") Long companyId);
 
 }
