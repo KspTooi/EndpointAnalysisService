@@ -1,3 +1,4 @@
+import { useTabStore } from "@/store/TabHolder";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
@@ -216,6 +217,28 @@ const router = createRouter({
       },
     },
   ],
+});
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  // 当访问根路径 '/' 时进行检测
+  if (to.path === "/") {
+    const tabStore = useTabStore();
+
+    //如果有激活的标签页
+    if (tabStore.activeTabId) {
+      // 在标签列表中查找该标签的具体信息
+      const activeTab = tabStore.tabs.find((t) => t.id === tabStore.activeTabId);
+
+      // 如果找到了激活的标签且其路径不是当前根路径，则跳转
+      if (activeTab && activeTab.path !== "/") {
+        return next(activeTab.path);
+      }
+    }
+  }
+
+  // 其他情况或没有激活标签时，继续正常访问
+  next();
 });
 
 export default router;

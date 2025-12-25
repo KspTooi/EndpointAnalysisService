@@ -73,7 +73,7 @@ knife4j:
   enable: true
 
 application:
-  version: 1.2G # 应用版本号
+  version: 1.3Z # 应用版本号
 
 #附件模块配置
 module-attach:
