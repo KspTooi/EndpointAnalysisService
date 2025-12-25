@@ -368,7 +368,37 @@ public class AttachService {
         }
 
         if (Files.exists(path)) {
-            throw new BizException("无法预分配文件,文件已存在: " + path.toString());
+
+            boolean moveSuccess = false;
+            int maxRetries = 3; // 最大重试3次
+
+            // 尝试重命名循环
+            for (int i = 0; i < maxRetries; i++) {
+                try {
+                    // 当预分配文件存在但数据库无数据时 将旧的预分配文件重命名
+                    var uuid = UUID.randomUUID().toString().replace("-", "");
+                    var newPath = path.getParent().resolve("conflicted_" + uuid + "." + path.getFileName().toString());
+                    Files.move(path, newPath);
+                    log.info("已将旧的预分配文件 {} 重命名为: {}", path.getFileName().toString(), newPath.getFileName().toString());
+                    moveSuccess = true;
+                    break; // 成功则跳出循环
+                } catch (IOException e) {
+                    log.warn("重命名文件失败，可能是文件被锁定，正在重试 ({}/{}): {}", i + 1, maxRetries, e.getMessage());
+                    try {
+                        // 休眠 100ms 等待锁释放（如杀毒软件扫描结束）
+                        Thread.sleep(100);
+                        // 在极端的 Windows 情况下，有时建议调用 System.gc() 强制释放未关闭的 MappedByteBuffer，但不建议作为首选
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            if (!moveSuccess) {
+                // 如果重试多次依然失败，抛出异常
+                throw new BizException("无法预分配文件，文件被系统锁定且重命名失败: " + path.toString());
+            }
+
         }
 
         try {
@@ -381,7 +411,7 @@ public class AttachService {
                 raf.setLength(totalSize);
             }
         } catch (IOException e) {
-            log.error("预分配文件失败 路径:{} 大小:{} 错误:{}", path.toString(), totalSize, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw new BizException("预分配文件失败: " + e.getMessage());
         }
     }

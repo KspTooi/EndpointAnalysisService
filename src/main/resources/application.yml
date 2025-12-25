@@ -37,7 +37,7 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
       naming:

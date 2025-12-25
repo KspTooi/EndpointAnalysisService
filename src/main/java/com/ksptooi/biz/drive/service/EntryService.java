@@ -482,6 +482,7 @@ public class EntryService {
             //文件附件不存在
             if (attach == null) {
                 errorEntries.add(entryPo.getId());
+                log.info("文件附件不存在 条目ID:{} 名称:{}", entryPo.getId(), entryPo.getName());
                 continue;
             }
 
@@ -498,6 +499,7 @@ public class EntryService {
 
             //其他异常状态
             errorEntries.add(entryPo.getId());
+            log.info("文件附件状态异常 条目ID:{} 名称:{} 状态:{}", entryPo.getId(), entryPo.getName(), attach.getStatus());
         }
 
         //更新云盘条目状态
