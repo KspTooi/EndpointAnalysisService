@@ -158,11 +158,44 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long> {
     @Query("""
             SELECT DISTINCT t.name FROM EntryPo t
             WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
-            t.name IN :names
+            t.name IN :names AND
+            t.companyId = :companyId
             ORDER BY t.name ASC
             """)
-    Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId);
+    Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
     
+
+    /**
+     * 根据名称列表和父级目录ID和公司ID查找同名条目名称列表
+     *
+     * @param names 名称列表
+     * @param parentId 父级目录ID
+     * @param companyId 公司ID
+     * @return 匹配的同名条目名称列表
+     */
+    @Query("""
+            SELECT t FROM EntryPo t
+            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
+            t.name IN :names AND
+            t.companyId = :companyId
+            ORDER BY t.name ASC
+            """)
+    List<EntryPo> matchEntriesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
+
+
+    /**
+     * 根据名称和父级目录ID和公司ID逻辑删除条目
+     *
+     * @param name 名称
+     * @param parentId 父级目录ID
+     * @param companyId 公司ID
+     * @return 更新条数
+     */
+    @Modifying
+    @Query("""
+            UPDATE EntryPo t SET t.deleteTime = now() WHERE t.name IN :names AND t.parent.id = :parentId AND t.companyId = :companyId AND t.deleteTime IS NULL
+            """)
+    int removeByNameAndParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
 
     /**
      * 根据ID列表获取名称列表

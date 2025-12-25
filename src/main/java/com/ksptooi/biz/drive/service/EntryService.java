@@ -273,7 +273,7 @@ public class EntryService {
         }
 
         //查找出目标条目下的重复项
-        var matchNames = repository.matchNamesByParentId(names, dto.getTargetId());
+        var matchNames = repository.matchNamesByParentId(names, dto.getTargetId(), companyId);
         
         if (!matchNames.isEmpty()) {
             ret.setCanMove(1);
@@ -287,8 +287,76 @@ public class EntryService {
         return ret;
     }
 
+    /**
+     * 移动条目
+     *
+     * @param dto 移动条目
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void moveEntry(MoveEntryDto dto) throws BizException, AuthException {
+
+        var companyId = AuthService.requireCompanyId();
+        var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+
+        if(targetEntryPo == null){
+            throw new BizException("目标条目不存在或无权限访问.");
+        }
+
+        if(targetEntryPo.getKind() != 1){
+            throw new BizException("目标条目必须是文件夹.");
+        }
+
+        if(dto.getEntryIds().contains(dto.getTargetId())){
+            throw new BizException("不能将条目移动到自身内部.");
+        }
+        
+        //查找被移动条目
+        var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
+
+        if(moveEntryPos.isEmpty()){
+            throw new BizException("要移动的条目不存在或无权限访问.");
+        }
+
+        var moveEntryNames = new HashSet<String>();
+        for(var entryPo : moveEntryPos){
+            moveEntryNames.add(entryPo.getName());
+        }
 
 
+        //覆盖模式移动
+        if(dto.getMode() == 0){
+
+            //删除目标下全部重名条目
+            repository.removeByNameAndParentId(moveEntryNames, dto.getTargetId(), companyId);
+
+            //将被移动条目挂载到目标条目
+            for(var entryPo : moveEntryPos){
+                entryPo.setParent(targetEntryPo);
+            }
+
+            //保存被移动条目
+            repository.saveAll(moveEntryPos);
+            return;
+        }
+
+        //跳过模式移动
+
+        //查找目标条目下的重复项
+        var matchNames = repository.matchNamesByParentId(moveEntryNames, dto.getTargetId(), companyId);
+
+        for(var entryPo : moveEntryPos){
+
+            //不移动重名条目
+            if(matchNames.contains(entryPo.getName())){
+                continue;
+            }
+
+            entryPo.setParent(targetEntryPo);
+        }
+
+        //保存被移动条目
+        repository.saveAll(moveEntryPos);
+    }
 
     /**
      * 查询条目详情

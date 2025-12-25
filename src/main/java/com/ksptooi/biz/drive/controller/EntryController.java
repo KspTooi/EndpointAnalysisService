@@ -5,6 +5,7 @@ import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
 import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
 import com.ksptooi.biz.drive.model.dto.MoveEntryDto;
 import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
@@ -72,14 +73,16 @@ public class EntryController {
 
     @Operation(summary = "移动检测")
     @PostMapping("/checkEntryMove")
-    public Result<String> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
-        return Result.success("移动检测成功");
+    public Result<CheckEntryMoveVo> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
+        var ret = entryService.checkEntryMove(dto);
+        return Result.success(ret);
     }
 
 
     @Operation(summary = "移动条目")
     @PostMapping("/moveEntry")
     public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
+        entryService.moveEntry(dto);
         return Result.success("移动成功");
     }
 
