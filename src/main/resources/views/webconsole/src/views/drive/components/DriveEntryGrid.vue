@@ -1,23 +1,26 @@
 <template>
   <div ref="gridRef" class="list-grid" v-loading="loading" @contextmenu.prevent="handleGridRightClick" @mousedown="handleMouseDown">
     <!-- 上级目录 -->
-    <DriveEntryParentItem :target-id="parentId" name="上级目录" v-show="parentId" @dblclick="handleReturnParentDir" />
+    <DriveEntryParentItem :target-id="parentId" name="上级目录" v-show="parentId" @dblclick="handleReturnParentDir" @dragover="handleParentDragOver" @drop="handleParentDrop" />
 
     <!-- 条目列表 -->
     <DriveEntryItem
       v-for="item in data"
-      :key="item.id"
-      :id="item.id"
+      :key="item.id as string"
+      :id="item.id as string"
       :name="item.name"
       :kind="item.kind"
       :attach-id="item.attachId"
       :attach-size="item.attachSize"
       :attach-suffix="item.attachSuffix"
-      :ref="(el) => setEntryRef(item.id, el)"
-      :class="{ selected: selectedIds.has(item.id) }"
+      :ref="(el) => setEntryRef(item.id as string, el)"
+      :class="{ selected: selectedIds.has(item.id as string) }"
       @click="handleEntryClick"
       @dblclick="handleEntryDoubleClick"
       @contextmenu="(event: MouseEvent) => handleEntryRightClick(event, item)"
+      @dragstart="handleEntryDragStart"
+      @dragover="handleEntryDragOver"
+      @drop="handleEntryDrop"
     />
 
     <!-- 框选矩形 -->
@@ -52,6 +55,7 @@ const emit = defineEmits<{
   (e: "entry-dblclick", id: string, kind: number): void;
   (e: "entry-right-click", event: MouseEvent, entries: GetEntryListVo[]): void;
   (e: "return-parent-dir", parentId: string | null): void;
+  (e: "on-item-drag", target: GetEntryListVo, entries: GetEntryListVo[]): void;
 }>();
 
 const gridRef = ref<HTMLElement | null>(null);
@@ -68,6 +72,7 @@ const selectionBox = ref({
 const startX = ref(0);
 const startY = ref(0);
 const scrollTop = ref(0);
+const draggedEntryId = ref<string | null>(null);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {
@@ -78,7 +83,7 @@ const setEntryRef = (id: string, el: any) => {
 
 const handleGridRightClick = (event: MouseEvent) => {
   if (selectedIds.value.size > 1) {
-    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id));
+    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id as string));
     emit("entry-right-click", event, selectedEntries);
     return;
   }
@@ -94,8 +99,8 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
 };
 
 const handleEntryRightClick = (event: MouseEvent, entry: GetEntryListVo) => {
-  if (selectedIds.value.size > 1 && selectedIds.value.has(entry.id)) {
-    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id));
+  if (selectedIds.value.size > 1 && selectedIds.value.has(entry.id as string)) {
+    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id as string));
     emit("entry-right-click", event, selectedEntries);
     return;
   }
@@ -204,6 +209,91 @@ const updateSelectedEntries = () => {
 };
 
 onMounted(() => {});
+
+const handleEntryDragStart = (id: string, event: DragEvent) => {
+  draggedEntryId.value = id;
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = "move";
+  }
+};
+
+const handleEntryDragOver = (id: string, event: DragEvent) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "move";
+  }
+};
+
+const handleEntryDrop = (targetId: string, event: DragEvent) => {
+  if (!draggedEntryId.value) {
+    return;
+  }
+
+  const draggedEntry = props.data.find((item) => item.id === draggedEntryId.value);
+  if (!draggedEntry) {
+    return;
+  }
+
+  let entriesToDrag: GetEntryListVo[] = [];
+  if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
+    entriesToDrag = props.data.filter((item) => selectedIds.value.has(item.id as string));
+  } else {
+    entriesToDrag = [draggedEntry];
+  }
+
+  if (entriesToDrag.some((item) => item.id === targetId)) {
+    return;
+  }
+
+  const targetEntry = props.data.find((item) => item.id === targetId);
+  if (!targetEntry) {
+    return;
+  }
+
+  emit("on-item-drag", targetEntry, entriesToDrag);
+  draggedEntryId.value = null;
+};
+
+const handleParentDragOver = (targetId: string | null, event: DragEvent) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "move";
+  }
+};
+
+const handleParentDrop = (targetId: string | null, event: DragEvent) => {
+  if (!draggedEntryId.value) {
+    return;
+  }
+
+  const draggedEntry = props.data.find((item) => item.id === draggedEntryId.value);
+  if (!draggedEntry) {
+    return;
+  }
+
+  let entriesToDrag: GetEntryListVo[] = [];
+  if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
+    entriesToDrag = props.data.filter((item) => selectedIds.value.has(item.id as string));
+  } else {
+    entriesToDrag = [draggedEntry];
+  }
+
+  if (targetId && entriesToDrag.some((item) => item.id === targetId)) {
+    return;
+  }
+
+  const targetEntry: GetEntryListVo = {
+    id: targetId || "",
+    name: "上级目录",
+    kind: 1,
+    attachId: null,
+    attachSize: "0",
+    attachSuffix: null,
+    createTime: "",
+    parentId: null,
+  };
+
+  emit("on-item-drag", targetEntry, entriesToDrag);
+  draggedEntryId.value = null;
+};
 
 onUnmounted(() => {
   document.removeEventListener("mousemove", handleMouseMove);

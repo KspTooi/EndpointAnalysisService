@@ -1,5 +1,14 @@
 <template>
-  <div class="drive-entry-item" @click="handleClick" @dblclick="handleDoubleClick" @contextmenu.stop.prevent="handleRightClick">
+  <div
+    class="drive-entry-item"
+    draggable="true"
+    @click="handleClick"
+    @dblclick="handleDoubleClick"
+    @contextmenu.stop.prevent="handleRightClick"
+    @dragstart="handleDragStart"
+    @dragover.prevent="handleDragOver"
+    @drop.prevent="handleDrop"
+  >
     <div class="entry-icon-wrapper">
       <el-icon :size="64" class="entry-icon" :class="{ 'folder-icon': kind === 1, 'file-icon': kind === 0 }">
         <Folder v-if="kind === 1" />
@@ -27,6 +36,9 @@ const emit = defineEmits<{
   (e: "click", id: string): void;
   (e: "dblclick", id: string, kind: number): void;
   (e: "contextmenu", event: MouseEvent): void;
+  (e: "dragstart", id: string, event: DragEvent): void;
+  (e: "dragover", id: string, event: DragEvent): void;
+  (e: "drop", id: string, event: DragEvent): void;
 }>();
 
 const formatFileSize = (bytes: string): string => {
@@ -58,6 +70,18 @@ const handleDoubleClick = () => {
 
 const handleRightClick = (event: MouseEvent) => {
   emit("contextmenu", event);
+};
+
+const handleDragStart = (event: DragEvent) => {
+  emit("dragstart", props.id, event);
+};
+
+const handleDragOver = (event: DragEvent) => {
+  emit("dragover", props.id, event);
+};
+
+const handleDrop = (event: DragEvent) => {
+  emit("drop", props.id, event);
 };
 </script>
 

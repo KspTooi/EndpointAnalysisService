@@ -15,6 +15,7 @@
         @entry-click="handleEntryClick"
         @entry-dblclick="handleEntryDoubleClick"
         @return-parent-dir="listReturnParentDir"
+        @on-item-drag="onItemDrag"
       />
     </DriveFileSelector>
 
@@ -31,6 +32,7 @@
       @on-delete="onDelete"
       @on-rename="onRename"
       @on-properties="onProperties"
+      @on-refresh="loadList"
     />
 
     <!-- 创建文件夹模态框 -->
@@ -44,6 +46,9 @@
 
     <!-- 重命名模态框 -->
     <DriveModalRename ref="renameModalRef" @success="loadList" />
+
+    <!-- 移动冲突确认模态框 -->
+    <DriveModalMoveConfirm ref="moveConfirmModalRef" />
   </div>
 </template>
 
@@ -60,6 +65,7 @@ import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
+import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
 import { DriveHolder } from "@/store/DriveHolder.ts";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
@@ -70,6 +76,7 @@ const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
 const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
+const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const driveHolder = DriveHolder();
 
@@ -304,6 +311,47 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
     }
   });
   inQueueUploadCount.value = count;
+};
+
+/**
+ * 条目拖拽事件
+ * @param target 目标条目
+ * @param entries 被拖拽的条目列表
+ */
+const onItemDrag = async (target: GetEntryListVo, entries: GetEntryListVo[]) => {
+  const entryIds: string[] = [];
+
+  entries.forEach((item) => {
+    entryIds.push(item.id as string);
+  });
+
+  //检测移动
+  const result = await DriveApi.checkEntryMove({ targetId: target.id, entryIds: entryIds, mode: 0 });
+  const canMove = result.data.canMove;
+
+  //0:可以移动 1:名称冲突 2:不可移动
+  if (canMove == 2) {
+    ElMessage.error(result.data.message);
+    return;
+  }
+
+  if (canMove == 1) {
+    const conflictNames = result.data.conflictNames;
+    const action = await moveConfirmModalRef.value?.openModal(conflictNames);
+
+    //取消
+    if (action === -1) {
+      return;
+    }
+
+    //跳过
+    if (action === 1) {
+      await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 1 });
+    }
+  }
+
+  //覆盖移动
+  await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 0 });
 };
 </script>
 

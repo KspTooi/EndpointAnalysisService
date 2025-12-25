@@ -1,5 +1,12 @@
 <template>
-  <div class="drive-entry-item" @click="handleClick" @dblclick="handleDoubleClick" @contextmenu.stop.prevent="handleRightClick">
+  <div
+    class="drive-entry-item"
+    @click="handleClick"
+    @dblclick="handleDoubleClick"
+    @contextmenu.stop.prevent="handleRightClick"
+    @dragover.prevent="handleDragOver"
+    @drop.prevent="handleDrop"
+  >
     <div class="entry-icon-wrapper">
       <el-icon :size="64" class="entry-icon">
         <Folder />
@@ -21,6 +28,8 @@ const emit = defineEmits<{
   (e: "click", targetId: string | null): void;
   (e: "dblclick", targetId: string | null): void;
   (e: "contextmenu", event: MouseEvent): void;
+  (e: "dragover", targetId: string | null, event: DragEvent): void;
+  (e: "drop", targetId: string | null, event: DragEvent): void;
 }>();
 
 const handleClick = () => {
@@ -33,6 +42,14 @@ const handleDoubleClick = () => {
 
 const handleRightClick = (event: MouseEvent) => {
   emit("contextmenu", event);
+};
+
+const handleDragOver = (event: DragEvent) => {
+  emit("dragover", props.targetId, event);
+};
+
+const handleDrop = (event: DragEvent) => {
+  emit("drop", props.targetId, event);
 };
 </script>
 
