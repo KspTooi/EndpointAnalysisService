@@ -386,6 +386,54 @@ public class EntryService {
     }
 
 
+    public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
+
+        var companyId = AuthService.requireCompanyId();
+        var result = new ArrayList<EntryPo>();
+
+        for (var entryPo : entryPos) {
+            var newEntry = copyEntryRecursive(entryPo, null, companyId);
+            result.add(newEntry);
+        }
+
+        return result;
+    }
+
+    /**
+     * 递归复制条目
+     *
+     * @param sourcePo  源条目
+     * @param parentPo  父级条目
+     * @param companyId 公司ID
+     * @return 新条目
+     */
+    private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo, Long companyId) throws BizException {
+
+        var newEntry = new EntryPo();
+        newEntry.setId(IdWorker.nextId());
+        newEntry.setCompanyId(companyId);
+        newEntry.setParent(parentPo);
+        newEntry.setName(sourcePo.getName());
+        newEntry.setKind(sourcePo.getKind());
+        newEntry.setAttach(sourcePo.getAttach());
+        newEntry.setAttachSize(sourcePo.getAttachSize());
+        newEntry.setAttachSuffix(sourcePo.getAttachSuffix());
+        newEntry.setAttachStatus(sourcePo.getAttachStatus());
+
+        if (sourcePo.getChildren() != null && !sourcePo.getChildren().isEmpty()) {
+            var children = new ArrayList<EntryPo>();
+            for (var child : sourcePo.getChildren()) {
+                var newChild = copyEntryRecursive(child, newEntry, companyId);
+                children.add(newChild);
+            }
+            newEntry.setChildren(new HashSet<>(children));
+        }
+
+        return newEntry;
+    }
+
+
+    
     /**
      * 定时任务 5秒执行一次,检查entrySyncList中的数据,如果存在数据,则执行同步操作
      */
@@ -466,55 +514,6 @@ public class EntryService {
             }
         }
     }
-
-
-    public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
-
-        var companyId = AuthService.requireCompanyId();
-        var result = new ArrayList<EntryPo>();
-
-        for (var entryPo : entryPos) {
-            var newEntry = copyEntryRecursive(entryPo, null, companyId);
-            result.add(newEntry);
-        }
-
-        return result;
-    }
-
-    /**
-     * 递归复制条目
-     *
-     * @param sourcePo  源条目
-     * @param parentPo  父级条目
-     * @param companyId 公司ID
-     * @return 新条目
-     */
-    private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo, Long companyId) throws BizException {
-
-        var newEntry = new EntryPo();
-        newEntry.setId(IdWorker.nextId());
-        newEntry.setCompanyId(companyId);
-        newEntry.setParent(parentPo);
-        newEntry.setName(sourcePo.getName());
-        newEntry.setKind(sourcePo.getKind());
-        newEntry.setAttach(sourcePo.getAttach());
-        newEntry.setAttachSize(sourcePo.getAttachSize());
-        newEntry.setAttachSuffix(sourcePo.getAttachSuffix());
-        newEntry.setAttachStatus(sourcePo.getAttachStatus());
-
-        if (sourcePo.getChildren() != null && !sourcePo.getChildren().isEmpty()) {
-            var children = new ArrayList<EntryPo>();
-            for (var child : sourcePo.getChildren()) {
-                var newChild = copyEntryRecursive(child, newEntry, companyId);
-                children.add(newChild);
-            }
-            newEntry.setChildren(new HashSet<>(children));
-        }
-
-        return newEntry;
-    }
-
-
 
 
 }

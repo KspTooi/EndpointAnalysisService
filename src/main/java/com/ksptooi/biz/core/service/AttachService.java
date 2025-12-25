@@ -14,8 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +52,45 @@ public class AttachService {
     @Autowired
     @Lazy
     private AttachService self;
+
+    /**
+     * 根据文件大小和分块大小计算分块数量
+     *
+     * @param bytes     文件大小
+     * @param chunkSize 分块大小
+     * @return 分块数量
+     */
+    public static Long getChunkCount(Long bytes, Long chunkSize) {
+        return (bytes + chunkSize - 1) / chunkSize;
+    }
+
+    /**
+     * 获取分块大小
+     *
+     * @return 分块大小 5MB
+     */
+    public static long getChunkSize() {
+        return 5 * 1024 * 1024;
+    }
+
+    /**
+     * 获取文件后缀
+     *
+     * @param name 文件名
+     * @return 文件后缀
+     */
+    public static String getSuffix(String name) {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+
+        int lastDotIndex = name.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == name.length() - 1) {
+            return "";
+        }
+
+        return name.substring(lastDotIndex + 1);
+    }
 
     /**
      * 预检文件
@@ -158,7 +198,6 @@ public class AttachService {
         return ret;
     }
 
-
     @Transactional(rollbackFor = Exception.class)
     public ApplyChunkVo applyChunk(Long preCheckId, Long chunkId, MultipartFile file) throws BizException {
 
@@ -242,87 +281,10 @@ public class AttachService {
         //所有分块都已上传完成 更新为校验中状态
         if (chunkPos.size() == chunkCount) {
             attach.setStatus(2);
-            //异步校验
-            self.verifyAttach(attach);
         }
 
         repository.save(attach);
         return ret;
-    }
-
-
-    @Async
-    public void verifyAttach(AttachPo attach) {
-
-        if (attach == null) {
-            return;
-        }
-
-        var absolutePath = getAttachLocalPath(Paths.get(attach.getPath()));
-
-        if (!Files.exists(absolutePath)) {
-            log.error("校验文件不存在 ID:{} 路径:{}", attach.getId(), absolutePath);
-            return;
-        }
-
-        try (InputStream is = Files.newInputStream(absolutePath)) {
-
-            var digest = MessageDigest.getInstance("SHA-256");
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = is.read(buffer)) != -1) {
-                digest.update(buffer, 0, read);
-            }
-
-            byte[] hashBytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-
-            String actualSha256 = sb.toString();
-
-            // 校验失败
-            if (!StringUtils.equalsIgnoreCase(actualSha256, attach.getSha256())) {
-                log.error("文件校验失败 ID:{} 预期:{} 实际:{}", attach.getId(), attach.getSha256(), actualSha256);
-                attach.setStatus(1); // 回退到 1:区块不完整
-                repository.save(attach);
-                return;
-            }
-
-            // 校验成功
-            attach.setStatus(3); // 3:有效
-            attach.setVerifyTime(LocalDateTime.now());
-            repository.save(attach);
-            log.info("文件校验成功 ID:{} SHA256:{}", attach.getId(), actualSha256);
-
-        } catch (Exception e) {
-            log.error("文件校验异常 ID:{} 错误:{}", attach.getId(), e.getMessage(), e);
-            attach.setStatus(1); // 发生异常也回退状态
-            repository.save(attach);
-        }
-
-    }
-
-
-    /**
-     * 根据文件大小和分块大小计算分块数量
-     *
-     * @param bytes     文件大小
-     * @param chunkSize 分块大小
-     * @return 分块数量
-     */
-    public static Long getChunkCount(Long bytes, Long chunkSize) {
-        return (bytes + chunkSize - 1) / chunkSize;
-    }
-
-    /**
-     * 获取分块大小
-     *
-     * @return 分块大小 5MB
-     */
-    public static long getChunkSize() {
-        return 5 * 1024 * 1024;
     }
 
 
@@ -390,26 +352,6 @@ public class AttachService {
         return relativePathFile;
     }
 
-
-    /**
-     * 获取文件后缀
-     *
-     * @param name 文件名
-     * @return 文件后缀
-     */
-    public static String getSuffix(String name) {
-        if (StringUtils.isBlank(name)) {
-            return "";
-        }
-
-        int lastDotIndex = name.lastIndexOf('.');
-        if (lastDotIndex == -1 || lastDotIndex == name.length() - 1) {
-            return "";
-        }
-
-        return name.substring(lastDotIndex + 1);
-    }
-
     /**
      * 预分配文件 写入一个指定大小的占位文件
      *
@@ -443,5 +385,88 @@ public class AttachService {
             throw new BizException("预分配文件失败: " + e.getMessage());
         }
     }
+
+    @Scheduled(fixedDelay = 5000) //5秒执行一次
+    public void verifyAttach() {
+
+        //查询全部需要校验的文件附件
+        var attachList = repository.getNeedVerifyAttachList(500);
+
+        if (attachList.isEmpty()) {
+            return;
+        }
+
+        var success = 0;
+        var error = 0;
+
+        log.info("开始校验附件 数量:{}", attachList.size());
+
+        for (var attach : attachList) {
+            if (self.verifyAttachInternal(attach)) {
+                success++;
+                continue;
+            }
+            error++;
+        }
+
+        log.info("已完成:{} 个附件的校验. 成功:{} 个 失败:{} 个", attachList.size(), success, error);
+    }
+
+    /**
+     * 校验文件
+     *
+     * @param attach 文件附件
+     * @return 是否校验成功
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public boolean verifyAttachInternal(AttachPo attach) {
+
+        var absolutePath = getAttachLocalPath(Paths.get(attach.getPath()));
+
+        if (!Files.exists(absolutePath)) {
+            log.error("校验文件不存在 ID:{} 路径:{}", attach.getId(), absolutePath);
+            attach.setStatus(0);
+            repository.save(attach);
+            return false;
+        }
+
+        try (InputStream is = Files.newInputStream(absolutePath)) {
+
+            var digest = MessageDigest.getInstance("SHA-256");
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = is.read(buffer)) != -1) {
+                digest.update(buffer, 0, read);
+            }
+
+            byte[] hashBytes = digest.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+
+            String actualSha256 = sb.toString();
+
+            // 校验失败
+            if (!actualSha256.equals(attach.getSha256())) {
+                log.error("文件校验失败 ID:{} 预期:{} 实际:{}", attach.getId(), attach.getSha256(), actualSha256);
+                attach.setStatus(1); // 回退到 1:区块不完整
+                return false;
+            }
+
+            // 校验成功
+            attach.setStatus(3); // 3:有效
+            attach.setVerifyTime(LocalDateTime.now());
+            //log.info("文件校验成功 ID:{} SHA256:{}", attach.getId(), actualSha256);
+            return true;
+        } catch (Exception e) {
+            log.error("文件校验异常 ID:{} 错误:{}", attach.getId(), e.getMessage(), e);
+            attach.setStatus(1); // 发生异常也回退状态
+            return false;
+        } finally {
+            repository.save(attach);
+        }
+    }
+
 
 }
