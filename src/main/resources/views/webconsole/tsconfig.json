@@ -10,6 +10,8 @@
     "types": ["unplugin-icons/types/vue"],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "strict": false,
+    "strictNullChecks": false
   }
 }

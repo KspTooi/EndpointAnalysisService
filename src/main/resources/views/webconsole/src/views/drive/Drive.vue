@@ -1,21 +1,19 @@
 <template>
   <div class="list-container">
     <!-- 控制面板 -->
-    <DriveContrlPanel :entry-count="listTotal" :upload-count="inQueueUploadCount" @on-search="loadList" @open-upload-queue="openFileUploadModal" />
+    <DriveContrlPanel :entry-count="entryTotal" :upload-count="inQueueUploadCount" @on-search="updateQueryKeyword" @open-upload-queue="openFileUploadModal" />
 
     <!-- 文件选择器 -->
     <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
       <!-- 条目列表 -->
       <DriveEntryGrid
-        :data="listData"
-        :loading="listLoading"
-        :parent-id="listForm.parentId"
-        @grid-right-click="handleGridRightClick"
-        @entry-right-click="onEntryRightClick"
-        @entry-click="handleEntryClick"
-        @entry-dblclick="handleEntryDoubleClick"
-        @return-parent-dir="listReturnParentDir"
-        @on-item-drag="onItemDrag"
+        :keyword="entryKeyword"
+        @on-directory-change="onDirectoryChange"
+        @on-entry-click=""
+        @on-entry-dblclick=""
+        @on-entry-drag="onEntryDrag"
+        @on-entry-contextmenu="onEntryContextmenu"
+        ref="entryGridRef"
       />
     </DriveFileSelector>
 
@@ -32,20 +30,20 @@
       @on-delete="onDelete"
       @on-rename="onRename"
       @on-properties="onProperties"
-      @on-refresh="loadList"
+      @on-refresh="loadEntries"
     />
 
     <!-- 创建文件夹模态框 -->
-    <DriveModalCreateDir ref="createEntryModalRef" :parent-id="listForm.parentId" @success="loadList" />
+    <DriveModalCreateDir ref="createEntryModalRef" :parent-id="currentParentId" @success="loadEntries" />
 
     <!-- 文件上传队列组件 -->
-    <DriveModalFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadList" @on-queue-update="onQueueUpdate" />
+    <DriveModalFileUpload ref="fileUploadRef" kind="drive" @on-upload-success="loadEntries" @on-queue-update="onQueueUpdate" />
 
     <!-- 删除确认对话框 -->
-    <DriveModalRemove ref="removeConfirmRef" @success="loadList" />
+    <DriveModalRemove ref="removeConfirmRef" @success="loadEntries" />
 
     <!-- 重命名模态框 -->
-    <DriveModalRename ref="renameModalRef" @success="loadList" />
+    <DriveModalRename ref="renameModalRef" @success="loadEntries" />
 
     <!-- 移动冲突确认模态框 -->
     <DriveModalMoveConfirm ref="moveConfirmModalRef" />
@@ -79,58 +77,49 @@ const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null)
 const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
 const currentSelectedEntry = ref<GetEntryListVo | null>(null);
 const driveHolder = DriveHolder();
+const entryGridRef = ref<InstanceType<typeof DriveEntryGrid> | null>(null);
 
-const listForm = reactive<GetEntryListDto>({
-  parentId: null,
-  keyword: null,
-  pageNum: 1,
-  pageSize: 50000,
-});
+//列表查询条件
+const entryKeyword = ref<string | null>(null);
 
-const listData = ref<GetEntryListVo[]>([]);
-const listTotal = ref(0);
-const listLoading = ref(false);
+//列表数据
+const entryData = ref<GetEntryListVo[]>([]);
 
-const loadList = async (keyword: string | null = null) => {
-  listLoading.value = true;
-  try {
-    listForm.keyword = keyword;
-    const res = await DriveApi.getEntryList(listForm);
-    if (res.code === 0) {
-      listData.value = res.data;
-      listTotal.value = res.total;
-    }
-    if (res.code !== 0) {
-      ElMessage.error(res.message || "加载列表失败");
-    }
-  } catch (error: any) {
-    ElMessage.error(error.message || "加载列表失败");
-  } finally {
-    listLoading.value = false;
-  }
-};
+//列表总条数
+const entryTotal = ref(0);
 
-const handleEntryClick = (id: string) => {
-  const entry = listData.value.find((item) => item.id === id);
-  if (entry) {
-    currentSelectedEntry.value = entry;
-  }
-};
+//当前文件夹ID
+const currentParentId = ref<string | null>(null);
 
-const handleGridRightClick = (event: MouseEvent) => {
-  rightMenuRef.value?.openMenu(event, null);
+const updateQueryKeyword = (keyword: string | null) => {
+  entryKeyword.value = keyword;
 };
 
 /**
- * 条目右键点击
+ * 加载条目列表
+ */
+const loadEntries = async () => {
+  const ret = await entryGridRef.value?.loadEntries();
+  if (ret) {
+    entryData.value = ret.data;
+    entryTotal.value = ret.total;
+  }
+};
+
+/**
+ * 右键菜单打开
  * @param event 鼠标事件
  * @param entries 当前选中的条目列表
  */
-const onEntryRightClick = (event: MouseEvent, entries: GetEntryListVo[]) => {
+const onEntryContextmenu = (entries: GetEntryListVo[], event: MouseEvent) => {
   rightMenuRef.value?.openMenu(event, entries);
 };
 
-const handleEntryDoubleClick = (id: string, kind: number) => {
+const onDirectoryChange = (targetId: string | null) => {
+  currentParentId.value = targetId;
+};
+
+/* const handleEntryDoubleClick = (id: string, kind: number) => {
   if (kind === 1) {
     // 双击文件夹，进入文件夹
     listForm.parentId = id;
@@ -140,9 +129,7 @@ const handleEntryDoubleClick = (id: string, kind: number) => {
   if (kind === 0) {
     // 双击文件，可根据需要实现下载或预览
   }
-};
-
-loadList();
+}; */
 
 /**
  * 文件选择器->文件选择
@@ -150,7 +137,7 @@ loadList();
 const onFileSelected = (files: File[]) => {
   ElMessage.info(`正在处理 ${files.length} 个文件`);
   //添加到上传队列
-  fileUploadRef.value?.toUploadQueue(files, listForm.parentId);
+  fileUploadRef.value?.toUploadQueue(files, currentParentId.value);
 };
 
 //右键菜单操作
@@ -191,7 +178,7 @@ const onDownload = async (entries: GetEntryListVo[]) => {
 
   //获取签名
   try {
-    const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id) });
+    const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id as string) });
     if (Result.isSuccess(result)) {
       const params = result.data.params;
       window.open(`/drive/object/access/downloadEntry?sign=${params}`, "_blank");
@@ -230,12 +217,12 @@ const onPaste = async () => {
   try {
     //调用后端粘贴接口
     const result = await DriveApi.copyEntry({
-      entryIds: entries.map((item) => item.id),
-      parentId: listForm.parentId,
+      entryIds: entries.map((item) => item.id as string),
+      parentId: currentParentId.value,
     });
     if (Result.isSuccess(result)) {
       ElMessage.success("粘贴成功");
-      loadList();
+      loadEntries();
     }
   } catch (error: any) {
     ElMessage.error(error.message || "粘贴失败");
@@ -275,24 +262,6 @@ const onProperties = (entry: GetEntryListVo) => {
 };
 
 /**
- * 返回上级目录
- * @param parentId 父级ID
- */
-const listReturnParentDir = async (parentId: string | null) => {
-  const result = await DriveApi.getEntryDetails({ id: parentId });
-
-  if (Result.isSuccess(result)) {
-    listForm.parentId = result.data.parentId;
-    listForm.pageNum = 1;
-    listForm.pageSize = 50000;
-    await loadList();
-    return;
-  }
-
-  ElMessage.error(result.message);
-};
-
-/**
  * 打开文件上传弹窗
  */
 const openFileUploadModal = () => {
@@ -318,7 +287,14 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
  * @param target 目标条目
  * @param entries 被拖拽的条目列表
  */
-const onItemDrag = async (target: GetEntryListVo, entries: GetEntryListVo[]) => {
+const onEntryDrag = async (target: GetEntryListVo, entries: GetEntryListVo[]) => {
+  if (target === null) {
+    ElMessage.error("拖拽到上级目录");
+    return;
+  }
+
+  ElMessage.info("拖拽事件 目标ID: " + target.id + " 条目ID: " + entries.map((item) => item.id).join(","));
+  return;
   const entryIds: string[] = [];
 
   entries.forEach((item) => {
@@ -337,7 +313,7 @@ const onItemDrag = async (target: GetEntryListVo, entries: GetEntryListVo[]) => 
 
   if (canMove == 1) {
     const conflictNames = result.data.conflictNames;
-    const action = await moveConfirmModalRef.value?.openModal(conflictNames);
+    const action = await moveConfirmModalRef.value.openModal(conflictNames);
 
     //取消
     if (action === -1) {

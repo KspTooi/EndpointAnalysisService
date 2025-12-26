@@ -1,26 +1,27 @@
 <template>
-  <div ref="gridRef" class="list-grid" v-loading="loading" @contextmenu.prevent="handleGridRightClick" @mousedown="handleMouseDown">
+  <div ref="gridRef" class="list-grid" v-loading="entryLoading" @contextmenu.prevent="onGridRightClick" @mousedown="handleMouseDown">
     <!-- 上级目录 -->
-    <DriveEntryParentItem :target-id="parentId" name="上级目录" v-show="parentId" @dblclick="handleReturnParentDir" @dragover="handleParentDragOver" @drop="handleParentDrop" />
-
+    <DriveEntryParentItem
+      target-id="0"
+      name="上级目录"
+      v-show="previousParentId.length > 0"
+      @dblclick="onReturnParentDir"
+      @dragover="handleParentDragOver"
+      @drop="handleParentDrop"
+    />
     <!-- 条目列表 -->
     <DriveEntryItem
-      v-for="item in data"
+      v-for="item in entryData"
       :key="item.id as string"
-      :id="item.id as string"
-      :name="item.name"
-      :kind="item.kind"
-      :attach-id="item.attachId"
-      :attach-size="item.attachSize"
-      :attach-suffix="item.attachSuffix"
+      :entry="item"
       :ref="(el) => setEntryRef(item.id as string, el)"
       :class="{ selected: selectedIds.has(item.id as string) }"
-      @click="handleEntryClick"
-      @dblclick="handleEntryDoubleClick"
-      @contextmenu="(event: MouseEvent) => handleEntryRightClick(event, item)"
-      @dragstart="handleEntryDragStart"
-      @dragover="handleEntryDragOver"
-      @drop="handleEntryDrop"
+      @on-entry-click="onEntryClick"
+      @on-entry-dblclick="onEntryDoubleClick"
+      @on-entry-contextmenu="onRightMenuOpen"
+      @on-entry-dragstart="handleEntryDragStart"
+      @on-entry-dragover="handleEntryDragOver"
+      @on-entry-drop="handleEntryDrop"
     />
 
     <!-- 框选矩形 -->
@@ -38,25 +39,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, reactive, watch } from "vue";
 import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
 import DriveEntryParentItem from "@/views/drive/components/DriveEntryParentItem.vue";
-import type { GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import type { GetEntryListDto, GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import DriveApi from "@/api/drive/DriveApi.ts";
+import type RestPageableView from "@/commons/entity/RestPageableView";
+import { ElMessage } from "element-plus";
+import MouseInteractionService from "@/views/drive/service/DriveMouseInteractionService.ts";
 
 const props = defineProps<{
-  data: GetEntryListVo[];
-  loading: boolean;
-  parentId: string | null;
+  //搜索关键词
+  keyword: string | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "grid-right-click", event: MouseEvent): void;
-  (e: "entry-click", id: string): void;
-  (e: "entry-dblclick", id: string, kind: number): void;
-  (e: "entry-right-click", event: MouseEvent, entries: GetEntryListVo[]): void;
-  (e: "return-parent-dir", parentId: string | null): void;
-  (e: "on-item-drag", target: GetEntryListVo, entries: GetEntryListVo[]): void;
+  //条目加载完成
+  (e: "on-entries-loaded", data: GetEntryListVo[], total: number): void;
+
+  //目录切换
+  (e: "on-directory-change", targetId: string | null): void;
+
+  //条目单击
+  (e: "on-entry-click", entry: GetEntryListVo): void;
+
+  //条目双击
+  (e: "on-entry-dblclick", entry: GetEntryListVo): void;
+
+  //拖拽条目
+  (e: "on-entry-drag", target: GetEntryListVo, entries: GetEntryListVo[]): void;
+
+  //右键菜单打开
+  (e: "on-entry-contextmenu", entries: GetEntryListVo[], event: MouseEvent): void;
 }>();
+
+const entryData = ref<GetEntryListVo[]>([]);
+const entryTotal = ref(0);
+const entryLoading = ref(false);
+
+//上级文件夹列表
+const previousParentId = ref<string[]>([]);
+
+const entryForm = reactive<GetEntryListDto>({
+  parentId: null,
+  keyword: null,
+  pageNum: 1,
+  pageSize: 50000,
+});
+
+/**
+ * 加载条目列表
+ * @returns 条目列表分页结果
+ */
+const loadEntries = async (): Promise<RestPageableView<GetEntryListVo>> => {
+  entryLoading.value = true;
+  try {
+    const res = await DriveApi.getEntryList(entryForm);
+    if (res.code === 0) {
+      entryData.value = res.data;
+      entryTotal.value = res.total;
+    }
+    if (res.code !== 0) {
+      ElMessage.error(res.message || "加载列表失败");
+    }
+    emit("on-entries-loaded", entryData.value, entryTotal.value);
+    return res;
+  } catch (error: any) {
+    entryLoading.value = false;
+    ElMessage.error(error.message || "加载列表失败");
+    throw error;
+  } finally {
+    entryLoading.value = false;
+  }
+};
 
 const gridRef = ref<HTMLElement | null>(null);
 const entryRefs = ref<Map<string, HTMLElement>>(new Map());
@@ -81,36 +136,79 @@ const setEntryRef = (id: string, el: any) => {
   entryRefs.value.set(id, el.$el);
 };
 
-const handleGridRightClick = (event: MouseEvent) => {
-  if (selectedIds.value.size > 1) {
-    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id as string));
-    emit("entry-right-click", event, selectedEntries);
+/**
+ * 条目被单击
+ * @param entry 条目对象
+ */
+const onEntryClick = (entry: GetEntryListVo) => {
+  emit("on-entry-click", entry);
+};
+
+/**
+ * 条目被双击
+ * @param entry 条目对象
+ */
+const onEntryDoubleClick = (entry: GetEntryListVo | null) => {
+  //如果entry为null则返回顶级目录
+  if (entry == null) {
+    entryForm.parentId = null;
+    emit("on-directory-change", null);
+    loadEntries();
     return;
   }
-  emit("grid-right-click", event);
-};
 
-const handleEntryClick = (id: string) => {
-  emit("entry-click", id);
-};
-
-const handleEntryDoubleClick = (id: string, kind: number) => {
-  emit("entry-dblclick", id, kind);
-};
-
-const handleEntryRightClick = (event: MouseEvent, entry: GetEntryListVo) => {
-  if (selectedIds.value.size > 1 && selectedIds.value.has(entry.id as string)) {
-    const selectedEntries = props.data.filter((item) => selectedIds.value.has(item.id as string));
-    emit("entry-right-click", event, selectedEntries);
+  //如果双击的是文件夹 则进入目录
+  if (entry.kind === 1) {
+    previousParentId.value.push(entry.id as string);
+    entryForm.parentId = entry.id;
+    loadEntries();
     return;
   }
-  emit("entry-right-click", event, [entry]);
+
+  emit("on-entry-dblclick", entry);
 };
 
-const handleReturnParentDir = (parentId: string | null) => {
-  emit("return-parent-dir", parentId);
+/**
+ * 回退到上级目录
+ * @param targetId 目标ID
+ */
+const onReturnParentDir = () => {
+  if (previousParentId.value.length > 0) {
+    previousParentId.value.pop();
+    entryForm.parentId = previousParentId.value[previousParentId.value.length - 1];
+    loadEntries();
+  }
 };
 
+/**
+ * 右键菜单打开
+ * @param entry 条目对象
+ * @param event 鼠标事件
+ */
+const onRightMenuOpen = (entry: GetEntryListVo, event: MouseEvent) => {
+  //如果选了多个且当前右键的也在其中，保持多选状态
+  if (selectedIds.value.size > 1 && entry.id && selectedIds.value.has(entry.id as string)) {
+    const selectedEntries = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
+    emit("on-entry-contextmenu", selectedEntries, event);
+    return;
+  }
+
+  //单选
+  emit("on-entry-contextmenu", [entry], event);
+};
+
+/**
+ * 右键点击容器中没有元素的空白区
+ * @param event 鼠标事件
+ */
+const onGridRightClick = (event: MouseEvent) => {
+  emit("on-entry-contextmenu", [], event);
+};
+
+/**
+ * 鼠标按下
+ * @param event 鼠标事件
+ */
 const handleMouseDown = (event: MouseEvent) => {
   if (event.button !== 0) {
     return;
@@ -208,70 +306,81 @@ const updateSelectedEntries = () => {
   selectedIds.value = newSelectedIds;
 };
 
-onMounted(() => {});
-
-const handleEntryDragStart = (id: string, event: DragEvent) => {
-  draggedEntryId.value = id;
+const handleEntryDragStart = (entry: GetEntryListVo, event: DragEvent) => {
+  if (!entry.id) {
+    return;
+  }
+  draggedEntryId.value = entry.id;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = "move";
   }
 };
 
-const handleEntryDragOver = (id: string, event: DragEvent) => {
+const handleEntryDragOver = (entry: GetEntryListVo, event: DragEvent) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = "move";
   }
 };
 
-const handleEntryDrop = (targetId: string, event: DragEvent) => {
-  if (!draggedEntryId.value) {
+/*
+ * 条目拖拽结束
+ * @param targetEntry 目标条目
+ * @param event 鼠标事件
+ */
+const handleEntryDrop = (targetEntry: GetEntryListVo, event: DragEvent) => {
+  if (!draggedEntryId.value || !targetEntry.id) {
     return;
   }
 
-  const draggedEntry = props.data.find((item) => item.id === draggedEntryId.value);
+  const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
   if (!draggedEntry) {
     return;
   }
 
   let entriesToDrag: GetEntryListVo[] = [];
   if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
-    entriesToDrag = props.data.filter((item) => selectedIds.value.has(item.id as string));
+    entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
   } else {
     entriesToDrag = [draggedEntry];
   }
 
-  if (entriesToDrag.some((item) => item.id === targetId)) {
+  if (entriesToDrag.some((item) => item.id === targetEntry.id)) {
     return;
   }
 
-  const targetEntry = props.data.find((item) => item.id === targetId);
-  if (!targetEntry) {
-    return;
-  }
-
-  emit("on-item-drag", targetEntry, entriesToDrag);
+  emit("on-entry-drag", targetEntry, entriesToDrag);
   draggedEntryId.value = null;
 };
 
+/*
+ * 父级拖拽覆盖
+ * @param targetId 目标ID
+ * @param event 鼠标事件
+ */
 const handleParentDragOver = (targetId: string | null, event: DragEvent) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = "move";
   }
 };
 
+/*
+ * 父级拖拽结束
+ * @param targetId 目标ID
+ * @param event 鼠标事件
+ */
 const handleParentDrop = (targetId: string | null, event: DragEvent) => {
   if (!draggedEntryId.value) {
     return;
   }
 
-  const draggedEntry = props.data.find((item) => item.id === draggedEntryId.value);
+  const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
   if (!draggedEntry) {
     return;
   }
 
   let entriesToDrag: GetEntryListVo[] = [];
   if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
-    entriesToDrag = props.data.filter((item) => selectedIds.value.has(item.id as string));
+    entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
   } else {
     entriesToDrag = [draggedEntry];
   }
@@ -291,13 +400,34 @@ const handleParentDrop = (targetId: string | null, event: DragEvent) => {
     parentId: null,
   };
 
-  emit("on-item-drag", targetEntry, entriesToDrag);
+  emit("on-entry-drag", null, entriesToDrag);
   draggedEntryId.value = null;
 };
+
+const { entrySelecting, entrySelectionBox, entrySelectedIds, onMouseDown } = MouseInteractionService.useEntrySelection(gridRef, entryRefs);
+
+const { draggedEntryId, onDragStart, onDragOver, onDrop, onParentDragOver, onParentDrop } = MouseInteractionService.useEntryDrag(entryData, selectedIdsBox, emit);
+
+onMounted(() => {
+  loadEntries();
+});
 
 onUnmounted(() => {
   document.removeEventListener("mousemove", handleMouseMove);
   document.removeEventListener("mouseup", handleMouseUp);
+});
+
+//监听keyword变更
+watch(
+  () => props.keyword,
+  (newVal: string | null) => {
+    entryForm.keyword = newVal;
+    loadEntries();
+  }
+);
+
+defineExpose({
+  loadEntries,
 });
 </script>
 

@@ -10,39 +10,34 @@
     @drop.prevent="handleDrop"
   >
     <div class="entry-icon-wrapper">
-      <el-icon :size="64" class="entry-icon" :class="{ 'folder-icon': kind === 1, 'file-icon': kind === 0 }">
-        <Folder v-if="kind === 1" />
+      <el-icon :size="64" class="entry-icon" :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }">
+        <Folder v-if="entry.kind === 1" />
         <Document v-else />
       </el-icon>
     </div>
-    <div class="entry-name" :title="name">{{ name }}</div>
-    <div v-if="kind === 0 && attachSize" class="entry-size">{{ formatFileSize(attachSize) }}</div>
+    <div class="entry-name" :title="entry.name">{{ entry.name }}</div>
+    <div v-if="entry.kind === 0 && entry.attachSize" class="entry-size">{{ formatFileSize(entry.attachSize) }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Folder, Document } from "@element-plus/icons-vue";
+import type { GetEntryListVo } from "@/api/drive/DriveApi.ts";
 
 const props = defineProps<{
-  id: string; //条目ID
-  name: string; //条目名称
-  kind: number; //类型 0:文件 1:文件夹
-  attachId: string | null; //文件附件ID
-  attachSize: string; //文件附件大小
-  attachSuffix: string | null; //文件附件类型
+  entry: GetEntryListVo;
 }>();
 
 const emit = defineEmits<{
-  (e: "click", id: string): void;
-  (e: "dblclick", id: string, kind: number): void;
-  (e: "contextmenu", event: MouseEvent): void;
-  (e: "dragstart", id: string, event: DragEvent): void;
-  (e: "dragover", id: string, event: DragEvent): void;
-  (e: "drop", id: string, event: DragEvent): void;
+  (e: "on-entry-click", entry: GetEntryListVo): void;
+  (e: "on-entry-dblclick", entry: GetEntryListVo): void;
+  (e: "on-entry-contextmenu", entry: GetEntryListVo, event: MouseEvent): void;
+  (e: "on-entry-dragstart", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-entry-dragover", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-entry-drop", entry: GetEntryListVo, event: DragEvent): void;
 }>();
 
 const formatFileSize = (bytes: string): string => {
-  //转换为数字
   const bytesNum = parseInt(bytes);
 
   if (!bytesNum || bytesNum === 0) {
@@ -61,27 +56,27 @@ const formatFileSize = (bytes: string): string => {
 };
 
 const handleClick = () => {
-  emit("click", props.id);
+  emit("on-entry-click", props.entry);
 };
 
 const handleDoubleClick = () => {
-  emit("dblclick", props.id, props.kind);
+  emit("on-entry-dblclick", props.entry);
 };
 
 const handleRightClick = (event: MouseEvent) => {
-  emit("contextmenu", event);
+  emit("on-entry-contextmenu", props.entry, event);
 };
 
 const handleDragStart = (event: DragEvent) => {
-  emit("dragstart", props.id, event);
+  emit("on-entry-dragstart", props.entry, event);
 };
 
 const handleDragOver = (event: DragEvent) => {
-  emit("dragover", props.id, event);
+  emit("on-entry-dragover", props.entry, event);
 };
 
 const handleDrop = (event: DragEvent) => {
-  emit("drop", props.id, event);
+  emit("on-entry-drop", props.entry, event);
 };
 </script>
 
