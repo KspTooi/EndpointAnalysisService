@@ -247,7 +247,7 @@ public class EntryService {
         var companyId = AuthService.requireCompanyId();
         Long targetId = null;
 
-        //移动到其他目录下 
+        //移动到非根目录 
         if (dto.getTargetId() != null) {
 
             var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
@@ -304,19 +304,28 @@ public class EntryService {
     public void moveEntry(MoveEntryDto dto) throws BizException, AuthException {
 
         var companyId = AuthService.requireCompanyId();
-        var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
 
-        if (targetEntryPo == null) {
-            throw new BizException("目标条目不存在或无权限访问.");
+        EntryPo targetDir = null;
+
+        //移动到非根目录
+        if (dto.getTargetId() != null) {
+
+            targetDir = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+            
+            if (targetDir == null) {
+                throw new BizException("目标条目不存在或无权限访问.");
+            }
+    
+            if (targetDir.getKind() != 1) {
+                throw new BizException("目标条目必须是文件夹.");
+            }
+
+            if (dto.getEntryIds().contains(dto.getTargetId())) {
+                throw new BizException("不能将条目移动到自身内部.");
+            }
+    
         }
 
-        if (targetEntryPo.getKind() != 1) {
-            throw new BizException("目标条目必须是文件夹.");
-        }
-
-        if (dto.getEntryIds().contains(dto.getTargetId())) {
-            throw new BizException("不能将条目移动到自身内部.");
-        }
 
         //查找被移动条目
         var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
@@ -339,7 +348,7 @@ public class EntryService {
 
             //将被移动条目挂载到目标条目
             for (var entryPo : moveEntryPos) {
-                entryPo.setParent(targetEntryPo);
+                entryPo.setParent(targetDir);
             }
 
             //保存被移动条目
@@ -359,7 +368,7 @@ public class EntryService {
                 continue;
             }
 
-            entryPo.setParent(targetEntryPo);
+            entryPo.setParent(targetDir);
         }
 
         //保存被移动条目
