@@ -180,25 +180,62 @@ public class EntryService {
             if (parentPo.getKind() != 1) {
                 throw new BizException("指定的挂载父级目录必须是文件夹。");
             }
-
         }
 
-        //组装复制数据
+        // 1. 获取目标目录下所有的已存在文件名 (避免在循环中反复查库)
+        // 注意：Repository 需要支持 getNamesByParentId，如果不支持，可以使用原有的 count 逻辑，但在循环里效率较低
+        // 这里为了兼容现有代码，我们先初始化一个空的 Set，如果 repository 没有直接获取所有名字的方法，
+        // 我们可以依然用 count 判断，但为了处理批量复制时的内部冲突，我们需要维护一个本次操作的 usedNames
+        Set<String> usedNames = new HashSet<>();
+        // 如果 repository 有 getNamesByParentId 方法最好，如果没有，我们依靠下方的 while 循环 + 实时查库 + 本地 Set 缓存
+        // 假设没有 getNamesByParentId，我们采用 "查库 + 本地缓存" 双重校验
+
+        // 组装复制数据
         var copyPos = copyEntry(entryPos);
 
         for (var entryPo : copyPos) {
 
             entryPo.setParent(parentPo);
+            String originalName = entryPo.getName();
+            String finalName = originalName;
 
-            //判断目标目录中是否有同名文件
-            if (repository.countByNameParentIdAndCompanyId(companyId, dto.getParentId(), entryPo.getName()) > 0) {
-                entryPo.setName(entryPo.getName() + "-副本");
+            // 生成规则：原名 -> 原名-副本 -> 原名-副本(1) -> 原名-副本(2)...
+
+            // 第一次检查：是否直接冲突
+            if (isNameConflict(companyId, dto.getParentId(), finalName, usedNames)) {
+
+                // 尝试 "名称-副本"
+                finalName = originalName + "-副本";
+
+                // 如果 "名称-副本" 还冲突，开始循环递增 (1), (2)...
+                int index = 1;
+                while (isNameConflict(companyId, dto.getParentId(), finalName, usedNames)) {
+                    finalName = originalName + "-副本(" + index + ")";
+                    index++;
+                }
             }
 
+            // 确定了唯一名称
+            entryPo.setName(finalName);
+            // 将新名称加入本地占用表，防止本次批量操作中的后续文件与当前文件重名
+            usedNames.add(finalName);
         }
 
         //保存复制条目
         repository.saveAll(copyPos);
+    }
+
+    /**
+     * 辅助方法：检测名称是否冲突
+     * 冲突条件：数据库里存在 OR 本次批量操作已占用了该名字
+     */
+    private boolean isNameConflict(Long companyId, Long parentId, String name, Set<String> currentBatchUsedNames) {
+        // 1. 先看本次批量操作是否已经用过这个名字
+        if (currentBatchUsedNames.contains(name)) {
+            return true;
+        }
+        // 2. 再看数据库里是否已存在
+        return repository.countByNameParentIdAndCompanyId(companyId, parentId, name) > 0;
     }
 
 
@@ -311,11 +348,11 @@ public class EntryService {
         if (dto.getTargetId() != null) {
 
             targetDir = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
-            
+
             if (targetDir == null) {
                 throw new BizException("目标条目不存在或无权限访问.");
             }
-    
+
             if (targetDir.getKind() != 1) {
                 throw new BizException("目标条目必须是文件夹.");
             }
@@ -323,7 +360,7 @@ public class EntryService {
             if (dto.getEntryIds().contains(dto.getTargetId())) {
                 throw new BizException("不能将条目移动到自身内部.");
             }
-    
+
         }
 
 
