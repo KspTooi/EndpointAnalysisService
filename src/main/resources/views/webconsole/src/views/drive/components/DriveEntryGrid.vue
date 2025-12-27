@@ -91,7 +91,7 @@ const { hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } = Dr
 const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
 
 //文件夹导航打包
-const { enterDirectory } = DriveEntryGridService.useDirectoryNavigation(listQuery, listLoad);
+const { enterDirectory } = DriveEntryGridService.useDirectoryNavigation(listQuery, selectedIds, listLoad);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {

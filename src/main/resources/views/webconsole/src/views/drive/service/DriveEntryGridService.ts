@@ -383,7 +383,7 @@ export default {
    * 文件夹导航打包
    * @param currentDir 当前目录
    */
-  useDirectoryNavigation(listQuery: Reactive<GetEntryListDto>, listLoad: () => void) {
+  useDirectoryNavigation(listQuery: Reactive<GetEntryListDto>, selectedIds: Ref<Set<string>>, listLoad: () => void) {
     /**
      * 进入文件夹
      * @param entry 条目对象
@@ -394,6 +394,7 @@ export default {
       if (entry.id == null) {
         listQuery.directoryId = currentDir.parentId;
         listLoad();
+        selectedIds.value.clear();
         return;
       }
 
@@ -406,6 +407,7 @@ export default {
       //进入文件夹
       listQuery.directoryId = entry.id;
       listLoad();
+      selectedIds.value.clear();
     };
 
     return {
