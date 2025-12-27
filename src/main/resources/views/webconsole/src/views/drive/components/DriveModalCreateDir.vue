@@ -1,9 +1,24 @@
 <template>
-  <el-dialog v-model="modalVisible" title="创建文件夹" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent @opened="handleDialogOpened">
+  <el-dialog
+    v-model="modalVisible"
+    title="创建文件夹"
+    width="500px"
+    :close-on-click-modal="false"
+    class="modal-centered"
+    @contextmenu.prevent
+    @opened="handleDialogOpened"
+  >
     <div class="modal-content">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="文件夹名称" prop="name">
-          <el-input ref="nameInputRef" v-model="form.name" placeholder="请输入文件夹名称" clearable maxlength="128" show-word-limit />
+          <el-input
+            ref="nameInputRef"
+            v-model="form.name"
+            placeholder="请输入文件夹名称"
+            clearable
+            maxlength="128"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
     </div>
@@ -20,11 +35,11 @@
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
-import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts"
-import DriveApi from "@/views/drive/api/DriveApi.ts"
+import type { AddEntryDto, CurrentDirPo } from "@/views/drive/api/DriveTypes.ts";
+import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 const props = defineProps<{
-  parentId?: string | null;
+  currentDir: CurrentDirPo;
 }>();
 
 const emit = defineEmits<{
@@ -63,7 +78,7 @@ const handleDialogOpened = () => {
 const resetModal = () => {
   formRef.value?.resetFields();
   form.name = "";
-  form.parentId = props.parentId || null;
+  form.parentId = props.currentDir.id;
   form.kind = 1;
   form.attachId = null;
   submitLoading.value = false;

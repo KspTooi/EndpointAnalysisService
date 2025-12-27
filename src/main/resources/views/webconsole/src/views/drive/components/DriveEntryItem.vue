@@ -1,7 +1,7 @@
 <template>
   <div
     class="drive-entry-item"
-    draggable="true"
+    :draggable="type === 0"
     @click="onClick"
     @dblclick="onDoubleClick"
     @contextmenu.stop.prevent="onContextmenu"
@@ -16,7 +16,12 @@
       </el-icon>
 
       <!-- 普通条目 -->
-      <el-icon v-if="type === 0" :size="64" class="entry-icon" :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }">
+      <el-icon
+        v-if="type === 0"
+        :size="64"
+        class="entry-icon"
+        :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }"
+      >
         <Folder v-if="entry.kind === 1" />
         <Document v-if="entry.kind === 0" />
       </el-icon>
@@ -36,7 +41,7 @@ import { Folder, Document } from "@element-plus/icons-vue";
 import { computed } from "vue";
 import FileUtils from "@/utils/FileUtils";
 import { ElMessage } from "element-plus";
-import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
+import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
 
 /**
  * 定义props
@@ -48,6 +53,9 @@ const props = withDefaults(
 
     //条目对象
     entry?: EntryPo;
+
+    //当前目录
+    currentDir: CurrentDirPo;
   }>(),
   {
     type: 0,
@@ -59,11 +67,11 @@ const props = withDefaults(
  */
 const emit = defineEmits<{
   (e: "on-click", entry: EntryPo): void;
-  (e: "on-dblclick", entry: EntryPo): void;
+  (e: "on-dblclick", entry: EntryPo, currentDir: CurrentDirPo): void;
   (e: "on-contextmenu", entry: EntryPo, event: MouseEvent): void;
   (e: "on-drag-start", entry: EntryPo, event: DragEvent): void;
   (e: "on-drag-over", entry: EntryPo, event: DragEvent): void;
-  (e: "on-drag-drop", entry: EntryPo, event: DragEvent): void;
+  (e: "on-drag-drop", entry: EntryPo, currentDir: CurrentDirPo, event: DragEvent): void;
 }>();
 
 const vFileSize = computed(() => {
@@ -83,7 +91,24 @@ const onClick = () => {
  * @param entry 条目对象
  */
 const onDoubleClick = () => {
-  emit("on-dblclick", props.entry);
+  //如果当前是上级目录 则构造一个虚拟的PO
+  if (props.type === 1) {
+    const parentDirPo: EntryPo = {
+      id: props.currentDir.parentId,
+      parentId: props.currentDir.parentId,
+      name: props.currentDir.name + "_上级目录",
+      kind: 1,
+      attachId: null,
+      attachSize: null,
+      attachSuffix: null,
+      createTime: null,
+      updateTime: null,
+    };
+    emit("on-dblclick", parentDirPo, props.currentDir);
+    return;
+  }
+
+  emit("on-dblclick", props.entry, props.currentDir);
 };
 
 /**
@@ -119,7 +144,13 @@ const onDragOver = (event: DragEvent) => {
  * @param event 鼠标事件
  */
 const onDrop = (event: DragEvent) => {
-  emit("on-drag-drop", props.entry, event);
+  //如果当前是上级目录 则构造一个虚拟的PO
+  if (props.type === 1) {
+    emit("on-drag-drop", null, props.currentDir, event);
+    return;
+  }
+
+  emit("on-drag-drop", props.entry, props.currentDir, event);
 };
 </script>
 

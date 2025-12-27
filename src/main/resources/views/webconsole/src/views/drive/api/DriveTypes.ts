@@ -1,9 +1,9 @@
-import Http from "@/commons/Http.ts"
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts"
-import type PageQuery from "@/commons/entity/PageQuery.ts"
+import Http from "@/commons/Http.ts";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
 
 export interface GetEntryListDto extends PageQuery {
-  directoryId: string | null; //父级ID
+  directoryId: string | null; //目录ID
   keyword: string | null; //关键词
 }
 
@@ -12,7 +12,7 @@ export interface GetEntryListVo {
   dirName: string; //目录名称
   dirParentId: string | null; //父级目录ID 为NULL顶级
   items: GetEntryListItemVo[]; //条目列表
-  total: number; //条目总数
+  total: string; //条目总数
 }
 
 export interface GetEntryListItemVo {
@@ -78,6 +78,12 @@ export interface CheckEntryMoveVo {
   canMove: number; //是否可以移动 0:是 1:名称冲突 2:不可移动
   message: string; //提示信息
   conflictNames: string[]; //存在冲突的条目名称列表
+}
+
+export interface CurrentDirPo {
+  id: string; //当前目录ID 为NULL顶级
+  name: string; //当前目录名称
+  parentId: string; //当前目录父级ID 为NULL顶级
 }
 
 /**

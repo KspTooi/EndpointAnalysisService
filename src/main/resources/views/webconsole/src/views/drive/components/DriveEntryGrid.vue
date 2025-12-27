@@ -1,15 +1,13 @@
 <template>
   <div ref="gridRef" class="list-grid" v-loading="listLoading" @contextmenu.prevent="onGridRightClick" @mousedown="onMouseDown">
-    {{ dirParentId }}
     <!-- 上级目录 -->
     <DriveEntryItem
       v-if="hasParentDir"
       :type="1"
+      :currentDir="currentDir"
       @on-click="onEntryClick"
-      @on-dblclick="onEntryDoubleClick"
+      @on-dblclick="enterDirectory"
       @on-contextmenu="onContextmenu"
-      @on-drag-start="onDragStart"
-      @on-drag-over="onDragOver"
       @on-drag-drop="onDrop"
     />
 
@@ -18,10 +16,11 @@
       v-for="item in listData"
       :key="item.id"
       :entry="item"
+      :currentDir="currentDir"
       :ref="(el) => setEntryRef(item.id, el)"
       :class="{ selected: selectedIds.has(item.id) }"
       @on-click="onEntryClick"
-      @on-dblclick="onEntryDoubleClick"
+      @on-dblclick="enterDirectory"
       @on-contextmenu="onContextmenu"
       @on-drag-start="onDragStart"
       @on-drag-over="onDragOver"
@@ -43,22 +42,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, reactive, watch } from "vue";
+import { ref, onMounted, onUnmounted, reactive, watch, type Ref } from "vue";
 import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
 import DriveEntryGridService from "@/views/drive/service/DriveEntryGridService.ts";
-import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
+import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
 
 const props = defineProps<{
   //搜索关键词
   keyword: string | null;
 }>();
 
-const emit = defineEmits<{
-  //条目加载完成
-  (e: "on-entries-loaded", data: EntryPo[], total: number): void;
-
+export interface EntryGridEmitter {
   //目录切换
-  (e: "on-directory-change", targetId: string | null): void;
+  (e: "on-directory-change", currentDir: CurrentDirPo): void;
+
+  //条目列表加载完成
+  (e: "on-entries-loaded", items: EntryPo[], total: number): void;
 
   //条目单击
   (e: "on-entry-click", entry: EntryPo): void;
@@ -67,23 +66,32 @@ const emit = defineEmits<{
   (e: "on-entry-dblclick", entry: EntryPo): void;
 
   //拖拽条目
-  (e: "on-entry-drag", target: EntryPo, entries: EntryPo[]): void;
+  (e: "on-entry-drag", target: EntryPo, entries: EntryPo[], currentDir: CurrentDirPo): void;
 
   //右键菜单打开
   (e: "on-entry-contextmenu", entries: EntryPo[], event: MouseEvent): void;
-}>();
+}
+
+const emit = defineEmits<EntryGridEmitter>();
 
 const gridRef = ref<HTMLElement | null>(null);
 const entryRefs = ref<Map<string, HTMLElement>>(new Map());
 
 //条目列表打包
-const { hasParentDir, dirId, dirName, dirParentId, listQuery, listData, listTotal, listLoading, listLoad } = DriveEntryGridService.useEntryList(emit);
+const { hasParentDir, currentDir, listQuery, listData, listTotal, listLoading, listLoad } =
+  DriveEntryGridService.useEntryList(emit);
 
 //鼠标框选打包
-const { hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } = DriveEntryGridService.useEntrySelection(gridRef, entryRefs);
+const { hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } = DriveEntryGridService.useEntrySelection(
+  gridRef,
+  entryRefs
+);
 
 //鼠标拖拽打包
-const { draggedEntry, onDragStart, onDragOver, onDrop, onParentDragOver, onParentDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
+const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
+
+//文件夹导航打包
+const { enterDirectory } = DriveEntryGridService.useDirectoryNavigation(listQuery, listLoad);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {
@@ -101,29 +109,6 @@ const setEntryRef = (id: string, el: any) => {
  */
 const onEntryClick = (entry: EntryPo) => {
   emit("on-entry-click", entry);
-};
-
-/**
- * 条目被双击
- * @param entry 条目对象
- */
-const onEntryDoubleClick = (entry: EntryPo) => {
-  //如果entry为null则返回顶级目录
-  if (entry == null) {
-    listQuery.directoryId = null;
-    emit("on-directory-change", null);
-    listLoad();
-    return;
-  }
-
-  //如果双击的是文件夹 则进入目录
-  if (entry.kind === 1) {
-    listQuery.directoryId = entry.id;
-    listLoad();
-    return;
-  }
-
-  emit("on-entry-dblclick", entry);
 };
 
 /**
@@ -166,6 +151,9 @@ watch(
 
 defineExpose({
   listLoad,
+  getCurrentDirId: () => {
+    return currentDir.value.id;
+  },
 });
 </script>
 

@@ -1,9 +1,9 @@
-
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 import { ElMessage } from "element-plus";
-import { ref, onUnmounted, type Ref, reactive, computed } from "vue";
-import type { EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts"
+import { ref, onUnmounted, type Ref, reactive, computed, type Reactive } from "vue";
+import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
+import type { EntryGridEmitter } from "../components/DriveEntryGrid.vue";
 
 /**
  * DriveEntryGrid 服务模块
@@ -14,7 +14,7 @@ export default {
    * 条目列表打包
    * @param emit
    */
-  useEntryList(emit: (event: "on-entries-loaded", data: EntryPo[], total: number) => void) {
+  useEntryList(emit: EntryGridEmitter) {
     const listQuery = reactive<GetEntryListDto>({
       directoryId: null,
       keyword: null,
@@ -25,12 +25,15 @@ export default {
     const listTotal = ref(0);
     const listLoading = ref(false);
 
-    const dirId = ref<string>(null); //当前目录ID
-    const dirName = ref<string>(null); //当前目录名称
-    const dirParentId = ref<string>(null); //当前目录父级ID
+    //当前目录信息
+    const currentDir = ref<CurrentDirPo>({
+      id: null,
+      name: null,
+      parentId: null,
+    });
 
     const hasParentDir = computed(() => {
-      if (dirId.value == null && dirParentId.value == null && dirName.value == null) {
+      if (currentDir.value.id == null && currentDir.value.parentId == null && currentDir.value.name == null) {
         return false;
       }
       return true;
@@ -41,9 +44,23 @@ export default {
       try {
         const res = await DriveApi.getEntryList(listQuery);
 
-        dirId.value = res.data.dirId;
-        dirName.value = res.data.dirName;
-        dirParentId.value = res.data.dirParentId;
+        //检查是否有更改目录
+        const isChangeDir = res.data.dirId !== currentDir.value.id;
+        if (isChangeDir) {
+          emit("on-directory-change", {
+            id: res.data.dirId,
+            name: res.data.dirName,
+            parentId: res.data.dirParentId,
+          });
+          console.log(`目录变更: ${currentDir.value.name} -> ${res.data.dirName}`);
+        }
+
+        //更新当前目录信息
+        currentDir.value = {
+          id: res.data.dirId,
+          name: res.data.dirName,
+          parentId: res.data.dirParentId,
+        };
 
         //后端VO转换为前端PO
         const items: EntryPo[] = res.data.items.map((item) => {
@@ -61,8 +78,9 @@ export default {
         });
 
         listData.value = items;
-        listTotal.value = res.data.total;
-        emit("on-entries-loaded", items, listTotal.value);
+        listTotal.value = parseInt(res.data.total);
+        emit("on-entries-loaded", items, parseInt(res.data.total));
+
         return res;
       } catch (error: any) {
         listLoading.value = false;
@@ -75,9 +93,7 @@ export default {
 
     return {
       hasParentDir,
-      dirId,
-      dirName,
-      dirParentId,
+      currentDir,
       listQuery,
       listData,
       listTotal,
@@ -142,7 +158,12 @@ export default {
         };
 
         // 碰撞检测
-        if (boxRect.left < entryBox.right && boxRect.right > entryBox.left && boxRect.top < entryBox.bottom && boxRect.bottom > entryBox.top) {
+        if (
+          boxRect.left < entryBox.right &&
+          boxRect.right > entryBox.left &&
+          boxRect.top < entryBox.bottom &&
+          boxRect.bottom > entryBox.top
+        ) {
           newSelectedIds.add(id);
         }
       });
@@ -257,7 +278,11 @@ export default {
    * @param selectedIds 当前已被选中的条目IDS
    * @param emit Vue的emit函数,用于向父组件发送最终的拖拽事件
    */
-  useEntryDrag(entryData: Ref<EntryPo[]>, selectedIds: Ref<Set<string>>, emit: (event: "on-entry-drag", target: EntryPo, entries: EntryPo[]) => void) {
+  useEntryDrag(
+    entryData: Ref<EntryPo[]>,
+    selectedIds: Ref<Set<string>>,
+    emit: (event: "on-entry-drag", target: EntryPo, entries: EntryPo[], currentDir: CurrentDirPo) => void
+  ) {
     //当前正在拖拽的条目
     const draggedEntry: Ref<EntryPo> = ref();
 
@@ -296,7 +321,7 @@ export default {
      * @param targetEntry 目标条目
      * @param event 拖拽事件
      */
-    const onDrop = (targetEntry: EntryPo, event: DragEvent) => {
+    const onDrop = (targetEntry: EntryPo, currentDir: CurrentDirPo, event: DragEvent) => {
       //计算实际被拖拽的文件列表 (处理多选)
       let dragEntries: EntryPo[] = [];
 
@@ -311,40 +336,32 @@ export default {
         dragEntries = [draggedEntry.value];
       }
 
+      //如果拖拽到上级目录 target为null 需要组装一个虚拟的EntryPo
+      if (targetEntry == null) {
+        const parentDirPo: EntryPo = {
+          id: currentDir.parentId,
+          parentId: currentDir.parentId,
+          name: currentDir.name + "_上级目录",
+          kind: 1,
+          attachId: null,
+          attachSize: null,
+          attachSuffix: null,
+          createTime: null,
+          updateTime: null,
+        };
+
+        emit("on-entry-drag", parentDirPo, dragEntries, currentDir);
+        draggedEntry.value = null;
+        return;
+      }
+
       //如果拖拽集合中的某一项与拖拽的目标相同 则判定为自身拖拽
       if (dragEntries.some((item) => item.id === targetEntry.id)) {
         return;
       }
 
       //发送事件
-      emit("on-entry-drag", targetEntry, dragEntries);
-      draggedEntry.value = null;
-    };
-
-    /**
-     * 拖拽经过上级目录
-     */
-    const onParentDragOver = (targetId: string | null, event: DragEvent) => {
-      if (event.dataTransfer) {
-        event.dataTransfer.dropEffect = "move";
-      }
-    };
-
-    /**
-     * 放置在上级目录
-     */
-    const onParentDrop = (targetId: string | null, event: DragEvent) => {
-      let entriesToDrag: EntryPo[] = [];
-
-      //如果选了多个且当前拖拽的也在其中,保持多选状态
-      if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntry.value.id)) {
-        entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id));
-      } else {
-        entriesToDrag = [draggedEntry.value];
-      }
-
-      //投递到上级目录
-      emit("on-entry-drag", null, entriesToDrag);
+      emit("on-entry-drag", targetEntry, dragEntries, currentDir);
       draggedEntry.value = null;
     };
 
@@ -353,8 +370,40 @@ export default {
       onDragStart,
       onDragOver,
       onDrop,
-      onParentDragOver,
-      onParentDrop,
+    };
+  },
+
+  /**
+   * 文件夹导航打包
+   * @param currentDir 当前目录
+   */
+  useDirectoryNavigation(listQuery: Reactive<GetEntryListDto>, listLoad: () => void) {
+    /**
+     * 进入文件夹
+     * @param entry 条目对象
+     * @param currentDir 当前目录
+     */
+    const enterDirectory = (entry: EntryPo, currentDir: CurrentDirPo) => {
+      //如果条目ID为空 则进入上级目录
+      if (entry.id == null) {
+        listQuery.directoryId = currentDir.parentId;
+        listLoad();
+        return;
+      }
+
+      //判断是否是文件夹
+      if (entry.kind !== 1) {
+        ElMessage.error("指定的目标不是文件夹.");
+        return;
+      }
+
+      //进入文件夹
+      listQuery.directoryId = entry.id;
+      listLoad();
+    };
+
+    return {
+      enterDirectory,
     };
   },
 };

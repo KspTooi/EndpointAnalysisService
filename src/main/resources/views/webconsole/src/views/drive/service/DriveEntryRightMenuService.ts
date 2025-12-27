@@ -85,8 +85,15 @@ export default {
    * 右键菜单事件提交打包
    * @param emit 事件提交
    * @param closeRightMenu 关闭右键菜单
+   * @param currentEntry 当前选中的条目
+   * @param currentEntries 当前选中的条目列表
    */
-  useRightMenuEmitter(emit: RightMenuEmitter, closeRightMenu: () => void, currentEntry: Ref<EntryPo>, currentEntries: Ref<EntryPo[]>) {
+  useRightMenuEmitter(
+    emit: RightMenuEmitter,
+    closeRightMenu: () => void,
+    currentEntry: Ref<EntryPo>,
+    currentEntries: Ref<EntryPo[]>
+  ) {
     return {
       //刷新
       onRefresh: () => {

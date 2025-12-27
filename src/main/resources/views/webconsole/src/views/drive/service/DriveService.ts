@@ -1,6 +1,244 @@
+import { ref, type Ref } from "vue";
+import type { CurrentDirPo, EntryPo } from "../api/DriveTypes";
+import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
+import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
+import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
+import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
+import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
+import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
+import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
+import { DriveHolder } from "@/store/DriveHolder.ts";
+import DriveApi from "../api/DriveApi";
+import { ElMessage } from "element-plus";
+import { Result } from "@/commons/entity/Result";
+
+//当前目录信息
+const currentDir = ref<CurrentDirPo>({
+  id: null,
+  name: null,
+  parentId: null,
+});
+
+const entryTotal = ref(0);
+const entryData = ref<EntryPo[]>([]);
+const entryKeyword = ref<string>(null);
+
 export default {
   /**
-   * 条目功能打包 这包含剪切、复制、粘贴、删除、重命名、移动、属性等操作
+   * 条目列表打包
+   * @param entryGridRef 条目列表引用
    */
-  useEntryFunction() {},
+  useEntryList(entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>) {
+    return {
+      currentDir,
+      entryTotal,
+      entryData,
+      entryKeyword,
+
+      /**
+       * 条目列表加载完成
+       * @param items 条目列表
+       * @param total 总条数
+       */
+      onGridLoad(items: EntryPo[], total: number) {
+        entryData.value = items;
+        entryTotal.value = total;
+      },
+
+      /**
+       * 目录切换
+       * @param dir 当前目录
+       */
+      onGridDirectoryChange(dir: CurrentDirPo) {
+        currentDir.value = dir;
+      },
+
+      /**
+       * 更新查询关键词
+       * @param keyword 查询关键词
+       */
+      updateQueryKeyword(keyword: string) {
+        entryKeyword.value = keyword;
+      },
+
+      /**
+       * 加载条目列表
+       */
+      loadEntries: async () => {
+        await entryGridRef.value.listLoad();
+      },
+    };
+  },
+
+  /**
+   * 条目右键菜单功能打包
+   * @param createModalRef 创建文件夹模态框引用
+   * @param fileSelectorRef 文件选择器引用
+   * @param removeModalRef 删除确认对话框引用
+   * @param renameModalRef 重命名模态框引用
+   * @param entryGridRef 条目列表引用
+   */
+  useEntryRightMenuFunction(
+    createModalRef: Ref<InstanceType<typeof DriveModalCreateDir>>,
+    fileSelectorRef: Ref<InstanceType<typeof DriveFileSelector>>,
+    removeModalRef: Ref<InstanceType<typeof DriveModalRemove>>,
+    renameModalRef: Ref<InstanceType<typeof DriveModalRename>>,
+    entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>
+  ) {
+    return {
+      //刷新
+      refresh: async () => {
+        await entryGridRef.value.listLoad();
+      },
+
+      //粘贴
+      paste: async () => {
+        const entries = DriveHolder().getClipBoardEntry;
+
+        //粘贴板没有内容
+        if (entries.length === 0) {
+          return;
+        }
+
+        try {
+          //调用后端粘贴接口
+          const result = await DriveApi.copyEntry({
+            entryIds: entries.map((item) => item.id as string),
+            parentId: entryGridRef.value.getCurrentDirId(),
+          });
+          if (Result.isSuccess(result)) {
+            ElMessage.success("粘贴成功");
+            entryGridRef.value.listLoad();
+          }
+        } catch (error: any) {
+          ElMessage.error(error.message || "粘贴失败");
+        }
+      },
+
+      //创建文件夹
+      createDir: () => {
+        createModalRef.value.openModal();
+      },
+
+      //上传文件
+      uploadFile: () => {
+        fileSelectorRef.value.openSelector();
+      },
+
+      //预览
+      preview: (entry: EntryPo) => {
+        ElMessage.info("暂不支持预览功能");
+      },
+
+      /**
+       * 下载
+       * @param entries 条目列表
+       */
+      download: async (entries: EntryPo[]) => {
+        //不支持文件夹与文件混选下载
+        if (entries.some((item) => item.kind === 1)) {
+          ElMessage.error("不支持文件与文件夹打包下载！请选择同类型条目打包下载！");
+          return;
+        }
+
+        //获取签名
+        try {
+          const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id as string) });
+          if (Result.isSuccess(result)) {
+            const params = result.data.params;
+            window.open(`/drive/object/access/downloadEntry?sign=${params}`, "_blank");
+          }
+        } catch (error: any) {
+          ElMessage.error(error.message || "下载失败");
+        }
+      },
+
+      //剪切
+      cut: (entries: EntryPo[]) => {
+        ElMessage.info("不支持剪切功能");
+      },
+
+      //复制
+      copy: (entries: EntryPo[]) => {
+        DriveHolder().setClipBoardEntry(entries);
+      },
+
+      //删除
+      remove: async (entries: EntryPo[]) => {
+        await removeModalRef.value.openConfirm(entries);
+      },
+
+      //重命名
+      rename: (entry: EntryPo) => {
+        renameModalRef.value.openModal(entry);
+      },
+
+      //属性
+      properties: (entry: EntryPo) => {
+        ElMessage.info("暂不支持属性功能");
+      },
+    };
+  },
+
+  /**
+   * 条目拖拽功能打包
+   * @param entryGridRef 条目列表引用
+   * @param moveConfirmModalRef 移动冲突确认模态框引用
+   * @param dirParentId 当前目录父级ID
+   */
+  useEntryDragFunction(
+    entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>,
+    moveConfirmModalRef: Ref<InstanceType<typeof DriveModalMoveConfirm>>
+  ) {
+    return {
+      /**
+       * 拖拽移动
+       * @param target 目标条目 当ID为null时表示拖拽到上级目录
+       * @param entries 条目列表
+       * @param currentDir 当前目录
+       */
+      dragMove: async (target: EntryPo, entries: EntryPo[], currentDir: CurrentDirPo) => {
+        if (target == null) {
+          ElMessage.error("拖拽到上级目录:" + currentDir.name);
+          return;
+        }
+
+        const entryIds: string[] = [];
+
+        entries.forEach((item) => {
+          entryIds.push(item.id as string);
+        });
+
+        //检测移动
+        const result = await DriveApi.checkEntryMove({ targetId: target.id, entryIds: entryIds, mode: 0 });
+        const canMove = result.data.canMove;
+
+        //0:可以移动 1:名称冲突 2:不可移动
+        if (canMove == 2) {
+          ElMessage.error(result.data.message);
+          return;
+        }
+
+        if (canMove == 1) {
+          const conflictNames = result.data.conflictNames;
+          const action = await moveConfirmModalRef.value.openModal(conflictNames);
+
+          //取消
+          if (action === -1) {
+            return;
+          }
+
+          //跳过
+          if (action === 1) {
+            await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 1 });
+            entryGridRef.value.listLoad();
+          }
+        }
+
+        //覆盖移动
+        await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 0 });
+        entryGridRef.value.listLoad();
+      },
+    };
+  },
 };

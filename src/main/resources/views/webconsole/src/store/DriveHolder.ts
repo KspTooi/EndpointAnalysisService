@@ -1,4 +1,4 @@
-import type { EntryPo, GetEntryListVo } from "@/views/drive/api/DriveApi.ts";
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import { defineStore } from "pinia";
 
 export const DriveHolder = defineStore("DriveHolder", {
