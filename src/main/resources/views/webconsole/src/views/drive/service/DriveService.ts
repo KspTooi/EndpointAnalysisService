@@ -198,11 +198,6 @@ export default {
        * @param currentDir 当前目录
        */
       dragMove: async (target: EntryPo, entries: EntryPo[], currentDir: CurrentDirPo) => {
-        if (target == null) {
-          ElMessage.error("拖拽到上级目录:" + currentDir.name);
-          return;
-        }
-
         const entryIds: string[] = [];
 
         entries.forEach((item) => {
@@ -232,6 +227,7 @@ export default {
           if (action === 1) {
             await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 1 });
             entryGridRef.value.listLoad();
+            return;
           }
         }
 

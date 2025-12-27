@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecificationExecutor<EntryPo> {
+public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecificationExecutor<EntryPo> {
 
     /**
      * 获取云盘信息
@@ -110,7 +110,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecifi
     /**
      * 根据ID和公司ID查询条目
      *
-     * @param id 条目ID
+     * @param id        条目ID
      * @param companyId 公司ID
      * @return 条目
      */
@@ -123,21 +123,21 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecifi
     /**
      * 根据ID和公司ID查询条目
      *
-     * @param id 条目ID
+     * @param id        条目ID
      * @param companyId 公司ID
      * @return 条目
      */
     @Query("""
             SELECT t FROM EntryPo t WHERE t.id = :id AND t.companyId = :companyId
-            """)  
+            """)
     EntryPo getByIdAndCompanyId(@Param("id") Long id, @Param("companyId") Long companyId);
 
     /**
      * 根据名称和父级目录ID和公司ID统计条目数量
      *
      * @param companyId 公司ID
-     * @param parentId 父级目录ID
-     * @param name 名称
+     * @param parentId  父级目录ID
+     * @param name      名称
      * @return 条目数量
      */
     @Query("""
@@ -152,7 +152,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecifi
     /**
      * 根据给定的名称查找父级ID下是否存在同名条目
      *
-     * @param names 名称列表
+     * @param names    名称列表
      * @param parentId 父级目录ID
      * @return 匹配的同名条目名称列表
      */
@@ -164,13 +164,13 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecifi
             ORDER BY t.name ASC
             """)
     Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
-    
+
 
     /**
      * 根据名称列表和父级目录ID和公司ID查找同名条目名称列表
      *
-     * @param names 名称列表
-     * @param parentId 父级目录ID
+     * @param names     名称列表
+     * @param parentId  父级目录ID
      * @param companyId 公司ID
      * @return 匹配的同名条目名称列表
      */
@@ -187,27 +187,27 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecifi
     /**
      * 根据名称和父级目录ID和公司ID逻辑删除条目
      *
-     * @param name 名称
-     * @param parentId 父级目录ID
+     * @param names     名称列表
+     * @param parentId  父级目录ID
      * @param companyId 公司ID
      * @return 更新条数
      */
     @Modifying
     @Query("""
-            UPDATE EntryPo t SET t.deleteTime = now() WHERE t.name IN :names AND t.parent.id = :parentId AND t.companyId = :companyId AND t.deleteTime IS NULL
+            UPDATE EntryPo t SET t.deleteTime = now() WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND t.name IN :names AND t.companyId = :companyId AND t.deleteTime IS NULL
             """)
     int removeByNameAndParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
 
     /**
      * 根据ID列表获取名称列表
      *
-     * @param ids ID列表
+     * @param ids       ID列表
      * @param companyId 公司ID
      * @return 名称列表
      */
     @Query("""
             SELECT DISTINCT t.name FROM EntryPo t WHERE t.id IN :ids AND t.companyId = :companyId
             """)
-    Set<String> getNamesByIds(@Param("ids") List<Long> ids,@Param("companyId") Long companyId);
+    Set<String> getNamesByIds(@Param("ids") List<Long> ids, @Param("companyId") Long companyId);
 
 }
