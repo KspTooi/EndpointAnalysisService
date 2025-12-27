@@ -245,39 +245,47 @@ public class EntryService {
         ret.setCanMove(2); //0:可以移动 1:名称冲突 2:不可移动
 
         var companyId = AuthService.requireCompanyId();
-        var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+        Long targetId = null;
 
-        if (targetEntryPo == null) {
-            ret.setCanMove(2);
-            ret.setMessage("目标条目不存在或无权限访问");
-            return ret;
-        }
+        //移动到其他目录下 
+        if (dto.getTargetId() != null) {
 
-        if (targetEntryPo.getKind() != 1) {
-            ret.setCanMove(2);
-            ret.setMessage("目标条目必须是文件夹");
-            return ret;
-        }
+            var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
 
-        //检测是否有自身移动
-        if (dto.getEntryIds().contains(dto.getTargetId())) {
-            ret.setCanMove(2);
-            ret.setMessage("不能将条目移动到自身内部");
-            return ret;
+            if (targetEntryPo == null) {
+                ret.setCanMove(2);
+                ret.setMessage("目标目录不存在或无权限访问");
+                return ret;
+            }
+
+            if (targetEntryPo.getKind() != 1) {
+                ret.setCanMove(2);
+                ret.setMessage("目标必须是文件夹");
+                return ret;
+            }
+
+            //检测是否有自身移动到自身内部
+            if (dto.getEntryIds().contains(dto.getTargetId())) {
+                ret.setCanMove(2);
+                ret.setMessage("不能将文件或目录移动到自身目录下");
+                return ret;
+            }
+
+            targetId = dto.getTargetId();
         }
 
         Set<String> names = repository.getNamesByIds(dto.getEntryIds(), companyId);
 
         if (names.isEmpty()) {
-            throw new BizException("要移动的条目不存在或无权限访问");
+            throw new BizException("要移动的文件/目录不存在或无权限访问");
         }
 
         //查找出目标条目下的重复项
-        var matchNames = repository.matchNamesByParentId(names, dto.getTargetId(), companyId);
+        var matchNames = repository.matchNamesByParentId(names, targetId, companyId);
 
         if (!matchNames.isEmpty()) {
             ret.setCanMove(1);
-            ret.setMessage("目标条目下存在同名条目.");
+            ret.setMessage("目标目录下存在同名文件.");
             ret.setConflictNames(matchNames);
             return ret;
         }
