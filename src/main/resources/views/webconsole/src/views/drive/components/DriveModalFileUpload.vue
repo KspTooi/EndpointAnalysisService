@@ -30,9 +30,10 @@
 import { ref, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
 import AttachApi, { type PreCheckAttachDto, type ApplyChunkVo } from "@/api/core/AttachApi.ts";
-import DriveApi, { type AddEntryDto } from "@/api/drive/DriveApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import Sha256Worker from "../workers/sha256.worker.ts?worker";
+import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts"
+import DriveApi from "@/views/drive/api/DriveApi.ts"
 
 export interface UploadQueueItem {
   file: File;

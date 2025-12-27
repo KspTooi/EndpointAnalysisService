@@ -101,7 +101,7 @@ importers:
         version: 5.8.3
       unplugin-icons:
         specifier: ^22.2.0
-        version: 22.2.0(@vue/compiler-sfc@3.5.18)(svelte@5.38.1)
+        version: 22.2.0(@vue/compiler-components@3.5.18)(svelte@5.38.1)
       unplugin-vue-components:
         specifier: ^29.0.0
         version: 29.0.0(@babel/parser@7.28.3)(vue@3.5.18(typescript@5.8.3))

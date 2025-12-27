@@ -63,8 +63,9 @@
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Close, Delete, Folder, Document, WarningFilled } from "@element-plus/icons-vue";
-import DriveApi, { type GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -72,12 +73,12 @@ const emit = defineEmits<{
 
 const isVisible = ref(false);
 const loading = ref(false);
-const entries = ref<GetEntryListVo[]>([]);
+const entries = ref<EntryPo[]>([]);
 const errorMessage = ref("");
 let resolvePromise: ((value: boolean) => void) | null = null;
 
-const openConfirm = (vos: GetEntryListVo[]): Promise<boolean> => {
-  entries.value = vos;
+const openConfirm = (pos: EntryPo[]): Promise<boolean> => {
+  entries.value = pos;
   isVisible.value = true;
   loading.value = false;
   errorMessage.value = "";

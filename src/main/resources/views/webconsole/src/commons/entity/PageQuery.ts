@@ -11,4 +11,4 @@ export default interface PageQuery {
      * 每页数量
      */
     pageSize: number;
-} 
+}

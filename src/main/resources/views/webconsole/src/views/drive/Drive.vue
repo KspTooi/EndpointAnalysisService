@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
-import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import DriveApi, { type GetEntryListDto, type GetEntryListVo } from "@/views/drive/api/DriveApi.ts";
 import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
@@ -65,6 +65,7 @@ import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
 import { DriveHolder } from "@/store/DriveHolder.ts";
+import type { EntryPo } from "@/views/drive/api/DriveApi.ts";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -75,7 +76,7 @@ const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null)
 const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
-const currentSelectedEntry = ref<GetEntryListVo | null>(null);
+const currentSelectedEntry = ref<EntryPo | null>(null);
 const driveHolder = DriveHolder();
 const entryGridRef = ref<InstanceType<typeof DriveEntryGrid> | null>(null);
 
@@ -83,7 +84,7 @@ const entryGridRef = ref<InstanceType<typeof DriveEntryGrid> | null>(null);
 const entryKeyword = ref<string | null>(null);
 
 //列表数据
-const entryData = ref<GetEntryListVo[]>([]);
+const entryData = ref<EntryPo[]>([]);
 
 //列表总条数
 const entryTotal = ref(0);
@@ -101,8 +102,22 @@ const updateQueryKeyword = (keyword: string | null) => {
 const loadEntries = async () => {
   const ret = await entryGridRef.value?.listLoad();
   if (ret) {
-    entryData.value = ret.data;
-    entryTotal.value = ret.total;
+    entryData.value = ret.data.items.map((item) => {
+      return {
+        id: item.id,
+        parentId: null,
+        name: item.name,
+        kind: item.kind,
+        attachId: item.attachId,
+        attachSize: item.attachSize,
+        attachSuffix: item.attachSuffix,
+        createTime: item.createTime,
+        updateTime: item.createTime,
+        creatorId: null,
+        updaterId: null,
+      };
+    });
+    entryTotal.value = ret.data.total;
   }
 };
 
@@ -111,25 +126,13 @@ const loadEntries = async () => {
  * @param event 鼠标事件
  * @param entries 当前选中的条目列表
  */
-const onEntryContextmenu = (entries: GetEntryListVo[], event: MouseEvent) => {
-  rightMenuRef.value?.openMenu(event, entries);
+const onEntryContextmenu = (entries: EntryPo[], event: MouseEvent) => {
+  rightMenuRef.value?.openRightMenu(event, entries);
 };
 
 const onDirectoryChange = (targetId: string | null) => {
   currentParentId.value = targetId;
 };
-
-/* const handleEntryDoubleClick = (id: string, kind: number) => {
-  if (kind === 1) {
-    // 双击文件夹，进入文件夹
-    listForm.parentId = id;
-    listForm.pageNum = 1;
-    loadList();
-  }
-  if (kind === 0) {
-    // 双击文件，可根据需要实现下载或预览
-  }
-}; */
 
 /**
  * 文件选择器->文件选择
@@ -160,7 +163,7 @@ const onUploadFile = () => {
  * 右键菜单->预览
  * @param entry 单个条目
  */
-const onPreview = (entry: GetEntryListVo) => {
+const onPreview = (entry: EntryPo) => {
   // 预览逻辑，可根据需要实现
   ElMessage.info("预览功能待实现");
 };
@@ -169,7 +172,7 @@ const onPreview = (entry: GetEntryListVo) => {
  * 右键菜单->下载
  * @param entries 条目列表
  */
-const onDownload = async (entries: GetEntryListVo[]) => {
+const onDownload = async (entries: EntryPo[]) => {
   //不支持文件夹与文件混选下载
   if (entries.some((item) => item.kind === 1)) {
     ElMessage.error("不支持文件与文件夹打包下载！请选择同类型条目打包下载！");
@@ -192,7 +195,7 @@ const onDownload = async (entries: GetEntryListVo[]) => {
  * 右键菜单->剪切
  * @param entries 条目列表
  */
-const onCut = (entries: GetEntryListVo[]) => {
+const onCut = (entries: EntryPo[]) => {
   // 剪切逻辑，可根据需要实现
   ElMessage.info("剪切功能待实现");
 };
@@ -201,7 +204,7 @@ const onCut = (entries: GetEntryListVo[]) => {
  * 右键菜单->复制
  * @param entries 条目列表
  */
-const onCopy = (entries: GetEntryListVo[]) => {
+const onCopy = (entries: EntryPo[]) => {
   driveHolder.setClipBoardEntry(entries);
 };
 
@@ -233,7 +236,7 @@ const onPaste = async () => {
  * 右键菜单->删除
  * @param entries 条目列表
  */
-const onDelete = async (entries: GetEntryListVo[]) => {
+const onDelete = async (entries: EntryPo[]) => {
   if (!removeConfirmRef.value) {
     return;
   }
@@ -245,7 +248,7 @@ const onDelete = async (entries: GetEntryListVo[]) => {
  * 右键菜单->重命名
  * @param entry 单个条目
  */
-const onRename = (entry: GetEntryListVo) => {
+const onRename = (entry: EntryPo) => {
   if (!renameModalRef.value) {
     return;
   }
@@ -256,7 +259,7 @@ const onRename = (entry: GetEntryListVo) => {
  * 右键菜单->属性
  * @param entry 单个条目
  */
-const onProperties = (entry: GetEntryListVo) => {
+const onProperties = (entry: EntryPo) => {
   // 属性逻辑，可根据需要实现
   ElMessage.info("属性功能待实现");
 };
@@ -287,7 +290,7 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
  * @param target 目标条目
  * @param entries 被拖拽的条目列表
  */
-const onEntryDrag = async (target: GetEntryListVo, entries: GetEntryListVo[]) => {
+const onEntryDrag = async (target: EntryPo, entries: EntryPo[]) => {
   if (target === null) {
     ElMessage.error("拖拽到上级目录");
     return;

@@ -1,5 +1,5 @@
 <template>
-  <div v-show="visible" ref="menuRef" class="context-menu" :style="{ left: x + 'px', top: y + 'px' }" @click.stop @contextmenu.prevent>
+  <div v-show="visible" ref="rightMenuRef" class="context-menu" :style="{ left: menuX + 'px', top: menuY + 'px' }" @click.stop @contextmenu.prevent>
     <!-- 当没有选中条目时，只显示新建文件夹和上传文件 -->
     <template v-if="!currentEntry">
       <div class="menu-item" @click="onRefresh">
@@ -74,72 +74,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref } from "vue";
 import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload, Refresh } from "@element-plus/icons-vue";
-import type { GetEntryListVo } from "@/api/drive/DriveApi";
-import { DriveHolder } from "@/store/DriveHolder.ts";
+import DriveEntryRightMenuService from "../service/DriveEntryRightMenuService";
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
 
-const driveHolder = DriveHolder();
+const rightMenuRef = ref<HTMLElement>();
 
 const emit = defineEmits<{
   (e: "on-refresh"): void; //刷新
   (e: "on-paste"): void; //粘贴
   (e: "on-create-folder"): void; //创建文件夹
   (e: "on-upload-file"): void; //上传文件
-  (e: "on-preview", entry: GetEntryListVo): void; //预览
-  (e: "on-download", entries: GetEntryListVo[]): void; //下载
-  (e: "on-cut", entries: GetEntryListVo[]): void; //剪切
-  (e: "on-copy", entries: GetEntryListVo[]): void; //复制
-  (e: "on-delete", entries: GetEntryListVo[]): void; //删除
-  (e: "on-rename", entry: GetEntryListVo): void; //重命名
-  (e: "on-properties", entry: GetEntryListVo): void; //属性
+  (e: "on-preview", entry: EntryPo): void; //预览
+  (e: "on-download", entries: EntryPo[]): void; //下载
+  (e: "on-cut", entries: EntryPo[]): void; //剪切
+  (e: "on-copy", entries: EntryPo[]): void; //复制
+  (e: "on-delete", entries: EntryPo[]): void; //删除
+  (e: "on-rename", entry: EntryPo): void; //重命名
+  (e: "on-properties", entry: EntryPo): void; //属性
 }>();
 
-const visible = ref(false);
-const x = ref(0);
-const y = ref(0);
-
-//选择的条目列表
-const currentEntries = ref<GetEntryListVo[]>([]);
-//当前选中的条目
-const currentEntry = computed(() => {
-  return currentEntries.value[0] || null;
-});
-//是否多选
-const isMultiSelect = computed(() => {
-  return currentEntries.value.length > 1;
-});
-//是否有粘贴板内容
-const hasClipboard = computed(() => {
-  return driveHolder.getClipBoardEntry.length > 0;
-});
-const menuRef = ref<HTMLElement>();
-
-/**
- * 打开右键菜单
- * @param event 鼠标事件
- * @param entries 当前条目，可以为空，表示没有选中条目
- */
-const openMenu = (event: MouseEvent, entries: GetEntryListVo[] | null = null) => {
-  x.value = event.clientX;
-  y.value = event.clientY;
-  currentEntries.value = entries || [];
-  visible.value = true;
-};
-
-/**
- * 关闭右键菜单
- */
-const closeMenu = () => {
-  visible.value = false;
-};
+//右键菜单控制打包
+const {
+  openRightMenu,
+  closeRightMenu,
+  isMultiSelect,
+  currentEntries,
+  visible,
+  currentEntry,
+  hasClipboard,
+  x: menuX,
+  y: menuY,
+} = DriveEntryRightMenuService.useRightMenuControl(rightMenuRef);
 
 /**
  * 刷新
  */
 const onRefresh = () => {
   emit("on-refresh");
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -150,7 +124,7 @@ const onPaste = () => {
     return;
   }
   emit("on-paste");
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -158,7 +132,7 @@ const onPaste = () => {
  */
 const onCreateFolder = () => {
   emit("on-create-folder");
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -166,7 +140,7 @@ const onCreateFolder = () => {
  */
 const onUploadFile = () => {
   emit("on-upload-file");
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -177,7 +151,7 @@ const onPreview = () => {
     return;
   }
   emit("on-preview", currentEntry.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 //下载
@@ -186,7 +160,7 @@ const onDownload = () => {
     return;
   }
   emit("on-download", currentEntries.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -197,7 +171,7 @@ const onCut = () => {
     return;
   }
   emit("on-cut", currentEntries.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -208,7 +182,7 @@ const onCopy = () => {
     return;
   }
   emit("on-copy", currentEntries.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -219,7 +193,7 @@ const onDelete = () => {
     return;
   }
   emit("on-delete", currentEntries.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -230,7 +204,7 @@ const onRename = () => {
     return;
   }
   emit("on-rename", currentEntry.value);
-  closeMenu();
+  closeRightMenu();
 };
 
 /**
@@ -241,28 +215,12 @@ const onProperties = () => {
     return;
   }
   emit("on-properties", currentEntry.value);
-  closeMenu();
+  closeRightMenu();
 };
-
-/**
- * 点击外部关闭菜单
- */
-const handleClickOutside = (event: MouseEvent) => {
-  if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
-    closeMenu();
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 
 defineExpose({
-  openMenu,
+  openRightMenu,
+  closeRightMenu,
 });
 </script>
 

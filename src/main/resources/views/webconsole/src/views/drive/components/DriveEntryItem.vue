@@ -33,10 +33,10 @@
 
 <script setup lang="ts">
 import { Folder, Document } from "@element-plus/icons-vue";
-import type { GetEntryListVo } from "@/api/drive/DriveApi.ts";
 import { computed } from "vue";
 import FileUtils from "@/utils/FileUtils";
 import { ElMessage } from "element-plus";
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
 
 /**
  * 定义props
@@ -47,7 +47,7 @@ const props = withDefaults(
     type?: 0 | 1;
 
     //条目对象
-    entry?: GetEntryListVo;
+    entry?: EntryPo;
   }>(),
   {
     type: 0,
@@ -58,12 +58,12 @@ const props = withDefaults(
  * 定义emits
  */
 const emit = defineEmits<{
-  (e: "on-click", entry: GetEntryListVo): void;
-  (e: "on-dblclick", entry: GetEntryListVo): void;
-  (e: "on-contextmenu", entry: GetEntryListVo, event: MouseEvent): void;
-  (e: "on-drag-start", entry: GetEntryListVo, event: DragEvent): void;
-  (e: "on-drag-over", entry: GetEntryListVo, event: DragEvent): void;
-  (e: "on-drag-drop", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-click", entry: EntryPo): void;
+  (e: "on-dblclick", entry: EntryPo): void;
+  (e: "on-contextmenu", entry: EntryPo, event: MouseEvent): void;
+  (e: "on-drag-start", entry: EntryPo, event: DragEvent): void;
+  (e: "on-drag-over", entry: EntryPo, event: DragEvent): void;
+  (e: "on-drag-drop", entry: EntryPo, event: DragEvent): void;
 }>();
 
 const vFileSize = computed(() => {

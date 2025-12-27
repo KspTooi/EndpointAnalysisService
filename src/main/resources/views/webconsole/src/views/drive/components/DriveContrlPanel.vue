@@ -47,9 +47,9 @@
 import { ref, computed, onMounted } from "vue";
 import { Search, Upload, Coin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import DriveApi from "@/api/drive/DriveApi";
-import type { GetDriveInfoVo } from "@/api/drive/DriveApi";
+import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
+import type { GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts"
 
 //定义props
 const props = withDefaults(
@@ -191,7 +191,7 @@ onMounted(() => {
 .search-input :deep(.el-input__wrapper) {
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
-  padding: 0px 10px;
+  padding: 0 10px;
   box-shadow: none;
   transition: border-color 0.2s;
   border-radius: 0;

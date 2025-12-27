@@ -6,17 +6,12 @@ import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.*;
-import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
-import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
-import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
-import com.ksptooi.biz.drive.model.vo.GetEntryListItemVo;
-import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
+import com.ksptooi.biz.drive.model.vo.*;
 import com.ksptooi.biz.drive.repository.EntryRepository;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -70,18 +65,27 @@ public class EntryService {
 
         Long companyId = AuthService.requireCompanyId();
 
-        //查询目录详情
-        var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
+        Long dirId = null;
+        String dirName = null;
+        Long dirParentId = null;
 
-        if(dirEntryPo == null || dirEntryPo.getKind() != 1){
-            throw new BizException("指定的目录不存在或无权限访问");
+        //查询目录详情
+        if (dto.getDirectoryId() != null) {
+            var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
+
+            if (dirEntryPo == null || dirEntryPo.getKind() != 1) {
+                throw new BizException("指定的目录不存在或无权限访问");
+            }
+            dirId = dirEntryPo.getId();
+            dirName = dirEntryPo.getName();
+            dirParentId = dirEntryPo.getParent() != null ? dirEntryPo.getParent().getId() : null;
         }
 
         var ret = new GetEntryListVo();
-        ret.setDirId(dirEntryPo.getId());
-        ret.setDirName(dirEntryPo.getName());
-        ret.setDirParentId(dirEntryPo.getParent() != null ? dirEntryPo.getParent().getId() : null);
-        
+        ret.setDirId(dirId);
+        ret.setDirName(dirName);
+        ret.setDirParentId(dirParentId);
+
         Page<EntryPo> page = repository.getEntryList(dto.getDirectoryId(), dto.getKeyword(), companyId, dto.pageRequest());
         ret.setTotal(page.getTotalElements());
         ret.setItems(as(page.getContent(), GetEntryListItemVo.class));

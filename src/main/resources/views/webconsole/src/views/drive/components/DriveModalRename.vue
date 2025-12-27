@@ -17,10 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import DriveApi, { type GetEntryListVo, type RenameEntryDto } from "@/api/drive/DriveApi.ts";
+import DriveApi from "@/views/drive/api/DriveApi.ts"
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
+import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts"
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -30,7 +31,7 @@ const modalVisible = ref(false);
 const formRef = ref<FormInstance>();
 const nameInputRef = ref();
 const submitLoading = ref(false);
-const currentEntry = ref<GetEntryListVo | null>(null);
+const currentEntry = ref<GetEntryListItemVo | null>(null);
 
 const form = reactive<RenameEntryDto>({
   entryId: "",
@@ -44,7 +45,7 @@ const rules = reactive<FormRules>({
   ],
 });
 
-const openModal = (entry: GetEntryListVo) => {
+const openModal = (entry: GetEntryListItemVo) => {
   if (!entry) {
     return;
   }

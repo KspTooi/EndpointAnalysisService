@@ -17,10 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import DriveApi, { type AddEntryDto } from "@/api/drive/DriveApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
+import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts"
+import DriveApi from "@/views/drive/api/DriveApi.ts"
 
 const props = defineProps<{
   parentId?: string | null;

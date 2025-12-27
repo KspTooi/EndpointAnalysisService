@@ -1,10 +1,10 @@
-import type { GetEntryListVo } from "@/api/drive/DriveApi";
+import type { EntryPo, GetEntryListVo } from "@/views/drive/api/DriveApi.ts";
 import { defineStore } from "pinia";
 
 export const DriveHolder = defineStore("DriveHolder", {
   state: () => ({
     //粘贴板
-    clipBoardEntry: [] as GetEntryListVo[],
+    clipBoardEntry: [] as EntryPo[],
   }),
 
   getters: {
@@ -14,7 +14,7 @@ export const DriveHolder = defineStore("DriveHolder", {
   },
 
   actions: {
-    setClipBoardEntry(entry: GetEntryListVo[]) {
+    setClipBoardEntry(entry: EntryPo[]) {
       this.clipBoardEntry = entry;
     },
   },
