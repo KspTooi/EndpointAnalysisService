@@ -11,7 +11,7 @@
   >
     <div class="entry-icon-wrapper">
       <!-- 上级目录 -->
-      <el-icon v-if="type === 1" :size="64" class="entry-icon">
+      <el-icon v-if="type === 1" :size="64" class="!text-[#00a8be]">
         <Folder />
       </el-icon>
 
@@ -27,7 +27,7 @@
 
     <!-- 普通条目 -->
     <div v-if="type === 0" class="entry-name" :title="entry.name">{{ entry.name }}</div>
-    <div v-if="entry.kind === 0 && entry.attachSize" class="entry-size">{{ vFileSize }}</div>
+    <div v-if="type === 0 && entry.kind === 0 && entry.attachSize" class="entry-size">{{ vFileSize }}</div>
   </div>
 </template>
 

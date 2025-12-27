@@ -1,10 +1,6 @@
 package com.ksptooi.biz.drive.controller;
 
-import com.ksptooi.biz.drive.model.dto.AddEntryDto;
-import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
-import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
-import com.ksptooi.biz.drive.model.dto.MoveEntryDto;
-import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.dto.*;
 import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
@@ -19,7 +15,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @PrintLog
 @RestController
@@ -39,8 +38,9 @@ public class EntryController {
 
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
-    public PageResult<GetEntryListVo> getEntryList(@RequestBody @Valid GetEntryListDto dto) throws Exception {
-        return entryService.getEntryList(dto);
+    public Result<GetEntryListVo> getEntryList(@RequestBody @Valid GetEntryListDto dto) throws Exception {
+        var ret = entryService.getEntryList(dto);
+        return Result.success(ret);
     }
 
     @Operation(summary = "新增条目")

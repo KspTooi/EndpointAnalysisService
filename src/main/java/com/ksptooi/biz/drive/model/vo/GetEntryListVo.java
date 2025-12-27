@@ -1,36 +1,28 @@
 package com.ksptooi.biz.drive.model.vo;
 
-import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
-@Getter@Setter
-public class GetEntryListVo{
+@Getter
+@Setter
+public class GetEntryListVo {
 
-    @Schema(description="条目ID")
-    private Long id;
+    @Schema(description = "目录ID")
+    private Long dirId;
 
-    @Schema(description="父级ID 为NULL顶级")
-    private Long parentId;
+    @Schema(description = "目录名称")
+    private String dirName;
 
-    @Schema(description="条目名称")
-    private String name;
+    @Schema(description = "父级目录ID 为NULL顶级")
+    private Long dirParentId;
 
-    @Schema(description="条目类型 0:文件 1:文件夹")
-    private Integer kind;
+    @Schema(description = "条目列表")
+    private List<GetEntryListItemVo> items;
 
-    @Schema(description="文件附件ID 文件夹为NULL")
-    private Long attachId;
-
-    @Schema(description="文件附件大小 文件夹为0")
-    private Long attachSize;
-
-    @Schema(description="文件附件类型 文件夹为NULL")
-    private String attachSuffix;
-
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
+    @Schema(description = "条目总数")
+    private Long total;
 
 }
 

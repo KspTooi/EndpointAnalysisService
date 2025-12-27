@@ -5,6 +5,7 @@ import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface EntryRepository extends JpaRepository<EntryPo, Long> {
+public interface EntryRepository extends JpaRepository<EntryPo, Long>,JpaSpecificationExecutor<EntryPo> {
 
     /**
      * 获取云盘信息

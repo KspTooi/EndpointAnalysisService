@@ -5,39 +5,27 @@ import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
-import com.ksptooi.biz.drive.model.dto.AddEntryDto;
-import com.ksptooi.biz.drive.model.dto.CopyEntryDto;
-import com.ksptooi.biz.drive.model.dto.GetEntryListDto;
-import com.ksptooi.biz.drive.model.dto.MoveEntryDto;
-import com.ksptooi.biz.drive.model.dto.RenameEntry;
+import com.ksptooi.biz.drive.model.dto.*;
 import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
-import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
+import com.ksptooi.biz.drive.model.vo.GetEntryListItemVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
 import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
 
@@ -78,18 +66,26 @@ public class EntryService {
      * @param dto 查询条件
      * @return 条目列表
      */
-    public PageResult<GetEntryListVo> getEntryList(GetEntryListDto dto) throws AuthException {
+    public GetEntryListVo getEntryList(GetEntryListDto dto) throws AuthException, BizException {
 
         Long companyId = AuthService.requireCompanyId();
 
-        Page<EntryPo> page = repository.getEntryList(dto.getParentId(), dto.getKeyword(), companyId, dto.pageRequest());
+        //查询目录详情
+        var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
 
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
+        if(dirEntryPo == null || dirEntryPo.getKind() != 1){
+            throw new BizException("指定的目录不存在或无权限访问");
         }
 
-        List<GetEntryListVo> vos = as(page.getContent(), GetEntryListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        var ret = new GetEntryListVo();
+        ret.setDirId(dirEntryPo.getId());
+        ret.setDirName(dirEntryPo.getName());
+        ret.setDirParentId(dirEntryPo.getParent() != null ? dirEntryPo.getParent().getId() : null);
+        
+        Page<EntryPo> page = repository.getEntryList(dto.getDirectoryId(), dto.getKeyword(), companyId, dto.pageRequest());
+        ret.setTotal(page.getTotalElements());
+        ret.setItems(as(page.getContent(), GetEntryListItemVo.class));
+        return ret;
     }
 
     /**
@@ -274,7 +270,7 @@ public class EntryService {
 
         //查找出目标条目下的重复项
         var matchNames = repository.matchNamesByParentId(names, dto.getTargetId(), companyId);
-        
+
         if (!matchNames.isEmpty()) {
             ret.setCanMove(1);
             ret.setMessage("目标条目下存在同名条目.");
@@ -298,39 +294,39 @@ public class EntryService {
         var companyId = AuthService.requireCompanyId();
         var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
 
-        if(targetEntryPo == null){
+        if (targetEntryPo == null) {
             throw new BizException("目标条目不存在或无权限访问.");
         }
 
-        if(targetEntryPo.getKind() != 1){
+        if (targetEntryPo.getKind() != 1) {
             throw new BizException("目标条目必须是文件夹.");
         }
 
-        if(dto.getEntryIds().contains(dto.getTargetId())){
+        if (dto.getEntryIds().contains(dto.getTargetId())) {
             throw new BizException("不能将条目移动到自身内部.");
         }
-        
+
         //查找被移动条目
         var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
 
-        if(moveEntryPos.isEmpty()){
+        if (moveEntryPos.isEmpty()) {
             throw new BizException("要移动的条目不存在或无权限访问.");
         }
 
         var moveEntryNames = new HashSet<String>();
-        for(var entryPo : moveEntryPos){
+        for (var entryPo : moveEntryPos) {
             moveEntryNames.add(entryPo.getName());
         }
 
 
         //覆盖模式移动
-        if(dto.getMode() == 0){
+        if (dto.getMode() == 0) {
 
             //删除目标下全部重名条目
             repository.removeByNameAndParentId(moveEntryNames, dto.getTargetId(), companyId);
 
             //将被移动条目挂载到目标条目
-            for(var entryPo : moveEntryPos){
+            for (var entryPo : moveEntryPos) {
                 entryPo.setParent(targetEntryPo);
             }
 
@@ -344,10 +340,10 @@ public class EntryService {
         //查找目标条目下的重复项
         var matchNames = repository.matchNamesByParentId(moveEntryNames, dto.getTargetId(), companyId);
 
-        for(var entryPo : moveEntryPos){
+        for (var entryPo : moveEntryPos) {
 
             //不移动重名条目
-            if(matchNames.contains(entryPo.getName())){
+            if (matchNames.contains(entryPo.getName())) {
                 continue;
             }
 
@@ -433,7 +429,6 @@ public class EntryService {
     }
 
 
-    
     /**
      * 定时任务 5秒执行一次,检查entrySyncList中的数据,如果存在数据,则执行同步操作
      */

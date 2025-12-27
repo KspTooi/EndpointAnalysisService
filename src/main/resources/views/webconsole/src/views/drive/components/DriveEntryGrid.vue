@@ -1,22 +1,12 @@
 <template>
-  <div ref="gridRef" class="list-grid" v-loading="entryLoading" @contextmenu.prevent="onGridRightClick" @mousedown="handleMouseDown">
-    <!-- 上级目录 -->
-    <!-- <DriveEntryParentItem
-      target-id="0"
-      name="上级目录"
-      v-show="previousParentId.length > 0"
-      @dblclick="onReturnParentDir"
-      @dragover="handleParentDragOver"
-      @drop="handleParentDrop"
-    /> -->
-
+  <div ref="gridRef" class="list-grid" v-loading="listLoading" @contextmenu.prevent="onGridRightClick" @mousedown="handleMouseDown">
     <!-- 上级目录 -->
     <DriveEntryItem
       v-if="previousParentId.length > 0"
       :type="1"
       @on-click="onEntryClick"
       @on-dblclick="onEntryDoubleClick"
-      @on-contextmenu="onRightMenuOpen"
+      @on-contextmenu="onContextmenu"
       @on-drag-start="handleEntryDragStart"
       @on-drag-over="handleEntryDragOver"
       @on-drag-drop="handleEntryDrop"
@@ -24,14 +14,14 @@
 
     <!-- 条目列表 -->
     <DriveEntryItem
-      v-for="item in entryData"
-      :key="item.id as string"
+      v-for="item in listData"
+      :key="item.id"
       :entry="item"
       :ref="(el) => setEntryRef(item.id as string, el)"
       :class="{ selected: selectedIds.has(item.id as string) }"
       @on-click="onEntryClick"
       @on-dblclick="onEntryDoubleClick"
-      @on-contextmenu="onRightMenuOpen"
+      @on-contextmenu="onContextmenu"
       @on-drag-start="handleEntryDragStart"
       @on-drag-over="handleEntryDragOver"
       @on-drag-drop="handleEntryDrop"
@@ -59,7 +49,7 @@ import type { GetEntryListDto, GetEntryListVo } from "@/api/drive/DriveApi.ts";
 import DriveApi from "@/api/drive/DriveApi.ts";
 import type RestPageableView from "@/commons/entity/RestPageableView";
 import { ElMessage } from "element-plus";
-import MouseInteractionService from "@/views/drive/service/DriveMouseInteractionService.ts";
+import DriveEntryGridService from "@/views/drive/service/DriveEntryGridService.ts";
 
 const props = defineProps<{
   //搜索关键词
@@ -86,45 +76,10 @@ const emit = defineEmits<{
   (e: "on-entry-contextmenu", entries: GetEntryListVo[], event: MouseEvent): void;
 }>();
 
-const entryData = ref<GetEntryListVo[]>([]);
-const entryTotal = ref(0);
-const entryLoading = ref(false);
-
 //上级文件夹列表
 const previousParentId = ref<string[]>([]);
 
-const entryForm = reactive<GetEntryListDto>({
-  parentId: null,
-  keyword: null,
-  pageNum: 1,
-  pageSize: 50000,
-});
-
-/**
- * 加载条目列表
- * @returns 条目列表分页结果
- */
-const loadEntries = async (): Promise<RestPageableView<GetEntryListVo>> => {
-  entryLoading.value = true;
-  try {
-    const res = await DriveApi.getEntryList(entryForm);
-    if (res.code === 0) {
-      entryData.value = res.data;
-      entryTotal.value = res.total;
-    }
-    if (res.code !== 0) {
-      ElMessage.error(res.message || "加载列表失败");
-    }
-    emit("on-entries-loaded", entryData.value, entryTotal.value);
-    return res;
-  } catch (error: any) {
-    entryLoading.value = false;
-    ElMessage.error(error.message || "加载列表失败");
-    throw error;
-  } finally {
-    entryLoading.value = false;
-  }
-};
+const { listQuery, listData, listTotal, listLoading, listLoad } = DriveEntryGridService.useEntryList(emit);
 
 const gridRef = ref<HTMLElement | null>(null);
 const entryRefs = ref<Map<string, HTMLElement>>(new Map());
@@ -144,11 +99,13 @@ const draggedEntryId = ref<string | null>(null);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {
+    entryRefs.value.delete(id);
     return;
   }
-  entryRefs.value.set(id, el.$el);
+  if (el.$el) {
+    entryRefs.value.set(id, el.$el);
+  }
 };
-
 /**
  * 条目被单击
  * @param entry 条目对象
@@ -164,17 +121,17 @@ const onEntryClick = (entry: GetEntryListVo) => {
 const onEntryDoubleClick = (entry: GetEntryListVo) => {
   //如果entry为null则返回顶级目录
   if (entry == null) {
-    entryForm.parentId = null;
+    listQuery.parentId = null;
     emit("on-directory-change", null);
-    loadEntries();
+    listLoad();
     return;
   }
 
   //如果双击的是文件夹 则进入目录
   if (entry.kind === 1) {
     previousParentId.value.push(entry.id as string);
-    entryForm.parentId = entry.id;
-    loadEntries();
+    listQuery.parentId = entry.id;
+    listLoad();
     return;
   }
 
@@ -188,20 +145,20 @@ const onEntryDoubleClick = (entry: GetEntryListVo) => {
 const onReturnParentDir = () => {
   if (previousParentId.value.length > 0) {
     previousParentId.value.pop();
-    entryForm.parentId = previousParentId.value[previousParentId.value.length - 1];
-    loadEntries();
+    listQuery.parentId = previousParentId.value[previousParentId.value.length - 1];
+    listLoad();
   }
 };
 
 /**
- * 右键菜单打开
+ * 右键菜单事件
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onRightMenuOpen = (entry: GetEntryListVo, event: MouseEvent) => {
+const onContextmenu = (entry: GetEntryListVo, event: MouseEvent) => {
   //如果选了多个且当前右键的也在其中，保持多选状态
   if (selectedIds.value.size > 1 && entry.id && selectedIds.value.has(entry.id as string)) {
-    const selectedEntries = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
+    const selectedEntries = listData.value.filter((item) => selectedIds.value.has(item.id as string));
     emit("on-entry-contextmenu", selectedEntries, event);
     return;
   }
@@ -345,14 +302,14 @@ const handleEntryDrop = (targetEntry: GetEntryListVo, event: DragEvent) => {
     return;
   }
 
-  const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
+  const draggedEntry = listData.value.find((item) => item.id === draggedEntryId.value);
   if (!draggedEntry) {
     return;
   }
 
   let entriesToDrag: GetEntryListVo[] = [];
   if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
-    entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
+    entriesToDrag = listData.value.filter((item) => selectedIds.value.has(item.id as string));
   } else {
     entriesToDrag = [draggedEntry];
   }
@@ -386,14 +343,14 @@ const handleParentDrop = (targetId: string | null, event: DragEvent) => {
     return;
   }
 
-  const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
+  const draggedEntry = listData.value.find((item) => item.id === draggedEntryId.value);
   if (!draggedEntry) {
     return;
   }
 
   let entriesToDrag: GetEntryListVo[] = [];
   if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
-    entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
+    entriesToDrag = listData.value.filter((item) => selectedIds.value.has(item.id as string));
   } else {
     entriesToDrag = [draggedEntry];
   }
@@ -402,23 +359,12 @@ const handleParentDrop = (targetId: string | null, event: DragEvent) => {
     return;
   }
 
-  const targetEntry: GetEntryListVo = {
-    id: targetId || "",
-    name: "上级目录",
-    kind: 1,
-    attachId: null,
-    attachSize: "0",
-    attachSuffix: null,
-    createTime: "",
-    parentId: null,
-  };
-
   emit("on-entry-drag", null, entriesToDrag);
   draggedEntryId.value = null;
 };
 
 onMounted(() => {
-  loadEntries();
+  listLoad();
 });
 
 onUnmounted(() => {
@@ -430,13 +376,13 @@ onUnmounted(() => {
 watch(
   () => props.keyword,
   (newVal: string | null) => {
-    entryForm.keyword = newVal;
-    loadEntries();
+    listQuery.keyword = newVal;
+    listLoad();
   }
 );
 
 defineExpose({
-  loadEntries,
+  listLoad,
 });
 </script>
 

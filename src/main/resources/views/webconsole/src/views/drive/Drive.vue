@@ -99,7 +99,7 @@ const updateQueryKeyword = (keyword: string | null) => {
  * 加载条目列表
  */
 const loadEntries = async () => {
-  const ret = await entryGridRef.value?.loadEntries();
+  const ret = await entryGridRef.value?.listLoad();
   if (ret) {
     entryData.value = ret.data;
     entryTotal.value = ret.total;
