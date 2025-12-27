@@ -1,5 +1,12 @@
 <template>
-  <div v-show="visible" ref="rightMenuRef" class="context-menu" :style="{ left: menuX + 'px', top: menuY + 'px' }" @click.stop @contextmenu.prevent>
+  <div
+    v-show="visible"
+    ref="rightMenuRef"
+    class="context-menu"
+    :style="{ left: menuX + 'px', top: menuY + 'px' }"
+    @click.stop
+    @contextmenu.prevent
+  >
     <!-- 当没有选中条目时，只显示新建文件夹和上传文件 -->
     <template v-if="!currentEntry">
       <div class="menu-item" @click="onRefresh">
@@ -75,13 +82,24 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { FolderAdd, View, Download, Scissor, DocumentCopy, Delete, Edit, InfoFilled, Upload, Refresh } from "@element-plus/icons-vue";
+import {
+  FolderAdd,
+  View,
+  Download,
+  Scissor,
+  DocumentCopy,
+  Delete,
+  Edit,
+  InfoFilled,
+  Upload,
+  Refresh,
+} from "@element-plus/icons-vue";
 import DriveEntryRightMenuService from "../service/DriveEntryRightMenuService";
-import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
 
 const rightMenuRef = ref<HTMLElement>();
 
-const emit = defineEmits<{
+export interface RightMenuEmitter {
   (e: "on-refresh"): void; //刷新
   (e: "on-paste"): void; //粘贴
   (e: "on-create-folder"): void; //创建文件夹
@@ -93,7 +111,9 @@ const emit = defineEmits<{
   (e: "on-delete", entries: EntryPo[]): void; //删除
   (e: "on-rename", entry: EntryPo): void; //重命名
   (e: "on-properties", entry: EntryPo): void; //属性
-}>();
+}
+
+const emit = defineEmits<RightMenuEmitter>();
 
 //右键菜单控制打包
 const {
@@ -108,115 +128,20 @@ const {
   y: menuY,
 } = DriveEntryRightMenuService.useRightMenuControl(rightMenuRef);
 
-/**
- * 刷新
- */
-const onRefresh = () => {
-  emit("on-refresh");
-  closeRightMenu();
-};
-
-/**
- * 粘贴
- */
-const onPaste = () => {
-  if (!hasClipboard.value) {
-    return;
-  }
-  emit("on-paste");
-  closeRightMenu();
-};
-
-/**
- * 创建文件夹
- */
-const onCreateFolder = () => {
-  emit("on-create-folder");
-  closeRightMenu();
-};
-
-/**
- * 上传文件
- */
-const onUploadFile = () => {
-  emit("on-upload-file");
-  closeRightMenu();
-};
-
-/**
- * 预览
- */
-const onPreview = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-preview", currentEntry.value);
-  closeRightMenu();
-};
-
-//下载
-const onDownload = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-download", currentEntries.value);
-  closeRightMenu();
-};
-
-/**
- * 剪切
- */
-const onCut = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-cut", currentEntries.value);
-  closeRightMenu();
-};
-
-/**
- * 复制
- */
-const onCopy = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-copy", currentEntries.value);
-  closeRightMenu();
-};
-
-/**
- * 删除
- */
-const onDelete = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-delete", currentEntries.value);
-  closeRightMenu();
-};
-
-/**
- * 重命名
- */
-const onRename = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-rename", currentEntry.value);
-  closeRightMenu();
-};
-
-/**
- * 属性
- */
-const onProperties = () => {
-  if (!currentEntry.value) {
-    return;
-  }
-  emit("on-properties", currentEntry.value);
-  closeRightMenu();
-};
+//右键菜单事件提交打包
+const {
+  onRefresh,
+  onPaste,
+  onCreateFolder,
+  onUploadFile,
+  onPreview,
+  onDownload,
+  onCut,
+  onCopy,
+  onDelete,
+  onRename,
+  onProperties,
+} = DriveEntryRightMenuService.useRightMenuEmitter(emit, closeRightMenu, currentEntry, currentEntries);
 
 defineExpose({
   openRightMenu,

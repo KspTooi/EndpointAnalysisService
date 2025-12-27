@@ -1,6 +1,7 @@
-import type { EntryPo } from "@/views/drive/api/DriveApi.ts";
 import { DriveHolder } from "@/store/DriveHolder";
 import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
+import type { EntryPo } from "../api/DriveTypes";
+import type { RightMenuEmitter } from "../components/DriveEntryRightMenu.vue";
 
 export default {
   /**
@@ -82,6 +83,75 @@ export default {
 
   /**
    * 右键菜单事件提交打包
+   * @param emit 事件提交
+   * @param closeRightMenu 关闭右键菜单
    */
-  useRightMenuEmitter() {},
+  useRightMenuEmitter(emit: RightMenuEmitter, closeRightMenu: () => void, currentEntry: Ref<EntryPo>, currentEntries: Ref<EntryPo[]>) {
+    return {
+      //刷新
+      onRefresh: () => {
+        emit("on-refresh");
+        closeRightMenu();
+      },
+
+      //粘贴
+      onPaste: () => {
+        emit("on-paste");
+        closeRightMenu();
+      },
+
+      //创建文件夹
+      onCreateFolder: () => {
+        emit("on-create-folder");
+        closeRightMenu();
+      },
+
+      //上传文件
+      onUploadFile: () => {
+        emit("on-upload-file");
+        closeRightMenu();
+      },
+
+      //预览
+      onPreview: () => {
+        emit("on-preview", currentEntry.value);
+      },
+
+      //下载
+      onDownload: () => {
+        emit("on-download", currentEntries.value);
+        closeRightMenu();
+      },
+
+      //剪切
+      onCut: () => {
+        emit("on-cut", currentEntries.value);
+        closeRightMenu();
+      },
+
+      //复制
+      onCopy: () => {
+        emit("on-copy", currentEntries.value);
+        closeRightMenu();
+      },
+
+      //删除
+      onDelete: () => {
+        emit("on-delete", currentEntries.value);
+        closeRightMenu();
+      },
+
+      //重命名
+      onRename: () => {
+        emit("on-rename", currentEntry.value);
+        closeRightMenu();
+      },
+
+      //属性
+      onProperties: () => {
+        emit("on-properties", currentEntry.value);
+        closeRightMenu();
+      },
+    };
+  },
 };
