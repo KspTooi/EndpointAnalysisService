@@ -1,14 +1,27 @@
 <template>
   <div ref="gridRef" class="list-grid" v-loading="entryLoading" @contextmenu.prevent="onGridRightClick" @mousedown="handleMouseDown">
     <!-- 上级目录 -->
-    <DriveEntryParentItem
+    <!-- <DriveEntryParentItem
       target-id="0"
       name="上级目录"
       v-show="previousParentId.length > 0"
       @dblclick="onReturnParentDir"
       @dragover="handleParentDragOver"
       @drop="handleParentDrop"
+    /> -->
+
+    <!-- 上级目录 -->
+    <DriveEntryItem
+      v-if="previousParentId.length > 0"
+      :type="1"
+      @on-click="onEntryClick"
+      @on-dblclick="onEntryDoubleClick"
+      @on-contextmenu="onRightMenuOpen"
+      @on-drag-start="handleEntryDragStart"
+      @on-drag-over="handleEntryDragOver"
+      @on-drag-drop="handleEntryDrop"
     />
+
     <!-- 条目列表 -->
     <DriveEntryItem
       v-for="item in entryData"
@@ -16,12 +29,12 @@
       :entry="item"
       :ref="(el) => setEntryRef(item.id as string, el)"
       :class="{ selected: selectedIds.has(item.id as string) }"
-      @on-entry-click="onEntryClick"
-      @on-entry-dblclick="onEntryDoubleClick"
-      @on-entry-contextmenu="onRightMenuOpen"
-      @on-entry-dragstart="handleEntryDragStart"
-      @on-entry-dragover="handleEntryDragOver"
-      @on-entry-drop="handleEntryDrop"
+      @on-click="onEntryClick"
+      @on-dblclick="onEntryDoubleClick"
+      @on-contextmenu="onRightMenuOpen"
+      @on-drag-start="handleEntryDragStart"
+      @on-drag-over="handleEntryDragOver"
+      @on-drag-drop="handleEntryDrop"
     />
 
     <!-- 框选矩形 -->
@@ -148,7 +161,7 @@ const onEntryClick = (entry: GetEntryListVo) => {
  * 条目被双击
  * @param entry 条目对象
  */
-const onEntryDoubleClick = (entry: GetEntryListVo | null) => {
+const onEntryDoubleClick = (entry: GetEntryListVo) => {
   //如果entry为null则返回顶级目录
   if (entry == null) {
     entryForm.parentId = null;
@@ -403,10 +416,6 @@ const handleParentDrop = (targetId: string | null, event: DragEvent) => {
   emit("on-entry-drag", null, entriesToDrag);
   draggedEntryId.value = null;
 };
-
-const { entrySelecting, entrySelectionBox, entrySelectedIds, onMouseDown } = MouseInteractionService.useEntrySelection(gridRef, entryRefs);
-
-const { draggedEntryId, onDragStart, onDragOver, onDrop, onParentDragOver, onParentDrop } = MouseInteractionService.useEntryDrag(entryData, selectedIdsBox, emit);
 
 onMounted(() => {
   loadEntries();

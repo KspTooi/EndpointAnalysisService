@@ -2,81 +2,124 @@
   <div
     class="drive-entry-item"
     draggable="true"
-    @click="handleClick"
-    @dblclick="handleDoubleClick"
-    @contextmenu.stop.prevent="handleRightClick"
-    @dragstart="handleDragStart"
-    @dragover.prevent="handleDragOver"
-    @drop.prevent="handleDrop"
+    @click="onClick"
+    @dblclick="onDoubleClick"
+    @contextmenu.stop.prevent="onContextmenu"
+    @dragstart="onDragStart"
+    @dragover.prevent="onDragOver"
+    @drop.prevent="onDrop"
   >
     <div class="entry-icon-wrapper">
-      <el-icon :size="64" class="entry-icon" :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }">
+      <!-- 上级目录 -->
+      <el-icon v-if="type === 1" :size="64" class="entry-icon">
+        <Folder />
+      </el-icon>
+
+      <!-- 普通条目 -->
+      <el-icon v-if="type === 0" :size="64" class="entry-icon" :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }">
         <Folder v-if="entry.kind === 1" />
-        <Document v-else />
+        <Document v-if="entry.kind === 0" />
       </el-icon>
     </div>
-    <div class="entry-name" :title="entry.name">{{ entry.name }}</div>
-    <div v-if="entry.kind === 0 && entry.attachSize" class="entry-size">{{ formatFileSize(entry.attachSize) }}</div>
+
+    <!-- 上级目录 -->
+    <div v-if="type === 1" class="entry-name">{{ "上级目录" }}</div>
+
+    <!-- 普通条目 -->
+    <div v-if="type === 0" class="entry-name" :title="entry.name">{{ entry.name }}</div>
+    <div v-if="entry.kind === 0 && entry.attachSize" class="entry-size">{{ vFileSize }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Folder, Document } from "@element-plus/icons-vue";
 import type { GetEntryListVo } from "@/api/drive/DriveApi.ts";
+import { computed } from "vue";
+import FileUtils from "@/utils/FileUtils";
+import { ElMessage } from "element-plus";
 
-const props = defineProps<{
-  entry: GetEntryListVo;
-}>();
+/**
+ * 定义props
+ */
+const props = withDefaults(
+  defineProps<{
+    //条目类型 0:普通条目 1:上级目录 可选 默认值为0
+    type?: 0 | 1;
 
+    //条目对象
+    entry?: GetEntryListVo;
+  }>(),
+  {
+    type: 0,
+  }
+);
+
+/**
+ * 定义emits
+ */
 const emit = defineEmits<{
-  (e: "on-entry-click", entry: GetEntryListVo): void;
-  (e: "on-entry-dblclick", entry: GetEntryListVo): void;
-  (e: "on-entry-contextmenu", entry: GetEntryListVo, event: MouseEvent): void;
-  (e: "on-entry-dragstart", entry: GetEntryListVo, event: DragEvent): void;
-  (e: "on-entry-dragover", entry: GetEntryListVo, event: DragEvent): void;
-  (e: "on-entry-drop", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-click", entry: GetEntryListVo): void;
+  (e: "on-dblclick", entry: GetEntryListVo): void;
+  (e: "on-contextmenu", entry: GetEntryListVo, event: MouseEvent): void;
+  (e: "on-drag-start", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-drag-over", entry: GetEntryListVo, event: DragEvent): void;
+  (e: "on-drag-drop", entry: GetEntryListVo, event: DragEvent): void;
 }>();
 
-const formatFileSize = (bytes: string): string => {
-  const bytesNum = parseInt(bytes);
+const vFileSize = computed(() => {
+  return FileUtils.formatFileSize(props.entry.attachSize);
+});
 
-  if (!bytesNum || bytesNum === 0) {
-    return "-";
-  }
-  if (bytesNum < 1024) {
-    return bytesNum + " B";
-  }
-  if (bytesNum < 1024 * 1024) {
-    return (bytesNum / 1024).toFixed(2) + " KB";
-  }
-  if (bytesNum < 1024 * 1024 * 1024) {
-    return (bytesNum / (1024 * 1024)).toFixed(2) + " MB";
-  }
-  return (bytesNum / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+/**
+ * 条目被单击
+ * @param entry 条目对象
+ */
+const onClick = () => {
+  emit("on-click", props.entry);
 };
 
-const handleClick = () => {
-  emit("on-entry-click", props.entry);
+/**
+ * 条目被双击
+ * @param entry 条目对象
+ */
+const onDoubleClick = () => {
+  emit("on-dblclick", props.entry);
 };
 
-const handleDoubleClick = () => {
-  emit("on-entry-dblclick", props.entry);
+/**
+ * 右键菜单打开
+ * @param entry 条目对象
+ * @param event 鼠标事件
+ */
+const onContextmenu = (event: MouseEvent) => {
+  emit("on-contextmenu", props.entry, event);
 };
 
-const handleRightClick = (event: MouseEvent) => {
-  emit("on-entry-contextmenu", props.entry, event);
+/**
+ * 拖拽开始
+ * @param entry 条目对象
+ * @param event 鼠标事件
+ */
+const onDragStart = (event: DragEvent) => {
+  emit("on-drag-start", props.entry, event);
 };
 
-const handleDragStart = (event: DragEvent) => {
-  emit("on-entry-dragstart", props.entry, event);
+/**
+ * 拖拽经过
+ * @param entry 条目对象
+ * @param event 鼠标事件
+ */
+const onDragOver = (event: DragEvent) => {
+  emit("on-drag-over", props.entry, event);
 };
 
-const handleDragOver = (event: DragEvent) => {
-  emit("on-entry-dragover", props.entry, event);
-};
-
-const handleDrop = (event: DragEvent) => {
-  emit("on-entry-drop", props.entry, event);
+/**
+ * 拖拽放置
+ * @param entry 条目对象
+ * @param event 鼠标事件
+ */
+const onDrop = (event: DragEvent) => {
+  emit("on-drag-drop", props.entry, event);
 };
 </script>
 

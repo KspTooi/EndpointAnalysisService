@@ -8,8 +8,6 @@ import { ref, onUnmounted, type Ref } from "vue";
  * @param itemRefsMap 条目 DOM 元素的 Map (entryRefs)
  */
 export function useEntrySelection(containerRef: Ref<HTMLElement | null>, itemRefsMap: Ref<Map<string, HTMLElement>>) {
-  // --- 状态定义 ---
-
   // 是否正在框选
   const entrySelecting = ref(false);
 
@@ -28,11 +26,12 @@ export function useEntrySelection(containerRef: Ref<HTMLElement | null>, itemRef
   const startX = ref(0);
   const startY = ref(0);
 
-  // --- 核心逻辑 ---
-
   // 更新选中项 (核心碰撞检测算法)
   const updateEntrySelectedIds = () => {
-    if (!containerRef.value) return;
+    //如果容器不存在则返回
+    if (!containerRef.value) {
+      return;
+    }
 
     const newSelectedIds = new Set<string>();
     const boxRect = {
@@ -99,7 +98,10 @@ export function useEntrySelection(containerRef: Ref<HTMLElement | null>, itemRef
       return;
     }
 
-    if (!containerRef.value) return;
+    //如果容器不存在则返回
+    if (!containerRef.value) {
+      return;
+    }
 
     const rect = containerRef.value.getBoundingClientRect();
     startX.value = event.clientX - rect.left + containerRef.value.scrollLeft;
@@ -155,14 +157,14 @@ export function useEntryDrag(
   emit: (event: "on-entry-drag", target: GetEntryListVo | null, entries: GetEntryListVo[]) => void
 ) {
   // --- 状态 ---
-  const draggedEntryId = ref<string | null>(null);
+  const draggedEntry: Ref<GetEntryListVo> = ref();
 
   /**
    * 开始拖拽
    */
   const onDragStart = (entry: GetEntryListVo, event: DragEvent) => {
     if (!entry.id) return;
-    draggedEntryId.value = entry.id;
+    draggedEntry.value = entry;
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = "move";
       // 可以设置拖拽时的预览图，如果需要的话
@@ -184,20 +186,16 @@ export function useEntryDrag(
    * 放置在某条目上 (目标是普通文件/文件夹)
    */
   const onDrop = (targetEntry: GetEntryListVo, event: DragEvent) => {
-    if (!draggedEntryId.value || !targetEntry.id) return;
-
-    // 1. 找到源对象
-    const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
-    if (!draggedEntry) return;
+    if (!draggedEntry.value?.id || !targetEntry.id) return;
 
     // 2. 计算实际被拖拽的文件列表 (处理多选)
     let entriesToDrag: GetEntryListVo[] = [];
-    if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
+    if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntry.value.id)) {
       // 如果拖拽的是选中集合里的一项，则移动所有选中的项
       entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
     } else {
       // 否则只移动当前这一项
-      entriesToDrag = [draggedEntry];
+      entriesToDrag = [draggedEntry.value];
     }
 
     // 3. 自身不能拖拽到自身
@@ -205,7 +203,7 @@ export function useEntryDrag(
 
     // 4. 发送事件
     emit("on-entry-drag", targetEntry, entriesToDrag);
-    draggedEntryId.value = null; // 重置
+    draggedEntry.value = null; // 重置
   };
 
   /**
@@ -221,13 +219,13 @@ export function useEntryDrag(
    * 放置在上级目录
    */
   const onParentDrop = (targetId: string | null, event: DragEvent) => {
-    if (!draggedEntryId.value) return;
+    if (!draggedEntry.value.id) return;
 
-    const draggedEntry = entryData.value.find((item) => item.id === draggedEntryId.value);
+    const draggedEntry = entryData.value.find((item) => item.id === draggedEntry.value.id);
     if (!draggedEntry) return;
 
     let entriesToDrag: GetEntryListVo[] = [];
-    if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntryId.value)) {
+    if (selectedIds.value.size > 1 && selectedIds.value.has(draggedEntry.value.id)) {
       entriesToDrag = entryData.value.filter((item) => selectedIds.value.has(item.id as string));
     } else {
       entriesToDrag = [draggedEntry];
@@ -235,11 +233,11 @@ export function useEntryDrag(
 
     //投递到上级目录
     emit("on-entry-drag", null, entriesToDrag);
-    draggedEntryId.value = null;
+    draggedEntry.value = null;
   };
 
   return {
-    draggedEntryId,
+    draggedEntry,
     onDragStart,
     onDragOver,
     onDrop,
