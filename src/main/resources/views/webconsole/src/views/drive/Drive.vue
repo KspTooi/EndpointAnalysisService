@@ -70,7 +70,7 @@ import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
-import { DriveHolder } from "@/store/DriveHolder.ts";
+import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "./service/DriveService";
 
@@ -84,7 +84,7 @@ const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
 const currentSelectedEntry = ref<EntryPo | null>(null);
-const driveHolder = DriveHolder();
+const driveHolder = DriveStore();
 const entryGridRef = ref<InstanceType<typeof DriveEntryGrid>>();
 
 //条目列表打包

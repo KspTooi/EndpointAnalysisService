@@ -7,7 +7,7 @@ import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfir
 import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
 import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
-import { DriveHolder } from "@/store/DriveHolder.ts";
+import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveApi from "../api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
@@ -93,7 +93,7 @@ export default {
 
       //粘贴
       paste: async () => {
-        const entries = DriveHolder().getClipBoardEntry;
+        const entries = DriveStore().getClipBoardEntry;
 
         //粘贴板没有内容
         if (entries.length === 0) {
@@ -160,7 +160,7 @@ export default {
 
       //复制
       copy: (entries: EntryPo[]) => {
-        DriveHolder().setClipBoardEntry(entries);
+        DriveStore().setClipBoardEntry(entries);
       },
 
       //删除

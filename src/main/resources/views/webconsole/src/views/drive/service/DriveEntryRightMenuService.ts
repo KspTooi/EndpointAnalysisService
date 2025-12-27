@@ -1,4 +1,4 @@
-import { DriveHolder } from "@/store/DriveHolder";
+import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
 import type { EntryPo } from "../api/DriveTypes";
 import type { RightMenuEmitter } from "../components/DriveEntryRightMenu.vue";
@@ -18,7 +18,7 @@ export default {
 
     //是否有粘贴板内容
     const hasClipboard = computed(() => {
-      return DriveHolder().getClipBoardEntry.length > 0;
+      return DriveStore().getClipBoardEntry.length > 0;
     });
 
     //是否多选

@@ -4,6 +4,7 @@ import { ElMessage } from "element-plus";
 import { ref, onUnmounted, type Ref, reactive, computed, type Reactive } from "vue";
 import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
 import type { EntryGridEmitter } from "../components/DriveEntryGrid.vue";
+import { DriveStore } from "./DriveStore";
 
 /**
  * DriveEntryGrid 服务模块
@@ -16,7 +17,7 @@ export default {
    */
   useEntryList(emit: EntryGridEmitter) {
     const listQuery = reactive<GetEntryListDto>({
-      directoryId: null,
+      directoryId: DriveStore().getCurrentDir.id,
       keyword: null,
       pageNum: 1,
       pageSize: 50000,
@@ -53,6 +54,11 @@ export default {
             parentId: res.data.dirParentId,
           });
           console.log(`目录变更: ${currentDir.value.name} -> ${res.data.dirName}`);
+          DriveStore().setCurrentDir({
+            id: res.data.dirId,
+            name: res.data.dirName,
+            parentId: res.data.dirParentId,
+          });
         }
 
         //更新当前目录信息
