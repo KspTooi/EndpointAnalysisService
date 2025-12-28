@@ -177,6 +177,9 @@ export default {
       selectedIds.value = newSelectedIds;
     };
 
+    let cachedRect: DOMRect | null = null; // 缓存的容器矩形
+    let rafId: number | null = null; // 请求动画帧ID
+
     /**
      * 鼠标移动事件
      * @param event 鼠标事件
@@ -186,17 +189,41 @@ export default {
         return;
       }
 
-      const rect = gridRef.value.getBoundingClientRect();
-      const currentX = event.clientX - rect.left + gridRef.value.scrollLeft;
-      const currentY = event.clientY - rect.top + gridRef.value.scrollTop;
+      //取消上次请求动画帧
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
 
-      const left = Math.min(startX.value, currentX);
-      const top = Math.min(startY.value, currentY);
-      const width = Math.abs(currentX - startX.value);
-      const height = Math.abs(currentY - startY.value);
+      rafId = requestAnimationFrame(() => {
+        const container = gridRef.value!;
 
-      selectBox.value = { left, top, width, height };
-      updateSelectedIds();
+        //只有在没有缓存时才获取 Rect（建议在 onMouseDown 中获取并重置为 null）
+        if (!cachedRect) {
+          cachedRect = container.getBoundingClientRect();
+        }
+
+        //计算相对坐标（考虑滚动条）
+        let currentX = event.clientX - cachedRect.left + container.scrollLeft;
+        let currentY = event.clientY - cachedRect.top + container.scrollTop;
+
+        //边界约束：限制坐标不超出容器实际内容区域
+        const scrollWidth = container.scrollWidth;
+        const scrollHeight = container.scrollHeight;
+        currentX = Math.max(0, Math.min(currentX, scrollWidth));
+        currentY = Math.max(0, Math.min(currentY, scrollHeight));
+
+        //计算矩形几何属性
+        const left = Math.min(startX.value, currentX);
+        const top = Math.min(startY.value, currentY);
+        const width = Math.abs(currentX - startX.value);
+        const height = Math.abs(currentY - startY.value);
+
+        //批量更新响应式数据
+        selectBox.value = { left, top, width, height };
+
+        //执行碰撞检测（建议也进行节流处理）
+        updateSelectedIds();
+      });
     };
 
     /**
