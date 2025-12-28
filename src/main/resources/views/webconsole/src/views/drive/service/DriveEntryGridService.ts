@@ -455,7 +455,7 @@ export default {
 
       //判断是否是文件夹
       if (entry.kind !== 1) {
-        ElMessage.error("指定的目标不是文件夹.");
+        //ElMessage.error("指定的目标不是文件夹.");
         return;
       }
 

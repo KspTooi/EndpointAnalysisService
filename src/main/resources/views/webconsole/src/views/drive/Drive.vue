@@ -7,7 +7,7 @@
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
     />
-    {{ isFocused }}
+    <!-- {{ isFocused }} -->
 
     <!-- 文件选择器 -->
     <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
@@ -17,7 +17,7 @@
         @on-directory-change="onGridDirectoryChange"
         @on-entries-loaded="onGridLoad"
         @on-entry-click=""
-        @on-entry-dblclick=""
+        @on-entry-dblclick="enterOrOpenFile"
         @on-entry-drag="dragMove"
         @on-entry-contextmenu="onEntryContextmenu"
         ref="entryGridRef"
@@ -122,21 +122,7 @@ const { isFocused, clearFocus } = ElementFocusService.useElementFocus(containerR
 GenricHotkeyService.useHotkeyFunction(
   {
     enter: () => {
-      //获取当前选中的条目列表
-      const selectedEntries = entryGridRef.value?.getSelectedEntries();
-
-      if (selectedEntries.length != 1) {
-        return;
-      }
-
-      //如果是文件夹 则导航进入文件夹
-      if (selectedEntries[0].kind == 1) {
-        entryGridRef.value?.enterDirectory(selectedEntries[0], currentDir.value);
-        return;
-      }
-
-      //如果是文件 尝试预览、下载
-      menuPreview(selectedEntries[0]);
+      enterOrOpenFile(null);
     },
 
     //复制
@@ -183,6 +169,38 @@ GenricHotkeyService.useHotkeyFunction(
   },
   isFocused
 );
+
+/**
+ * 进入或打开文件
+ * @param entry 条目对象
+ */
+const enterOrOpenFile = (entry: EntryPo) => {
+  //获取当前选中的条目列表
+  const selectedEntries = [];
+
+  //如果传入条目 则添加到选中列表
+  if (entry) {
+    selectedEntries.push(entry);
+  }
+
+  //如果未传入条目 则获取当前选中的条目列表
+  if (!entry && entryGridRef.value) {
+    selectedEntries.push(...entryGridRef.value?.getSelectedEntries());
+  }
+
+  if (selectedEntries.length != 1) {
+    return;
+  }
+
+  //如果是文件夹 则导航进入文件夹
+  if (selectedEntries[0].kind == 1) {
+    entryGridRef.value?.enterDirectory(selectedEntries[0], currentDir.value);
+    return;
+  }
+
+  //如果是文件 尝试预览、下载
+  menuPreview(selectedEntries[0]);
+};
 
 /**
  * 右键菜单打开

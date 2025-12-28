@@ -20,7 +20,7 @@
       :ref="(el) => setEntryRef(item.id, el)"
       :class="{ selected: selectedIds.has(item.id) }"
       @on-click="onEntryClick"
-      @on-dblclick="enterDirectory"
+      @on-dblclick="onEntryDoubleClick"
       @on-contextmenu="onContextmenu"
       @on-drag-start="onDragStart"
       @on-drag-over="onDragOver"
@@ -114,6 +114,18 @@ const setEntryRef = (id: string, el: any) => {
 const onEntryClick = (entry: EntryPo) => {
   selectEntry(entry);
   emit("on-entry-click", entry);
+};
+
+/**
+ * 条目被双击
+ * @param entry 条目对象
+ */
+const onEntryDoubleClick = (entry: EntryPo) => {
+  if (entry.kind === 1) {
+    enterDirectory(entry, currentDir.value);
+    return;
+  }
+  emit("on-entry-dblclick", entry);
 };
 
 /**
