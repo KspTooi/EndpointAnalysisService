@@ -27,6 +27,8 @@
       @on-drag-drop="onDrop"
     />
 
+    <el-empty description="此处没有任何物品" v-if="listTotal === 0" style="width: 100%; height: 100%; user-select: none" />
+
     <!-- 框选矩形 -->
     <div
       v-if="hasSelecting"
