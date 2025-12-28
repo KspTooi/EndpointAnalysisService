@@ -66,7 +66,7 @@
     <template v-if="isMultiSelect">
       <div v-if="currentEntries.every((item) => item.kind === 0)" class="menu-item" @click="onDownload">
         <el-icon><Download /></el-icon>
-        <span>下载({{ currentEntries.length }})</span>
+        <span>打包下载({{ currentEntries.length }})</span>
       </div>
       <div class="menu-item" @click="onCopy">
         <el-icon><DocumentCopy /></el-icon>
