@@ -12,10 +12,10 @@ import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.CompanyMemberRepository;
 import com.ksptooi.biz.core.repository.CompanyRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.exception.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class CompanyService {
 
         //新增成功以后，将当前用户加入公司
         insertPo.addMember(user, 0); //0:CEO 1:成员
-        
+
 
         //如果该用户名下没有担任CEO的公司，则将当前公司设置为激活公司
         Long ceoCompanyCount = repository.getCompanyCountByUserRole(user.getId(), 0);
@@ -106,7 +106,7 @@ public class CompanyService {
         if (currentMember.getRole() != 0) {
             throw new BizException("您不是CEO，无权限编辑此公司");
         }
-        
+
         Long count = repository.countByCompanyNameExcludeId(dto.getName(), updatePo.getId());
 
         if (count > 0) {
@@ -182,6 +182,9 @@ public class CompanyService {
                 user.setActiveCompany(null);
                 userRepository.save(user);
             }
+
+            //刷新用户Session
+            authService.refreshUserSession(userId);
             return;
         }
 
@@ -194,7 +197,8 @@ public class CompanyService {
             user.setActiveCompany(null);
             userRepository.save(user);
         }
-
+        //刷新用户Session
+        authService.refreshUserSession(userId);
     }
 
     /**

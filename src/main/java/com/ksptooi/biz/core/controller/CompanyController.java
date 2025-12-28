@@ -30,7 +30,7 @@ public class CompanyController {
 
     @Autowired
     private CompanyService companyService;
-    
+
 
     @PostMapping("/getCurrentUserCompanyList")
     @Operation(summary = "获取我的/我加入的团队列表")
@@ -70,14 +70,14 @@ public class CompanyController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除团队")
+    /*@Operation(summary = "删除团队")
     @PostMapping("/removeCompany")
     public Result<String> removeCompany(@RequestBody @Valid CommonIdDto dto) throws Exception {
         companyService.removeCompany(dto);
         return Result.success("操作成功");
-    }
+    }*/
 
-    
+
     @Operation(summary = "激活团队")
     @PostMapping("/activateCompany")
     public Result<String> activateCompany(@RequestBody @Valid CommonIdDto dto) throws Exception {
