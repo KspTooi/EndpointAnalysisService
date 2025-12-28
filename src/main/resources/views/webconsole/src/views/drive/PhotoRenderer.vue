@@ -155,7 +155,7 @@ const handleReset = () => {
   max-height: 100%;
 
   /* 保持原有的过渡和交互样式 */
-  transition: transform 0.1s linear;
+  /* transition: transform 0.1s linear; */
   user-select: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
