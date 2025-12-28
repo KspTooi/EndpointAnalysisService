@@ -1,11 +1,24 @@
 <template>
-  <div class="list-container no-outline" ref="containerRef">
+  <div class="no-active-company" v-if="noActiveCompany" style="width: 100%">
+    <el-empty description="暂无激活的团队">
+      <template #description>
+        <div class="empty-description">
+          <h3>您还没有激活或创建团队</h3>
+          <p>请先激活或创建一个团队，然后才能使用团队云盘</p>
+        </div>
+      </template>
+      <el-button type="primary" @click="goToCompanySetup">前往团队设置</el-button>
+    </el-empty>
+  </div>
+
+  <div class="list-container no-outline" ref="containerRef" v-if="!noActiveCompany">
     <!-- 控制面板 -->
     <DriveContrlPanel
       :entry-count="entryTotal"
       :upload-count="inQueueUploadCount"
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
+      @refresh-drive-info="refreshDriveInfo"
     />
     <!-- {{ isFocused }} -->
 
@@ -68,10 +81,12 @@ import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
-import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
+import type { EntryPo, GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "./service/DriveService";
 import ElementFocusService from "@/service/ElmentFocusService";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
+import type Result from "@/commons/entity/Result";
+import router from "@/router/admin";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null);
@@ -239,6 +254,26 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
   });
   inQueueUploadCount.value = count;
 };
+
+const noActiveCompany = ref(false);
+
+/**
+ * 刷新云盘信息
+ * @param result 云盘信息
+ */
+const refreshDriveInfo = (result: Result<GetDriveInfoVo>) => {
+  if (result.code != 0) {
+    noActiveCompany.value = true;
+    return;
+  }
+};
+
+/**
+ * 前往团队设置
+ */
+const goToCompanySetup = () => {
+  router.push("/company-manager");
+};
 </script>
 
 <style scoped>
@@ -264,5 +299,13 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
 
 .no-outline:focus {
   outline: none;
+}
+
+.no-active-company {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
 }
 </style>

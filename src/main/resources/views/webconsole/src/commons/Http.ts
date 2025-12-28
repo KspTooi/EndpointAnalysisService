@@ -122,6 +122,11 @@ export default {
       return result as T;
     }
 
+    //需要团队
+    if (result.code === 101) {
+      return result as T;
+    }
+
     // 抛出其他业务错误信息 (code != 0 且非权限不足)
     throw new Error(result.message || "请求失败或数据无效");
   },

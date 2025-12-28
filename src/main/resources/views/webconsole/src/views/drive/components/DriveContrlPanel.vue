@@ -64,7 +64,7 @@ import { ref, computed, onMounted } from "vue";
 import { Search, Upload, Coin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
-import { Result } from "@/commons/entity/Result";
+import type Result from "@/commons/entity/Result.ts";
 import type { GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts";
 
 //定义props
@@ -83,6 +83,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "on-search", keyword: string): void; //搜索时触发
   (e: "open-upload-queue"): void; //打开上传队列
+  (e: "refresh-drive-info", result: Result<GetDriveInfoVo>): void; //刷新云盘信息
 }>();
 
 const keyword = ref("");
@@ -130,14 +131,16 @@ const formatSize = (bytes: string | number | null | undefined): string => {
 
 const loadDriveInfo = async () => {
   const result = await DriveApi.getDriveInfo();
-  if (Result.isSuccess(result)) {
+  emit("refresh-drive-info", result);
+  if (result.code === 0) {
     driveInfo.value = result.data;
   }
 };
 
 const handleRefreshDriveInfo = async () => {
   const result = await DriveApi.getDriveInfo();
-  if (Result.isSuccess(result)) {
+  emit("refresh-drive-info", result);
+  if (result.code === 0) {
     driveInfo.value = result.data;
     ElMessage.success("云盘信息已刷新");
     return;

@@ -21,7 +21,7 @@ public class UserSessionPo {
     @Comment("用户ID")
     private Long userId;
 
-    @Column(name = "company_id", nullable = false)
+    @Column(name = "company_id", nullable = true)
     @Comment("公司ID")
     private Long companyId;
 

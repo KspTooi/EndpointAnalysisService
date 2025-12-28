@@ -45,6 +45,10 @@ export default {
       try {
         const res = await DriveApi.getEntryList(listQuery);
 
+        if (res.code != 0) {
+          return;
+        }
+
         //检查是否有更改目录
         const isChangeDir = res.data.dirId !== currentDir.value.id;
         if (isChangeDir) {
