@@ -234,6 +234,18 @@ const router = createRouter({
       component: () => import("@/views/drive/VideoRenderer.vue"),
       meta: { breadcrumb: { title: "媒体播放" } },
     },
+    {
+      path: "/drive/preview/word",
+      name: "drive-preview-word",
+      component: () => import("@/views/drive/WordRenderer.vue"),
+      meta: { breadcrumb: { title: "Word预览" } },
+    },
+    {
+      path: "/drive/preview/excel",
+      name: "drive-preview-excel",
+      component: () => import("@/views/drive/ExcelRenderer.vue"),
+      meta: { breadcrumb: { title: "Excel预览" } },
+    },
   ],
 });
 

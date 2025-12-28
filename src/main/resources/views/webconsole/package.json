@@ -14,6 +14,8 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "@iconify/json": "^2.2.373",
+    "@vue-office/docx": "^1.6.3",
+    "@vue-office/excel": "^1.7.14",
     "axios": "^1.8.4",
     "bootstrap-icons": "^1.11.3",
     "element-plus": "^2.9.7",
@@ -25,10 +27,12 @@
     "pnpm": "^10.14.0",
     "vanilla-jsoneditor": "^3.8.0",
     "vue": "^3.5.13",
+    "vue-demi": "^0.14.10",
     "vue-json-pretty": "^2.5.0",
     "vue-router": "^4.5.0",
     "vue3-json-editor": "^1.1.5",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@iconify/vue": "^5.0.0",

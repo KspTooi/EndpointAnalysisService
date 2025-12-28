@@ -12,6 +12,7 @@ import DriveApi from "../api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
 import { useTabStore } from "@/store/TabHolder";
+import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
 
 //当前目录信息
 const currentDir = ref<CurrentDirPo>({
@@ -132,29 +133,49 @@ export default {
           return; // 文件夹不预览
         }
 
-        // 文件类型定义
-        const FILE_TYPES = {
-          PHOTO: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico"],
-          VIDEO: ["mp4", "webm", "ogg", "mp3", "wav", "flac", "m4a"],
-          PDF: ["pdf"],
-        };
-
-        const suffix = entry.attachSuffix?.toLowerCase() || "";
         let routePath = "";
         let icon = "";
+        const fileCategory = FileCategoryService.getFileCategory(entry.attachSuffix);
 
-        // 识别类型
-        if (FILE_TYPES.PHOTO.includes(suffix)) {
+        //图片
+        if (fileCategory === EntryCategory.PHOTO) {
           routePath = "/drive/preview/photo";
           icon = "el-icon-picture";
-        } else if (FILE_TYPES.VIDEO.includes(suffix)) {
+        }
+
+        //视频
+        if (fileCategory === EntryCategory.VIDEO) {
           routePath = "/drive/preview/video";
           icon = "el-icon-video-play";
-        } else if (FILE_TYPES.PDF.includes(suffix)) {
+        }
+
+        //音频
+        if (fileCategory === EntryCategory.AUDIO) {
+          routePath = "/drive/preview/video";
+          icon = "el-icon-headset";
+        }
+
+        //PDF
+        if (fileCategory === EntryCategory.PDF) {
           routePath = "/drive/preview/pdf";
           icon = "el-icon-document";
-        } else {
-          ElMessage.info(`暂不支持预览 .${suffix} 文件，请下载查看`);
+        }
+
+        //Word文档
+        if (fileCategory === EntryCategory.WORD) {
+          routePath = "/drive/preview/word";
+          icon = "el-icon-document";
+        }
+
+        //Excel表格
+        if (fileCategory === EntryCategory.EXCEL) {
+          routePath = "/drive/preview/excel";
+          icon = "el-icon-table";
+        }
+
+        //未能获取到受支持的预览类型
+        if (!routePath) {
+          ElMessage.info(`暂不支持预览 .${entry.attachSuffix} 文件，请下载查看`);
           return;
         }
 
@@ -166,7 +187,7 @@ export default {
             const sign = result.data.params;
 
             // 构建带参数的路径
-            // 注意：我们将 sign 作为 query 参数传递
+            // 将 sign 作为 query 参数传递
             const fullPath = `${routePath}?sign=${encodeURIComponent(sign)}&name=${encodeURIComponent(entry.name)}`;
 
             // 添加并激活 Tab
