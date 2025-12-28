@@ -286,11 +286,23 @@ export default {
      * @param entry 条目对象
      */
     const selectEntry = (entry: EntryPo) => {
+      //如果点选的时候当前选择了不止一个条目 则直接点选当前条目
+      if (selectedIds.value.size > 1) {
+        selectedIds.value.clear();
+        selectedIds.value.add(entry.id);
+        return;
+      }
+
+      //点选时如果当前条目已经选中 则取消选中
       if (selectedIds.value.has(entry.id)) {
         selectedIds.value.delete(entry.id);
         return;
       }
 
+      //取消所有选中
+      selectedIds.value.clear();
+
+      //添加选中
       selectedIds.value.add(entry.id);
     };
 
