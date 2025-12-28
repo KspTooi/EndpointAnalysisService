@@ -7,7 +7,7 @@
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
     />
-    <!-- {{ isFocused }} -->
+    {{ isFocused }}
 
     <!-- 文件选择器 -->
     <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
@@ -121,6 +121,24 @@ const { isFocused } = ElementFocusService.useElementFocus(containerRef);
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
   {
+    enter: () => {
+      //获取当前选中的条目列表
+      const selectedEntries = entryGridRef.value?.getSelectedEntries();
+
+      if (selectedEntries.length != 1) {
+        return;
+      }
+
+      //如果是文件夹 则导航进入文件夹
+      if (selectedEntries[0].kind == 1) {
+        entryGridRef.value?.enterDirectory(selectedEntries[0], currentDir.value);
+        return;
+      }
+
+      //如果是文件 尝试预览、下载
+      menuPreview(selectedEntries[0]);
+    },
+
     //复制
     ctrl_c: () => {
       menuCopy(entryGridRef.value?.getSelectedEntries() || []);

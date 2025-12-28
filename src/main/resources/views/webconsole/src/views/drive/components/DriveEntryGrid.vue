@@ -46,6 +46,8 @@ import { ref, onMounted, onUnmounted, reactive, watch, type Ref } from "vue";
 import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
 import DriveEntryGridService from "@/views/drive/service/DriveEntryGridService.ts";
 import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
+import ElmentFocusService from "@/service/ElmentFocusService";
 
 const props = defineProps<{
   //搜索关键词
@@ -81,7 +83,7 @@ const entryRefs = ref<Map<string, HTMLElement>>(new Map());
 const { hasParentDir, currentDir, listQuery, listData, listTotal, listLoading, listLoad } =
   DriveEntryGridService.useEntryList(emit);
 
-//鼠标框选打包
+//鼠标框选和点选打包
 const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } =
   DriveEntryGridService.useEntrySelection(gridRef, entryRefs);
 
@@ -190,6 +192,13 @@ defineExpose({
   backspace: () => {
     backParentDirectory();
   },
+
+  /**
+   * 导航进入文件夹
+   * @param entry 条目对象
+   * @param currentDir 当前目录对象
+   */
+  enterDirectory,
 });
 </script>
 
@@ -204,6 +213,7 @@ defineExpose({
   height: calc(100vh - 185px);
   /* border: 1px solid var(--el-border-color); */
   overflow-y: auto;
+  outline: none;
 }
 
 .selection-box {
