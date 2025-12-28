@@ -37,6 +37,7 @@ import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
 import type { AddEntryDto, CurrentDirPo } from "@/views/drive/api/DriveTypes.ts";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const props = defineProps<{
   currentDir: CurrentDirPo;
@@ -89,6 +90,8 @@ const closeModal = () => {
 };
 
 const handleSubmit = async () => {
+  console.log("handleSubmit", formRef.value);
+
   if (!formRef.value) {
     return;
   }
@@ -144,6 +147,15 @@ watch(modalVisible, (val) => {
     });
   }
 });
+
+//快捷键功能打包
+GenricHotkeyService.useHotkeyFunction(
+  {
+    enter: handleSubmit,
+  },
+  modalVisible,
+  true
+);
 </script>
 
 <style scoped>

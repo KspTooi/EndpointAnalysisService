@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, type Ref } from "vue";
 
 /**
  * 快捷键动作接口
@@ -49,8 +49,10 @@ export default {
   /**
    * 启用快捷键监听
    * @param actions 动作集合 (只传需要监听的按键)
+   * @param active 是否激活快捷键
+   * @param triggerInInput 是否在输入框中触发快捷键
    */
-  useHotkeyFunction(actions: HotkeyActions) {
+  useHotkeyFunction(actions: HotkeyActions, active: Ref<boolean>, triggerInInput?: boolean) {
     /**
      * 辅助执行函数：只有当 action 存在时，才阻止默认事件并执行
      * @param e 键盘事件
@@ -72,6 +74,10 @@ export default {
      * 按键按下事件
      */
     const onKeydown = (e: KeyboardEvent) => {
+      if (!active.value) {
+        return;
+      }
+
       const { key, ctrlKey, metaKey } = e;
       const isCtrl = ctrlKey || metaKey; // 兼容 Mac Command 键
       const activeTag = document.activeElement?.tagName.toLowerCase();
@@ -87,7 +93,7 @@ export default {
 
       // 如果当前焦点在输入框或文本域中，通常不触发常规业务快捷键
       // (保留原生复制粘贴等功能)
-      if (isInput) {
+      if (isInput && !triggerInInput) {
         return;
       }
 

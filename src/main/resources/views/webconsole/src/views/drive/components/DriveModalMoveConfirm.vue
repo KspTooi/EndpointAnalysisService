@@ -1,5 +1,12 @@
 <template>
-  <el-dialog v-model="modalVisible" title="移动冲突确认" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent>
+  <el-dialog
+    v-model="modalVisible"
+    title="移动冲突确认"
+    width="500px"
+    :close-on-click-modal="false"
+    class="modal-centered"
+    @contextmenu.prevent
+  >
     <div class="modal-content">
       <div class="conflict-tip">
         <el-icon class="warning-icon"><Warning /></el-icon>
@@ -25,6 +32,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import { Warning } from "@element-plus/icons-vue";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const modalVisible = ref(false);
 const conflictNames = ref<string[]>([]);
@@ -94,6 +102,15 @@ watch(modalVisible, (val) => {
     resolvePromise = null;
   }
 });
+
+//快捷键功能打包
+GenricHotkeyService.useHotkeyFunction(
+  {
+    enter: handleOverwrite,
+  },
+  modalVisible,
+  true
+);
 </script>
 
 <style scoped>

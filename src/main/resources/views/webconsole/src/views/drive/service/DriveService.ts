@@ -391,11 +391,11 @@ export default {
       }
 
       // --- 刷新 (F5) ---
-      if (e.key === "F5") {
+      /* if (e.key === "F5") {
         e.preventDefault(); // 阻止浏览器刷新页面
         actions.refresh();
         return;
-      }
+      } */
     };
 
     onMounted(() => {

@@ -1,5 +1,13 @@
 <template>
-  <el-dialog v-model="modalVisible" title="重命名" width="500px" :close-on-click-modal="false" class="modal-centered" @contextmenu.prevent @opened="handleDialogOpened">
+  <el-dialog
+    v-model="modalVisible"
+    title="重命名"
+    width="500px"
+    :close-on-click-modal="false"
+    class="modal-centered"
+    @contextmenu.prevent
+    @opened="handleDialogOpened"
+  >
     <div class="modal-content">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="名称" prop="name">
@@ -17,11 +25,12 @@
 </template>
 
 <script setup lang="ts">
-import DriveApi from "@/views/drive/api/DriveApi.ts"
+import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
-import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts"
+import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -137,6 +146,15 @@ watch(modalVisible, (val) => {
     });
   }
 });
+
+//快捷键功能打包
+GenricHotkeyService.useHotkeyFunction(
+  {
+    enter: handleSubmit,
+  },
+  modalVisible,
+  true
+);
 </script>
 
 <style scoped>

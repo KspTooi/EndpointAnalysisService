@@ -65,7 +65,8 @@ import { ElMessage } from "element-plus";
 import { Close, Delete, Folder, Document, WarningFilled } from "@element-plus/icons-vue";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
-import type { EntryPo } from "@/views/drive/api/DriveTypes.ts"
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -165,6 +166,16 @@ const getFileType = (suffix: string | null): string => {
 defineExpose({
   openConfirm,
 });
+
+//快捷键功能打包
+GenricHotkeyService.useHotkeyFunction(
+  {
+    enter: handleConfirm,
+    esc: handleCancel,
+  },
+  isVisible,
+  true
+);
 </script>
 
 <style scoped>
