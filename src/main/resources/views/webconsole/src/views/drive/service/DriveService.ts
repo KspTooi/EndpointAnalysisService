@@ -190,13 +190,20 @@ export default {
             // 将 sign 作为 query 参数传递
             const fullPath = `${routePath}?sign=${encodeURIComponent(sign)}&name=${encodeURIComponent(entry.name)}`;
 
-            // 添加并激活 Tab
-            useTabStore().addTab({
-              id: `preview-${entry.id}`, // 使用文件ID作为Tab ID，防止重复打开
-              title: entry.name,
-              path: fullPath,
-              closable: true,
-            });
+            //在当前激活的TAB后面插入一个新标签
+            const activeTab = useTabStore().activeTabId;
+            const activeTabIndex = useTabStore().tabs.findIndex((t) => t.id === activeTab);
+            if (activeTabIndex !== -1) {
+              useTabStore().insertTab(
+                {
+                  id: `preview-${entry.id}`, // 使用文件ID作为Tab ID，防止重复打开
+                  title: entry.name,
+                  path: fullPath,
+                  closable: true,
+                },
+                activeTabIndex + 1
+              );
+            }
           }
         } catch (error: any) {
           ElMessage.error(error.message || "获取预览链接失败");

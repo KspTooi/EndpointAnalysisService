@@ -72,11 +72,38 @@ export const useTabStore = defineStore("tabStore", () => {
     }
   };
 
+  /**
+   * 添加标签
+   * @param tab 标签
+   */
   const addTab = (tab: Tab) => {
     const existingTab = tabs.value.find((t) => t.id === tab.id);
     if (!existingTab) {
       tabs.value.push(tab);
     }
+    setActiveTab(tab.id);
+  };
+
+  /**
+   * 插入标签
+   * @param tab 标签
+   * @param index 索引
+   */
+  const insertTab = (tab: Tab, index: number) => {
+    let _index = index;
+    if (_index < 1) {
+      _index = 1;
+    }
+    if (_index > tabs.value.length) {
+      _index = tabs.value.length;
+    }
+
+    const existingTab = tabs.value.find((t) => t.id === tab.id);
+    if (existingTab) {
+      setActiveTab(existingTab.id);
+      return;
+    }
+    tabs.value.splice(_index, 0, tab);
     setActiveTab(tab.id);
   };
 
@@ -140,6 +167,7 @@ export const useTabStore = defineStore("tabStore", () => {
     activeTabId,
     refreshCounter,
     addTab,
+    insertTab,
     removeTab,
     setActiveTab,
     closeOtherTabs,
