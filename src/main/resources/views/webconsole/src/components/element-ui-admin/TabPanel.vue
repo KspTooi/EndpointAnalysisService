@@ -1,8 +1,21 @@
 <template>
   <div class="tab-panel-container">
-    <draggable v-model="tabs" item-key="id" class="draggable-tabs" animation="200" ghost-class="ghost-tab" @end="onDragEnd" ref="draggableRef">
+    <draggable
+      v-model="tabs"
+      item-key="id"
+      class="draggable-tabs"
+      animation="200"
+      ghost-class="ghost-tab"
+      @end="onDragEnd"
+      ref="draggableRef"
+    >
       <template #item="{ element: tab }">
-        <div class="tab-item" :class="{ active: activeTabId === tab.id }" @click="handleTabClick(tab.id)" @contextmenu.prevent="openContextMenu($event, tab)">
+        <div
+          class="tab-item"
+          :class="{ active: activeTabId === tab.id }"
+          @click="handleTabClick(tab.id)"
+          @contextmenu.prevent="openContextMenu($event, tab)"
+        >
           <span class="tab-title">{{ tab.title }}</span>
           <el-icon v-if="tab.closable !== false && tabs.length > 1" class="close-icon" @click.stop="handleTabClose(tab.id)">
             <Close />
@@ -137,6 +150,7 @@ onBeforeUnmount(() => {
   padding: 1px 0 0 5px;
   border-bottom: 1px solid var(--el-border-color-light);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  user-select: none;
 }
 
 .draggable-tabs {
