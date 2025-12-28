@@ -1,36 +1,37 @@
 package com.ksptooi.biz.drive.service;
 
+import com.google.gson.Gson;
+import com.ksptooi.biz.core.service.AttachService;
+import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.drive.model.EntryPo;
+import com.ksptooi.biz.drive.model.vo.EntrySignVo;
+import com.ksptooi.biz.drive.repository.EntryRepository;
+import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
+import com.ksptooi.commons.config.DriveConfig;
+import com.ksptooi.commons.utils.Base64;
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.assembly.entity.exception.BizException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.ksptooi.biz.drive.model.EntryPo;
-import com.ksptooi.biz.drive.model.vo.EntrySignVo;
-import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptooi.biz.core.service.AttachService;
-import com.ksptooi.biz.core.service.AuthService;
-import java.nio.file.Paths;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import com.ksptooi.biz.drive.repository.EntryRepository;
-import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
-import com.ksptooi.commons.config.DriveConfig;
-import com.ksptooi.commons.utils.Base64;
-import com.google.gson.Gson;
 
 @Service
 public class EntryAccessService {
 
     @Autowired
-    private AttachService attachService;        
+    private AttachService attachService;
 
     @Autowired
     private EntryRepository entryRepository;
@@ -42,29 +43,30 @@ public class EntryAccessService {
 
     /**
      * 获取条目对象签名 支持单个和多个
-     * @param id 条目ID
+     *
+     * @param ids 条目IDS
      * @return 条目对象签名
      * @throws BizException
      * @throws AuthException
      */
-    public String getEntrySign(List<Long> ids) throws BizException,AuthException {
+    public String getEntrySign(List<Long> ids) throws BizException, AuthException {
 
         //单文件签名
-        if(ids.size() < 2){
+        if (ids.size() < 2) {
 
             var entryPo = entryRepository.getByIdAndCompanyId(ids.getFirst(), AuthService.requireCompanyId());
 
-            if(entryPo == null){
+            if (entryPo == null) {
                 throw new BizException("条目不存在!");
             }
 
-            if(entryPo.getKind() == 1){
+            if (entryPo.getKind() == 1) {
                 throw new BizException("条目类型为文件夹,无法执行签名操作!");
             }
 
             var attach = entryPo.getAttach();
 
-            if(attach == null){
+            if (attach == null) {
                 throw new BizException("条目中的附件不存在!");
             }
 
@@ -86,17 +88,17 @@ public class EntryAccessService {
         //多文件签名
         var entryPos = entryRepository.getByIdAndCompanyIds(ids, AuthService.requireCompanyId());
 
-        if(entryPos.isEmpty() || ( entryPos.size() != ids.size() )){
+        if (entryPos.isEmpty() || (entryPos.size() != ids.size())) {
             throw new BizException("至少有一个文件不存在或无权限访问!");
         }
 
-        if(entryPos.size() < 2){
+        if (entryPos.size() < 2) {
             throw new BizException("至少需要选择2个条目,才能生成签名!");
         }
 
         //检查是否有文件夹
-        for(var entryPo : entryPos){
-            if(entryPo.getKind() == 1){
+        for (var entryPo : entryPos) {
+            if (entryPo.getKind() == 1) {
                 throw new BizException("多个条目中包含文件夹,无法生成签名!");
             }
         }
@@ -114,7 +116,7 @@ public class EntryAccessService {
 
     /**
      * 下载条目(单个)
-     * 
+     *
      * @param signVo 签名信息
      * @return 资源
      * @throws BizException
@@ -122,14 +124,14 @@ public class EntryAccessService {
      */
     public Resource downloadEntry(EntrySignVo signVo) throws BizException, AuthException {
 
-        if(signVo.getEk() != 0){
+        if (signVo.getEk() != 0) {
             throw new BizException("不支持的文件类型! ");
         }
 
         //查找文件
         var absolutePath = attachService.getAttachLocalPath(Paths.get(signVo.getAPath()));
-        
-        if(!Files.exists(absolutePath)){
+
+        if (!Files.exists(absolutePath)) {
             throw new BizException("文件在本地存储中不存在! 请重新生成签名并尝试下载.");
         }
 
@@ -146,7 +148,7 @@ public class EntryAccessService {
 
         var entries = entryRepository.getByIdAndCompanyIds(idList, signVo.getCid());
 
-        if(entries.isEmpty() || (entries.size() != idList.size())){
+        if (entries.isEmpty() || (entries.size() != idList.size())) {
             throw new BizException("至少有一个文件不存在或无权限访问!");
         }
 
@@ -163,7 +165,7 @@ public class EntryAccessService {
                 }
 
                 var path = attachService.getAttachLocalPath(Paths.get(attach.getPath()));
-                if (!Files.exists(path)){
+                if (!Files.exists(path)) {
                     throw new BizException("文件在本地存储中不存在! 请重新生成签名并尝试下载.");
                 }
 

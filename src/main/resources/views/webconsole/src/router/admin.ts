@@ -216,6 +216,24 @@ const router = createRouter({
         },
       },
     },
+    {
+      path: "/drive/preview/pdf",
+      name: "drive-preview-pdf",
+      component: () => import("@/views/drive/PdfRenderer.vue"),
+      meta: { breadcrumb: { title: "PDF预览" } },
+    },
+    {
+      path: "/drive/preview/photo",
+      name: "drive-preview-photo",
+      component: () => import("@/views/drive/PhotoRenderer.vue"),
+      meta: { breadcrumb: { title: "图片预览" } },
+    },
+    {
+      path: "/drive/preview/video",
+      name: "drive-preview-video",
+      component: () => import("@/views/drive/VideoRenderer.vue"),
+      meta: { breadcrumb: { title: "媒体播放" } },
+    },
   ],
 });
 

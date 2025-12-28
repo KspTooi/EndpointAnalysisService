@@ -29,7 +29,7 @@
 
     <!-- 当单选条目时，显示完整菜单 -->
     <template v-if="currentEntry && !isMultiSelect">
-      <div v-if="isMultiSelect && currentEntry.kind === 0" class="menu-item" @click="onPreview">
+      <div v-if="!isMultiSelect && currentEntry.kind === 0" class="menu-item" @click="onPreview">
         <el-icon><View /></el-icon>
         <span>预览</span>
       </div>

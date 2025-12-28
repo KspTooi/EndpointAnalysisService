@@ -11,6 +11,7 @@ import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveApi from "../api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
+import { useTabStore } from "@/store/TabHolder";
 
 //当前目录信息
 const currentDir = ref<CurrentDirPo>({
@@ -126,8 +127,59 @@ export default {
       },
 
       //预览
-      preview: (entry: EntryPo) => {
-        ElMessage.info("暂不支持预览功能");
+      preview: async (entry: EntryPo) => {
+        if (entry.kind === 1) {
+          return; // 文件夹不预览
+        }
+
+        // 文件类型定义
+        const FILE_TYPES = {
+          PHOTO: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico"],
+          VIDEO: ["mp4", "webm", "ogg", "mp3", "wav", "flac", "m4a"],
+          PDF: ["pdf"],
+        };
+
+        const suffix = entry.attachSuffix?.toLowerCase() || "";
+        let routePath = "";
+        let icon = "";
+
+        // 识别类型
+        if (FILE_TYPES.PHOTO.includes(suffix)) {
+          routePath = "/drive/preview/photo";
+          icon = "el-icon-picture";
+        } else if (FILE_TYPES.VIDEO.includes(suffix)) {
+          routePath = "/drive/preview/video";
+          icon = "el-icon-video-play";
+        } else if (FILE_TYPES.PDF.includes(suffix)) {
+          routePath = "/drive/preview/pdf";
+          icon = "el-icon-document";
+        } else {
+          ElMessage.info(`暂不支持预览 .${suffix} 文件，请下载查看`);
+          return;
+        }
+
+        try {
+          // 获取临时访问签名
+          const result = await DriveApi.getEntrySign({ ids: [entry.id] });
+
+          if (Result.isSuccess(result)) {
+            const sign = result.data.params;
+
+            // 构建带参数的路径
+            // 注意：我们将 sign 作为 query 参数传递
+            const fullPath = `${routePath}?sign=${encodeURIComponent(sign)}&name=${encodeURIComponent(entry.name)}`;
+
+            // 添加并激活 Tab
+            useTabStore().addTab({
+              id: `preview-${entry.id}`, // 使用文件ID作为Tab ID，防止重复打开
+              title: entry.name,
+              path: fullPath,
+              closable: true,
+            });
+          }
+        } catch (error: any) {
+          ElMessage.error(error.message || "获取预览链接失败");
+        }
       },
 
       /**
