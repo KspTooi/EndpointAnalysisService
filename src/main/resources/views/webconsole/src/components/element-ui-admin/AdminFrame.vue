@@ -8,7 +8,7 @@
           :active-item-id="activeMenuId"
           :is-collapse="false"
           title="EAS服务管理控制台"
-          version="版本:1.3Z"
+          version="版本:1.4L CP1"
           @item-click="handleMenuClick"
           @action="handleMenuAction"
         />
@@ -104,6 +104,14 @@ import MenuApi from "@/api/core/MenuApi";
 import { EventHolder } from "@/store/EventHolder";
 import { useTabStore } from "@/store/TabHolder";
 import { storeToRefs } from "pinia";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
+
+const router = useRouter();
+const route = useRoute();
+const tabStore = useTabStore();
+const { refreshCounter } = storeToRefs(tabStore);
+const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
+const menuTree = ref<GetMenuTreeVo[]>([]);
 
 // 定义组件props
 const props = defineProps<{
@@ -128,12 +136,42 @@ const emit = defineEmits<{
   (e: "logout"): void;
 }>();
 
-const router = useRouter();
-const route = useRoute();
-const tabStore = useTabStore();
-const { refreshCounter } = storeToRefs(tabStore);
-const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
-const menuTree = ref<GetMenuTreeVo[]>([]);
+const hotKeyActive = ref(true);
+const { activeOf } = useTabStore();
+
+//快捷键服务打包
+GenricHotkeyService.useHotkeyFunction(
+  {
+    ctrl_1: () => {
+      activeOf(1);
+    },
+    ctrl_2: () => {
+      activeOf(2);
+    },
+    ctrl_3: () => {
+      activeOf(3);
+    },
+    ctrl_4: () => {
+      activeOf(4);
+    },
+    ctrl_5: () => {
+      activeOf(5);
+    },
+    ctrl_6: () => {
+      activeOf(6);
+    },
+    ctrl_7: () => {
+      activeOf(7);
+    },
+    ctrl_8: () => {
+      activeOf(8);
+    },
+    ctrl_9: () => {
+      activeOf(9);
+    },
+  },
+  hotKeyActive
+);
 
 const loadMenuTree = async () => {
   try {

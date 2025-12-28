@@ -15,7 +15,12 @@ const STORAGE_KEY_ACTIVE_TAB = "admin_active_tab_state";
 export const useTabStore = defineStore("tabStore", () => {
   const router = useRouter();
 
-  // Load initial state from localStorage
+  /**
+   * 从localStorage中加载数据
+   * @param key 键
+   * @param defaultValue 默认值
+   * @returns 数据
+   */
   const loadFromStorage = <T>(key: string, defaultValue: T): T => {
     try {
       const saved = localStorage.getItem(key);
@@ -118,6 +123,18 @@ export const useTabStore = defineStore("tabStore", () => {
     { immediate: true }
   );
 
+  /**
+   * 激活指定索引的标签
+   * @param index 索引
+   * @returns 标签
+   */
+  const activeOf = (index: number) => {
+    if (index < 1 || index > tabs.value.length) {
+      return null;
+    }
+    setActiveTab(tabs.value[index - 1].id);
+  };
+
   return {
     tabs,
     activeTabId,
@@ -128,5 +145,6 @@ export const useTabStore = defineStore("tabStore", () => {
     closeOtherTabs,
     setTabs,
     refreshActiveView,
+    activeOf,
   };
 });
