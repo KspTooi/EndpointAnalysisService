@@ -117,6 +117,31 @@ const {
 //拖拽功能打包
 const { dragMove } = DriveService.useEntryDragFunction(entryGridRef, moveConfirmModalRef);
 
+//快捷键功能打包
+DriveService.useHotkeyFunction({
+  copy: () => {
+    menuCopy(entryGridRef.value?.getSelectedEntries() || []);
+  },
+  paste: () => {
+    menuPaste();
+  },
+  cut: () => {
+    menuCut(entryGridRef.value?.getSelectedEntries() || []);
+  },
+  remove: () => {
+    menuRemove(entryGridRef.value?.getSelectedEntries() || []);
+  },
+  rename: () => {
+    menuRename(entryGridRef.value?.getSelectedEntries()?.[0] || null);
+  },
+  selectAll: () => {
+    entryGridRef.value?.selectAll();
+  },
+  refresh: () => {
+    menuRefresh();
+  },
+});
+
 /**
  * 右键菜单打开
  * @param event 鼠标事件

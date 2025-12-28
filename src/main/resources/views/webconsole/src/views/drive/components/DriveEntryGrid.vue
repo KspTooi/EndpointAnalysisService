@@ -149,9 +149,35 @@ watch(
 );
 
 defineExpose({
+  /**
+   * 加载条目列表
+   */
   listLoad,
+
+  /**
+   * 获取当前目录ID
+   * @returns 当前目录ID
+   */
   getCurrentDirId: () => {
     return currentDir.value.id;
+  },
+
+  /**
+   * 获取当前选中的条目
+   * @returns 当前选中的条目列表
+   */
+  getSelectedEntries: () => {
+    return listData.value.filter((item) => selectedIds.value.has(item.id));
+  },
+
+  /**
+   * 全选
+   */
+  selectAll: () => {
+    selectedIds.value.clear();
+    listData.value.forEach((item) => {
+      selectedIds.value.add(item.id);
+    });
   },
 });
 </script>
