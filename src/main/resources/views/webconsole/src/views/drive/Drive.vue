@@ -116,7 +116,7 @@ const {
 const { dragMove } = DriveService.useEntryDragFunction(entryGridRef, moveConfirmModalRef);
 
 //焦点服务打包
-const { isFocused } = ElementFocusService.useElementFocus(containerRef);
+const { isFocused, clearFocus } = ElementFocusService.useElementFocus(containerRef);
 
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
@@ -157,11 +157,13 @@ GenricHotkeyService.useHotkeyFunction(
     //删除
     delete: () => {
       menuRemove(entryGridRef.value?.getSelectedEntries() || []);
+      clearFocus();
     },
 
     //重命名
     f2: () => {
       menuRename(entryGridRef.value?.getSelectedEntries()?.[0] || null);
+      clearFocus();
     },
 
     //刷新
