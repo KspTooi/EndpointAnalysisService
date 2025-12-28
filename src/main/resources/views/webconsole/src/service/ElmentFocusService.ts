@@ -8,8 +8,9 @@ export default {
   /**
    * 使用元素焦点管理功能
    * @param elementRef 目标 DOM 元素的 Ref
+   * @param autoTabIndex 是否自动设置 tabindex-1
    */
-  useElementFocus(elementRef: Ref<HTMLElement>) {
+  useElementFocus(elementRef: Ref<HTMLElement>, autoTabIndex: boolean = true) {
     //响应式状态
     const isFocused = ref(false);
 
@@ -34,9 +35,16 @@ export default {
     //生命周期管理：绑定与解绑事件
     onMounted(() => {
       const el = elementRef.value;
-      if (el) {
-        el.addEventListener("focus", handleFocus);
-        el.addEventListener("blur", handleBlur);
+
+      if (!el) {
+        return;
+      }
+
+      el.addEventListener("focus", handleFocus);
+      el.addEventListener("blur", handleBlur);
+
+      if (autoTabIndex) {
+        el.setAttribute("tabindex", "-1");
       }
     });
 

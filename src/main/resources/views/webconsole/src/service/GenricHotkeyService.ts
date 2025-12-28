@@ -43,6 +43,9 @@ export interface HotkeyActions {
 
   //按键Ctrl
   ctrl?: () => void;
+
+  //按键Backspace
+  backspace?: () => void;
 }
 
 export default {
@@ -161,6 +164,10 @@ export default {
       }
       if (_key === "meta") {
         trigger(e, actions.ctrl, false);
+        return;
+      }
+      if (_key === "backspace") {
+        trigger(e, actions.backspace);
         return;
       }
     };
