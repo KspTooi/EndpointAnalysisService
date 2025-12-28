@@ -28,7 +28,10 @@
               <!-- 用户信息和下拉菜单-->
               <el-dropdown trigger="click">
                 <div class="user-info" style="display: flex; align-items: center; height: 100%">
-                  <div class="color-block" style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"></div>
+                  <div
+                    class="color-block"
+                    style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"
+                  ></div>
                   <div style="line-height: 1">Operator Options</div>
                 </div>
                 <template #dropdown>
@@ -364,6 +367,8 @@ watch(
   font-size: 13px;
   line-height: 1;
   margin-left: 15px;
+  user-select: none;
+  cursor: default !important;
 }
 
 .admin-content {

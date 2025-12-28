@@ -3,7 +3,15 @@
     <div class="panel-content">
       <!-- 左侧搜索区域 -->
       <div class="search-section">
-        <el-input v-model="keyword" placeholder="在团队云盘中搜索..." clearable @clear="handleSearch" @keyup.enter="handleSearch" @input="handleSearchInput" class="search-input">
+        <el-input
+          v-model="keyword"
+          placeholder="在团队云盘中搜索..."
+          clearable
+          @clear="handleSearch"
+          @keyup.enter="handleSearch"
+          @input="handleSearchInput"
+          class="search-input"
+        >
           <template #prefix>
             <el-icon><Search /></el-icon>
           </template>
@@ -24,8 +32,16 @@
           </template>
           <div class="drive-info-display">
             <el-icon><Coin /></el-icon>
-            <span class="drive-info-text">{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span>
-            <el-progress :percentage="usagePercentage" :stroke-width="4" :show-text="false" :color="progressColor" class="drive-progress" />
+            <span class="drive-info-text"
+              >{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span
+            >
+            <el-progress
+              :percentage="usagePercentage"
+              :stroke-width="4"
+              :show-text="false"
+              :color="progressColor"
+              class="drive-progress"
+            />
           </div>
         </el-tooltip>
       </div>
@@ -49,7 +65,7 @@ import { Search, Upload, Coin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
-import type { GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts"
+import type { GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts";
 
 //定义props
 const props = withDefaults(
@@ -159,6 +175,7 @@ onMounted(() => {
   padding: 10px 12px;
   margin-bottom: 10px;
   border-radius: 0;
+  user-select: none;
 }
 
 .panel-content {
