@@ -89,7 +89,11 @@ const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown, clearSel
 const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
 
 //文件夹导航打包
-const { enterDirectory } = DriveEntryGridService.useDirectoryNavigation(listQuery, selectedIds, listLoad);
+const { enterDirectory, backspace: backParentDirectory } = DriveEntryGridService.useDirectoryNavigation(
+  listQuery,
+  selectedIds,
+  listLoad
+);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {
@@ -178,6 +182,13 @@ defineExpose({
     listData.value.forEach((item) => {
       selectedIds.value.add(item.id);
     });
+  },
+
+  /**
+   * 返回上级目录
+   */
+  backspace: () => {
+    backParentDirectory();
   },
 });
 </script>

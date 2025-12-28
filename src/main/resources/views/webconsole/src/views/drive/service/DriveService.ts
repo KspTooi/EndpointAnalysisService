@@ -26,6 +26,8 @@ export interface HotkeyActions {
   cut: () => void;
   //删除 (Delete)
   remove: () => void;
+  //退格 (Backspace)
+  backspace: () => void;
   //重命名 (F2)
   rename: () => void;
   //全选 (Ctrl+A)
@@ -375,11 +377,16 @@ export default {
       }
 
       // --- 删除 (Delete) ---
-      if (e.key === "Delete" || e.key === "Backspace") {
+      if (e.key === "Delete") {
         // Backspace 通常仅在未选中文字时作为删除，这里主要使用 Delete
-        if (e.key === "Backspace") return;
-
         actions.remove();
+        return;
+      }
+
+      // --- 退格 (Backspace) ---
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        actions.backspace();
         return;
       }
 

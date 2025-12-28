@@ -453,8 +453,26 @@ export default {
       selectedIds.value.clear();
     };
 
+    /**
+     * 返回上级目录
+     */
+    const backspace = () => {
+      const currentDir = DriveStore().getCurrentDir;
+
+      //已经位于root目录
+      if (currentDir == null && currentDir.id == null && currentDir.name == null && currentDir.parentId == null) {
+        console.log("已经位于root目录");
+        return;
+      }
+
+      listQuery.directoryId = currentDir.parentId;
+      listLoad();
+      selectedIds.value.clear();
+    };
+
     return {
       enterDirectory,
+      backspace,
     };
   },
 };

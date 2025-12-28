@@ -140,6 +140,10 @@ DriveService.useHotkeyFunction({
   refresh: () => {
     menuRefresh();
   },
+  backspace: () => {
+    console.log("backspace");
+    entryGridRef.value?.backspace();
+  },
 });
 
 /**
