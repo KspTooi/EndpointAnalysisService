@@ -16,7 +16,6 @@
         :keyword="entryKeyword"
         @on-directory-change="onGridDirectoryChange"
         @on-entries-loaded="onGridLoad"
-        @on-entry-click=""
         @on-entry-dblclick="enterOrOpenFile"
         @on-entry-drag="dragMove"
         @on-entry-contextmenu="onEntryContextmenu"

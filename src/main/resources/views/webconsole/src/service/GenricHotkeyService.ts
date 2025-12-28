@@ -46,6 +46,17 @@ export interface HotkeyActions {
 
   //按键Backspace
   backspace?: () => void;
+
+  ctrl_1?: () => void;
+  ctrl_2?: () => void;
+  ctrl_3?: () => void;
+  ctrl_4?: () => void;
+  ctrl_5?: () => void;
+  ctrl_6?: () => void;
+  ctrl_7?: () => void;
+  ctrl_8?: () => void;
+  ctrl_9?: () => void;
+  ctrl_0?: () => void;
 }
 
 export default {
@@ -123,6 +134,46 @@ export default {
         }
         if (_key === "s") {
           trigger(e, actions.ctrl_s);
+          return;
+        }
+        if (_key === "1") {
+          trigger(e, actions.ctrl_1);
+          return;
+        }
+        if (_key === "2") {
+          trigger(e, actions.ctrl_2);
+          return;
+        }
+        if (_key === "3") {
+          trigger(e, actions.ctrl_3);
+          return;
+        }
+        if (_key === "4") {
+          trigger(e, actions.ctrl_4);
+          return;
+        }
+        if (_key === "5") {
+          trigger(e, actions.ctrl_5);
+          return;
+        }
+        if (_key === "6") {
+          trigger(e, actions.ctrl_6);
+          return;
+        }
+        if (_key === "7") {
+          trigger(e, actions.ctrl_7);
+          return;
+        }
+        if (_key === "8") {
+          trigger(e, actions.ctrl_8);
+          return;
+        }
+        if (_key === "9") {
+          trigger(e, actions.ctrl_9);
+          return;
+        }
+        if (_key === "0") {
+          trigger(e, actions.ctrl_0);
           return;
         }
 
