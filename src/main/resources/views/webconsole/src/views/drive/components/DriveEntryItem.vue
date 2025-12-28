@@ -29,18 +29,18 @@
 
         <!-- 文件 -->
         <template v-if="entry.kind === 0">
-          <IBytesizePhoto v-if="fileCategory === EntryCategory.PHOTO" />
-          <IBiFileEarmarkPlay v-if="fileCategory === EntryCategory.VIDEO" />
-          <IBiFileEarmarkMusic v-if="fileCategory === EntryCategory.AUDIO" />
-          <IBiFiletypePdf v-if="fileCategory === EntryCategory.PDF" />
-          <IBiFiletypeDoc v-if="fileCategory === EntryCategory.WORD" />
-          <IBiFiletypeXls v-if="fileCategory === EntryCategory.EXCEL" />
-          <IBiFiletypePpt v-if="fileCategory === EntryCategory.PPT" />
-          <IFormkitZip v-if="fileCategory === EntryCategory.ARCHIVE" />
-          <IBiCodeSlash v-if="fileCategory === EntryCategory.CODE" />
-          <IBiFiletypeTxt v-if="fileCategory === EntryCategory.TEXT" />
-          <IBiFiletypeExe v-if="fileCategory === EntryCategory.EXECUTABLE" />
-          <Document v-if="fileCategory === EntryCategory.OTHER" />
+          <IBytesizePhoto class="text-[#00a8be]" v-if="fileCategory === EntryCategory.PHOTO" />
+          <IBiFileEarmarkPlay class="text-[#9c27b0]" v-if="fileCategory === EntryCategory.VIDEO" />
+          <IBiFileEarmarkMusic class="text-[#ff9800]" v-if="fileCategory === EntryCategory.AUDIO" />
+          <IBiFiletypePdf class="text-[#f44336]" v-if="fileCategory === EntryCategory.PDF" />
+          <IBiFiletypeDoc class="text-[#2196f3]" v-if="fileCategory === EntryCategory.WORD" />
+          <IBiFiletypeXls class="text-[#4caf50]" v-if="fileCategory === EntryCategory.EXCEL" />
+          <IBiFiletypePpt class="text-[#ff5722]" v-if="fileCategory === EntryCategory.PPT" />
+          <IFormkitZip class="text-[#795548]" v-if="fileCategory === EntryCategory.ARCHIVE" />
+          <IBiCodeSlash class="text-[#673ab7]" v-if="fileCategory === EntryCategory.CODE" />
+          <IBiFiletypeTxt class="text-[#607d8b]" v-if="fileCategory === EntryCategory.TEXT" />
+          <IBiFiletypeExe class="text-[#e91e63]" v-if="fileCategory === EntryCategory.EXECUTABLE" />
+          <Document class="text-[#9e9e9e]" v-if="fileCategory === EntryCategory.OTHER" />
         </template>
       </el-icon>
     </div>
