@@ -22,8 +22,26 @@
         class="entry-icon"
         :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }"
       >
-        <Folder v-if="entry.kind === 1" />
-        <Document v-if="entry.kind === 0" />
+        <!-- 文件夹 -->
+        <template v-if="entry.kind === 1">
+          <Folder />
+        </template>
+
+        <!-- 文件 -->
+        <template v-if="entry.kind === 0">
+          <IBytesizePhoto v-if="fileCategory === EntryCategory.PHOTO" />
+          <IBiFileEarmarkPlay v-if="fileCategory === EntryCategory.VIDEO" />
+          <IBiFileEarmarkMusic v-if="fileCategory === EntryCategory.AUDIO" />
+          <IBiFiletypePdf v-if="fileCategory === EntryCategory.PDF" />
+          <IBiFiletypeDoc v-if="fileCategory === EntryCategory.WORD" />
+          <IBiFiletypeXls v-if="fileCategory === EntryCategory.EXCEL" />
+          <IBiFiletypePpt v-if="fileCategory === EntryCategory.PPT" />
+          <IFormkitZip v-if="fileCategory === EntryCategory.ARCHIVE" />
+          <IBiCodeSlash v-if="fileCategory === EntryCategory.CODE" />
+          <IBiFiletypeTxt v-if="fileCategory === EntryCategory.TEXT" />
+          <IBiFiletypeExe v-if="fileCategory === EntryCategory.EXECUTABLE" />
+          <Document v-if="fileCategory === EntryCategory.OTHER" />
+        </template>
       </el-icon>
     </div>
 
@@ -37,11 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import { Folder, Document } from "@element-plus/icons-vue";
+import { Folder, Document, Picture, VideoCamera, Headset } from "@element-plus/icons-vue";
 import { computed } from "vue";
 import FileUtils from "@/utils/FileUtils";
 import { ElMessage } from "element-plus";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
+import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
 
 /**
  * 定义props
@@ -77,6 +96,8 @@ const emit = defineEmits<{
 const vFileSize = computed(() => {
   return FileUtils.formatFileSize(props.entry.attachSize);
 });
+
+const { fileCategory } = FileCategoryService.useFileCategory(props.entry?.attachSuffix || "");
 
 /**
  * 条目被单击
