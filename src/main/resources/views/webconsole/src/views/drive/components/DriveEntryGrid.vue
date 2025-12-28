@@ -82,10 +82,8 @@ const { hasParentDir, currentDir, listQuery, listData, listTotal, listLoading, l
   DriveEntryGridService.useEntryList(emit);
 
 //鼠标框选打包
-const { hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } = DriveEntryGridService.useEntrySelection(
-  gridRef,
-  entryRefs
-);
+const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } =
+  DriveEntryGridService.useEntrySelection(gridRef, entryRefs);
 
 //鼠标拖拽打包
 const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
@@ -108,6 +106,7 @@ const setEntryRef = (id: string, el: any) => {
  * @param entry 条目对象
  */
 const onEntryClick = (entry: EntryPo) => {
+  selectEntry(entry);
   emit("on-entry-click", entry);
 };
 

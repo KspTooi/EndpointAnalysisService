@@ -281,6 +281,19 @@ export default {
       document.addEventListener("mouseup", onMouseUp);
     };
 
+    /**
+     * 用于鼠标单击一个元素时选择、取消
+     * @param entry 条目对象
+     */
+    const selectEntry = (entry: EntryPo) => {
+      if (selectedIds.value.has(entry.id)) {
+        selectedIds.value.delete(entry.id);
+        return;
+      }
+
+      selectedIds.value.add(entry.id);
+    };
+
     // 清理副作用
     onUnmounted(() => {
       document.removeEventListener("mousemove", onMouseMove);
@@ -288,6 +301,9 @@ export default {
     });
 
     return {
+      //用于鼠标单击一个元素时选择、取消
+      selectEntry,
+
       //是否正在框选
       hasSelecting,
 
