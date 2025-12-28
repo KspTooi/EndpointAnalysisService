@@ -1,303 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>端点分析系统</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>端点分析系统</title>
 
-    <!-- 导入Google字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+          href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+          rel="stylesheet"
+  />
 
-    <!-- 已移除外部依赖：components/com-styles -->
+  <style>
+    :root {
+      /* 设计系统变量 */
+      --primary-color: #00d2ff;
+      --primary-hover: #3a7bd5;
+      --bg-dark: #0f172a;
+      --bg-light: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --error-color: #ef4444;
+      --glass-bg: rgba(30, 41, 59, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(15, 23, 42, 0.6);
+      --transition-speed: 0.3s;
+    }
 
-    <style>
-        /* 基础样式 */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body.page {
-            font-family: 'Chakra Petch', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-            /* 使用渐变背景 */
-            background: linear-gradient(135deg, #252525 0%, #1a1a1a 100%) !important;
-            display: flex !important;
-            flex-direction: column !important;
-            min-height: 100vh !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-        }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-        /* 登录界面 */
-        .login-container {
-            flex: 1;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 1.5rem !important;
-        }
+    /* 动态背景效果 */
+    body::before,
+    body::after {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      z-index: -1;
+      animation: float 10s infinite alternate ease-in-out;
+    }
 
-        /* 品牌标题 */
-        .brand-title {
-            font-family: 'Chakra Petch', sans-serif !important;
-            font-size: 2.5rem !important;
-            font-weight: 700 !important;
-            margin-bottom: 2rem !important;
-            color: rgba(255, 255, 255, 0.9) !important;
-            letter-spacing: 1px !important;
-            text-align: center !important;
-            position: relative !important;
-            text-transform: uppercase !important;
-        }
+    body::before {
+      background: radial-gradient(circle, var(--primary-color), transparent);
+      top: -10%;
+      left: -10%;
+    }
 
-        .brand-title:after {
-            content: "" !important;
-            position: absolute !important;
-            left: 50% !important;
-            bottom: -10px !important;
-            width: 60px !important;
-            height: 3px !important;
-            background: rgba(135, 206, 250, 0.7) !important; /* 使用 mainBorderColor */
-            transform: translateX(-50%) !important;
-            border-radius: 2px !important;
-            box-shadow: 0 0 8px rgba(61, 138, 168, 0.6) !important; /* 添加辉光效果 */
-        }
+    body::after {
+      background: radial-gradient(circle, #7928ca, transparent);
+      bottom: -10%;
+      right: -10%;
+      animation-delay: -5s;
+    }
 
-        /* 表单容器 */
-        .login-form-container {
-            width: 100% !important;
-            max-width: 360px !important;
-            margin: 0 auto !important;
-            position: relative !important;
-        }
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 50px) scale(1.1); }
+    }
 
-        /* 统一表单元素宽度与盒模型 */
-        .form-field__input,
-        .login-button,
-        .error-message {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            display: block !important;
-        }
+    /* 主容器 */
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      perspective: 1000px;
+    }
 
-        /* 表单字段 */
-        .form-field {
-            margin-bottom: 1.5rem !important;
-            position: relative !important;
-        }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .form-field__label {
-            font-family: 'Chakra Petch', sans-serif !important;
-            display: block !important;
-            margin-bottom: 0.6rem !important;
-            font-size: 0.95rem !important;
-            font-weight: 500 !important;
-            color: rgba(255, 255, 255, 0.8) !important;
-            transition: all 0.2s ease !important;
-            letter-spacing: 0.5px !important;
-            text-transform: uppercase !important;
-        }
+    /* 磨砂卡片 */
+    .login-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      /*border-radius: 24px;*/
+      padding: 3rem 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .form-field__input {
-            width: 100% !important;
-            padding: 0.85rem 1rem !important;
-            background: rgba(61, 138, 168, 0.12) !important; /* 使用 mainColor */
-            border: 1px solid rgba(135, 206, 250, 0.4) !important; /* 使用 mainBorderColor */
-            border-radius: 0 !important;
-            box-shadow: 0 0 8px rgba(61, 138, 168, 0.24) !important; /* 增加微弱辉光 */
-            font-size: 1rem !important;
-            font-family: 'Chakra Petch', sans-serif !important;
-            color: rgba(255, 255, 255, 0.9) !important;
-            transition: all 0.2s ease !important;
-            outline: none !important;
-            letter-spacing: 0.5px !important;
-        }
+    /* 顶部装饰条 */
+    .login-card::top {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), #7928ca);
+    }
 
-        .form-field__input:focus {
-            background: rgba(54, 201, 255, 0.15) !important; /* 使用 mainColorHover */
-            border-color: rgba(135, 206, 250, 0.7) !important; /* 使用 mainBorderColorHover */
-            box-shadow: 0 0 12px rgba(54, 201, 255, 0.26) !important; /* 增强辉光 */
-        }
+    /* 品牌标题 */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
 
-        .form-field__input::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
-            font-family: 'Chakra Petch', sans-serif !important;
-        }
+    .brand-title {
+      font-family: "Chakra Petch", sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
 
-        /* 内发光效果 */
-        .form-field:after {
-            content: "";
-            position: absolute;
-            top: 38px; /* 调整位置以符合标签高度 */
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            background: transparent;
-            box-shadow: inset 0 0 6px rgba(54, 201, 255, 0.2);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            height: calc(100% - 38px);
-        }
+    .brand-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
 
-        .form-field:focus-within:after {
-            opacity: 1;
-        }
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
 
-        /* 错误消息 */
-        .error-message {
-            font-family: 'Chakra Petch', sans-serif !important;
-            color: #ff4d4f !important;
-            background: rgba(255, 77, 79, 0.1) !important; /* 使用 dangerColorHover */
-            border-left: 3px solid rgba(255, 77, 79, 0.7) !important; /* 使用 dangerBorderColor */
-            border-radius: 0 !important;
-            padding: 0.5rem 0.75rem !important;
-            margin-bottom: 1.5rem !important;
-            font-size: 0.875rem !important;
-            font-weight: 500 !important;
-            box-shadow: 0 0 8px rgba(220, 53, 69, 0.24) !important; /* 使用 dangerColor */
-            letter-spacing: 0.5px !important;
-        }
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: var(--transition-speed);
+    }
 
-        /* 登录按钮 */
-        .login-button {
-            font-family: 'Chakra Petch', sans-serif !important;
-            position: relative !important;
-            display: block !important;
-            width: 100% !important;
-            padding: 0.85rem 1rem !important;
-            background: rgba(61, 138, 168, 0.24) !important; /* 使用 mainColor */
-            color: rgba(255, 255, 255, 0.9) !important;
-            border: 1px solid rgba(135, 206, 250, 0.7) !important; /* 使用 mainBorderColor */
-            border-radius: 0 !important;
-            font-size: 1rem !important;
-            font-weight: 600 !important;
-            cursor: pointer !important;
-            box-shadow: 0 0 8px rgba(61, 138, 168, 0.24) !important; /* 按钮辉光 */
-            transition: all 0.3s ease !important;
-            overflow: hidden !important;
-            letter-spacing: 1px !important;
-            text-transform: uppercase !important;
-        }
+    .form-input-wrapper {
+      position: relative;
+    }
 
-        .login-button:hover {
-            background: rgba(54, 201, 255, 0.26) !important; /* 使用 mainColorHover */
-            border-color: rgba(135, 206, 250, 0.7) !important; /* 使用 mainBorderColorHover */
-            box-shadow: 0 0 12px rgba(54, 201, 255, 0.26) !important; /* 增强辉光 */
-        }
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      /*border-radius: 12px;*/
+      border-radius: 4px;
+      color: var(--text-main);
+      font-size: 1rem;
+      font-family: "Inter", sans-serif;
+      transition: all var(--transition-speed);
+      outline: none;
+    }
 
-        .login-button:active {
-            background: rgba(253, 253, 253, 0.87) !important; /* 使用 mainColorActive */
-            border-color: rgba(253, 253, 253, 0.87) !important; /* 使用 mainBorderColorActive */
-            color: rgb(7, 7, 7) !important; /* 使用 mainTextColorActive */
-            box-shadow: 0 0 15px rgba(54, 201, 255, 0.4) !important;
-        }
+    .form-input:focus {
+      border-color: var(--primary-color);
+      background: rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.15);
+    }
 
-        /* 按钮内发光效果 */
-        .login-button:before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            background: transparent;
-            box-shadow: inset 0 0 6px rgba(54, 201, 255, 0.2);
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
-        }
+    .form-input::placeholder {
+      color: rgba(148, 163, 184, 0.4);
+    }
 
-        .login-button:hover:before {
-            opacity: 0.8;
-            box-shadow: inset 0 0 10px rgba(54, 201, 255, 0.3);
-        }
+    /* 聚焦时标签高亮 */
+    .form-group:focus-within .form-label {
+      color: var(--primary-color);
+    }
 
-        /* 注册引导 */
-        .register-guide {
-            font-family: 'Chakra Petch', sans-serif !important;
-            margin-top: 1.5rem !important;
-            text-align: center !important;
-            font-size: 0.95rem !important;
-            color: rgba(255, 255, 255, 0.7) !important;
-            letter-spacing: 0.3px !important;
-        }
+    /* 错误提示 */
+    .error-alert {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: shake 0.4s ease-in-out;
+    }
 
-        .register-guide a {
-            font-family: 'Chakra Petch', sans-serif !important;
-            color: rgba(135, 206, 250, 0.9) !important; /* 使用 mainBorderColor */
-            text-decoration: none !important;
-            font-weight: 600 !important;
-            transition: all 0.2s ease !important;
-            position: relative !important;
-            letter-spacing: 0.5px !important;
-        }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
 
-        .register-guide a:after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: -2px;
-            width: 0;
-            height: 1px;
-            background: rgba(135, 206, 250, 0.9);
-            transition: width 0.2s ease;
-        }
+    /* 登录按钮 */
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary-color) 0%, #3a7bd5 100%);
+      border: none;
+      /*border-radius: 12px;*/
+      border-radius: 4px;
+      color: #fff;
+      font-family: "Chakra Petch", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+    }
 
-        .register-guide a:hover {
-            color: rgba(54, 201, 255, 0.9) !important; /* 使用 mainColorHover */
-            text-shadow: 0 0 8px rgba(54, 201, 255, 0.4);
-        }
+    .btn-submit:hover {
+      box-shadow: 0 10px 20px -5px rgba(0, 210, 255, 0.4);
+    }
 
-        .register-guide a:hover:after {
-            width: 100%;
-        }
+    .btn-submit:active {
+      transform: translateY(0);
+    }
 
-        /* 版权信息 */
-        .footer {
-            font-family: 'Chakra Petch', sans-serif !important;
-            text-align: center !important;
-            padding: 1rem !important;
-            color: rgba(255, 255, 255, 0.5) !important;
-            font-size: 0.85rem !important;
-            margin-top: auto;
-            letter-spacing: 0.5px !important;
-        }
-    </style>
+    /* 注册链接 */
+    .register-link {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
 
+    .register-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .register-link a:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    /* 页脚 */
+    .footer-copy {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      width: 100%;
+      font-size: 0.75rem;
+      color: rgba(148, 163, 184, 0.4);
+      font-family: "Chakra Petch", sans-serif;
+    }
+  </style>
 </head>
 
-<body class="page">
-    <div class="login-container">
-        <h1 class="brand-title" th:text="${loginBrand ?: 'QuickLauncher'}">端点分析服务</h1>
-        <div class="login-form-container">
-            <form action="/login" method="post">
-                <div class="form-field">
-                    <label class="form-field__label" for="username">账户</label>
-                    <input class="form-field__input" type="text" id="username" name="username" placeholder="请输入您的账户" required autocomplete="username">
-                </div>
-                <div class="form-field">
-                    <label class="form-field__label" for="password">密码</label>
-                    <input class="form-field__input" type="password" id="password" name="password" placeholder="请输入您的密码" required autocomplete="current-password">
-                </div>
-                <div th:if="${error}" class="error-message" th:text="${error}">
-                    <!-- 错误信息 -->
-                </div>
-                <button class="login-button" type="submit">登录</button>
-                <div class="register-guide" th:if="${allowRegister}">
-                    还没有账号？<a href="/register">立即注册</a>
-                </div>
-            </form>
+<body>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="brand-header">
+      <h1 class="brand-title" th:text="${loginBrand ?: 'QuickLauncher'}">
+        端点分析服务
+      </h1>
+      <div class="brand-subtitle">安全接入网关</div>
+    </div>
+
+    <form action="/login" method="post">
+      <div class="form-group">
+        <label class="form-label" for="username">账户 ID</label>
+        <div class="form-input-wrapper">
+          <input
+                  class="form-input"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="请输入您的账户"
+                  required
+                  autocomplete="username"
+          />
         </div>
-    </div>
-    
-    <div class="footer">
-        &copy; 2025 KspTool. 保留所有权利。
-    </div>
+      </div>
 
-    <!-- 已移除外部依赖：components/com-scripts, components/mvc-toasts -->
+      <div class="form-group">
+        <label class="form-label" for="password">密钥</label>
+        <div class="form-input-wrapper">
+          <input
+                  class="form-input"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="请输入您的密码"
+                  required
+                  autocomplete="current-password"
+          />
+        </div>
+      </div>
 
+      <div th:if="${error}" class="error-alert">
+        <span th:text="${error}">用户名或密码错误</span>
+      </div>
+
+      <button class="btn-submit" type="submit">立即登录</button>
+
+      <div class="register-link" th:if="${allowRegister}">
+        还没有账号？ <a href="/register">立即注册</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="footer-copy">&copy; 2025 KspTool. All Rights Reserved.</div>
 </body>
 </html>
