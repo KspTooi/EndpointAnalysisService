@@ -14,28 +14,6 @@ import { Result } from "@/commons/entity/Result";
 import { useTabStore } from "@/store/TabHolder";
 import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
 
-/**
- * 快捷键动作接口
- */
-export interface HotkeyActions {
-  //复制 (Ctrl+C)
-  copy: () => void;
-  //粘贴 (Ctrl+V)
-  paste: () => void;
-  //剪切 (Ctrl+X)
-  cut: () => void;
-  //删除 (Delete)
-  remove: () => void;
-  //退格 (Backspace)
-  backspace: () => void;
-  //重命名 (F2)
-  rename: () => void;
-  //全选 (Ctrl+A)
-  selectAll: () => void;
-  //刷新 (F5)
-  refresh: () => void;
-}
-
 //当前目录信息
 const currentDir = ref<CurrentDirPo>({
   id: null,
@@ -331,86 +309,5 @@ export default {
         entryGridRef.value.listLoad();
       },
     };
-  },
-
-  /**
-   * 启用快捷键监听
-   * @param getSelectedEntries 获取当前选中的条目列表的函数
-   * @param actions 动作集合
-   */
-  useHotkeyFunction(actions: HotkeyActions) {
-    const handleKeydown = (e: KeyboardEvent) => {
-      // 1. 如果当前焦点在输入框或文本域中，不触发快捷键 (除了 F5)
-      const activeTag = document.activeElement?.tagName.toLowerCase();
-      if (e.key !== "F5" && (activeTag === "input" || activeTag === "textarea")) {
-        return;
-      }
-
-      const isCtrl = e.ctrlKey || e.metaKey; // 兼容 Mac Command 键
-
-      // --- 全选 (Ctrl + A) ---
-      if (isCtrl && e.key.toLowerCase() === "a") {
-        e.preventDefault(); // 阻止浏览器全选文字
-        actions.selectAll();
-        return;
-      }
-
-      // --- 复制 (Ctrl + C) ---
-      if (isCtrl && e.key.toLowerCase() === "c") {
-        e.preventDefault();
-        actions.copy();
-        return;
-      }
-
-      // --- 粘贴 (Ctrl + V) ---
-      if (isCtrl && e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        actions.paste();
-        return;
-      }
-
-      // --- 剪切 (Ctrl + X) ---
-      if (isCtrl && e.key.toLowerCase() === "x") {
-        e.preventDefault();
-        actions.cut();
-        return;
-      }
-
-      // --- 删除 (Delete) ---
-      if (e.key === "Delete") {
-        // Backspace 通常仅在未选中文字时作为删除，这里主要使用 Delete
-        actions.remove();
-        return;
-      }
-
-      // --- 退格 (Backspace) ---
-      if (e.key === "Backspace") {
-        e.preventDefault();
-        actions.backspace();
-        return;
-      }
-
-      // --- 重命名 (F2) ---
-      if (e.key === "F2") {
-        e.preventDefault();
-        actions.rename();
-        return;
-      }
-
-      // --- 刷新 (F5) ---
-      /* if (e.key === "F5") {
-        e.preventDefault(); // 阻止浏览器刷新页面
-        actions.refresh();
-        return;
-      } */
-    };
-
-    onMounted(() => {
-      window.addEventListener("keydown", handleKeydown);
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeydown);
-    });
   },
 };

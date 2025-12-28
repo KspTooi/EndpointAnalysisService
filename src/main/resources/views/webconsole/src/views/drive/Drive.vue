@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="list-container no-outline" ref="containerRef">
     <!-- 控制面板 -->
     <DriveContrlPanel
       :entry-count="entryTotal"
@@ -7,6 +7,7 @@
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
     />
+    <!-- {{ isFocused }} -->
 
     <!-- 文件选择器 -->
     <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
@@ -57,25 +58,23 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import DriveApi from "@/views/drive/api/DriveApi.ts";
 import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
 import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
-import { Result } from "@/commons/entity/Result";
 import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
-import { DriveStore } from "@/views/drive/service/DriveStore.ts";
-import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
+import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "./service/DriveService";
+import ElementFocusService from "@/service/ElmentFocusService";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
-const fileInput = ref<HTMLInputElement | null>(null);
 const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null);
 const createEntryModalRef = ref<InstanceType<typeof DriveModalCreateDir> | null>(null);
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
@@ -83,9 +82,8 @@ const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null)
 const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
-const currentSelectedEntry = ref<EntryPo | null>(null);
-const driveHolder = DriveStore();
 const entryGridRef = ref<InstanceType<typeof DriveEntryGrid>>();
+const containerRef = ref<HTMLElement>();
 
 //条目列表打包
 const { currentDir, entryTotal, entryKeyword, updateQueryKeyword, onGridLoad, onGridDirectoryChange, loadEntries } =
@@ -117,34 +115,54 @@ const {
 //拖拽功能打包
 const { dragMove } = DriveService.useEntryDragFunction(entryGridRef, moveConfirmModalRef);
 
+//焦点服务打包
+const { isFocused } = ElementFocusService.useElementFocus(containerRef);
+
 //快捷键功能打包
-DriveService.useHotkeyFunction({
-  copy: () => {
-    menuCopy(entryGridRef.value?.getSelectedEntries() || []);
+GenricHotkeyService.useHotkeyFunction(
+  {
+    //复制
+    ctrl_c: () => {
+      menuCopy(entryGridRef.value?.getSelectedEntries() || []);
+    },
+
+    //粘贴
+    ctrl_v: () => {
+      menuPaste();
+    },
+
+    //剪切
+    ctrl_x: () => {
+      menuCut(entryGridRef.value?.getSelectedEntries() || []);
+    },
+
+    //删除
+    delete: () => {
+      menuRemove(entryGridRef.value?.getSelectedEntries() || []);
+    },
+
+    //重命名
+    f2: () => {
+      menuRename(entryGridRef.value?.getSelectedEntries()?.[0] || null);
+    },
+
+    //刷新
+    f5: () => {
+      menuRefresh();
+    },
+
+    //返回
+    backspace: () => {
+      entryGridRef.value?.backspace();
+    },
+
+    //选择所有
+    ctrl_a: () => {
+      entryGridRef.value?.selectAll();
+    },
   },
-  paste: () => {
-    menuPaste();
-  },
-  cut: () => {
-    menuCut(entryGridRef.value?.getSelectedEntries() || []);
-  },
-  remove: () => {
-    menuRemove(entryGridRef.value?.getSelectedEntries() || []);
-  },
-  rename: () => {
-    menuRename(entryGridRef.value?.getSelectedEntries()?.[0] || null);
-  },
-  selectAll: () => {
-    entryGridRef.value?.selectAll();
-  },
-  refresh: () => {
-    menuRefresh();
-  },
-  backspace: () => {
-    console.log("backspace");
-    entryGridRef.value?.backspace();
-  },
-});
+  isFocused
+);
 
 /**
  * 右键菜单打开
@@ -205,5 +223,9 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
   margin: 0 auto;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.no-outline:focus {
+  outline: none;
 }
 </style>
