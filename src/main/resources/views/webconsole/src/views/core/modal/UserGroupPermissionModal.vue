@@ -1,5 +1,12 @@
 <template>
-  <el-dialog v-model="props.visible" title="管理权限" width="1000px" :close-on-click-modal="false" class="modal-centered" @close="resetModal">
+  <el-dialog
+    v-model="props.visible"
+    title="管理权限"
+    width="1000px"
+    :close-on-click-modal="false"
+    class="modal-centered"
+    @close="resetModal"
+  >
     <div class="modal-content">
       <el-tabs v-model="tab">
         <el-tab-pane :label="'菜单视图(' + menuTotalCount + ')'" name="menu">
@@ -40,9 +47,19 @@
               <el-table-column type="selection" width="40" :selectable="isMenuRowSelectable" />
               <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
                 <template #default="scope">
-                  <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
-                  {{ scope.row.name }}
-                  <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px"> ({{ scope.row.menuBtnId }}) </span>
+                  <div style="display: flex; align-items: center; gap: 8px; display: inline">
+                    <Icon
+                      v-if="scope.row.menuIcon"
+                      :icon="scope.row.menuIcon"
+                      :width="16"
+                      :height="16"
+                      style="vertical-align: middle; display: inline"
+                    />
+                    {{ scope.row.name }}
+                    <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px">
+                      ({{ scope.row.menuBtnId }})
+                    </span>
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column label="类型" prop="menuKind" width="60">
@@ -86,8 +103,16 @@
                 <template #default="scope">
                   <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
                   <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
-                  <el-button v-else-if="scope.row.hasPermission === 0 || scope.row.hasPermission === 2" type="primary" @click="grandAndRevoke(scope.row, 0)" link>授权</el-button>
-                  <el-button v-else-if="scope.row.hasPermission === 1" type="danger" @click="grandAndRevoke(scope.row, 1)" link>取消授权</el-button>
+                  <el-button
+                    v-else-if="scope.row.hasPermission === 0 || scope.row.hasPermission === 2"
+                    type="primary"
+                    @click="grandAndRevoke(scope.row, 0)"
+                    link
+                    >授权</el-button
+                  >
+                  <el-button v-else-if="scope.row.hasPermission === 1" type="danger" @click="grandAndRevoke(scope.row, 1)" link
+                    >取消授权</el-button
+                  >
                   <span v-else style="color: #999">未知</span>
                 </template>
               </el-table-column>
@@ -169,8 +194,12 @@
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <el-button type="primary" @click="grandAndRevoke(scope.row, 0)" link v-if="scope.row.hasPermission === 0">授权</el-button>
-                  <el-button type="danger" @click="grandAndRevoke(scope.row, 1)" link v-if="scope.row.hasPermission === 1">取消授权</el-button>
+                  <el-button type="primary" @click="grandAndRevoke(scope.row, 0)" link v-if="scope.row.hasPermission === 0"
+                    >授权</el-button
+                  >
+                  <el-button type="danger" @click="grandAndRevoke(scope.row, 1)" link v-if="scope.row.hasPermission === 1"
+                    >取消授权</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>

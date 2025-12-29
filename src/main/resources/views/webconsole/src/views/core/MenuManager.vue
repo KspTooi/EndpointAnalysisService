@@ -12,7 +12,8 @@
         <div>
           <span style="color: #67c23a; font-weight: bold">● 绿色</span>：权限完整，所有权限节点已在系统中定义
           <span style="margin-left: 16px; color: #e6a23c; font-weight: bold">● 橙色</span>：部分缺失，部分权限节点未在系统中定义
-          <span style="margin-left: 16px; color: #f56c6c; font-weight: bold">● 红色</span>：完全缺失，所有权限节点均未在系统中定义
+          <span style="margin-left: 16px; color: #f56c6c; font-weight: bold">● 红色</span
+          >：完全缺失，所有权限节点均未在系统中定义
         </div>
       </div>
     </el-alert>
@@ -61,9 +62,17 @@
       <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all ref="listTableRef">
         <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
-            <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" style="margin-right: 8px; vertical-align: middle" />
-            {{ scope.row.name }}
-            <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px"> ({{ scope.row.menuBtnId }}) </span>
+            <div style="display: flex; align-items: center; gap: 8px; display: inline">
+              <Icon
+                v-if="scope.row.menuIcon"
+                :icon="scope.row.menuIcon"
+                :width="16"
+                :height="16"
+                style="vertical-align: middle; display: inline"
+              />
+              {{ scope.row.name }}
+              <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px"> ({{ scope.row.menuBtnId }}) </span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="类型" prop="menuKind" width="70">
@@ -104,12 +113,28 @@
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%">
               <!-- 按钮下无法新增子项 -->
-              <el-button v-if="scope.row.parentId === null || scope.row.menuKind == 1" link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
+              <el-button
+                v-if="scope.row.parentId === null || scope.row.menuKind == 1"
+                link
+                type="success"
+                size="small"
+                @click="openModal('add-item', scope.row)"
+                :icon="PlusIcon"
+              >
                 新增子项
               </el-button>
 
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-              <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="removeList(scope.row.id)"
+                :icon="DeleteIcon"
+                :disabled="scope.row.children && scope.row.children.length > 0"
+              >
                 删除
               </el-button>
             </div>
@@ -129,7 +154,14 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="80px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="80px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="父级菜单" prop="parentId">
           <el-tree-select
             v-model="modalForm.parentId"
@@ -164,7 +196,11 @@
         <el-form-item :label="modalFormLabel + '描述'" prop="description">
           <el-input v-model="modalForm.description" placeholder="请输入菜单描述" clearable />
         </el-form-item>
-        <el-form-item :label="modalFormLabel + '图标'" prop="menuIcon" v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1">
+        <el-form-item
+          :label="modalFormLabel + '图标'"
+          prop="menuIcon"
+          v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1"
+        >
           <IconPicker v-model="modalForm.menuIcon" />
         </el-form-item>
         <el-form-item label="查询参数" prop="menuQueryParam" v-if="modalForm.menuKind == 1">
