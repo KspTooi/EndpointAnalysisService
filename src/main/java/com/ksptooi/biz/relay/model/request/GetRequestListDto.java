@@ -1,6 +1,8 @@
 package com.ksptooi.biz.relay.model.request;
 
 import com.ksptool.assembly.entity.web.PageQuery;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,9 +34,11 @@ public class GetRequestListDto extends PageQuery {
     private Integer replay;
 
     //时间范围开始
+    @NotNull(message = "此查询必须指定时间范围")
     private LocalDateTime startTime;
 
     //时间范围结束
+    @NotNull(message = "此查询必须指定时间范围")
     private LocalDateTime endTime;
 
 }

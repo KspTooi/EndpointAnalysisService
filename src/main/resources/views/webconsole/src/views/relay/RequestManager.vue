@@ -57,7 +57,13 @@
           <el-row>
             <el-col :span="5" :offset="1">
               <el-form-item label="时间区间">
-                <el-date-picker v-model="timeRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" />
+                <el-date-picker
+                  v-model="timeRange"
+                  type="datetimerange"
+                  range-separator="至"
+                  start-placeholder="开始时间"
+                  end-placeholder="结束时间"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="1">
@@ -118,8 +124,27 @@
         <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
         <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
           <template #default="scope">
-            <span :style="{ color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6' }">
-              {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "HTTP失败" : scope.row.status === 2 ? "业务失败" : "连接超时" }}
+            <span
+              :style="{
+                color:
+                  scope.row.status === 0
+                    ? '#2ECC71'
+                    : scope.row.status === 1
+                      ? '#E74C3C'
+                      : scope.row.status === 2
+                        ? '#F1C40F'
+                        : '#95A5A6',
+              }"
+            >
+              {{
+                scope.row.status === 0
+                  ? "正常"
+                  : scope.row.status === 1
+                    ? "HTTP失败"
+                    : scope.row.status === 2
+                      ? "业务失败"
+                      : "连接超时"
+              }}
             </span>
           </template>
         </el-table-column>
@@ -146,9 +171,29 @@
 
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 预览请求 </el-button>
-            <el-button link type="success" size="small" @click="goToReplay(scope.row)" :icon="RightIcon" style="margin-left: 8px"> 转到重放 </el-button>
-            <el-button link type="primary" size="small" @click="saveRequest(scope.row)" :icon="SaveIcon" style="margin-left: 8px"> 保存 </el-button>
+            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon">
+              预览请求
+            </el-button>
+            <el-button
+              link
+              type="success"
+              size="small"
+              @click="goToReplay(scope.row)"
+              :icon="RightIcon"
+              style="margin-left: 8px"
+            >
+              转到重放
+            </el-button>
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="saveRequest(scope.row)"
+              :icon="SaveIcon"
+              style="margin-left: 8px"
+            >
+              保存
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -181,7 +226,14 @@
     <RequestPreviewModal ref="requestPreviewModalRef" />
 
     <!-- 保存请求对话框 -->
-    <el-dialog v-model="saveDialogVisible" title="另存为" width="400px" :close-on-click-modal="false" :close-on-press-escape="false" class="modal-centered">
+    <el-dialog
+      v-model="saveDialogVisible"
+      title="另存为"
+      width="400px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      class="modal-centered"
+    >
       <el-form
         ref="saveFormRef"
         :model="saveForm"
@@ -205,7 +257,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, markRaw } from "vue";
+import { reactive, ref, onMounted, markRaw, watch } from "vue";
 import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/relay/RequestApi.ts";
 import RequestApi from "@/api/relay/RequestApi.ts";
 import { ElMessage } from "element-plus";
@@ -311,6 +363,14 @@ const loadList = async () => {
     return;
   }
 
+  //如果时间范围为空，则设置为15天前到今天23:59:59
+  if (!timeRange.value) {
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    const fifteenDaysAgo = new Date(endOfToday.getTime() - 15 * 24 * 60 * 60 * 1000);
+    timeRange.value = [fifteenDaysAgo, endOfToday];
+  }
+
   if (timeRange.value) {
     listForm.startTime = formatDateTime(timeRange.value[0]);
     listForm.endTime = formatDateTime(timeRange.value[1]);
@@ -323,12 +383,12 @@ const loadList = async () => {
     const res = await RequestApi.getRequestList(listForm);
     listData.value = res.data;
     listTotal.value = res.total;
-    queryPersistService.persistQuery("request-manager", listForm);
   } catch (e) {
-    ElMessage.error("Failed to load configuration list");
+    ElMessage.error(e.message);
     console.error("Failed to load configuration list", e);
   } finally {
     listLoading.value = false;
+    queryPersistService.persistQuery("request-manager", listForm);
   }
 };
 
@@ -342,7 +402,12 @@ const resetList = () => {
   listForm.startTime = null;
   listForm.endTime = null;
   listForm.replay = 0;
+
+  //重置时间范围
   timeRange.value = null;
+  listForm.startTime = null;
+  listForm.endTime = null;
+
   listForm.pageNum = 1;
   queryPersistService.clearQuery("request-manager");
   loadList();
@@ -463,6 +528,23 @@ const goToReplay = (row: GetRequestListVo) => {
   router.push({ name: "replay-request-manager" });
   ElMessage.success("已跳转到重放请求页面");
 };
+
+// 监听时间范围变化
+watch(timeRange, (newValue) => {
+  if (!newValue) {
+    return;
+  }
+
+  const [startDate, endDate] = newValue;
+  const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 15) {
+    ElMessage.warning("时间范围不可以超过15天");
+    timeRange.value = null;
+    return;
+  }
+});
 
 // 生命周期
 onMounted(async () => {

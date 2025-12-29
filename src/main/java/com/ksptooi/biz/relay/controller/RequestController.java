@@ -10,6 +10,10 @@ import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +31,13 @@ public class RequestController {
     @PostMapping("/getRequestList")
     @Operation(summary = "获取中继器请求列表")
     public PageResult<GetRequestListVo> getRequestList(@RequestBody @Valid GetRequestListDto dto) {
+
+        //开始、结束时间区间范围不可以超过15天
+        long days = ChronoUnit.DAYS.between(dto.getStartTime(), dto.getEndTime());
+        if (days > 15) {
+            return PageResult.error("时间范围不可以超过15天");
+        }
+
         return requestService.getRequestList(dto);
     }
 
