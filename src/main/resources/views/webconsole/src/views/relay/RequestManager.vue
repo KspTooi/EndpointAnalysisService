@@ -363,14 +363,6 @@ const loadList = async () => {
     return;
   }
 
-  //如果时间范围为空，则设置为15天前到今天23:59:59
-  if (!timeRange.value) {
-    const endOfToday = new Date();
-    endOfToday.setHours(23, 59, 59, 999);
-    const fifteenDaysAgo = new Date(endOfToday.getTime() - 15 * 24 * 60 * 60 * 1000);
-    timeRange.value = [fifteenDaysAgo, endOfToday];
-  }
-
   if (timeRange.value) {
     listForm.startTime = formatDateTime(timeRange.value[0]);
     listForm.endTime = formatDateTime(timeRange.value[1]);

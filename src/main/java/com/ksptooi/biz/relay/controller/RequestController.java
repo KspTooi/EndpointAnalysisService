@@ -32,10 +32,25 @@ public class RequestController {
     @Operation(summary = "获取中继器请求列表")
     public PageResult<GetRequestListVo> getRequestList(@RequestBody @Valid GetRequestListDto dto) {
 
-        //开始、结束时间区间范围不可以超过15天
-        long days = ChronoUnit.DAYS.between(dto.getStartTime(), dto.getEndTime());
-        if (days > 15) {
-            return PageResult.error("时间范围不可以超过15天");
+        //开始时间与结束时间不可单独填写
+        if ((dto.getStartTime() == null && dto.getEndTime() != null) || (dto.getStartTime() != null && dto.getEndTime() == null)) {
+            return PageResult.error("开始时间与结束时间必须同时填写");
+        }
+
+        if(dto.getStartTime() != null && dto.getEndTime() != null){
+            //开始、结束时间区间范围不可以超过15天
+            long days = ChronoUnit.DAYS.between(dto.getStartTime(), dto.getEndTime());
+            if (days > 15) {
+                return PageResult.error("时间范围不可以超过15天");
+            }
+        }
+
+        //如果不填写开始时间结束时间 则以今天的00:00:00开始 向前推15天
+        if(dto.getStartTime() == null || dto.getEndTime() == null){
+            LocalDateTime startOfToday = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            LocalDateTime fifteenDaysAgo = startOfToday.minusDays(15);
+            dto.setStartTime(fifteenDaysAgo);
+            dto.setEndTime(startOfToday);
         }
 
         return requestService.getRequestList(dto);
