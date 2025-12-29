@@ -38,10 +38,10 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
     @Query("""
             SELECT u FROM EntryPo u
             WHERE
-            ((:parentId IS NULL AND u.parent IS NULL) OR u.parent.id = :parentId) AND
+            (:#{#keyword} IS NOT NULL OR ((:parentId IS NULL AND u.parent IS NULL) OR u.parent.id = :parentId)) AND
             u.companyId = :companyId AND
             (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
-            ORDER BY u.kind DESC,u.updateTime DESC
+            ORDER BY u.kind DESC,u.name ASC
             """)
     Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
 
