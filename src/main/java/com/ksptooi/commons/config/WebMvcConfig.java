@@ -10,7 +10,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/src/assets/**").addResourceLocations("classpath:/views/webconsole/src/assets/");
-        //registry.addResourceHandler("/src/views/**").addResourceLocations("classpath:/views/webconsole/src/views/");
+        registry.addResourceHandler("/src/views/**").addResourceLocations("classpath:/views/webconsole/src/views/");
         registry.addResourceHandler("/commons/**").addResourceLocations("classpath:/views/commons/");
         registry.addResourceHandler("/res/**").addResourceLocations("file:userdata/res/");
         registry.addResourceHandler("/node_modules/**").addResourceLocations("file:src/main/resources/views/aether/node_modules/");

@@ -2,6 +2,7 @@ package com.ksptooi.biz;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.util.Enumeration;
 
 @Controller
+@Profile("dev")
 public class ViteProxyController {
 
     // Vite 开发服务器的地址
