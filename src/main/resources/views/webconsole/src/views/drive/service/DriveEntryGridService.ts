@@ -199,6 +199,12 @@ export default {
       }
 
       rafId = requestAnimationFrame(() => {
+        //如果没有检测到鼠标按下 立即结束框选
+        if (event.buttons === 0) {
+          onMouseUp();
+          return;
+        }
+
         const container = gridRef.value!;
 
         //只有在没有缓存时才获取 Rect（建议在 onMouseDown 中获取并重置为 null）
@@ -242,6 +248,7 @@ export default {
       hasSelecting.value = false;
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("blur", onMouseUp);
     };
 
     /**
@@ -283,6 +290,8 @@ export default {
 
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
+      //失去焦点时立即结束框选
+      window.addEventListener("blur", onMouseUp);
     };
 
     /**
