@@ -399,6 +399,7 @@ watch(
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 10;
+  user-select: none;
 }
 
 .admin-breadcrumb {
