@@ -173,6 +173,18 @@ export default {
           icon = "el-icon-table";
         }
 
+        //代码
+        if (fileCategory === EntryCategory.CODE) {
+          routePath = "/drive/preview/code";
+          icon = "el-icon-code";
+        }
+
+        //TXT
+        if (fileCategory === EntryCategory.TEXT) {
+          routePath = "/drive/preview/code";
+          icon = "el-icon-text";
+        }
+
         //未能获取到受支持的预览类型
         if (!routePath) {
           ElMessage.info(`暂不支持预览 .${entry.attachSuffix} 文件，请下载查看`);

@@ -1,11 +1,6 @@
 package com.ksptooi.biz.core.controller;
 
-
-import com.ksptooi.biz.core.model.config.AddConfigDto;
-import com.ksptooi.biz.core.model.config.EditConfigDto;
-import com.ksptooi.biz.core.model.config.GetConfigDetailsVo;
-import com.ksptooi.biz.core.model.config.GetConfigListDto;
-import com.ksptooi.biz.core.model.config.GetConfigListVo;
+import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.service.ConfigService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.annotation.RequirePermissionRest;
