@@ -103,6 +103,20 @@ public class EntryAccessContrller {
         if (signVo.getIsBatch() == 0) {
             var resource = entryAccessService.downloadEntry(signVo);
             var filename = URLEncoder.encode(signVo.getEName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+            //判断FileName是否包含扩展名
+            if(!filename.contains(".")){
+
+                var attachName = resource.getFilename();
+
+                //如果附件名称包含扩展名，则使用附件的扩展名
+                if(attachName!= null && attachName.contains(".")){
+                    //获取附件中最后一个.后的扩展名
+                    var attachSuffix = attachName.substring(attachName.lastIndexOf("."));
+                    filename = URLEncoder.encode(signVo.getEName() + attachSuffix, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+                }
+            }
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + filename)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
