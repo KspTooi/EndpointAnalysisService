@@ -4,7 +4,7 @@
     <div
       class="tag-tree-item"
       :class="{
-        'node-active': isGroup(node) ? activeCollectionId === node.id : activeCollectionId === node.id,
+        'node-active': selectedIds.includes(node.id),
         'tag-item-active': isGroup(node) ? isExpanded(node.id) : false,
         'request-item': !isGroup(node),
         'drag-over-center': isDragHoverCenter,
@@ -16,13 +16,13 @@
       @dblclick="onDoubleClick(node)"
       @contextmenu.prevent="onContextmenu"
       @dragstart="onDragStart"
-      @dragover.prevent="onDragOver"
-      @dragleave.prevent="onDragLeave"
-      @drop.prevent="onDrop"
+      @dragover.prevent.stop="onDragOver"
+      @dragleave.prevent.stop="onDragLeave"
+      @drop.prevent.stop="onDrop"
     >
       <!-- 请求组的显示 -->
       <div v-if="isGroup(node)" class="tag-tree-item-tag">
-        <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="onClick">
+        <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="onClick(node)">
           <ArrowRight v-if="!isExpanded(node.id)" />
           <ArrowDown v-if="isExpanded(node.id)" />
         </el-icon>
@@ -50,14 +50,23 @@
 
     <!-- 子节点 -->
     <div v-if="isGroup(node) && hasChildren(node) && isExpanded(node.id)" class="operation-list">
-      <CollectionTreeItem
+      <RdbgCollectionTreeItem
         v-for="(child, childIndex) in node.children"
         :key="child.id"
         :node="child"
-        :active-nodes="activeNodes"
-        :active-collection-id="activeCollectionId"
+        :expanded-ids="expandedIds"
+        :selected-ids="selectedIds"
+        :drag-hover-zone="dragHoverZone"
+        :drag-hover-target="dragHoverTarget"
         :parent-node="node"
         :child-index="childIndex"
+        @on-click="(collection) => emit('on-click', collection)"
+        @on-dblclick="(collection) => emit('on-dblclick', collection)"
+        @on-contextmenu="(collection, event) => emit('on-contextmenu', collection, event)"
+        @on-drag-start="(collection, event) => emit('on-drag-start', collection, event)"
+        @on-drag-over="(collection, event) => emit('on-drag-over', collection, event)"
+        @on-drag-leave="(collection, event) => emit('on-drag-leave', collection, event)"
+        @on-drag-drop="(collection, event) => emit('on-drag-drop', collection, event)"
       />
     </div>
   </div>
@@ -69,13 +78,23 @@ import { Folder, ArrowDown, ArrowRight } from "@element-plus/icons-vue";
 import RdbgCollectionTreeItemService, {
   type CollectionDragEmitter,
 } from "@/views/requestdebug/service/RdbgCollectionTreeItemService";
+import RdbgCollectionTreeItem from "./RdbgCollectionTreeItem.vue";
 
 const props = defineProps<{
+  //当前节点
   node: GetCollectionTreeVo;
-  activeNodes: string[];
-  activeCollectionId: string | null;
-  dragHoverZone: "center" | "top" | "bottom";
-  dragHoverTarget: GetCollectionTreeVo;
+
+  //当前展开的节点IDS
+  expandedIds: string[];
+
+  //当前选中的节点IDS
+  selectedIds: string[];
+
+  //拖拽悬停状态
+  dragHoverZone: "center" | "top" | "bottom" | null;
+  dragHoverTarget: GetCollectionTreeVo | null;
+
+  //嵌套组件状态
   parentNode?: GetCollectionTreeVo | undefined;
   childIndex?: number | undefined;
 }>();
@@ -124,21 +143,15 @@ const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(90deg, #409eff 0%, #66b3ff 100%);
+  background: #409eff;
   color: white;
-  padding: 2px 2px;
+  padding: 0 6px;
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border: none;
   margin-left: 4px;
   min-width: 20px;
-  text-align: center;
-  line-height: 14px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 1px 2px rgba(64, 158, 255, 0.3);
+  height: 18px;
+  line-height: 18px;
 }
 
 .node-name {
@@ -151,64 +164,58 @@ const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 14px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  margin: 0 0px;
+  background: #ffffff;
+  margin: 1px 0;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
   user-select: none;
-  min-height: 20px;
-  border: 1px solid rgba(255, 255, 255, 0);
+  min-height: 32px;
+  border: 1px solid transparent;
 }
 
 .drag-over-center {
-  outline: 2px dashed #409eff;
-  background: #f0f8ff;
+  background: #f0f7ff !important;
+  border: 1px dashed #409eff !important;
 }
 
 .drag-over-top {
-  box-shadow: inset 0 3px 0 0 #409eff;
+  border-top: 2px solid #409eff !important;
 }
 
 .drag-over-bottom {
-  box-shadow: inset 0 -3px 0 0 #409eff;
+  border-bottom: 2px solid #409eff !important;
 }
 
 .request-item {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid rgba(222, 226, 230, 0);
+  background: #ffffff;
 }
 
 .request-item:hover {
-  background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
-  border-color: #409eff;
+  background: #f5f7fa;
 }
 
 .tag-item-active {
-  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%) !important;
-  border-color: #40b9ff !important;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15) !important;
+  background: #f0f7ff !important;
 }
 
 .tag-tree-item:hover {
-  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
-  border-color: #409eff;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+  background: #f5f7fa;
 }
 
 .tag-tree-item:active {
-  background: linear-gradient(135deg, #e0f2ff 0%, #d0ebff 100%);
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(64, 158, 255, 0.2);
+  background: #ecf5ff;
 }
 
 .expand-icon {
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
   color: #909399;
   margin-right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .expand-icon:hover {
@@ -216,20 +223,9 @@ const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(
 }
 
 .operation-list {
-  margin-left: 15px;
-  margin-top: 2px;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-left: 18px;
+  border-left: 1px solid #e4e7ed;
+  padding-left: 4px;
 }
 
 .operation-item-content {
@@ -240,57 +236,64 @@ const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(
 }
 
 .operation-method {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  min-width: 45px;
-  text-align: center;
+  min-width: 42px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
 }
 
 .operation-name {
   flex: 1;
   color: #606266;
-  font-weight: 500;
+  font-size: 13px;
 }
 
 .method-get {
-  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  background: #67c23a;
 }
 
 .method-post {
-  background: linear-gradient(135deg, #409eff 0%, #66b3ff 100%);
+  background: #409eff;
 }
 
 .method-put {
-  background: linear-gradient(135deg, #e6a23c 0%, #f0c78a 100%);
+  background: #e6a23c;
 }
 
 .method-delete {
-  background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+  background: #f56c6c;
 }
 
 .method-patch {
-  background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+  background: #909399;
 }
 
 .method-head {
-  background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+  background: #909399;
 }
 
 .method-options {
-  background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+  background: #909399;
 }
 
 .method-unknown {
-  background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+  background: #909399;
 }
 
 .node-active {
-  border: 1px solid #5dc7cd;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-  background: linear-gradient(135deg, #f0ffff 0%, rgb(211, 250, 255) 100%) !important;
+  background: #ecf5ff !important;
+  border-color: #b3d8ff !important;
+  color: #409eff !important;
+}
+
+.node-active .node-name,
+.node-active .operation-name {
+  color: #409eff !important;
 }
 </style>

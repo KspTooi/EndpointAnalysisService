@@ -67,8 +67,8 @@ export default {
    */
   useCollectionItemDragHover: (props: {
     node: GetCollectionTreeVo;
-    dragHoverTarget: GetCollectionTreeVo;
-    dragHoverZone: "center" | "top" | "bottom";
+    dragHoverTarget: GetCollectionTreeVo | null;
+    dragHoverZone: "center" | "top" | "bottom" | null;
   }) => {
     const isDragHoverTop = computed(() => {
       if (props.dragHoverTarget?.id !== props.node.id) {
@@ -144,5 +144,5 @@ export default {
    * @param nodeId 节点ID
    * @param activeNodes 激活的节点ID列表
    */
-  isExpanded: (nodeId: string, props: { activeNodes: string[] }) => props.activeNodes.includes(nodeId),
+  isExpanded: (nodeId: string, props: { expandedIds: string[] }) => props.expandedIds.includes(nodeId),
 };

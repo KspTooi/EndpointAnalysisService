@@ -47,16 +47,66 @@ export default {
   },
 
   /**
+   * 集合选择与展开功能打包
+   */
+  useCollectionSelection: () => {
+    //当前展开的节点ID列表
+    const expandedIds = ref<string[]>([]);
+
+    //当前选中的节点ID列表
+    const selectedIds = ref<string[]>([]);
+
+    /**
+     * 切换节点展开/收起
+     * @param nodeId 节点ID
+     */
+    const toggleNode = (node: GetCollectionTreeVo) => {
+      if (!node) {
+        return;
+      }
+
+      //处理组 组允许切换展开/收起
+      if (node.kind === 1) {
+        if (expandedIds.value.includes(node.id)) {
+          expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
+          return;
+        }
+        expandedIds.value.push(node.id);
+      }
+
+      //处理请求与组 它们都允许被选中
+      if (node.kind === 0 || node.kind === 1) {
+        if (selectedIds.value.includes(node.id)) {
+          selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
+          return;
+        }
+        selectedIds.value.push(node.id);
+      }
+
+      //清空其他选中状态
+      selectedIds.value = [node.id];
+    };
+
+    return {
+      expandedIds,
+      selectedIds,
+      toggleNode,
+    };
+  },
+
+  /**
    * 集合树项拖拽功能打包
    * @param emit 事件发射器
    */
-  useCollectionTreeItemDrag: () => {
+  useCollectionTreeItemDrag: (
+    onDrag: (target: GetCollectionTreeVo, entries: GetCollectionTreeVo[], zone: "center" | "top" | "bottom") => void
+  ) => {
     //当前正在拖拽的集合
     const draggedCollection = ref<GetCollectionTreeVo>(null);
 
     //拖拽悬停区域
-    const dragHoverZone = ref<"center" | "top" | "bottom">(null);
-    const dragHoverTarget = ref<GetCollectionTreeVo>(null);
+    const dragHoverZone = ref<"center" | "top" | "bottom" | null>(null);
+    const dragHoverTarget = ref<GetCollectionTreeVo | null>(null);
 
     /**
      * 开始拖拽
@@ -114,8 +164,11 @@ export default {
      * @param event 拖拽事件
      */
     const onDrop = (target: GetCollectionTreeVo, event: DragEvent) => {
-      dragHoverZone.value = null;
-      dragHoverTarget.value = null;
+      //拖拽到根节点
+      if (target == null) {
+        onDrag(null, [draggedCollection.value], null);
+        return;
+      }
 
       const targetId = target.id;
 
@@ -130,21 +183,20 @@ export default {
 
       //拖拽到目标上边缘
       if (zone === "top") {
-        ElMessage.success("拖拽到目标上边缘");
-        //emit("on-collection-drag", target, [draggedCollection.value], zone);
+        onDrag(target, [draggedCollection.value], zone);
       }
 
       //拖拽到目标中心
       if (zone === "center") {
-        ElMessage.success("拖拽到目标中心");
-        //emit("on-collection-drag", target, [draggedCollection.value], zone);
+        onDrag(target, [draggedCollection.value], zone);
       }
 
       //拖拽到目标下边缘
       if (zone === "bottom") {
-        ElMessage.success("拖拽到目标下边缘");
-        //emit("on-collection-drag", target, [draggedCollection.value], zone);
+        onDrag(target, [draggedCollection.value], zone);
       }
+      dragHoverZone.value = null;
+      dragHoverTarget.value = null;
     };
     return {
       draggedCollection,

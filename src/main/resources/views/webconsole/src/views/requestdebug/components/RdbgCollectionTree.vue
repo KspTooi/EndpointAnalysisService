@@ -1,5 +1,5 @@
 <template>
-  <div class="collection-tree-container">
+  <div class="collection-tree-container" @dragover.prevent @drop.prevent="onDrop(null, $event)">
     <div class="flex justify-between items-center pt-1.5 pr-3 pb-1.5 pl-3">
       <el-input placeholder="输入任意字符查询" size="small" clearable />
       <el-button type="primary" @click="$emit('on-create-collection')" size="small" class="ml-2">新建</el-button>
@@ -14,10 +14,11 @@
           v-for="node in listData"
           :key="node.id"
           :node="node"
-          :active-nodes="activeNodes"
-          :active-collection-id="activeCollectionId"
+          :expanded-ids="expandedIds"
+          :selected-ids="selectedIds"
           :drag-hover-zone="dragHoverZone"
           :drag-hover-target="dragHoverTarget"
+          @on-click="toggleNode"
           @on-drag-start="onDragStart"
           @on-drag-over="onDragOver"
           @on-drag-leave="onDragLeave"
@@ -36,6 +37,7 @@ import RdbgCollectionTreeItem from "@/views/requestdebug/components/RdbgCollecti
 import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
 import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCollectionTreeRightMenu.vue";
 import RdbgCollectionTreeItemService from "../service/RdbgCollectionTreeItemService";
+import CollectionApi from "@/views/requestdebug/api/CollectionApi";
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
 
 defineEmits<{
@@ -45,39 +47,49 @@ defineEmits<{
 //列表功能打包
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();
 
+//集合选择与展开功能打包
+const { expandedIds, selectedIds, toggleNode } = RdbgCollectonTreeService.useCollectionSelection();
+
+/**
+ * 拖拽到目标
+ * @param target 目标
+ * @param entries 拖拽的集合
+ * @param zone 拖拽区域
+ */
+const onDrag = async (target: GetCollectionTreeVo, entries: GetCollectionTreeVo[], zone: "center" | "top" | "bottom") => {
+  //执行拖拽移动
+  let kind = 0;
+  let targetId = null;
+
+  if (zone === "center") {
+    kind = 2;
+  }
+
+  if (zone === "top") {
+    kind = 0;
+  }
+
+  if (target != null) {
+    targetId = target.id;
+  }
+
+  await CollectionApi.moveCollection({
+    nodeId: entries[0].id,
+    targetId: targetId,
+    kind: kind,
+  });
+
+  await loadList();
+};
+
 //拖拽功能打包
 const { draggedCollection, dragHoverZone, dragHoverTarget, onDragStart, onDragOver, onDragLeave, onDrop } =
-  RdbgCollectonTreeService.useCollectionTreeItemDrag();
+  RdbgCollectonTreeService.useCollectionTreeItemDrag(onDrag);
 
 //激活的节点ID列表(展开状态)
 const activeNodes = ref<string[]>([]);
 //激活的集合ID
 const activeCollectionId = ref<string | null>(null);
-
-//切换节点展开/收起
-const handleToggleNode = (nodeId: string) => {
-  const index = activeNodes.value.indexOf(nodeId);
-  if (index > -1) {
-    activeNodes.value.splice(index, 1);
-    return;
-  }
-  activeNodes.value.push(nodeId);
-};
-
-//选择集合
-const handleSelectCollection = (collectionId: string) => {
-  activeCollectionId.value = collectionId;
-};
-
-//刷新树
-const handleRefreshTree = () => {
-  loadList();
-};
-
-//应用树结构
-const handleApplyTree = (tree: GetCollectionTreeVo[]) => {
-  listData.value = tree;
-};
 </script>
 
 <style scoped>
