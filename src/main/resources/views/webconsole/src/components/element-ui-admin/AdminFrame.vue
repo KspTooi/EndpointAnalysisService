@@ -333,7 +333,7 @@ watch(
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
   height: 35px;
   flex-shrink: 0;
 }
@@ -393,10 +393,10 @@ watch(
 
 .admin-sidebar {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-right: none;
+  border-right: 1px solid #e4e7ed;
   height: 100%;
   overflow: hidden;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08); */
   position: relative;
   z-index: 10;
   user-select: none;
@@ -424,8 +424,9 @@ watch(
 
 .content-wrapper {
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 0; /* 修改为直角 */
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
+  box-shadow: none; /* 移除内容区域投影 */
   padding: 0;
   flex: 1;
   display: flex;

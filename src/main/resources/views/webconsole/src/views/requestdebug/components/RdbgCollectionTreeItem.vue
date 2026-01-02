@@ -173,6 +173,8 @@ const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(
   user-select: none;
   min-height: 32px;
   border: 1px solid transparent;
+  border-right: none !important;
+  border-left: none !important;
 }
 
 .drag-over-center {

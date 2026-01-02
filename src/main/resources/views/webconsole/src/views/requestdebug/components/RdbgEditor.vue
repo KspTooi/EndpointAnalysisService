@@ -6,30 +6,60 @@
       <div class="rb-loading-text">正在处理...</div>
     </div>
 
-    <el-empty description="请选择一个请求" v-show="RequestTreeHolder().getActiveRequestId == null || requestDetail.id == null" style="height: 100%; width: 100%" />
+    <el-empty
+      description="请选择一个请求"
+      v-show="RequestTreeHolder().getActiveRequestId == null || requestDetail.id == null"
+      style="height: 100%; width: 100%"
+    />
 
     <div v-show="RequestTreeHolder().getActiveRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
       <div class="rb-header">
         <div class="rb-header-title">
           <input class="rb-name-input" v-model="requestDetail.name" />
           <div class="rb-header-env-selector">
-            <rdbg-editor-env-selector/>
+            <rdbg-editor-env-selector />
           </div>
         </div>
 
         <div class="rb-header-input" style="margin-top: 12px">
-          <rdbg-editor-url-input :url="requestDetail.url" :method="requestDetail.method" @onUrlChange="onUrlChange" @onSendRequest="onSendRequest" :loading="loading" />
+          <rdbg-editor-url-input
+            :url="requestDetail.url"
+            :method="requestDetail.method"
+            @onUrlChange="onUrlChange"
+            @onSendRequest="onSendRequest"
+            :loading="loading"
+          />
         </div>
       </div>
 
       <!-- 选项卡 -->
       <div class="rb-tab">
-        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }" @click="PreferenceHolder().setRequestEditorTab('header')">标头</div>
-        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }" @click="PreferenceHolder().setRequestEditorTab('body')">载荷</div>
-        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'lastResponse' }" @click="PreferenceHolder().setRequestEditorTab('lastResponse')">
+        <div
+          class="rb-tab-item"
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }"
+          @click="PreferenceHolder().setRequestEditorTab('header')"
+        >
+          标头
+        </div>
+        <div
+          class="rb-tab-item"
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }"
+          @click="PreferenceHolder().setRequestEditorTab('body')"
+        >
+          载荷
+        </div>
+        <div
+          class="rb-tab-item"
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'lastResponse' }"
+          @click="PreferenceHolder().setRequestEditorTab('lastResponse')"
+        >
           响应
         </div>
-        <div class="rb-tab-item" :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }" @click="PreferenceHolder().setRequestEditorTab('response')">
+        <div
+          class="rb-tab-item"
+          :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }"
+          @click="PreferenceHolder().setRequestEditorTab('response')"
+        >
           响应列表
         </div>
       </div>
@@ -41,7 +71,14 @@
             <div class="headers-toolbar">
               <el-button @click="addHeader" type="primary" size="small">添加请求头</el-button>
             </div>
-            <el-table :data="editableHeaders" style="width: 100%" height="100%" empty-text="点击'添加请求头'开始编辑" size="small" border>
+            <el-table
+              :data="editableHeaders"
+              style="width: 100%"
+              height="100%"
+              empty-text="点击'添加请求头'开始编辑"
+              size="small"
+              border
+            >
               <el-table-column prop="k" label="键" width="200">
                 <template #default="scope">
                   <el-input v-model="scope.row.k" @blur="onHeaderChange" placeholder="请求头名称" size="small" />
@@ -63,12 +100,12 @@
 
         <!-- 载荷内容 -->
         <div v-show="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
-<!--          <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />-->
+          <!--          <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />-->
         </div>
 
         <!-- 响应列表 -->
         <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
-<!--          <UrResponseList ref="urResponseListRef" :loading="loading" />-->
+          <!--          <UrResponseList ref="urResponseListRef" :loading="loading" />-->
         </div>
 
         <!-- 响应 -->
@@ -98,8 +135,8 @@ import { PreferenceHolder } from "@/store/PreferenceHolder";
 import UserRequestLogApi from "@/api/requestdebug/UserRequestLogApi.ts";
 import type { GetUserRequestLogDetailsVo } from "@/api/requestdebug/UserRequestLogApi.ts";
 import RequestPreview from "@/components/user-request-view/RequestPreview.vue";
-import RdbgEditorEnvSelector from "@/views/requestdebug/components/RdbgEditorEnvSelector.vue"
-import RdbgEditorUrlInput from "@/views/requestdebug/components/RdbgEditorUrlInput.vue"
+import RdbgEditorEnvSelector from "@/views/requestdebug/components/RdbgEditorEnvSelector.vue";
+import RdbgEditorUrlInput from "@/views/requestdebug/components/RdbgEditorUrlInput.vue";
 
 //完整用户请求数据
 const requestDetail = ref<GetUserRequestDetailsVo>({
@@ -330,7 +367,8 @@ watch(
   height: 100%;
   background: #fff;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 1px solid #e4e7ed;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .rb-header {
@@ -435,7 +473,6 @@ watch(
 .body-type span {
   background: #e9ecef;
   padding: 4px 8px;
-  border-radius: 4px;
   font-size: 12px;
   color: #495057;
 }
@@ -443,7 +480,6 @@ watch(
 .body-text {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-radius: 6px;
   overflow: auto;
   max-height: 400px;
 }

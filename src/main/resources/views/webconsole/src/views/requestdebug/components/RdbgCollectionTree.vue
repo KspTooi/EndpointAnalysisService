@@ -111,7 +111,19 @@ const activeCollectionId = ref<string | null>(null);
   color: #909399;
 }
 
-.tree-list {
+/* .tree-list {
   padding: 4px;
+} */
+
+.collection-tree-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.collection-tree-container::-webkit-scrollbar-thumb {
+  background: #e4e7ed;
+}
+
+.collection-tree-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 </style>
