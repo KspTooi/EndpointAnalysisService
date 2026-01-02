@@ -78,8 +78,29 @@ public class CollectionService {
      * @param dto 新增请求集合参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addCollection(AddCollectionDto dto) {
-        CollectionPo insertPo = as(dto, CollectionPo.class);
+    public void addCollection(AddCollectionDto dto) throws BizException {
+
+        Long companyId = AuthService.getCurrentCompanyId();
+
+        //如果父级ID不为空，则校验父级节点
+        if (dto.getParentId() != null) {
+
+            CollectionPo parentPo = repository.getByIdAndCompanyId(dto.getParentId(), companyId);
+            if (parentPo == null) {
+                throw new BizException("父级节点不存在或无权限访问");
+            }
+
+            if (parentPo.getKind() != 1) {
+                throw new BizException("父级节点必须是请求组");
+            }
+            
+        }
+
+        //组装请求PO
+        CollectionPo insertPo = new CollectionPo();
+        as(dto, insertPo);
+        insertPo.setParentId(dto.getParentId());
+        insertPo.setSeq(repository.getMaxSeqInParent(dto.getParentId()));
         repository.save(insertPo);
     }
 
