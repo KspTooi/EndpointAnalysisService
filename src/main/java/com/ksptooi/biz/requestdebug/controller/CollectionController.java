@@ -3,7 +3,7 @@ package com.ksptooi.biz.requestdebug.controller;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
-import com.ksptooi.biz.requestdebug.model.collection.dto.GetCollectionListDto;
+import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionListVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
@@ -56,6 +56,13 @@ public class CollectionController {
        
         collectionService.addCollection(dto);
         return Result.success("新增成功");
+    }
+
+    @Operation(summary = "移动请求集合")
+    @PostMapping("/moveCollection")
+    public Result<String> moveCollection(@RequestBody @Valid MoveCollectionDto dto) throws Exception {
+        collectionService.moveCollection(dto);
+        return Result.success("移动操作成功");
     }
 
     @Operation(summary = "编辑请求集合")

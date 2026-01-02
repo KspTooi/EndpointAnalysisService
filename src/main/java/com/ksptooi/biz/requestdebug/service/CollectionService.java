@@ -4,7 +4,7 @@ import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.CollectionPo;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
-import com.ksptooi.biz.requestdebug.model.collection.dto.GetCollectionListDto;
+import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionListVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -81,11 +82,12 @@ public class CollectionService {
     public void addCollection(AddCollectionDto dto) throws BizException {
 
         Long companyId = AuthService.getCurrentCompanyId();
+        CollectionPo parentPo = null;
 
         //如果父级ID不为空，则校验父级节点
         if (dto.getParentId() != null) {
 
-            CollectionPo parentPo = repository.getByIdAndCompanyId(dto.getParentId(), companyId);
+            parentPo = repository.getByIdAndCompanyId(dto.getParentId(), companyId);
             if (parentPo == null) {
                 throw new BizException("父级节点不存在或无权限访问");
             }
@@ -99,10 +101,209 @@ public class CollectionService {
         //组装请求PO
         CollectionPo insertPo = new CollectionPo();
         as(dto, insertPo);
-        insertPo.setParentId(dto.getParentId());
+        insertPo.setParent(parentPo);
         insertPo.setSeq(repository.getMaxSeqInParent(dto.getParentId()));
         repository.save(insertPo);
     }
+
+    /**
+     * 移动请求集合
+     * @param dto 移动请求集合参数
+     * @return 移动请求集合结果
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void moveCollection(MoveCollectionDto dto) throws BizException {
+
+        Long companyId = AuthService.getCurrentCompanyId();
+
+        //查找对象节点
+        CollectionPo nodePo = repository.getByIdAndCompanyId(dto.getNodeId(), companyId);
+        
+        if (nodePo == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        //移动到顶层
+        if (dto.getTargetId() == null) {
+            nodePo.setParent(null);
+            nodePo.setSeq(repository.getMaxSeqInParent(null));
+            repository.save(nodePo);
+            return;
+        }
+
+        //移动到目标节点
+        CollectionPo targetNodePo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+        
+        if (targetNodePo == null) {
+            throw new BizException("目标节点不存在或无权限访问");
+        }
+
+        Integer targetSeq = targetNodePo.getSeq();
+
+        //处理移动方式 0:顶部 1:底部 2:内部
+
+        //顶部
+        if (dto.getKind() == 0) {
+
+            nodePo.setSeq(targetSeq);
+
+            /*
+             * 处理目标节点让位
+             * 让位逻辑: 目标节点同级节点下所有节点SEQ+1
+             */
+
+            //获取目标节点的父级 如果是NULL则顶级节点让位
+            CollectionPo targetParentNodePo = targetNodePo.getParent();
+
+            //将当前正在移动的节点父级设置为目标节点的父级
+            nodePo.setParent(targetParentNodePo);
+
+            //处理顶级节点让位
+            if (targetParentNodePo == null) {
+                List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
+                for (CollectionPo item : rootNodeList) {
+                    if (item.getSeq() >= targetSeq) {
+                        item.setSeq(item.getSeq() + 1);
+                    }
+                }
+                repository.saveAll(rootNodeList);
+                repository.save(nodePo);
+                return;
+            }
+
+            //处理内部节点让位
+            List<CollectionPo> targetParentNodeList = targetParentNodePo.getChildren();
+            for (CollectionPo item : targetParentNodeList) {
+                if (item.getSeq() >= targetSeq) {
+
+                    //跳过当前正在移动的节点
+                    if (Objects.equals(item.getId(), nodePo.getId())) {
+                        continue;
+                    }
+
+                    item.setSeq(item.getSeq() + 1);
+                }
+            }
+            repository.saveAll(targetParentNodeList);
+            repository.save(nodePo);
+            return;
+        }
+
+        //底部
+        if (dto.getKind() == 1) {
+            nodePo.setSeq(targetSeq);
+
+            /*
+             * 处理目标节点让位
+             * 让位逻辑: 目标节点同级节点下所有节点SEQ-1
+             */
+            //获取目标节点的父级 如果是NULL则顶级节点让位
+            CollectionPo targetParentNodePo = targetNodePo.getParent();
+
+            //将当前正在移动的节点父级设置为目标节点的父级
+            nodePo.setParent(targetParentNodePo);
+
+            //处理顶级节点让位
+            if (targetParentNodePo == null) {
+                List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
+                for (CollectionPo item : rootNodeList) {
+                    if (item.getSeq() <= targetSeq) {
+
+                        //跳过当前正在移动的节点
+                        if (Objects.equals(item.getId(), nodePo.getId())) {
+                            continue;
+                        }
+
+
+                        item.setSeq(item.getSeq() - 1);
+                    }
+                }
+                repository.saveAll(rootNodeList);
+                repository.save(nodePo);
+                return;
+            }
+
+            //处理内部节点让位
+            List<CollectionPo> targetParentNodeList = targetParentNodePo.getChildren();
+            for (CollectionPo item : targetParentNodeList) {
+                if (item.getSeq() <= targetSeq) {
+
+                    //跳过当前正在移动的节点
+                    if (Objects.equals(item.getId(), nodePo.getId())) {
+                        continue;
+                    }
+
+                    item.setSeq(item.getSeq() - 1);
+                }
+            }
+            repository.saveAll(targetParentNodeList);
+            repository.save(nodePo);
+            return;
+        }
+
+        //内部
+        if (dto.getKind() == 2) {
+
+            //目标节点不是组则直接移动到下一个位置 并处理让位
+            if (targetNodePo.getKind() == 0) {
+                nodePo.setSeq(targetSeq);
+
+                //获取目标节点的父级 如果是NULL则顶级节点让位
+                CollectionPo targetParentNodePo = targetNodePo.getParent();
+
+                //将当前正在移动的节点父级设置为目标节点的父级
+                nodePo.setParent(targetParentNodePo);
+
+                //处理顶级节点让位
+                if (targetParentNodePo == null) {
+                    List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
+                    for (CollectionPo item : rootNodeList) {
+
+                        //跳过当前正在移动的节点
+                        if (Objects.equals(item.getId(), nodePo.getId())) {
+                            continue;
+                        }
+
+                        if (item.getSeq() >= targetSeq) {
+                            item.setSeq(item.getSeq() + 1);
+                        }
+                    }
+                    repository.saveAll(rootNodeList);
+                    repository.save(nodePo);
+                    return;
+                }
+
+                //处理内部节点让位
+                List<CollectionPo> targetParentNodeList = targetParentNodePo.getChildren();
+                for (CollectionPo item : targetParentNodeList) {
+                    if (item.getSeq() >= targetSeq) {
+
+                        //跳过当前正在移动的节点
+                        if (Objects.equals(item.getId(), nodePo.getId())) {
+                            continue;
+                        }
+
+                        item.setSeq(item.getSeq() + 1);
+                    }
+                }
+                repository.saveAll(targetParentNodeList);
+                repository.save(nodePo);
+                return;
+            }
+
+            //目标节点是组则移动到组中最后一个位置
+            nodePo.setParent(targetNodePo);
+            nodePo.setSeq(repository.getMaxSeqInParent(targetNodePo.getId()));
+            repository.save(nodePo);
+            return;
+        }
+        
+    }
+
+
+
+
 
     /**
      * 编辑请求集合

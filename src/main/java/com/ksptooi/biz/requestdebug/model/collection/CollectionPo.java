@@ -5,11 +5,14 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -27,9 +30,10 @@ public class CollectionPo {
     @Comment("主键ID")
     private Long id;
 
-    @Column(name = "parent_id")
-    @Comment("父级ID NULL顶级")
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("父级节点 NULL顶级")
+    private CollectionPo parent;
 
     @Column(name = "company_id", nullable = false)
     @Comment("公司ID")
@@ -90,6 +94,13 @@ public class CollectionPo {
     @Column(name = "delete_time", nullable = true)
     @Comment("删除时间 为NULL未删除")
     private LocalDateTime deleteTime;
+
+
+    @BatchSize(size = 100)
+    @OrderBy("seq ASC")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL)
+    @Comment("子节点")
+    private List<CollectionPo> children;
 
     @PrePersist
     private void onCreate() {

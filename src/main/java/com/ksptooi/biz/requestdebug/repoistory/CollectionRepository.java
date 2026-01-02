@@ -47,4 +47,17 @@ public interface CollectionRepository extends JpaRepository<CollectionPo, Long> 
             """)
     CollectionPo getByIdAndCompanyId(@Param("id") Long id, @Param("companyId") Long companyId);
 
+
+    /**
+     * 获取公司顶级节点
+     * @param companyId 公司ID
+     * @return 顶级节点
+     */
+    @Query("""
+            SELECT t FROM CollectionPo t
+            WHERE t.parent IS NULL AND t.companyId = :companyId
+            ORDER BY t.seq ASC
+            """)
+    List<CollectionPo> getRootNodeListByCompanyId(@Param("companyId") Long companyId);
+
 }
