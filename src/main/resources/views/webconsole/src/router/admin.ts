@@ -252,6 +252,12 @@ const router = createRouter({
       component: () => import("@/views/drive/CodeRenderer.vue"),
       meta: { breadcrumb: { title: "代码预览" } },
     },
+    {
+      path: "/rdbg-workspace",
+      name: "rdbg-workspace",
+      component: () => import("@/views/requestdebug/RdbgWorkSpace.vue"),
+      meta: { breadcrumb: { title: "请求调试器" } },
+    },
   ],
 });
 

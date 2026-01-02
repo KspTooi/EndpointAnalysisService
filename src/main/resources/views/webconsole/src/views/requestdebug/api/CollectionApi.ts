@@ -7,7 +7,7 @@ export interface GetCollectionTreeVo {
   parentId: string | null; //父级ID null:顶级
   name: string; //集合名称
   kind: number; //集合类型 0:请求 1:组
-  method: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
+  reqMethod: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
   children: GetCollectionTreeVo[]; //子节点
 }
 
