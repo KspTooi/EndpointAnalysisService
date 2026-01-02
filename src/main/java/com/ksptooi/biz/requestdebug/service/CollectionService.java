@@ -6,28 +6,19 @@ import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
-import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionListVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.requestdebug.repoistory.CollectionRepository;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
 
 @Service
 public class CollectionService {
@@ -37,6 +28,7 @@ public class CollectionService {
 
     /**
      * 获取请求集合树
+     *
      * @return 请求集合树
      */
     public List<GetCollectionTreeVo> getCollectionTree() {
@@ -53,6 +45,9 @@ public class CollectionService {
         //处理PO为平面节点
         for (CollectionPo item : nodePos) {
             GetCollectionTreeVo vo = as(item, GetCollectionTreeVo.class);
+            if (item.getParent() != null) {
+                vo.setParentId(item.getParent().getId());
+            }
             vo.setChildren(new ArrayList<>());
             flatNodeVos.add(vo);
         }
@@ -60,6 +55,12 @@ public class CollectionService {
         //将平面节点转换为树结构
         Map<Long, GetCollectionTreeVo> idToNode = new HashMap<>();
 
+        //先将所有节点添加到映射中
+        for (GetCollectionTreeVo node : flatNodeVos) {
+            idToNode.put(node.getId(), node);
+        }
+
+        //构建树结构
         for (GetCollectionTreeVo node : flatNodeVos) {
             Long parentId = node.getParentId();
             if (parentId == null) {
@@ -79,6 +80,7 @@ public class CollectionService {
 
     /**
      * 新增请求集合
+     *
      * @param dto 新增请求集合参数
      */
     @Transactional(rollbackFor = Exception.class)
@@ -86,7 +88,7 @@ public class CollectionService {
 
         Long companyId = AuthService.getCurrentCompanyId();
         CollectionPo parentPo = null;
-
+        
         //如果父级ID不为空，则校验父级节点
         if (dto.getParentId() != null) {
 
@@ -98,19 +100,21 @@ public class CollectionService {
             if (parentPo.getKind() != 1) {
                 throw new BizException("父级节点必须是请求组");
             }
-            
+
         }
 
         //组装请求PO
         CollectionPo insertPo = new CollectionPo();
         as(dto, insertPo);
         insertPo.setParent(parentPo);
+        insertPo.setCompanyId(companyId);
         insertPo.setSeq(repository.getMaxSeqInParent(dto.getParentId()));
         repository.save(insertPo);
     }
 
     /**
      * 移动请求集合
+     *
      * @param dto 移动请求集合参数
      * @return 移动请求集合结果
      * @throws BizException 业务异常
@@ -122,7 +126,7 @@ public class CollectionService {
 
         //查找对象节点
         CollectionPo nodePo = repository.getByIdAndCompanyId(dto.getNodeId(), companyId);
-        
+
         if (nodePo == null) {
             throw new BizException("对象节点不存在或无权限访问");
         }
@@ -137,7 +141,7 @@ public class CollectionService {
 
         //移动到目标节点
         CollectionPo targetNodePo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
-        
+
         if (targetNodePo == null) {
             throw new BizException("目标节点不存在或无权限访问");
         }
@@ -307,6 +311,7 @@ public class CollectionService {
 
     /**
      * 复制请求集合
+     *
      * @param dto 复制请求集合参数
      * @throws BizException 业务异常
      */
@@ -326,7 +331,7 @@ public class CollectionService {
          * 新复制的节点排序为当前节点排序+1且父级为当前节点的父级
          * 新复制的节点将插入在被复制节点之后的一个槽位,并且后方所有大于等于 新复制节点SEQ 的节点都需要进行让位处理
          * 让位规则: 节点SEQ >= 新复制节点SEQ 则节点SEQ + 1
-         */     
+         */
         var nodeName = sourceNodePo.getName() + " 副本";
 
         //组装新节点PO
@@ -343,7 +348,7 @@ public class CollectionService {
         if (sourceParentNodePo == null) {
             List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
             for (CollectionPo item : rootNodeList) {
-                
+
                 //所有SEQ大于等于新复制节点SEQ的节点都需要进行让位处理
                 if (item.getSeq() >= newNodePo.getSeq()) {
                     newNodePo.setSeq(item.getSeq() + 1);
@@ -384,6 +389,7 @@ public class CollectionService {
 
     /**
      * 编辑请求集合
+     *
      * @param dto 编辑请求集合参数
      * @throws BizException 业务异常
      */
@@ -399,22 +405,22 @@ public class CollectionService {
 
         //如果是组类型不允许编辑请求相关字段
         if (updatePo.getKind() == 1) {
-            if(StringUtils.isNotBlank(dto.getReqUrl())){
+            if (StringUtils.isNotBlank(dto.getReqUrl())) {
                 throw new BizException("组类型不允许编辑请求URL");
             }
-            if(StringUtils.isNotBlank(dto.getReqUrlParamsJson())){
+            if (StringUtils.isNotBlank(dto.getReqUrlParamsJson())) {
                 throw new BizException("组类型不允许编辑请求URL参数");
             }
-            if(dto.getReqMethod() != null){
+            if (dto.getReqMethod() != null) {
                 throw new BizException("组类型不允许编辑请求方法");
             }
-            if(StringUtils.isNotBlank(dto.getReqHeaderJson())){
+            if (StringUtils.isNotBlank(dto.getReqHeaderJson())) {
                 throw new BizException("组类型不允许编辑请求头");
             }
-            if(dto.getReqBodyKind() != null){
+            if (dto.getReqBodyKind() != null) {
                 throw new BizException("组类型不允许编辑请求体类型");
             }
-            if(StringUtils.isNotBlank(dto.getReqBodyJson())){
+            if (StringUtils.isNotBlank(dto.getReqBodyJson())) {
                 throw new BizException("组类型不允许编辑请求体");
             }
         }
@@ -431,6 +437,7 @@ public class CollectionService {
 
     /**
      * 获取请求集合详情
+     *
      * @param dto 获取请求集合详情参数
      * @return 请求集合详情
      * @throws BizException 业务异常
@@ -445,7 +452,7 @@ public class CollectionService {
 
         GetCollectionDetailsVo vo = as(po, GetCollectionDetailsVo.class);
 
-        if(po.getParent() != null){
+        if (po.getParent() != null) {
             vo.setParentId(po.getParent().getId());
         }
 
@@ -454,6 +461,7 @@ public class CollectionService {
 
     /**
      * 删除请求集合
+     *
      * @param dto 删除请求集合参数
      * @throws BizException 业务异常
      */

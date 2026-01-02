@@ -3,6 +3,7 @@ package com.ksptooi.biz.requestdebug.model.collection.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 @Getter
@@ -22,7 +23,7 @@ public class GetCollectionTreeVo {
     private Integer kind;
 
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
-    private Integer method;
+    private Integer reqMethod;
 
     @Schema(description = "子节点")
     private List<GetCollectionTreeVo> children;

@@ -5,7 +5,6 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
@@ -25,7 +24,6 @@ import java.util.List;
 public class CollectionPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @Comment("主键ID")
     private Long id;
@@ -55,7 +53,7 @@ public class CollectionPo {
     @Comment("请求URL参数JSON")
     private String reqUrlParamsJson;
 
-    @Column(name = "req_method",columnDefinition = "tinyint")
+    @Column(name = "req_method", columnDefinition = "tinyint")
     @Comment("请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
 
@@ -122,9 +120,10 @@ public class CollectionPo {
         if (this.updaterId == null) {
             this.updaterId = AuthService.getCurrentUserId();
         }
-        if(this.companyId == null){
+        if (this.companyId == null) {
             this.companyId = AuthService.getCurrentCompanyId();
         }
+
     }
 
     @PreUpdate
