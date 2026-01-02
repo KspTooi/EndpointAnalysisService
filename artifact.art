@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.entry.service",
-  "pkgNamePo": "com.ksptooi.biz.entry.model.po",
+  "pkgNameService": "com.ksptooi.biz.collection.service",
+  "pkgNamePo": "com.ksptooi.biz.collection.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,17 +9,8 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "条目ID",
+        "comment": "主键ID",
         "primary": true
-      },
-      {
-        "name": "company_id",
-        "javaFieldName": "companyId",
-        "javaGetterName": "CompanyId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "团队ID",
-        "primary": false
       },
       {
         "name": "parent_id",
@@ -27,7 +18,16 @@
         "javaGetterName": "ParentId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "父级ID 为NULL顶级",
+        "comment": "父级ID NULL顶级",
+        "primary": false
+      },
+      {
+        "name": "company_id",
+        "javaFieldName": "companyId",
+        "javaGetterName": "CompanyId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "公司ID",
         "primary": false
       },
       {
@@ -36,7 +36,7 @@
         "javaGetterName": "Name",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "条目名称",
+        "comment": "集合名称",
         "primary": false
       },
       {
@@ -45,34 +45,70 @@
         "javaGetterName": "Kind",
         "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "条目类型 0:文件 1:文件夹",
+        "comment": "集合类型 0:请求 1:组",
         "primary": false
       },
       {
-        "name": "attach_id",
-        "javaFieldName": "attachId",
-        "javaGetterName": "AttachId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "文件附件ID 文件夹为NULL",
-        "primary": false
-      },
-      {
-        "name": "attach_size",
-        "javaFieldName": "attachSize",
-        "javaGetterName": "AttachSize",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "文件附件大小 文件夹为0",
-        "primary": false
-      },
-      {
-        "name": "attach_suffix",
-        "javaFieldName": "attachSuffix",
-        "javaGetterName": "AttachSuffix",
+        "name": "req_url",
+        "javaFieldName": "reqUrl",
+        "javaGetterName": "ReqUrl",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "文件附件类型 文件夹为NULL",
+        "comment": "请求URL",
+        "primary": false
+      },
+      {
+        "name": "req_url_params_json",
+        "javaFieldName": "reqUrlParamsJson",
+        "javaGetterName": "ReqUrlParamsJson",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "请求URL参数JSON",
+        "primary": false
+      },
+      {
+        "name": "req_method",
+        "javaFieldName": "reqMethod",
+        "javaGetterName": "ReqMethod",
+        "type": "TINYINT",
+        "javaType": "Integer",
+        "comment": "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS",
+        "primary": false
+      },
+      {
+        "name": "req_header_json",
+        "javaFieldName": "reqHeaderJson",
+        "javaGetterName": "ReqHeaderJson",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "请求头JSON",
+        "primary": false
+      },
+      {
+        "name": "req_body_kind",
+        "javaFieldName": "reqBodyKind",
+        "javaGetterName": "ReqBodyKind",
+        "type": "TINYINT",
+        "javaType": "Integer",
+        "comment": "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded",
+        "primary": false
+      },
+      {
+        "name": "req_body_json",
+        "javaFieldName": "reqBodyJson",
+        "javaGetterName": "ReqBodyJson",
+        "type": "JSON",
+        "javaType": "String",
+        "comment": "请求体JSON",
+        "primary": false
+      },
+      {
+        "name": "seq",
+        "javaFieldName": "seq",
+        "javaGetterName": "Seq",
+        "type": "INT",
+        "javaType": "Integer",
+        "comment": "排序",
         "primary": false
       },
       {
@@ -85,12 +121,30 @@
         "primary": false
       },
       {
+        "name": "creator_id",
+        "javaFieldName": "creatorId",
+        "javaGetterName": "CreatorId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "创建人ID",
+        "primary": false
+      },
+      {
         "name": "update_time",
         "javaFieldName": "updateTime",
         "javaGetterName": "UpdateTime",
         "type": "DATETIME",
         "javaType": "Date",
         "comment": "更新时间",
+        "primary": false
+      },
+      {
+        "name": "updater_id",
+        "javaFieldName": "updaterId",
+        "javaGetterName": "UpdaterId",
+        "type": "BIGINT",
+        "javaType": "Long",
+        "comment": "更新人ID",
         "primary": false
       },
       {
@@ -101,56 +155,38 @@
         "javaType": "Date",
         "comment": "删除时间 为NULL未删除",
         "primary": false
-      },
-      {
-        "name": "creator_id",
-        "javaFieldName": "creatorId",
-        "javaGetterName": "CreatorId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "创建人",
-        "primary": false
-      },
-      {
-        "name": "updater_id",
-        "javaFieldName": "updaterId",
-        "javaGetterName": "UpdaterId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "更新人",
-        "primary": false
       }
     ],
     "options": [
       {
         "key": "tableName",
-        "val": "drive_entry",
-        "defaultVal": "drive_entry"
+        "val": "rdbg_collection",
+        "defaultVal": "rdbg_collection"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.entry.controller",
+  "pkgNameController": "com.ksptooi.biz.collection.controller",
   "dirRoot": "src",
-  "dbName": "endpoint_analysis_service_test",
+  "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "drive_entry",
-  "classNamePo": "EntryPo",
+  "tableName": "rdbg_collection",
+  "classNamePo": "CollectionPo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "entryService",
+  "fieldNameService": "collectionService",
   "password": "root",
-  "datetime": "2025-12-18 17:37:59",
-  "host": "192.168.10.202:3306",
+  "datetime": "2026-01-02 10:24:16",
+  "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "EntryVo",
+  "classNameVo": "CollectionVo",
   "driver": "com.mysql.cj.jdbc.Driver",
-  "excludeNames": "drive_",
+  "excludeNames": "rdbg_",
   "genPo": "true",
-  "table.name": "drive_entry",
-  "classNameService": "EntryService",
+  "table.name": "rdbg_collection",
+  "classNameService": "CollectionService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -159,17 +195,8 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "条目ID",
+      "comment": "主键ID",
       "primary": true
-    },
-    {
-      "name": "company_id",
-      "javaFieldName": "companyId",
-      "javaGetterName": "CompanyId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "团队ID",
-      "primary": false
     },
     {
       "name": "parent_id",
@@ -177,7 +204,16 @@
       "javaGetterName": "ParentId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "父级ID 为NULL顶级",
+      "comment": "父级ID NULL顶级",
+      "primary": false
+    },
+    {
+      "name": "company_id",
+      "javaFieldName": "companyId",
+      "javaGetterName": "CompanyId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "公司ID",
       "primary": false
     },
     {
@@ -186,7 +222,7 @@
       "javaGetterName": "Name",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "条目名称",
+      "comment": "集合名称",
       "primary": false
     },
     {
@@ -195,34 +231,70 @@
       "javaGetterName": "Kind",
       "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "条目类型 0:文件 1:文件夹",
+      "comment": "集合类型 0:请求 1:组",
       "primary": false
     },
     {
-      "name": "attach_id",
-      "javaFieldName": "attachId",
-      "javaGetterName": "AttachId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "文件附件ID 文件夹为NULL",
-      "primary": false
-    },
-    {
-      "name": "attach_size",
-      "javaFieldName": "attachSize",
-      "javaGetterName": "AttachSize",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "文件附件大小 文件夹为0",
-      "primary": false
-    },
-    {
-      "name": "attach_suffix",
-      "javaFieldName": "attachSuffix",
-      "javaGetterName": "AttachSuffix",
+      "name": "req_url",
+      "javaFieldName": "reqUrl",
+      "javaGetterName": "ReqUrl",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "文件附件类型 文件夹为NULL",
+      "comment": "请求URL",
+      "primary": false
+    },
+    {
+      "name": "req_url_params_json",
+      "javaFieldName": "reqUrlParamsJson",
+      "javaGetterName": "ReqUrlParamsJson",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "请求URL参数JSON",
+      "primary": false
+    },
+    {
+      "name": "req_method",
+      "javaFieldName": "reqMethod",
+      "javaGetterName": "ReqMethod",
+      "type": "TINYINT",
+      "javaType": "Integer",
+      "comment": "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS",
+      "primary": false
+    },
+    {
+      "name": "req_header_json",
+      "javaFieldName": "reqHeaderJson",
+      "javaGetterName": "ReqHeaderJson",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "请求头JSON",
+      "primary": false
+    },
+    {
+      "name": "req_body_kind",
+      "javaFieldName": "reqBodyKind",
+      "javaGetterName": "ReqBodyKind",
+      "type": "TINYINT",
+      "javaType": "Integer",
+      "comment": "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded",
+      "primary": false
+    },
+    {
+      "name": "req_body_json",
+      "javaFieldName": "reqBodyJson",
+      "javaGetterName": "ReqBodyJson",
+      "type": "JSON",
+      "javaType": "String",
+      "comment": "请求体JSON",
+      "primary": false
+    },
+    {
+      "name": "seq",
+      "javaFieldName": "seq",
+      "javaGetterName": "Seq",
+      "type": "INT",
+      "javaType": "Integer",
+      "comment": "排序",
       "primary": false
     },
     {
@@ -235,12 +307,30 @@
       "primary": false
     },
     {
+      "name": "creator_id",
+      "javaFieldName": "creatorId",
+      "javaGetterName": "CreatorId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "创建人ID",
+      "primary": false
+    },
+    {
       "name": "update_time",
       "javaFieldName": "updateTime",
       "javaGetterName": "UpdateTime",
       "type": "DATETIME",
       "javaType": "Date",
       "comment": "更新时间",
+      "primary": false
+    },
+    {
+      "name": "updater_id",
+      "javaFieldName": "updaterId",
+      "javaGetterName": "UpdaterId",
+      "type": "BIGINT",
+      "javaType": "Long",
+      "comment": "更新人ID",
       "primary": false
     },
     {
@@ -251,48 +341,30 @@
       "javaType": "Date",
       "comment": "删除时间 为NULL未删除",
       "primary": false
-    },
-    {
-      "name": "creator_id",
-      "javaFieldName": "creatorId",
-      "javaGetterName": "CreatorId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "创建人",
-      "primary": false
-    },
-    {
-      "name": "updater_id",
-      "javaFieldName": "updaterId",
-      "javaGetterName": "UpdaterId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "更新人",
-      "primary": false
     }
   ],
-  "fieldNameController": "entryController",
-  "pkgNameVo": "com.ksptooi.biz.entry.model.vo",
-  "fieldNameDto": "entryDto",
+  "fieldNameController": "collectionController",
+  "pkgNameVo": "com.ksptooi.biz.collection.model.vo",
+  "fieldNameDto": "collectionDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "Entry",
-  "fieldNamePo": "entryPo",
-  "classNameController": "EntryController",
-  "pkgNameDto": "com.ksptooi.biz.entry.model.dto",
-  "classNameRepository": "EntryRepository",
-  "pkgNameRepository": "com.ksptooi.biz.entry.repository",
+  "apiTagName": "Collection",
+  "fieldNamePo": "collectionPo",
+  "classNameController": "CollectionController",
+  "pkgNameDto": "com.ksptooi.biz.collection.model.dto",
+  "classNameRepository": "CollectionRepository",
+  "pkgNameRepository": "com.ksptooi.biz.collection.repository",
   "comments": "",
-  "fieldNameRepository": "entryRepository",
+  "fieldNameRepository": "collectionRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "entry",
+  "requestMappingName": "collection",
   "genController": "true",
-  "fieldNameVo": "entryVo",
-  "businessClassName": "Entry",
+  "fieldNameVo": "collectionVo",
+  "businessClassName": "Collection",
   "genVo": "true",
   "dirClasses": "main.java",
-  "gWorkspace": "C:\\InternalDev\\KspTooiProject\\endpoint-analysis-service",
-  "classNameDto": "EntryDto",
+  "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
+  "classNameDto": "CollectionDto",
   "username": "root"
 }
