@@ -9,9 +9,12 @@ import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionListVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.requestdebug.repoistory.CollectionRepository;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -298,11 +301,85 @@ public class CollectionService {
             repository.save(nodePo);
             return;
         }
-        
+
     }
 
 
+    /**
+     * 复制请求集合
+     * @param dto 复制请求集合参数
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void copyCollection(CommonIdDto dto) throws BizException {
 
+        Long companyId = AuthService.getCurrentCompanyId();
+
+        CollectionPo sourceNodePo = repository.getByIdAndCompanyId(dto.getId(), companyId);
+
+        if (sourceNodePo == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        /*
+         * 处理节点基础信息
+         * 新复制的节点排序为当前节点排序+1且父级为当前节点的父级
+         * 新复制的节点将插入在被复制节点之后的一个槽位,并且后方所有大于等于 新复制节点SEQ 的节点都需要进行让位处理
+         * 让位规则: 节点SEQ >= 新复制节点SEQ 则节点SEQ + 1
+         */     
+        var nodeName = sourceNodePo.getName() + " 副本";
+
+        //组装新节点PO
+        CollectionPo newNodePo = new CollectionPo();
+        as(sourceNodePo, newNodePo);
+        newNodePo.setId(IdWorker.nextId());
+        newNodePo.setName(nodeName);
+        newNodePo.setSeq(sourceNodePo.getSeq() + 1);
+
+        //处理让位
+        var sourceParentNodePo = sourceNodePo.getParent();
+
+        //处理顶级节点让位
+        if (sourceParentNodePo == null) {
+            List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
+            for (CollectionPo item : rootNodeList) {
+                
+                //所有SEQ大于等于新复制节点SEQ的节点都需要进行让位处理
+                if (item.getSeq() >= newNodePo.getSeq()) {
+                    newNodePo.setSeq(item.getSeq() + 1);
+                }
+
+            }
+            repository.saveAll(rootNodeList);
+        }
+
+        //处理内部节点让位
+        if (sourceParentNodePo != null) {
+
+            List<CollectionPo> sourceParentNodeList = sourceParentNodePo.getChildren();
+            for (CollectionPo item : sourceParentNodeList) {
+                if (item.getSeq() >= newNodePo.getSeq()) {
+                    item.setSeq(item.getSeq() + 1);
+                }
+            }
+            repository.saveAll(sourceParentNodeList);
+
+        }
+
+
+        //如果被复制的节点是组则复制组下的所有请求
+        if (sourceNodePo.getKind() == 0) {
+            List<CollectionPo> sourceChildren = sourceNodePo.getChildren();
+            for (CollectionPo item : sourceChildren) {
+                CollectionPo newChild = new CollectionPo();
+                as(item, newChild);
+                newChild.setId(IdWorker.nextId());
+                newChild.setParent(newNodePo);
+            }
+        }
+
+        repository.save(newNodePo);
+    }
 
 
     /**
@@ -312,10 +389,43 @@ public class CollectionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void editCollection(EditCollectionDto dto) throws BizException {
-        CollectionPo updatePo = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
-        assign(dto, updatePo);
+        Long companyId = AuthService.getCurrentCompanyId();
+        CollectionPo updatePo = repository.getByIdAndCompanyId(dto.getId(), companyId);
+
+        if (updatePo == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        //如果是组类型不允许编辑请求相关字段
+        if (updatePo.getKind() == 1) {
+            if(StringUtils.isNotBlank(dto.getReqUrl())){
+                throw new BizException("组类型不允许编辑请求URL");
+            }
+            if(StringUtils.isNotBlank(dto.getReqUrlParamsJson())){
+                throw new BizException("组类型不允许编辑请求URL参数");
+            }
+            if(dto.getReqMethod() != null){
+                throw new BizException("组类型不允许编辑请求方法");
+            }
+            if(StringUtils.isNotBlank(dto.getReqHeaderJson())){
+                throw new BizException("组类型不允许编辑请求头");
+            }
+            if(dto.getReqBodyKind() != null){
+                throw new BizException("组类型不允许编辑请求体类型");
+            }
+            if(StringUtils.isNotBlank(dto.getReqBodyJson())){
+                throw new BizException("组类型不允许编辑请求体");
+            }
+        }
+
+        updatePo.setName(dto.getName());
+        updatePo.setReqUrl(dto.getReqUrl());
+        updatePo.setReqUrlParamsJson(dto.getReqUrlParamsJson());
+        updatePo.setReqMethod(dto.getReqMethod());
+        updatePo.setReqHeaderJson(dto.getReqHeaderJson());
+        updatePo.setReqBodyKind(dto.getReqBodyKind());
+        updatePo.setReqBodyJson(dto.getReqBodyJson());
         repository.save(updatePo);
     }
 
@@ -326,9 +436,20 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     public GetCollectionDetailsVo getCollectionDetails(CommonIdDto dto) throws BizException {
-        CollectionPo po = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在."));
-        return as(po, GetCollectionDetailsVo.class);
+
+        Long companyId = AuthService.getCurrentCompanyId();
+        CollectionPo po = repository.getByIdAndCompanyId(dto.getId(), companyId);
+        if (po == null) {
+            throw new BizException("对象节点不存在或无权限访问");
+        }
+
+        GetCollectionDetailsVo vo = as(po, GetCollectionDetailsVo.class);
+
+        if(po.getParent() != null){
+            vo.setParentId(po.getParent().getId());
+        }
+
+        return vo;
     }
 
     /**
@@ -338,12 +459,19 @@ public class CollectionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeCollection(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
+
+        Long companyId = AuthService.getCurrentCompanyId();
+
+        var ids = dto.toIds();
+
+        for (var id : ids) {
+            CollectionPo po = repository.getByIdAndCompanyId(id, companyId);
+            if (po == null) {
+                throw new BizException("对象节点不存在或无权限访问");
+            }
+            repository.delete(po);
         }
-        if (!dto.isBatch()) {
-            repository.deleteById(dto.getId());
-        }
+
     }
 
 }

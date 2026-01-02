@@ -16,9 +16,6 @@ public class GetCollectionDetailsVo {
     @Schema(description = "父级ID NULL顶级")
     private Long parentId;
 
-    @Schema(description = "公司ID")
-    private Long companyId;
-
     @Schema(description = "集合名称")
     private String name;
 
@@ -45,21 +42,6 @@ public class GetCollectionDetailsVo {
 
     @Schema(description = "排序")
     private Integer seq;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description = "创建人ID")
-    private Long creatorId;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "更新人ID")
-    private Long updaterId;
-
-    @Schema(description = "删除时间 为NULL未删除")
-    private LocalDateTime deleteTime;
 
 }
 

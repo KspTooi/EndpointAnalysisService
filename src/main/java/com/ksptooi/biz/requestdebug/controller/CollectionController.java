@@ -5,20 +5,16 @@ import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
-import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionListVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.requestdebug.service.CollectionService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,8 +57,25 @@ public class CollectionController {
     @Operation(summary = "移动请求集合")
     @PostMapping("/moveCollection")
     public Result<String> moveCollection(@RequestBody @Valid MoveCollectionDto dto) throws Exception {
+
+        if (AuthService.getCurrentCompanyId() == null) {
+            return Result.error(101, "该操作需要用户加入团队后才能执行");
+        }
+
         collectionService.moveCollection(dto);
         return Result.success("移动操作成功");
+    }
+
+    @Operation(summary = "复制请求集合")
+    @PostMapping("/copyCollection")
+    public Result<String> copyCollection(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
+        if (AuthService.getCurrentCompanyId() == null) {
+            return Result.error(101, "该操作需要用户加入团队后才能执行");
+        }
+
+        collectionService.copyCollection(dto);
+        return Result.success("复制操作成功");
     }
 
     @Operation(summary = "编辑请求集合")
@@ -86,9 +99,11 @@ public class CollectionController {
         }
 
         GetCollectionDetailsVo details = collectionService.getCollectionDetails(dto);
+
         if (details == null) {
             return Result.error("无数据");
         }
+
         return Result.success(details);
     }
 
