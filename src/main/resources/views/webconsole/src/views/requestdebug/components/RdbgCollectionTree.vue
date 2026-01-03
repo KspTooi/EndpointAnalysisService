@@ -9,27 +9,29 @@
     <div
       class="h-full overflow-y-auto"
       @contextmenu.prevent="onContextmenu(null, $event)"
-      v-loading="true"
+      v-loading="listLoading"
       element-loading-text="正在处理..."
     >
-      <div v-if="!listLoading && listData.length === 0" class="empty-tip">暂无数据</div>
-      <div class="tree-list">
-        <rdbg-collection-tree-item
-          v-for="node in listData"
-          :key="node.id"
-          :node="node"
-          :expanded-ids="expandedIds"
-          :selected-ids="selectedIds"
-          :drag-hover-zone="dragHoverZone"
-          :drag-hover-target="dragHoverTarget"
-          @on-click="toggleNode"
-          @on-contextmenu="onContextmenu"
-          @on-drag-start="onDragStart"
-          @on-drag-over="onDragOver"
-          @on-drag-leave="onDragLeave"
-          @on-drag-drop="onDrop"
-        />
-      </div>
+      <el-scrollbar>
+        <div v-if="!listLoading && listData.length === 0" class="empty-tip">暂无数据</div>
+        <div class="tree-list">
+          <rdbg-collection-tree-item
+            v-for="node in listData"
+            :key="node.id"
+            :node="node"
+            :expanded-ids="expandedIds"
+            :selected-ids="selectedIds"
+            :drag-hover-zone="dragHoverZone"
+            :drag-hover-target="dragHoverTarget"
+            @on-click="toggleNode"
+            @on-contextmenu="onContextmenu"
+            @on-drag-start="onDragStart"
+            @on-drag-over="onDragOver"
+            @on-drag-leave="onDragLeave"
+            @on-drag-drop="onDrop"
+          />
+        </div>
+      </el-scrollbar>
     </div>
 
     <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-delete-group="onDeleteGroup" />
