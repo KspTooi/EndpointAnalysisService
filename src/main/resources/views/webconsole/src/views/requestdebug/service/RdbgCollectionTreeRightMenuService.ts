@@ -15,10 +15,46 @@ export default {
     const currentNode = ref<GetCollectionTreeVo | null>(null);
 
     const openRightMenu = (event: MouseEvent, node: GetCollectionTreeVo | null = null) => {
-      x.value = event.clientX;
-      y.value = event.clientY;
       currentNode.value = node;
       visible.value = true;
+
+      // 等待下一帧计算菜单位置，确保菜单DOM已更新
+      requestAnimationFrame(() => {
+        if (!rightMenuRef.value) {
+          return;
+        }
+
+        const menuWidth = rightMenuRef.value.offsetWidth;
+        const menuHeight = rightMenuRef.value.offsetHeight;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        let menuX = event.clientX;
+        let menuY = event.clientY;
+
+        // 检查右边界
+        if (menuX + menuWidth > windowWidth) {
+          menuX = windowWidth - menuWidth - 5;
+        }
+
+        // 检查下边界
+        if (menuY + menuHeight > windowHeight) {
+          menuY = windowHeight - menuHeight - 5;
+        }
+
+        // 确保不超出左边界
+        if (menuX < 0) {
+          menuX = 5;
+        }
+
+        // 确保不超出上边界
+        if (menuY < 0) {
+          menuY = 5;
+        }
+
+        x.value = menuX;
+        y.value = menuY;
+      });
     };
 
     const closeRightMenu = () => {
