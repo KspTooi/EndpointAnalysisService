@@ -6,10 +6,14 @@
       <!-- <div v-if="" class="root-drop-hint">拖拽到此处以移动到根级别</div> -->
     </div>
 
-    <div class="h-full overflow-y-auto" @contextmenu.prevent="onContextmenu(null, $event)">
-      <div v-if="listLoading" class="loading-mask">加载中...</div>
+    <div
+      class="h-full overflow-y-auto"
+      @contextmenu.prevent="onContextmenu(null, $event)"
+      v-loading="true"
+      element-loading-text="正在处理..."
+    >
       <div v-if="!listLoading && listData.length === 0" class="empty-tip">暂无数据</div>
-      <div v-if="!listLoading && listData.length > 0" class="tree-list">
+      <div class="tree-list">
         <rdbg-collection-tree-item
           v-for="node in listData"
           :key="node.id"
@@ -123,12 +127,6 @@ const onDeleteGroup = async (node: GetCollectionTreeVo) => {
 </script>
 
 <style scoped>
-.loading-mask {
-  padding: 20px;
-  text-align: center;
-  color: #909399;
-}
-
 .empty-tip {
   padding: 20px;
   text-align: center;
