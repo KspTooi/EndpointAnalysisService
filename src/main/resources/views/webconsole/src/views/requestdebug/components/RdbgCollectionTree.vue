@@ -1,12 +1,12 @@
 <template>
-  <div class="collection-tree-container" @dragover.prevent @drop.prevent="onDrop(null, $event)">
+  <div class="h-full w-full flex flex-col" @dragover.prevent @drop.prevent="onDrop(null, $event)">
     <div class="flex justify-between items-center pt-1.5 pr-3 pb-1.5 pl-3">
       <el-input placeholder="输入任意字符查询" size="small" clearable />
       <el-button type="primary" @click="$emit('on-create-collection')" size="small" class="ml-2">新建</el-button>
       <!-- <div v-if="" class="root-drop-hint">拖拽到此处以移动到根级别</div> -->
     </div>
 
-    <div>
+    <div class="h-full overflow-y-auto" @contextmenu.prevent="onContextmenu(null, $event)">
       <div v-if="listLoading" class="loading-mask">加载中...</div>
       <div v-if="!listLoading && listData.length === 0" class="empty-tip">暂无数据</div>
       <div v-if="!listLoading && listData.length > 0" class="tree-list">
@@ -19,6 +19,7 @@
           :drag-hover-zone="dragHoverZone"
           :drag-hover-target="dragHoverTarget"
           @on-click="toggleNode"
+          @on-contextmenu="onContextmenu"
           @on-drag-start="onDragStart"
           @on-drag-over="onDragOver"
           @on-drag-leave="onDragLeave"
@@ -26,7 +27,8 @@
         />
       </div>
     </div>
-    <rdbg-collection-tree-right-menu ref="rightMenuRef" />
+
+    <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-delete-group="onDeleteGroup" />
   </div>
 </template>
 
@@ -38,6 +40,7 @@ import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi
 import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCollectionTreeRightMenu.vue";
 import RdbgCollectionTreeItemService from "../service/RdbgCollectionTreeItemService";
 import CollectionApi from "@/views/requestdebug/api/CollectionApi";
+import { ElMessage, ElMessageBox } from "element-plus";
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
 
 defineEmits<{
@@ -48,7 +51,7 @@ defineEmits<{
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();
 
 //集合选择与展开功能打包
-const { expandedIds, selectedIds, toggleNode } = RdbgCollectonTreeService.useCollectionSelection();
+const { expandedIds, selectedIds, toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
 
 /**
  * 拖拽到目标
@@ -86,19 +89,40 @@ const onDrag = async (target: GetCollectionTreeVo, entries: GetCollectionTreeVo[
 const { draggedCollection, dragHoverZone, dragHoverTarget, onDragStart, onDragOver, onDragLeave, onDrop } =
   RdbgCollectonTreeService.useCollectionTreeItemDrag(onDrag);
 
-//激活的节点ID列表(展开状态)
-const activeNodes = ref<string[]>([]);
-//激活的集合ID
-const activeCollectionId = ref<string | null>(null);
+/**
+ * 右键菜单打开
+ * @param node 节点
+ * @param event 事件
+ */
+const onContextmenu = (node: GetCollectionTreeVo, event: MouseEvent) => {
+  rightMenuRef.value?.openRightMenu(event, node);
+};
+
+/**
+ * 删除节点
+ * @param node 节点
+ */
+const onDeleteGroup = async (node: GetCollectionTreeVo) => {
+  try {
+    await ElMessageBox.confirm("确定删除此" + (node.kind === 0 ? "分组" : "请求") + "吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await CollectionApi.removeCollection({ id: node.id });
+    await loadList();
+  } catch (error) {
+    ElMessage.error(error.message);
+  }
+};
 </script>
 
 <style scoped>
-.collection-tree-container {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-}
-
 .loading-mask {
   padding: 20px;
   text-align: center;
@@ -109,21 +133,5 @@ const activeCollectionId = ref<string | null>(null);
   padding: 20px;
   text-align: center;
   color: #909399;
-}
-
-/* .tree-list {
-  padding: 4px;
-} */
-
-.collection-tree-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.collection-tree-container::-webkit-scrollbar-thumb {
-  background: #e4e7ed;
-}
-
-.collection-tree-container::-webkit-scrollbar-track {
-  background: transparent;
 }
 </style>

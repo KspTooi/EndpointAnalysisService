@@ -7,6 +7,18 @@
     @click.stop
     @contextmenu.prevent
   >
+    <!-- 点击空白区域时展示的菜单项 -->
+    <template v-if="currentNode == null">
+      <div class="menu-item" @click="onCreateRequest">
+        <el-icon><Document /></el-icon>
+        <span>创建请求</span>
+      </div>
+      <div class="menu-item" @click="onCreateGroup">
+        <el-icon><FolderAdd /></el-icon>
+        <span>创建子组</span>
+      </div>
+    </template>
+
     <div class="menu-item" @click="onCreateRequest">
       <el-icon><Document /></el-icon>
       <span>创建请求</span>
@@ -35,8 +47,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Document, FolderAdd, DocumentCopy, Edit, Delete } from "@element-plus/icons-vue";
-import RdbgCollectionTreeRightMenuService from "../service/RdbgCollectionTreeRightMenuService";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
+import RdbgCollectionTreeRightMenuService from "@/views/requestdebug/service/RdbgCollectionTreeRightMenuService";
+import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
 
 const rightMenuRef = ref<HTMLElement>();
 

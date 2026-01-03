@@ -87,10 +87,41 @@ export default {
       selectedIds.value = [node.id];
     };
 
+    /**
+     * 选中节点
+     * @param node 节点
+     */
+    const selectNode = (node: GetCollectionTreeVo) => {
+      if (!node) {
+        return;
+      }
+
+      //判断是否已经被选中
+      if (selectedIds.value.includes(node.id)) {
+        return;
+      }
+
+      //选中
+      selectedIds.value.push(node.id);
+    };
+
+    /**
+     * 取消选中节点
+     * @param node 节点
+     */
+    const unselectNode = (node: GetCollectionTreeVo) => {
+      if (!node) {
+        return;
+      }
+      selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
+    };
+
     return {
       expandedIds,
       selectedIds,
       toggleNode,
+      selectNode,
+      unselectNode,
     };
   },
 
@@ -207,5 +238,15 @@ export default {
       onDragLeave,
       onDrop,
     };
+  },
+
+  /**
+   * 集合树右键菜单功能打包
+   */
+  useCollectionTreeRightMenu: () => {
+    const rightMenuVisible = ref<boolean>(false);
+    const rightMenuX = ref<number>(0);
+    const rightMenuY = ref<number>(0);
+    const rightMenuNode = ref<GetCollectionTreeVo | null>(null);
   },
 };
