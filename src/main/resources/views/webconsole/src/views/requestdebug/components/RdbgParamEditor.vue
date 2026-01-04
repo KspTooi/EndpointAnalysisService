@@ -13,6 +13,15 @@
 
     <el-scrollbar>
       <div class="flex-1 border-t border-gray-200">
+        <!-- 表头 -->
+        <div v-if="th" class="flex items-center bg-gray-50 border-b border-gray-200 text-[12px] font-medium text-gray-600">
+          <div class="w-10 h-7 flex-shrink-0 flex items-center justify-center border-r border-gray-200"></div>
+          <div class="flex-1 h-7 min-w-0 border-r border-gray-200 flex items-center px-3">Key</div>
+          <div class="flex-1 h-7 min-w-0 border-r border-gray-200 flex items-center px-3">Value</div>
+          <div class="w-10 h-7 flex-shrink-0 flex items-center justify-center border-r border-gray-200"></div>
+          <div class="w-10 h-7 flex-shrink-0 flex items-center justify-center"></div>
+        </div>
+
         <draggable v-model="params" item-key="s" handle=".drag-handle" @end="onDragEnd">
           <template #item="{ element, index }">
             <div
@@ -87,9 +96,11 @@ import { ElScrollbar } from "element-plus";
 withDefaults(
   defineProps<{
     title?: string;
+    th?: boolean;
   }>(),
   {
     title: "参数",
+    th: false,
   }
 );
 

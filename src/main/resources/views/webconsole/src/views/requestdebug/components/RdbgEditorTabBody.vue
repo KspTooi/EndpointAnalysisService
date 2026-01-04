@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="flex h-full bg-white select-none max-h-9 items-center px-4 border-b border-gray-200">
+  <div class="flex flex-col h-full bg-white select-none">
+    <div class="flex bg-white select-none items-center px-4 py-2 border-b border-gray-200 flex-shrink-0">
       <div class="text-sm font-semibold text-gray-700 text-[12px]">请求体类型</div>
       <div class="flex justify-between items-center px-4 py-1 max-w-50">
         <!-- 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded -->
@@ -17,12 +17,24 @@
         </el-select>
       </div>
     </div>
+
+    <div class="flex-1 min-h-0">
+      <!-- 表单参数编辑器 -->
+      <rdbg-param-editor
+        v-show="reqBody.kind === 1"
+        v-model="reqBody.formData"
+        title="表单类型(form-data | multipart/form-data)"
+        th
+      />
+      <rdbg-param-editor v-show="reqBody.kind === 8" v-model="reqBody.formDataUrlEncoded" title="表单类型(URL编码)" th />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { RequestBodyJson } from "@/views/requestdebug/api/CollectionApi";
+import RdbgParamEditor from "@/views/requestdebug/components/RdbgParamEditor.vue";
 
 const reqBody = defineModel<RequestBodyJson>("modelValue", { required: true });
 </script>
