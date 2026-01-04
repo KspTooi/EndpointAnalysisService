@@ -113,9 +113,10 @@ public class CollectionService {
         insertPo.setCompanyId(companyId);
         insertPo.setSeq(repository.getMaxSeqInParent(dto.getParentId()));
 
-        //如果是请求类型 加入默认请求头
+        //如果是请求类型 加入默认请求头、默认请求体
         if (dto.getKind() == 0) {
             insertPo.setReqHeaderJson(toJson(RequestHeaderJson.ofDefaultList()));
+            insertPo.setReqBodyJson(toJson(RequestBodyJson.ofDefault()));
         }
 
         repository.save(insertPo);
@@ -476,6 +477,11 @@ public class CollectionService {
             vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestParamJson.class));
             vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RequestHeaderJson.class));
             vo.setReqBody(fromJson(po.getReqBodyJson(), RequestBodyJson.class));
+
+            if(StringUtils.isBlank(po.getReqBodyJson())){
+                vo.setReqBody(RequestBodyJson.ofDefault());
+            }
+
         }
 
         return vo;

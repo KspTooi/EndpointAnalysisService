@@ -12,7 +12,13 @@ const getDefaultEditor = (): GetCollectionDetailsVo => ({
   reqMethod: 0,
   requestHeaders: [],
   reqBodyKind: 0,
-  reqBodyJson: "",
+  reqBody: {
+    kind: 0,
+    formData: [],
+    formDataUrlEncoded: [],
+    rawData: "",
+    binaryData: "",
+  },
   seq: 0,
 });
 
@@ -64,8 +70,8 @@ export default {
         editor.reqBodyKind = value.reqBodyKind;
       }
 
-      if (value.reqBodyJson) {
-        editor.reqBodyJson = value.reqBodyJson;
+      if (value.reqBody) {
+        editor.reqBody = value.reqBody;
       }
 
       if (value.seq) {
