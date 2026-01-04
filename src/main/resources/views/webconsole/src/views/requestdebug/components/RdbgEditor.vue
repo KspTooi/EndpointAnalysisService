@@ -23,58 +23,32 @@
       <div class="tab">
         <div
           class="tab-item"
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }"
-          @click="PreferenceHolder().setRequestEditorTab('header')"
+          :class="{ active: rdbgStore.getEditorTab === 'params' }"
+          @click="rdbgStore.setEditorTab('params')"
         >
-          标头
+          参数
         </div>
         <div
           class="tab-item"
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }"
-          @click="PreferenceHolder().setRequestEditorTab('body')"
+          :class="{ active: rdbgStore.getEditorTab === 'header' }"
+          @click="rdbgStore.setEditorTab('header')"
         >
+          标头
+        </div>
+        <div class="tab-item" :class="{ active: rdbgStore.getEditorTab === 'body' }" @click="rdbgStore.setEditorTab('body')">
           载荷
         </div>
       </div>
 
       <div class="content">
+        <!-- 参数内容 -->
+        <rdbg-editor-tab-params v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" />
+
         <!-- 请求头内容 -->
-        <div v-show="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
-          <!--           <div class="headers-editor">
-            <div class="headers-toolbar">
-              <el-button @click="addHeader" type="primary" size="small">添加请求头</el-button>
-            </div>
-            <el-table
-              :data="editableHeaders"
-              style="width: 100%"
-              height="100%"
-              empty-text="点击'添加请求头'开始编辑"
-              size="small"
-              border
-            >
-              <el-table-column prop="k" label="键" width="200">
-                <template #default="scope">
-                  <el-input v-model="scope.row.k" @blur="onHeaderChange" placeholder="请求头名称" size="small" />
-                </template>
-              </el-table-column>
-              <el-table-column prop="v" label="值">
-                <template #default="scope">
-                  <el-input v-model="scope.row.v" @blur="onHeaderChange" placeholder="请求头值" size="small" />
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="80" align="center">
-                <template #default="scope">
-                  <el-button @click="removeHeader(scope.$index)" type="danger" size="small" plain>删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div> -->
-        </div>
+        <div v-show="rdbgStore.getEditorTab === 'header'" class="tab-panel"></div>
 
         <!-- 载荷内容 -->
-        <div v-show="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
-          <!--          <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />-->
-        </div>
+        <div v-show="rdbgStore.getEditorTab === 'body'" class="tab-panel"></div>
       </div>
     </div>
   </div>
@@ -85,8 +59,12 @@ import { ref, watch } from "vue";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
 import RdbgEditorEnvSelector from "@/views/requestdebug/components/RdbgEditorEnvSelector.vue";
 import RdbgEditorUrlInput from "@/views/requestdebug/components/RdbgEditorUrlInput.vue";
-import type { GetCollectionDetailsVo } from "../api/CollectionApi";
-import RdbgEditorService from "../service/RdbgEditorService";
+import type { GetCollectionDetailsVo } from "@/views/requestdebug/api/CollectionApi";
+import RdbgEditorService from "@/views/requestdebug/service/RdbgEditorService";
+import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+import RdbgEditorTabParams from "@/views/requestdebug/components/RdbgEditorTabParams.vue";
+
+const rdbgStore = useRdbgStore();
 
 export interface RdbgEditorProps {
   details: GetCollectionDetailsVo | null;

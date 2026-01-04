@@ -3,6 +3,9 @@ import type { GetCollectionTreeVo } from "../api/CollectionApi";
 
 export const useRdbgStore = defineStore("RdbgStore", {
   state: () => ({
+    //当前编辑器请求标签页
+    editorTab: "params" as "params" | "body" | "header",
+
     //当前激活的集合
     activeCollection: null as GetCollectionTreeVo | null,
 
@@ -13,11 +16,15 @@ export const useRdbgStore = defineStore("RdbgStore", {
     expandedCollections: [] as GetCollectionTreeVo[],
   }),
   getters: {
+    getEditorTab: (state) => state.editorTab,
     getActiveCollection: (state) => state.activeCollection,
     getSelectedCollections: (state) => state.selectedCollections,
     getExpandedCollections: (state) => state.expandedCollections,
   },
   actions: {
+    setEditorTab(tab: "params" | "body" | "header") {
+      this.editorTab = tab;
+    },
     /**
      * 设置当前激活的集合
      * @param collection 集合
