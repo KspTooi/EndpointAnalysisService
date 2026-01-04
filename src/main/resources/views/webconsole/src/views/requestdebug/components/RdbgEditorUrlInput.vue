@@ -1,10 +1,10 @@
 <template>
   <div class="url-input">
     <div class="url-input-url">
-      <div class="el-input el-input-group el-input-group--prepend">
+      <div class="el-input el-input-group el-input-group--prepend !h-[28px]">
         <div class="el-input-group__prepend">
           <!-- 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS -->
-          <el-select v-model="method" placeholder="请选择请求方法" :filterable="true" style="width: 110px">
+          <el-select v-model="method" placeholder="请选择请求方法" :filterable="true" style="width: 100px" size="small">
             <el-option label="GET" :value="0" />
             <el-option label="POST" :value="1" />
             <el-option label="PUT" :value="2" />
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="url-input-send">
-      <el-button type="primary" @click="onRequestSend" :disabled="props.loading">发送</el-button>
+      <el-button type="primary" @click="onRequestSend" :disabled="props.loading" class="!text-[14px] !h-[28px]">发送</el-button>
     </div>
   </div>
 </template>
@@ -190,7 +190,7 @@ watch(localUrl, () => {
 }
 
 .el-input__inner[contenteditable="true"] {
-  min-height: 32px;
+  min-height: 16px;
   height: auto;
   line-height: 1.5;
   padding-top: 5px;

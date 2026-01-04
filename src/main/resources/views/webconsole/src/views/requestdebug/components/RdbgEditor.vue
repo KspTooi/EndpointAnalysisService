@@ -2,13 +2,13 @@
   <div class="container">
     <div class="header">
       <div class="header-title">
-        <input class="name-input" v-model="editor.name" />
+        <input class="name-input !text-[12px]" v-model="editor.name" />
         <div class="header-env-selector">
           <rdbg-editor-env-selector />
         </div>
       </div>
 
-      <div class="header-input" style="margin-top: 12px">
+      <div class="header-input" style="margin-top: 8px">
         <rdbg-editor-url-input
           v-model:method="editor.reqMethod"
           v-model:url="editor.reqUrl"
@@ -88,7 +88,7 @@ const { editor } = RdbgEditorService.useEditor(props, emits);
 
 .header {
   background: #f8f9fa;
-  padding: 10px 20px;
+  padding: 10px 12px;
   border-bottom: 1px solid #e9ecef;
 }
 

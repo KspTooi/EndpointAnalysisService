@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col h-full bg-white select-none">
-    <div class="flex bg-white select-none items-center px-4 py-2 border-b border-gray-200 flex-shrink-0">
+    <div class="flex bg-white select-none items-center px-4 py-1.5 border-b border-gray-200 flex-shrink-0">
       <div class="text-sm font-semibold text-gray-700 text-[12px]">请求体类型</div>
-      <div class="flex justify-between items-center px-4 py-1 max-w-50">
+      <div class="flex justify-between items-center px-4 max-w-65">
         <!-- 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded -->
         <el-select size="small" placeholder="请选择请求体类型" filterable v-model="reqBody.kind">
           <el-option :value="0" label="空请求体"></el-option>
