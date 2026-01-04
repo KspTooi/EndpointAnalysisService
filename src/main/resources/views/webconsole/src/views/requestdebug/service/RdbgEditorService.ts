@@ -2,21 +2,23 @@ import { reactive, ref, watch } from "vue";
 import type { GetCollectionDetailsVo } from "../api/CollectionApi";
 import type { RdbgEditorProps } from "../components/RdbgEditor.vue";
 
+const getDefaultEditor = (): GetCollectionDetailsVo => ({
+  id: "",
+  parentId: "",
+  name: "",
+  kind: 0,
+  reqUrl: "",
+  requestParams: [],
+  reqMethod: 0,
+  requestHeaders: [],
+  reqBodyKind: 0,
+  reqBodyJson: "",
+  seq: 0,
+});
+
 export default {
   useEditor: (props: RdbgEditorProps, emits: (e: "on-details-change", details: GetCollectionDetailsVo) => void) => {
-    const editor = reactive<GetCollectionDetailsVo>({
-      id: "",
-      parentId: "",
-      name: "",
-      kind: 0,
-      reqUrl: "",
-      requestParams: [],
-      reqMethod: 0,
-      requestHeaders: [],
-      reqBodyKind: 0,
-      reqBodyJson: "",
-      seq: 0,
-    });
+    const editor = reactive<GetCollectionDetailsVo>(getDefaultEditor());
 
     //防抖定时器
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -29,6 +31,10 @@ export default {
     const update = (value: GetCollectionDetailsVo) => {
       //正在进行props更新
       propsUpdating = true;
+
+      //初始化为默认
+      Object.assign(editor, getDefaultEditor());
+
       editor.id = value.id;
       editor.parentId = value.parentId;
 
