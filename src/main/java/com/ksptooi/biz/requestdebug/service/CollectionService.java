@@ -88,7 +88,7 @@ public class CollectionService {
 
         Long companyId = AuthService.getCurrentCompanyId();
         CollectionPo parentPo = null;
-        
+
         //如果父级ID不为空，则校验父级节点
         if (dto.getParentId() != null) {
 
@@ -373,14 +373,17 @@ public class CollectionService {
 
 
         //如果被复制的节点是组则复制组下的所有请求
-        if (sourceNodePo.getKind() == 0) {
-            List<CollectionPo> sourceChildren = sourceNodePo.getChildren();
+        if (sourceNodePo.getKind() == 1) {
+            var sourceChildren = sourceNodePo.getChildren();
+            List<CollectionPo> targetChildren = new ArrayList<>();
             for (CollectionPo item : sourceChildren) {
                 CollectionPo newChild = new CollectionPo();
                 as(item, newChild);
-                newChild.setId(IdWorker.nextId());
+                newChild.setId(null);
                 newChild.setParent(newNodePo);
+                targetChildren.add(newChild);
             }
+            newNodePo.setChildren(targetChildren);
         }
 
         repository.save(newNodePo);

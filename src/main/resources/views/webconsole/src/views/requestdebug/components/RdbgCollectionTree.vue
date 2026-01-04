@@ -34,7 +34,12 @@
       </el-scrollbar>
     </div>
 
-    <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-remove="onRemoveCollection" @on-create="onCreateCollection" />
+    <rdbg-collection-tree-right-menu
+      ref="rightMenuRef"
+      @on-create="onCreateCollection"
+      @on-copy="onCopyCollection"
+      @on-remove="onRemoveCollection"
+    />
 
     <RdbgModalCollectionCreate ref="modalCollectionCreateRef" @on-success="loadList" />
   </div>
@@ -129,6 +134,18 @@ const onCreateCollection = (node: GetCollectionTreeVo) => {
   }
 
   modalCollectionCreateRef.value?.openModal(parentId);
+};
+
+/**
+ * 复制集合
+ * @param node 节点
+ */
+const onCopyCollection = async (node: GetCollectionTreeVo) => {
+  await CollectionApi.copyCollection({
+    id: node.id,
+  });
+
+  await loadList();
 };
 
 /**

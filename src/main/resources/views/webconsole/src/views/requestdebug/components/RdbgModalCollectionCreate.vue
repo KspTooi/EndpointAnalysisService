@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="modalVisible"
-    title="创建集合"
+    :title="modalTitle"
     width="500px"
     :close-on-click-modal="false"
     class="modal-centered"
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import type { AddCollectionDto } from "../api/CollectionApi";
 import { ElMessage, type FormInstance } from "element-plus";
 import CollectionApi from "../api/CollectionApi";
@@ -48,6 +48,10 @@ import GenricHotkeyService from "@/service/GenricHotkeyService";
 const emit = defineEmits<{
   (e: "on-success"): void;
 }>();
+
+const modalTitle = computed(() => {
+  return modalForm.kind === 0 ? "创建请求" : "创建分组";
+});
 
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();

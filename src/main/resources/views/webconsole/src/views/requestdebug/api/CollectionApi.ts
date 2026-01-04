@@ -29,11 +29,6 @@ export interface MoveCollectionDto {
   kind: number; //移动方式 0:顶部 1:底部 2:内部
 }
 
-export interface CopyCollectionDto {
-  collectionIds: string[]; //集合ID列表
-  parentId: string | null; //父级ID null:顶级
-}
-
 export interface EditCollectionDto {
   id: string; //主键ID
   name: string; //集合名称
@@ -91,7 +86,7 @@ export default {
    * @param dto 复制请求集合
    * @returns 复制请求集合
    */
-  copyCollection: async (dto: CopyCollectionDto): Promise<Result<string>> => {
+  copyCollection: async (dto: CommonIdDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/collection/copyCollection", dto);
   },
 
