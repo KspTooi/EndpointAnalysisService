@@ -2,6 +2,7 @@ package com.ksptooi.biz.requestdebug.model.collection.vo;
 
 import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
 import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +40,8 @@ public class GetCollectionDetailsVo {
     @Schema(description = "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded")
     private Integer reqBodyKind;
 
-    @Schema(description = "请求体JSON")
-    private String reqBodyJson;
+    @Schema(description = "请求体")
+    private RequestBodyJson reqBody;
 
 }
 

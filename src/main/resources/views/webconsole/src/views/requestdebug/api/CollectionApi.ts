@@ -37,7 +37,7 @@ export interface EditCollectionDto {
   reqMethod: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
   requestHeaders: RequestHeaderJson[]; //请求头
   reqBodyKind: number; //请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded
-  reqBodyJson: string; //请求体JSON
+  reqBody: RequestBodyJson; //请求体
 }
 
 export interface GetCollectionDetailsVo {
@@ -50,7 +50,7 @@ export interface GetCollectionDetailsVo {
   reqMethod: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
   requestHeaders: RequestHeaderJson[]; //请求头
   reqBodyKind: number; //请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded
-  reqBodyJson: string; //请求体JSON
+  reqBody: RequestBodyJson; //请求体
   seq: number; //排序
 }
 
@@ -67,6 +67,14 @@ export interface RequestHeaderJson {
   k: string; //请求头键
   v: string; //请求头值
   s: number; //排序
+}
+
+export interface RequestBodyJson {
+  kind: number; //请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded
+  formData: RequestUrlParamJson[]; //请求体数据(FORM-DATA)
+  formDataUrlEncoded: RequestUrlParamJson[]; //请求体数据(X-WWW-FORM-URL-ENCODED)
+  rawData: string; //请求体数据(RAW)
+  binaryData: string; //请求体数据(BINARY)
 }
 
 export default {

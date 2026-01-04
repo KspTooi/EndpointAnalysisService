@@ -2,6 +2,7 @@ package com.ksptooi.biz.requestdebug.service;
 
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.CollectionPo;
+import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
 import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
 import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
@@ -434,7 +435,7 @@ public class CollectionService {
             if (dto.getReqBodyKind() != null) {
                 throw new BizException("组类型不允许编辑请求体类型");
             }
-            if (StringUtils.isNotBlank(dto.getReqBodyJson())) {
+            if (dto.getReqBody() != null) {
                 throw new BizException("组类型不允许编辑请求体");
             }
         }
@@ -445,7 +446,7 @@ public class CollectionService {
         updatePo.setReqMethod(dto.getReqMethod());
         updatePo.setReqHeaderJson(toJson(dto.getRequestHeaders()));
         updatePo.setReqBodyKind(dto.getReqBodyKind());
-        updatePo.setReqBodyJson(dto.getReqBodyJson());
+        updatePo.setReqBodyJson(toJson(dto.getReqBody()));
         repository.save(updatePo);
     }
 
@@ -470,10 +471,11 @@ public class CollectionService {
             vo.setParentId(po.getParent().getId());
         }
 
-        //解析请求URL参数、请求头
+        //解析请求URL参数、请求头、请求体
         if (po.getKind() == 0) {
             vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestParamJson.class));
             vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RequestHeaderJson.class));
+            vo.setReqBody(fromJson(po.getReqBodyJson(), RequestBodyJson.class));
         }
 
         return vo;

@@ -33,11 +33,7 @@
 
     <div class="content">
       <!-- 参数内容 -->
-      <rdbg-editor-tab-params
-        v-show="rdbgStore.getEditorTab === 'params'"
-        v-model="editor.requestParams"
-        style="height: 100%"
-      />
+      <rdbg-editor-tab-params v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" />
 
       <!-- 请求头内容 -->
       <rdbg-editor-tab-headers v-show="rdbgStore.getEditorTab === 'header'" v-model="editor.requestHeaders" />

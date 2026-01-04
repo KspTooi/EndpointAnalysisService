@@ -2,6 +2,7 @@ package com.ksptooi.biz.requestdebug.model.collection.dto;
 
 import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
 import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -46,7 +47,7 @@ public class EditCollectionDto {
     private Integer reqBodyKind;
 
     @Schema(description = "请求体JSON")
-    private String reqBodyJson;
+    private RequestBodyJson reqBody;
 
 }
 
