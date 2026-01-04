@@ -3,6 +3,9 @@ import type { GetCollectionTreeVo } from "../api/CollectionApi";
 
 export const useRdbgStore = defineStore("RdbgStore", {
   state: () => ({
+    //当前激活的集合
+    activeCollection: null as GetCollectionTreeVo | null,
+
     //当前被选中的集合列表
     selectedCollections: [] as GetCollectionTreeVo[],
 
@@ -10,10 +13,25 @@ export const useRdbgStore = defineStore("RdbgStore", {
     expandedCollections: [] as GetCollectionTreeVo[],
   }),
   getters: {
+    getActiveCollection: (state) => state.activeCollection,
     getSelectedCollections: (state) => state.selectedCollections,
     getExpandedCollections: (state) => state.expandedCollections,
   },
   actions: {
+    /**
+     * 设置当前激活的集合
+     * @param collection 集合
+     */
+    setActiveCollection(collection: GetCollectionTreeVo) {
+      this.activeCollection = collection;
+    },
+    /**
+     * 清空当前激活的集合
+     */
+    clearActiveCollection() {
+      this.activeCollection = null;
+    },
+
     /**
      * 添加被选中的集合
      * @param collection 集合

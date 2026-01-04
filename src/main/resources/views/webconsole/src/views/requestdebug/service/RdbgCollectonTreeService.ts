@@ -49,12 +49,12 @@ export default {
           rdbgStore.clearSelectedCollections();
           rdbgStore.addSelectedCollection(node);
           return;
-          //已选中时再次点击不移除选中状态 只是清空其他选中
-          //selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
         }
+
         if (!isSelected) {
           rdbgStore.clearSelectedCollections();
           rdbgStore.addSelectedCollection(node);
+          rdbgStore.setActiveCollection(node);
         }
       }
     };

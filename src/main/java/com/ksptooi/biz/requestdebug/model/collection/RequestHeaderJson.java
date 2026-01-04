@@ -1,11 +1,11 @@
 package com.ksptooi.biz.requestdebug.model.collection;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,7 +29,7 @@ public class RequestHeaderJson {
     @Schema(description = "排序")
     private Integer s;
 
-    public static RequestHeaderJson of(String k,String v){
+    public static RequestHeaderJson of(String k, String v) {
         RequestHeaderJson requestHeaderJson = new RequestHeaderJson();
         requestHeaderJson.setD(false);
         requestHeaderJson.setE(false);
@@ -40,29 +40,29 @@ public class RequestHeaderJson {
         return requestHeaderJson;
     }
 
-    public static RequestHeaderJson ofDefault(String k,String v,Integer s){
+    public static RequestHeaderJson ofDefault(String k, String v, Integer s) {
         RequestHeaderJson requestHeaderJson = new RequestHeaderJson();
         requestHeaderJson.setD(true);
         requestHeaderJson.setE(true);
         requestHeaderJson.setA(false);
         requestHeaderJson.setK(k);
         requestHeaderJson.setV(v);
-        requestHeaderJson.setS(0);
+        requestHeaderJson.setS(s);
         return requestHeaderJson;
     }
 
-    public static RequestHeaderJson ofDefaultAuto(String k,String v,Integer s){
+    public static RequestHeaderJson ofDefaultAuto(String k, String v, Integer s) {
         RequestHeaderJson requestHeaderJson = new RequestHeaderJson();
         requestHeaderJson.setD(true);
         requestHeaderJson.setE(true);
         requestHeaderJson.setA(true);
         requestHeaderJson.setK(k);
         requestHeaderJson.setV(v);
-        requestHeaderJson.setS(0);
+        requestHeaderJson.setS(s);
         return requestHeaderJson;
     }
 
-    public static List<RequestHeaderJson> ofDefaultList(){
+    public static List<RequestHeaderJson> ofDefaultList() {
         List<RequestHeaderJson> requestHeaderJsonList = new ArrayList<>();
         requestHeaderJsonList.add(ofDefaultAuto("eas-token", "auto-calculated", -100));
         requestHeaderJsonList.add(ofDefaultAuto("Content-Type", "auto-calculated", -95));

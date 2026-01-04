@@ -1,5 +1,5 @@
-import { computed, onMounted, ref, type Ref } from "vue";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
+import { computed, onMounted, ref, watch, type Ref } from "vue";
+import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "../api/CollectionApi";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
 import { useRdbgStore } from "./RdbgStore";
@@ -44,6 +44,47 @@ export default {
       listFilter,
       listLoading,
       loadList,
+    };
+  },
+
+  /**
+   * 请求集合详情功能打包
+   */
+  useCollectionDetails: () => {
+    const details = ref<GetCollectionDetailsVo>(null);
+    const detailsLoading = ref<boolean>(false);
+
+    const loadDetails = async (collectionId: string) => {
+      detailsLoading.value = true;
+      try {
+        const res = await CollectionApi.getCollectionDetails({ id: collectionId });
+        if (Result.isSuccess(res)) {
+          details.value = res.data;
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        detailsLoading.value = false;
+      }
+    };
+
+    /**
+     * 监听当前激活的集合
+     * 当当前激活的集合发生变化时 加载集合详情
+     */
+    watch(
+      () => rdbgStore.getActiveCollection,
+      (newVal) => {
+        if (newVal) {
+          loadDetails(newVal.id);
+        }
+      }
+    );
+
+    return {
+      details,
+      detailsLoading,
+      loadDetails,
     };
   },
 };

@@ -9,22 +9,23 @@
 <script setup lang="ts">
 import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
 import RdbgEditor from "@/views/requestdebug/components/RdbgEditor.vue";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
-import RdbgWorkSpaceService from "./service/RdbgWorkSpaceService";
+import RdbgWorkSpaceService from "@/views/requestdebug/service/RdbgWorkSpaceService";
+
+const rdbgStore = useRdbgStore();
 
 //列表功能打包
 const { listData, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
 
-const rdbgStore = useRdbgStore();
+//集合详情功能打包
+const { details, detailsLoading, loadDetails } = RdbgWorkSpaceService.useCollectionDetails();
 
 const isSelectedRequest = computed(() => {
-  //最后一个被选中的节点是否是请求
-  return rdbgStore.getSelectedCollections[rdbgStore.getSelectedCollections.length - 1]?.kind === 0;
+  return rdbgStore.getActiveCollection?.kind === 0;
 });
 const isSelectedGroup = computed(() => {
-  //最后一个被选中的节点是否是分组
-  return rdbgStore.getSelectedCollections[rdbgStore.getSelectedCollections.length - 1]?.kind === 1;
+  return rdbgStore.getActiveCollection?.kind === 1;
 });
 </script>
 

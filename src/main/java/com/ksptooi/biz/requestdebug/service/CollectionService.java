@@ -2,6 +2,8 @@ package com.ksptooi.biz.requestdebug.service;
 
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.CollectionPo;
+import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParam;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.*;
 
 @Service
 public class CollectionService {
@@ -109,6 +111,12 @@ public class CollectionService {
         insertPo.setParent(parentPo);
         insertPo.setCompanyId(companyId);
         insertPo.setSeq(repository.getMaxSeqInParent(dto.getParentId()));
+
+        //如果是请求类型 加入默认请求头
+        if (dto.getKind() == 0) {
+            insertPo.setReqHeaderJson(toJson(RequestHeaderJson.ofDefaultList()));
+        }
+
         repository.save(insertPo);
     }
 
@@ -460,6 +468,12 @@ public class CollectionService {
 
         if (po.getParent() != null) {
             vo.setParentId(po.getParent().getId());
+        }
+
+        //解析请求URL参数、请求头
+        if (po.getKind() == 0) {
+            vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestUrlParam.class));
+            vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RequestHeaderJson.class));
         }
 
         return vo;

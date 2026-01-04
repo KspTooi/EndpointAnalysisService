@@ -62,7 +62,10 @@ const props = defineProps<{
   loading: boolean;
   loadList: () => void;
 }>();
-defineEmits<{}>();
+
+const emit = defineEmits<{
+  (e: "on-select", collection: GetCollectionTreeVo): void;
+}>();
 
 //集合选择与展开功能打包
 const { toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
@@ -191,6 +194,11 @@ const onRemoveCollection = async (collections: GetCollectionTreeVo[]) => {
   try {
     await CollectionApi.removeCollection({ ids: collections.map((collection) => collection.id) });
     await props.loadList();
+
+    //如果删除的包含当前激活的集合 则清空当前激活的集合
+    if (collections.some((collection) => collection.id === rdbgStore.getActiveCollection?.id)) {
+      rdbgStore.clearActiveCollection();
+    }
   } catch (error) {
     ElMessage.error(error.message);
   }
