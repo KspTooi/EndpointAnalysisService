@@ -52,7 +52,7 @@ export default {
    */
   useCollectionSelection: () => {
     //当前展开的节点ID列表
-    const expandedIds = ref<string[]>([]);
+    //const expandedIds = ref<string[]>([]);
 
     //当前选中的节点ID列表
     //const selectedIds = ref<string[]>([]);
@@ -69,22 +69,22 @@ export default {
       //处理组 组允许切换展开/收起
       if (node.kind === 1) {
         const hasChildren = node.children && node.children.length > 0;
-        const isExpanded = expandedIds.value.includes(node.id);
+        const isExpanded = rdbgStore.getExpandedIds.includes(node.id);
 
         //组中没有内容时仅允许收起
         if (!hasChildren) {
           if (isExpanded) {
-            expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
+            rdbgStore.removeExpandedId(node.id);
           }
         }
 
         //组中有内容时允许展开/收起
         if (hasChildren) {
           if (isExpanded) {
-            expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
+            rdbgStore.removeExpandedId(node.id);
           }
           if (!isExpanded) {
-            expandedIds.value.push(node.id);
+            rdbgStore.addExpandedId(node.id);
           }
         }
       }
@@ -137,7 +137,6 @@ export default {
     };
 
     return {
-      expandedIds,
       toggleNode,
       selectNode,
       unselectNode,

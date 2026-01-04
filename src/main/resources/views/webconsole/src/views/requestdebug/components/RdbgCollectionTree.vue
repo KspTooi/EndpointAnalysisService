@@ -19,7 +19,7 @@
             v-for="node in listData"
             :key="node.id"
             :node="node"
-            :expanded-ids="expandedIds"
+            :expanded-ids="rdbgStore.getExpandedIds"
             :selected-ids="rdbgStore.getSelectedIds"
             :drag-hover-zone="dragHoverZone"
             :drag-hover-target="dragHoverTarget"
@@ -65,7 +65,7 @@ defineEmits<{}>();
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();
 
 //集合选择与展开功能打包
-const { expandedIds, toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
+const { toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
 
 /**
  * 拖拽到目标
