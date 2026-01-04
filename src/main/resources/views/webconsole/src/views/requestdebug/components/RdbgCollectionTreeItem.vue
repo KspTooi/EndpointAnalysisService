@@ -4,7 +4,7 @@
     <div
       class="tag-tree-item"
       :class="{
-        'node-active': selectedIds.includes(node.id),
+        'node-active': rdbgStore.isSelected(node),
         'request-item': !isGroup(node),
         'drag-over-center': isDragHoverCenter,
         'drag-over-top': isDragHoverTop,
@@ -22,8 +22,8 @@
       <!-- 请求组的显示 -->
       <div v-if="isGroup(node)" class="tag-tree-item-tag">
         <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="onClick(node)">
-          <ArrowRight v-if="!isExpanded(node.id)" />
-          <ArrowDown v-if="isExpanded(node.id)" />
+          <ArrowRight v-if="!isExpanded(node)" />
+          <ArrowDown v-if="isExpanded(node)" />
         </el-icon>
         <el-icon class="folder-icon">
           <Folder v-show="node.children?.length === 0" />
@@ -48,13 +48,11 @@
     </div>
 
     <!-- 子节点 -->
-    <div v-if="isGroup(node) && hasChildren(node) && isExpanded(node.id)" class="operation-list">
+    <div v-if="isGroup(node) && hasChildren(node) && isExpanded(node)" class="operation-list">
       <RdbgCollectionTreeItem
         v-for="(child, childIndex) in node.children"
         :key="child.id"
         :node="child"
-        :expanded-ids="expandedIds"
-        :selected-ids="selectedIds"
         :drag-hover-zone="dragHoverZone"
         :drag-hover-target="dragHoverTarget"
         :parent-node="node"
@@ -77,17 +75,12 @@ import { Folder, ArrowDown, ArrowRight } from "@element-plus/icons-vue";
 import RdbgCollectionTreeItemService, {
   type CollectionDragEmitter,
 } from "@/views/requestdebug/service/RdbgCollectionTreeItemService";
-import RdbgCollectionTreeItem from "./RdbgCollectionTreeItem.vue";
+import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+const rdbgStore = useRdbgStore();
 
 const props = defineProps<{
   //当前节点
   node: GetCollectionTreeVo;
-
-  //当前展开的节点IDS
-  expandedIds: string[];
-
-  //当前选中的节点IDS
-  selectedIds: string[];
 
   //拖拽悬停状态
   dragHoverZone: "center" | "top" | "bottom" | null;
@@ -115,7 +108,7 @@ const isGroup = (node: GetCollectionTreeVo) => RdbgCollectionTreeItemService.isG
 //是否有子节点
 const hasChildren = (node: GetCollectionTreeVo) => RdbgCollectionTreeItemService.hasChildren(node);
 //是否展开
-const isExpanded = (nodeId: string) => RdbgCollectionTreeItemService.isExpanded(nodeId, props);
+const isExpanded = (node: GetCollectionTreeVo) => rdbgStore.isExpanded(node);
 </script>
 
 <style scoped>

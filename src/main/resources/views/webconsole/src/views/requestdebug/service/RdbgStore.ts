@@ -3,46 +3,105 @@ import type { GetCollectionTreeVo } from "../api/CollectionApi";
 
 export const useRdbgStore = defineStore("RdbgStore", {
   state: () => ({
-    //当前被选中的集合ID列表
-    selectedIds: [] as string[],
+    //当前被选中的集合列表
+    selectedCollections: [] as GetCollectionTreeVo[],
 
-    //当前展开的集合ID列表
-    expandedIds: [] as string[],
+    //当前展开的集合列表
+    expandedCollections: [] as GetCollectionTreeVo[],
   }),
   getters: {
-    /**
-     * 获取当前激活的集合
-     * @param state 状态
-     * @returns 当前激活的集合
-     */
-    getSelectedIds: (state) => state.selectedIds,
-
-    /**
-     * 获取当前展开的集合ID列表
-     * @param state 状态
-     * @returns 当前展开的集合ID列表
-     */
-    getExpandedIds: (state) => state.expandedIds,
+    getSelectedCollections: (state) => state.selectedCollections,
+    getExpandedCollections: (state) => state.expandedCollections,
   },
   actions: {
-    addSelectedId(id: string) {
-      this.selectedIds.push(id);
-      console.log(this.selectedIds);
+    /**
+     * 添加被选中的集合
+     * @param collection 集合
+     */
+    addSelectedCollection(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return;
+      }
+      //已存在时不重复添加
+      if (this.selectedCollections.find((c) => c.id === collection.id)) {
+        return;
+      }
+      this.selectedCollections.push(collection);
     },
-    removeSelectedId(id: string) {
-      this.selectedIds = this.selectedIds.filter((id) => id !== id);
+
+    /**
+     * 移除被选中的集合
+     * @param collection 集合
+     */
+    removeSelectedCollection(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return;
+      }
+      this.selectedCollections = this.selectedCollections.filter((c) => c.id !== collection.id);
     },
-    clearSelectedIds() {
-      this.selectedIds = [];
+
+    /**
+     * 清空被选中的集合列表
+     */
+    clearSelectedCollections() {
+      this.selectedCollections = [];
     },
-    addExpandedId(id: string) {
-      this.expandedIds.push(id);
+
+    /**
+     * 判断集合是否被选中
+     * @param collection 集合
+     * @returns 是否被选中
+     */
+    isSelected(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return false;
+      }
+      return this.selectedCollections.find((c) => c.id === collection.id) != null;
     },
-    removeExpandedId(id: string) {
-      this.expandedIds = this.expandedIds.filter((id) => id !== id);
+
+    /**
+     * 添加展开的集合
+     * @param collection 集合
+     */
+    addExpandedCollection(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return;
+      }
+      //已存在时不重复添加
+      if (this.expandedCollections.find((c) => c.id === collection.id)) {
+        return;
+      }
+      this.expandedCollections.push(collection);
     },
-    clearExpandedIds() {
-      this.expandedIds = [];
+
+    /**
+     * 移除展开的集合
+     * @param collection 集合
+     */
+    removeExpandedCollection(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return;
+      }
+      this.expandedCollections = this.expandedCollections.filter((c) => c.id !== collection.id);
+    },
+
+    /**
+     * 清空展开的集合列表
+     */
+    clearExpandedCollections() {
+      this.expandedCollections = [];
+    },
+
+    /**
+     * 判断集合是否展开
+     * @param collection 集合
+     * @returns 是否展开
+     */
+    isExpanded(collection: GetCollectionTreeVo) {
+      if (collection == null) {
+        return false;
+      }
+      return this.expandedCollections.find((c) => c.id === collection.id) != null;
     },
   },
 });

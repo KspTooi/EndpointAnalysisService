@@ -1,7 +1,10 @@
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref, type Ref } from "vue";
 import type { GetCollectionTreeVo } from "../api/CollectionApi";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
+import { useRdbgStore } from "./RdbgStore";
+
+const rdbgStore = useRdbgStore();
 
 export default {
   /**

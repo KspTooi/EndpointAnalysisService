@@ -1,7 +1,5 @@
 import { onMounted, ref } from "vue";
 import type { GetCollectionTreeVo } from "../api/CollectionApi";
-import CollectionApi from "../api/CollectionApi";
-import { Result } from "@/commons/entity/Result";
 import { ElMessage } from "element-plus";
 import { useRdbgStore } from "./RdbgStore";
 const rdbgStore = useRdbgStore();
@@ -11,12 +9,6 @@ export default {
    * 集合选择与展开功能打包
    */
   useCollectionSelection: () => {
-    //当前展开的节点ID列表
-    //const expandedIds = ref<string[]>([]);
-
-    //当前选中的节点ID列表
-    //const selectedIds = ref<string[]>([]);
-
     /**
      * 切换节点展开/收起
      * @param nodeId 节点ID
@@ -29,40 +21,40 @@ export default {
       //处理组 组允许切换展开/收起
       if (node.kind === 1) {
         const hasChildren = node.children && node.children.length > 0;
-        const isExpanded = rdbgStore.getExpandedIds.includes(node.id);
+        const isExpanded = rdbgStore.isExpanded(node);
 
         //组中没有内容时仅允许收起
         if (!hasChildren) {
           if (isExpanded) {
-            rdbgStore.removeExpandedId(node.id);
+            rdbgStore.removeExpandedCollection(node);
           }
         }
 
         //组中有内容时允许展开/收起
         if (hasChildren) {
           if (isExpanded) {
-            rdbgStore.removeExpandedId(node.id);
+            rdbgStore.removeExpandedCollection(node);
           }
           if (!isExpanded) {
-            rdbgStore.addExpandedId(node.id);
+            rdbgStore.addExpandedCollection(node);
           }
         }
       }
 
       //处理请求与组 它们都允许被选中
       if (node.kind === 0 || node.kind === 1) {
-        const isSelected = rdbgStore.getSelectedIds.includes(node.id);
+        const isSelected = rdbgStore.isSelected(node);
 
         if (isSelected) {
-          rdbgStore.clearSelectedIds();
-          rdbgStore.addSelectedId(node.id);
+          rdbgStore.clearSelectedCollections();
+          rdbgStore.addSelectedCollection(node);
           return;
           //已选中时再次点击不移除选中状态 只是清空其他选中
           //selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
         }
         if (!isSelected) {
-          rdbgStore.clearSelectedIds();
-          rdbgStore.addSelectedId(node.id);
+          rdbgStore.clearSelectedCollections();
+          rdbgStore.addSelectedCollection(node);
         }
       }
     };
@@ -77,12 +69,12 @@ export default {
       }
 
       //判断是否已经被选中
-      if (rdbgStore.getSelectedIds.includes(node.id)) {
+      if (rdbgStore.isSelected(node)) {
         return;
       }
 
       //选中
-      rdbgStore.addSelectedId(node.id);
+      rdbgStore.addSelectedCollection(node);
     };
 
     /**
@@ -93,7 +85,7 @@ export default {
       if (!node) {
         return;
       }
-      rdbgStore.removeSelectedId(node.id);
+      rdbgStore.removeSelectedCollection(node);
     };
 
     return {

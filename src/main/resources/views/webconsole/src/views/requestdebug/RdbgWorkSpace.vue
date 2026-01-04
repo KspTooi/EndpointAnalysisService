@@ -18,8 +18,6 @@ import RdbgWorkSpaceService from "./service/RdbgWorkSpaceService";
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
 
 const rdbgStore = useRdbgStore();
-const isRequestSelected = computed(() => {});
-const isCollectionSelected = computed(() => {});
 </script>
 
 <style scoped>

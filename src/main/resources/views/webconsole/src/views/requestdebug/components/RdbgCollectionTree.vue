@@ -19,8 +19,6 @@
             v-for="node in props.data"
             :key="node.id"
             :node="node"
-            :expanded-ids="rdbgStore.getExpandedIds"
-            :selected-ids="rdbgStore.getSelectedIds"
             :drag-hover-zone="dragHoverZone"
             :drag-hover-target="dragHoverTarget"
             @on-click="toggleNode"
