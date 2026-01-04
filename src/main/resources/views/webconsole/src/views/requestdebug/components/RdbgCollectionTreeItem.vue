@@ -235,11 +235,14 @@ const isExpanded = (node: GetCollectionTreeVo) => rdbgStore.isExpanded(node);
   font-weight: 700;
   text-transform: uppercase;
   min-width: 42px;
+  max-width: 42px;
+  overflow: hidden;
   height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  text-align: left;
 }
 
 .operation-name {
@@ -253,11 +256,11 @@ const isExpanded = (node: GetCollectionTreeVo) => rdbgStore.isExpanded(node);
 }
 
 .method-post {
-  background: #409eff;
+  background: #e6a23c;
 }
 
 .method-put {
-  background: #e6a23c;
+  background: #409eff;
 }
 
 .method-delete {
@@ -265,15 +268,15 @@ const isExpanded = (node: GetCollectionTreeVo) => rdbgStore.isExpanded(node);
 }
 
 .method-patch {
-  background: #909399;
+  background: #6b0280;
 }
 
 .method-head {
-  background: #909399;
+  background: #049735;
 }
 
 .method-options {
-  background: #909399;
+  background: #970472;
 }
 
 .method-unknown {

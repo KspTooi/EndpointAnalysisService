@@ -106,21 +106,22 @@ export default {
     //请求方法名称 请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
     const method = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
     const methodName = computed(() => {
-      if (!props.node.reqMethod) {
+      if (props.node.reqMethod == null) {
         return "未知";
       }
-      return method[props.node.reqMethod];
+      //最多4个字母
+      return method[props.node.reqMethod].substring(0, 4);
     });
 
     //请求方法CSS类名
     const methodClass = computed(() => {
-      if (!props.node.reqMethod) {
+      if (props.node.reqMethod == null) {
         return "method-unknown";
       }
       if (props.node.reqMethod >= 0 && props.node.reqMethod < method.length) {
-        return `method-${method[props.node.reqMethod]}`;
+        return `method-${method[props.node.reqMethod]}`.toLowerCase();
       }
-      return "method-unknown";
+      return "method-unknown".toLowerCase();
     });
 
     return {

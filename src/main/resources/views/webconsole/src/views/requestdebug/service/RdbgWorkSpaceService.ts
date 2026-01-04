@@ -51,7 +51,7 @@ export default {
   /**
    * 请求集合详情功能打包
    */
-  useCollectionDetails: () => {
+  useCollectionDetails: (loadList: () => void) => {
     const details = ref<GetCollectionDetailsVo>(null);
     const detailsLoading = ref<boolean>(false);
 
@@ -81,6 +81,7 @@ export default {
         ElMessage.error("保存失败: " + error.message);
       } finally {
         detailsLoading.value = false;
+        loadList();
       }
     };
 
