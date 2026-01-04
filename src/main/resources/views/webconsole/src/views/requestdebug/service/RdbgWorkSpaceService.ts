@@ -3,6 +3,7 @@ import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "../api/Collect
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
 import { useRdbgStore } from "./RdbgStore";
+import { ElMessage } from "element-plus";
 
 const rdbgStore = useRdbgStore();
 
@@ -68,6 +69,21 @@ export default {
       }
     };
 
+    const saveDetails = async (details: GetCollectionDetailsVo) => {
+      detailsLoading.value = true;
+      try {
+        const res = await CollectionApi.editCollection(details);
+        if (Result.isSuccess(res)) {
+          ElMessage.success("已成功保存: " + details.name);
+        }
+      } catch (error) {
+        console.error(error);
+        ElMessage.error("保存失败: " + error.message);
+      } finally {
+        detailsLoading.value = false;
+      }
+    };
+
     /**
      * 监听当前激活的集合
      * 当当前激活的集合发生变化时 加载集合详情
@@ -85,6 +101,7 @@ export default {
       details,
       detailsLoading,
       loadDetails,
+      saveDetails,
     };
   },
 };

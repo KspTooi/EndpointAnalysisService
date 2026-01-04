@@ -2,7 +2,13 @@
   <div class="h-full w-full flex">
     <RdbgCollectionTree style="width: 350px" :data="listData" :loading="listLoading" :loadList="loadList" />
 
-    <RdbgEditor style="flex: 1" v-show="isSelectedRequest" :details="details" :loading="detailsLoading" />
+    <RdbgEditor
+      style="flex: 1"
+      v-show="isSelectedRequest"
+      :details="details"
+      :loading="detailsLoading"
+      @on-details-change="saveDetails"
+    />
   </div>
 </template>
 
@@ -19,7 +25,7 @@ const rdbgStore = useRdbgStore();
 const { listData, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
 
 //集合详情功能打包
-const { details, detailsLoading, loadDetails } = RdbgWorkSpaceService.useCollectionDetails();
+const { details, detailsLoading, loadDetails, saveDetails } = RdbgWorkSpaceService.useCollectionDetails();
 
 const isSelectedRequest = computed(() => {
   return rdbgStore.getActiveCollection?.kind === 0;

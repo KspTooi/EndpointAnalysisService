@@ -33,9 +33,9 @@ export interface EditCollectionDto {
   id: string; //主键ID
   name: string; //集合名称
   reqUrl: string; //请求URL
-  reqUrlParamsJson: string; //请求URL参数JSON
+  requestParams: RequestUrlParamJson[]; //请求URL参数
   reqMethod: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
-  reqHeaderJson: string; //请求头JSON
+  requestHeaders: RequestHeaderJson[]; //请求头
   reqBodyKind: number; //请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded
   reqBodyJson: string; //请求体JSON
 }
@@ -46,21 +46,21 @@ export interface GetCollectionDetailsVo {
   name: string; //集合名称
   kind: number; //集合类型 0:请求 1:组
   reqUrl: string; //请求URL
-  requestParams: RequestUrlParam[]; //请求URL参数
+  requestParams: RequestUrlParamJson[]; //请求URL参数
   reqMethod: number; //请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS
-  requestHeaders: RequestHeader[]; //请求头
+  requestHeaders: RequestHeaderJson[]; //请求头
   reqBodyKind: number; //请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded
   reqBodyJson: string; //请求体JSON
   seq: number; //排序
 }
 
-export interface RequestUrlParam {
+export interface RequestUrlParamJson {
   e: boolean; //是否启用
   k: string; //参数键
   v: string; //参数值
   s: number; //排序
 }
-export interface RequestHeader {
+export interface RequestHeaderJson {
   d: boolean; //是否默认
   e: boolean; //是否启用
   a: boolean; //是否自动计算

@@ -1,11 +1,12 @@
 package com.ksptooi.biz.requestdebug.model.collection.vo;
 
+import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParamJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
-import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParam;
 
 @Getter
 @Setter
@@ -27,7 +28,7 @@ public class GetCollectionDetailsVo {
     private String reqUrl;
 
     @Schema(description = "请求URL参数JSON")
-    private List<RequestUrlParam> requestParams;
+    private List<RequestUrlParamJson> requestParams;
 
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
