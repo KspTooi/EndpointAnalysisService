@@ -20,6 +20,12 @@
             show-word-limit
           />
         </el-form-item>
+        <el-form-item label="类型" prop="kind">
+          <el-radio-group v-model="modalForm.kind">
+            <el-radio :label="0">请求</el-radio>
+            <el-radio :label="1">请求组</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
     </div>
     <template #footer>
@@ -38,6 +44,10 @@ import { ElMessage, type FormInstance } from "element-plus";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
+
+const emit = defineEmits<{
+  (e: "on-success"): void;
+}>();
 
 const modalVisible = ref(false);
 const modalFormRef = ref<FormInstance>();
@@ -77,6 +87,7 @@ const handleSubmit = async () => {
   if (Result.isSuccess(result)) {
     ElMessage.success("已创建:" + modalForm.name);
     closeModal();
+    emit("on-success");
   }
 };
 

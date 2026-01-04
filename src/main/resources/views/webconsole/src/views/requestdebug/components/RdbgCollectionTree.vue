@@ -2,7 +2,7 @@
   <div class="h-full w-full flex flex-col" @dragover.prevent @drop.prevent="onDrop(null, $event)">
     <div class="flex justify-between items-center pt-1.5 pr-3 pb-1.5 pl-3">
       <el-input placeholder="输入任意字符查询" size="small" clearable />
-      <el-button type="primary" @click="$emit('on-create-collection')" size="small" class="ml-2">新建</el-button>
+      <el-button type="primary" @click="modalCollectionCreateRef?.openModal" size="small" class="ml-2">新建</el-button>
       <!-- <div v-if="" class="root-drop-hint">拖拽到此处以移动到根级别</div> -->
     </div>
 
@@ -35,6 +35,8 @@
     </div>
 
     <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-delete-group="onDeleteGroup" />
+
+    <RdbgModalCollectionCreate ref="modalCollectionCreateRef" @on-success="loadList" />
   </div>
 </template>
 
@@ -47,11 +49,11 @@ import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCol
 import RdbgCollectionTreeItemService from "../service/RdbgCollectionTreeItemService";
 import CollectionApi from "@/views/requestdebug/api/CollectionApi";
 import { ElMessage, ElMessageBox } from "element-plus";
+import RdbgModalCollectionCreate from "@/views/requestdebug/components/RdbgModalCollectionCreate.vue";
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
+const modalCollectionCreateRef = ref<InstanceType<typeof RdbgModalCollectionCreate>>();
 
-defineEmits<{
-  (e: "on-create-collection"): void;
-}>();
+defineEmits<{}>();
 
 //列表功能打包
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();

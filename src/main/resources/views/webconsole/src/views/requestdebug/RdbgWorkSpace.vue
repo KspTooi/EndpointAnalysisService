@@ -2,7 +2,6 @@
   <div class="h-full w-full flex">
     <RdbgCollectionTree style="width: 350px" @on-create-collection="modalCollectionCreateRef?.openModal" />
     <RdbgEditor style="flex: 1" />
-    <RdbgModalCollectionCreate ref="modalCollectionCreateRef" />
   </div>
 </template>
 
