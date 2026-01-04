@@ -66,7 +66,12 @@ const modalForm = reactive<AddCollectionDto>({
   reqBodyJson: "",
 });
 
-const openModal = () => {
+/**
+ * 打开创建集合弹窗
+ * @param parentId 父级ID
+ */
+const openModal = (parentId: string) => {
+  modalForm.parentId = parentId;
   modalForm.name = "未命名请求";
   modalVisible.value = true;
 };

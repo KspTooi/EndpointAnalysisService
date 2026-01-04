@@ -2,7 +2,6 @@ import { onMounted, ref } from "vue";
 import type { GetCollectionTreeVo } from "../api/CollectionApi";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
-import type { CollectionDragEmitter } from "./RdbgCollectionTreeItemService";
 import { ElMessage } from "element-plus";
 
 export default {

@@ -9,38 +9,53 @@
   >
     <!-- 点击空白区域时展示的菜单项 -->
     <template v-if="currentNode == null">
-      <div class="menu-item" @click="onCreateRequest">
+      <div class="menu-item" @click="onCreateCollection">
         <el-icon><Document /></el-icon>
         <span>创建请求</span>
       </div>
-      <div class="menu-item" @click="onCreateGroup">
-        <el-icon><FolderAdd /></el-icon>
-        <span>创建子组</span>
+    </template>
+
+    <!-- 点击到请求组时展示的菜单项 -->
+    <template v-if="currentNode != null && currentNode.kind === 1">
+      <div class="menu-item" @click="onCreateCollection">
+        <el-icon><Document /></el-icon>
+        <span>创建请求</span>
+      </div>
+      <div class="menu-item" @click="onCopyCollection">
+        <el-icon><DocumentCopy /></el-icon>
+        <span>复制分组</span>
+      </div>
+      <div class="menu-item" @click="onRenameCollection">
+        <el-icon><Edit /></el-icon>
+        <span>重命名</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" @click="onRemoveCollection">
+        <el-icon><Delete /></el-icon>
+        <span>删除分组</span>
       </div>
     </template>
 
-    <div class="menu-item" @click="onCreateRequest">
-      <el-icon><Document /></el-icon>
-      <span>创建请求</span>
-    </div>
-    <div class="menu-item" @click="onCreateGroup">
-      <el-icon><FolderAdd /></el-icon>
-      <span>创建子组</span>
-    </div>
-    <div class="menu-divider"></div>
-    <div class="menu-item" @click="onCopyGroup">
-      <el-icon><DocumentCopy /></el-icon>
-      <span>复制分组</span>
-    </div>
-    <div class="menu-item" @click="onEditGroup">
-      <el-icon><Edit /></el-icon>
-      <span>编辑分组</span>
-    </div>
-    <div class="menu-divider"></div>
-    <div class="menu-item" @click="onDeleteGroup">
-      <el-icon><Delete /></el-icon>
-      <span>删除分组</span>
-    </div>
+    <!-- 点击到请求时展示的菜单项 -->
+    <template v-if="currentNode != null && currentNode.kind === 0">
+      <div class="menu-item" @click="onCreateCollection">
+        <el-icon><Document /></el-icon>
+        <span>创建请求</span>
+      </div>
+      <div class="menu-item" @click="onCopyCollection">
+        <el-icon><DocumentCopy /></el-icon>
+        <span>复制请求</span>
+      </div>
+      <div class="menu-item" @click="onRenameCollection">
+        <el-icon><Edit /></el-icon>
+        <span>重命名</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" @click="onRemoveCollection">
+        <el-icon><Delete /></el-icon>
+        <span>删除请求</span>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -53,11 +68,10 @@ import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi
 const rightMenuRef = ref<HTMLElement>();
 
 export interface RightMenuEmitter {
-  (e: "on-create-request", node: GetCollectionTreeVo | null): void;
-  (e: "on-create-group", node: GetCollectionTreeVo | null): void;
-  (e: "on-copy-group", node: GetCollectionTreeVo): void;
-  (e: "on-edit-group", node: GetCollectionTreeVo): void;
-  (e: "on-delete-group", node: GetCollectionTreeVo): void;
+  (e: "on-create", collection: GetCollectionTreeVo | null): void;
+  (e: "on-copy", collection: GetCollectionTreeVo): void;
+  (e: "on-rename", collection: GetCollectionTreeVo): void;
+  (e: "on-remove", collections: GetCollectionTreeVo[]): void;
 }
 
 const emit = defineEmits<RightMenuEmitter>();
@@ -73,7 +87,7 @@ const {
 } = RdbgCollectionTreeRightMenuService.useRightMenuControl(rightMenuRef);
 
 //右键菜单事件提交打包
-const { onCreateRequest, onCreateGroup, onCopyGroup, onEditGroup, onDeleteGroup } =
+const { onCreateCollection, onCopyCollection, onRenameCollection, onRemoveCollection } =
   RdbgCollectionTreeRightMenuService.useRightMenuEmitter(emit, closeRightMenu, currentNode);
 
 defineExpose({

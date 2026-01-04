@@ -13,7 +13,7 @@
       element-loading-text="正在处理..."
     >
       <el-scrollbar>
-        <div v-if="!listLoading && listData.length === 0" class="empty-tip">暂无数据</div>
+        <el-empty v-if="!listLoading && listData.length === 0" description="暂无数据" />
         <div class="tree-list">
           <rdbg-collection-tree-item
             v-for="node in listData"
@@ -34,7 +34,7 @@
       </el-scrollbar>
     </div>
 
-    <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-delete-group="onDeleteGroup" />
+    <rdbg-collection-tree-right-menu ref="rightMenuRef" @on-remove="onRemoveCollection" @on-create="onCreateCollection" />
 
     <RdbgModalCollectionCreate ref="modalCollectionCreateRef" @on-success="loadList" />
   </div>
@@ -46,7 +46,6 @@ import RdbgCollectonTreeService from "@/views/requestdebug/service/RdbgCollecton
 import RdbgCollectionTreeItem from "@/views/requestdebug/components/RdbgCollectionTreeItem.vue";
 import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
 import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCollectionTreeRightMenu.vue";
-import RdbgCollectionTreeItemService from "../service/RdbgCollectionTreeItemService";
 import CollectionApi from "@/views/requestdebug/api/CollectionApi";
 import { ElMessage, ElMessageBox } from "element-plus";
 import RdbgModalCollectionCreate from "@/views/requestdebug/components/RdbgModalCollectionCreate.vue";
@@ -111,12 +110,57 @@ const onContextmenu = (node: GetCollectionTreeVo, event: MouseEvent) => {
 };
 
 /**
- * 删除节点
+ * 创建集合
  * @param node 节点
  */
-const onDeleteGroup = async (node: GetCollectionTreeVo) => {
+const onCreateCollection = (node: GetCollectionTreeVo) => {
+  let parentId = null;
+
+  if (node) {
+    //请求
+    if (node.kind === 0) {
+      parentId = node.parentId;
+    }
+
+    //分组
+    if (node.kind === 1) {
+      parentId = node.id;
+    }
+  }
+
+  modalCollectionCreateRef.value?.openModal(parentId);
+};
+
+/**
+ * 删除集合
+ * @param collections 集合
+ */
+const onRemoveCollection = async (collections: GetCollectionTreeVo[]) => {
+  const hasBatch = collections.length > 1;
+
+  let title = "删除请求";
+  let text = "确定要删除吗?";
+
+  if (hasBatch) {
+    text = "确定要删除选中的" + collections.length + "个项目吗?";
+    title = "删除多个项目";
+  }
+
+  if (!hasBatch) {
+    const firstCollection = collections[0];
+    const kind = firstCollection.kind;
+    if (kind === 0) {
+      title = "删除请求";
+      text = "确定要删除请求 " + firstCollection.name + " 吗?";
+    }
+    if (kind === 1) {
+      title = "删除分组";
+      text = "确定要删除分组 " + firstCollection.name + " 吗?";
+    }
+  }
+
   try {
-    await ElMessageBox.confirm("确定删除此" + (node.kind === 0 ? "分组" : "请求") + "吗？", "提示", {
+    await ElMessageBox.confirm(text, title, {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -126,7 +170,7 @@ const onDeleteGroup = async (node: GetCollectionTreeVo) => {
   }
 
   try {
-    await CollectionApi.removeCollection({ id: node.id });
+    await CollectionApi.removeCollection({ ids: collections.map((collection) => collection.id) });
     await loadList();
   } catch (error) {
     ElMessage.error(error.message);

@@ -87,37 +87,32 @@ export default {
 
   useRightMenuEmitter(emit: RightMenuEmitter, closeRightMenu: () => void, currentNode: Ref<GetCollectionTreeVo | null>) {
     return {
-      onCreateRequest: () => {
-        emit("on-create-request", currentNode.value);
+      onCreateCollection: () => {
+        emit("on-create", currentNode.value);
         closeRightMenu();
       },
 
-      onCreateGroup: () => {
-        emit("on-create-group", currentNode.value);
-        closeRightMenu();
-      },
-
-      onCopyGroup: () => {
+      onCopyCollection: () => {
         if (!currentNode.value) {
           return;
         }
-        emit("on-copy-group", currentNode.value);
+        emit("on-copy", currentNode.value);
         closeRightMenu();
       },
 
-      onEditGroup: () => {
+      onRenameCollection: () => {
         if (!currentNode.value) {
           return;
         }
-        emit("on-edit-group", currentNode.value);
+        emit("on-rename", currentNode.value);
         closeRightMenu();
       },
 
-      onDeleteGroup: () => {
+      onRemoveCollection: () => {
         if (!currentNode.value) {
           return;
         }
-        emit("on-delete-group", currentNode.value);
+        emit("on-remove", [currentNode.value]);
         closeRightMenu();
       },
     };
