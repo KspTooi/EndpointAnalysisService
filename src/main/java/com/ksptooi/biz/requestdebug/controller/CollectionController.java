@@ -14,12 +14,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @PrintLog
 @RestController
@@ -45,11 +46,11 @@ public class CollectionController {
     @Operation(summary = "新增请求集合")
     @PostMapping("/addCollection")
     public Result<String> addCollection(@RequestBody @Valid AddCollectionDto dto) throws Exception {
-    
+
         if (AuthService.getCurrentCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
-       
+
         collectionService.addCollection(dto);
         return Result.success("新增成功");
     }

@@ -1,7 +1,8 @@
 <template>
-  <div class="container">
+  <div class="container" v-loading="props.loading">
     <div class="header">
-      <div class="header-title">
+      <div class="header-title flex items-center">
+        <span class="text-[#07998b]" v-show="hasUncommittedChanges"><ILineMdUploadingLoop /></span>
         <input class="name-input !text-[12px]" v-model="editor.name" />
         <div class="header-env-selector">
           <rdbg-editor-env-selector />
@@ -71,7 +72,7 @@ const emits = defineEmits<{
 
 const loading = ref(false);
 
-const { editor } = RdbgEditorService.useEditor(props, emits);
+const { editor, hasUncommittedChanges } = RdbgEditorService.useEditor(props, emits, 3000);
 </script>
 
 <style scoped>
@@ -100,6 +101,7 @@ const { editor } = RdbgEditorService.useEditor(props, emits);
   font-size: 14px;
   font-weight: 600;
   color: #495057;
+  text-align: center;
 }
 
 .content {

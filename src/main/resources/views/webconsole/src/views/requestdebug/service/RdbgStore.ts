@@ -1,5 +1,17 @@
 import { defineStore } from "pinia";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
+import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "../api/CollectionApi";
+
+/**
+ * 提交详情
+ * @param id 数据ID
+ * @param data 数据
+ * @param commitImmediately 立即提交
+ */
+export interface CommitDetails {
+  id: string;
+  data: GetCollectionDetailsVo;
+  commitImmediately: () => void;
+}
 
 export const useRdbgStore = defineStore("RdbgStore", {
   state: () => ({
@@ -14,12 +26,16 @@ export const useRdbgStore = defineStore("RdbgStore", {
 
     //当前展开的集合列表
     expandedCollections: [] as GetCollectionTreeVo[],
+
+    //当前未提交更改的集合列表
+    uncommittedCollections: [] as CommitDetails[],
   }),
   getters: {
     getEditorTab: (state) => state.editorTab,
     getActiveCollection: (state) => state.activeCollection,
     getSelectedCollections: (state) => state.selectedCollections,
     getExpandedCollections: (state) => state.expandedCollections,
+    getUncommittedCollections: (state) => state.uncommittedCollections,
   },
   actions: {
     setEditorTab(tab: "params" | "body" | "header") {
@@ -127,6 +143,25 @@ export const useRdbgStore = defineStore("RdbgStore", {
         return false;
       }
       return this.expandedCollections.find((c) => c.id === collection.id) != null;
+    },
+    addUncommittedCollection(collection: CommitDetails) {
+      if (collection == null) {
+        return;
+      }
+      //已存在时移除旧值并添加新值
+      if (this.uncommittedCollections.find((c) => c.id === collection.id)) {
+        this.removeUncommittedCollection(collection);
+      }
+      this.uncommittedCollections.push(collection);
+    },
+    removeUncommittedCollection(collection: CommitDetails) {
+      if (collection == null) {
+        return;
+      }
+      this.uncommittedCollections = this.uncommittedCollections.filter((c) => c.id !== collection.id);
+    },
+    clearUncommittedCollections() {
+      this.uncommittedCollections = [];
     },
   },
 });

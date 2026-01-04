@@ -18,6 +18,13 @@ export default {
         return;
       }
 
+      //如果节点有未提交的更改，则立即提交
+      if (rdbgStore.getUncommittedCollections.length > 0) {
+        rdbgStore.getUncommittedCollections.forEach((c) => c.commitImmediately());
+        rdbgStore.clearUncommittedCollections();
+        ElMessage.success("已提交未保存的更改!");
+      }
+
       //处理组 组允许切换展开/收起
       if (node.kind === 1) {
         const hasChildren = node.children && node.children.length > 0;

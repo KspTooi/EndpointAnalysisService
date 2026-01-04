@@ -1,6 +1,9 @@
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import type { GetCollectionDetailsVo } from "../api/CollectionApi";
 import type { RdbgEditorProps } from "../components/RdbgEditor.vue";
+import { useRdbgStore } from "./RdbgStore";
+
+const rdbgStore = useRdbgStore();
 
 const getDefaultEditor = (): GetCollectionDetailsVo => ({
   id: "",
@@ -23,8 +26,25 @@ const getDefaultEditor = (): GetCollectionDetailsVo => ({
 });
 
 export default {
-  useEditor: (props: RdbgEditorProps, emits: (e: "on-details-change", details: GetCollectionDetailsVo) => void) => {
+  /**
+   * 编辑器功能打包
+   * @param props 属性
+   * @param emits 事件发射器
+   * @param debounceTime 防抖时间
+   * @returns 编辑器
+   */
+  useEditor: (
+    props: RdbgEditorProps,
+    emits: (e: "on-details-change", details: GetCollectionDetailsVo) => void,
+    debounceTime: number = 300
+  ) => {
+    //编辑器数据
     const editor = reactive<GetCollectionDetailsVo>(getDefaultEditor());
+
+    //编辑器是否有未提交的更改(这是在编辑器内部更新时但外部未提交时会置为true)
+    const hasUncommittedChanges = computed(() => {
+      return rdbgStore.getUncommittedCollections.length > 0;
+    });
 
     //防抖定时器
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -103,9 +123,17 @@ export default {
       }
 
       debounceTimer = setTimeout(() => {
+        //如果当前没有未提交的更改，则不再提交
+        if (rdbgStore.getUncommittedCollections.length === 0) {
+          return;
+        }
+
+        //提交成功后重置为false
+        rdbgStore.clearUncommittedCollections();
+
+        //提交到外部
         emits("on-details-change", value);
-        console.log("updateEmitter", value);
-      }, 300);
+      }, debounceTime);
     };
 
     watch(
@@ -116,11 +144,20 @@ export default {
         }
 
         updateEmitter(newVal);
+        //有未提交的更改
+        rdbgStore.addUncommittedCollection({
+          id: newVal.id,
+          data: newVal,
+          commitImmediately: () => {
+            emits("on-details-change", newVal);
+          },
+        });
       },
       { deep: true }
     );
 
     return {
+      hasUncommittedChanges,
       editor,
       update,
     };

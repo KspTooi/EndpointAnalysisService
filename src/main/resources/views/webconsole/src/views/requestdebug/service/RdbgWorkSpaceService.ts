@@ -74,7 +74,7 @@ export default {
       try {
         const res = await CollectionApi.editCollection(details);
         if (Result.isSuccess(res)) {
-          ElMessage.success("已成功保存: " + details.name);
+          //ElMessage.success("已成功保存: " + details.name);
         }
       } catch (error) {
         console.error(error);

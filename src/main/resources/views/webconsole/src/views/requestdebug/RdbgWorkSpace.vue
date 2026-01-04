@@ -25,7 +25,7 @@ const rdbgStore = useRdbgStore();
 const { listData, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
 
 //集合详情功能打包
-const { details, detailsLoading, loadDetails, saveDetails } = RdbgWorkSpaceService.useCollectionDetails(loadList);
+const { details, detailsLoading, saveDetails } = RdbgWorkSpaceService.useCollectionDetails(loadList);
 
 const isSelectedRequest = computed(() => {
   return rdbgStore.getActiveCollection?.kind === 0;

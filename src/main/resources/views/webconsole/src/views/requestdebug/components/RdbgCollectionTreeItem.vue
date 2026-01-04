@@ -41,7 +41,10 @@
         <div v-if="node.reqMethod !== undefined" class="operation-method" :class="methodClass">
           {{ methodName }}
         </div>
-        <div class="operation-name">
+        <div class="operation-name flex items-center gap-1">
+          <span v-if="rdbgStore.getUncommittedCollections.find((c) => c.id === node.id)" class="text-[#07998b]"
+            ><ILineMdUploadingLoop />
+          </span>
           {{ node.name }}
         </div>
       </div>
