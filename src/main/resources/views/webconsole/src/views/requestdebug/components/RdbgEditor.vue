@@ -45,7 +45,7 @@
         <rdbg-editor-tab-params v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" />
 
         <!-- 请求头内容 -->
-        <div v-show="rdbgStore.getEditorTab === 'header'" class="tab-panel"></div>
+        <rdbg-editor-tab-headers v-show="rdbgStore.getEditorTab === 'header'" v-model="editor.requestHeaders" />
 
         <!-- 载荷内容 -->
         <div v-show="rdbgStore.getEditorTab === 'body'" class="tab-panel"></div>
@@ -63,6 +63,7 @@ import type { GetCollectionDetailsVo } from "@/views/requestdebug/api/Collection
 import RdbgEditorService from "@/views/requestdebug/service/RdbgEditorService";
 import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
 import RdbgEditorTabParams from "@/views/requestdebug/components/RdbgEditorTabParams.vue";
+import RdbgEditorTabHeaders from "@/views/requestdebug/components/RdbgEditorTabHeaders.vue";
 
 const rdbgStore = useRdbgStore();
 
