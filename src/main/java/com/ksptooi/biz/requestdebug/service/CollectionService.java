@@ -346,12 +346,15 @@ public class CollectionService {
 
         //处理顶级节点让位
         if (sourceParentNodePo == null) {
+
             List<CollectionPo> rootNodeList = repository.getRootNodeListByCompanyId(companyId);
+            var startSeq = newNodePo.getSeq() + 1;
+
             for (CollectionPo item : rootNodeList) {
 
                 //所有SEQ大于等于新复制节点SEQ的节点都需要进行让位处理
                 if (item.getSeq() >= newNodePo.getSeq()) {
-                    newNodePo.setSeq(item.getSeq() + 1);
+                    item.setSeq(startSeq++);
                 }
 
             }
