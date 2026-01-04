@@ -3,8 +3,9 @@ package com.ksptooi.biz.requestdebug.model.collection.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
+import java.util.List;
+import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParam;
 
 @Getter
 @Setter
@@ -26,22 +27,19 @@ public class GetCollectionDetailsVo {
     private String reqUrl;
 
     @Schema(description = "请求URL参数JSON")
-    private String reqUrlParamsJson;
+    private List<RequestUrlParam> requestParams;
 
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
 
-    @Schema(description = "请求头JSON")
-    private String reqHeaderJson;
+    @Schema(description = "请求头")
+    private List<RequestHeaderJson> requestHeaders;
 
     @Schema(description = "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded")
     private Integer reqBodyKind;
 
     @Schema(description = "请求体JSON")
     private String reqBodyJson;
-
-    @Schema(description = "排序")
-    private Integer seq;
 
 }
 

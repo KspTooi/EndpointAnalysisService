@@ -1,70 +1,43 @@
 <template>
-  <div class="rb-container">
-    <!-- Loading 遮罩 -->
-    <div v-show="globalLoading" class="rb-loading-overlay">
-      <div class="rb-loading-spinner"></div>
-      <div class="rb-loading-text">正在处理...</div>
-    </div>
-
-    <el-empty
-      description="请选择一个请求"
-      v-show="RequestTreeHolder().getActiveRequestId == null || requestDetail.id == null"
-      style="height: 100%; width: 100%"
-    />
-
-    <div v-show="RequestTreeHolder().getActiveRequestId != null && requestDetail.id != null" class="rb-editor-wrapper">
-      <div class="rb-header">
-        <div class="rb-header-title">
-          <input class="rb-name-input" v-model="requestDetail.name" />
-          <div class="rb-header-env-selector">
+  <div class="container">
+    <div class="editor-wrapper">
+      <div class="header">
+        <div class="header-title">
+          <input class="name-input" v-model="requestDetail.name" />
+          <div class="header-env-selector">
             <rdbg-editor-env-selector />
           </div>
         </div>
 
-        <div class="rb-header-input" style="margin-top: 12px">
+        <div class="header-input" style="margin-top: 12px">
           <rdbg-editor-url-input
             :url="requestDetail.url"
             :method="requestDetail.method"
             @onUrlChange="onUrlChange"
-            @onSendRequest="onSendRequest"
             :loading="loading"
           />
         </div>
       </div>
 
       <!-- 选项卡 -->
-      <div class="rb-tab">
+      <div class="tab">
         <div
-          class="rb-tab-item"
+          class="tab-item"
           :class="{ active: PreferenceHolder().getRequestEditorTab === 'header' }"
           @click="PreferenceHolder().setRequestEditorTab('header')"
         >
           标头
         </div>
         <div
-          class="rb-tab-item"
+          class="tab-item"
           :class="{ active: PreferenceHolder().getRequestEditorTab === 'body' }"
           @click="PreferenceHolder().setRequestEditorTab('body')"
         >
           载荷
         </div>
-        <div
-          class="rb-tab-item"
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'lastResponse' }"
-          @click="PreferenceHolder().setRequestEditorTab('lastResponse')"
-        >
-          响应
-        </div>
-        <div
-          class="rb-tab-item"
-          :class="{ active: PreferenceHolder().getRequestEditorTab === 'response' }"
-          @click="PreferenceHolder().setRequestEditorTab('response')"
-        >
-          响应列表
-        </div>
       </div>
 
-      <div v-show="requestDetail" class="rb-content">
+      <div v-show="requestDetail" class="content">
         <!-- 请求头内容 -->
         <div v-show="PreferenceHolder().getRequestEditorTab === 'header'" class="tab-panel">
           <div class="headers-editor">
@@ -102,21 +75,6 @@
         <div v-show="PreferenceHolder().getRequestEditorTab === 'body'" class="tab-panel">
           <!--          <RequestPayload :requestDetails="requestDetail" @onRequestBodyChange="onRequestBodyChange" />-->
         </div>
-
-        <!-- 响应列表 -->
-        <div v-if="PreferenceHolder().getRequestEditorTab === 'response'" class="tab-panel">
-          <!--          <UrResponseList ref="urResponseListRef" :loading="loading" />-->
-        </div>
-
-        <!-- 响应 -->
-        <div v-if="PreferenceHolder().getRequestEditorTab === 'lastResponse'" class="tab-panel">
-          <div v-if="!lastResponse" style="text-align: center; margin-top: 50px">
-            <el-empty description="暂无响应，请先发送请求"></el-empty>
-          </div>
-          <div v-if="lastResponse">
-            <RequestPreview :request-preview-vo="lastResponse" />
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -152,7 +110,6 @@ const requestDetail = ref<GetUserRequestDetailsVo>({
 
 //可编辑的请求头数据
 const editableHeaders = ref<RequestHeaderVo[]>([]);
-const urResponseListRef = ref<InstanceType<typeof UrResponseList>>();
 
 const loading = ref(false);
 const globalLoading = ref(false);
@@ -242,41 +199,6 @@ const onUrlChange = (method: string, url: string) => {
 };
 
 /**
- * 发送请求
- */
-const onSendRequest = async () => {
-  loading.value = true;
-
-  //先保存请求
-  await UserRequestApi.editUserRequest({
-    id: requestDetail.value.id,
-    name: requestDetail.value.name,
-    method: requestDetail.value.method,
-    url: requestDetail.value.url,
-    requestHeaders: requestDetail.value.requestHeaders,
-    requestBodyType: requestDetail.value.requestBodyType,
-    requestBody: requestDetail.value.requestBody,
-  });
-
-  try {
-    await UserRequestApi.sendUserRequest({ id: requestDetail.value.id || "" });
-    await urResponseListRef.value?.loadUserRequestLogList();
-  } catch (e) {
-    ElMessage.error(`发送请求失败:${e}`);
-  } finally {
-    await urResponseListRef.value?.loadUserRequestLogList();
-    loading.value = false;
-  }
-
-  try {
-    lastResponse.value = await UserRequestLogApi.getLastUserRequestLogDetails(RequestTreeHolder().getActiveRequestId || "");
-  } catch (e) {
-    //需要清空lastResponse
-    lastResponse.value = null;
-  }
-};
-
-/**
  * 请求体变化
  */
 const onRequestBodyChange = (requestBody: string) => {
@@ -360,7 +282,7 @@ watch(
 </script>
 
 <style scoped>
-.rb-container {
+.container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -371,13 +293,13 @@ watch(
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
-.rb-header {
+.header {
   background: #f8f9fa;
   padding: 10px 20px;
   border-bottom: 1px solid #e9ecef;
 }
 
-.rb-header-title {
+.header-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -387,27 +309,20 @@ watch(
   color: #495057;
 }
 
-.rb-content {
+.content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.rb-info-row label {
-  min-width: 80px;
-  font-weight: 500;
-  color: #6c757d;
-  margin-right: 12px;
-}
-
-.rb-tab {
+.tab {
   display: flex;
   background: #fff;
   border-bottom: 1px solid #e9ecef;
 }
 
-.rb-tab-item {
+.tab-item {
   padding: 5px 20px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
@@ -417,12 +332,12 @@ watch(
   font-size: 14px;
 }
 
-.rb-tab-item:hover {
+.tab-item:hover {
   background: #f8f9fa;
   color: #495057;
 }
 
-.rb-tab-item.active {
+.tab-item.active {
   color: #007bff;
   border-bottom-color: #007bff;
   background: #fff;
@@ -465,44 +380,7 @@ watch(
   margin-bottom: 5px;
 }
 
-.body-type label {
-  font-weight: 500;
-  color: #6c757d;
-}
-
-.body-type span {
-  background: #e9ecef;
-  padding: 4px 8px;
-  font-size: 12px;
-  color: #495057;
-}
-
-.body-text {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  overflow: auto;
-  max-height: 400px;
-}
-
-.body-text pre {
-  margin: 0;
-  padding: 16px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  color: #495057;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.empty-state {
-  text-align: center;
-  color: #6c757d;
-  padding: 40px;
-  font-style: italic;
-}
-
-.rb-name-input {
+.name-input {
   border: none;
   outline: none;
   font-size: 14px;
@@ -514,53 +392,7 @@ watch(
   min-width: 0;
 }
 
-.rb-header-env-selector {
+.header-env-selector {
   flex-shrink: 0;
-}
-
-.rb-editor-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Loading 遮罩样式 */
-.rb-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100000;
-}
-
-.rb-loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.rb-loading-text {
-  margin-top: 16px;
-  color: #495057;
-  font-size: 14px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 </style>
