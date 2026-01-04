@@ -33,7 +33,7 @@
 
     <div class="content">
       <!-- 参数内容 -->
-      <rdbg-editor-tab-params v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" />
+      <rdbg-param-editor v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" title="URL查询参数" />
 
       <!-- 请求头内容 -->
       <rdbg-editor-tab-headers v-show="rdbgStore.getEditorTab === 'header'" v-model="editor.requestHeaders" />
@@ -52,7 +52,7 @@ import RdbgEditorUrlInput from "@/views/requestdebug/components/RdbgEditorUrlInp
 import type { GetCollectionDetailsVo } from "@/views/requestdebug/api/CollectionApi";
 import RdbgEditorService from "@/views/requestdebug/service/RdbgEditorService";
 import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
-import RdbgEditorTabParams from "@/views/requestdebug/components/RdbgEditorTabParams.vue";
+import RdbgParamEditor from "@/views/requestdebug/components/RdbgParamEditor.vue";
 import RdbgEditorTabHeaders from "@/views/requestdebug/components/RdbgEditorTabHeaders.vue";
 import RdbgEditorTabBody from "@/views/requestdebug/components/RdbgEditorTabBody.vue";
 

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full bg-white select-none">
     <div class="flex justify-between items-center px-4 py-1">
-      <span class="text-sm font-semibold text-gray-700 text-[12px]">URL查询参数</span>
+      <span class="text-sm font-semibold text-gray-700 text-[12px]">{{ title }}</span>
       <button
         @click="addParam"
         title="添加参数"
@@ -81,10 +81,19 @@
 
 <script setup lang="ts">
 import draggable from "vuedraggable";
-import type { RequestUrlParamJson } from "@/views/requestdebug/api/CollectionApi";
+import type { RequestParamJson } from "@/views/requestdebug/api/CollectionApi";
 import { ElScrollbar } from "element-plus";
 
-const params = defineModel<RequestUrlParamJson[]>({ required: true });
+withDefaults(
+  defineProps<{
+    title?: string;
+  }>(),
+  {
+    title: "参数",
+  }
+);
+
+const params = defineModel<RequestParamJson[]>({ required: true });
 
 const addParam = () => {
   if (!params.value) {
