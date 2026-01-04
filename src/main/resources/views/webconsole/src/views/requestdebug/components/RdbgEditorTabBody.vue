@@ -26,7 +26,20 @@
         title="表单类型(form-data | multipart/form-data)"
         th
       />
+      <!-- 表单参数编辑器 -->
       <rdbg-param-editor v-show="reqBody.kind === 8" v-model="reqBody.formDataUrlEncoded" title="表单类型(URL编码)" th />
+
+      <!-- 纯文本、JS、JSON、HTML、XML编辑器 -->
+      <JsonEditorVue
+        v-show="reqBody.kind === 2 || reqBody.kind === 3 || reqBody.kind === 4 || reqBody.kind === 5 || reqBody.kind === 6"
+        style="height: 100%"
+        v-model="reqBody.rawData"
+        v-bind="{
+          /* 局部 props & attrs */
+        }"
+        v-model:mode="Mode.text"
+        ref="jsonEditorRef"
+      />
     </div>
   </div>
 </template>
@@ -35,8 +48,12 @@
 import { computed, ref } from "vue";
 import type { RequestBodyJson } from "@/views/requestdebug/api/CollectionApi";
 import RdbgParamEditor from "@/views/requestdebug/components/RdbgParamEditor.vue";
+import { Mode } from "vanilla-jsoneditor";
+import JsonEditorVue from "json-editor-vue";
 
 const reqBody = defineModel<RequestBodyJson>("modelValue", { required: true });
+
+const editorMode = ref<Mode.text>(Mode.text);
 </script>
 
 <style scoped></style>
