@@ -1,7 +1,7 @@
 package com.ksptooi.biz.requestdebug.model.collection.dto;
 
 import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParamJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +31,7 @@ public class EditCollectionDto {
 
     @NotNull(message = "请求URL参数不能为空")
     @Schema(description = "请求URL参数JSON")
-    private List<RequestUrlParamJson> requestParams;
+    private List<RequestParamJson> requestParams;
 
     @Range(min = 0, max = 6, message = "请求方法只能在0-6之间")
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")

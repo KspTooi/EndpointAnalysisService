@@ -1,55 +1,49 @@
 <template>
   <div class="container">
-    <div class="editor-wrapper">
-      <div class="header">
-        <div class="header-title">
-          <input class="name-input" v-model="editor.name" />
-          <div class="header-env-selector">
-            <rdbg-editor-env-selector />
-          </div>
-        </div>
-
-        <div class="header-input" style="margin-top: 12px">
-          <rdbg-editor-url-input
-            v-model:method="editor.reqMethod"
-            v-model:url="editor.reqUrl"
-            @on-request-send=""
-            :loading="props.loading"
-          />
+    <div class="header">
+      <div class="header-title">
+        <input class="name-input" v-model="editor.name" />
+        <div class="header-env-selector">
+          <rdbg-editor-env-selector />
         </div>
       </div>
 
-      <!-- 选项卡 -->
-      <div class="tab">
-        <div
-          class="tab-item"
-          :class="{ active: rdbgStore.getEditorTab === 'params' }"
-          @click="rdbgStore.setEditorTab('params')"
-        >
-          参数
-        </div>
-        <div
-          class="tab-item"
-          :class="{ active: rdbgStore.getEditorTab === 'header' }"
-          @click="rdbgStore.setEditorTab('header')"
-        >
-          标头
-        </div>
-        <div class="tab-item" :class="{ active: rdbgStore.getEditorTab === 'body' }" @click="rdbgStore.setEditorTab('body')">
-          载荷
-        </div>
+      <div class="header-input" style="margin-top: 12px">
+        <rdbg-editor-url-input
+          v-model:method="editor.reqMethod"
+          v-model:url="editor.reqUrl"
+          @on-request-send=""
+          :loading="props.loading"
+        />
       </div>
+    </div>
 
-      <div class="content">
-        <!-- 参数内容 -->
-        <rdbg-editor-tab-params v-show="rdbgStore.getEditorTab === 'params'" v-model="editor.requestParams" />
-
-        <!-- 请求头内容 -->
-        <rdbg-editor-tab-headers v-show="rdbgStore.getEditorTab === 'header'" v-model="editor.requestHeaders" />
-
-        <!-- 载荷内容 -->
-        <div v-show="rdbgStore.getEditorTab === 'body'" class="tab-panel"></div>
+    <!-- 选项卡 -->
+    <div class="tab">
+      <div class="tab-item" :class="{ active: rdbgStore.getEditorTab === 'params' }" @click="rdbgStore.setEditorTab('params')">
+        参数
       </div>
+      <div class="tab-item" :class="{ active: rdbgStore.getEditorTab === 'header' }" @click="rdbgStore.setEditorTab('header')">
+        标头
+      </div>
+      <div class="tab-item" :class="{ active: rdbgStore.getEditorTab === 'body' }" @click="rdbgStore.setEditorTab('body')">
+        载荷
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- 参数内容 -->
+      <rdbg-editor-tab-params
+        v-show="rdbgStore.getEditorTab === 'params'"
+        v-model="editor.requestParams"
+        style="height: 100%"
+      />
+
+      <!-- 请求头内容 -->
+      <rdbg-editor-tab-headers v-show="rdbgStore.getEditorTab === 'header'" v-model="editor.requestHeaders" />
+
+      <!-- 载荷内容 -->
+      <div v-show="rdbgStore.getEditorTab === 'body'" class="tab-panel"></div>
     </div>
   </div>
 </template>

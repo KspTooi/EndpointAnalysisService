@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RequestUrlParamJson {
+public class RequestParamJson {
 
     @Schema(description = "是否启用")
     private boolean e;

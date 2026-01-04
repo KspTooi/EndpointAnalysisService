@@ -3,7 +3,7 @@ package com.ksptooi.biz.requestdebug.service;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.CollectionPo;
 import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParamJson;
+import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
@@ -472,7 +472,7 @@ public class CollectionService {
 
         //解析请求URL参数、请求头
         if (po.getKind() == 0) {
-            vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestUrlParamJson.class));
+            vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestParamJson.class));
             vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RequestHeaderJson.class));
         }
 
