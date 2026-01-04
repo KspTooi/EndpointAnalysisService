@@ -2,7 +2,7 @@
   <div class="h-full w-full flex flex-col" @dragover.prevent @drop.prevent="onDrop(null, $event)">
     <div class="flex justify-between items-center pt-1.5 pr-3 pb-1.5 pl-3">
       <el-input placeholder="输入任意字符查询" size="small" clearable />
-      <el-button type="primary" @click="modalCollectionCreateRef?.openModal" size="small" class="ml-2">新建</el-button>
+      <el-button type="primary" @click="onCreateCollection(null)" size="small" class="ml-2">新建</el-button>
       <!-- <div v-if="" class="root-drop-hint">拖拽到此处以移动到根级别</div> -->
     </div>
 
@@ -20,7 +20,7 @@
             :key="node.id"
             :node="node"
             :expanded-ids="expandedIds"
-            :selected-ids="selectedIds"
+            :selected-ids="rdbgStore.getSelectedIds"
             :drag-hover-zone="dragHoverZone"
             :drag-hover-target="dragHoverTarget"
             @on-click="toggleNode"
@@ -54,6 +54,8 @@ import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCol
 import CollectionApi from "@/views/requestdebug/api/CollectionApi";
 import { ElMessage, ElMessageBox } from "element-plus";
 import RdbgModalCollectionCreate from "@/views/requestdebug/components/RdbgModalCollectionCreate.vue";
+import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+const rdbgStore = useRdbgStore();
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
 const modalCollectionCreateRef = ref<InstanceType<typeof RdbgModalCollectionCreate>>();
 
@@ -63,7 +65,7 @@ defineEmits<{}>();
 const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();
 
 //集合选择与展开功能打包
-const { expandedIds, selectedIds, toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
+const { expandedIds, toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
 
 /**
  * 拖拽到目标

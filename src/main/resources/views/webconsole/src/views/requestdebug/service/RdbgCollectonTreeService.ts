@@ -3,6 +3,8 @@ import type { GetCollectionTreeVo } from "../api/CollectionApi";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage } from "element-plus";
+import { useRdbgStore } from "./RdbgStore";
+const rdbgStore = useRdbgStore();
 
 export default {
   /**
@@ -53,7 +55,7 @@ export default {
     const expandedIds = ref<string[]>([]);
 
     //当前选中的节点ID列表
-    const selectedIds = ref<string[]>([]);
+    //const selectedIds = ref<string[]>([]);
 
     /**
      * 切换节点展开/收起
@@ -89,19 +91,20 @@ export default {
 
       //处理请求与组 它们都允许被选中
       if (node.kind === 0 || node.kind === 1) {
-        const isSelected = selectedIds.value.includes(node.id);
+        const isSelected = rdbgStore.getSelectedIds.includes(node.id);
 
         if (isSelected) {
+          rdbgStore.clearSelectedIds();
+          rdbgStore.addSelectedId(node.id);
+          return;
           //已选中时再次点击不移除选中状态 只是清空其他选中
           //selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
         }
         if (!isSelected) {
-          selectedIds.value.push(node.id);
+          rdbgStore.clearSelectedIds();
+          rdbgStore.addSelectedId(node.id);
         }
       }
-
-      //清空其他选中状态
-      selectedIds.value = [node.id];
     };
 
     /**
@@ -114,12 +117,12 @@ export default {
       }
 
       //判断是否已经被选中
-      if (selectedIds.value.includes(node.id)) {
+      if (rdbgStore.getSelectedIds.includes(node.id)) {
         return;
       }
 
       //选中
-      selectedIds.value.push(node.id);
+      rdbgStore.addSelectedId(node.id);
     };
 
     /**
@@ -130,12 +133,11 @@ export default {
       if (!node) {
         return;
       }
-      selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
+      rdbgStore.removeSelectedId(node.id);
     };
 
     return {
       expandedIds,
-      selectedIds,
       toggleNode,
       selectNode,
       unselectNode,
