@@ -80,6 +80,10 @@ const onDrag = async (target: GetCollectionTreeVo, entries: GetCollectionTreeVo[
     kind = 0;
   }
 
+  if (zone === "bottom") {
+    kind = 1;
+  }
+
   if (target != null) {
     targetId = target.id;
   }
