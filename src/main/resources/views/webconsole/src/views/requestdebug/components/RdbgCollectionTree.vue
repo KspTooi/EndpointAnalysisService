@@ -9,14 +9,14 @@
     <div
       class="h-full overflow-y-auto"
       @contextmenu.prevent="onContextmenu(null, $event)"
-      v-loading="listLoading"
+      v-loading="props.loading"
       element-loading-text="正在处理..."
     >
       <el-scrollbar>
-        <el-empty v-if="!listLoading && listData.length === 0" description="暂无数据" />
+        <el-empty v-if="!props.loading && props.data.length === 0" description="暂无数据" />
         <div class="tree-list">
           <rdbg-collection-tree-item
-            v-for="node in listData"
+            v-for="node in props.data"
             :key="node.id"
             :node="node"
             :expanded-ids="rdbgStore.getExpandedIds"
@@ -59,10 +59,12 @@ const rdbgStore = useRdbgStore();
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
 const modalCollectionCreateRef = ref<InstanceType<typeof RdbgModalCollectionCreate>>();
 
+const props = defineProps<{
+  data: GetCollectionTreeVo[];
+  loading: boolean;
+  loadList: () => void;
+}>();
 defineEmits<{}>();
-
-//列表功能打包
-const { listData, listTotal, listFilter, listLoading, loadList } = RdbgCollectonTreeService.useCollectionTree();
 
 //集合选择与展开功能打包
 const { toggleNode, selectNode } = RdbgCollectonTreeService.useCollectionSelection();
@@ -100,7 +102,7 @@ const onDrag = async (target: GetCollectionTreeVo, entries: GetCollectionTreeVo[
     kind: kind,
   });
 
-  await loadList();
+  await props.loadList();
 };
 
 //拖拽功能打包
@@ -147,7 +149,7 @@ const onCopyCollection = async (node: GetCollectionTreeVo) => {
     id: node.id,
   });
 
-  await loadList();
+  await props.loadList();
 };
 
 /**
@@ -190,7 +192,7 @@ const onRemoveCollection = async (collections: GetCollectionTreeVo[]) => {
 
   try {
     await CollectionApi.removeCollection({ ids: collections.map((collection) => collection.id) });
-    await loadList();
+    await props.loadList();
   } catch (error) {
     ElMessage.error(error.message);
   }

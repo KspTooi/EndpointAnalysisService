@@ -8,46 +8,6 @@ const rdbgStore = useRdbgStore();
 
 export default {
   /**
-   * 请求集合树功能打包
-   */
-  useCollectionTree: () => {
-    const listData = ref<GetCollectionTreeVo[]>([]);
-    const listTotal = ref<number>(0);
-    const listFilter = ref<string>(null);
-    const listLoading = ref<boolean>(false);
-
-    /**
-     * 加载请求集合树
-     */
-    const loadList = async () => {
-      listLoading.value = true;
-      try {
-        const res = await CollectionApi.getCollectionTree();
-        if (Result.isSuccess(res)) {
-          listData.value = res.data;
-          listTotal.value = res.data.length;
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        listLoading.value = false;
-      }
-    };
-
-    onMounted(() => {
-      loadList();
-    });
-
-    return {
-      listData,
-      listTotal,
-      listFilter,
-      listLoading,
-      loadList,
-    };
-  },
-
-  /**
    * 集合选择与展开功能打包
    */
   useCollectionSelection: () => {
@@ -256,15 +216,5 @@ export default {
       onDragLeave,
       onDrop,
     };
-  },
-
-  /**
-   * 集合树右键菜单功能打包
-   */
-  useCollectionTreeRightMenu: () => {
-    const rightMenuVisible = ref<boolean>(false);
-    const rightMenuX = ref<number>(0);
-    const rightMenuY = ref<number>(0);
-    const rightMenuNode = ref<GetCollectionTreeVo | null>(null);
   },
 };

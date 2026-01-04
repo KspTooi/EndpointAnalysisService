@@ -85,6 +85,13 @@ export default {
     };
   },
 
+  /**
+   * 集合树右键菜单事件发射器打包
+   * @param emit 事件发射器
+   * @param closeRightMenu 关闭右键菜单
+   * @param currentNode 当前节点
+   * @returns 事件发射器
+   */
   useRightMenuEmitter(emit: RightMenuEmitter, closeRightMenu: () => void, currentNode: Ref<GetCollectionTreeVo | null>) {
     return {
       onCreateCollection: () => {

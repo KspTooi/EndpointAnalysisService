@@ -1,6 +1,7 @@
 <template>
   <div class="h-full w-full flex">
-    <RdbgCollectionTree style="width: 350px" @on-create-collection="modalCollectionCreateRef?.openModal" />
+    <RdbgCollectionTree style="width: 350px" :data="listData" :loading="listLoading" :loadList="loadList" />
+
     <RdbgEditor style="flex: 1" />
   </div>
 </template>
@@ -9,9 +10,16 @@
 import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
 import RdbgEditor from "@/views/requestdebug/components/RdbgEditor.vue";
 import RdbgModalCollectionCreate from "./components/RdbgModalCollectionCreate.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+import RdbgWorkSpaceService from "./service/RdbgWorkSpaceService";
 
-const modalCollectionCreateRef = ref<InstanceType<typeof RdbgModalCollectionCreate>>();
+//列表功能打包
+const { listData, listTotal, listFilter, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
+
+const rdbgStore = useRdbgStore();
+const isRequestSelected = computed(() => {});
+const isCollectionSelected = computed(() => {});
 </script>
 
 <style scoped>
