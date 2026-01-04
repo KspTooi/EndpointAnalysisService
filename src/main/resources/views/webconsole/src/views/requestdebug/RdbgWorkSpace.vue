@@ -2,7 +2,7 @@
   <div class="h-full w-full flex">
     <RdbgCollectionTree style="width: 350px" :data="listData" :loading="listLoading" :loadList="loadList" />
 
-    <RdbgEditor style="flex: 1" v-show="isSelectedRequest" />
+    <RdbgEditor style="flex: 1" v-show="isSelectedRequest" :details="details" :loading="detailsLoading" />
   </div>
 </template>
 

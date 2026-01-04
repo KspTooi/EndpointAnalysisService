@@ -3,23 +3,22 @@
     <div class="url-input-url">
       <div class="el-input el-input-group el-input-group--prepend">
         <div class="el-input-group__prepend">
+          <!-- 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS -->
           <el-select v-model="method" placeholder="请选择请求方法" :filterable="true" style="width: 110px">
-            <el-option label="GET" value="GET" />
-            <el-option label="POST" value="POST" />
-            <el-option label="PUT" value="PUT" />
-            <el-option label="DELETE" value="DELETE" />
-            <el-option label="PATCH" value="PATCH" />
-            <el-option label="HEAD" value="HEAD" />
-            <el-option label="OPTIONS" value="OPTIONS" />
-            <el-option label="TRACE" value="TRACE" />
-            <el-option label="CONNECT" value="CONNECT" />
+            <el-option label="GET" :value="0" />
+            <el-option label="POST" :value="1" />
+            <el-option label="PUT" :value="2" />
+            <el-option label="PATCH" :value="3" />
+            <el-option label="DELETE" :value="4" />
+            <el-option label="HEAD" :value="5" />
+            <el-option label="OPTIONS" :value="6" />
           </el-select>
         </div>
         <div ref="urlInputRef" class="el-input__inner" contenteditable="true" @input="onInput" v-html="highlightedUrl"></div>
       </div>
     </div>
     <div class="url-input-send">
-      <el-button type="primary" @click="sendRequest" :disabled="props.loading">发送</el-button>
+      <el-button type="primary" @click="onRequestSend" :disabled="props.loading">发送</el-button>
     </div>
   </div>
 </template>
@@ -27,24 +26,23 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, nextTick } from "vue";
 
+const urlInputRef = ref<HTMLDivElement | null>(null);
+
+const method = defineModel<number>("method", { required: true });
+const url = defineModel<string>("url", { required: true });
+
 const props = defineProps<{
-  url: string | null;
-  method: string | null;
   loading: boolean;
 }>();
 
 const emit = defineEmits<{
-  (event: "onSendRequest"): void;
-  (event: "onUrlChange", method: string, url: string): void;
+  (event: "on-request-send"): void;
 }>();
 
-const urlInputRef = ref<HTMLDivElement | null>(null);
-
-const method = ref<string>(props.method || "GET");
-const url = ref<string>(props.url || "http://");
+const localUrl = ref(url.value);
 
 const highlightedUrl = computed(() => {
-  return url.value.replace(/#\{[^}]+}/g, (match) => {
+  return localUrl.value.replace(/#\{[^}]+}/g, (match) => {
     return `<span class="highlight">${match}</span>`;
   });
 });
@@ -110,7 +108,7 @@ const getCaretPosition = (el: HTMLElement) => {
 const onInput = (event: Event) => {
   const target = event.target as HTMLDivElement;
   const pos = getCaretPosition(target);
-  url.value = target.innerText;
+  localUrl.value = target.innerText;
 
   nextTick(() => {
     if (urlInputRef.value) {
@@ -121,36 +119,31 @@ const onInput = (event: Event) => {
 
 onMounted(() => {
   if (urlInputRef.value) {
-    urlInputRef.value.innerText = url.value;
+    urlInputRef.value.innerText = localUrl.value;
   }
 });
 
+const onRequestSend = async () => {
+  await emit("on-request-send");
+};
+
+//监听外部url变化
 watch(
-  () => props.method,
+  () => url.value,
   (newVal) => {
-    method.value = newVal || "GET";
-  }
-);
-watch(
-  () => props.url,
-  (newVal) => {
-    url.value = newVal || "http://";
-    if (urlInputRef.value && document.activeElement !== urlInputRef.value) {
-      urlInputRef.value.innerText = url.value;
+    if (localUrl.value !== newVal) {
+      localUrl.value = newVal;
+      if (urlInputRef.value) {
+        urlInputRef.value.innerText = newVal;
+      }
     }
   }
 );
 
-watch(method, (newVal) => {
-  emit("onUrlChange", newVal, url.value);
+//监听localUrl变化
+watch(localUrl, () => {
+  url.value = localUrl.value;
 });
-watch(url, (newVal) => {
-  emit("onUrlChange", method.value, newVal);
-});
-
-const sendRequest = async () => {
-  await emit("onSendRequest");
-};
 </script>
 
 <style scoped>
