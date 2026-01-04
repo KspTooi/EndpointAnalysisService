@@ -5,7 +5,6 @@
       class="tag-tree-item"
       :class="{
         'node-active': selectedIds.includes(node.id),
-        'tag-item-active': isGroup(node) ? isExpanded(node.id) : false,
         'request-item': !isGroup(node),
         'drag-over-center': isDragHoverCenter,
         'drag-over-top': isDragHoverTop,

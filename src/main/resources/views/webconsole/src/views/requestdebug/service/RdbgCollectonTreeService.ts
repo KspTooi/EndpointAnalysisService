@@ -67,20 +67,38 @@ export default {
 
       //处理组 组允许切换展开/收起
       if (node.kind === 1) {
-        if (expandedIds.value.includes(node.id)) {
-          expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
-          return;
+        const hasChildren = node.children && node.children.length > 0;
+        const isExpanded = expandedIds.value.includes(node.id);
+
+        //组中没有内容时仅允许收起
+        if (!hasChildren) {
+          if (isExpanded) {
+            expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
+          }
         }
-        expandedIds.value.push(node.id);
+
+        //组中有内容时允许展开/收起
+        if (hasChildren) {
+          if (isExpanded) {
+            expandedIds.value = expandedIds.value.filter((id) => id !== node.id);
+          }
+          if (!isExpanded) {
+            expandedIds.value.push(node.id);
+          }
+        }
       }
 
       //处理请求与组 它们都允许被选中
       if (node.kind === 0 || node.kind === 1) {
-        if (selectedIds.value.includes(node.id)) {
-          selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
-          return;
+        const isSelected = selectedIds.value.includes(node.id);
+
+        if (isSelected) {
+          //已选中时再次点击不移除选中状态 只是清空其他选中
+          //selectedIds.value = selectedIds.value.filter((id) => id !== node.id);
         }
-        selectedIds.value.push(node.id);
+        if (!isSelected) {
+          selectedIds.value.push(node.id);
+        }
       }
 
       //清空其他选中状态
