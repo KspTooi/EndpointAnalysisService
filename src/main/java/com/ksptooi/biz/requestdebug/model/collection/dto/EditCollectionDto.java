@@ -1,7 +1,10 @@
 package com.ksptooi.biz.requestdebug.model.collection.dto;
 
 import org.hibernate.validator.constraints.Range;
+import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.ksptooi.biz.requestdebug.model.collection.RequestUrlParam;
+import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,15 +29,17 @@ public class EditCollectionDto {
     @Schema(description = "请求URL")
     private String reqUrl;
 
+    @NotNull(message = "请求URL参数不能为空")
     @Schema(description = "请求URL参数JSON")
-    private String reqUrlParamsJson;
+    private List<RequestUrlParam> requestParams;
 
     @Range(min = 0, max = 6, message = "请求方法只能在0-6之间")
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
 
+    @NotNull(message = "请求头不能为空")
     @Schema(description = "请求头JSON")
-    private String reqHeaderJson;
+    private List<RequestHeader> requestHeaders;
 
     @Range(min = 0, max = 8, message = "请求体类型只能在0-8之间")
     @Schema(description = "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded")

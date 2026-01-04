@@ -422,13 +422,13 @@ public class CollectionService {
             if (StringUtils.isNotBlank(dto.getReqUrl())) {
                 throw new BizException("组类型不允许编辑请求URL");
             }
-            if (StringUtils.isNotBlank(dto.getReqUrlParamsJson())) {
+            if (dto.getRequestParams() != null && !dto.getRequestParams().isEmpty()) {
                 throw new BizException("组类型不允许编辑请求URL参数");
             }
             if (dto.getReqMethod() != null) {
                 throw new BizException("组类型不允许编辑请求方法");
             }
-            if (StringUtils.isNotBlank(dto.getReqHeaderJson())) {
+            if (dto.getRequestHeaders() != null && !dto.getRequestHeaders().isEmpty()) {
                 throw new BizException("组类型不允许编辑请求头");
             }
             if (dto.getReqBodyKind() != null) {
@@ -441,9 +441,9 @@ public class CollectionService {
 
         updatePo.setName(dto.getName());
         updatePo.setReqUrl(dto.getReqUrl());
-        updatePo.setReqUrlParamsJson(dto.getReqUrlParamsJson());
+        updatePo.setReqUrlParamsJson(toJson(dto.getRequestParams()));
         updatePo.setReqMethod(dto.getReqMethod());
-        updatePo.setReqHeaderJson(dto.getReqHeaderJson());
+        updatePo.setReqHeaderJson(toJson(dto.getRequestHeaders()));
         updatePo.setReqBodyKind(dto.getReqBodyKind());
         updatePo.setReqBodyJson(dto.getReqBodyJson());
         repository.save(updatePo);
