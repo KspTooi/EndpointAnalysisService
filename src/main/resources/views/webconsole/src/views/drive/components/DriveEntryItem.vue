@@ -18,7 +18,7 @@
       <!-- 普通条目 -->
       <el-icon
         v-if="type === 0"
-        :size="64"
+        :size="48"
         class="entry-icon"
         :class="{ 'folder-icon': entry.kind === 1, 'file-icon': entry.kind === 0 }"
       >
@@ -182,8 +182,8 @@ const onDrop = (event: DragEvent) => {
   align-items: center;
   justify-content: flex-start;
   width: 120px;
-  padding: 12px 8px;
-  margin: 8px;
+  padding: 8px 4px;
+  margin: 4px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;

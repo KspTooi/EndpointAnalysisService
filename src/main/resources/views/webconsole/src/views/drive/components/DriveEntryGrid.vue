@@ -1,41 +1,33 @@
 <template>
   <div ref="gridRef" class="list-grid" v-loading="listLoading" @contextmenu.prevent="onGridRightClick" @mousedown="onMouseDown">
-    <el-scrollbar>
-      <div class="w-full h-full flex flex-wrap">
-        <!-- 上级目录 -->
-        <DriveEntryItem
-          v-if="hasParentDir"
-          :type="1"
-          :currentDir="currentDir"
-          @on-click="onEntryClick"
-          @on-dblclick="enterDirectory"
-          @on-contextmenu="onContextmenu"
-          @on-drag-drop="onDrop"
-        />
+    <!-- 上级目录 -->
+    <DriveEntryItem
+      v-if="hasParentDir"
+      :type="1"
+      :currentDir="currentDir"
+      @on-click="onEntryClick"
+      @on-dblclick="enterDirectory"
+      @on-contextmenu="onContextmenu"
+      @on-drag-drop="onDrop"
+    />
 
-        <!-- 条目列表 -->
-        <DriveEntryItem
-          v-for="item in listData"
-          :key="item.id"
-          :entry="item"
-          :currentDir="currentDir"
-          :ref="(el) => setEntryRef(item.id, el)"
-          :class="{ selected: selectedIds.has(item.id) }"
-          @on-click="onEntryClick"
-          @on-dblclick="onEntryDoubleClick"
-          @on-contextmenu="onContextmenu"
-          @on-drag-start="onDragStart"
-          @on-drag-over="onDragOver"
-          @on-drag-drop="onDrop"
-        />
-      </div>
-      <!-- <el-empty
-        class="position-absolute top-50 left-50"
-        description="此处没有任何物品"
-        v-if="listTotal === 0"
-        style="width: 100%; height: 100%; user-select: none"
-      /> -->
-    </el-scrollbar>
+    <!-- 条目列表 -->
+    <DriveEntryItem
+      v-for="item in listData"
+      :key="item.id"
+      :entry="item"
+      :currentDir="currentDir"
+      :ref="(el) => setEntryRef(item.id, el)"
+      :class="{ selected: selectedIds.has(item.id) }"
+      @on-click="onEntryClick"
+      @on-dblclick="onEntryDoubleClick"
+      @on-contextmenu="onContextmenu"
+      @on-drag-start="onDragStart"
+      @on-drag-over="onDragOver"
+      @on-drag-drop="onDrop"
+    />
+
+    <el-empty description="此处没有任何物品" v-if="listTotal === 0" style="width: 100%; height: 100%; user-select: none" />
 
     <!-- 框选矩形 -->
     <div
@@ -229,7 +221,6 @@ defineExpose({
   redirectDirectory,
 });
 </script>
-
 <style scoped>
 .list-grid {
   position: relative;
@@ -240,7 +231,7 @@ defineExpose({
   width: calc(100% - 2px);
   height: calc(100vh - 185px);
   /* border: 1px solid var(--el-border-color); */
-  /* overflow-y: auto; */
+  overflow-y: auto;
   outline: none;
 }
 
