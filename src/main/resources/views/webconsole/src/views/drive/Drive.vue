@@ -13,12 +13,13 @@
 
   <div class="list-container no-outline" ref="containerRef" v-if="!noActiveCompany">
     <!-- 控制面板 -->
-    <DriveContrlPanel
+    <DriveControlPanel
       :entry-count="entryTotal"
       :upload-count="inQueueUploadCount"
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
       @refresh-drive-info="refreshDriveInfo"
+      @on-path-change="onPathChange"
     />
     <!-- {{ isFocused }} -->
 
@@ -76,12 +77,12 @@ import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vu
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import DriveEntryRightMenu from "@/views/drive/components/DriveEntryRightMenu.vue";
 import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
-import DriveContrlPanel from "@/views/drive/components/DriveContrlPanel.vue";
+import DriveControlPanel from "@/views/drive/components/DriveControlPanel.vue";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
-import type { EntryPo, GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts";
+import type { EntryPo, GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "./service/DriveService";
 import ElementFocusService from "@/service/ElmentFocusService";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
@@ -273,6 +274,14 @@ const refreshDriveInfo = (result: Result<GetDriveInfoVo>) => {
  */
 const goToCompanySetup = () => {
   router.push("/company-manager");
+};
+
+/**
+ * 当前目录路径变更
+ * @param paths 当前目录路径
+ */
+const onPathChange = (path: GetEntryListPathVo) => {
+  entryGridRef.value?.redirectDirectory(path.id);
 };
 </script>
 

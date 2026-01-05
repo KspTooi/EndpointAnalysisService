@@ -2,7 +2,7 @@ import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 import { ElMessage } from "element-plus";
 import { ref, onUnmounted, type Ref, reactive, computed, type Reactive } from "vue";
-import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
+import type { CurrentDirPo, EntryPo, GetEntryListDto, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import type { EntryGridEmitter } from "../components/DriveEntryGrid.vue";
 import { DriveStore } from "./DriveStore";
 
@@ -63,6 +63,7 @@ export default {
             name: res.data.dirName,
             parentId: res.data.dirParentId,
           });
+          DriveStore().setCurrentDirPaths(res.data.paths);
         }
 
         //更新当前目录信息
@@ -453,6 +454,16 @@ export default {
    */
   useDirectoryNavigation(listQuery: Reactive<GetEntryListDto>, selectedIds: Ref<Set<string>>, listLoad: () => void) {
     /**
+     * 重定向到指定目录
+     * @param dirId 目录ID
+     */
+    const redirectDirectory = (dirId: string) => {
+      listQuery.directoryId = dirId;
+      listLoad();
+      selectedIds.value.clear();
+    };
+
+    /**
      * 进入文件夹
      * @param entry 条目对象
      * @param currentDir 当前目录
@@ -496,6 +507,7 @@ export default {
     };
 
     return {
+      redirectDirectory,
       enterDirectory,
       backspace,
     };

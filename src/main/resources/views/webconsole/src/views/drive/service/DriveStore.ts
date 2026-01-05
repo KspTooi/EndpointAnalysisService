@@ -1,4 +1,4 @@
-import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
+import type { CurrentDirPo, EntryPo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import { defineStore } from "pinia";
 
 const CURRENT_DIR_KEY = "drive_current_dir";
@@ -44,6 +44,9 @@ export const DriveStore = defineStore("DriveStore", {
 
     //当前目录
     currentDir: loadCurrentDirFromStorage(),
+
+    //当前目录路径
+    currentDirPaths: [] as GetEntryListPathVo[],
   }),
 
   getters: {
@@ -63,6 +66,14 @@ export const DriveStore = defineStore("DriveStore", {
     getCurrentDir: (state) => {
       return state.currentDir;
     },
+    /**
+     * 获取当前目录路径
+     * @param state 状态
+     * @returns 当前目录路径
+     */
+    getCurrentDirPaths: (state) => {
+      return state.currentDirPaths;
+    },
   },
 
   actions: {
@@ -80,6 +91,13 @@ export const DriveStore = defineStore("DriveStore", {
     setCurrentDir(dir: CurrentDirPo) {
       this.currentDir = dir;
       saveCurrentDirToStorage(dir);
+    },
+    /**
+     * 设置当前目录路径
+     * @param paths 当前目录路径
+     */
+    setCurrentDirPaths(paths: GetEntryListPathVo[]) {
+      this.currentDirPaths = paths;
     },
   },
 });

@@ -1,7 +1,7 @@
 <template>
   <div class="control-panel">
-    <div class="panel-content">
-      <!-- 左侧搜索区域 -->
+    <!-- 上层：搜索、容量信息与操作按钮 -->
+    <div class="panel-row top-row">
       <div class="search-section">
         <el-input
           v-model="keyword"
@@ -19,41 +19,48 @@
         <span class="entry-count">共 {{ entryCount }} 项</span>
       </div>
 
-      <!-- 云盘信息区域 -->
-      <div class="drive-info-section" @click="handleRefreshDriveInfo">
-        <el-tooltip effect="dark" placement="bottom">
-          <template #content>
-            <div class="drive-info-tooltip">
-              <div>总容量: {{ formatSize(driveInfo.totalCapacity) }}</div>
-              <div>已使用: {{ formatSize(driveInfo.usedCapacity) }}</div>
-              <div>对象数量: {{ driveInfo.objectCount }}</div>
-              <div style="margin-top: 8px; color: #909399">点击刷新云盘信息</div>
+      <div class="info-action-group">
+        <div class="drive-info-section" @click="handleRefreshDriveInfo">
+          <el-tooltip effect="dark" placement="bottom">
+            <template #content>
+              <div class="drive-info-tooltip">
+                <div>总容量: {{ formatSize(driveInfo.totalCapacity) }}</div>
+                <div>已使用: {{ formatSize(driveInfo.usedCapacity) }}</div>
+                <div>对象数量: {{ driveInfo.objectCount }}</div>
+                <div style="margin-top: 8px; color: #909399">点击刷新云盘信息</div>
+              </div>
+            </template>
+            <div class="drive-info-display">
+              <el-icon><Coin /></el-icon>
+              <span class="drive-info-text"
+                >{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span
+              >
+              <el-progress
+                :percentage="usagePercentage"
+                :stroke-width="4"
+                :show-text="false"
+                :color="progressColor"
+                class="drive-progress"
+              />
             </div>
-          </template>
-          <div class="drive-info-display">
-            <el-icon><Coin /></el-icon>
-            <span class="drive-info-text"
-              >{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span
-            >
-            <el-progress
-              :percentage="usagePercentage"
-              :stroke-width="4"
-              :show-text="false"
-              :color="progressColor"
-              class="drive-progress"
-            />
-          </div>
-        </el-tooltip>
-      </div>
+          </el-tooltip>
+        </div>
 
-      <!-- 右侧操作区域 -->
-      <div class="action-section">
-        <el-button type="success" @click="handleUploadQueue" class="action-btn">
-          <el-icon><Upload /></el-icon>
-          <span
-            >查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span
-          >
-        </el-button>
+        <div class="action-section">
+          <el-button type="success" @click="handleUploadQueue" class="action-btn">
+            <el-icon><Upload /></el-icon>
+            <span
+              >查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span
+            >
+          </el-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下层：目录路径 -->
+    <div v-show="reversedPaths.length > 0">
+      <div class="path-section">
+        <DriveControlPanelPaths :paths="reversedPaths" @on-path-change="handlePathClick" />
       </div>
     </div>
   </div>
@@ -63,9 +70,12 @@
 import { ref, computed, onMounted } from "vue";
 import { Search, Upload, Coin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import { storeToRefs } from "pinia";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 import type Result from "@/commons/entity/Result.ts";
-import type { GetDriveInfoVo } from "@/views/drive/api/DriveTypes.ts";
+import type { GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
+import { DriveStore } from "@/views/drive/service/DriveStore.ts";
+import DriveControlPanelPaths from "@/views/drive/components/DriveControlPanelPaths.vue";
 
 //定义props
 const props = withDefaults(
@@ -84,10 +94,18 @@ const emit = defineEmits<{
   (e: "on-search", keyword: string): void; //搜索时触发
   (e: "open-upload-queue"): void; //打开上传队列
   (e: "refresh-drive-info", result: Result<GetDriveInfoVo>): void; //刷新云盘信息
+  (e: "on-path-change", path: GetEntryListPathVo): void; //当前目录路径变更
 }>();
 
 const keyword = ref("");
 let searchTimer: number | null = null;
+
+const driveStore = DriveStore();
+const { currentDirPaths } = storeToRefs(driveStore);
+
+const reversedPaths = computed(() => {
+  return [...currentDirPaths.value].reverse();
+});
 
 const driveInfo = ref<GetDriveInfoVo>({
   totalCapacity: "0",
@@ -166,6 +184,10 @@ const handleUploadQueue = () => {
   emit("open-upload-queue");
 };
 
+const handlePathClick = (path: GetEntryListPathVo | null) => {
+  emit("on-path-change", path as any);
+};
+
 onMounted(() => {
   loadDriveInfo();
 });
@@ -175,18 +197,36 @@ onMounted(() => {
 .control-panel {
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
-  padding: 10px 12px;
-  margin-bottom: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
   border-radius: 0;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.panel-content {
+.panel-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+  width: 100%;
+}
+
+.top-row {
+  padding-bottom: 2px;
+}
+
+.bottom-row {
+  border-top: 1px solid var(--el-border-color-lighter);
+  padding-top: 4px;
+}
+
+.info-action-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .search-section {
@@ -194,26 +234,29 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   flex: 1;
-  min-width: 300px;
 }
 
 .search-input {
-  flex: 1;
-  max-width: 450px;
+  width: 280px;
 }
 
 .entry-count {
   color: var(--el-text-color-secondary);
-  font-size: 13px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
+.path-section {
+  flex: 1;
+  overflow: hidden;
+}
+
 .search-input :deep(.el-input__wrapper) {
-  background: var(--el-bg-color);
+  background: var(--el-fill-color-blank);
   border: 1px solid var(--el-border-color);
-  padding: 0 10px;
+  padding: 0 8px;
   box-shadow: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
   border-radius: 0;
 }
 
@@ -223,6 +266,7 @@ onMounted(() => {
 
 .search-input :deep(.el-input__wrapper.is-focus) {
   border-color: var(--el-color-primary);
+  background: var(--el-bg-color);
 }
 
 .search-input :deep(.el-input__inner) {
@@ -237,29 +281,29 @@ onMounted(() => {
 }
 
 .search-input :deep(.el-input__prefix) {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .drive-info-section {
   display: flex;
   align-items: center;
-  cursor: pointer;
 }
 
 .drive-info-display {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 12px;
+  padding: 3px 10px;
   background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .drive-info-display:hover {
   background: var(--el-fill-color-light);
-  border-color: var(--el-border-color-hover);
+  border-color: var(--el-border-color);
 }
 
 .drive-info-display .el-icon {
@@ -268,13 +312,13 @@ onMounted(() => {
 }
 
 .drive-info-text {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--el-text-color-regular);
   white-space: nowrap;
 }
 
 .drive-progress {
-  width: 60px;
+  width: 70px;
 }
 
 .drive-info-tooltip {
@@ -291,43 +335,56 @@ onMounted(() => {
 }
 
 .action-btn {
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 0 12px;
+  font-size: 12px;
   font-weight: normal;
   border-radius: 0;
-  height: 30px;
+  height: 28px;
 }
 
 .action-btn .el-icon {
   margin-right: 4px;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 992px) {
+  .search-input {
+    width: 200px;
+  }
 }
 
 @media (max-width: 768px) {
-  .panel-content {
+  .panel-row {
     flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
-  .search-section {
-    width: 100%;
-    min-width: auto;
+  .top-row {
+    padding-bottom: 0;
+  }
+
+  .bottom-row {
+    padding-top: 4px;
+  }
+
+  .info-action-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .search-input {
-    max-width: 100%;
-  }
-
-  .drive-info-section {
     width: 100%;
   }
 
   .drive-info-display {
     width: 100%;
+    justify-content: center;
   }
 
-  .action-section {
+  .action-btn {
     width: 100%;
-    justify-content: flex-start;
   }
 }
 </style>

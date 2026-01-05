@@ -69,7 +69,7 @@ public class EntryService {
         String dirName = null;
         Long dirParentId = null;
         List<GetEntryListPathVo> pathVos = new ArrayList<>();
-        
+
         //查询目录详情
         if (dto.getDirectoryId() != null) {
             var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
@@ -80,16 +80,19 @@ public class EntryService {
             dirId = dirEntryPo.getId();
             dirName = dirEntryPo.getName();
             dirParentId = dirEntryPo.getParent() != null ? dirEntryPo.getParent().getId() : null;
-            
+
             //查询当前的目录路径(至多10层)
             var reamingLevel = 10;
             var _parent = dirEntryPo;
+
+            //添加当前文件夹作为最后一级路径
+            pathVos.add(GetEntryListPathVo.of(dirEntryPo));
 
             while (reamingLevel > 0) {
 
                 var parent = _parent.getParent();
 
-                if(parent == null){
+                if (parent == null) {
                     pathVos.add(GetEntryListPathVo.ofRoot());
                     break;
                 }
@@ -98,6 +101,7 @@ public class EntryService {
                 _parent = parent;
                 reamingLevel--;
             }
+
 
         }
 

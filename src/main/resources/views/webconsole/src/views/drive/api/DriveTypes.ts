@@ -13,6 +13,7 @@ export interface GetEntryListVo {
   dirParentId: string | null; //父级目录ID 为NULL顶级
   items: GetEntryListItemVo[]; //条目列表
   total: string; //条目总数
+  paths: GetEntryListPathVo[]; //当前目录路径(至多10层)
 }
 
 export interface GetEntryListItemVo {
@@ -99,4 +100,9 @@ export interface EntryPo {
   attachSuffix: string | null; //文件附件类型
   createTime: string; //创建时间
   updateTime: string; //更新时间
+}
+
+export interface GetEntryListPathVo {
+  id: string; //条目ID
+  name: string; //条目名称
 }

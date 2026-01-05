@@ -93,11 +93,11 @@ const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown, clearSel
 const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
 
 //文件夹导航打包
-const { enterDirectory, backspace: backParentDirectory } = DriveEntryGridService.useDirectoryNavigation(
-  listQuery,
-  selectedIds,
-  listLoad
-);
+const {
+  redirectDirectory,
+  enterDirectory,
+  backspace: backParentDirectory,
+} = DriveEntryGridService.useDirectoryNavigation(listQuery, selectedIds, listLoad);
 
 const setEntryRef = (id: string, el: any) => {
   if (!el) {
@@ -213,6 +213,12 @@ defineExpose({
    * @param currentDir 当前目录对象
    */
   enterDirectory,
+
+  /**
+   * 重定向到指定目录
+   * @param dirId 目录ID
+   */
+  redirectDirectory,
 });
 </script>
 
