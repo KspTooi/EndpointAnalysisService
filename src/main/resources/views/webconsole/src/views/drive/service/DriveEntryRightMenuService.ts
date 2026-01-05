@@ -130,6 +130,12 @@ export default {
         closeRightMenu();
       },
 
+      //下载URL
+      onDownloadUrl: () => {
+        emit("on-download-url", currentEntries.value);
+        closeRightMenu();
+      },
+
       //剪切
       onCut: () => {
         emit("on-cut", currentEntries.value);

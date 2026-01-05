@@ -13,6 +13,7 @@ import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
 import { useTabStore } from "@/store/TabHolder";
 import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
+import type DriveModalDownloadUrl from "../components/DriveModalDownloadUrl.vue";
 
 //当前目录信息
 const currentDir = ref<CurrentDirPo>({
@@ -85,7 +86,8 @@ export default {
     fileSelectorRef: Ref<InstanceType<typeof DriveFileSelector>>,
     removeModalRef: Ref<InstanceType<typeof DriveModalRemove>>,
     renameModalRef: Ref<InstanceType<typeof DriveModalRename>>,
-    entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>
+    entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>,
+    downloadUrlModalRef: Ref<InstanceType<typeof DriveModalDownloadUrl>>
   ) {
     return {
       //刷新
@@ -239,6 +241,33 @@ export default {
           if (Result.isSuccess(result)) {
             const params = result.data.params;
             window.open(`/drive/object/access/downloadEntry?sign=${params}`, "_blank");
+          }
+        } catch (error: any) {
+          ElMessage.error(error.message || "下载失败");
+        }
+      },
+
+      //下载URL
+      downloadUrl: async (entries: EntryPo[]) => {
+        //不支持文件夹与文件混选下载
+        if (entries.some((item) => item.kind === 1)) {
+          ElMessage.error("不支持文件与文件夹打包下载！请选择同类型条目打包下载！");
+          return;
+        }
+
+        //获取签名
+        try {
+          const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id as string) });
+          if (Result.isSuccess(result)) {
+            const params = result.data.params;
+
+            // 获取当前页面的协议、主机名和端口
+            const origin = window.location.origin;
+            // 拼接完整的下载链接
+            const fullUrl = `${origin}/drive/object/access/downloadEntry?sign=${params}`;
+
+            //弹出URL模态框
+            downloadUrlModalRef.value?.openModal(fullUrl);
           }
         } catch (error: any) {
           ElMessage.error(error.message || "下载失败");

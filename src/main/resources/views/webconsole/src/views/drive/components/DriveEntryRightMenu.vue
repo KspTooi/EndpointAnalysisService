@@ -37,6 +37,10 @@
         <el-icon><Download /></el-icon>
         <span>下载</span>
       </div>
+      <div v-if="currentEntry.kind === 0" class="menu-item" @click="onDownloadUrl">
+        <el-icon><Download /></el-icon>
+        <span>创建下载链接</span>
+      </div>
       <div v-if="currentEntry.kind === 0" class="menu-divider"></div>
       <div class="menu-item" @click="onCut">
         <el-icon><Scissor /></el-icon>
@@ -67,6 +71,10 @@
       <div v-if="currentEntries.every((item) => item.kind === 0)" class="menu-item" @click="onDownload">
         <el-icon><Download /></el-icon>
         <span>打包下载({{ currentEntries.length }})</span>
+      </div>
+      <div v-if="currentEntries.every((item) => item.kind === 0)" class="menu-item" @click="onDownloadUrl">
+        <el-icon><Download /></el-icon>
+        <span>创建下载链接({{ currentEntries.length }})</span>
       </div>
       <div class="menu-item" @click="onCopy">
         <el-icon><DocumentCopy /></el-icon>
@@ -106,6 +114,7 @@ export interface RightMenuEmitter {
   (e: "on-upload-file"): void; //上传文件
   (e: "on-preview", entry: EntryPo): void; //预览
   (e: "on-download", entries: EntryPo[]): void; //下载
+  (e: "on-download-url", entries: EntryPo[]): void; //创建下载链接
   (e: "on-cut", entries: EntryPo[]): void; //剪切
   (e: "on-copy", entries: EntryPo[]): void; //复制
   (e: "on-delete", entries: EntryPo[]): void; //删除
@@ -136,6 +145,7 @@ const {
   onUploadFile,
   onPreview,
   onDownload,
+  onDownloadUrl,
   onCut,
   onCopy,
   onDelete,

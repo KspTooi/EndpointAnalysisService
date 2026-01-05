@@ -44,6 +44,7 @@
       @on-upload-file="menuUploadFile"
       @on-preview="menuPreview"
       @on-download="menuDownload"
+      @on-download-url="menuDownloadUrl"
       @on-cut="menuCut"
       @on-copy="menuCopy"
       @on-paste="menuPaste"
@@ -67,6 +68,9 @@
 
     <!-- 移动冲突确认模态框 -->
     <DriveModalMoveConfirm ref="moveConfirmModalRef" />
+
+    <!-- 下载URL模态框 -->
+    <DriveModalDownloadUrl ref="downloadUrlModalRef" />
   </div>
 </template>
 
@@ -82,6 +86,7 @@ import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
+import DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 import type { EntryPo, GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "./service/DriveService";
 import ElementFocusService from "@/service/ElmentFocusService";
@@ -95,6 +100,7 @@ const createEntryModalRef = ref<InstanceType<typeof DriveModalCreateDir> | null>
 const rightMenuRef = ref<InstanceType<typeof DriveEntryRightMenu> | null>(null);
 const removeConfirmRef = ref<InstanceType<typeof DriveModalRemove> | null>(null);
 const renameModalRef = ref<InstanceType<typeof DriveModalRename> | null>(null);
+const downloadUrlModalRef = ref<InstanceType<typeof DriveModalDownloadUrl> | null>(null);
 const fileSelectorRef = ref<InstanceType<typeof DriveFileSelector> | null>(null);
 const moveConfirmModalRef = ref<InstanceType<typeof DriveModalMoveConfirm> | null>(null);
 const entryGridRef = ref<InstanceType<typeof DriveEntryGrid>>();
@@ -114,6 +120,7 @@ const {
   uploadFile: menuUploadFile,
   preview: menuPreview,
   download: menuDownload,
+  downloadUrl: menuDownloadUrl,
   cut: menuCut,
   copy: menuCopy,
   remove: menuRemove,
@@ -124,7 +131,8 @@ const {
   fileSelectorRef,
   removeConfirmRef,
   renameModalRef,
-  entryGridRef
+  entryGridRef,
+  downloadUrlModalRef
 );
 
 //拖拽功能打包
