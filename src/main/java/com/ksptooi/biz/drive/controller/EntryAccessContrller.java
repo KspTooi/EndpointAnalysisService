@@ -5,7 +5,6 @@ import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.config.DriveConfig;
-import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
@@ -34,13 +33,11 @@ import java.util.Arrays;
 @Slf4j
 public class EntryAccessContrller {
 
+    private final Tika tika = new Tika();
     @Autowired
     private EntryAccessService entryAccessService;
-
     @Autowired
     private DriveConfig driveConfig;
-
-    private final Tika tika = new Tika();
 
     @Operation(summary = "获取条目对象签名")
     @PostMapping("/getEntrySign")
@@ -61,13 +58,13 @@ public class EntryAccessContrller {
     @PostMapping("/downloadEntry")
     public ResponseEntity<Resource> downloadEntry(@RequestParam("sign") String sign
             , @RequestParam(value = "preview", required = false, defaultValue = "0") Integer preview, HttpServletResponse hsrp) throws Exception {
-        
+
         if (StringUtils.isBlank(sign)) {
             throw new BizException("签名参数不能为空");
         }
 
         //校验preview参数 0:下载 1:预览
-        if(preview == null || (preview != 0 && preview != 1)){
+        if (preview == null || (preview != 0 && preview != 1)) {
             throw new BizException("preview参数不合法.");
         }
 
@@ -80,15 +77,15 @@ public class EntryAccessContrller {
         }
 
         //预览模式
-        if(preview == 1){
+        if (preview == 1) {
 
             //不支持多签预览
-            if(signVo.getIsBatch() == 1){
+            if (signVo.getIsBatch() == 1) {
                 throw new BizException("签名的文件数量超过1个,无法预览.");
             }
 
             var resource = entryAccessService.downloadEntry(signVo);
-            
+
             //探测Mine类型
             var mimeType = tika.detect(resource.getFile());
             var filename = URLEncoder.encode(signVo.getEName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
@@ -105,12 +102,12 @@ public class EntryAccessContrller {
             var filename = URLEncoder.encode(signVo.getEName(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
             //判断FileName是否包含扩展名
-            if(!filename.contains(".")){
+            if (!filename.contains(".")) {
 
                 var attachName = resource.getFilename();
 
                 //如果附件名称包含扩展名，则使用附件的扩展名
-                if(attachName!= null && attachName.contains(".")){
+                if (attachName != null && attachName.contains(".")) {
                     //获取附件中最后一个.后的扩展名
                     var attachSuffix = attachName.substring(attachName.lastIndexOf("."));
                     filename = URLEncoder.encode(signVo.getEName() + attachSuffix, StandardCharsets.UTF_8).replaceAll("\\+", "%20");

@@ -24,5 +24,8 @@ public class GetEntryListVo {
     @Schema(description = "条目总数")
     private Long total;
 
+    @Schema(description = "当前目录路径(至多10层)")
+    private List<GetEntryListPathVo> paths;
+
 }
 

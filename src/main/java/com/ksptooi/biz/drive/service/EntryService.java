@@ -68,7 +68,8 @@ public class EntryService {
         Long dirId = null;
         String dirName = null;
         Long dirParentId = null;
-
+        List<GetEntryListPathVo> pathVos = new ArrayList<>();
+        
         //查询目录详情
         if (dto.getDirectoryId() != null) {
             var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
@@ -79,12 +80,32 @@ public class EntryService {
             dirId = dirEntryPo.getId();
             dirName = dirEntryPo.getName();
             dirParentId = dirEntryPo.getParent() != null ? dirEntryPo.getParent().getId() : null;
+            
+            //查询当前的目录路径(至多10层)
+            var reamingLevel = 10;
+            var _parent = dirEntryPo;
+
+            while (reamingLevel > 0) {
+
+                var parent = _parent.getParent();
+
+                if(parent == null){
+                    pathVos.add(GetEntryListPathVo.ofRoot());
+                    break;
+                }
+
+                pathVos.add(GetEntryListPathVo.of(parent));
+                _parent = parent;
+                reamingLevel--;
+            }
+
         }
 
         var ret = new GetEntryListVo();
         ret.setDirId(dirId);
         ret.setDirName(dirName);
         ret.setDirParentId(dirParentId);
+        ret.setPaths(pathVos);
 
         Page<EntryPo> page = repository.getEntryList(dto.getDirectoryId(), dto.getKeyword(), companyId, dto.pageRequest());
         ret.setTotal(page.getTotalElements());
