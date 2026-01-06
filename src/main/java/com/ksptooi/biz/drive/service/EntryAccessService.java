@@ -16,10 +16,12 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -192,6 +194,53 @@ public class EntryAccessService {
         } catch (IOException e) {
             throw new BizException("文件打包下载失败", e);
         }
+    }
+
+
+    /**
+     * 根据条目IDS获取文件列表
+     *
+     * @param entryIds 条目IDS
+     * @return 文件列表
+     */
+    public List<File> getEntryFiles(List<Long> entryIds) throws BizException, AuthException {
+
+        var companyId = AuthService.requireCompanyId();
+
+        var entryPos = entryRepository.getByIdAndCompanyIds(entryIds, companyId);
+
+        if (entryPos.isEmpty()) {
+            throw new BizException("要获取的条目不存在或无权限访问");
+        }
+
+        if(entryIds.size() != entryPos.size()){
+            throw new BizException("至少有一个条目不存在或无权限访问");
+        }
+
+        var files = new ArrayList<File>();
+        for (var entryPo : entryPos) {
+
+            if(entryPo.getKind() != 0){
+                throw new BizException("至少有一个条目类型不正确,期望:文件,实际:文件夹");
+            }
+
+            if(entryPo.getAttach() == null){
+                throw new BizException("至少有一个条目附件不存在");
+            }
+
+            if(entryPo.getAttachStatus() != 3){
+                throw new BizException("至少有一个条目附件状态不正确,期望:3,实际:"+entryPo.getAttachStatus());
+            }
+
+            //查找文件
+            var absolutePath = attachService.getAttachLocalPath(Paths.get(entryPo.getAttach().getPath()));
+            if (!Files.exists(absolutePath)) {
+                throw new BizException("文件在本地存储中不存在");
+            }
+
+            files.add(absolutePath.toFile());
+        }
+        return files;
     }
 
 }
