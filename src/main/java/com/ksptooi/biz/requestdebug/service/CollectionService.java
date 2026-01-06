@@ -2,15 +2,15 @@ package com.ksptooi.biz.requestdebug.service;
 
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.requestdebug.model.collection.CollectionPo;
-import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
 import com.ksptooi.biz.requestdebug.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.requestdebug.repoistory.CollectionRepository;
+import com.ksptooi.commons.httprelay.model.RelayBody;
+import com.ksptooi.commons.httprelay.model.RelayHeader;
+import com.ksptooi.commons.httprelay.model.RelayParam;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -115,8 +115,8 @@ public class CollectionService {
 
         //如果是请求类型 加入默认请求头、默认请求体
         if (dto.getKind() == 0) {
-            insertPo.setReqHeaderJson(toJson(RequestHeaderJson.ofDefaultList()));
-            insertPo.setReqBodyJson(toJson(RequestBodyJson.ofDefault()));
+            insertPo.setReqHeaderJson(toJson(RelayHeader.ofDefaultList()));
+            insertPo.setReqBodyJson(toJson(RelayBody.ofDefault()));
         }
 
         repository.save(insertPo);
@@ -474,12 +474,12 @@ public class CollectionService {
 
         //解析请求URL参数、请求头、请求体
         if (po.getKind() == 0) {
-            vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RequestParamJson.class));
-            vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RequestHeaderJson.class));
-            vo.setReqBody(fromJson(po.getReqBodyJson(), RequestBodyJson.class));
+            vo.setRequestParams(fromJsonArray(po.getReqUrlParamsJson(), RelayParam.class));
+            vo.setRequestHeaders(fromJsonArray(po.getReqHeaderJson(), RelayHeader.class));
+            vo.setReqBody(fromJson(po.getReqBodyJson(), RelayBody.class));
 
-            if(StringUtils.isBlank(po.getReqBodyJson())){
-                vo.setReqBody(RequestBodyJson.ofDefault());
+            if (StringUtils.isBlank(po.getReqBodyJson())) {
+                vo.setReqBody(RelayBody.ofDefault());
             }
 
         }

@@ -1,8 +1,8 @@
 package com.ksptooi.biz.requestdebug.model.collection.dto;
 
-import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
+import com.ksptooi.commons.httprelay.model.RelayBody;
+import com.ksptooi.commons.httprelay.model.RelayHeader;
+import com.ksptooi.commons.httprelay.model.RelayParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +32,7 @@ public class EditCollectionDto {
 
     @NotNull(message = "请求URL参数不能为空")
     @Schema(description = "请求URL参数JSON")
-    private List<RequestParamJson> requestParams;
+    private List<RelayParam> requestParams;
 
     @Range(min = 0, max = 6, message = "请求方法只能在0-6之间")
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
@@ -40,14 +40,14 @@ public class EditCollectionDto {
 
     @NotNull(message = "请求头不能为空")
     @Schema(description = "请求头JSON")
-    private List<RequestHeaderJson> requestHeaders;
+    private List<RelayHeader> requestHeaders;
 
     @Range(min = 0, max = 8, message = "请求体类型只能在0-8之间")
     @Schema(description = "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded")
     private Integer reqBodyKind;
 
     @Schema(description = "请求体JSON")
-    private RequestBodyJson reqBody;
+    private RelayBody reqBody;
 
 }
 

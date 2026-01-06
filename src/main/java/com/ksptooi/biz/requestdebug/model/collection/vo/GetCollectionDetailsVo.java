@@ -1,8 +1,8 @@
 package com.ksptooi.biz.requestdebug.model.collection.vo;
 
-import com.ksptooi.biz.requestdebug.model.collection.RequestHeaderJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestParamJson;
-import com.ksptooi.biz.requestdebug.model.collection.RequestBodyJson;
+import com.ksptooi.commons.httprelay.model.RelayBody;
+import com.ksptooi.commons.httprelay.model.RelayHeader;
+import com.ksptooi.commons.httprelay.model.RelayParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,19 +29,19 @@ public class GetCollectionDetailsVo {
     private String reqUrl;
 
     @Schema(description = "请求URL参数JSON")
-    private List<RequestParamJson> requestParams;
+    private List<RelayParam> requestParams;
 
     @Schema(description = "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
 
     @Schema(description = "请求头")
-    private List<RequestHeaderJson> requestHeaders;
+    private List<RelayHeader> requestHeaders;
 
     @Schema(description = "请求体类型 0:空 1:form-data 2:raw-text 3:raw-javascription 4:raw-json 5:raw-html 6:raw-xml 7:binary 8:x-www-form-urlencoded")
     private Integer reqBodyKind;
 
     @Schema(description = "请求体")
-    private RequestBodyJson reqBody;
+    private RelayBody reqBody;
 
 }
 

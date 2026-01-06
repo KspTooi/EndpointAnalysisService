@@ -1,0 +1,100 @@
+package com.ksptooi.commons.httprelay.model;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+public class RelayHeader {
+
+    @Schema(description = "是否默认")
+    private boolean d;
+
+    @Schema(description = "是否启用")
+    private boolean e;
+
+    @Schema(description = "是否自动计算")
+    private boolean a;
+
+    @Schema(description = "请求头键")
+    private String k;
+
+    @Schema(description = "请求头值")
+    private String v;
+
+    @Schema(description = "排序")
+    private Integer s;
+
+    public static RelayHeader of(String k, String v) {
+        RelayHeader relayHeader = new RelayHeader();
+        relayHeader.setD(false);
+        relayHeader.setE(false);
+        relayHeader.setA(false);
+        relayHeader.setK(k);
+        relayHeader.setV(v);
+        relayHeader.setS(0);
+        return relayHeader;
+    }
+
+    public static RelayHeader ofDefault(String k, String v, Integer s) {
+        RelayHeader relayHeader = new RelayHeader();
+        relayHeader.setD(true);
+        relayHeader.setE(true);
+        relayHeader.setA(false);
+        relayHeader.setK(k);
+        relayHeader.setV(v);
+        relayHeader.setS(s);
+        return relayHeader;
+    }
+
+    public static RelayHeader ofDefaultAuto(String k, String v, Integer s) {
+        RelayHeader relayHeader = new RelayHeader();
+        relayHeader.setD(true);
+        relayHeader.setE(true);
+        relayHeader.setA(true);
+        relayHeader.setK(k);
+        relayHeader.setV(v);
+        relayHeader.setS(s);
+        return relayHeader;
+    }
+
+    public static List<RelayHeader> ofDefaultList() {
+        List<RelayHeader> relayHeaderList = new ArrayList<>();
+        relayHeaderList.add(ofDefaultAuto("eas-token", "auto-calculated", -100));
+        relayHeaderList.add(ofDefaultAuto("Content-Type", "auto-calculated", -95));
+        relayHeaderList.add(ofDefaultAuto("Content-Length", "auto-calculated", -90));
+        relayHeaderList.add(ofDefaultAuto("Host", "auto-calculated", -85));
+        relayHeaderList.add(ofDefault("User-Agent", "EasServer/1.4M/CP23", -80));
+        relayHeaderList.add(ofDefault("Accept", "*/*", -75));
+        relayHeaderList.add(ofDefault("Accept-Encoding", "gzip, deflate, br", -70));
+        relayHeaderList.add(ofDefault("Connection", "keep-alive", -65));
+        return relayHeaderList;
+    }
+
+    @Override
+    public String toString() {
+        return "RelayHeader[d=" + d + ", e=" + e + ", a=" + a + ", k=" + k + ", v=" + v + ", s=" + s + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()){
+            return false;
+        }
+        RelayHeader that = (RelayHeader) obj;
+        //只要k、v相等就认为相等
+        return k.equals(that.k) && v.equals(that.v);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(k, v);
+    }
+
+}

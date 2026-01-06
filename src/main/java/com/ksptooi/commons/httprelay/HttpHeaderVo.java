@@ -1,4 +1,4 @@
-package com.ksptooi.commons.http;
+package com.ksptooi.commons.httprelay;
 
 import lombok.Getter;
 import lombok.Setter;

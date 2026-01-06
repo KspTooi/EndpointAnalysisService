@@ -1,6 +1,6 @@
 package com.ksptooi.biz.requestdebug.model.userrequest;
 
-import com.ksptooi.commons.http.HttpHeaderVo;
+import com.ksptooi.commons.httprelay.HttpHeaderVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

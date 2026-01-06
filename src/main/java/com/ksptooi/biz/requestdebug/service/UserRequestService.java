@@ -16,15 +16,17 @@ import com.ksptooi.biz.requestdebug.repoistory.UserRequestGroupRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestLogRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestRepository;
 import com.ksptooi.biz.requestdebug.repoistory.UserRequestTreeRepository;
+import com.ksptooi.commons.httprelay.HttpHeaderVo;
+import com.ksptooi.commons.httprelay.RequestSchema;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptooi.commons.http.HttpHeaderVo;
-import com.ksptooi.commons.http.RequestSchema;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.http.HttpClient;
@@ -35,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import static com.ksptool.entities.Entities.as;
-import com.ksptool.assembly.entity.exception.AuthException;
 
 @Slf4j
 @Service
@@ -191,7 +193,6 @@ public class UserRequestService {
         }
 
         HttpClient client = HttpClient.newHttpClient();
-
 
         //执行请求过滤器
         userRequestFilterService.doRequestFilter(requestSchema, userRequestPo);

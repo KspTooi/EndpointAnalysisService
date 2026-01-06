@@ -1,4 +1,4 @@
-package com.ksptooi.commons.http;
+package com.ksptooi.commons.httprelay;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,8 +20,6 @@ import java.util.Set;
 @Setter
 public class RequestSchema {
 
-    private final Gson gson = new Gson();
-
     //hop-by-hop请求头
     private static final Set<String> HOP_BY_HOP_HEADERS = new HashSet<>();
 
@@ -38,6 +36,7 @@ public class RequestSchema {
         HOP_BY_HOP_HEADERS.add("content-length");
     }
 
+    private final Gson gson = new Gson();
     private String url;
 
     private String method;
@@ -47,6 +46,23 @@ public class RequestSchema {
     private byte[] body;
 
     private String contentType;
+
+    /**
+     * 替换URL中的主机名、协议和端口号 例如:http://www.baidu.com/index.html 替换为 http://127.0.0.1:8080/index.html
+     *
+     * @param url       原始URL
+     * @param targetUrl 目标URL
+     * @return 替换后的URL
+     */
+    private static String replaceHostAndScheme(String url, String targetUrl) {
+        try {
+            URI uri = new URI(url);
+            URI targetUri = new URI(targetUrl);
+            return new URI(targetUri.getScheme(), targetUri.getUserInfo(), targetUri.getHost(), targetUri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment()).toString();
+        } catch (URISyntaxException e) {
+            return url;
+        }
+    }
 
     /**
      * 将JSON格式的请求头处理为VO
@@ -101,9 +117,9 @@ public class RequestSchema {
         headers.add(header);
     }
 
-    public String getHeader(String key){
-        for(var it : headers){
-            if(it.getK().equalsIgnoreCase(key)){
+    public String getHeader(String key) {
+        for (var it : headers) {
+            if (it.getK().equalsIgnoreCase(key)) {
                 return it.getV();
             }
         }
@@ -118,7 +134,6 @@ public class RequestSchema {
     public void setHost(String host) {
         this.url = replaceHostAndScheme(this.url, host);
     }
-
 
     /**
      * 获取请求构建器
@@ -136,24 +151,6 @@ public class RequestSchema {
         }
 
         return builder;
-    }
-
-
-    /**
-     * 替换URL中的主机名、协议和端口号 例如:http://www.baidu.com/index.html 替换为 http://127.0.0.1:8080/index.html
-     *
-     * @param url       原始URL
-     * @param targetUrl 目标URL
-     * @return 替换后的URL
-     */
-    private static String replaceHostAndScheme(String url, String targetUrl) {
-        try {
-            URI uri = new URI(url);
-            URI targetUri = new URI(targetUrl);
-            return new URI(targetUri.getScheme(), targetUri.getUserInfo(), targetUri.getHost(), targetUri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment()).toString();
-        } catch (URISyntaxException e) {
-            return url;
-        }
     }
 
 

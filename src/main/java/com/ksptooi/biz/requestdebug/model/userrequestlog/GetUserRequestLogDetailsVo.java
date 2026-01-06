@@ -1,6 +1,6 @@
 package com.ksptooi.biz.requestdebug.model.userrequestlog;
 
-import com.ksptooi.commons.http.HttpHeaderVo;
+import com.ksptooi.commons.httprelay.HttpHeaderVo;
 import lombok.Getter;
 import lombok.Setter;
 
