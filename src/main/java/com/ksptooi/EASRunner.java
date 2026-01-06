@@ -31,16 +31,24 @@ public class EASRunner {
     @Autowired
     private RelayServerService relayServerService;
 
+    public static void main(String[] args) {
+        System.setProperty("jdk.httpclient.allowRestrictedHeaders", "content-length,host,connection");
+        SpringApplication.run(EASRunner.class, args);
+    }
+
+    /**
+     * 获取应用版本号
+     *
+     * @return 应用版本号
+     */
+    public static String getVersion() {
+        return applicationVersion;
+    }
+
     @Value("${application.version}")
     public void setApplicationVersion(String version) {
         applicationVersion = version;
     }
-
-
-    public static void main(String[] args) {
-        SpringApplication.run(EASRunner.class, args);
-    }
-
 
     @PostConstruct
     public void init() {
@@ -94,14 +102,5 @@ public class EASRunner {
             // 打印应用版本信息
             System.out.println("应用版本: " + getVersion());
         };
-    }
-
-    /**
-     * 获取应用版本号
-     *
-     * @return 应用版本号
-     */
-    public static String getVersion() {
-        return applicationVersion;
     }
 }

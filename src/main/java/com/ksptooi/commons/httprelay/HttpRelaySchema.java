@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +44,11 @@ public class HttpRelaySchema {
 
     private HttpRelaySchema() {
         this.HOP_BY_HOP_HEADERS = HopByHopHeaders.ofDefault();
+        this.url = null;
+        this.queryParams = new ArrayList<>();
+        this.method = 0;
+        this.headers = new HashSet<>();
+        this.body = RelayBody.ofDefault();
         this.config = HttpRelaySchemaConfig.ofDefault();
     }
 
@@ -113,9 +120,41 @@ public class HttpRelaySchema {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
 
         //从URL中解析出查询参数
-        this.setQueryParams(RelayParam.of(builder.build().getQueryParams()));
+        this.setQueryParams(RelayParam.ofMultiValueMap(builder.build().getQueryParams()));
 
         //设置不带查询参数的URL
         this.url = builder.build().toUriString();
     }
+
+
+    public String getMethodString() {
+        if (this.method == null || this.method < 0 || this.method > 6) {
+            throw new IllegalArgumentException("请求方法不合法,method: " + this.method);
+        }
+        
+        if(this.method == 0) {
+            return "GET";
+        }
+        if(this.method == 1) {
+            return "POST";
+        }
+        if(this.method == 2) {
+            return "PUT";
+        }
+        if(this.method == 3) {
+            return "PATCH";
+        }
+        if(this.method == 4) {
+            return "DELETE";
+        }
+        if(this.method == 5) {
+            return "HEAD";
+        }
+        if(this.method == 6) {
+            return "OPTIONS";
+        }
+
+        throw new IllegalArgumentException("请求方法不合法,method: " + this.method);
+    }
+
 }

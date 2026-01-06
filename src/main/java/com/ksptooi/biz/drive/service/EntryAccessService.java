@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -203,7 +204,7 @@ public class EntryAccessService {
      * @param entryIds 条目IDS
      * @return 文件列表
      */
-    public List<File> getEntryFiles(List<Long> entryIds) throws BizException, AuthException {
+    public Map<Long, File> getEntryFiles(List<Long> entryIds) throws BizException, AuthException {
 
         var companyId = AuthService.requireCompanyId();
 
@@ -217,7 +218,7 @@ public class EntryAccessService {
             throw new BizException("至少有一个条目不存在或无权限访问");
         }
 
-        var files = new ArrayList<File>();
+        var files = new HashMap<Long, File>();
         for (var entryPo : entryPos) {
 
             if(entryPo.getKind() != 0){
@@ -238,7 +239,7 @@ public class EntryAccessService {
                 throw new BizException("文件在本地存储中不存在");
             }
 
-            files.add(absolutePath.toFile());
+            files.put(entryPo.getId(), absolutePath.toFile());
         }
         return files;
     }

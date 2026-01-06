@@ -8,18 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 @Getter
 @Setter
 public class RelayHeader {
 
     @Schema(description = "是否默认")
-    private boolean d;
+    private Boolean d;
 
     @Schema(description = "是否启用")
-    private boolean e;
+    private Boolean e;
 
     @Schema(description = "是否自动计算")
-    private boolean a;
+    private Boolean a;
 
     @Schema(description = "请求头键")
     private String k;
@@ -75,6 +77,46 @@ public class RelayHeader {
         relayHeaderList.add(ofDefault("Connection", "keep-alive", -65));
         return relayHeaderList;
     }
+
+
+
+    public static int count(List<RelayHeader> header,String hk){
+        int count = 0;
+        for (var h : header) {
+            if (StringUtils.isBlank(h.getK())) {
+                continue;
+            }
+            if (h.getK().toLowerCase().equals(hk.toLowerCase())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static String firstValue(List<RelayHeader> header,String hk){
+        return values(header, hk).stream().findFirst().orElse(null);
+    }
+
+    public static List<String> values(List<RelayHeader> header,String hk){
+        List<String> values = new ArrayList<>();
+        for (var h : header) {
+            if (StringUtils.isBlank(h.getK())) {
+                continue;
+            }
+            if (h.getK().toLowerCase().equals(hk.toLowerCase())) {
+                values.add(h.getV());
+            }
+        }
+        return values;
+    }
+
+
+
+
+
+
+
+
 
     @Override
     public String toString() {

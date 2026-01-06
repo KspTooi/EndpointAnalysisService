@@ -8,6 +8,9 @@ import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.requestdebug.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.requestdebug.service.CollectionService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.httprelay.HttpRelay;
+import com.ksptooi.commons.httprelay.HttpRelaySchema;
+import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @PrintLog
 @RestController
@@ -31,6 +35,9 @@ public class CollectionController {
 
     @Autowired
     private CollectionService collectionService;
+
+    @Autowired
+    private EntryAccessService entryAccessService;
 
     @PostMapping("/getCollectionTree")
     @Operation(summary = "查询请求集合列表树")
@@ -119,5 +126,18 @@ public class CollectionController {
         collectionService.removeCollection(dto);
         return Result.success("操作成功");
     }
+
+    private final HttpRelay hRelay = new HttpRelay(entryAccessService);
+
+    @Operation(summary = "发送请求")
+    @PostMapping("/sendRequest")
+    public Result<Map<String, Object>> sendRequest(@RequestBody @Valid HttpRelaySchema schema) throws Exception {
+        return Result.success(hRelay.sendRequest(schema));
+    }
+
+
+
+
+
 
 }
