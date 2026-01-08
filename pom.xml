@@ -77,11 +77,11 @@
         </dependency>
 
         <!-- Spring Boot DevTools，用于开发时热部署 -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- Spring Boot 测试 Starter，用于单元测试 -->
         <dependency>

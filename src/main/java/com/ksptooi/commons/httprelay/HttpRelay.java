@@ -20,17 +20,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * 请求转发器
+ */
 public class HttpRelay {
 
-    private EntryAccessService entryAccessService;
+    private final EntryAccessService entryAccessService;
 
-    private HttpClient client;
+    private final HttpClient client;
 
     public HttpRelay(EntryAccessService entryAccessService) {
         this.entryAccessService = entryAccessService;
         this.client = HttpClient.newBuilder().build();
     }
 
+    /**
+     * 发送请求
+     * @param schema 请求模式
+     * @return 响应结果
+     * @throws Exception 异常
+     */
     public Map<String, Object> sendRequest(HttpRelaySchema schema) throws Exception {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -59,6 +68,7 @@ public class HttpRelay {
 
             //自动计算请求头值
             builder.header(header.getK(), computeHeaderValue(uriBuilder, header, bodyPublisher));
+            
         }
 
         //发送请求
@@ -81,13 +91,21 @@ public class HttpRelay {
         String contentLength = RelayHeader.firstValue(retHeaders, "content-length");
 
         var ret = new HashMap<String, Object>();
+        ret.put("statusCode", "400");
         ret.put("contentType", contentType);
         ret.put("contentLength", contentLength);
         ret.put("headers", retHeaders);
         return ret;
     }
-
-
+    
+    
+    /**
+     * 计算请求头值
+     * @param uriBuilder URI构建器
+     * @param header 请求头
+     * @param bodyPublisher 请求体发布者
+     * @return 请求头值
+     */
     private String computeHeaderValue(UriComponentsBuilder uriBuilder, RelayHeader header, HttpBodyPublisher bodyPublisher) {
 
         if (!header.getA()) {
@@ -211,7 +229,7 @@ public class HttpRelay {
     }
 
     @Getter
-    private class HttpBodyPublisher {
+    private static class HttpBodyPublisher {
 
         private final RelayBody source;
         private final BodyPublisher target;

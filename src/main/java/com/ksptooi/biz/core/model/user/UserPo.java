@@ -3,7 +3,7 @@ package com.ksptooi.biz.core.model.user;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
-import com.ksptooi.biz.requestdebug.model.userrequestenv.UserRequestEnvPo;
+import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
