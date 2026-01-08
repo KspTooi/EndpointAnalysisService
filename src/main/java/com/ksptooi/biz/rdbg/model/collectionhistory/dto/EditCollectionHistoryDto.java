@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -43,29 +43,29 @@ public class EditCollectionHistoryDto {
     @Schema(description = "HTTP状态码")
     private Integer retHttpStatus;
 
-    @Schema(description = "状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时")
-    private Integer retBizStatus;
+    @Schema(description = "业务状态 0:正常 1:HTTP失败 2:业务失败 3:正在处理")
+    private Integer bizStatus;
 
     @Schema(description = "请求发起时间")
-    private Date reqTime;
+    private LocalDateTime reqTime;
 
     @Schema(description = "响应时间")
-    private Date retTime;
+    private LocalDateTime retTime;
 
     @Schema(description = "创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Schema(description = "创建人ID")
     private Long creatorId;
 
     @Schema(description = "更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @Schema(description = "更新人ID")
     private Long updaterId;
 
     @Schema(description = "删除时间 NULL未删除")
-    private Date deleteTime;
+    private LocalDateTime deleteTime;
 
 }
 

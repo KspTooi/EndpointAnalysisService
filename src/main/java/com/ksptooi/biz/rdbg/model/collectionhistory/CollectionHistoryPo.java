@@ -26,51 +26,51 @@ public class CollectionHistoryPo {
     @Comment("记录ID")
     private Long id;
 
-    @Column(name = "company_id")
+    @Column(name = "company_id",nullable = false)
     @Comment("公司ID")
     private Long companyId;
 
-    @Column(name = "collection_id")
+    @Column(name = "collection_id",nullable = false)
     @Comment("集合ID")
     private Long collectionId;
 
-    @Column(name = "req_url")
+    @Column(name = "req_url",nullable = false,length = 320)
     @Comment("请求URL")
     private String reqUrl;
 
-    @Column(name = "req_url_params_json")
+    @Column(name = "req_url_params_json", columnDefinition = "json",nullable = false)
     @Comment("请求URL查询参数")
     private String reqUrlParamsJson;
 
-    @Column(name = "req_method")
+    @Column(name = "req_method", columnDefinition = "tinyint",nullable = false)
     @Comment("请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS")
     private Integer reqMethod;
 
-    @Column(name = "req_header_json")
+    @Column(name = "req_header_json", columnDefinition = "json",nullable = false)
     @Comment("请求头JSON")
     private String reqHeaderJson;
 
-    @Column(name = "req_body_json")
+    @Column(name = "req_body_json", columnDefinition = "json",nullable = false)
     @Comment("请求体JSON")
     private String reqBodyJson;
 
-    @Column(name = "ret_header_json")
+    @Column(name = "ret_header_json", columnDefinition = "json",nullable = false)
     @Comment("响应头JSON")
     private String retHeaderJson;
 
-    @Column(name = "ret_body_json")
+    @Column(name = "ret_body_json", columnDefinition = "json",nullable = false)
     @Comment("响应体JSON")
     private String retBodyJson;
 
-    @Column(name = "ret_http_status")
+    @Column(name = "ret_http_status",nullable = false)
     @Comment("HTTP状态码")
     private Integer retHttpStatus;
 
-    @Column(name = "ret_biz_status")
-    @Comment("状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时")
-    private Integer retBizStatus;
+    @Column(name = "biz_status", columnDefinition = "tinyint",nullable = false)
+    @Comment("业务状态 0:正常 1:HTTP失败 2:业务失败 3:正在处理")
+    private Integer bizStatus;
 
-    @Column(name = "req_time")
+    @Column(name = "req_time",nullable = false)
     @Comment("请求发起时间")
     private LocalDateTime reqTime;
 
@@ -78,23 +78,23 @@ public class CollectionHistoryPo {
     @Comment("响应时间")
     private LocalDateTime retTime;
 
-    @Column(name = "create_time")
+    @Column(name = "create_time",nullable = false)
     @Comment("创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "creator_id")
+    @Column(name = "creator_id",nullable = false)
     @Comment("创建人ID")
     private Long creatorId;
 
-    @Column(name = "update_time")
+    @Column(name = "update_time",nullable = false)
     @Comment("更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updater_id")
+    @Column(name = "updater_id",nullable = false)
     @Comment("更新人ID")
     private Long updaterId;
 
-    @Column(name = "delete_time")
+    @Column(name = "delete_time",nullable = true)
     @Comment("删除时间 NULL未删除")
     private LocalDateTime deleteTime;
 
