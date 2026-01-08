@@ -1,13 +1,12 @@
 package com.ksptooi.biz.rdbg.model.collectionhistory;
 
-import com.odisp.biz.auth.service.AuthService;
-import com.odisp.commons.utils.IdWorker;
+import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * ${tableComment}
@@ -19,13 +18,13 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "rdbg_collection_history")
+@Comment("请求集合历史记录表")
 public class CollectionHistoryPo {
 
-    @Column(name = "id")
     @Id
+    @Column(name = "id")
     @Comment("记录ID")
     private Long id;
-
 
     @Column(name = "company_id")
     @Comment("公司ID")
@@ -73,15 +72,15 @@ public class CollectionHistoryPo {
 
     @Column(name = "req_time")
     @Comment("请求发起时间")
-    private Date reqTime;
+    private LocalDateTime reqTime;
 
     @Column(name = "ret_time")
     @Comment("响应时间")
-    private Date retTime;
+    private LocalDateTime retTime;
 
     @Column(name = "create_time")
     @Comment("创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Column(name = "creator_id")
     @Comment("创建人ID")
@@ -89,7 +88,7 @@ public class CollectionHistoryPo {
 
     @Column(name = "update_time")
     @Comment("更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @Column(name = "updater_id")
     @Comment("更新人ID")
@@ -97,7 +96,7 @@ public class CollectionHistoryPo {
 
     @Column(name = "delete_time")
     @Comment("删除时间 NULL未删除")
-    private Date deleteTime;
+    private LocalDateTime deleteTime;
 
     @PrePersist
     private void onCreate() {
@@ -105,7 +104,7 @@ public class CollectionHistoryPo {
             this.id = IdWorker.nextId();
         }
 
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         if (this.createTime == null) {
             this.createTime = now;
         }
@@ -123,7 +122,7 @@ public class CollectionHistoryPo {
 
     @PreUpdate
     private void onUpdate() {
-        this.updateTime = new Date();
+            this.updateTime = LocalDateTime.now();
         if (this.updaterId == null) {
             this.updaterId = AuthService.getCurrentUserId();
         }
