@@ -3,7 +3,7 @@
     <el-container>
       <!-- 桌面版侧边栏 -->
       <el-aside width="210px" class="admin-sidebar">
-        <admin-side-panel
+        <side-panel-menu
           :items="menuTree"
           :active-item-id="activeMenuId"
           :is-collapse="false"
@@ -16,7 +16,7 @@
 
       <el-container>
         <!-- 多标签页区域 -->
-        <tab-panel>
+        <console-tab>
           <template #controls>
             <div class="header-right">
               <!-- 系统导航按钮区域 -->
@@ -42,7 +42,7 @@
               </el-dropdown>
             </div>
           </template>
-        </tab-panel>
+        </console-tab>
 
         <!-- 头部区域 -->
         <el-header class="admin-header" height="10px">
@@ -90,8 +90,6 @@ import {
   ElMain,
   ElMessage,
 } from "element-plus";
-import TabPanel from "@/components/element-ui-admin/TabPanel.vue";
-import AdminSidePanel from "@/components/element-ui-admin/AdminSidePanel.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
@@ -100,6 +98,8 @@ import MenuApi, { type GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
+import ConsoleTab from "@/soa/console-framework/components/ConsoleTab.vue";
+import SidePanelMenu from "@/soa/console-framework/components/SidePanelMenu.vue";
 
 const router = useRouter();
 const route = useRoute();

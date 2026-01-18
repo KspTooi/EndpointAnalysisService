@@ -31,7 +31,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(createPinia());
 
-//初始化路由服务
+
 const { initialize, addRoute } = GenricRouteService.useGenricRoute();
 
 //注册业务路由
@@ -40,6 +40,7 @@ addRoute(new DriveRouteRegister());
 addRoute(new RelayRouteRegister());
 addRoute(new RdbgRouteRegister());
 
+//初始化路由服务
 initialize(app);
 
 // 使用Element Plus并设置为中文
