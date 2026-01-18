@@ -1,12 +1,5 @@
 <template>
-  <el-dialog
-    v-model="modalVisible"
-    title="移动冲突确认"
-    width="500px"
-    :close-on-click-modal="false"
-    class="modal-centered"
-    @contextmenu.prevent
-  >
+  <el-dialog v-model="modalVisible" title="移动冲突确认" width="500px" :close-on-click-modal="false" @contextmenu.prevent>
     <div class="modal-content">
       <div class="conflict-tip">
         <el-icon class="warning-icon"><Warning /></el-icon>
@@ -114,12 +107,6 @@ GenricHotkeyService.useHotkeyFunction(
 </script>
 
 <style scoped>
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 :deep(.el-overlay) {
   user-select: none;
 }

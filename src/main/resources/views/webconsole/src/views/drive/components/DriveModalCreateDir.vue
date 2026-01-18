@@ -4,7 +4,6 @@
     title="创建文件夹"
     width="500px"
     :close-on-click-modal="false"
-    class="modal-centered"
     @contextmenu.prevent
     @opened="handleDialogOpened"
   >
@@ -159,12 +158,6 @@ GenricHotkeyService.useHotkeyFunction(
 </script>
 
 <style scoped>
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 :deep(.el-overlay) {
   user-select: none;
 }

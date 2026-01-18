@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px" class="modal-centered">
+  <el-dialog v-model="modalVisible" title="文件上传队列" width="600px">
     <div class="upload-content">
       <div class="queue-header">
         <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件</span>
@@ -7,7 +7,12 @@
       </div>
 
       <div class="queue-list">
-        <div v-for="(item, index) in uploadQueue" :key="index" class="queue-item" :class="{ active: index === currentIndex, failed: item.status === 'failed' }">
+        <div
+          v-for="(item, index) in uploadQueue"
+          :key="index"
+          class="queue-item"
+          :class="{ active: index === currentIndex, failed: item.status === 'failed' }"
+        >
           <div class="item-info">
             <span class="item-name">{{ item.file.name }}</span>
             <span class="item-size">{{ formatFileSize(item.file.size) }}</span>
@@ -32,8 +37,8 @@ import { ElMessage } from "element-plus";
 import AttachApi, { type PreCheckAttachDto, type ApplyChunkVo } from "@/views/core/api/AttachApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import Sha256Worker from "../workers/sha256.worker.ts?worker";
-import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts"
-import DriveApi from "@/views/drive/api/DriveApi.ts"
+import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts";
+import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 export interface UploadQueueItem {
   file: File;

@@ -308,12 +308,6 @@ const onPathChange = (path: GetEntryListPathVo) => {
   width: 100%;
 }
 
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 .no-outline:focus {
   outline: none;
 }
