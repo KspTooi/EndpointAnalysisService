@@ -36,6 +36,7 @@ export interface GetUserListVo {
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
   status: number; // 用户状态
+  isSystem: number; // 是否为系统内置用户 0:否 1:是
 }
 
 export interface GetUserDetailsVo {
@@ -48,6 +49,7 @@ export interface GetUserDetailsVo {
   status: number; // 用户状态
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
+  isSystem: number; // 是否为系统内置用户 0:否 1:是
   groups: UserGroupVo[]; // 用户组列表
   permissions: UserPermissionVo[]; // 用户权限列表
 }

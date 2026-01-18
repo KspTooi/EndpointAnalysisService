@@ -60,7 +60,16 @@
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="removeList(scope.row)"
+              :disabled="scope.row.isSystem === 1"
+              :icon="DeleteIcon"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -141,6 +150,10 @@
             <el-radio :label="0">正常</el-radio>
             <el-radio :label="1">封禁</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="系统用户" v-if="modalMode === 'edit'">
+          <el-tag v-if="modalForm.isSystem === 1" type="warning">是</el-tag>
+          <span v-if="modalForm.isSystem === 0">否</span>
         </el-form-item>
         <el-form-item label="所属用户组" prop="groupIds">
           <el-select v-model="selectedGroupIds" multiple placeholder="请选择用户组" style="width: 100%">

@@ -33,4 +33,7 @@ public class GetUserListVo {
 
     @Schema(description = "用户状态 0:正常 1:封禁")
     private Integer status;
+
+    @Schema(description = "是否为系统内置用户 0:否 1:是")
+    private Integer isSystem;
 }

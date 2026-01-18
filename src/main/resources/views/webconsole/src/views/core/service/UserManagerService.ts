@@ -64,7 +64,7 @@ export default {
     /**
      * 删除用户
      */
-    const removeList = async (id: string) => {
+    const removeList = async (user: GetUserListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该用户吗？", "提示", {
           confirmButtonText: "确定",
@@ -76,7 +76,7 @@ export default {
       }
 
       try {
-        await AdminUserApi.removeUser({ id });
+        await AdminUserApi.removeUser({ id: user.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -121,6 +121,7 @@ export default {
       status: 0,
       createTime: "",
       lastLoginTime: "",
+      isSystem: 0,
       groups: [],
       permissions: [],
     });
@@ -185,6 +186,7 @@ export default {
           modalForm.phone = ret.phone || "";
           modalForm.email = ret.email || "";
           modalForm.status = ret.status;
+          modalForm.isSystem = ret.isSystem ?? 0;
           modalForm.groups = ret.groups || [];
 
           groupOptions.value = ret.groups || [];
@@ -225,6 +227,7 @@ export default {
       modalForm.phone = "";
       modalForm.email = "";
       modalForm.status = 0;
+      modalForm.isSystem = 0;
       modalForm.groups = [];
       modalFormPassword.value = "";
       selectedGroupIds.value = [];

@@ -21,8 +21,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Comment("用户表")
-@SQLDelete(sql = "UPDATE core_user SET deleted_time = NOW() WHERE id = ?")
-@SQLRestriction("deleted_time IS NULL")
+@SQLDelete(sql = "UPDATE core_user SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class UserPo {
 
     @Id
@@ -42,7 +42,7 @@ public class UserPo {
     @Comment("昵称")
     private String nickname;
 
-    @Column(name = "gender",columnDefinition = "tinyint")
+    @Column(name = "gender", columnDefinition = "tinyint")
     @Comment("性别 0:男 1:女 2:不愿透露")
     private Integer gender;
 
@@ -81,7 +81,7 @@ public class UserPo {
     @Comment("用户头像附件")
     private AttachPo avatarAttach;
 
-    @Column(name = "is_system", nullable = false)
+    @Column(name = "is_system", columnDefinition = "tinyint", nullable = false)
     @Comment("是否为系统用户 0:否 1:是")
     private Integer isSystem;
 

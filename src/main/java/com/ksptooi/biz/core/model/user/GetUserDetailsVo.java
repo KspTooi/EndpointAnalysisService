@@ -36,9 +36,13 @@ public class GetUserDetailsVo {
     @Schema(description = "最后登录时间")
     private String lastLoginTime;
 
+    @Schema(description = "是否为系统内置用户 0:否 1:是")
+    private Integer isSystem;
+
     @Schema(description = "用户组列表")
     private List<UserGroupVo> groups;
 
     @Schema(description = "用户权限列表")
     private List<UserPermissionVo> permissions;
+
 }
