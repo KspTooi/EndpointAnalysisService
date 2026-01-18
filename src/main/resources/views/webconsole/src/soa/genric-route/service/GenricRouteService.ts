@@ -59,9 +59,9 @@ function buildPath(entry: RouteEntryPo): string {
 }
 
 export default {
+
   /**
    * 使用全局路由服务
-   * @param routeEntry 路由条目
    */
   useGenricRoute() {
     /**
@@ -199,6 +199,7 @@ export default {
       addRoutes,
       removeRoute,
       getRoutes,
+      buildPath,
     };
   },
 };
