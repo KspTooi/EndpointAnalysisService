@@ -70,7 +70,9 @@
         <el-table-column prop="userName" label="所有者" min-width="120" />
         <el-table-column label="操作" fixed="right" min-width="140">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+              编辑
+            </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -106,15 +108,23 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑配置' : '添加配置'"
       width="500px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">提示：新建配置项时，所有者默认为当前用户，无法指定为他人。</div>
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
+      <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">
+        提示：新建配置项时，所有者默认为当前用户，无法指定为他人。
+      </div>
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
         <!-- 编辑时显示的只读信息 -->
         <template v-if="modalMode === 'edit'">
           <el-form-item label="创建时间">
@@ -157,7 +167,13 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo, type AddConfigDto, type EditConfigDto } from "@/views/core/api/ConfigApi.ts";
+import ConfigApi, {
+  type GetConfigDetailsVo,
+  type GetConfigListDto,
+  type GetConfigListVo,
+  type AddConfigDto,
+  type EditConfigDto,
+} from "@/views/core/api/ConfigApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const listForm = reactive<GetConfigListDto>({
@@ -368,11 +384,5 @@ const removeList = async (id: string) => {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

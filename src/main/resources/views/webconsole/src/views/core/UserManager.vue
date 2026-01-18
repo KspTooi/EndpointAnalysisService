@@ -49,7 +49,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+              编辑
+            </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -84,19 +86,30 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑用户' : '添加用户'"
       width="500px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="modalForm.username" :disabled="modalMode === 'edit'" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="modalFormPassword" type="password" show-password :placeholder="modalMode === 'add' ? '请输入密码' : '不修改密码请留空'" />
+          <el-input
+            v-model="modalFormPassword"
+            type="password"
+            show-password
+            :placeholder="modalMode === 'add' ? '请输入密码' : '不修改密码请留空'"
+          />
           <div v-if="modalMode === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
@@ -135,7 +148,14 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import Http from "@/commons/Http.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminUserApi, { type GetUserDetailsVo, type GetUserListDto, type GetUserListVo, type AddUserDto, type EditUserDto, type UserGroupVo } from "@/views/core/api/UserApi.ts";
+import AdminUserApi, {
+  type GetUserDetailsVo,
+  type GetUserListDto,
+  type GetUserListVo,
+  type AddUserDto,
+  type EditUserDto,
+  type UserGroupVo,
+} from "@/views/core/api/UserApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import GroupApi from "@/views/core/api/GroupApi.ts";
@@ -409,11 +429,5 @@ loadList();
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

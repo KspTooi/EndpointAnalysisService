@@ -51,9 +51,22 @@
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="primary" size="small" @click="openPermissionEditModal(scope.row)" :icon="EditIcon"> 管理权限 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem"> 删除 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+              编辑
+            </el-button>
+            <el-button link type="primary" size="small" @click="openPermissionEditModal(scope.row)" :icon="EditIcon">
+              管理权限
+            </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="removeList(scope.row.id)"
+              :icon="DeleteIcon"
+              :disabled="scope.row.isSystem"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,14 +95,17 @@
       </div>
     </div>
 
-    <UserGroupPermissionModal :visible="modalPermissionEditVisible" :row="modalPermissionEditRow" @close="modalPermissionEditVisible = false" />
+    <UserGroupPermissionModal
+      :visible="modalPermissionEditVisible"
+      :row="modalPermissionEditRow"
+      @close="modalPermissionEditVisible = false"
+    />
 
     <!-- 用户组编辑/新增模态框 -->
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
       width="800px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         (async () => {
@@ -98,7 +114,14 @@
         })()
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
         <div class="form-two-columns">
           <div class="form-left-column">
             <el-form-item label="组标识" prop="code" label-for="group-code">
@@ -261,7 +284,9 @@ const filteredPermissions = computed(() => {
   if (!search) {
     return permissionList.value;
   }
-  return permissionList.value.filter((permission) => permission.name.toLowerCase().includes(search) || permission.code.toLowerCase().includes(search));
+  return permissionList.value.filter(
+    (permission) => permission.name.toLowerCase().includes(search) || permission.code.toLowerCase().includes(search)
+  );
 });
 
 const loadList = async () => {
@@ -490,12 +515,6 @@ loadList();
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .form-two-columns {
