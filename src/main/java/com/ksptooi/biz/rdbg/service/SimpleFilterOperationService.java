@@ -6,7 +6,7 @@ import com.ksptooi.biz.rdbg.model.filter.dto.EditSimpleFilterOperationDto;
 import com.ksptooi.biz.rdbg.model.filter.dto.GetSimpleFilterOperationListDto;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterOperationDetailsVo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterOperationListVo;
-import com.ksptooi.biz.rdbg.repoistory.SimpleFilterOperationRepository;
+import com.ksptooi.biz.rdbg.repository.SimpleFilterOperationRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

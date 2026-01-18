@@ -7,7 +7,7 @@ import com.ksptooi.biz.rdbg.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionTreeVo;
-import com.ksptooi.biz.rdbg.repoistory.CollectionRepository;
+import com.ksptooi.biz.rdbg.repository.CollectionRepository;
 import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.commons.httprelay.HttpRelay;
 import com.ksptooi.commons.httprelay.HttpRelaySchema;

@@ -45,14 +45,14 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import RdbgCollectonTreeService from "@/views/requestdebug/service/RdbgCollectonTreeService";
-import RdbgCollectionTreeItem from "@/views/requestdebug/components/RdbgCollectionTreeItem.vue";
-import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
-import RdbgCollectionTreeRightMenu from "@/views/requestdebug/components/RdbgCollectionTreeRightMenu.vue";
-import CollectionApi from "@/views/requestdebug/api/CollectionApi";
+import RdbgCollectonTreeService from "@/views/rdbg/service/RdbgCollectonTreeService";
+import RdbgCollectionTreeItem from "@/views/rdbg/components/RdbgCollectionTreeItem.vue";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
+import RdbgCollectionTreeRightMenu from "@/views/rdbg/components/RdbgCollectionTreeRightMenu.vue";
+import CollectionApi from "@/views/rdbg/api/CollectionApi";
 import { ElMessage, ElMessageBox } from "element-plus";
-import RdbgModalCollectionCreate from "@/views/requestdebug/components/RdbgModalCollectionCreate.vue";
-import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+import RdbgModalCollectionCreate from "@/views/rdbg/components/RdbgModalCollectionCreate.vue";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
 const rdbgStore = useRdbgStore();
 const rightMenuRef = ref<InstanceType<typeof RdbgCollectionTreeRightMenu>>();
 const modalCollectionCreateRef = ref<InstanceType<typeof RdbgModalCollectionCreate>>();

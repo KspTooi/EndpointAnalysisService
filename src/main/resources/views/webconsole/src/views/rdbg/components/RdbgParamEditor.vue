@@ -90,7 +90,7 @@
 
 <script setup lang="ts">
 import draggable from "vuedraggable";
-import type { RequestParamJson } from "@/views/requestdebug/api/CollectionApi";
+import type { RequestParamJson } from "@/views/rdbg/api/CollectionApi";
 import { ElScrollbar } from "element-plus";
 
 withDefaults(

@@ -58,7 +58,7 @@ import UserRequestEnvApi, {
   type GetUserRequestEnvDetailsVo,
   type GetUserRequestEnvListDto,
   type GetUserRequestEnvListVo,
-} from "@/views/requestdebug/api/UserRequestEnvApi.ts";
+} from "@/views/rdbg/api/UserRequestEnvApi.ts";
 import RequestEnvSideList from "@/components/user-request/RequestEnvSideList.vue";
 import RequestEnvStorageList from "@/components/user-request/RequestEnvStorageList.vue";
 

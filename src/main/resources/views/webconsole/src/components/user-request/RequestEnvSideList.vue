@@ -37,9 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import type { GetUserRequestEnvListDto, GetUserRequestEnvListVo } from "@/views/requestdebug/api/UserRequestEnvApi.ts";
+import type { GetUserRequestEnvListDto, GetUserRequestEnvListVo } from "@/views/rdbg/api/UserRequestEnvApi.ts";
 import { reactive, ref, computed, watch } from "vue";
-import UserRequestEnvApi from "@/views/requestdebug/api/UserRequestEnvApi.ts";
+import UserRequestEnvApi from "@/views/rdbg/api/UserRequestEnvApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit, Plus } from "@element-plus/icons-vue";

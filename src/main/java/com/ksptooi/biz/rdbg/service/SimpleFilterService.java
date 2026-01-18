@@ -10,7 +10,7 @@ import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterDetailsVo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterListVo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterOperationDetailsVo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterTriggerDetailsVo;
-import com.ksptooi.biz.rdbg.repoistory.SimpleFilterRepository;
+import com.ksptooi.biz.rdbg.repository.SimpleFilterRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

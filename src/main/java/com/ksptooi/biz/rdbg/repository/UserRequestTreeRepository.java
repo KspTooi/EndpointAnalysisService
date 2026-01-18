@@ -1,4 +1,4 @@
-package com.ksptooi.biz.rdbg.repoistory;
+package com.ksptooi.biz.rdbg.repository;
 
 import com.ksptooi.biz.rdbg.model.userrequesttree.UserRequestTreePo;
 import org.springframework.data.jpa.repository.JpaRepository;

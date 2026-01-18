@@ -6,7 +6,7 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.dto.EditCollectionHistoryDto
 import com.ksptooi.biz.rdbg.model.collectionhistory.dto.GetCollectionHistoryListDto;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryListVo;
-import com.ksptooi.biz.rdbg.repoistory.CollectionHistoryRepository;
+import com.ksptooi.biz.rdbg.repository.CollectionHistoryRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

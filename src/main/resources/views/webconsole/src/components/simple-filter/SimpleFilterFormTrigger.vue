@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AddSimpleFilterTriggerDto, EditSimpleFilterTriggerDto } from "@/views/requestdebug/api/SimpleFilterApi.ts";
+import type { AddSimpleFilterTriggerDto, EditSimpleFilterTriggerDto } from "@/views/rdbg/api/SimpleFilterApi.ts";
 import { nextTick, ref, watch } from "vue";
 
 const show = ref(false);

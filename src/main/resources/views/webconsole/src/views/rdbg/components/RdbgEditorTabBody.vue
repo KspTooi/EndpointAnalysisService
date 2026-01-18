@@ -46,8 +46,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { RequestBodyJson } from "@/views/requestdebug/api/CollectionApi";
-import RdbgParamEditor from "@/views/requestdebug/components/RdbgParamEditor.vue";
+import type { RequestBodyJson } from "@/views/rdbg/api/CollectionApi";
+import RdbgParamEditor from "@/views/rdbg/components/RdbgParamEditor.vue";
 import { Mode } from "vanilla-jsoneditor";
 import JsonEditorVue from "json-editor-vue";
 

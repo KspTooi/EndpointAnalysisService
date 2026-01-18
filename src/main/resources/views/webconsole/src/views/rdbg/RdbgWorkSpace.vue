@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
-import RdbgEditor from "@/views/requestdebug/components/RdbgEditor.vue";
+import RdbgEditor from "@/views/rdbg/components/RdbgEditor.vue";
 import { computed } from "vue";
-import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
-import RdbgWorkSpaceService from "@/views/requestdebug/service/RdbgWorkSpaceService";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
+import RdbgWorkSpaceService from "@/views/rdbg/service/RdbgWorkSpaceService";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 

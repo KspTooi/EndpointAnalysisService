@@ -73,12 +73,12 @@
 </template>
 
 <script setup lang="ts">
-import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 import { Folder, ArrowDown, ArrowRight } from "@element-plus/icons-vue";
 import RdbgCollectionTreeItemService, {
   type CollectionDragEmitter,
-} from "@/views/requestdebug/service/RdbgCollectionTreeItemService";
-import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
+} from "@/views/rdbg/service/RdbgCollectionTreeItemService";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
 const rdbgStore = useRdbgStore();
 
 const props = defineProps<{

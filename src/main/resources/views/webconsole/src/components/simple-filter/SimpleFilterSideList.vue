@@ -48,7 +48,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
-import SimpleFilterApi, { type GetSimpleFilterListDto, type GetSimpleFilterListVo } from "@/views/requestdebug/api/SimpleFilterApi.ts";
+import SimpleFilterApi, { type GetSimpleFilterListDto, type GetSimpleFilterListVo } from "@/views/rdbg/api/SimpleFilterApi.ts";
 import SimpleFilterSideItem from "./SimpleFilterSideItem.vue";
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 

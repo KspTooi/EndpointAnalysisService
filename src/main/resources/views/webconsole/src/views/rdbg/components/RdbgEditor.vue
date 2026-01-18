@@ -48,14 +48,14 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
-import RdbgEditorEnvSelector from "@/views/requestdebug/components/RdbgEditorEnvSelector.vue";
-import RdbgEditorUrlInput from "@/views/requestdebug/components/RdbgEditorUrlInput.vue";
-import type { GetCollectionDetailsVo } from "@/views/requestdebug/api/CollectionApi";
-import RdbgEditorService from "@/views/requestdebug/service/RdbgEditorService";
-import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
-import RdbgParamEditor from "@/views/requestdebug/components/RdbgParamEditor.vue";
-import RdbgEditorTabHeaders from "@/views/requestdebug/components/RdbgEditorTabHeaders.vue";
-import RdbgEditorTabBody from "@/views/requestdebug/components/RdbgEditorTabBody.vue";
+import RdbgEditorEnvSelector from "@/views/rdbg/components/RdbgEditorEnvSelector.vue";
+import RdbgEditorUrlInput from "@/views/rdbg/components/RdbgEditorUrlInput.vue";
+import type { GetCollectionDetailsVo } from "@/views/rdbg/api/CollectionApi";
+import RdbgEditorService from "@/views/rdbg/service/RdbgEditorService";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
+import RdbgParamEditor from "@/views/rdbg/components/RdbgParamEditor.vue";
+import RdbgEditorTabHeaders from "@/views/rdbg/components/RdbgEditorTabHeaders.vue";
+import RdbgEditorTabBody from "@/views/rdbg/components/RdbgEditorTabBody.vue";
 
 const rdbgStore = useRdbgStore();
 

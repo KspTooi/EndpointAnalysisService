@@ -215,7 +215,7 @@ import { View } from "@element-plus/icons-vue";
 import RequestApi from "@/views/relay/api/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
-import type { HttpHeaderVo } from "@/views/requestdebug/api/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
 
 // 图标常量
 const ViewIcon = markRaw(View);

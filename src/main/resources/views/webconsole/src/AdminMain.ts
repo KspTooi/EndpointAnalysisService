@@ -18,7 +18,7 @@ import GenricRouteService from "./soa/genric-route/service/GenricRouteService.ts
 import CoreRouteRegister from "./views/core/route/CoreRouteRegister";
 import DriveRouteRegister from "./views/drive/route/DriveRouteRegister";
 import RelayRouteRegister from "./views/relay/route/RelayRouteRegister";
-import RdbgRouteRegister from "./views/requestdebug/route/RdbgRouteRegister";
+import RdbgRouteRegister from "@/views/rdbg/route/RdbgRouteRegister";
 
 setupIconify();
 

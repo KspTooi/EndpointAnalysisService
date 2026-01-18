@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>端点分析系统</title>
 
     <!-- 导入Google字体 -->
@@ -324,28 +324,28 @@
           <div class="form-field">
             <label class="form-field__label" for="username">账户</label>
             <input
+              autocomplete="username"
               class="form-field__input"
-              type="text"
               id="username"
               name="username"
               placeholder="请输入您的账户"
               required
-              autocomplete="username"
+              type="text"
             />
           </div>
           <div class="form-field">
             <label class="form-field__label" for="password">密码</label>
             <input
+              autocomplete="current-password"
               class="form-field__input"
-              type="password"
               id="password"
               name="password"
               placeholder="请输入您的密码"
               required
-              autocomplete="current-password"
+              type="password"
             />
           </div>
-          <div th:if="${error}" class="error-message" th:text="${error}">
+          <div class="error-message" th:if="${error}" th:text="${error}">
             <!-- 错误信息 -->
           </div>
           <button class="login-button" type="submit">登录</button>
@@ -356,6 +356,6 @@
       </div>
     </div>
 
-    <div class="footer">&copy; 2025 KspTool. 保留所有权利。</div>
+    <div class="footer">&copy; 2026 KspTool. 保留所有权利。</div>
   </body>
 </html>

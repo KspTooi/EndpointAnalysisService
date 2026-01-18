@@ -62,8 +62,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Document, FolderAdd, DocumentCopy, Edit, Delete } from "@element-plus/icons-vue";
-import RdbgCollectionTreeRightMenuService from "@/views/requestdebug/service/RdbgCollectionTreeRightMenuService";
-import type { GetCollectionTreeVo } from "@/views/requestdebug/api/CollectionApi";
+import RdbgCollectionTreeRightMenuService from "@/views/rdbg/service/RdbgCollectionTreeRightMenuService";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 
 const rightMenuRef = ref<HTMLElement>();
 

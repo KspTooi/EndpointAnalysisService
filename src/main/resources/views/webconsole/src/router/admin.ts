@@ -87,7 +87,7 @@ const router = createRouter({
     {
       path: "/user-request-manager",
       name: "user-request-manager",
-      component: () => import("@/views/requestdebug/UserRequestView.vue"),
+      component: () => import("@/views/rdbg/UserRequestView.vue"),
       meta: {
         breadcrumb: {
           title: "端点调试工作台",
@@ -97,7 +97,7 @@ const router = createRouter({
     {
       path: "/user-request-env-manager",
       name: "user-request-env-manager",
-      component: () => import("@/views/requestdebug/UserRequestEnvManager.vue"),
+      component: () => import("@/views/rdbg/UserRequestEnvManager.vue"),
       meta: {
         breadcrumb: {
           title: "用户请求环境管理",
@@ -108,7 +108,7 @@ const router = createRouter({
     {
       path: "/simple-filter-manager",
       name: "simple-filter-manager",
-      component: () => import("@/views/requestdebug/SimpleFilterManager.vue"),
+      component: () => import("@/views/rdbg/SimpleFilterManager.vue"),
       meta: {
         breadcrumb: {
           title: "基本过滤器",
@@ -255,7 +255,7 @@ const router = createRouter({
     {
       path: "/rdbg-workspace",
       name: "rdbg-workspace",
-      component: () => import("@/views/requestdebug/RdbgWorkSpace.vue"),
+      component: () => import("@/views/rdbg/RdbgWorkSpace.vue"),
       meta: { breadcrumb: { title: "请求调试器" } },
     },
   ],
