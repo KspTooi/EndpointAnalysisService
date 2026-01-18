@@ -3,6 +3,9 @@ import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
+import GenricRouteRegister from "./GenricRouteRegister";
+
+export abstract class RouteRegistry {}
 
 /**
  * Vue路由
@@ -47,6 +50,11 @@ let hasInitialized = false;
  */
 const routes = ref<RouteEntryPo[]>([]);
 
+/**
+ * 路由注册器
+ */
+const routeRegistries = ref<GenricRouteRegister[]>([]);
+
 export default {
   /**
    * 使用全局路由服务
@@ -62,10 +70,24 @@ export default {
         return;
       }
       hasInitialized = true;
+
+      //注册路由注册器
+      routeRegistries.value.forEach((register) => {
+        //注册路由
+        addRoutes(register.doRegister());
+      });
+
       app.use(vueRouter);
     };
 
-    const addRoute = (entry: RouteEntryPo) => {
+    const addRoute = (entry: RouteEntryPo | GenricRouteRegister) => {
+      //如果是路由注册器 则注册到路由注册器列表
+      if (entry instanceof GenricRouteRegister) {
+        routeRegistries.value.push(entry);
+        return;
+      }
+
+      //如果是路由条目 处理路由条目
       if (entry.path == null || entry.component == null) {
         throw new Error("path和component不能为空");
       }
