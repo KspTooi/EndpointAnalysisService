@@ -30,7 +30,7 @@
           <el-table-column label="业务域" prop="biz" width="100" show-overflow-tooltip>
             <template #default="scope">
               <span v-if="scope.row.biz">{{ scope.row.biz }}</span>
-              <span v-else style="color: #999">-</span>
+              <span v-if="!scope.row.biz" style="color: #999">-</span>
             </template>
           </el-table-column>
         </el-table>
@@ -67,8 +67,8 @@ const {
   filteredRouteList,
   buildPath,
   openModal,
-  confirmSelect: originalConfirmSelect,
-  cancelSelect: originalCancelSelect,
+  confirmSelect: serviceConfirmSelect,
+  cancelSelect: serviceCancelSelect,
 } = GenricRouteChooseModalService.useGenricRouteChooseModal();
 
 /**
@@ -79,7 +79,7 @@ const confirmSelect = () => {
     return;
   }
   modelValue.value = buildPath(selectedRoute.value);
-  originalConfirmSelect();
+  serviceConfirmSelect();
 };
 
 /**
@@ -87,7 +87,7 @@ const confirmSelect = () => {
  */
 const cancelSelect = () => {
   modelValue.value = null;
-  originalCancelSelect();
+  serviceCancelSelect();
 };
 
 defineExpose({

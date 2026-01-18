@@ -55,6 +55,8 @@
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>
       <el-button type="primary" @click="listExpandToggle()"> {{ listExpand ? "收起全部" : "展开全部" }} </el-button>
+      <el-button type="primary" @click="openGRCM()">选择路由</el-button>
+      {{ testGrcm }}
     </div>
 
     <!-- 列表 -->
@@ -142,6 +144,9 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <!-- 选择路由模态框 -->
+    <GenricRouteChooseModal v-model="testGrcm" ref="grcmRef" />
 
     <!-- 菜单编辑模态框 -->
     <el-dialog
@@ -236,6 +241,14 @@ import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
+import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
+
+const testGrcm = ref<string | null>(null);
+const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
+
+const openGRCM = () => {
+  grcmRef.value?.openModal();
+};
 
 const listTableRef = ref<TableInstance>();
 const modalFormRef = ref<FormInstance>();
