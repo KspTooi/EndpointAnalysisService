@@ -55,7 +55,6 @@
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>
       <el-button type="primary" @click="listExpandToggle()"> {{ listExpand ? "收起全部" : "展开全部" }} </el-button>
-      <el-button type="primary" @click="openGRCM()">选择路由</el-button>
     </div>
 
     <!-- 列表 -->

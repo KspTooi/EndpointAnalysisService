@@ -88,7 +88,7 @@ const props = defineProps<{
 }>();
 
 const hasMaintainCenter = computed(() => {
-  const searchPath = "/application-maintain";
+  const searchPath = "/core/application-maintain";
   const findItemByPath = (items: GetMenuTreeVo[]): boolean => {
     for (const item of items) {
       if (item.menuPath === searchPath) {
@@ -106,7 +106,7 @@ const hasMaintainCenter = computed(() => {
 });
 
 const goToMaintainCenter = () => {
-  router.push("/application-maintain");
+  router.push("/core/application-maintain");
 };
 
 const STORAGE_KEY = "admin_menu_opened_state";
