@@ -14,6 +14,8 @@ import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 // 导入并设置 Iconify
 import { setupIconify } from "./commons/Iconify.ts";
+import GenricRouteService from "./soa/genric-route/service/GenricRouteService.ts";
+import CoreRouteService from "./views/core/service/CoreRouteService";
 
 setupIconify();
 
@@ -25,7 +27,14 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.use(createPinia());
-app.use(router);
+
+//注册业务路由
+CoreRouteService.useCoreRoute();
+
+//初始化路由服务
+const { initialize } = GenricRouteService.useGenricRoute();
+initialize(app);
+
 // 使用Element Plus并设置为中文
 app.use(ElementPlus, {
   locale: zhCn,

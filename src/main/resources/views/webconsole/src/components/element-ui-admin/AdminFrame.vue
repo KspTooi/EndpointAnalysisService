@@ -104,7 +104,7 @@ import MenuApi from "@/views/core/api/MenuApi.ts";
 import { EventHolder } from "@/store/EventHolder";
 import { useTabStore } from "@/store/TabHolder";
 import { storeToRefs } from "pinia";
-import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const router = useRouter();
 const route = useRoute();

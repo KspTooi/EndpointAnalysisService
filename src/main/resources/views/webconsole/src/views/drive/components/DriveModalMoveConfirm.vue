@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import { Warning } from "@element-plus/icons-vue";
-import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const modalVisible = ref(false);
 const conflictNames = ref<string[]>([]);

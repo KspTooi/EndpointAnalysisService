@@ -60,7 +60,7 @@ import { computed } from "vue";
 import FileUtils from "@/commons/FileUtils.ts";
 import { ElMessage } from "element-plus";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
-import FileCategoryService, { EntryCategory } from "@/commons/service/FileCategoryService";
+import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
 
 /**
  * 定义props

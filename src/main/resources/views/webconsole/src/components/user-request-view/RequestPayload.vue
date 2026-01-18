@@ -32,7 +32,7 @@ import { type GetUserRequestDetailsVo } from "@/views/requestdebug/api/UserReque
 import { ref, computed, watch } from "vue";
 import JsonEditorVue from "json-editor-vue";
 import { Mode } from "vanilla-jsoneditor";
-import ContentTypeService, { ContentType } from "@/commons/service/ContentTypeService";
+import ContentTypeService, { ContentType } from "@/service/ContentTypeService";
 import { EventHolder } from "@/store/EventHolder";
 
 const emit = defineEmits<{

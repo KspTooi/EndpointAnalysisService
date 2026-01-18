@@ -37,7 +37,7 @@ import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
 import type { AddEntryDto, CurrentDirPo } from "@/views/drive/api/DriveTypes.ts";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
-import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const props = defineProps<{
   currentDir: CurrentDirPo;

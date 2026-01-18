@@ -66,7 +66,7 @@ import { Close, Delete, Folder, Document, WarningFilled } from "@element-plus/ic
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
 import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
+import GenricHotkeyService from "@/service/GenricHotkeyService";
 
 const emit = defineEmits<{
   (e: "success"): void;

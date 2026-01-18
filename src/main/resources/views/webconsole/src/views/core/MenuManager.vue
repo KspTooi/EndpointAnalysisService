@@ -238,7 +238,7 @@ import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } 
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import { EventHolder } from "@/store/EventHolder";
-import QueryPersistService from "@/commons/service/QueryPersistService";
+import QueryPersistService from "@/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 const listForm = reactive<GetMenuTreeDto>({
