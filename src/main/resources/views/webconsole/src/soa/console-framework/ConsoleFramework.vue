@@ -26,19 +26,27 @@
               <slot name="header-actions"></slot>
 
               <!-- 用户信息和下拉菜单-->
-              <el-dropdown trigger="click">
-                <div class="user-info" style="display: flex; align-items: center; height: 100%">
-                  <el-avatar :size="24" src="/getUserAvatar" style="margin-right: 8px" />
-                  <div style="line-height: 1">
-                    {{ userProfile?.nickname || userProfile?.username || "Operator" }}
+              <el-popover
+                placement="bottom-end"
+                :width="340"
+                trigger="click"
+                popper-style="padding: 0; border-radius: 0; overflow: hidden; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); border: 1px solid #ebeef5;"
+              >
+                <template #reference>
+                  <div class="user-info">
+                    <el-avatar
+                      :size="24"
+                      :src="userProfile?.avatarAttachId ? `/getAttach?id=${userProfile.avatarAttachId}` : '/getUserAvatar'"
+                      style="margin-right: 8px"
+                      shape="square"
+                    />
+                    <div class="username">
+                      {{ userProfile?.nickname || userProfile?.username || "Operator" }}
+                    </div>
                   </div>
-                </div>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
-                  </el-dropdown-menu>
                 </template>
-              </el-dropdown>
+                <profile-drop-menu :profile="userProfile" />
+              </el-popover>
             </div>
           </template>
         </console-tab>
@@ -89,6 +97,7 @@ import {
   ElMain,
   ElMessage,
   ElAvatar,
+  ElPopover,
 } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
@@ -101,6 +110,7 @@ import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
 import ConsoleTab from "@/soa/console-framework/components/ConsoleTab.vue";
 import SidePanelMenu from "@/soa/console-framework/components/SidePanelMenu.vue";
+import ProfileDropMenu from "@/soa/console-framework/components/ProfileDropMenu.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -392,6 +402,13 @@ watch(
   display: flex;
   align-items: center;
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 0;
+  transition: background-color 0.2s;
+}
+
+.user-info:hover {
+  background-color: #f1f3f4;
 }
 
 .username {
