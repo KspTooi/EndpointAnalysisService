@@ -2,17 +2,16 @@
   <div class="common-layout">
     <el-container>
       <!-- 桌面版侧边栏 -->
-      <el-aside width="210px" class="admin-sidebar">
-        <side-panel-menu
-          :items="menuTree"
-          :active-item-id="activeMenuId"
-          :is-collapse="false"
-          title="EAS服务管理控制台"
-          version="版本:1.4L CP10"
-          @item-click="handleMenuClick"
-          @action="handleMenuAction"
-        />
-      </el-aside>
+      <component
+        :is="isMenuCollapse ? SidePanelMenuShort : SidePanelMenu"
+        :items="menuTree"
+        :active-item-id="activeMenuId"
+        title="EAS服务管理控制台"
+        version="版本:1.4L CP10"
+        @item-click="handleMenuClick"
+        @action="handleMenuAction"
+        @expand="toggleMenu"
+      />
 
       <el-container>
         <!-- 多标签页区域 -->
@@ -52,8 +51,11 @@
         </console-tab>
 
         <!-- 头部区域 -->
-        <el-header class="admin-header" height="10px">
+        <el-header class="admin-header" height="35px">
           <div class="header-left">
+            <div class="menu-toggle" @click="toggleMenu">
+              <ILineMdMenuUnfoldRight />
+            </div>
             <!-- 面包屑导航，放在头部区域 -->
             <el-breadcrumb v-if="autoBreadcrumbs.length" separator="/" class="admin-breadcrumb">
               <el-breadcrumb-item v-for="(item, index) in autoBreadcrumbs" :key="index" :to="item.to">
@@ -86,7 +88,6 @@
 
 <script setup lang="ts">
 import {
-  ElAside,
   ElBreadcrumb,
   ElBreadcrumbItem,
   ElContainer,
@@ -98,7 +99,9 @@ import {
   ElMessage,
   ElAvatar,
   ElPopover,
+  ElIcon,
 } from "element-plus";
+import { Expand, Fold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
@@ -111,6 +114,9 @@ import { EventHolder } from "@/store/EventHolder.ts";
 import ConsoleTab from "@/soa/console-framework/components/ConsoleTab.vue";
 import SidePanelMenu from "@/soa/console-framework/components/SidePanelMenu.vue";
 import ProfileDropMenu from "@/soa/console-framework/components/ProfileDropMenu.vue";
+import SidePanelMenuShort from "@/soa/console-framework/components/SidePanelMenuShort.vue";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 
 const router = useRouter();
 const route = useRoute();
@@ -145,6 +151,14 @@ const emit = defineEmits<{
 
 const hotKeyActive = ref(true);
 const { activeOf } = useTabStore();
+
+// 菜单折叠状态
+const isMenuCollapse = ref(localStorage.getItem("isMenuCollapse") !== "false");
+
+const toggleMenu = () => {
+  isMenuCollapse.value = !isMenuCollapse.value;
+  localStorage.setItem("isMenuCollapse", isMenuCollapse.value.toString());
+};
 
 //快捷键服务打包
 GenricHotkeyService.useHotkeyFunction(
@@ -360,6 +374,7 @@ watch(
 .header-left {
   display: flex;
   align-items: center;
+  height: 100%;
 }
 
 .logo-wrapper {
@@ -380,10 +395,19 @@ watch(
 }
 
 .menu-toggle {
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
   color: var(--el-text-color-secondary);
-  margin-right: 15px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  height: 100%;
+}
+
+.menu-toggle:hover {
+  color: #764ba2;
 }
 
 .header-right {

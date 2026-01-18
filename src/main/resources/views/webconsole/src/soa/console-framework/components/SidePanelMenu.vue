@@ -1,69 +1,71 @@
 <template>
-  <div class="admin-side-panel">
-    <!-- LOGO与标题区域 -->
-    <div class="title-container">
-      <div v-if="title" class="panel-title">
-        <img :src="logoUrl" alt="EAS Logo" class="logo-image" />
-        {{ title }}
+  <el-aside width="210px" class="admin-sidebar">
+    <div class="admin-side-panel">
+      <!-- LOGO与标题区域 -->
+      <div class="title-container">
+        <div v-if="title" class="panel-title">
+          <img :src="logoUrl" alt="EAS Logo" class="logo-image" />
+          {{ title }}
+        </div>
+        <div v-if="version" class="panel-version">
+          {{ version }}
+        </div>
       </div>
-      <div v-if="version" class="panel-version">
-        {{ version }}
-      </div>
-    </div>
 
-    <!-- 菜单区域 -->
-    <el-menu
-      :default-active="activeItemId"
-      :default-openeds="openedMenus"
-      class="panel-menu"
-      @select="handleSelect"
-      @open="handleMenuOpen"
-      @close="handleMenuClose"
-      :collapse="isCollapse"
-      :unique-opened="false"
-    >
-      <!-- Fallback for Maintenance Center -->
-      <el-menu-item v-if="!hasMaintainCenter" index="fallback-maintenance-center" @click="goToMaintainCenter">
-        <el-icon>
-          <component :is="getIconComponent('Setting')" />
-        </el-icon>
-        <span>维护中心(备用)</span>
-      </el-menu-item>
+      <!-- 菜单区域 -->
+      <el-menu
+        :default-active="activeItemId"
+        :default-openeds="openedMenus"
+        class="panel-menu"
+        @select="handleSelect"
+        @open="handleMenuOpen"
+        @close="handleMenuClose"
+        :collapse="isCollapse"
+        :unique-opened="false"
+      >
+        <!-- Fallback for Maintenance Center -->
+        <el-menu-item v-if="!hasMaintainCenter" index="fallback-maintenance-center" @click="goToMaintainCenter">
+          <el-icon>
+            <component :is="getIconComponent('Setting')" />
+          </el-icon>
+          <span>维护中心(备用)</span>
+        </el-menu-item>
 
-      <template v-for="item in filteredItems" :key="item.id">
-        <!-- 目录类型 -->
-        <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id as any">
-          <template #title>
+        <template v-for="item in filteredItems" :key="item.id">
+          <!-- 目录类型 -->
+          <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id as any">
+            <template #title>
+              <el-icon>
+                <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
+              </el-icon>
+              <span>{{ item.name }}</span>
+            </template>
+            <template v-for="child in filterChildren(item.children)" :key="child.id">
+              <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="handleMenuItemClick(child)">
+                <el-icon>
+                  <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+                </el-icon>
+                <span>{{ child.name }}</span>
+              </el-menu-item>
+            </template>
+          </el-sub-menu>
+
+          <!-- 菜单类型 -->
+          <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
             <span>{{ item.name }}</span>
-          </template>
-          <template v-for="child in filterChildren(item.children)" :key="child.id">
-            <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="handleMenuItemClick(child)">
-              <el-icon>
-                <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
-              </el-icon>
-              <span>{{ child.name }}</span>
-            </el-menu-item>
-          </template>
-        </el-sub-menu>
-
-        <!-- 菜单类型 -->
-        <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
-          <el-icon>
-            <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
-          </el-icon>
-          <span>{{ item.name }}</span>
-        </el-menu-item>
-      </template>
-    </el-menu>
-  </div>
+          </el-menu-item>
+        </template>
+      </el-menu>
+    </div>
+  </el-aside>
 </template>
 
 <script setup lang="ts">
 import { ref, inject, computed, markRaw, h } from "vue";
-import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElBadge } from "element-plus";
+import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElBadge, ElAside } from "element-plus";
 import { useRouter } from "vue-router";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
@@ -241,14 +243,16 @@ const handleSelect = (index: string) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: none;
   overflow: hidden;
   background: linear-gradient(to bottom, #f8f9fa, #ffffff);
 }
 
 .title-container {
   padding: 8px 8px 12px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   border-bottom: 1px solid #f0f0f0;
 }
