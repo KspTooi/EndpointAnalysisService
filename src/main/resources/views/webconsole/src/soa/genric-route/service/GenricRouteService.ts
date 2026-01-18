@@ -185,7 +185,11 @@ export default {
         path: route.path,
         name: route.name,
         component: route.component,
-        breadcrumb: route.breadcrumb,
+        meta: {
+          breadcrumb: {
+            title: route.breadcrumb,
+          },
+        },
       }));
     };
 
