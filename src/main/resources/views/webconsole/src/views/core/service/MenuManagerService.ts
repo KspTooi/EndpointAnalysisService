@@ -40,6 +40,7 @@ export default {
       }
 
       listLoading.value = false;
+      await loadFullMenuTree();
     };
 
     /**
@@ -91,7 +92,7 @@ export default {
     };
 
     /**
-     * 加载完整菜单树用于父级选择
+     * 加载不带条件的完整菜单树用于父级选择
      */
     const loadFullMenuTree = async () => {
       const result = await MenuApi.getMenuTree({});
@@ -211,7 +212,7 @@ export default {
       resetModal();
 
       if (mode === "add") {
-        modalForm.parentId = null;
+        modalForm.parentId = "";
       }
 
       if (mode === "add-item" && currentRow) {
@@ -234,7 +235,11 @@ export default {
 
         if (Result.isSuccess(ret)) {
           modalForm.id = ret.data.id;
-          modalForm.parentId = ret.data.parentId;
+          const parentId = ret.data.parentId;
+          modalForm.parentId = "";
+          if (parentId != null) {
+            modalForm.parentId = parentId;
+          }
           modalForm.name = ret.data.name;
           modalForm.description = ret.data.description;
           modalForm.kind = ret.data.kind;
@@ -275,7 +280,7 @@ export default {
       modalForm.seq = 0;
 
       if (force) {
-        modalForm.parentId = null;
+        modalForm.parentId = "";
         modalForm.menuKind = 0;
       }
     };
@@ -375,7 +380,7 @@ export default {
 
       return [
         {
-          id: null,
+          id: "",
           name: "根节点",
           disabled: rootDisabled,
           children: filter(fullMenuTree.value),
