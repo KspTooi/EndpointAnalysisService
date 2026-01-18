@@ -10,17 +10,28 @@ import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
+import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.commons.WebUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.SHA256;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import com.ksptool.assembly.entity.exception.AuthException;
@@ -47,6 +58,9 @@ public class AuthService {
 
     @Autowired
     private GlobalConfigService globalConfigService;
+
+    @Autowired
+    private AttachService attachService;
 
     /**
      * 用户使用用户名与密码登录系统
@@ -481,6 +495,54 @@ public class AuthService {
         }
 
         return vo;
+    }
+
+
+    /**
+     * 获取当前用户头像
+     *
+     * @return 用户头像
+     */
+    public ResponseEntity<Resource> getUserAvatar() throws AuthException {
+
+        var userPo = requireUser();
+        var avatarAttach = userPo.getAvatarAttach();
+
+        //返回默认头像
+        if (avatarAttach == null) {
+            return getDefaultAvatar();
+        }
+
+        //返回用户头像
+        var absolutePath = attachService.getAttachLocalPath(Paths.get(avatarAttach.getPath()));
+        if (!Files.exists(absolutePath)) {
+            return getDefaultAvatar();
+        }
+
+        var resource = new FileSystemResource(absolutePath);
+        var filename = avatarAttach.getName();
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    /**
+     * 获取默认头像
+     *
+     * @return 默认头像资源
+     */
+    private ResponseEntity<Resource> getDefaultAvatar() {
+        var resource = new ClassPathResource("views/webconsole/src/assets/EAS_CROWN_SHORT_LOGO.jpg");
+        var filename = "EAS_CROWN_SHORT_LOGO.jpg";
+        if (!resource.exists()) {
+            throw new RuntimeException("默认头像文件不存在");
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename)
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(resource);
     }
 
 }

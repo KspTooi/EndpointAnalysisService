@@ -21,6 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -177,6 +179,12 @@ public class AuthController {
     @ResponseBody
     public Result<GetCurrentUserProfile> getCurrentUserProfile() throws AuthException {
         return Result.success(authService.getCurrentUserProfile());
+    }
+
+    @Operation(summary = "获取当前用户头像")
+    @GetMapping("/getUserAvatar")
+    public ResponseEntity<Resource> getUserAvatar() throws AuthException {
+        return authService.getUserAvatar();
     }
 
 }
