@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,6 +21,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Comment("用户表")
+@SQLDelete(sql = "UPDATE core_user SET deleted_time = NOW() WHERE id = ?")
+@SQLRestriction("deleted_time IS NULL")
 public class UserPo {
 
     @Id
@@ -77,6 +81,10 @@ public class UserPo {
     @Comment("用户头像附件")
     private AttachPo avatarAttach;
 
+    @Column(name = "is_system", nullable = false)
+    @Comment("是否为系统用户 0:否 1:是")
+    private Integer isSystem;
+
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")
     private LocalDateTime createTime;
@@ -84,6 +92,10 @@ public class UserPo {
     @Column(name = "update_time", nullable = false)
     @Comment("修改时间")
     private LocalDateTime updateTime;
+
+    @Column(name = "delete_time", nullable = false)
+    @Comment("删除时间 为null代表未删除")
+    private LocalDateTime deleteTime;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
