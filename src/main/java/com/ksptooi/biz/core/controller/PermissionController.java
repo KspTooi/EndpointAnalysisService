@@ -8,7 +8,6 @@ import com.ksptooi.biz.core.model.permission.GetPermissionListDto;
 import com.ksptooi.biz.core.model.permission.GetPermissionListVo;
 import com.ksptooi.biz.core.service.PermissionService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -41,14 +40,12 @@ public class PermissionController {
 
     @Operation(summary = "获取权限列表")
     @PostMapping("getPermissionList")
-    @RequirePermissionRest("admin:permission:view")
     public PageResult<GetPermissionListVo> getPermissionList(@RequestBody @Valid GetPermissionListDto dto) {
         return service.getPermissionList(dto);
     }
 
     @Operation(summary = "获取权限详情")
     @PostMapping("getPermissionDetails")
-    @RequirePermissionRest("admin:permission:save")
     public Result<GetPermissionDetailsVo> getPermissionDetails(@RequestBody @Valid CommonIdDto dto) {
         try {
             return Result.success(service.getPermissionDetails(dto.getId()));
@@ -59,7 +56,6 @@ public class PermissionController {
 
     @Operation(summary = "新增权限")
     @PostMapping("addPermission")
-    @RequirePermissionRest("admin:permission:save")
     public Result<String> addPermission(@RequestBody @Valid AddPermissionDto dto) {
         try {
             service.addPermission(dto);
@@ -71,7 +67,6 @@ public class PermissionController {
 
     @Operation(summary = "编辑权限")
     @PostMapping("editPermission")
-    @RequirePermissionRest("admin:permission:save")
     public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) {
         try {
             service.editPermission(dto);
@@ -83,7 +78,6 @@ public class PermissionController {
 
     @Operation(summary = "删除权限")
     @PostMapping("removePermission")
-    @RequirePermissionRest("admin:permission:remove")
     public Result<String> removePermission(@RequestBody @Valid CommonIdDto dto) {
         try {
             service.removePermission(dto.getId());
