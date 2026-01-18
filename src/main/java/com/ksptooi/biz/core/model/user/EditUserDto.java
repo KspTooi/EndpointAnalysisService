@@ -31,6 +31,15 @@ public class EditUserDto {
     @Schema(description = "用户昵称")
     private String nickname;
 
+    @NotNull(message = "性别不能为空")
+    @Range(min = 0, max = 2, message = "性别只能在0、1或2之间")
+    @Schema(description = "性别 0:男 1:女 2:不愿透露")
+    private Integer gender;
+
+    @Length(max = 64, message = "用户手机号长度不能超过64个字符")
+    @Schema(description = "用户手机号")
+    private String phone;
+
     @Length(max = 64, message = "用户邮箱长度不能超过64个字符")
     @Schema(description = "用户邮箱")
     @Email(message = "邮箱格式不正确")

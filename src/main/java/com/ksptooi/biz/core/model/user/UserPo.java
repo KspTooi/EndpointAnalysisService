@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.user;
 
+import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
@@ -33,13 +34,21 @@ public class UserPo {
     @Comment("密码")
     private String password;
 
-    @Column(name = "email", length = 64)
-    @Comment("邮箱")
-    private String email;
-
     @Column(name = "nickname", length = 50)
     @Comment("昵称")
     private String nickname;
+
+    @Column(name = "gender",columnDefinition = "tinyint")
+    @Comment("性别 0:男 1:女 2:不愿透露")
+    private Integer gender;
+
+    @Column(name = "phone", length = 64)
+    @Comment("手机号")
+    private String phone;
+
+    @Column(name = "email", length = 64)
+    @Comment("邮箱")
+    private String email;
 
     @Column(name = "login_count", nullable = false)
     @Comment("登录次数")
@@ -62,6 +71,11 @@ public class UserPo {
     @JoinColumn(name = "active_env_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("已激活的环境 为null时表示未激活任何环境")
     private UserRequestEnvPo activeEnv;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_attach_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("用户头像附件")
+    private AttachPo avatarAttach;
 
     @Column(name = "create_time", nullable = false, updatable = false)
     @Comment("创建时间")

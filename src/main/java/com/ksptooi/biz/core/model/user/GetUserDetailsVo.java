@@ -18,6 +18,12 @@ public class GetUserDetailsVo {
     @Schema(description = "用户昵称")
     private String nickname;
 
+    @Schema(description = "用户性别")
+    private Integer gender;
+
+    @Schema(description = "用户手机号")
+    private String phone;
+
     @Schema(description = "用户邮箱")
     private String email;
 
