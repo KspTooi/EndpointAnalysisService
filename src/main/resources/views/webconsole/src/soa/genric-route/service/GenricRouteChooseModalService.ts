@@ -43,9 +43,6 @@ export default {
      */
     const openModal = (): Promise<string | null> => {
       return new Promise((resolve) => {
-        selectedRoute.value = null;
-        searchKeyword.value = "";
-
         const genricRouteService = GenricRouteService.useGenricRoute();
         const routes = genricRouteService.getRoutes();
 

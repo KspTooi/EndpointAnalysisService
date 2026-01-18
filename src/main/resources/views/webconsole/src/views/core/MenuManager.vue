@@ -56,7 +56,6 @@
       <el-button type="success" @click="openModal('add', null)">创建菜单</el-button>
       <el-button type="primary" @click="listExpandToggle()"> {{ listExpand ? "收起全部" : "展开全部" }} </el-button>
       <el-button type="primary" @click="openGRCM()">选择路由</el-button>
-      {{ testGrcm }}
     </div>
 
     <!-- 列表 -->
@@ -146,7 +145,7 @@
     </div>
 
     <!-- 选择路由模态框 -->
-    <GenricRouteChooseModal v-model="testGrcm" ref="grcmRef" />
+    <GenricRouteChooseModal v-model="modalForm.menuPath" v-model:searchKeyword="grcmQuery" ref="grcmRef" />
 
     <!-- 菜单编辑模态框 -->
     <el-dialog
@@ -193,7 +192,11 @@
           <el-input v-model="modalForm.menuBtnId" placeholder="请输入按钮ID" clearable />
         </el-form-item>
         <el-form-item :label="modalFormLabel + '路径'" prop="menuPath" v-if="modalForm.menuKind == 1">
-          <el-input v-model="modalForm.menuPath" placeholder="请输入菜单路径" clearable />
+          <el-input v-model="modalForm.menuPath" placeholder="请输入菜单路径" clearable>
+            <template #append>
+              <el-button @click="openGRCM">选择路由</el-button>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item label="所需权限" prop="permission" v-if="modalForm.menuKind == 1 || modalForm.menuKind == 2">
           <el-input v-model="modalForm.permission" placeholder="请输入所需权限" clearable />
@@ -243,8 +246,10 @@ import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
 
-const testGrcm = ref<string | null>(null);
 const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
+
+//路由选择模态框查询参数
+const grcmQuery = ref<string>("");
 
 const openGRCM = () => {
   grcmRef.value?.openModal();

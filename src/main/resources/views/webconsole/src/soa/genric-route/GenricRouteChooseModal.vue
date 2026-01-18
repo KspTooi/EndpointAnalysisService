@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="选择路由" width="700px" :close-on-click-modal="false">
+  <el-dialog v-model="modalVisible" title="选择路由" width="800px" :close-on-click-modal="false">
     <div class="route-choose-container">
       <!-- 搜索框 -->
       <el-input
@@ -44,20 +44,21 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="cancelSelect">取消</el-button>
-        <el-button type="primary" @click="confirmSelect" :disabled="!selectedRoute">确定</el-button>
+        <el-button @click="cancelSelect">退出</el-button>
+        <el-button type="primary" @click="confirmSelect" :disabled="!selectedRoute">选择指定</el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 import type { TableInstance } from "element-plus";
 import GenricRouteChooseModalService from "@/soa/genric-route/service/GenricRouteChooseModalService";
 import type { RouteEntryPo } from "./api/RouteEntryPo";
 
 const modelValue = defineModel<string | null>({ default: null });
+const searchKeywordModel = defineModel<string>("searchKeyword", { default: "" });
 
 /**
  * 选择路由模态框打包
@@ -76,6 +77,41 @@ const {
 const tableRef = ref<TableInstance>();
 const syncingSelection = ref(false);
 const selectingAll = ref(false);
+
+watch(
+  searchKeywordModel,
+  (value) => {
+    if (value === searchKeyword.value) {
+      return;
+    }
+    searchKeyword.value = value;
+  },
+  { immediate: true }
+);
+
+watch(searchKeyword, (value) => {
+  if (value === searchKeywordModel.value) {
+    return;
+  }
+  searchKeywordModel.value = value;
+});
+
+watch(modalVisible, (visible) => {
+  if (!visible) {
+    return;
+  }
+
+  if (!modelValue.value) {
+    return;
+  }
+
+  nextTick(() => {
+    const route = filteredRouteList.value.find((r) => buildPath(r) === modelValue.value);
+    if (route) {
+      applySingleSelection(route);
+    }
+  });
+});
 
 const applySingleSelection = (row: RouteEntryPo | null) => {
   if (!tableRef.value) {
@@ -175,7 +211,6 @@ const confirmSelect = () => {
  * 取消选择（支持双向绑定）
  */
 const cancelSelect = () => {
-  modelValue.value = null;
   serviceCancelSelect();
 };
 
