@@ -1,0 +1,171 @@
+import { createRouter, createWebHashHistory, useRoute, useRouter } from "vue-router";
+import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
+import { type App, ref } from "vue";
+import { useTabStore } from "@/store/TabHolder";
+import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
+
+/**
+ * Vue路由
+ */
+const vueRouter = createRouter({
+  history: createWebHashHistory(),
+  routes: [
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: RouteNotFound,
+    },
+  ],
+});
+
+// 路由守卫
+vueRouter.beforeEach((to, from, next) => {
+  // 当访问根路径 '/' 时进行检测
+  if (to.path === "/") {
+    const tabStore = useTabStore();
+
+    //如果有激活的标签页
+    if (tabStore.activeTabId) {
+      // 在标签列表中查找该标签的具体信息
+      const activeTab = tabStore.tabs.find((t) => t.id === tabStore.activeTabId);
+
+      // 如果找到了激活的标签且其路径不是当前根路径，则跳转
+      if (activeTab && activeTab.path !== "/") {
+        return next(activeTab.path);
+      }
+    }
+  }
+
+  // 其他情况或没有激活标签时，继续正常访问
+  next();
+});
+
+let hasInitialized = false;
+
+/**
+ * 路由表
+ */
+const routes = ref<RouteEntryPo[]>([]);
+
+export default {
+  /**
+   * 使用全局路由服务
+   * @param routeEntry 路由条目
+   */
+  useGenricRoute() {
+    /**
+     * 初始化路由服务
+     * @param app 应用实例
+     */
+    const initialize = (app: App) => {
+      if (hasInitialized) {
+        return;
+      }
+      hasInitialized = true;
+      app.use(vueRouter);
+    };
+
+    const addRoute = (entry: RouteEntryPo) => {
+      if (entry.path == null || entry.component == null) {
+        throw new Error("path和component不能为空");
+      }
+
+      //path不允许包含/
+      if (entry.path.includes("/")) {
+        throw new Error("path不允许包含/");
+      }
+
+      //Name为空时使用path
+      if (entry.name == null) {
+        entry.name = entry.path;
+      }
+
+      //Breadcrumb为空时使用path
+      if (entry.breadcrumb == null) {
+        entry.breadcrumb = entry.path;
+      }
+
+      let hasConflict = false;
+
+      for (const route of routes.value) {
+        //查找同名路由
+        if (route.name === entry.name) {
+          //删除Vue路由
+          vueRouter.removeRoute(route.name);
+
+          //更新路由条目
+          route.biz = entry.biz;
+          route.path = entry.path;
+          route.name = entry.name;
+          route.component = entry.component;
+          route.breadcrumb = entry.breadcrumb;
+          hasConflict = true;
+          break;
+        }
+      }
+
+      //如果无冲突 同时更新路由表+Vue路由
+      if (!hasConflict) {
+        //更新路由表
+        routes.value.push(entry);
+
+        //添加Vue路由
+        vueRouter.addRoute({
+          path: "/" + entry.biz + "/" + entry.path,
+          name: entry.name,
+          component: entry.component,
+          meta: {
+            breadcrumb: entry.breadcrumb,
+          },
+        });
+      }
+
+      //有冲突 只更新Vue路由
+      if (hasConflict) {
+        vueRouter.addRoute({
+          path: "/" + entry.biz + "/" + entry.path,
+          name: entry.name,
+          component: entry.component,
+          meta: {
+            breadcrumb: entry.breadcrumb,
+          },
+        });
+      }
+    };
+
+    /**
+     * 批量注册路由
+     * @param entries 路由条目数组
+     */
+    const addRoutes = (entries: RouteEntryPo[]) => {
+      entries.forEach((entry) => addRoute(entry));
+    };
+
+    const removeRoute = (name: string) => {
+      vueRouter.removeRoute(name);
+      routes.value = routes.value.filter((route) => route.name !== name);
+    };
+
+    /**
+     * 获取路由表
+     * @returns 路由表的副本 对副本操作不会改变原始路由表
+     */
+    const getRoutes = () => {
+      return routes.value.map((route) => ({
+        biz: route.biz,
+        path: route.path,
+        name: route.name,
+        component: route.component,
+        breadcrumb: route.breadcrumb,
+      }));
+    };
+
+    return {
+      initialize,
+      addRoute,
+      addRoutes,
+      removeRoute,
+      getRoutes,
+    };
+  },
+};
