@@ -12,7 +12,7 @@
 import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { ArrowUp, ArrowDown } from "@element-plus/icons-vue";
-import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 
 const props = defineProps<{
   modelValue: boolean;

@@ -13,7 +13,7 @@ import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 // 导入Element Plus图标并进行全局注册
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 // 导入并设置 Iconify
-import { setupIconify } from "./utils/iconify";
+import { setupIconify } from "./commons/Iconify.ts";
 
 setupIconify();
 

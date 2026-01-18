@@ -43,7 +43,7 @@ import type { AddCollectionDto } from "../api/CollectionApi";
 import { ElMessage, type FormInstance } from "element-plus";
 import CollectionApi from "../api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
 
 const emit = defineEmits<{
   (e: "on-success"): void;

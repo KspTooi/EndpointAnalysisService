@@ -377,7 +377,7 @@ import {
   Refresh,
   QuestionFilled,
 } from "@element-plus/icons-vue";
-import QueryPersistService from "@/service/QueryPersistService";
+import QueryPersistService from "@/commons/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 

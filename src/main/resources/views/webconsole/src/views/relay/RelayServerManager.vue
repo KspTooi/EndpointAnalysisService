@@ -259,7 +259,7 @@ import type { FormInstance } from "element-plus";
 import type { GetRouteRuleListVo } from "@/views/relay/api/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import RouteRuleApi from "@/views/relay/api/RouteRuleApi.ts";
-import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 // 图标常量

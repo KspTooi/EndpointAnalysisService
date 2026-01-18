@@ -48,8 +48,8 @@ import { ref, onMounted, onUnmounted, reactive, watch, type Ref } from "vue";
 import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
 import DriveEntryGridService from "@/views/drive/service/DriveEntryGridService.ts";
 import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
-import ElmentFocusService from "@/service/ElmentFocusService";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
+import ElmentFocusService from "@/commons/service/ElmentFocusService";
 
 const props = defineProps<{
   //搜索关键词

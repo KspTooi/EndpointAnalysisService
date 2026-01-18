@@ -30,7 +30,7 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
 import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService";
 
 const emit = defineEmits<{
   (e: "success"): void;

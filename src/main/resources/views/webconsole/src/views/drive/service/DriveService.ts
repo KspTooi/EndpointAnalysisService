@@ -12,7 +12,7 @@ import DriveApi from "../api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
 import { useTabStore } from "@/store/TabHolder";
-import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
+import FileCategoryService, { EntryCategory } from "@/commons/service/FileCategoryService";
 import type DriveModalDownloadUrl from "../components/DriveModalDownloadUrl.vue";
 
 //当前目录信息

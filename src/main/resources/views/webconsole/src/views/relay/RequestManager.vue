@@ -264,7 +264,7 @@ import { ElMessage } from "element-plus";
 import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
-import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import UserRequestApi from "@/views/requestdebug/api/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
