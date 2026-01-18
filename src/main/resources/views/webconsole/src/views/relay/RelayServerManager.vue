@@ -35,7 +35,9 @@
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
           <template #default="scope">
             <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
-            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)">已配置路由策略</el-button>
+            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)"
+              >已配置路由策略</el-button
+            >
           </template>
         </el-table-column>
         <el-table-column label="自动运行" prop="autoStart" width="90" align="center">
@@ -62,7 +64,16 @@
             >
               启动
             </el-button>
-            <el-button style="margin-left: 0" inline link type="primary" size="small" v-show="scope.row.status === 2" @click="stopRelayServer(scope.row)" :icon="CaretBottomIcon">
+            <el-button
+              style="margin-left: 0"
+              inline
+              link
+              type="primary"
+              size="small"
+              v-show="scope.row.status === 2"
+              @click="stopRelayServer(scope.row)"
+              :icon="CaretBottomIcon"
+            >
               停止
             </el-button>
           </template>
@@ -70,7 +81,9 @@
         <el-table-column label="创建时间" prop="createTime" />
         <el-table-column label="操作" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              编辑
+            </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -102,7 +115,7 @@
     </div>
 
     <!-- 路由状态模态框 -->
-    <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false" class="modal-centered">
+    <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false">
       <el-table :data="routeStateData" v-loading="routeStateLoading" border>
         <el-table-column label="目标主机" prop="targetHost" />
         <el-table-column label="目标端口" prop="targetPort" width="100" />
@@ -140,7 +153,14 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="115px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="115px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入中继通道名称" />
         </el-form-item>
@@ -157,7 +177,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="路由规则" prop="routeRules" v-show="modalForm.forwardType === 1">
-          <el-select v-model="modalForm.routeRules" placeholder="请选择路由规则" multiple value-key="routeRuleId" :collapse-tags="2">
+          <el-select
+            v-model="modalForm.routeRules"
+            placeholder="请选择路由规则"
+            multiple
+            value-key="routeRuleId"
+            :collapse-tags="2"
+          >
             <el-option
               v-for="item in modalRouteRuleData"
               :key="item.id"
@@ -187,7 +213,10 @@
         </el-form-item>
         <el-form-item label="自动运行" prop="autoStart">
           <el-switch v-model="modalForm.autoStart" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
-          <el-tooltip content="自动运行：如果勾选，则中继服务器会在EAS系统启动后自动启动，否则当EAS系统停机后再运行时需要手动启动这些中继服务器" placement="top">
+          <el-tooltip
+            content="自动运行：如果勾选，则中继服务器会在EAS系统启动后自动启动，否则当EAS系统停机后再运行时需要手动启动这些中继服务器"
+            placement="top"
+          >
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
               <el-icon><InfoFilled /></el-icon>
@@ -207,11 +236,17 @@
           </el-tooltip>
         </el-form-item>
         <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="modalForm.overrideRedirect === 1">
-          <el-input v-model="modalForm.overrideRedirectUrl" placeholder="例如：https://example.com/after-login 或 https://example.com/home" />
+          <el-input
+            v-model="modalForm.overrideRedirectUrl"
+            placeholder="例如：https://example.com/after-login 或 https://example.com/home"
+          />
         </el-form-item>
         <el-form-item label="请求ID策略" prop="requestIdStrategy">
           <el-switch v-model="modalForm.requestIdStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
-          <el-tooltip content="请求ID策略：0-随机生成，1-从请求头获取。勾选表示从请求头获取，需要指定请求头名称" placement="top">
+          <el-tooltip
+            content="请求ID策略：0-随机生成，1-从请求头获取。勾选表示从请求头获取，需要指定请求头名称"
+            placement="top"
+          >
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
               <el-icon><InfoFilled /></el-icon>
@@ -223,7 +258,10 @@
         </el-form-item>
         <el-form-item label="业务错误策略" prop="bizErrorStrategy">
           <el-switch v-model="modalForm.bizErrorStrategy" :active-value="1" :inactive-value="0" style="margin-right: 10px" />
-          <el-tooltip content="业务错误策略：0-由HTTP状态码决定，1-由业务错误码决定。勾选表示使用业务错误码判断" placement="top">
+          <el-tooltip
+            content="业务错误策略：0-由HTTP状态码决定，1-由业务错误码决定。勾选表示使用业务错误码判断"
+            placement="top"
+          >
             <div style="display: flex; align-items: center; gap: 5px; color: #999">
               <span>查看说明</span>
               <el-icon><InfoFilled /></el-icon>
@@ -252,7 +290,12 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch, markRaw } from "vue";
 import RelayServerApi, { type GetRelayServerListDto } from "@/views/relay/api/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/views/relay/api/RelayServerApi.ts";
+import type {
+  GetRelayServerListVo,
+  GetRelayServerDetailsVo,
+  RelayServerRouteRuleVo,
+  GetRelayServerRouteStateVo,
+} from "@/views/relay/api/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, Delete, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
@@ -737,11 +780,5 @@ onMounted(async () => {
 
 .copy-icon {
   cursor: pointer;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

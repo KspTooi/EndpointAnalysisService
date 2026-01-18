@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
 import RdbgEditor from "@/views/requestdebug/components/RdbgEditor.vue";
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
 import RdbgWorkSpaceService from "@/views/requestdebug/service/RdbgWorkSpaceService";
 import { Splitpanes, Pane } from "splitpanes";
@@ -42,12 +42,6 @@ const isSelectedGroup = computed(() => {
 </script>
 
 <style scoped>
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 :deep(.el-overlay) {
   user-select: none;
 }

@@ -232,7 +232,6 @@
       width="400px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      class="modal-centered"
     >
       <el-form
         ref="saveFormRef"
@@ -585,12 +584,5 @@ onMounted(async () => {
 
 .copy-icon {
   cursor: pointer;
-}
-
-/* 保存请求对话框垂直居中 */
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

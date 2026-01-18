@@ -1,6 +1,11 @@
 <template>
   <div class="user-request-env-manager-container">
-    <RequestEnvSideList ref="requestEnvSideListRef" @onAdd="openModal('add', null)" @onEdit="openModal('edit', $event)" @onSelect="handleEnvSelect" />
+    <RequestEnvSideList
+      ref="requestEnvSideListRef"
+      @onAdd="openModal('add', null)"
+      @onEdit="openModal('edit', $event)"
+      @onSelect="handleEnvSelect"
+    />
 
     <div class="env-storage-container">
       <RequestEnvStorageList :request-env-id="selectedRequestEnvId" />
@@ -11,14 +16,20 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑用户请求环境' : '添加用户请求环境'"
       width="550px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="95px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="95px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="环境名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入环境名称" />
         </el-form-item>
@@ -43,7 +54,11 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon } from "@element-plus/icons-vue";
-import UserRequestEnvApi, { type GetUserRequestEnvDetailsVo, type GetUserRequestEnvListDto, type GetUserRequestEnvListVo } from "@/views/requestdebug/api/UserRequestEnvApi.ts";
+import UserRequestEnvApi, {
+  type GetUserRequestEnvDetailsVo,
+  type GetUserRequestEnvListDto,
+  type GetUserRequestEnvListVo,
+} from "@/views/requestdebug/api/UserRequestEnvApi.ts";
 import RequestEnvSideList from "@/components/user-request/RequestEnvSideList.vue";
 import RequestEnvStorageList from "@/components/user-request/RequestEnvStorageList.vue";
 
@@ -180,11 +195,5 @@ const submitModal = async () => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>
