@@ -56,7 +56,6 @@
       width="400px"
       destroy-on-close
       @opened="handleGroupDialogOpened"
-      class="modal-centered"
       @keyup.enter="handleCreateGroup"
     >
       <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
@@ -532,10 +531,5 @@ const handleToggleNode = (nodeId: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>
