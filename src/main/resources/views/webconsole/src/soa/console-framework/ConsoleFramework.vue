@@ -28,15 +28,14 @@
               <!-- 用户信息和下拉菜单-->
               <el-dropdown trigger="click">
                 <div class="user-info" style="display: flex; align-items: center; height: 100%">
-                  <div
-                    class="color-block"
-                    style="width: 15px; height: 15px; background-color: #409eff; border-radius: 50%; margin-right: 5px"
-                  ></div>
-                  <div style="line-height: 1">Operator Options</div>
+                  <el-avatar :size="24" src="/getUserAvatar" style="margin-right: 8px" />
+                  <div style="line-height: 1">
+                    {{ userProfile?.nickname || userProfile?.username || "Operator" }}
+                  </div>
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item>No options</el-dropdown-item>
+                    <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -89,12 +88,14 @@ import {
   ElHeader,
   ElMain,
   ElMessage,
+  ElAvatar,
 } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import MenuApi, { type GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
+import AuthApi, { type GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
@@ -107,6 +108,7 @@ const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 const menuTree = ref<GetMenuTreeVo[]>([]);
+const userProfile = ref<GetCurrentUserProfile | null>(null);
 
 // 定义组件props
 const props = defineProps<{
@@ -184,6 +186,18 @@ const loadMenuTree = async () => {
 };
 
 loadMenuTree();
+
+const loadUserProfile = async () => {
+  try {
+    userProfile.value = await AuthApi.getCurrentUserProfile();
+  } catch (error: any) {
+    console.error("加载用户信息失败:", error);
+  }
+};
+
+onMounted(() => {
+  loadUserProfile();
+});
 
 // 导航到指定URL
 const navigateToUrl = (url: string) => {
