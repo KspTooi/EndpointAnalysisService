@@ -19,9 +19,9 @@ public class EditUserDto {
     @NotNull(message = "用户ID不能为空")
     private Long id;
 
-    @Schema(description = "用户名")
-    @Pattern(regexp = "^[a-zA-Z0-9_]{4,20}$", message = "用户名只能包含4-20位字母、数字和下划线")
-    private String username;
+    //@Schema(description = "用户名")
+    //@Pattern(regexp = "^[a-zA-Z0-9_]{4,20}$", message = "用户名只能包含4-20位字母、数字和下划线")
+    //private String username;
 
     @Schema(description = "用户密码，编辑时可选")
     @Length(max = 128, message = "用户密码长度不能超过128个字符")

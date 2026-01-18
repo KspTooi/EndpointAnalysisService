@@ -137,13 +137,12 @@ public class UserService {
             throw new BizException("用户名不能为空");
         }
 
-        UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
-        if (existingUserByName != null) {
-            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
-        }
-
         if (StringUtils.isBlank(dto.getPassword())) {
             throw new BizException("新建用户时密码不能为空");
+        }
+
+        if (userRepository.countByUsername(dto.getUsername()) > 0) {
+            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
         }
 
         UserPo user = new UserPo();
@@ -161,19 +160,11 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void editUser(EditUserDto dto) throws BizException {
-        if (StringUtils.isBlank(dto.getUsername())) {
-            throw new BizException("用户名不能为空");
-        }
-
-        UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
-        if (existingUserByName != null && !existingUserByName.getId().equals(dto.getId())) {
-            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
-        }
 
         UserPo user = userRepository.findById(dto.getId()).orElseThrow(() -> new BizException("用户不存在"));
 
         if (StringUtils.isNotBlank(dto.getPassword())) {
-            dto.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+            dto.setPassword(encryptPassword(dto.getPassword(), user.getUsername()));
         }
         if (StringUtils.isBlank(dto.getPassword())) {
             dto.setPassword(user.getPassword());

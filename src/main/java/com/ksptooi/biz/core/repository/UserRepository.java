@@ -12,6 +12,39 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserPo, Long> {
 
+    /**
+     * 根据用户名统计用户数量(!!这会绕过软删除直接查询到被删除过的用户)
+     * @param username 用户名
+     * @return 用户数量
+     */
+    @Query(
+            value = """
+                    SELECT COUNT(1)
+                    FROM core_user
+                    WHERE username = :username
+                    """,
+            nativeQuery = true
+    )
+    Integer countByUsername(@Param("username") String username);
+
+    /**
+     * 根据用户名统计用户数量 排除指定ID(!!这会绕过软删除直接查询到被删除过的用户)
+     * @param username 用户名
+     * @param id 排除的ID
+     * @return 用户数量
+     */
+    @Query(
+            value = """
+                    SELECT COUNT(1)
+                    FROM core_user
+                    WHERE username = :username
+                      AND id != :id
+                    """,
+            nativeQuery = true
+    )
+    Integer countByUsernameExcludeId(@Param("username") String username, @Param("id") Long id);
+
+
     // 根据用户名查找用户
     UserPo findByUsername(String username);
 
@@ -33,4 +66,7 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             WHERE u.id = :userId
             """)
     List<PermissionPo> findUserPermissions(@Param("userId") Long userId);
+
+
+
 }

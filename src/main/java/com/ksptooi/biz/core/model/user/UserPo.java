@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "core_user")
+@Table(name = "core_user", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_username", columnNames = {"username"})
+})
 @Getter
 @Setter
 @Comment("用户表")
@@ -30,7 +32,7 @@ public class UserPo {
     @Comment("用户ID")
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     @Comment("用户名")
     private String username;
 
@@ -93,7 +95,7 @@ public class UserPo {
     @Comment("修改时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "delete_time", nullable = false)
+    @Column(name = "delete_time")
     @Comment("删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
 
