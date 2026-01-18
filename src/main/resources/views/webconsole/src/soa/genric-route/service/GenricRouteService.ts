@@ -5,7 +5,14 @@ import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
 import GenricRouteRegister from "./GenricRouteRegister";
 
-export abstract class RouteRegistry {}
+//是否已初始化
+let hasInitialized = false;
+
+//路由表
+const routes = ref<RouteEntryPo[]>([]);
+
+//路由注册器
+const routeRegistries = ref<GenricRouteRegister[]>([]);
 
 /**
  * Vue路由
@@ -43,17 +50,13 @@ vueRouter.beforeEach((to, from, next) => {
   next();
 });
 
-let hasInitialized = false;
+function buildPath(entry: RouteEntryPo): string {
+  if (entry.biz == null) {
+    return "/" + entry.path;
+  }
 
-/**
- * 路由表
- */
-const routes = ref<RouteEntryPo[]>([]);
-
-/**
- * 路由注册器
- */
-const routeRegistries = ref<GenricRouteRegister[]>([]);
+  return "/" + entry.biz + "/" + entry.path;
+}
 
 export default {
   /**
@@ -133,11 +136,13 @@ export default {
 
         //添加Vue路由
         vueRouter.addRoute({
-          path: "/" + entry.biz + "/" + entry.path,
+          path: buildPath(entry),
           name: entry.name,
           component: entry.component,
           meta: {
-            breadcrumb: entry.breadcrumb,
+            breadcrumb: {
+              title: entry.breadcrumb,
+            },
           },
         });
       }
@@ -145,11 +150,13 @@ export default {
       //有冲突 只更新Vue路由
       if (hasConflict) {
         vueRouter.addRoute({
-          path: "/" + entry.biz + "/" + entry.path,
+          path: buildPath(entry),
           name: entry.name,
           component: entry.component,
           meta: {
-            breadcrumb: entry.breadcrumb,
+            breadcrumb: {
+              title: entry.breadcrumb,
+            },
           },
         });
       }
