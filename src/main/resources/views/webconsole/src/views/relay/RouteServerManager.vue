@@ -151,8 +151,8 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, onMounted, markRaw } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";
-import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
-import RouteServerApi from "@/api/relay/RouteServerApi.ts";
+import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
+import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
 // 图标常量

@@ -100,7 +100,7 @@
 import { reactive, ref, onMounted, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
-import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/api/core/SessionApi.ts";
+import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/views/core/api/SessionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const ViewIcon = markRaw(View);

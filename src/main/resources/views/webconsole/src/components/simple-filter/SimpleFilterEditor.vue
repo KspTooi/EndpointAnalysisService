@@ -162,14 +162,14 @@
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 import { nextTick, onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import SimpleFilterApi from "@/api/requestdebug/SimpleFilterApi.ts";
+import SimpleFilterApi from "@/views/requestdebug/api/SimpleFilterApi.ts";
 import type {
   GetSimpleFilterDetailsVo,
   EditSimpleFilterTriggerDto,
   EditSimpleFilterOperationDto,
   AddSimpleFilterTriggerDto,
   AddSimpleFilterOperationDto,
-} from "@/api/requestdebug/SimpleFilterApi.ts";
+} from "@/views/requestdebug/api/SimpleFilterApi.ts";
 import SimpleFilterFormTrigger from "./SimpleFilterFormTrigger.vue";
 import SimpleFilterFormOperation from "./SimpleFilterFormOperation.vue";
 

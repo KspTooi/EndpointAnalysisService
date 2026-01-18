@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { type GetUserRequestDetailsVo } from "@/api/requestdebug/UserRequestApi.ts";
+import { type GetUserRequestDetailsVo } from "@/views/requestdebug/api/UserRequestApi.ts";
 import { ref, computed, watch } from "vue";
 import JsonEditorVue from "json-editor-vue";
 import { Mode } from "vanilla-jsoneditor";

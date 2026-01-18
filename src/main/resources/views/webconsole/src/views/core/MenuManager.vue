@@ -229,8 +229,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/api/core/MenuApi";
-import MenuApi from "@/api/core/MenuApi";
+import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
+import MenuApi from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 import { reactive, ref, watch, computed, onMounted, nextTick } from "vue";

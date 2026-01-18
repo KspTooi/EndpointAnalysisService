@@ -180,14 +180,14 @@
 
 <script setup lang="ts">
 import {reactive, ref, onMounted} from "vue";
-import EpDocApi, { type GetEpDocListDto, type GetEpDocListVo, type GetEpDocDetailsVo, type AddEpDocDto, type EditEpDocDto } from "@/api/document/EpDocApi.ts";
+import EpDocApi, { type GetEpDocListDto, type GetEpDocListVo, type GetEpDocDetailsVo, type AddEpDocDto, type EditEpDocDto } from "@/views/document/api/EpDocApi.ts";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Edit, View, Delete, DocumentCopy } from '@element-plus/icons-vue';
 import { markRaw } from 'vue';
 import type { FormInstance } from 'element-plus';
-import RelayServerApi, { type GetRelayServerListDto, type GetRelayServerListVo, type GetRelayServerDetailsVo, type AddRelayServerDto, type EditRelayServerDto } from "@/api/relay/RelayServerApi.ts";
-import type { GetEpDocSyncLogListDto, GetEpDocSyncLogListVo } from "@/api/document/EpDocSyncLogApi.ts";
-import EpDocSyncLogApi from "@/api/document/EpDocSyncLogApi.ts";
+import RelayServerApi, { type GetRelayServerListDto, type GetRelayServerListVo, type GetRelayServerDetailsVo, type AddRelayServerDto, type EditRelayServerDto } from "@/views/relay/api/RelayServerApi.ts";
+import type { GetEpDocSyncLogListDto, GetEpDocSyncLogListVo } from "@/views/document/api/EpDocSyncLogApi.ts";
+import EpDocSyncLogApi from "@/views/document/api/EpDocSyncLogApi.ts";
 
 //查询条件
 const query = reactive<GetEpDocListDto>({

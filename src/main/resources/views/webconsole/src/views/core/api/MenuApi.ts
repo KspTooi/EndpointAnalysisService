@@ -1,6 +1,6 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
-import Http from "@/commons/Http";
-import type Result from "@/commons/entity/Result";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import Http from "@/commons/Http.ts";
+import type Result from "@/commons/entity/Result.ts";
 
 export interface AddMenuDto {
   parentId?: string | null; // 父级ID null:根节点

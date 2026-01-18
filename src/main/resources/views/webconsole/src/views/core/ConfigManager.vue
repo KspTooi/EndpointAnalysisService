@@ -157,7 +157,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo, type AddConfigDto, type EditConfigDto } from "@/api/core/ConfigApi.ts";
+import ConfigApi, { type GetConfigDetailsVo, type GetConfigListDto, type GetConfigListVo, type AddConfigDto, type EditConfigDto } from "@/views/core/api/ConfigApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const listForm = reactive<GetConfigListDto>({

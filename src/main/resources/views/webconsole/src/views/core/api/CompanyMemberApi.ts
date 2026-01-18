@@ -1,8 +1,8 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
-import Http from "@/commons/Http";
-import type Result from "@/commons/entity/Result";
-import type PageResult from "@/commons/entity/PageResult";
-import type PageQuery from "@/commons/entity/PageQuery";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import Http from "@/commons/Http.ts";
+import type Result from "@/commons/entity/Result.ts";
+import type PageResult from "@/commons/entity/PageResult.ts";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
 
 export interface GetCompanyMemberListDto extends PageQuery {
   companyId: string | null; // 公司ID

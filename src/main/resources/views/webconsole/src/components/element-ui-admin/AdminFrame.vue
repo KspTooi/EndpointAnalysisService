@@ -98,9 +98,9 @@ import {
   ElButton,
   ElMessage,
 } from "element-plus";
-import type { GetMenuTreeVo } from "@/api/core/MenuApi";
+import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/entity/Result";
-import MenuApi from "@/api/core/MenuApi";
+import MenuApi from "@/views/core/api/MenuApi.ts";
 import { EventHolder } from "@/store/EventHolder";
 import { useTabStore } from "@/store/TabHolder";
 import { storeToRefs } from "pinia";

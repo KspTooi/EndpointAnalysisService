@@ -137,13 +137,13 @@
 </template>
 
 <script setup lang="ts">
-import type { GetUserRequestGroupDetailsVo } from "@/api/requestdebug/UserRequestGroupApi.ts";
+import type { GetUserRequestGroupDetailsVo } from "@/views/requestdebug/api/UserRequestGroupApi.ts";
 import { onMounted, ref, watch } from "vue";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder.ts";
-import UserRequestGroupApi from "@/api/requestdebug/UserRequestGroupApi.ts";
+import UserRequestGroupApi from "@/views/requestdebug/api/UserRequestGroupApi.ts";
 import { ElMessage } from "element-plus";
 import { PreferenceHolder } from "@/store/PreferenceHolder";
-import SimpleFilterApi, { type GetSimpleFilterListVo } from "@/api/requestdebug/SimpleFilterApi.ts";
+import SimpleFilterApi, { type GetSimpleFilterListVo } from "@/views/requestdebug/api/SimpleFilterApi.ts";
 import { EventHolder } from "@/store/EventHolder";
 
 const globalLoading = ref(false);

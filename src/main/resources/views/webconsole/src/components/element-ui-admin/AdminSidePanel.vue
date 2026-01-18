@@ -68,7 +68,7 @@ import { useRouter } from "vue-router";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
-import type { GetMenuTreeVo } from "@/api/core/MenuApi";
+import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 

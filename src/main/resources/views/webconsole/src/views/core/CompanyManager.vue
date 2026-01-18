@@ -107,14 +107,14 @@
 </template>
 
 <script setup lang="ts">
-import type { GetCurrentUserCompanyListDto, GetCurrentUserCompanyListVo, AddCompanyDto, EditCompanyDto, GetCompanyDetailsVo, ResignCeoDto } from "@/api/core/CompanyApi";
-import CompanyApi from "@/api/core/CompanyApi";
+import type { GetCurrentUserCompanyListDto, GetCurrentUserCompanyListVo, AddCompanyDto, EditCompanyDto, GetCompanyDetailsVo, ResignCeoDto } from "@/views/core/api/CompanyApi.ts";
+import CompanyApi from "@/views/core/api/CompanyApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";
-import CompanyMemberModal from "./modal/CompanyMemberModal.vue";
-import type { GetCompanyMemberListVo } from "@/api/core/CompanyMemberApi";
+import CompanyMemberModal from "./components/CompanyMemberModal.vue";
+import type { GetCompanyMemberListVo } from "@/views/core/api/CompanyMemberApi.ts";
 
 const listForm = reactive<GetCurrentUserCompanyListDto>({
   name: "",

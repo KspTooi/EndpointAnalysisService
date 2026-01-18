@@ -1,5 +1,5 @@
-import type Result from "@/commons/entity/Result";
-import Http from "@/commons/Http";
+import type Result from "@/commons/entity/Result.ts";
+import Http from "@/commons/Http.ts";
 
 export interface PreCheckAttachDto {
   name: string; //文件名

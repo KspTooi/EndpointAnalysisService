@@ -181,7 +181,7 @@ import AdminPermissionApi, {
   type GetPermissionListVo,
   type AddPermissionDto,
   type EditPermissionDto,
-} from "@/api/core/PermissionApi.ts";
+} from "@/views/core/api/PermissionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const listForm = reactive<GetPermissionListDto>({

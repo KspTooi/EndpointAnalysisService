@@ -251,14 +251,14 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch, markRaw } from "vue";
-import RelayServerApi, { type GetRelayServerListDto } from "@/api/relay/RelayServerApi.ts";
-import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/api/relay/RelayServerApi.ts";
+import RelayServerApi, { type GetRelayServerListDto } from "@/views/relay/api/RelayServerApi.ts";
+import type { GetRelayServerListVo, GetRelayServerDetailsVo, RelayServerRouteRuleVo, GetRelayServerRouteStateVo } from "@/views/relay/api/RelayServerApi.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, Delete, CaretTop, CaretBottom } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import type { GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
+import type { GetRouteRuleListVo } from "@/views/relay/api/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
-import RouteRuleApi from "@/api/relay/RouteRuleApi.ts";
+import RouteRuleApi from "@/views/relay/api/RouteRuleApi.ts";
 import QueryPersistService from "@/service/QueryPersistService.ts";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 

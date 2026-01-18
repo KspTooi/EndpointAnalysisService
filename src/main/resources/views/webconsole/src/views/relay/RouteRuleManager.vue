@@ -161,9 +161,9 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, markRaw, onMounted } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";
-import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
-import type { GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
-import RouteServerApi from "@/api/relay/RouteServerApi.ts";
+import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/views/relay/api/RouteRuleApi.ts";
+import type { GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
+import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
 
 // 图标常量
 const ViewIcon = markRaw(View);

@@ -78,9 +78,9 @@
 </template>
 
 <script setup lang="ts">
-import type { GetUserListDto, GetUserListVo } from "@/api/core/UserApi";
-import UserApi from "@/api/core/UserApi";
-import { Result } from "@/commons/entity/Result";
+import type { GetUserListDto, GetUserListVo } from "@/views/core/api/UserApi.ts";
+import UserApi from "@/views/core/api/UserApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage } from "element-plus";
 import { reactive, ref, watch } from "vue";
 

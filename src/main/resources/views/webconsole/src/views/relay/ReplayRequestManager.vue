@@ -208,14 +208,14 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, markRaw } from "vue";
-import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/api/relay/ReplayRequestApi.ts";
-import ReplayRequestApi from "@/api/relay/ReplayRequestApi.ts";
+import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/views/relay/api/ReplayRequestApi.ts";
+import ReplayRequestApi from "@/views/relay/api/ReplayRequestApi.ts";
 import { ElMessage } from "element-plus";
 import { View } from "@element-plus/icons-vue";
-import RequestApi from "@/api/relay/RequestApi.ts";
+import RequestApi from "@/views/relay/api/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
-import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/views/requestdebug/api/UserRequestLogApi.ts";
 
 // 图标常量
 const ViewIcon = markRaw(View);

@@ -76,9 +76,9 @@
 </template>
 
 <script setup lang="ts">
-import type { GetCompanyMemberListDto, GetCompanyMemberListVo } from "@/api/core/CompanyMemberApi";
-import CompanyMemberApi from "@/api/core/CompanyMemberApi";
-import { Result } from "@/commons/entity/Result";
+import type { GetCompanyMemberListDto, GetCompanyMemberListVo } from "@/views/core/api/CompanyMemberApi.ts";
+import CompanyMemberApi from "@/views/core/api/CompanyMemberApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage } from "element-plus";
 import { reactive, ref, watch } from "vue";
 

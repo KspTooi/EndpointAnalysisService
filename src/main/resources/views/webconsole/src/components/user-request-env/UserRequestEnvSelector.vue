@@ -13,7 +13,7 @@
 import { ref, onMounted, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { CircleCheck } from "@element-plus/icons-vue";
-import UserRequestEnvApi, { type GetUserRequestEnvListVo } from "@/api/requestdebug/UserRequestEnvApi.ts";
+import UserRequestEnvApi, { type GetUserRequestEnvListVo } from "@/views/requestdebug/api/UserRequestEnvApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const selectedEnvId = ref<string | null>(null);
