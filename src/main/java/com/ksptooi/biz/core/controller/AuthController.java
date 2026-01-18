@@ -1,6 +1,7 @@
 package com.ksptooi.biz.core.controller;
 
 
+import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.model.user.LoginDto;
 import com.ksptooi.biz.core.model.user.RegisterDto;
@@ -9,6 +10,7 @@ import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -168,6 +170,13 @@ public class AuthController {
         }
 
         return Result.success(session.getPermissions());
+    }
+
+    @Operation(summary = "获取当前用户信息")
+    @PostMapping("/getCurrentUserProfile")
+    @ResponseBody
+    public Result<GetCurrentUserProfile> getCurrentUserProfile() throws AuthException {
+        return Result.success(authService.getCurrentUserProfile());
     }
 
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -71,5 +72,27 @@ public class PermissionPo {
     @PreUpdate
     public void preUpdate() {
         updateTime = LocalDateTime.now();
+    }
+
+    /**
+     * 判断两个权限是否相等 只要id相等就认为相等
+     * @param obj 要比较的权限
+     * @return 是否相等 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        PermissionPo other = (PermissionPo) obj;
+        return Objects.equals(id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 } 
