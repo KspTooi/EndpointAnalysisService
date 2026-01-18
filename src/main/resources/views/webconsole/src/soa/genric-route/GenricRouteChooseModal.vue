@@ -55,13 +55,42 @@
 import GenricRouteChooseModalService from "@/soa/genric-route/service/GenricRouteChooseModalService";
 import type { RouteEntryPo } from "./api/RouteEntryPo";
 
+const modelValue = defineModel<string | null>({ default: null });
+
 /**
  * 选择路由模态框打包
  */
-const { modalVisible, selectedRoute, searchKeyword, filteredRouteList, buildPath, confirmSelect, cancelSelect } =
-  GenricRouteChooseModalService.useGenricRouteChooseModal();
+const {
+  modalVisible,
+  selectedRoute,
+  searchKeyword,
+  filteredRouteList,
+  buildPath,
+  openModal,
+  confirmSelect: originalConfirmSelect,
+  cancelSelect: originalCancelSelect,
+} = GenricRouteChooseModalService.useGenricRouteChooseModal();
+
+/**
+ * 确认选择（支持双向绑定）
+ */
+const confirmSelect = () => {
+  if (!selectedRoute.value) {
+    return;
+  }
+  modelValue.value = buildPath(selectedRoute.value);
+  originalConfirmSelect();
+};
+
+/**
+ * 取消选择（支持双向绑定）
+ */
+const cancelSelect = () => {
+  modelValue.value = null;
+  originalCancelSelect();
+};
 
 defineExpose({
-  openModal: () => GenricRouteChooseModalService.useGenricRouteChooseModal().openModal(),
+  openModal,
 });
 </script>
