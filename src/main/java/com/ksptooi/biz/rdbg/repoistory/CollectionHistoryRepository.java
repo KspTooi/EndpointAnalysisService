@@ -25,7 +25,7 @@ public interface CollectionHistoryRepository extends JpaRepository<CollectionHis
             AND (:#{#po.retHeaderJson} IS NULL OR u.retHeaderJson  = :#{#po.retHeaderJson} )
             AND (:#{#po.retBodyJson} IS NULL OR u.retBodyJson  = :#{#po.retBodyJson} )
             AND (:#{#po.retHttpStatus} IS NULL OR u.retHttpStatus  = :#{#po.retHttpStatus} )
-            AND (:#{#po.retBizStatus} IS NULL OR u.retBizStatus  = :#{#po.retBizStatus} )
+            AND (:#{#po.bizStatus} IS NULL OR u.bizStatus  = :#{#po.bizStatus} )
             AND (:#{#po.reqTime} IS NULL OR u.reqTime  = :#{#po.reqTime} )
             AND (:#{#po.retTime} IS NULL OR u.retTime  = :#{#po.retTime} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )

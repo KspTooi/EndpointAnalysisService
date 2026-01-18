@@ -1,15 +1,19 @@
 <template>
-  <div class="h-full w-full flex">
-    <RdbgCollectionTree style="width: 350px" :data="listData" :loading="listLoading" :loadList="loadList" />
+  <Splitpanes class="default-theme h-full w-full flex">
+    <Pane style="min-width: 300px" max-size="40" size="30" :push-other-panes="false">
+      <RdbgCollectionTree :data="listData" :loading="listLoading" :loadList="loadList" />
+    </Pane>
 
-    <RdbgEditor
-      style="flex: 1"
-      v-show="isSelectedRequest"
-      :details="details"
-      :loading="detailsLoading"
-      @on-details-change="saveDetails"
-    />
-  </div>
+    <Pane>
+      <RdbgEditor
+        style="flex: 1"
+        v-show="isSelectedRequest"
+        :details="details"
+        :loading="detailsLoading"
+        @on-details-change="saveDetails"
+      />
+    </Pane>
+  </Splitpanes>
 </template>
 
 <script setup lang="ts">
@@ -18,6 +22,8 @@ import RdbgEditor from "@/views/requestdebug/components/RdbgEditor.vue";
 import { computed, watch } from "vue";
 import { useRdbgStore } from "@/views/requestdebug/service/RdbgStore";
 import RdbgWorkSpaceService from "@/views/requestdebug/service/RdbgWorkSpaceService";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 
 const rdbgStore = useRdbgStore();
 

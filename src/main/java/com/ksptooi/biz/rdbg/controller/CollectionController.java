@@ -131,7 +131,8 @@ public class CollectionController {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
-        return Result.success(hRelay.sendRequest(dto));
+        //return Result.success(hRelay.sendRequest(dto));
+        return null;
     }
 
 

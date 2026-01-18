@@ -7,9 +7,9 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.dto.GetCollectionHistoryList
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryListVo;
 import com.ksptooi.biz.rdbg.repoistory.CollectionHistoryRepository;
-import com.ksptooi.commons.exception.BizException;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
