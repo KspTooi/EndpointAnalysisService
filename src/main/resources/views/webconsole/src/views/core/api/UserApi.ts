@@ -30,6 +30,8 @@ export interface GetUserListVo {
   id: string; // 用户ID
   username: string; // 用户名
   nickname: string; // 用户昵称
+  gender: number; // 用户性别
+  phone: string; // 用户手机号
   email: string; // 用户邮箱
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
@@ -40,6 +42,8 @@ export interface GetUserDetailsVo {
   id: string; // 用户ID
   username: string; // 用户名
   nickname: string; // 用户昵称
+  gender: number; // 用户性别
+  phone: string; // 用户手机号
   email: string; // 用户邮箱
   status: number; // 用户状态
   createTime: string; // 创建时间
@@ -52,6 +56,8 @@ export interface AddUserDto {
   username: string; // 用户名
   password: string; // 用户密码
   nickname?: string; // 用户昵称
+  gender: number; // 性别 0:男 1:女 2:不愿透露
+  phone?: string; // 用户手机号
   email?: string; // 用户邮箱
   status?: number; // 用户状态：0-禁用，1-启用
   groupIds?: string[]; // 用户组ID列表
@@ -62,6 +68,8 @@ export interface EditUserDto {
   username: string; // 用户名
   password?: string; // 用户密码，编辑时可选
   nickname?: string; // 用户昵称
+  gender: number; // 性别 0:男 1:女 2:不愿透露
+  phone?: string; // 用户手机号
   email?: string; // 用户邮箱
   status?: number; // 用户状态：0-禁用，1-启用
   groupIds?: string[]; // 用户组ID列表

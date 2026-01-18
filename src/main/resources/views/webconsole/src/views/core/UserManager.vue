@@ -37,6 +37,14 @@
       <el-table :data="listData" stripe v-loading="listLoading" border>
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="nickname" label="昵称" min-width="150" />
+        <el-table-column label="性别" min-width="100">
+          <template #default="scope">
+            <span v-if="scope.row.gender === 0">男</span>
+            <span v-if="scope.row.gender === 1">女</span>
+            <span v-if="scope.row.gender === 2">不愿透露</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="手机号" min-width="120" />
         <el-table-column prop="email" label="邮箱" min-width="160" />
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
@@ -115,6 +123,16 @@
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="modalForm.nickname" placeholder="请输入昵称" />
         </el-form-item>
+        <el-form-item label="性别" prop="gender">
+          <el-radio-group v-model="modalForm.gender">
+            <el-radio :label="0">男</el-radio>
+            <el-radio :label="1">女</el-radio>
+            <el-radio :label="2">不愿透露</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="modalForm.phone" placeholder="请输入手机号" />
+        </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="modalForm.email" placeholder="请输入邮箱" />
         </el-form-item>
@@ -143,265 +161,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, markRaw } from "vue";
+import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
-import Http from "@/commons/Http.ts";
-import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import AdminUserApi, {
-  type GetUserDetailsVo,
-  type GetUserListDto,
-  type GetUserListVo,
-  type AddUserDto,
-  type EditUserDto,
-  type UserGroupVo,
-} from "@/views/core/api/UserApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
-import GroupApi from "@/views/core/api/GroupApi.ts";
+import UserManagerService from "@/views/core/service/UserManagerService.ts";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-//列表内容
-const listForm = reactive<GetUserListDto>({
-  pageNum: 1,
-  pageSize: 10,
-  username: "",
-  status: null,
-});
+// 列表打包
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList();
 
-const listData = ref<GetUserListVo[]>([]);
-const listTotal = ref(0);
-const listLoading = ref(false);
-
-// 模态框相关
-const modalVisible = ref(false);
-const modalMode = ref<"add" | "edit">("add");
-const modalLoading = ref(false);
+// 模态框表单引用
 const modalFormRef = ref<FormInstance>();
 
-// 用户组选项，将从 API 获取
-const groupOptions = ref<UserGroupVo[]>([]);
-
-// 表单数据
-const modalForm = reactive<GetUserDetailsVo>({
-  id: "",
-  username: "",
-  nickname: "",
-  email: "",
-  status: 0,
-  createTime: "",
-  lastLoginTime: "",
-  groups: [],
-  permissions: [],
-});
-const modalFormPassword = ref("");
-const selectedGroupIds = ref<string[]>([]);
-
-// 表单校验规则 用户密码长度不能超过128个字符, 用户昵称长度不能超过50个字符
-const modalRules = {
-  username: [
-    { required: true, message: "请输入用户名", trigger: "blur" },
-    { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },
-  ],
-  nickname: [{ max: 50, message: "昵称长度不能超过50个字符", trigger: "blur" }],
-  password: [
-    {
-      trigger: "blur",
-      validator: (rule: any, value: string, callback: Function) => {
-        const password = modalFormPassword.value;
-        if (modalMode.value === "add" && !password) {
-          callback(new Error("请输入密码"));
-          return;
-        }
-        if (password && password.length > 128) {
-          callback(new Error("密码长度不能超过128个字符"));
-          return;
-        }
-        if (password && password.length < 6) {
-          callback(new Error("密码长度不能少于6位"));
-          return;
-        }
-        callback();
-      },
-    },
-  ],
-  email: [
-    { type: "email", message: "请输入正确的邮箱格式", trigger: "blur" },
-    { max: 50, message: "邮箱长度不能超过50个字符", trigger: "blur" },
-  ],
-};
-
-const loadList = async () => {
-  listLoading.value = true;
-  const result = await AdminUserApi.getUserList(listForm);
-
-  if (Result.isSuccess(result)) {
-    listData.value = result.data;
-    listTotal.value = result.total;
-  }
-
-  if (Result.isError(result)) {
-    ElMessage.error(result.message);
-  }
-
-  listLoading.value = false;
-};
-
-const resetList = () => {
-  listForm.pageNum = 1;
-  listForm.pageSize = 10;
-  listForm.username = "";
-  listForm.status = null;
-  loadList();
-};
-
-// 重置表单
-const resetModal = () => {
-  modalForm.id = "";
-  modalForm.username = "";
-  modalForm.nickname = "";
-  modalForm.email = "";
-  modalForm.status = 0;
-  modalForm.groups = [];
-  modalFormPassword.value = "";
-  selectedGroupIds.value = [];
-
-  if (modalFormRef.value) {
-    modalFormRef.value.resetFields();
-  }
-};
-
-// 打开模态框
-const openModal = async (mode: "add" | "edit", row: GetUserListVo | null) => {
-  modalMode.value = mode;
-  resetModal();
-
-  //如果是编辑模式则需要加载详情数据
-  if (mode === "edit" && row) {
-    try {
-      const ret = await AdminUserApi.getUserDetails({ id: row.id });
-
-      modalForm.id = ret.id;
-      modalForm.username = ret.username;
-      modalForm.nickname = ret.nickname || "";
-      modalForm.email = ret.email || "";
-      modalForm.status = ret.status;
-      modalForm.groups = ret.groups || [];
-
-      groupOptions.value = ret.groups || [];
-      selectedGroupIds.value = ret.groups ? ret.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
-    } catch (error: any) {
-      ElMessage.error(error.message);
-      return;
-    }
-  }
-  if (mode !== "edit" || !row) {
-    // 新增模式，获取用户组列表
-    const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
-    groupOptions.value = [];
-    groups.data.forEach((group) => {
-      groupOptions.value.push({
-        id: group.id,
-        name: group.name,
-        description: "",
-        sortOrder: 0,
-        isSystem: group.isSystem,
-        hasGroup: false,
-      });
-    });
-  }
-
-  modalVisible.value = true;
-};
-
-// 提交表单
-const submitModal = async () => {
-  //先校验表单
-  try {
-    await modalFormRef?.value?.validate();
-  } catch (error) {
-    return;
-  }
-
-  modalLoading.value = true;
-
-  //提交表单
-  try {
-    if (modalMode.value === "add") {
-      const addDto: AddUserDto = {
-        username: modalForm.username,
-        password: modalFormPassword.value,
-        nickname: modalForm.nickname,
-        email: modalForm.email,
-        status: modalForm.status,
-        groupIds: selectedGroupIds.value,
-      };
-      const result = await AdminUserApi.addUser(addDto);
-      if (Result.isSuccess(result)) {
-        ElMessage.success("操作成功");
-        resetModal();
-      }
-      if (Result.isError(result)) {
-        ElMessage.error(result.message);
-        return;
-      }
-    }
-
-    if (modalMode.value === "edit") {
-      const editDto: EditUserDto = {
-        id: modalForm.id,
-        username: modalForm.username,
-        nickname: modalForm.nickname,
-        email: modalForm.email,
-        status: modalForm.status,
-        groupIds: selectedGroupIds.value,
-      };
-      if (modalFormPassword.value) {
-        editDto.password = modalFormPassword.value;
-      }
-      const result = await AdminUserApi.editUser(editDto);
-      if (Result.isSuccess(result)) {
-        ElMessage.success("操作成功");
-      }
-      if (Result.isError(result)) {
-        ElMessage.error(result.message);
-        return;
-      }
-    }
-  } catch (error: any) {
-    ElMessage.error(error.message);
-    return;
-  } finally {
-    modalLoading.value = false;
-  }
-
-  await loadList();
-};
-
-const removeList = async (id: string) => {
-  try {
-    await ElMessageBox.confirm("确定删除该用户吗？", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    });
-  } catch (error) {
-    return;
-  }
-
-  try {
-    await AdminUserApi.removeUser({ id });
-    ElMessage.success("删除成功");
-    await loadList();
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-loadList();
+// 模态框打包
+const {
+  modalVisible,
+  modalLoading,
+  modalMode,
+  modalForm,
+  modalFormPassword,
+  selectedGroupIds,
+  groupOptions,
+  modalRules,
+  openModal,
+  resetModal,
+  submitModal,
+} = UserManagerService.useUserModal(modalFormRef, loadList);
 </script>
 
 <style scoped>
