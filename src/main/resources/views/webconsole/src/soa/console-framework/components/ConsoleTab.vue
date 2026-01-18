@@ -146,52 +146,57 @@ onBeforeUnmount(() => {
 .tab-panel-container {
   display: flex;
   align-items: center;
-  background-color: #f0f2f5;
-  padding: 1px 0 0 5px;
-  border-bottom: 1px solid var(--el-border-color-light);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  background-color: #f5f7fa;
+  padding: 0;
+  border-bottom: 1px solid #e4e7ed;
   user-select: none;
+  height: 38px;
 }
 
 .draggable-tabs {
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping */
-  gap: 2px;
-  overflow-x: auto; /* Allow horizontal scrolling if tabs overflow */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: 100%;
 }
 
 .draggable-tabs::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, and Opera */
+  display: none;
 }
 
 .tab-controls {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   height: 100%;
+  border-left: 1px solid #e4e7ed;
+  background-color: #fff;
 }
 
 .control-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
+  width: 38px;
   cursor: pointer;
-  font-size: 18px;
-  transition: background-color 0.2s ease;
+  font-size: 16px;
+  transition: all 0.2s ease;
   height: 100%;
+  color: #606266;
 }
 
 .control-btn:hover {
-  background-color: #d1d5db;
+  background-color: #f5f7fa;
+  color: #409eff;
 }
 
 .close-btn:hover {
-  background-color: #e81123;
-  color: white;
+  background-color: #fef0f0;
+  color: #f56c6c;
 }
 
 .tab-item {
@@ -199,66 +204,39 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  height: 34px;
-  background-color: #d1d5db;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  height: 100%;
+  background-color: transparent;
+  border-right: 1px solid #e4e7ed;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
   font-size: 13px;
-  color: #4b5563;
+  color: #606266;
   z-index: 1;
+  border-radius: 0 !important;
 }
 
 .tab-item:hover {
-  background-color: #e5e7eb;
+  background-color: #fff;
+  color: #409eff;
 }
 
 .tab-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background-color: #fff;
+  color: #009688; /* 使用项目主题色 */
+  font-weight: 600;
   z-index: 2;
 }
 
-.tab-item::before,
-.tab-item::after {
+.tab-item.active::after {
   content: "";
   position: absolute;
-  bottom: 0;
-  width: 10px;
-  height: 10px;
-}
-
-/* Curves for inactive tabs */
-.tab-item:not(.active)::before {
-  left: -10px;
-  background-image: radial-gradient(circle at 0 0, transparent 9.5px, #d1d5db 10px);
-}
-.tab-item:not(.active)::after {
-  right: -10px;
-  background-image: radial-gradient(circle at 100% 0, transparent 9.5px, #d1d5db 10px);
-}
-
-/* Curves for hovered tabs */
-.tab-item:not(.active):hover::before {
-  background-image: radial-gradient(circle at 0 0, transparent 9.5px, #e5e7eb 10px);
-}
-.tab-item:not(.active):hover::after {
-  background-image: radial-gradient(circle at 100% 0, transparent 9.5px, #e5e7eb 10px);
-}
-
-/* Curves for active tab */
-.tab-item.active::before {
-  left: -10px;
-  background-image: radial-gradient(circle at 0 0, transparent 9.5px, #667eea 10px);
-}
-.tab-item.active::after {
-  right: -10px;
-  background-image: radial-gradient(circle at 100% 0, transparent 9.5px, #764ba2 10px);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
 }
 
 .tab-title {
@@ -266,48 +244,44 @@ onBeforeUnmount(() => {
 }
 
 .close-icon {
-  font-size: 14px;
-  border-radius: 50%;
+  font-size: 12px;
   padding: 2px;
   transition: all 0.2s ease;
+  border-radius: 0;
 }
 
-.tab-item:not(.active) .close-icon:hover {
-  background-color: #dcdfe6;
-  color: #909399;
-}
-
-.tab-item.active .close-icon:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  color: #fff;
+.tab-item .close-icon:hover {
+  background-color: #fef0f0;
+  color: #f56c6c;
 }
 
 .ghost-tab {
   opacity: 0.5;
-  background: #c8e6fb;
+  background: #f5f7fa;
 }
 
 .context-menu {
   position: fixed;
   background: #fff;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border: 1px solid #e4e7ed;
+  border-radius: 0;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
+  padding: 4px 0;
   margin: 0;
   list-style: none;
   z-index: 3000;
-  font-size: 13px;
+  font-size: 12px;
   color: #606266;
 }
 
 .context-menu li {
   padding: 8px 16px;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .context-menu li:hover {
-  background-color: #ecf5ff;
-  color: #409eff;
+  background-color: #f5f7fa;
+  color: #009688;
 }
 </style>
