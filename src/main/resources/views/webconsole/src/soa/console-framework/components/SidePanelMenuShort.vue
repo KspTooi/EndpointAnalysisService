@@ -1,5 +1,5 @@
 <template>
-  <el-aside width="64px" class="admin-sidebar" @click="emit('expand')">
+  <el-aside width="64px" class="admin-sidebar">
     <div class="admin-side-panel-short">
       <!-- LOGO区域 - 仅图标 -->
       <div class="logo-container">
@@ -16,7 +16,12 @@
       >
         <template v-for="item in filteredItems" :key="item.id">
           <!-- 目录类型 -->
-          <el-sub-menu v-if="item.menuKind === 0 && item.children?.length" :index="item.id">
+          <el-sub-menu
+            v-if="item.menuKind === 0 && item.children?.length"
+            :index="item.id"
+            :show-timeout="50"
+            :hide-timeout="35"
+          >
             <template #title>
               <el-icon>
                 <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
@@ -72,7 +77,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "item-click", itemId: string): void;
   (e: "update:activeItemId", itemId: string): void;
-  (e: "expand"): void;
 }>();
 
 // 过滤掉按钮类型的菜单

@@ -1,5 +1,10 @@
 <template>
   <div class="tab-panel-container">
+    <div class="tab-prefix-controls">
+      <el-icon class="control-btn close-btn" @click="handleCloseCurrentTab" title="关闭标签页">
+        <Close />
+      </el-icon>
+    </div>
     <draggable
       v-model="tabs"
       item-key="id"
@@ -27,9 +32,6 @@
     <div class="tab-controls">
       <el-icon class="control-btn" @click="handleRefresh" title="刷新">
         <Refresh />
-      </el-icon>
-      <el-icon class="control-btn close-btn" @click="handleCloseCurrentTab" title="关闭标签页">
-        <Close />
       </el-icon>
       <slot name="controls"></slot>
     </div>
@@ -167,6 +169,15 @@ onBeforeUnmount(() => {
 
 .draggable-tabs::-webkit-scrollbar {
   display: none;
+}
+
+.tab-prefix-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border-right: 1px solid #e4e7ed;
+  background-color: #fff;
+  flex-shrink: 0;
 }
 
 .tab-controls {

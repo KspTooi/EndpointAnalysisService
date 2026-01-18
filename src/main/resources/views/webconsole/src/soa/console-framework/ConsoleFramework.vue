@@ -10,7 +10,6 @@
         version="版本:1.4L CP10"
         @item-click="handleMenuClick"
         @action="handleMenuAction"
-        @expand="toggleMenu"
       />
 
       <el-container>
