@@ -135,10 +135,10 @@ public class MaintainController {
     @RequirePermissionRest("admin:maintain:menu")
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
-        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_2G.sql");
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_4Z.sql");
 
         if (!sqlScript.exists()) {
-            throw new BizException("SQL脚本文件 'sql/default_menus_1_2G.sql' 不存在。请检查文件是否已正确放置。");
+            throw new BizException("SQL脚本文件 'sql/default_menus_1_4Z.sql' 不存在。请检查文件是否已正确放置。");
         }
 
         try {
