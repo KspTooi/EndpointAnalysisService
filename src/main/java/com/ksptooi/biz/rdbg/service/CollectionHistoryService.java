@@ -6,7 +6,7 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.dto.EditCollectionHistoryDto
 import com.ksptooi.biz.rdbg.model.collectionhistory.dto.GetCollectionHistoryListDto;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryListVo;
-import com.ksptooi.biz.rdbg.repoistory.CollectionHistoryRepository;
+import com.ksptooi.biz.rdbg.repository.CollectionHistoryRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -28,6 +28,7 @@ public class CollectionHistoryService {
 
     /**
      * 获取请求集合历史记录列表
+     *
      * @param dto 查询条件
      * @return 请求集合历史记录列表
      */
@@ -46,6 +47,7 @@ public class CollectionHistoryService {
 
     /**
      * 添加请求集合历史记录
+     *
      * @param dto 请求集合历史记录信息
      */
     @Transactional(rollbackFor = Exception.class)
@@ -56,6 +58,7 @@ public class CollectionHistoryService {
 
     /**
      * 编辑请求集合历史记录
+     *
      * @param dto 请求集合历史记录信息
      * @throws BizException 业务异常
      */
@@ -70,6 +73,7 @@ public class CollectionHistoryService {
 
     /**
      * 获取请求集合历史记录详情
+     *
      * @param dto 查询条件
      * @return 请求集合历史记录详情
      * @throws BizException 业务异常
@@ -82,6 +86,7 @@ public class CollectionHistoryService {
 
     /**
      * 删除请求集合历史记录
+     *
      * @param dto 查询条件
      * @throws BizException 业务异常
      */

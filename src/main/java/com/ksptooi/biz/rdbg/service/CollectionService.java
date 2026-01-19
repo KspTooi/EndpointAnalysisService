@@ -11,16 +11,12 @@ import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.CollectionHistoryPo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
-import com.ksptooi.biz.rdbg.repoistory.CollectionHistoryRepository;
-import com.ksptooi.biz.rdbg.repoistory.CollectionRepository;
+import com.ksptooi.biz.rdbg.repository.CollectionHistoryRepository;
+import com.ksptooi.biz.rdbg.repository.CollectionRepository;
+import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.httprelay.HttpRelay;
 import com.ksptooi.commons.httprelay.HttpRelaySchemaConfig;
-import com.ksptooi.commons.httprelay.model.HttpRelayResponse;
-import com.ksptooi.commons.httprelay.model.HttpRelaySchema;
-import com.ksptooi.commons.httprelay.model.RelayBody;
-import com.ksptooi.commons.httprelay.model.RelayHeader;
-import com.ksptooi.commons.httprelay.model.RelayParam;
-import com.ksptooi.commons.enums.GlobalConfigEnum;
+import com.ksptooi.commons.httprelay.model.*;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -590,17 +586,17 @@ public class CollectionService {
         HttpRelayResponse hrr = null;
 
         try {
-            
+
             hrr = httpRelay.sendRequest(schema);
 
             //读取响应内容
             var maxResponseSize = globalConfigService.getInt(GlobalConfigEnum.RDBG_MAX_RESPONSE_SIZE.getKey(), 10) * 1024 * 1024;
-            var declareResponseSize = Integer.parseInt(hrr.firstHeaderValue("content-length",String.valueOf(maxResponseSize)));
-        
+            var declareResponseSize = Integer.parseInt(hrr.firstHeaderValue("content-length", String.valueOf(maxResponseSize)));
+
             //响应长度不超限,直接读取
             if (declareResponseSize <= maxResponseSize) {
                 var retBody = hrr.getBody().readNBytes(declareResponseSize);
-                historyPo.setRetBodyText(new String(retBody,StandardCharsets.UTF_8));
+                historyPo.setRetBodyText(new String(retBody, StandardCharsets.UTF_8));
             }
 
             //响应长度超限,不读取
