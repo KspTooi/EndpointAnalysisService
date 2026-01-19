@@ -359,8 +359,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GetEndpointDetailsVo, GetEndpointTreeDto, GetEndpointTreeVo } from "@/api/core/EndpointApi";
-import EndpointApi from "@/api/core/EndpointApi";
+import type { GetEndpointDetailsVo, GetEndpointTreeDto, GetEndpointTreeVo } from "@/views/core/api/EndpointApi.ts";
+import EndpointApi from "@/views/core/api/EndpointApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, computed, onMounted } from "vue";

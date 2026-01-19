@@ -42,10 +42,30 @@
         <el-table-column label="操作" fixed="right" width="320">
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 2px; width: 100%">
-              <el-button v-if="scope.row.isActive !== 1" link type="success" size="small" @click="activateCompany(scope.row.id)" :icon="Refresh">激活</el-button>
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">编辑</el-button>
-              <el-button v-if="scope.row.isCeo === 1" link type="danger" size="small" @click="openResignCeoModal(scope.row)" :icon="SwitchButton">辞去CEO职位</el-button>
-              <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton">退出</el-button>
+              <el-button
+                v-if="scope.row.isActive !== 1"
+                link
+                type="success"
+                size="small"
+                @click="activateCompany(scope.row.id)"
+                :icon="Refresh"
+                >激活</el-button
+              >
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"
+                >编辑</el-button
+              >
+              <el-button
+                v-if="scope.row.isCeo === 1"
+                link
+                type="danger"
+                size="small"
+                @click="openResignCeoModal(scope.row)"
+                :icon="SwitchButton"
+                >辞去CEO职位</el-button
+              >
+              <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton"
+                >退出</el-button
+              >
               <!-- <el-button link type="danger" size="small" @click="removeCompany(scope.row.id)" :icon="DeleteIcon">删除</el-button> -->
             </div>
           </template>
@@ -81,9 +101,15 @@
       width="550px"
       :close-on-click-modal="false"
       @close="resetModal()"
-      class="modal-centered"
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="80px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="80px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="团队名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入团队名称" clearable />
         </el-form-item>
@@ -102,19 +128,32 @@
     </el-dialog>
 
     <!-- 成员选择模态框 -->
-    <CompanyMemberModal v-model="memberModalVisible" :company-id="currentResignCompanyId" :allow-select="true" :role="1" @on-member-selected="handleMemberSelected" />
+    <CompanyMemberModal
+      v-model="memberModalVisible"
+      :company-id="currentResignCompanyId"
+      :allow-select="true"
+      :role="1"
+      @on-member-selected="handleMemberSelected"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { GetCurrentUserCompanyListDto, GetCurrentUserCompanyListVo, AddCompanyDto, EditCompanyDto, GetCompanyDetailsVo, ResignCeoDto } from "@/api/core/CompanyApi";
-import CompanyApi from "@/api/core/CompanyApi";
+import type {
+  GetCurrentUserCompanyListDto,
+  GetCurrentUserCompanyListVo,
+  AddCompanyDto,
+  EditCompanyDto,
+  GetCompanyDetailsVo,
+  ResignCeoDto,
+} from "@/views/core/api/CompanyApi.ts";
+import CompanyApi from "@/views/core/api/CompanyApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";
-import CompanyMemberModal from "./modal/CompanyMemberModal.vue";
-import type { GetCompanyMemberListVo } from "@/api/core/CompanyMemberApi";
+import CompanyMemberModal from "./components/CompanyMemberModal.vue";
+import type { GetCompanyMemberListVo } from "@/views/core/api/CompanyMemberApi.ts";
 
 const listForm = reactive<GetCurrentUserCompanyListDto>({
   name: "",
@@ -409,11 +448,5 @@ const handleMemberSelected = async (member: GetCompanyMemberListVo) => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

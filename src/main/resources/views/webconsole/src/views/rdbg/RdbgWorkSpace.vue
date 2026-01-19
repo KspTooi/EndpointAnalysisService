@@ -1,0 +1,56 @@
+<template>
+  <Splitpanes class="default-theme h-full w-full flex">
+    <Pane style="min-width: 300px" max-size="40" size="30" :push-other-panes="false">
+      <RdbgCollectionTree :data="listData" :loading="listLoading" :loadList="loadList" />
+    </Pane>
+
+    <Pane>
+      <RdbgEditor
+        style="flex: 1"
+        v-show="isSelectedRequest"
+        :details="details"
+        :loading="detailsLoading"
+        @on-details-change="saveDetails"
+      />
+    </Pane>
+  </Splitpanes>
+</template>
+
+<script setup lang="ts">
+import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
+import RdbgEditor from "@/views/rdbg/components/RdbgEditor.vue";
+import { computed } from "vue";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
+import RdbgWorkSpaceService from "@/views/rdbg/service/RdbgWorkSpaceService";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
+
+const rdbgStore = useRdbgStore();
+
+//列表功能打包
+const { listData, listLoading, loadList } = RdbgWorkSpaceService.useCollectionList();
+
+//集合详情功能打包
+const { details, detailsLoading, saveDetails } = RdbgWorkSpaceService.useCollectionDetails(loadList);
+
+const isSelectedRequest = computed(() => {
+  return rdbgStore.getActiveCollection?.kind === 0;
+});
+const isSelectedGroup = computed(() => {
+  return rdbgStore.getActiveCollection?.kind === 1;
+});
+</script>
+
+<style scoped>
+:deep(.el-overlay) {
+  user-select: none;
+}
+
+:deep(.el-overlay) * {
+  user-select: none;
+}
+
+.modal-content {
+  padding: 20px 0;
+}
+</style>

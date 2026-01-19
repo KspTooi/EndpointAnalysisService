@@ -232,7 +232,6 @@
       width="400px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      class="modal-centered"
     >
       <el-form
         ref="saveFormRef"
@@ -258,20 +257,20 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, markRaw, watch } from "vue";
-import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/api/relay/RequestApi.ts";
-import RequestApi from "@/api/relay/RequestApi.ts";
+import type { GetRequestListDto, GetRequestListVo, GetRequestDetailsVo } from "@/views/relay/api/RequestApi.ts";
+import RequestApi from "@/views/relay/api/RequestApi.ts";
 import { ElMessage } from "element-plus";
 import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import QueryPersistService from "@/service/QueryPersistService.ts";
-import UserRequestApi from "@/api/requestdebug/UserRequestApi.ts";
+import UserRequestApi from "@/views/rdbg/api/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
-import type { HttpHeaderVo } from "@/api/requestdebug/UserRequestLogApi.ts";
+import type { HttpHeaderVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
-import type { GetRelayServerListVo } from "@/api/relay/RelayServerApi";
-import RelayServerApi from "@/api/relay/RelayServerApi";
+import type { GetRelayServerListVo } from "@/views/relay/api/RelayServerApi.ts";
+import RelayServerApi from "@/views/relay/api/RelayServerApi.ts";
 import { Result } from "@/commons/entity/Result";
 
 // 图标常量
@@ -585,12 +584,5 @@ onMounted(async () => {
 
 .copy-icon {
   cursor: pointer;
-}
-
-/* 保存请求对话框垂直居中 */
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

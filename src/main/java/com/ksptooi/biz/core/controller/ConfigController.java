@@ -3,7 +3,6 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.service.ConfigService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -29,14 +28,12 @@ public class ConfigController {
 
     @Operation(summary = "获取配置项列表")
     @PostMapping("getConfigList")
-    @RequirePermissionRest("admin:config:view")
     public PageResult<GetConfigListVo> getConfigList(@RequestBody @Valid GetConfigListDto dto) throws Exception {
         return service.getConfigList(dto);
     }
 
     @Operation(summary = "获取配置项详情")
     @PostMapping("getConfigDetails")
-    @RequirePermissionRest("admin:config:save")
     public Result<GetConfigDetailsVo> getConfigDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         try {
             return Result.success(service.getConfigDetails(dto.getId()));
@@ -47,7 +44,6 @@ public class ConfigController {
 
     @Operation(summary = "新增配置项")
     @PostMapping("addConfig")
-    @RequirePermissionRest("admin:config:save")
     public Result<String> addConfig(@RequestBody @Valid AddConfigDto dto) throws Exception {
         try {
             service.addConfig(dto);
@@ -59,7 +55,6 @@ public class ConfigController {
 
     @Operation(summary = "编辑配置项")
     @PostMapping("editConfig")
-    @RequirePermissionRest("admin:config:save")
     public Result<String> editConfig(@RequestBody @Valid EditConfigDto dto) throws Exception {
         try {
             service.editConfig(dto);
@@ -71,7 +66,6 @@ public class ConfigController {
 
     @Operation(summary = "删除配置项")
     @PostMapping("removeConfig")
-    @RequirePermissionRest("admin:config:remove")
     public Result<String> removeConfig(@RequestBody @Valid CommonIdDto dto) throws Exception {
         try {
             service.removeConfig(dto.getId());

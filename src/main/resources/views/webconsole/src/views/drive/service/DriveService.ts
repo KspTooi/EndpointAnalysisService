@@ -141,49 +141,49 @@ export default {
 
         //图片
         if (fileCategory === EntryCategory.PHOTO) {
-          routePath = "/drive/preview/photo";
+          routePath = "/drive/preview-photo";
           icon = "el-icon-picture";
         }
 
         //视频
         if (fileCategory === EntryCategory.VIDEO) {
-          routePath = "/drive/preview/video";
+          routePath = "/drive/preview-video";
           icon = "el-icon-video-play";
         }
 
         //音频
         if (fileCategory === EntryCategory.AUDIO) {
-          routePath = "/drive/preview/video";
+          routePath = "/drive/preview-video";
           icon = "el-icon-headset";
         }
 
         //PDF
         if (fileCategory === EntryCategory.PDF) {
-          routePath = "/drive/preview/pdf";
+          routePath = "/drive/preview-pdf";
           icon = "el-icon-document";
         }
 
         //Word文档
         if (fileCategory === EntryCategory.WORD) {
-          routePath = "/drive/preview/word";
+          routePath = "/drive/preview-word";
           icon = "el-icon-document";
         }
 
         //Excel表格
         if (fileCategory === EntryCategory.EXCEL) {
-          routePath = "/drive/preview/excel";
+          routePath = "/drive/preview-excel";
           icon = "el-icon-table";
         }
 
         //代码
         if (fileCategory === EntryCategory.CODE) {
-          routePath = "/drive/preview/code";
+          routePath = "/drive/preview-code";
           icon = "el-icon-code";
         }
 
         //TXT
         if (fileCategory === EntryCategory.TEXT) {
-          routePath = "/drive/preview/code";
+          routePath = "/drive/preview-code";
           icon = "el-icon-text";
         }
 

@@ -7,7 +7,6 @@ import com.ksptooi.biz.core.model.user.GetUserListDto;
 import com.ksptooi.biz.core.model.user.GetUserListVo;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -31,14 +30,12 @@ public class UserController {
 
     @Operation(summary = "获取用户列表")
     @PostMapping("getUserList")
-    @RequirePermissionRest("admin:user:view")
     public PageResult<GetUserListVo> getUserList(@RequestBody @Valid GetUserListDto dto) {
         return service.getUserList(dto);
     }
 
     @Operation(summary = "获取用户详情")
     @PostMapping("getUserDetails")
-    @RequirePermissionRest("admin:user:save")
     public Result<GetUserDetailsVo> getUserDetails(@RequestBody @Valid CommonIdDto dto) {
         try {
             return Result.success(service.getUserDetails(dto.getId()));
@@ -50,7 +47,6 @@ public class UserController {
     @Operation(summary = "新增用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("addUser")
-    @RequirePermissionRest("admin:user:save")
     public Result<String> addUser(@RequestBody @Valid AddUserDto dto) {
         try {
             service.addUser(dto);
@@ -63,7 +59,6 @@ public class UserController {
     @Operation(summary = "编辑用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("editUser")
-    @RequirePermissionRest("admin:user:save")
     public Result<String> editUser(@RequestBody @Valid EditUserDto dto) {
         try {
             service.editUser(dto);
@@ -75,7 +70,6 @@ public class UserController {
 
     @Operation(summary = "删除用户")
     @PostMapping("removeUser")
-    @RequirePermissionRest("admin:user:delete")
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) {
         try {
             service.removeUser(dto.getId());

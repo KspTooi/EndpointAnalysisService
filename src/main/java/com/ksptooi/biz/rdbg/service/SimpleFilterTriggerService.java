@@ -6,7 +6,7 @@ import com.ksptooi.biz.rdbg.model.filter.dto.EditSimpleFilterTriggerDto;
 import com.ksptooi.biz.rdbg.model.filter.dto.GetSimpleFilterTriggerListDto;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterTriggerDetailsVo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterTriggerListVo;
-import com.ksptooi.biz.rdbg.repoistory.SimpleFilterTriggerRepository;
+import com.ksptooi.biz.rdbg.repository.SimpleFilterTriggerRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { Folder, Document, Picture, VideoCamera, Headset } from "@element-plus/icons-vue";
 import { computed } from "vue";
-import FileUtils from "@/utils/FileUtils";
+import FileUtils from "@/commons/FileUtils.ts";
 import { ElMessage } from "element-plus";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";

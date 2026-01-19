@@ -76,8 +76,19 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.isSystem === 1"> 删除 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+              编辑
+            </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="removeList(scope.row.id)"
+              :icon="DeleteIcon"
+              :disabled="scope.row.isSystem === 1"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,14 +123,20 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑权限节点' : '添加权限节点'"
       width="500px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
         <!-- 编辑时显示的只读信息 -->
         <template v-if="modalMode === 'edit'">
           <el-form-item label="创建时间">
@@ -181,7 +198,7 @@ import AdminPermissionApi, {
   type GetPermissionListVo,
   type AddPermissionDto,
   type EditPermissionDto,
-} from "@/api/core/PermissionApi.ts";
+} from "@/views/core/api/PermissionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 
 const listForm = reactive<GetPermissionListDto>({
@@ -401,11 +418,5 @@ const removeList = async (id: string) => {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

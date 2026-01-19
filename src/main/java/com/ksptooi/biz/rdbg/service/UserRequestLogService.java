@@ -3,7 +3,7 @@ package com.ksptooi.biz.rdbg.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ksptooi.biz.rdbg.model.userrequestlog.*;
-import com.ksptooi.biz.rdbg.repoistory.UserRequestLogRepository;
+import com.ksptooi.biz.rdbg.repository.UserRequestLogRepository;
 import com.ksptooi.commons.httprelay.HttpHeaderVo;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;

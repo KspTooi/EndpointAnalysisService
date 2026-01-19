@@ -129,7 +129,7 @@ import UserRequestEnvStorageApi, {
   type GetUserRequestEnvStorageDetailsVo,
   type GetUserRequestEnvStorageListDto,
   type GetUserRequestEnvStorageListVo,
-} from "@/api/requestdebug/UserRequestEnvStorageApi.ts";
+} from "@/views/rdbg/api/UserRequestEnvStorageApi.ts";
 
 const props = defineProps<{
   requestEnvId: string | null;

@@ -43,7 +43,9 @@
         <el-table-column label="目标服务器" prop="routeServerName" width="180" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{ scope.row.matchType === 0 ? "全部" : "IP地址" }}</el-tag>
+            <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{
+              scope.row.matchType === 0 ? "全部" : "IP地址"
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="匹配键" prop="matchKey" width="100" show-overflow-tooltip>
@@ -68,8 +70,17 @@
         <el-table-column label="更新时间" prop="updateTime" width="200" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              编辑
+            </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="removeList(scope.row.id)"
+              :icon="DeleteIcon"
+              :disabled="scope.row.children && scope.row.children.length > 0"
+            >
               删除
             </el-button>
           </template>
@@ -105,14 +116,20 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑路由规则' : '添加路由规则'"
       width="550px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="95px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="95px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="路由规则名" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入路由规则名" />
         </el-form-item>
@@ -161,9 +178,13 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, markRaw, onMounted } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";
-import RouteRuleApi, { type GetRouteRuleDetailsVo, type GetRouteRuleListDto, type GetRouteRuleListVo } from "@/api/relay/RouteRuleApi.ts";
-import type { GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
-import RouteServerApi from "@/api/relay/RouteServerApi.ts";
+import RouteRuleApi, {
+  type GetRouteRuleDetailsVo,
+  type GetRouteRuleListDto,
+  type GetRouteRuleListVo,
+} from "@/views/relay/api/RouteRuleApi.ts";
+import type { GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
+import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
 
 // 图标常量
 const ViewIcon = markRaw(View);
@@ -408,11 +429,5 @@ onMounted(() => {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

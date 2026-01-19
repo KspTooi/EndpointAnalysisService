@@ -1,0 +1,193 @@
+/* 全局 Element Plus 模态框：极致紧凑风格 + 主题适配发光条 */
+
+.el-overlay-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .el-dialog {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding: 0;
+    overflow: visible;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--el-border-color-lighter);
+    position: relative;
+    background-color: #fff;
+
+    /* 顶部主题色发光条 - 适配项目主题 #009688 */
+    &::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 3px;
+      /* 采用主色 #009688 与 辅助色 #00a8be 的渐变 */
+      background: linear-gradient(90deg, #009688 0%, #00a8be 50%, #009688 100%);
+      background-size: 200% auto;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 150, 136, 0.3);
+      animation: gradientFlow 3s linear infinite;
+    }
+
+    /* 头部：极致紧凑化 */
+    &__header {
+      padding: 8px 20px; /* 进一步压缩至 8px */
+      margin-right: 0;
+      border-bottom: 1px solid var(--el-border-color-extra-light);
+      background-color: #fafafa;
+
+      .el-dialog__title {
+        font-size: 14px; /* 稍微调小字体以匹配高度 */
+        font-weight: 600;
+        color: #333;
+        line-height: 24px; /* 确保与按钮对齐 */
+      }
+
+      .el-dialog__headerbtn {
+        top: 8px; /* 同步调整位置 */
+        right: 12px;
+        width: 24px;
+        height: 24px;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: var(--el-color-danger-light-9);
+          .el-dialog__close {
+            color: var(--el-color-danger);
+          }
+        }
+
+        .el-dialog__close {
+          font-size: 14px;
+          color: #999;
+        }
+      }
+    }
+
+    /* 主体内容 */
+    &__body {
+      padding: 16px 20px 8px;
+      color: #606266;
+      font-size: 13px;
+    }
+
+    /* 底部：紧凑化 */
+    &__footer {
+      padding: 8px 20px 12px;
+      border-top: 1px solid var(--el-border-color-extra-light);
+      text-align: right;
+
+      .dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0;
+
+        .el-button {
+          border-radius: 0 !important;
+          padding: 4px 15px;
+          font-weight: 500;
+          height: 28px; /* 极致紧凑按钮高度 */
+          font-size: 12px;
+          transition: all 0.2s;
+
+          &--primary {
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+            &:active {
+              transform: translateY(1px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 渐变流动动画 */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* 遮罩层 */
+.el-overlay {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(1.5px);
+}
+
+/* 表单输入框同步直角化 */
+.el-dialog {
+  .el-form-item {
+    margin-bottom: 14px; /* 减小表单项间距 */
+  }
+
+  .el-input__wrapper,
+  .el-select__wrapper,
+  .el-textarea__inner,
+  .el-input-number {
+    border-radius: 0 !important;
+    box-shadow: 0 0 0 1px var(--el-border-color) inset;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--el-border-color-hover) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px var(--el-color-primary) inset !important;
+    }
+  }
+
+  /* 适配数字输入框的直角按钮 */
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    border-radius: 0 !important;
+    background-color: #f5f7fa;
+  }
+}
+
+/* 彻底覆盖 Element Plus 默认弹窗动画：纯渐隐，绝无位移 */
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+  transition: opacity 0.2s ease !important;
+  animation: none !important; /* 禁用默认的掉落 animation */
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+  opacity: 0 !important;
+  transform: none !important; /* 强制不产生位移 */
+}
+
+.dialog-fade-enter-to,
+.dialog-fade-leave-from {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* 同时也覆盖可能存在的 keyframes 定义，双重保险 */
+@keyframes dialog-fade-in {
+  0% {
+    opacity: 0;
+    transform: none;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dialog-fade-out {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}

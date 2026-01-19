@@ -47,10 +47,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import EpDocOperationApi from '@/api/document/EpDocOperationApi.ts'
-import type { GetEpDocOperationTagListVo } from '@/api/document/EpDocOperationApi.ts'
-import EpDocApi from '@/api/document/EpDocApi.ts'
-import type { GetEpDocListVo } from '@/api/document/EpDocApi.ts'
+import EpDocOperationApi from '@/views/document/api/EpDocOperationApi.ts'
+import type { GetEpDocOperationTagListVo } from '@/views/document/api/EpDocOperationApi.ts'
+import EpDocApi from '@/views/document/api/EpDocApi.ts'
+import type { GetEpDocListVo } from '@/views/document/api/EpDocApi.ts'
 import { Folder, ArrowDown, ArrowRight } from '@element-plus/icons-vue'
 
 const emit = defineEmits<{

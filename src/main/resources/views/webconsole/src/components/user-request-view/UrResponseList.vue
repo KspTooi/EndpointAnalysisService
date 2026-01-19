@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, watch } from "vue";
-import UserRequestLogApi, { type GetUserRequestLogDetailsVo, type GetUserRequestLogListDto, type GetUserRequestLogListVo } from "@/api/requestdebug/UserRequestLogApi.ts";
+import UserRequestLogApi, { type GetUserRequestLogDetailsVo, type GetUserRequestLogListDto, type GetUserRequestLogListVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
 import { View as ViewIcon } from "@element-plus/icons-vue";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";

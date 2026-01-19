@@ -30,14 +30,12 @@ public class SessionController {
 
     @Operation(summary = "获取会话列表")
     @PostMapping("getSessionList")
-    @RequirePermissionRest("admin:session:view")
     public PageResult<GetSessionListVo> getSessionList(@RequestBody @Valid GetSessionListDto dto) {
         return service.getSessionList(dto);
     }
 
     @Operation(summary = "获取会话详情")
     @PostMapping("getSessionDetails")
-    @RequirePermissionRest("admin:session:view")
     public Result<GetSessionDetailsVo> getSessionDetails(@RequestBody @Valid CommonIdDto dto) {
         try {
             return Result.success(service.getSessionDetails(dto.getId()));
@@ -48,7 +46,6 @@ public class SessionController {
 
     @Operation(summary = "关闭会话")
     @PostMapping("closeSession")
-    @RequirePermissionRest("admin:session:close")
     public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) {
         try {
             service.closeSession(dto.getId());

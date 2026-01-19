@@ -68,7 +68,7 @@ import { useRouter } from "vue-router";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
-import type { GetMenuTreeVo } from "@/api/core/MenuApi";
+import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
@@ -88,7 +88,7 @@ const props = defineProps<{
 }>();
 
 const hasMaintainCenter = computed(() => {
-  const searchPath = "/application-maintain";
+  const searchPath = "/core/application-maintain";
   const findItemByPath = (items: GetMenuTreeVo[]): boolean => {
     for (const item of items) {
       if (item.menuPath === searchPath) {
@@ -106,7 +106,7 @@ const hasMaintainCenter = computed(() => {
 });
 
 const goToMaintainCenter = () => {
-  router.push("/application-maintain");
+  router.push("/core/application-maintain");
 };
 
 const STORAGE_KEY = "admin_menu_opened_state";

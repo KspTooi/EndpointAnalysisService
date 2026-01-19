@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,6 +53,139 @@ public class AttachService {
     @Autowired
     @Lazy
     private AttachService self;
+
+    /**
+     * 上传附件
+     *
+     * @param file 附件文件
+     * @return 附件ID
+     * @throws BizException 上传附件失败
+     */
+    public Long uploadAttach(MultipartFile file) throws BizException {
+        return uploadAttach(file, "internal");
+    }
+
+    /**
+     * 上传附件
+     *
+     * @param file 附件文件
+     * @param kind 附件类型
+     * @return 附件ID
+     * @throws BizException 上传附件失败
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Long uploadAttach(MultipartFile file, String kind) throws BizException {
+
+        if (file == null || file.isEmpty()) {
+            throw new BizException("附件不能为空");
+        }
+
+        if (StringUtils.isBlank(kind)) {
+            throw new BizException("附件类型不能为空");
+        }
+
+        var filename = file.getOriginalFilename();
+        if (StringUtils.isBlank(filename)) {
+            filename = file.getName();
+        }
+
+        if (StringUtils.isBlank(filename)) {
+            throw new BizException("附件文件名不能为空");
+        }
+
+        var suffix = getSuffix(filename);
+        var totalSize = file.getSize();
+        if (totalSize <= 0) {
+            throw new BizException("附件大小无效");
+        }
+
+        Path tmpFile = null;
+        try {
+            tmpFile = Files.createTempFile("eas_attach_", ".tmp");
+
+            var digest = MessageDigest.getInstance("SHA-256");
+            try (InputStream is = file.getInputStream(); OutputStream os = Files.newOutputStream(tmpFile)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    digest.update(buffer, 0, read);
+                    os.write(buffer, 0, read);
+                }
+            }
+
+            var sha256 = bytesToHex(digest.digest());
+
+            var exist = repository.getBySha256AndKind(sha256, kind);
+            if (exist != null && exist.getStatus() != null && exist.getStatus() == 3) {
+                Files.deleteIfExists(tmpFile);
+                return exist.getId();
+            }
+
+            var relativePath = getAttachRelativePath(sha256, suffix);
+            if (relativePath == null) {
+                throw new BizException("获取附件本地路径失败");
+            }
+
+            var absolutePath = getAttachLocalPath(relativePath);
+            var parentDir = absolutePath.getParent();
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+            }
+
+            if (Files.exists(absolutePath)) {
+                Files.deleteIfExists(tmpFile);
+            }
+
+            if (!Files.exists(absolutePath)) {
+                Files.move(tmpFile, absolutePath);
+            }
+
+            var po = new AttachPo();
+            po.setId(IdWorker.nextId());
+            po.setName(filename);
+            po.setKind(kind);
+            po.setSuffix(suffix);
+            po.setPath(relativePath.toString());
+            po.setSha256(sha256);
+            po.setTotalSize(totalSize);
+            po.setReceiveSize(totalSize);
+            po.setStatus(3);
+            po.setVerifyTime(LocalDateTime.now());
+            po.setChunks(new ArrayList<>());
+            repository.save(po);
+            return po.getId();
+        } catch (BizException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BizException("上传附件失败: " + e.getMessage());
+        } finally {
+            if (tmpFile != null) {
+                try {
+                    Files.deleteIfExists(tmpFile);
+                } catch (Exception ignore) {
+                }
+            }
+        }
+    }
+
+    public AttachPo requireAttach(Long id) throws BizException {
+        if (id == null) {
+            throw new BizException("附件ID不能为空");
+        }
+        return repository.findById(id).orElseThrow(() -> new BizException("附件不存在"));
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
 
     /**
      * 根据文件大小和分块大小计算分块数量

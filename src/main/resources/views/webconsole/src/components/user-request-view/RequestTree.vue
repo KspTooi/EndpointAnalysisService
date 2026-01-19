@@ -56,7 +56,6 @@
       width="400px"
       destroy-on-close
       @opened="handleGroupDialogOpened"
-      class="modal-centered"
       @keyup.enter="handleCreateGroup"
     >
       <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
@@ -76,10 +75,10 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import UserRequestTreeApi from "@/api/requestdebug/UserRequestTreeApi.ts";
-import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from "@/api/requestdebug/UserRequestTreeApi.ts";
-import UserRequestGroupApi from "@/api/requestdebug/UserRequestGroupApi.ts";
-import type { AddUserRequestGroupDto } from "@/api/requestdebug/UserRequestGroupApi.ts";
+import UserRequestTreeApi from "@/views/rdbg/api/UserRequestTreeApi.ts";
+import type { GetUserRequestTreeVo, GetUserRequestTreeDto } from "@/views/rdbg/api/UserRequestTreeApi.ts";
+import UserRequestGroupApi from "@/views/rdbg/api/UserRequestGroupApi.ts";
+import type { AddUserRequestGroupDto } from "@/views/rdbg/api/UserRequestGroupApi.ts";
 import RequestTreeItem from "./RequestTreeItem.vue";
 import RequestTreeItemRightMenu from "./RequestTreeItemRightMenu.vue";
 import { ElMessage, type FormInstance, type InputInstance } from "element-plus";
@@ -532,10 +531,5 @@ const handleToggleNode = (nodeId: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

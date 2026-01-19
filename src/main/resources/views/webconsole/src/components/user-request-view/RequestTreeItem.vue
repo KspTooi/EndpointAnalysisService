@@ -84,8 +84,8 @@
 </template>
 
 <script setup lang="ts">
-import UserRequestTreeApi from "@/api/requestdebug/UserRequestTreeApi.ts";
-import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from "@/api/requestdebug/UserRequestTreeApi.ts";
+import UserRequestTreeApi from "@/views/rdbg/api/UserRequestTreeApi.ts";
+import type { GetUserRequestTreeVo, EditUserRequestTreeDto } from "@/views/rdbg/api/UserRequestTreeApi.ts";
 import { Folder, ArrowDown, ArrowRight, Document, Filter } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";

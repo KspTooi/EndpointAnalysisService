@@ -1,6 +1,7 @@
 package com.ksptooi.biz.core.controller;
 
 
+import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.model.user.LoginDto;
 import com.ksptooi.biz.core.model.user.RegisterDto;
@@ -9,6 +10,7 @@ import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,12 +21,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -168,6 +174,25 @@ public class AuthController {
         }
 
         return Result.success(session.getPermissions());
+    }
+
+    @Operation(summary = "获取当前用户信息")
+    @PostMapping("/getCurrentUserProfile")
+    @ResponseBody
+    public Result<GetCurrentUserProfile> getCurrentUserProfile() throws AuthException {
+        return Result.success(authService.getCurrentUserProfile());
+    }
+
+    @Operation(summary = "获取当前用户头像")
+    @GetMapping("/getUserAvatar")
+    public ResponseEntity<Resource> getUserAvatar() throws AuthException {
+        return authService.getUserAvatar();
+    }
+
+    @Operation(summary = "更新当前用户头像")
+    @PostMapping("/updateUserAvatar")
+    public ResponseEntity<Resource> updateUserAvatar(@RequestParam("file") MultipartFile file) throws AuthException {
+        return authService.updateUserAvatar(file);
     }
 
 }

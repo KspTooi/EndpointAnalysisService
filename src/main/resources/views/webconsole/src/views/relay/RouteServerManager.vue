@@ -51,12 +51,21 @@
     <!-- 操作按钮 -->
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
-      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading">删除选中项</el-button>
+      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading"
+        >删除选中项</el-button
+      >
     </div>
 
     <!-- 列表 -->
     <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)">
+      <el-table
+        :data="listData"
+        v-loading="listLoading"
+        border
+        row-key="id"
+        default-expand-all
+        @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)"
+      >
         <el-table-column type="selection" width="40" />
         <el-table-column label="服务器名称" prop="name" show-overflow-tooltip />
         <el-table-column label="服务器主机" prop="host" show-overflow-tooltip />
@@ -64,14 +73,25 @@
         <el-table-column label="备注" prop="remark" show-overflow-tooltip />
         <el-table-column label="服务器状态" prop="status" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{ scope.row.status === 1 ? "启用" : "禁用" }}</el-tag>
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{
+              scope.row.status === 1 ? "启用" : "禁用"
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="更新时间" prop="updateTime" width="180" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              编辑
+            </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="removeList(scope.row.id)"
+              :icon="DeleteIcon"
+              :disabled="scope.row.children && scope.row.children.length > 0"
+            >
               删除
             </el-button>
           </template>
@@ -107,14 +127,20 @@
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑服务器' : '添加服务器'"
       width="550px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="95px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="95px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="服务器名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入服务器名称" />
         </el-form-item>
@@ -151,8 +177,8 @@ import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, onMounted, markRaw } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";
-import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/api/relay/RouteServerApi.ts";
-import RouteServerApi from "@/api/relay/RouteServerApi.ts";
+import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
+import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
 // 图标常量
@@ -402,11 +428,5 @@ onMounted(() => {
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

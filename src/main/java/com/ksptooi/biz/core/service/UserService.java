@@ -39,6 +39,11 @@ public class UserService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * 获取用户列表
+     * @param dto 获取用户列表DTO
+     * @return 用户列表VO
+     */
     public PageResult<GetUserListVo> getUserList(GetUserListDto dto) {
         // 创建分页对象
         Pageable pageable = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize(), Sort.Direction.DESC, "updateTime");
@@ -79,6 +84,12 @@ public class UserService {
         return PageResult.success(voList, userPage.getTotalElements());
     }
 
+    /**
+     * 获取用户详情
+     * @param id 用户ID
+     * @return 用户详情VO
+     * @throws BizException 用户不存在
+     */
     public GetUserDetailsVo getUserDetails(long id) throws BizException {
         UserPo user = userRepository.findById(id).orElseThrow(() -> new BizException("用户不存在"));
         GetUserDetailsVo vo = new GetUserDetailsVo();
@@ -114,43 +125,46 @@ public class UserService {
         return vo;
     }
 
-    @Transactional
+    /**
+     * 新增用户
+     * 新增用户时，用户默认不是系统内置用户
+     * @param dto 新增用户DTO
+     * @throws BizException 用户名已存在或无法新增用户
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void addUser(AddUserDto dto) throws BizException {
         if (StringUtils.isBlank(dto.getUsername())) {
             throw new BizException("用户名不能为空");
-        }
-
-        UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
-        if (existingUserByName != null) {
-            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
         }
 
         if (StringUtils.isBlank(dto.getPassword())) {
             throw new BizException("新建用户时密码不能为空");
         }
 
+        if (userRepository.countByUsername(dto.getUsername()) > 0) {
+            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
+        }
+
         UserPo user = new UserPo();
         assign(dto, user);
         user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
         user.setGroups(getGroupSet(dto.getGroupIds()));
+        user.setIsSystem(0);
         userRepository.save(user);
     }
 
-    @Transactional
+    /**
+     * 编辑用户
+     * @param dto 编辑用户DTO
+     * @throws BizException 用户不存在或无法编辑系统内置用户
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void editUser(EditUserDto dto) throws BizException {
-        if (StringUtils.isBlank(dto.getUsername())) {
-            throw new BizException("用户名不能为空");
-        }
-
-        UserPo existingUserByName = userRepository.findByUsername(dto.getUsername());
-        if (existingUserByName != null && !existingUserByName.getId().equals(dto.getId())) {
-            throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
-        }
 
         UserPo user = userRepository.findById(dto.getId()).orElseThrow(() -> new BizException("用户不存在"));
 
         if (StringUtils.isNotBlank(dto.getPassword())) {
-            dto.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+            dto.setPassword(encryptPassword(dto.getPassword(), user.getUsername()));
         }
         if (StringUtils.isBlank(dto.getPassword())) {
             dto.setPassword(user.getPassword());
@@ -163,12 +177,22 @@ public class UserService {
         authService.refreshUserSession(user.getId());
     }
 
-    @Transactional
+    /**
+     * 移除用户
+     * 如果用户是系统内置用户，则无法移除
+     * @param id 用户ID
+     * @throws BizException 用户不存在或无法移除系统内置用户
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void removeUser(long id) throws BizException {
-        if (!userRepository.existsById(id)) {
-            throw new BizException("用户不存在");
+
+        var userPo = userRepository.findById(id).orElseThrow(() -> new BizException("用户不存在"));
+
+        if (userPo.getIsSystem() == 1) {
+            throw new BizException("无法移除系统内置用户:" + userPo.getUsername());
         }
-        userRepository.deleteById(id);
+
+        userRepository.delete(userPo);
     }
 
     private HashSet<GroupPo> getGroupSet(List<Long> groupIds) {
@@ -225,6 +249,7 @@ public class UserService {
         UserPo newUser = new UserPo();
         newUser.setUsername(username);
         newUser.setPassword(hashedPassword);
+        newUser.setGender(2);
         // 根据需要，可设置其它字段（如邮箱、昵称等）
 
         return userRepository.save(newUser);
@@ -288,6 +313,7 @@ public class UserService {
                 // 如果是admin用户，赋予所有用户组
                 if (userEnum == UserEnum.ADMIN) {
                     updateAdminGroups(newUser);
+                    newUser.setIsSystem(1);
                 }
 
                 addedCount++;

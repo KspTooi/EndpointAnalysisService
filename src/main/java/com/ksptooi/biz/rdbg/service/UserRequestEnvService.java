@@ -9,7 +9,7 @@ import com.ksptooi.biz.rdbg.model.userrequestenv.dto.EditUserRequestEnvDto;
 import com.ksptooi.biz.rdbg.model.userrequestenv.dto.GetUserRequestEnvListDto;
 import com.ksptooi.biz.rdbg.model.userrequestenv.vo.GetUserRequestEnvDetailsVo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.vo.GetUserRequestEnvListVo;
-import com.ksptooi.biz.rdbg.repoistory.UserRequestEnvRepository;
+import com.ksptooi.biz.rdbg.repository.UserRequestEnvRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

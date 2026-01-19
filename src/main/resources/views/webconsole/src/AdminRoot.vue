@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import AdminFrame from "./components/element-ui-admin/AdminFrame.vue";
 import { ElLoading, ElLoadingService, ElDropdownItem, ElIcon } from "element-plus";
 import { User, Setting, InfoFilled } from "@element-plus/icons-vue";
+import ConsoleFramework from "@/soa/console-framework/ConsoleFramework.vue";
 
 // 使用 markRaw 包装图标组件
 const UserIcon = markRaw(User);
@@ -20,21 +21,6 @@ const currentUser = reactive({
   role: "admin",
 });
 
-// 处理菜单点击
-const handleMenuClick = (menuId: string) => {
-  console.log(`菜单点击: ${menuId}`);
-};
-
-// 处理菜单操作
-const handleMenuAction = (action: string, menuId: string) => {
-  console.log(`执行操作: ${action}, 菜单ID: ${menuId}`);
-};
-
-// 处理登出
-const handleLogout = () => {
-  // 这里添加登出逻辑
-  router.push("/login");
-};
 
 // 创建loading实例
 let loadingInstance: ReturnType<typeof ElLoadingService> | null = null;
@@ -60,8 +46,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <admin-frame v-if="!isLoading" title="管理控制台" :user="currentUser" @menu-click="handleMenuClick" @menu-action="handleMenuAction" @logout="handleLogout">
-    <!-- 用户下拉菜单额外项目插槽 -->
+
+  <console-framework />
+
+<!--  <admin-frame
+    v-if="!isLoading"
+    title="管理控制台"
+    :user="currentUser"
+    @menu-click="handleMenuClick"
+    @menu-action="handleMenuAction"
+    @logout="handleLogout"
+  >
+    &lt;!&ndash; 用户下拉菜单额外项目插槽 &ndash;&gt;
     <template #user-dropdown>
       <el-dropdown-item>
         <el-icon><component :is="UserIcon" /></el-icon>
@@ -76,7 +72,7 @@ onMounted(() => {
         <span>帮助</span>
       </el-dropdown-item>
     </template>
-  </admin-frame>
+  </admin-frame>-->
 </template>
 
 <style>

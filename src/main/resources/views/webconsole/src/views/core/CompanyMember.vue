@@ -64,7 +64,16 @@
         <el-table-column label="加入时间" prop="joinedTime" width="180" />
         <el-table-column label="操作" width="100" align="center" fixed="right">
           <template #default="scope">
-            <el-button v-if="scope.row.role !== 0" link type="danger" size="small" @click="handleFireMember(scope.row)" :icon="DeleteIcon"> 开除 </el-button>
+            <el-button
+              v-if="scope.row.role !== 0"
+              link
+              type="danger"
+              size="small"
+              @click="handleFireMember(scope.row)"
+              :icon="DeleteIcon"
+            >
+              开除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -97,15 +106,20 @@
 </template>
 
 <script setup lang="ts">
-import type { GetCurrentUserActiveCompanyMemberListDto, GetCompanyMemberListVo, AddCompanyMemberDto, FireCompanyMemberDto } from "@/api/core/CompanyMemberApi";
-import CompanyMemberApi from "@/api/core/CompanyMemberApi";
+import type {
+  GetCurrentUserActiveCompanyMemberListDto,
+  GetCompanyMemberListVo,
+  AddCompanyMemberDto,
+  FireCompanyMemberDto,
+} from "@/views/core/api/CompanyMemberApi.ts";
+import CompanyMemberApi from "@/views/core/api/CompanyMemberApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Delete as DeleteIcon } from "@element-plus/icons-vue";
-import UserModal from "./modal/UserModal.vue";
-import type { GetUserListVo } from "@/api/core/UserApi";
+import UserModal from "./components/UserModal.vue";
+import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
 
 const listForm = reactive<GetCurrentUserActiveCompanyMemberListDto>({
   username: null,
@@ -199,12 +213,16 @@ const handleUserSelected = async (user: GetUserListVo) => {
 
 const handleFireMember = async (member: GetCompanyMemberListVo) => {
   if (member.role === 0) {
-    await ElMessageBox.confirm(`CEO作为公司的最高管理者，无法被开除。<br/><br/>如需调整职务，请先进行CEO权限职务交接。`, "不符合常理", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      dangerouslyUseHTMLString: true,
-    });
+    await ElMessageBox.confirm(
+      `CEO作为公司的最高管理者，无法被开除。<br/><br/>如需调整职务，请先进行CEO权限职务交接。`,
+      "不符合常理",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+      }
+    );
     return;
   }
 

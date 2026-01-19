@@ -8,8 +8,8 @@ import com.ksptooi.biz.rdbg.model.userrequestenvstorage.dto.EditUserRequestEnvSt
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.dto.GetUserRequestEnvStorageListDto;
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.vo.GetUserRequestEnvStorageDetailsVo;
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.vo.GetUserRequestEnvStorageListVo;
-import com.ksptooi.biz.rdbg.repoistory.UserRequestEnvRepository;
-import com.ksptooi.biz.rdbg.repoistory.UserRequestEnvStorageRepository;
+import com.ksptooi.biz.rdbg.repository.UserRequestEnvRepository;
+import com.ksptooi.biz.rdbg.repository.UserRequestEnvStorageRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
