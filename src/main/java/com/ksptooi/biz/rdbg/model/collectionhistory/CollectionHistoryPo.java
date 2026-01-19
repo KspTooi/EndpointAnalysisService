@@ -6,18 +6,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
-/**
- * ${tableComment}
- *
- * @author: generator
- * @date: ${.now?string("yyyy年MM月dd日 HH:mm")}
- */
+
 @Getter
 @Setter
 @Entity
 @Table(name = "rdbg_collection_history")
+@SQLDelete(sql = "UPDATE rdbg_collection_history SET delete_time = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 @Comment("请求集合历史记录表")
 public class CollectionHistoryPo {
 
@@ -39,7 +38,7 @@ public class CollectionHistoryPo {
     private String reqUrl;
 
     @Column(name = "req_url_params_json", columnDefinition = "json",nullable = false)
-    @Comment("请求URL查询参数")
+    @Comment("请求URL查询参数 类型:RelayParam")
     private String reqUrlParamsJson;
 
     @Column(name = "req_method", columnDefinition = "tinyint",nullable = false)
@@ -47,28 +46,32 @@ public class CollectionHistoryPo {
     private Integer reqMethod;
 
     @Column(name = "req_header_json", columnDefinition = "json",nullable = false)
-    @Comment("请求头JSON")
+    @Comment("请求头JSON 类型:RelayHeader")
     private String reqHeaderJson;
 
     @Column(name = "req_body_json", columnDefinition = "json",nullable = false)
-    @Comment("请求体JSON")
+    @Comment("请求体JSON 类型:RelayBody")
     private String reqBodyJson;
 
     @Column(name = "ret_header_json", columnDefinition = "json",nullable = false)
-    @Comment("响应头JSON")
+    @Comment("响应头JSON 类型:RelayHeader")
     private String retHeaderJson;
 
-    @Column(name = "ret_body_json", columnDefinition = "json",nullable = false)
-    @Comment("响应体JSON")
-    private String retBodyJson;
+    @Column(name = "ret_body_text", columnDefinition = "longtext",nullable = false)
+    @Comment("响应体文本")
+    private String retBodyText;
 
-    @Column(name = "ret_http_status",nullable = false)
-    @Comment("HTTP状态码")
+    @Column(name = "ret_http_status")
+    @Comment("HTTP状态码 NULL请求尚未完成")
     private Integer retHttpStatus;
 
     @Column(name = "biz_status", columnDefinition = "tinyint",nullable = false)
-    @Comment("业务状态 0:正常 1:HTTP失败 2:业务失败 3:正在处理")
+    @Comment("业务状态 0:正常 1:HTTP失败 2:业务失败 3:正在处理 4:EAS内部错误")
     private Integer bizStatus;
+
+    @Column(name = "error_message",columnDefinition = "longtext")
+    @Comment("EAS内部错误消息 NULL未发生错误")
+    private String errorMessage;
 
     @Column(name = "req_time",nullable = false)
     @Comment("请求发起时间")

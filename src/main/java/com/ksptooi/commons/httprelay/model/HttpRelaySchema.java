@@ -1,8 +1,7 @@
-package com.ksptooi.commons.httprelay;
+package com.ksptooi.commons.httprelay.model;
 
-import com.ksptooi.commons.httprelay.model.RelayBody;
-import com.ksptooi.commons.httprelay.model.RelayHeader;
-import com.ksptooi.commons.httprelay.model.RelayParam;
+import com.ksptooi.commons.httprelay.HopByHopHeaders;
+import com.ksptooi.commons.httprelay.HttpRelaySchemaConfig;
 import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -131,26 +130,26 @@ public class HttpRelaySchema {
         if (this.method == null || this.method < 0 || this.method > 6) {
             throw new IllegalArgumentException("请求方法不合法,method: " + this.method);
         }
-        
-        if(this.method == 0) {
+
+        if (this.method == 0) {
             return "GET";
         }
-        if(this.method == 1) {
+        if (this.method == 1) {
             return "POST";
         }
-        if(this.method == 2) {
+        if (this.method == 2) {
             return "PUT";
         }
-        if(this.method == 3) {
+        if (this.method == 3) {
             return "PATCH";
         }
-        if(this.method == 4) {
+        if (this.method == 4) {
             return "DELETE";
         }
-        if(this.method == 5) {
+        if (this.method == 5) {
             return "HEAD";
         }
-        if(this.method == 6) {
+        if (this.method == 6) {
             return "OPTIONS";
         }
 

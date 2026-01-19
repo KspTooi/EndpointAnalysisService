@@ -2,6 +2,8 @@ package com.ksptooi.commons.httprelay;
 
 
 import com.ksptooi.biz.drive.service.EntryAccessService;
+import com.ksptooi.commons.httprelay.model.HttpRelayResponse;
+import com.ksptooi.commons.httprelay.model.HttpRelaySchema;
 import com.ksptooi.commons.httprelay.model.RelayBody;
 import com.ksptooi.commons.httprelay.model.RelayHeader;
 import com.ksptooi.commons.httprelay.model.RelayParam;
@@ -17,6 +19,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,11 +39,12 @@ public class HttpRelay {
 
     /**
      * 发送请求
+     *
      * @param schema 请求模式
      * @return 响应结果
      * @throws Exception 异常
      */
-    public Map<String, Object> sendRequest(HttpRelaySchema schema) throws Exception {
+    public HttpRelayResponse sendRequest(HttpRelaySchema schema) throws Exception {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder();
 
@@ -68,41 +72,20 @@ public class HttpRelay {
 
             //自动计算请求头值
             builder.header(header.getK(), computeHeaderValue(uriBuilder, header, bodyPublisher));
-            
+
         }
 
         //发送请求
         var response = client.send(builder.build(), HttpResponse.BodyHandlers.ofInputStream());
-
-        //处理响应头
-        var retHeaders = new ArrayList<RelayHeader>();
-
-        for (var entry : response.headers().map().entrySet()) {
-            String name = entry.getKey();
-            for (String value : entry.getValue()) {
-                if (StringUtils.isBlank(value)) {
-                    continue;
-                }
-                retHeaders.add(RelayHeader.of(name, value));
-            }
-        }
-
-        String contentType = RelayHeader.firstValue(retHeaders, "content-type");
-        String contentLength = RelayHeader.firstValue(retHeaders, "content-length");
-
-        var ret = new HashMap<String, Object>();
-        ret.put("statusCode", "400");
-        ret.put("contentType", contentType);
-        ret.put("contentLength", contentLength);
-        ret.put("headers", retHeaders);
-        return ret;
+        return new HttpRelayResponse(response);
     }
-    
-    
+
+
     /**
      * 计算请求头值
-     * @param uriBuilder URI构建器
-     * @param header 请求头
+     *
+     * @param uriBuilder    URI构建器
+     * @param header        请求头
      * @param bodyPublisher 请求体发布者
      * @return 请求头值
      */

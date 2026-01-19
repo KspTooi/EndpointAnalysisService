@@ -13,7 +13,7 @@ public enum GlobalConfigEnum {
 
     ENDPOINT_ACCESS_DENIED("endpoint.access.denied","false","当端点未进行权限配置时禁止访问 true-禁止 false-允许"),
 
-
+    RDBG_MAX_RESPONSE_SIZE("rdbg.max.response.size","10","端点调试工作台最大响应体大小 单位:MB 默认10MB"),
     ;
 
     /**

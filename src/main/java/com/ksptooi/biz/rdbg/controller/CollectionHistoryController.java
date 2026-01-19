@@ -7,9 +7,9 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetai
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryListVo;
 import com.ksptooi.biz.rdbg.service.CollectionHistoryService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.utils.web.CommonIdDto;
-import com.ksptooi.commons.utils.web.PageResult;
-import com.ksptooi.commons.utils.web.Result;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/collectionHistory")
-@Tag(name = "CollectionHistory", description = "")
+@Tag(name = "请求集合历史记录", description = "请求集合历史记录管理")
 @Slf4j
 public class CollectionHistoryController {
 
@@ -31,26 +31,26 @@ public class CollectionHistoryController {
     private CollectionHistoryService collectionHistoryService;
 
     @PostMapping("/getCollectionHistoryList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询请求集合历史记录列表")
     public PageResult<GetCollectionHistoryListVo> getCollectionHistoryList(@RequestBody @Valid GetCollectionHistoryListDto dto) throws Exception {
         return collectionHistoryService.getCollectionHistoryList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "添加请求集合历史记录")
     @PostMapping("/addCollectionHistory")
     public Result<String> addCollectionHistory(@RequestBody @Valid AddCollectionHistoryDto dto) throws Exception {
         collectionHistoryService.addCollectionHistory(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑请求集合历史记录")
     @PostMapping("/editCollectionHistory")
     public Result<String> editCollectionHistory(@RequestBody @Valid EditCollectionHistoryDto dto) throws Exception {
         collectionHistoryService.editCollectionHistory(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询请求集合历史记录详情")
     @PostMapping("/getCollectionHistoryDetails")
     public Result<GetCollectionHistoryDetailsVo> getCollectionHistoryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetCollectionHistoryDetailsVo details = collectionHistoryService.getCollectionHistoryDetails(dto);
@@ -60,7 +60,7 @@ public class CollectionHistoryController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除请求集合历史记录")
     @PostMapping("/removeCollectionHistory")
     public Result<String> removeCollectionHistory(@RequestBody @Valid CommonIdDto dto) throws Exception {
         collectionHistoryService.removeCollectionHistory(dto);

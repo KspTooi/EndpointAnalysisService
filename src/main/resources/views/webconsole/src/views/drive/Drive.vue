@@ -9,6 +9,7 @@
       </template>
       <el-button type="primary" @click="goToCompanySetup">前往团队设置</el-button>
     </el-empty>
+    
   </div>
 
   <div class="list-container no-outline" ref="containerRef" v-if="!noActiveCompany">

@@ -1,20 +1,26 @@
 package com.ksptooi.biz.rdbg.service;
 
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.biz.rdbg.model.collection.CollectionPo;
 import com.ksptooi.biz.rdbg.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.dto.MoveCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionTreeVo;
+import com.ksptooi.biz.rdbg.model.collectionhistory.CollectionHistoryPo;
+import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
+import com.ksptooi.biz.rdbg.repoistory.CollectionHistoryRepository;
 import com.ksptooi.biz.rdbg.repoistory.CollectionRepository;
-import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.commons.httprelay.HttpRelay;
-import com.ksptooi.commons.httprelay.HttpRelaySchema;
 import com.ksptooi.commons.httprelay.HttpRelaySchemaConfig;
+import com.ksptooi.commons.httprelay.model.HttpRelayResponse;
+import com.ksptooi.commons.httprelay.model.HttpRelaySchema;
 import com.ksptooi.commons.httprelay.model.RelayBody;
 import com.ksptooi.commons.httprelay.model.RelayHeader;
 import com.ksptooi.commons.httprelay.model.RelayParam;
+import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -23,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.ksptool.entities.Entities.*;
@@ -34,8 +42,13 @@ public class CollectionService {
     private CollectionRepository repository;
 
     @Autowired
+    private CollectionHistoryRepository collectionHistoryRepository;
+
+    @Autowired
     private EntryAccessService entryAccessService;
 
+    @Autowired
+    private GlobalConfigService globalConfigService;
 
     private HttpRelay httpRelay;
 
@@ -520,7 +533,15 @@ public class CollectionService {
 
     }
 
-    public Map<String, Object> sendRequest(CommonIdDto dto) throws BizException {
+    /**
+     * 发送请求
+     *
+     * @param dto 发送请求参数
+     * @return 发送请求结果
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public GetCollectionHistoryDetailsVo sendRequest(CommonIdDto dto) throws BizException {
 
         var companyId = AuthService.getCurrentCompanyId();
 
@@ -549,11 +570,68 @@ public class CollectionService {
         schema.setConfig(HttpRelaySchemaConfig.ofDefault());
 
         //记录默认响应
+        var historyPo = new CollectionHistoryPo();
+        historyPo.setId(IdWorker.nextId());
+        historyPo.setCompanyId(companyId);
+        historyPo.setCollectionId(po.getId());
+        historyPo.setReqUrl(reqUrl);
+        historyPo.setReqUrlParamsJson(toJson(reqUrlParams));
+        historyPo.setReqMethod(reqMethod);
+        historyPo.setReqHeaderJson(toJson(reqHeaders));
+        historyPo.setReqBodyJson(toJson(reqBody));
+        historyPo.setRetHeaderJson("[]");
+        historyPo.setRetBodyText("");
+        historyPo.setRetHttpStatus(null);
+        historyPo.setBizStatus(3); //0:正常 1:HTTP失败 2:业务失败 3:正在处理 4:EAS内部错误
+        historyPo.setErrorMessage(null);
+        historyPo.setReqTime(LocalDateTime.now());
+        historyPo.setRetTime(null);
+
+        HttpRelayResponse hrr = null;
+
+        try {
+            
+            hrr = httpRelay.sendRequest(schema);
+
+            //读取响应内容
+            var maxResponseSize = globalConfigService.getInt(GlobalConfigEnum.RDBG_MAX_RESPONSE_SIZE.getKey(), 10) * 1024 * 1024;
+            var declareResponseSize = Integer.parseInt(hrr.firstHeaderValue("content-length",String.valueOf(maxResponseSize)));
+        
+            //响应长度不超限,直接读取
+            if (declareResponseSize <= maxResponseSize) {
+                var retBody = hrr.getBody().readNBytes(declareResponseSize);
+                historyPo.setRetBodyText(new String(retBody,StandardCharsets.UTF_8));
+            }
+
+            //响应长度超限,不读取
+            if (declareResponseSize > maxResponseSize) {
+                historyPo.setRetBodyText("响应长度超出最大限制,无法读取.");
+            }
+
+        } catch (Exception e) {
+            historyPo.setBizStatus(4);
+            historyPo.setErrorMessage(e.getMessage());
+            collectionHistoryRepository.save(historyPo);
+
+            //构建失败结果
+            var retVo = new GetCollectionHistoryDetailsVo();
+            as(historyPo, retVo);
+            retVo.setBizStatus(4);
+            retVo.setErrorMessage(e.getMessage());
+            return retVo;
+        }
+
+        //记录成功响应
+        historyPo.setRetHeaderJson(toJson(hrr.getHeaders()));
+        historyPo.setRetHttpStatus(hrr.getResponse().statusCode());
+        historyPo.setBizStatus(0);
+        historyPo.setErrorMessage(null);
+        historyPo.setRetTime(LocalDateTime.now());
+        collectionHistoryRepository.save(historyPo);
 
 
-        //发送请求
-        //var response = httpRelay.sendRequest(schema);
-
+        //构建成功结果
+        var retVo = new CollectionService();
 
         return null;
     }
