@@ -46,44 +46,28 @@ public class PermissionController {
 
     @Operation(summary = "获取权限详情")
     @PostMapping("getPermissionDetails")
-    public Result<GetPermissionDetailsVo> getPermissionDetails(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            return Result.success(service.getPermissionDetails(dto.getId()));
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<GetPermissionDetailsVo> getPermissionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(service.getPermissionDetails(dto.getId()));
     }
 
     @Operation(summary = "新增权限")
     @PostMapping("addPermission")
-    public Result<String> addPermission(@RequestBody @Valid AddPermissionDto dto) {
-        try {
-            service.addPermission(dto);
-            return Result.success("新增成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> addPermission(@RequestBody @Valid AddPermissionDto dto) throws Exception {
+        service.addPermission(dto);
+        return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑权限")
     @PostMapping("editPermission")
-    public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) {
-        try {
-            service.editPermission(dto);
-            return Result.success("修改成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) throws Exception {
+        service.editPermission(dto);
+        return Result.success("修改成功");
     }
 
     @Operation(summary = "删除权限")
     @PostMapping("removePermission")
-    public Result<String> removePermission(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            service.removePermission(dto.getId());
-            return Result.success("success");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> removePermission(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        service.removePermission(dto.getId());
+        return Result.success("success");
     }
 }
