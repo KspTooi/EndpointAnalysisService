@@ -5,8 +5,6 @@ import com.ksptooi.biz.core.model.session.GetSessionListDto;
 import com.ksptooi.biz.core.model.session.GetSessionListVo;
 import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -36,22 +34,14 @@ public class SessionController {
 
     @Operation(summary = "获取会话详情")
     @PostMapping("getSessionDetails")
-    public Result<GetSessionDetailsVo> getSessionDetails(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            return Result.success(service.getSessionDetails(dto.getId()));
-        } catch (BizException ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<GetSessionDetailsVo> getSessionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(service.getSessionDetails(dto.getId()));
     }
 
     @Operation(summary = "关闭会话")
     @PostMapping("closeSession")
-    public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            service.closeSession(dto.getId());
-            return Result.success("关闭成功");
-        } catch (BizException ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        service.closeSession(dto.getId());
+        return Result.success("关闭成功");
     }
 }
