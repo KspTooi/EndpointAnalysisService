@@ -1,6 +1,9 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.dept.DeptPo;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,12 +15,12 @@ import org.springframework.stereotype.Repository;
 public interface DeptRepository extends JpaRepository<DeptPo, Long> {
 
 
-    
 
-
-
-
-
+    @Query("""
+            SELECT u FROM DeptPo u
+            ORDER BY u.seq ASC
+            """)
+    List<DeptPo> getDeptListOrderBySeq();
 
 
 

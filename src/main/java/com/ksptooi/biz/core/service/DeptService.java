@@ -40,12 +40,13 @@ public class DeptService {
     /**
      * 查询部门树
      *
-     * @param dto 查询条件
      * @return 部门树
      */
     public Result<List<GetDeptTreeVo>> getDeptTree() {
+
         // 查询全量部门数据
-        List<DeptPo> allDepts = repository.findAll();
+        List<DeptPo> allDepts = repository.getDeptListOrderBySeq();
+
         if (allDepts.isEmpty()) {
             return Result.success(new ArrayList<>());
         }
@@ -116,13 +117,13 @@ public class DeptService {
     @Transactional(rollbackFor = Exception.class)
     public void addDept(AddDeptDto dto) throws BizException {
         DeptPo insertPo = as(dto, DeptPo.class);
-        
+
         if (dto.getPrincipalId() != null) {
             UserPo principal = userRepository.findById(dto.getPrincipalId())
                     .orElseThrow(() -> new BizException("负责人不存在"));
             insertPo.setPrincipalName(principal.getNickname());
         }
-        
+
         repository.save(insertPo);
     }
 
@@ -137,7 +138,7 @@ public class DeptService {
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
         assign(dto, updatePo);
-        
+
         if (dto.getPrincipalId() != null) {
             UserPo principal = userRepository.findById(dto.getPrincipalId())
                     .orElseThrow(() -> new BizException("负责人不存在"));
@@ -147,7 +148,7 @@ public class DeptService {
             updatePo.setPrincipalId(null);
             updatePo.setPrincipalName(null);
         }
-        
+
         repository.save(updatePo);
     }
 

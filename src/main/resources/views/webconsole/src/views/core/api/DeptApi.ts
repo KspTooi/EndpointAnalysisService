@@ -31,6 +31,7 @@ export interface GetDeptTreeVo {
   principalName: string; // 负责人名称
   status: number; // 部门状态 0:正常 1:禁用
   seq: number; // 排序
+  createTime: string; // 创建时间
   children: GetDeptTreeVo[]; // 子部门列表
 }
 

@@ -3,7 +3,6 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.dept.dto.AddDeptDto;
 import com.ksptooi.biz.core.model.dept.dto.EditDeptDto;
 import com.ksptooi.biz.core.model.dept.dto.GetDeptListDto;
-import com.ksptooi.biz.core.model.dept.dto.GetDeptTreeDto;
 import com.ksptooi.biz.core.model.dept.vo.GetDeptDetailsVo;
 import com.ksptooi.biz.core.model.dept.vo.GetDeptListVo;
 import com.ksptooi.biz.core.model.dept.vo.GetDeptTreeVo;

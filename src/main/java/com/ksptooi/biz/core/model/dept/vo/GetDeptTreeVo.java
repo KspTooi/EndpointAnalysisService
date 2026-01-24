@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -30,6 +31,9 @@ public class GetDeptTreeVo {
 
     @Schema(description = "排序")
     private Integer seq;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
 
     @Schema(description = "子部门列表")
     private List<GetDeptTreeVo> children;
