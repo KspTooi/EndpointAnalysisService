@@ -51,76 +51,48 @@ public class GroupController {
 
     @Operation(summary = "获取组详情")
     @PostMapping("getGroupDetails")
-    public Result<GetGroupDetailsVo> getGroupDetails(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            return Result.success(service.getGroupDetails(dto.getId()));
-        } catch (Exception e) {
-            return Result.error(e.getMessage());
-        }
+    public Result<GetGroupDetailsVo> getGroupDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(service.getGroupDetails(dto.getId()));
     }
 
     @Operation(summary = "新增组")
     @PostMapping("addGroup")
-    public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) {
-        try {
-            service.addGroup(dto);
-            return Result.success("新增成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) throws Exception {
+        service.addGroup(dto);
+        return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑组")
     @PostMapping("editGroup")
-    public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) {
-        try {
-            service.editGroup(dto);
-            return Result.success("修改成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) throws Exception {
+        service.editGroup(dto);
+        return Result.success("修改成功");
     }
 
 
     @Operation(summary = "获取组权限菜单视图")
     @PostMapping("getGroupPermissionMenuView")
-    public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) {
-        try {
-            return Result.success(service.getGroupPermissionMenuView(dto));
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) throws Exception {
+        return Result.success(service.getGroupPermissionMenuView(dto));
     }
     
     @Operation(summary = "获取组权限节点视图")
     @PostMapping("getGroupPermissionNodeView")
-    public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) {
-        try {
-            return service.getGroupPermissionNodeView(dto);
-        } catch (Exception ex) {
-            return PageResult.error(ex.getMessage());
-        }
+    public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) throws Exception {
+        return service.getGroupPermissionNodeView(dto);
     }
 
     @Operation(summary = "批量授权或取消授权")
     @PostMapping("grantAndRevoke")
-    public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) {
-        try {
-            service.grantAndRevoke(dto);
-            return Result.success("授权或取消授权成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) throws Exception {
+        service.grantAndRevoke(dto);
+        return Result.success("授权或取消授权成功");
     }
 
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
-    public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            service.removeGroup(dto.getId());
-            return Result.success("success");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        service.removeGroup(dto.getId());
+        return Result.success("删除成功");
     }
 }
