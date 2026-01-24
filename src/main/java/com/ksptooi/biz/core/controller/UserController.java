@@ -36,47 +36,31 @@ public class UserController {
 
     @Operation(summary = "获取用户详情")
     @PostMapping("getUserDetails")
-    public Result<GetUserDetailsVo> getUserDetails(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            return Result.success(service.getUserDetails(dto.getId()));
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<GetUserDetailsVo> getUserDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(service.getUserDetails(dto.getId()));
     }
 
     @Operation(summary = "新增用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("addUser")
-    public Result<String> addUser(@RequestBody @Valid AddUserDto dto) {
-        try {
-            service.addUser(dto);
-            return Result.success("新增成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> addUser(@RequestBody @Valid AddUserDto dto) throws Exception {
+        service.addUser(dto);
+        return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("editUser")
-    public Result<String> editUser(@RequestBody @Valid EditUserDto dto) {
-        try {
-            service.editUser(dto);
-            return Result.success("修改成功");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> editUser(@RequestBody @Valid EditUserDto dto) throws Exception {
+        service.editUser(dto);
+        return Result.success("修改成功");
     }
 
     @Operation(summary = "删除用户")
     @PostMapping("removeUser")
-    public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) {
-        try {
-            service.removeUser(dto.getId());
-            return Result.success("success");
-        } catch (Exception ex) {
-            return Result.error(ex.getMessage());
-        }
+    public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        service.removeUser(dto.getId());
+        return Result.success("success");
     }
 
 }
