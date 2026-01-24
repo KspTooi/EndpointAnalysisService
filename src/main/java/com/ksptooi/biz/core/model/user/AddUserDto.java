@@ -48,6 +48,9 @@ public class AddUserDto {
     @Schema(description = "用户状态：0-禁用，1-启用")
     private Integer status;
 
+    @Schema(description = "所属部门ID")
+    private Long deptId;
+
     @Schema(description = "用户组ID列表")
     private List<Long> groupIds;
 }

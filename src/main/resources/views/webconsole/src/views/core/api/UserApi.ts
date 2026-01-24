@@ -49,6 +49,7 @@ export interface GetUserDetailsVo {
   status: number; // 用户状态
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
+  deptId: string; // 所属部门ID
   isSystem: number; // 是否为系统内置用户 0:否 1:是
   groups: UserGroupVo[]; // 用户组列表
   permissions: UserPermissionVo[]; // 用户权限列表
@@ -62,6 +63,7 @@ export interface AddUserDto {
   phone?: string; // 用户手机号
   email?: string; // 用户邮箱
   status?: number; // 用户状态：0-禁用，1-启用
+  deptId?: string; // 所属部门ID
   groupIds?: string[]; // 用户组ID列表
 }
 
@@ -74,6 +76,7 @@ export interface EditUserDto {
   phone?: string; // 用户手机号
   email?: string; // 用户邮箱
   status?: number; // 用户状态：0-禁用，1-启用
+  deptId?: string; // 所属部门ID
   groupIds?: string[]; // 用户组ID列表
 }
 

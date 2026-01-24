@@ -13,6 +13,9 @@ public class GetUserListDto extends PageQuery {
     @Schema(description = "用户名")
     private String username;
 
+    @Schema(description = "部门ID")
+    private Long deptId;
+
     @Schema(description = "0:正常 1:封禁")
     private Integer status;
 }
