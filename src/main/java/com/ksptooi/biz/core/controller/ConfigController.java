@@ -3,7 +3,6 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.service.ConfigService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -35,44 +34,28 @@ public class ConfigController {
     @Operation(summary = "获取配置项详情")
     @PostMapping("getConfigDetails")
     public Result<GetConfigDetailsVo> getConfigDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        try {
-            return Result.success(service.getConfigDetails(dto.getId()));
-        } catch (BizException e) {
-            return Result.error(e.getMessage());
-        }
+        return Result.success(service.getConfigDetails(dto.getId()));
     }
 
     @Operation(summary = "新增配置项")
     @PostMapping("addConfig")
     public Result<String> addConfig(@RequestBody @Valid AddConfigDto dto) throws Exception {
-        try {
-            service.addConfig(dto);
-            return Result.success("新增成功");
-        } catch (BizException ex) {
-            return Result.error(ex.getMessage());
-        }
+        service.addConfig(dto);
+        return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑配置项")
     @PostMapping("editConfig")
     public Result<String> editConfig(@RequestBody @Valid EditConfigDto dto) throws Exception {
-        try {
-            service.editConfig(dto);
-            return Result.success("修改成功");
-        } catch (BizException ex) {
-            return Result.error(ex.getMessage());
-        }
+        service.editConfig(dto);
+        return Result.success("修改成功");
     }
 
     @Operation(summary = "删除配置项")
     @PostMapping("removeConfig")
     public Result<String> removeConfig(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        try {
-            service.removeConfig(dto.getId());
-            return Result.success("success");
-        } catch (BizException ex) {
-            return Result.error(ex.getMessage());
-        }
+        service.removeConfig(dto.getId());
+        return Result.success("删除成功");
     }
 
 }
