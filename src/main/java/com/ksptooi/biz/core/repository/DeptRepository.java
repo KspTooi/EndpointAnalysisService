@@ -1,9 +1,6 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.dept.DeptPo;
-
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,16 +8,37 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DeptRepository extends JpaRepository<DeptPo, Long> {
 
-
-
+    /**
+     * 获取部门列表
+     *
+     * @return 部门列表
+     */
     @Query("""
             SELECT u FROM DeptPo u
             ORDER BY u.seq ASC
             """)
     List<DeptPo> getDeptListOrderBySeq();
+
+
+    /**
+     * 根据父级ID统计部门数量
+     *
+     * @param parentId 父级ID
+     * @return 部门数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM DeptPo u WHERE u.parentId = :parentId
+            """)
+    Integer countByParentId(@Param("parentId") Long parentId);
+
+
+
+
 
 
 
@@ -41,4 +59,11 @@ public interface DeptRepository extends JpaRepository<DeptPo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<DeptPo> getDeptList(@Param("po") DeptPo po, Pageable pageable);
+
+
+
+
+
+
+
 }

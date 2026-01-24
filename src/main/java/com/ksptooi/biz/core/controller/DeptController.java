@@ -73,6 +73,11 @@ public class DeptController {
     @Operation(summary = "删除部门")
     @PostMapping("/removeDept")
     public Result<String> removeDept(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
+        if(dto.isBatch()){
+            return Result.error("不支持批处理!");
+        }
+
         deptService.removeDept(dto);
         return Result.success("操作成功");
     }

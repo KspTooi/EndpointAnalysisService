@@ -3,6 +3,8 @@ package com.ksptooi.biz.core.model.dept;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
@@ -72,7 +74,7 @@ public class DeptPo {
     @Column(name = "delete_time")
     @Comment("删除时间 为NULL未删除")
     private LocalDateTime deleteTime;
-
+    
     @PrePersist
     private void onCreate() {
 

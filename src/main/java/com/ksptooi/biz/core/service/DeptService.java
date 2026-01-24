@@ -171,12 +171,16 @@ public class DeptService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeDept(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
+
+        //查询部门
+        DeptPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("删除失败,数据不存在."));
+
+        if (repository.countByParentId(po.getId()) > 0) {
+            throw new BizException("该部门下存在子部门,删除操作失败!");
         }
-        if (!dto.isBatch()) {
-            repository.deleteById(dto.getId());
-        }
+
+        repository.delete(po);
     }
 
 }
