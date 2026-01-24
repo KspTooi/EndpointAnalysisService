@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-1-25 05:12:08",
+  "updatedTime": "2026-1-25 05:17:53",
   "dbConns": [],
   "profile": {
     "default": {
@@ -13173,6 +13173,24 @@
           "extProps": {},
           "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
           "id": "ABC96214-0EDF-49F4-AD2E-903E3EA7DA0E"
+        },
+        {
+          "defKey": "delete_time",
+          "defName": "删除时间 NULL未删除",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5",
+          "extProps": {},
+          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
+          "id": "9B8259C0-51AA-44B8-A880-53B2F128BFD1"
         }
       ],
       "correlations": [],

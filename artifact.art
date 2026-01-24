@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.collectionhistory.service",
-  "pkgNamePo": "com.ksptooi.biz.collectionhistory.model.po",
+  "pkgNameService": "com.ksptooi.biz.dept.service",
+  "pkgNamePo": "com.ksptooi.biz.dept.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,124 +9,61 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "记录ID",
+        "comment": "部门ID",
         "primary": true
       },
       {
-        "name": "company_id",
-        "javaFieldName": "companyId",
-        "javaGetterName": "CompanyId",
+        "name": "parent_id",
+        "javaFieldName": "parentId",
+        "javaGetterName": "ParentId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "公司ID",
+        "comment": "父级部门 NULL为顶级",
         "primary": false
       },
       {
-        "name": "collection_id",
-        "javaFieldName": "collectionId",
-        "javaGetterName": "CollectionId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "集合ID",
-        "primary": false
-      },
-      {
-        "name": "req_url",
-        "javaFieldName": "reqUrl",
-        "javaGetterName": "ReqUrl",
+        "name": "name",
+        "javaFieldName": "name",
+        "javaGetterName": "Name",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "请求URL",
+        "comment": "部门名",
         "primary": false
       },
       {
-        "name": "req_url_params_json",
-        "javaFieldName": "reqUrlParamsJson",
-        "javaGetterName": "ReqUrlParamsJson",
-        "type": "JSON",
+        "name": "principal_id",
+        "javaFieldName": "principalId",
+        "javaGetterName": "PrincipalId",
+        "type": "VARCHAR",
         "javaType": "String",
-        "comment": "请求URL查询参数",
+        "comment": "负责人ID",
         "primary": false
       },
       {
-        "name": "req_method",
-        "javaFieldName": "reqMethod",
-        "javaGetterName": "ReqMethod",
+        "name": "principal_name",
+        "javaFieldName": "principalName",
+        "javaGetterName": "PrincipalName",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "负责人名称",
+        "primary": false
+      },
+      {
+        "name": "status",
+        "javaFieldName": "status",
+        "javaGetterName": "Status",
         "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS",
+        "comment": "部门状态 0:正常 1:禁用",
         "primary": false
       },
       {
-        "name": "req_header_json",
-        "javaFieldName": "reqHeaderJson",
-        "javaGetterName": "ReqHeaderJson",
-        "type": "JSON",
-        "javaType": "String",
-        "comment": "请求头JSON",
-        "primary": false
-      },
-      {
-        "name": "req_body_json",
-        "javaFieldName": "reqBodyJson",
-        "javaGetterName": "ReqBodyJson",
-        "type": "JSON",
-        "javaType": "String",
-        "comment": "请求体JSON",
-        "primary": false
-      },
-      {
-        "name": "ret_header_json",
-        "javaFieldName": "retHeaderJson",
-        "javaGetterName": "RetHeaderJson",
-        "type": "JSON",
-        "javaType": "String",
-        "comment": "响应头JSON",
-        "primary": false
-      },
-      {
-        "name": "ret_body_json",
-        "javaFieldName": "retBodyJson",
-        "javaGetterName": "RetBodyJson",
-        "type": "JSON",
-        "javaType": "String",
-        "comment": "响应体JSON",
-        "primary": false
-      },
-      {
-        "name": "ret_http_status",
-        "javaFieldName": "retHttpStatus",
-        "javaGetterName": "RetHttpStatus",
+        "name": "seq",
+        "javaFieldName": "seq",
+        "javaGetterName": "Seq",
         "type": "INT",
         "javaType": "Integer",
-        "comment": "HTTP状态码",
-        "primary": false
-      },
-      {
-        "name": "ret_biz_status",
-        "javaFieldName": "retBizStatus",
-        "javaGetterName": "RetBizStatus",
-        "type": "INT",
-        "javaType": "Integer",
-        "comment": "状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时",
-        "primary": false
-      },
-      {
-        "name": "req_time",
-        "javaFieldName": "reqTime",
-        "javaGetterName": "ReqTime",
-        "type": "DATETIME",
-        "javaType": "Date",
-        "comment": "请求发起时间",
-        "primary": false
-      },
-      {
-        "name": "ret_time",
-        "javaFieldName": "retTime",
-        "javaGetterName": "RetTime",
-        "type": "DATETIME",
-        "javaType": "Date",
-        "comment": "响应时间",
+        "comment": "排序",
         "primary": false
       },
       {
@@ -164,47 +101,38 @@
         "javaType": "Long",
         "comment": "更新人ID",
         "primary": false
-      },
-      {
-        "name": "delete_time",
-        "javaFieldName": "deleteTime",
-        "javaGetterName": "DeleteTime",
-        "type": "DATETIME",
-        "javaType": "Date",
-        "comment": "删除时间 NULL未删除",
-        "primary": false
       }
     ],
     "options": [
       {
         "key": "tableName",
-        "val": "rdbg_collection_history",
-        "defaultVal": "rdbg_collection_history"
+        "val": "core_dept",
+        "defaultVal": "core_dept"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.collectionhistory.controller",
+  "pkgNameController": "com.ksptooi.biz.dept.controller",
   "dirRoot": "src",
-  "dbName": "endpoint_analysis_service_test",
+  "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "rdbg_collection_history",
-  "classNamePo": "CollectionHistoryPo",
+  "tableName": "core_dept",
+  "classNamePo": "DeptPo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "collectionHistoryService",
+  "fieldNameService": "deptService",
   "password": "root",
-  "datetime": "2026-01-08 14:36:20",
-  "host": "192.168.10.202:3306",
+  "datetime": "2026-01-25 05:15:38",
+  "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "CollectionHistoryVo",
+  "classNameVo": "DeptVo",
   "driver": "com.mysql.cj.jdbc.Driver",
-  "excludeNames": "rdbg_",
+  "excludeNames": "core_",
   "genPo": "true",
-  "table.name": "rdbg_collection_history",
-  "classNameService": "CollectionHistoryService",
+  "table.name": "core_dept",
+  "classNameService": "DeptService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -213,124 +141,61 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "记录ID",
+      "comment": "部门ID",
       "primary": true
     },
     {
-      "name": "company_id",
-      "javaFieldName": "companyId",
-      "javaGetterName": "CompanyId",
+      "name": "parent_id",
+      "javaFieldName": "parentId",
+      "javaGetterName": "ParentId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "公司ID",
+      "comment": "父级部门 NULL为顶级",
       "primary": false
     },
     {
-      "name": "collection_id",
-      "javaFieldName": "collectionId",
-      "javaGetterName": "CollectionId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "集合ID",
-      "primary": false
-    },
-    {
-      "name": "req_url",
-      "javaFieldName": "reqUrl",
-      "javaGetterName": "ReqUrl",
+      "name": "name",
+      "javaFieldName": "name",
+      "javaGetterName": "Name",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "请求URL",
+      "comment": "部门名",
       "primary": false
     },
     {
-      "name": "req_url_params_json",
-      "javaFieldName": "reqUrlParamsJson",
-      "javaGetterName": "ReqUrlParamsJson",
-      "type": "JSON",
+      "name": "principal_id",
+      "javaFieldName": "principalId",
+      "javaGetterName": "PrincipalId",
+      "type": "VARCHAR",
       "javaType": "String",
-      "comment": "请求URL查询参数",
+      "comment": "负责人ID",
       "primary": false
     },
     {
-      "name": "req_method",
-      "javaFieldName": "reqMethod",
-      "javaGetterName": "ReqMethod",
+      "name": "principal_name",
+      "javaFieldName": "principalName",
+      "javaGetterName": "PrincipalName",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "负责人名称",
+      "primary": false
+    },
+    {
+      "name": "status",
+      "javaFieldName": "status",
+      "javaGetterName": "Status",
       "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "请求方法 0:GET 1:POST 2:PUT 3:PATCH 4:DELETE 5:HEAD 6:OPTIONS",
+      "comment": "部门状态 0:正常 1:禁用",
       "primary": false
     },
     {
-      "name": "req_header_json",
-      "javaFieldName": "reqHeaderJson",
-      "javaGetterName": "ReqHeaderJson",
-      "type": "JSON",
-      "javaType": "String",
-      "comment": "请求头JSON",
-      "primary": false
-    },
-    {
-      "name": "req_body_json",
-      "javaFieldName": "reqBodyJson",
-      "javaGetterName": "ReqBodyJson",
-      "type": "JSON",
-      "javaType": "String",
-      "comment": "请求体JSON",
-      "primary": false
-    },
-    {
-      "name": "ret_header_json",
-      "javaFieldName": "retHeaderJson",
-      "javaGetterName": "RetHeaderJson",
-      "type": "JSON",
-      "javaType": "String",
-      "comment": "响应头JSON",
-      "primary": false
-    },
-    {
-      "name": "ret_body_json",
-      "javaFieldName": "retBodyJson",
-      "javaGetterName": "RetBodyJson",
-      "type": "JSON",
-      "javaType": "String",
-      "comment": "响应体JSON",
-      "primary": false
-    },
-    {
-      "name": "ret_http_status",
-      "javaFieldName": "retHttpStatus",
-      "javaGetterName": "RetHttpStatus",
+      "name": "seq",
+      "javaFieldName": "seq",
+      "javaGetterName": "Seq",
       "type": "INT",
       "javaType": "Integer",
-      "comment": "HTTP状态码",
-      "primary": false
-    },
-    {
-      "name": "ret_biz_status",
-      "javaFieldName": "retBizStatus",
-      "javaGetterName": "RetBizStatus",
-      "type": "INT",
-      "javaType": "Integer",
-      "comment": "状态 0:正常 1:HTTP失败 2:业务失败 3:连接超时",
-      "primary": false
-    },
-    {
-      "name": "req_time",
-      "javaFieldName": "reqTime",
-      "javaGetterName": "ReqTime",
-      "type": "DATETIME",
-      "javaType": "Date",
-      "comment": "请求发起时间",
-      "primary": false
-    },
-    {
-      "name": "ret_time",
-      "javaFieldName": "retTime",
-      "javaGetterName": "RetTime",
-      "type": "DATETIME",
-      "javaType": "Date",
-      "comment": "响应时间",
+      "comment": "排序",
       "primary": false
     },
     {
@@ -368,39 +233,30 @@
       "javaType": "Long",
       "comment": "更新人ID",
       "primary": false
-    },
-    {
-      "name": "delete_time",
-      "javaFieldName": "deleteTime",
-      "javaGetterName": "DeleteTime",
-      "type": "DATETIME",
-      "javaType": "Date",
-      "comment": "删除时间 NULL未删除",
-      "primary": false
     }
   ],
-  "fieldNameController": "collectionHistoryController",
-  "pkgNameVo": "com.ksptooi.biz.collectionhistory.model.vo",
-  "fieldNameDto": "collectionHistoryDto",
+  "fieldNameController": "deptController",
+  "pkgNameVo": "com.ksptooi.biz.core.model.dept.vo",
+  "fieldNameDto": "deptDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "CollectionHistory",
-  "fieldNamePo": "collectionHistoryPo",
-  "classNameController": "CollectionHistoryController",
-  "pkgNameDto": "com.ksptooi.biz.collectionhistory.model.dto",
-  "classNameRepository": "CollectionHistoryRepository",
-  "pkgNameRepository": "com.ksptooi.biz.collectionhistory.repository",
-  "comments": "",
-  "fieldNameRepository": "collectionHistoryRepository",
+  "apiTagName": "Dept",
+  "fieldNamePo": "deptPo",
+  "classNameController": "DeptController",
+  "pkgNameDto": "com.ksptooi.biz.core.model.dept.dto",
+  "classNameRepository": "DeptRepository",
+  "pkgNameRepository": "com.ksptooi.biz.dept.repository",
+  "comments": "部门表",
+  "fieldNameRepository": "deptRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "collectionHistory",
+  "requestMappingName": "dept",
   "genController": "true",
-  "fieldNameVo": "collectionHistoryVo",
-  "businessClassName": "CollectionHistory",
+  "fieldNameVo": "deptVo",
+  "businessClassName": "Dept",
   "genVo": "true",
   "dirClasses": "main.java",
-  "gWorkspace": "C:\\InternalDev\\KspTooiProject\\endpoint-analysis-service",
-  "classNameDto": "CollectionHistoryDto",
+  "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
+  "classNameDto": "DeptDto",
   "username": "root"
 }
