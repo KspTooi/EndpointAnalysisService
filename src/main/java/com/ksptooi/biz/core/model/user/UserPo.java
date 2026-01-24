@@ -3,6 +3,7 @@ package com.ksptooi.biz.core.model.user;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
+import com.ksptooi.biz.core.model.dept.DeptPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
@@ -67,6 +68,15 @@ public class UserPo {
     @Column(name = "last_login_time")
     @Comment("最后登录时间")
     private LocalDateTime lastLoginTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("所属部门 为null时表示未所属任何部门")
+    private DeptPo dept;
+
+    @Column(name = "dept_name", length = 32, nullable = true)
+    @Comment("所属部门名称")
+    private String deptName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "active_company_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

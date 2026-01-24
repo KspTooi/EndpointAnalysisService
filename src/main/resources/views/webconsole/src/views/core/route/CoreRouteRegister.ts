@@ -17,6 +17,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
       },
       {
         biz: "core",
+        path: "dept-manager",
+        name: "dept-manager",
+        component: () => import("@/views/core/DeptManager.vue"),
+        breadcrumb: "部门管理",
+      },
+      {
+        biz: "core",
         path: "group-manager",
         name: "group-manager",
         component: () => import("@/views/core/UserGroupManager.vue"),
