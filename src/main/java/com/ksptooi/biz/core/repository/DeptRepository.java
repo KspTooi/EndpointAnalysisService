@@ -11,6 +11,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeptRepository extends JpaRepository<DeptPo, Long> {
 
+
+    
+
+
+
+
+
+
+
+
     @Query("""
             SELECT u FROM DeptPo u
             WHERE

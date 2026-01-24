@@ -20,7 +20,7 @@ public class GetDeptListVo {
     private String name;
 
     @Schema(description = "负责人ID")
-    private String principalId;
+    private Long principalId;
 
     @Schema(description = "负责人名称")
     private String principalName;

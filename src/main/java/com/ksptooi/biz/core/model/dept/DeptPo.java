@@ -39,7 +39,7 @@ public class DeptPo {
 
     @Column(name = "principal_id")
     @Comment("负责人ID")
-    private String principalId;
+    private Long principalId;
 
     @Column(name = "principal_name")
     @Comment("负责人名称")

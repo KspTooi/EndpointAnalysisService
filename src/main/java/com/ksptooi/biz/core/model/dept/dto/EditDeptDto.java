@@ -25,10 +25,7 @@ public class EditDeptDto {
     private String name;
 
     @Schema(description = "负责人ID")
-    private String principalId;
-
-    @Schema(description = "负责人名称")
-    private String principalName;
+    private Long principalId;
 
     @NotNull(message = "部门状态不能为空")
     @Range(min = 0, max = 1, message = "部门状态只能在0-1之间")

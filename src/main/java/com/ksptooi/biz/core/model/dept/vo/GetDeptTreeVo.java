@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
-public class GetDeptDetailsVo {
+public class GetDeptTreeVo {
 
     @Schema(description = "部门ID")
     private Long id;
@@ -31,6 +31,7 @@ public class GetDeptDetailsVo {
     @Schema(description = "排序")
     private Integer seq;
 
+    @Schema(description = "子部门列表")
+    private List<GetDeptTreeVo> children;
 
 }
-
