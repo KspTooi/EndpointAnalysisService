@@ -29,10 +29,13 @@ import static com.ksptool.entities.Entities.assign;
 public class UserService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private GroupRepository groupRepository;
+
     @Autowired
     private AuthService authService;
 
@@ -44,43 +47,11 @@ public class UserService {
      * @return 用户列表VO
      */
     public PageResult<GetUserListVo> getUserList(GetUserListDto dto) {
-        // 创建分页对象
-        Pageable pageable = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize(), Sort.Direction.DESC, "updateTime");
-
-        // 创建查询条件
-        UserPo query = new UserPo();
-        if (StringUtils.isNotBlank(dto.getUsername())) {
-            query.setUsername(dto.getUsername());
-        }
-        if (dto.getStatus() != null) {
-            query.setStatus(dto.getStatus());
-        }
-
-        // 创建Example查询对象
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withIgnoreCase()
-                .withIgnoreNullValues();
-
-        // 查询数据
-        Page<UserPo> userPage = userRepository.findAll(Example.of(query, matcher), pageable);
-
-        // 转换为VO列表
-        List<GetUserListVo> voList = new ArrayList<>();
-        for (UserPo po : userPage.getContent()) {
-            GetUserListVo vo = new GetUserListVo();
-            assign(po, vo);
-            if (po.getCreateTime() != null) {
-                vo.setCreateTime(po.getCreateTime().format(DATE_TIME_FORMATTER));
-            }
-            if (po.getLastLoginTime() != null) {
-                vo.setLastLoginTime(po.getLastLoginTime().format(DATE_TIME_FORMATTER));
-            }
-            voList.add(vo);
-        }
+        
+        var vPos = userRepository.getUserList(dto, dto.pageRequest());
 
         // 返回分页视图
-        return PageResult.success(voList, userPage.getTotalElements());
+        return PageResult.success(vPos.getContent(), vPos.getTotalElements());
     }
 
     /**
@@ -176,7 +147,7 @@ public class UserService {
         assign(dto, user);
         user.setGroups(getGroupSet(dto.getGroupIds()));
 
-        
+
         userRepository.save(user);
         authService.refreshUserSession(user.getId());
     }
