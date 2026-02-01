@@ -1,5 +1,4 @@
 spring:
-
   profiles:
     active: dev
 
@@ -53,7 +52,6 @@ spring:
         use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.MySQLDialect
 
-
   thymeleaf:
     cache: false # 开发环境禁用模板缓存
     prefix: classpath:/views/
@@ -61,7 +59,6 @@ spring:
 
   main:
     lazy-initialization: true
-
 
 server:
   port: 27500
@@ -105,7 +102,6 @@ module-drive:
 
   #签名有效时间(秒)
   ttl: 3600
-
 #logging:
 #  level:
 #    org.springframework.boot.context.logging: INFO
