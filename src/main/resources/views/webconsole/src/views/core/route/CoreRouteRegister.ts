@@ -85,6 +85,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/core/CompanyMember.vue"),
         breadcrumb: "公司成员管理",
       },
+      {
+        biz: "core",
+        path: "excel-template-manager",
+        name: "excel-template-manager",
+        component: () => import("@/views/core/ExcelTemplateManager.vue"),
+        breadcrumb: "Excel模板管理",
+      },
     ];
   }
 }

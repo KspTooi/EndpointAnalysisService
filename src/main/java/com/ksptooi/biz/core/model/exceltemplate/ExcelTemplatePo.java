@@ -6,6 +6,8 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +20,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "core_excel_template")
+@Table(name = "core_excel_template", indexes = {
+        @Index(name = "uk_code_delete_time", columnList = "code,delete_time", unique = true)
+})
+@SQLDelete(sql = "UPDATE core_excel_template SET delete_time = now() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class ExcelTemplatePo {
 
     @Id
@@ -31,8 +37,8 @@ public class ExcelTemplatePo {
     @Column(name = "name", nullable = false, length = 32, comment = "模板名称")
     private String name;
 
-    @Column(name = "key", nullable = false, length = 32, comment = "模板标识 唯一")
-    private String key;
+    @Column(name = "code", nullable = false, length = 32, comment = "模板标识 唯一")
+    private String code;
 
     @Column(name = "remark", columnDefinition = "text", comment = "模板备注")
     private String remark;

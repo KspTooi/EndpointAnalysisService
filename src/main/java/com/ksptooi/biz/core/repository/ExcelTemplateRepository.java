@@ -16,9 +16,9 @@ public interface ExcelTemplateRepository extends JpaRepository<ExcelTemplatePo, 
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.attachId} IS NULL OR u.attachId  = :#{#po.attachId} )
-            AND (:#{#po.name} IS NULL OR u.name  = :#{#po.name} )
-            AND (:#{#po.key} IS NULL OR u.key  = :#{#po.key} )
-            AND (:#{#po.remark} IS NULL OR u.remark  = :#{#po.remark} )
+            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%') )
+            AND (:#{#po.code} IS NULL OR u.code LIKE CONCAT('%', :#{#po.code}, '%') )
+            AND (:#{#po.remark} IS NULL OR u.remark LIKE CONCAT('%', :#{#po.remark}, '%') )
             AND (:#{#po.status} IS NULL OR u.status  = :#{#po.status} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
@@ -28,4 +28,10 @@ public interface ExcelTemplateRepository extends JpaRepository<ExcelTemplatePo, 
             ORDER BY u.updateTime DESC
             """)
     Page<ExcelTemplatePo> getExcelTemplateList(@Param("po") ExcelTemplatePo po, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM ExcelTemplatePo u
+            WHERE u.code = :code
+            """)
+    ExcelTemplatePo getExcelTemplateByCode(@Param("code") String code);
 }

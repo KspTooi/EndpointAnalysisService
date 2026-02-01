@@ -20,7 +20,7 @@ public class GetExcelTemplateListVo {
     private String name;
 
     @Schema(description = "模板标识 唯一")
-    private String key;
+    private String code;
 
     @Schema(description = "模板备注")
     private String remark;
@@ -30,18 +30,6 @@ public class GetExcelTemplateListVo {
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
-
-    @Schema(description = "创建人ID")
-    private Long creatorId;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "更新人ID")
-    private Long updaterId;
-
-    @Schema(description = "删除时间 NULL未删除")
-    private LocalDateTime deleteTime;
 
 }
 

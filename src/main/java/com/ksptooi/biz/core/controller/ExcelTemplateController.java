@@ -1,9 +1,7 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.core.model.exceltemplate.dto.AddExcelTemplateDto;
 import com.ksptooi.biz.core.model.exceltemplate.dto.EditExcelTemplateDto;
 import com.ksptooi.biz.core.model.exceltemplate.dto.GetExcelTemplateListDto;
-import com.ksptooi.biz.core.model.exceltemplate.vo.GetExcelTemplateDetailsVo;
 import com.ksptooi.biz.core.model.exceltemplate.vo.GetExcelTemplateListVo;
 import com.ksptooi.biz.core.service.ExcelTemplateService;
 import com.ksptooi.commons.annotation.PrintLog;
@@ -15,10 +13,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 
 @PrintLog
@@ -37,12 +35,12 @@ public class ExcelTemplateController {
         return excelTemplateService.getExcelTemplateList(dto);
     }
 
-    @Operation(summary = "新增Excel模板")
+/*    @Operation(summary = "新增Excel模板")
     @PostMapping("/addExcelTemplate")
     public Result<String> addExcelTemplate(@RequestBody @Valid AddExcelTemplateDto dto) throws Exception {
         excelTemplateService.addExcelTemplate(dto);
         return Result.success("新增成功");
-    }
+    }*/
 
     @Operation(summary = "编辑Excel模板")
     @PostMapping("/editExcelTemplate")
@@ -51,7 +49,7 @@ public class ExcelTemplateController {
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询Excel模板详情")
+/*    @Operation(summary = "查询Excel模板详情")
     @PostMapping("/getExcelTemplateDetails")
     public Result<GetExcelTemplateDetailsVo> getExcelTemplateDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetExcelTemplateDetailsVo details = excelTemplateService.getExcelTemplateDetails(dto);
@@ -59,13 +57,64 @@ public class ExcelTemplateController {
             return Result.error("无数据");
         }
         return Result.success(details);
-    }
+    }*/
 
     @Operation(summary = "删除Excel模板")
     @PostMapping("/removeExcelTemplate")
     public Result<String> removeExcelTemplate(@RequestBody @Valid CommonIdDto dto) throws Exception {
         excelTemplateService.removeExcelTemplate(dto);
         return Result.success("操作成功");
+    }
+
+
+    @Operation(summary = "上传Excel模板")
+    @PostMapping("/uploadExcelTemplate")
+    public Result<String> uploadExcelTemplate(@RequestParam("file") MultipartFile[] file) throws Exception {
+
+        if (file == null || file.length == 0) {
+            return Result.error("文件不能为空");
+        }
+
+        //最多上传50个模板
+        if (file.length > 50) {
+            return Result.error("最多上传50个模板");
+        }
+
+        for (MultipartFile f : file) {
+            if (f.isEmpty()) {
+                return Result.error("文件不能为空");
+            }
+            //只能上传xlsx文件
+            if (!Objects.requireNonNull(f.getOriginalFilename()).endsWith(".xlsx")) {
+                return Result.error("只能上传xlsx文件");
+            }
+            //只能且必须有一个-
+            if (!f.getOriginalFilename().contains("-")) {
+                return Result.error("文件名必须包含-");
+            }
+            //-前面为模板名称
+            var name = f.getOriginalFilename().split("-")[0];
+            if (name == null) {
+                return Result.error("模板名称不能为空");
+            }
+            //-后面为唯一标识符
+            var key = f.getOriginalFilename().split("-")[1];
+            if (key == null) {
+                return Result.error("唯一标识符不能为空");
+            }
+            //唯一标识符只能包含字母、数字和下划线
+            if (!key.matches("[a-zA-Z0-9_]+\\.xlsx")) {
+                return Result.error("唯一标识符只能包含字母、数字和下划线");
+            }
+            //不能多个-
+            if (f.getOriginalFilename().split("-").length > 2) {
+                return Result.error("文件名不能有多个-");
+            }
+        }
+
+        //处理上传
+        excelTemplateService.uploadExcelTemplate(file);
+        return Result.success("上传成功");
     }
 
 }
