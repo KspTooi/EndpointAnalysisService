@@ -4,6 +4,8 @@ import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type Result from "@/commons/entity/Result.ts";
 
+import axios from "axios";
+
 export interface GetEpStdWordListDto extends PageQuery {
   sourceName?: string | null;
   sourceNameFull?: string | null;
@@ -101,5 +103,36 @@ export default {
       return result.message;
     }
     throw new Error(result.message);
+  },
+
+  /**
+   * 导出标准词
+   */
+  exportEpStdWord: async (dto: GetEpStdWordListDto): Promise<void> => {
+    const response = await axios.post(`/epStdWord/exportEpStdWord`, dto, {
+      responseType: "blob",
+      headers: {
+        "AE-Request-With": "XHR",
+      },
+    });
+
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "标准词导出.xlsx";
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = decodeURIComponent(filenameMatch[1]);
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   },
 };

@@ -19,10 +19,17 @@
               <el-input v-model="listForm.targetName" placeholder="请输入英文简称" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="3" :offset="3">
+          <el-col :span="4" :offset="2">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-dropdown split-button type="primary" @click="loadList" :disabled="listLoading">
+                查询
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item :icon="DownloadIcon" @click="handleExport">导出查询结果</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+              <el-button @click="resetList" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -31,7 +38,6 @@
 
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">新增标准词</el-button>
-      <el-button type="primary" @click="importWizardRef?.openModal()">导入标准词</el-button>
       <el-button
         type="danger"
         @click="() => removeListBatch(listSelected)"
@@ -40,6 +46,7 @@
       >
         删除选中项
       </el-button>
+      <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入标准词</el-button>
     </div>
 
     <!-- 标准词列表 -->
@@ -158,21 +165,32 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, ArrowDown, Download, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import EpStdWordService from "@/views/document/service/EpStdWordService.ts";
-import type { GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
+import EpStdWordApi, { type GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const DownloadIcon = markRaw(Download);
+const UploadIcon = markRaw(Upload);
+const ArrowDownIcon = markRaw(ArrowDown);
 
 const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
 // 列表打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   EpStdWordService.useEpStdWordList();
+
+const handleExport = async () => {
+  try {
+    await EpStdWordApi.exportEpStdWord(listForm.value);
+  } catch (e: any) {
+    console.error(e);
+  }
+};
 
 // 选中的列表项
 const listSelected = ref<GetEpStdWordListVo[]>([]);
