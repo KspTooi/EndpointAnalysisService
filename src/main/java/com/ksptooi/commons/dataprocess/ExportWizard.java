@@ -1,6 +1,8 @@
 package com.ksptooi.commons.dataprocess;
 
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.ksptool.assembly.entity.exception.BizException;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -48,11 +50,11 @@ public class ExportWizard<T> {
         fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName);
 
-        /*EasyExcel.write(response.getOutputStream(), targetClazz)
+        EasyExcel.write(response.getOutputStream(), targetClazz)
                 .sheet(prefix)
                 .head(targetClazz)
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(data);*/
+                .doWrite(data);
     }
 
 

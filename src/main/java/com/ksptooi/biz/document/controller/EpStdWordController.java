@@ -78,6 +78,9 @@ public class EpStdWordController {
         //准备向导
         var iw = new ImportWizard<>(file, ImportEpStdWordDto.class);
 
+        //开始传输
+        iw.transfer();
+
         //验证导入数据
         var errors = iw.validate();
 
@@ -88,7 +91,7 @@ public class EpStdWordController {
         //获取导入数据
         var data = iw.getData();
         var count = epStdWordService.importEpStdWord(data);
-        return Result.success("操作成功,已导入数据:" + count + "条");
+        return Result.success("操作成功,已导入数据:" + count + "条", null);
     }
 
     @Operation(summary = "导出标准词")

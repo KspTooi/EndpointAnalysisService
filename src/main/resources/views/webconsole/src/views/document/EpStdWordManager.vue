@@ -31,6 +31,7 @@
 
     <div class="action-buttons">
       <el-button type="success" @click="openModal('add', null)">新增标准词</el-button>
+      <el-button type="primary" @click="importWizardRef?.openModal()">导入标准词</el-button>
       <el-button
         type="danger"
         @click="() => removeListBatch(listSelected)"
@@ -143,6 +144,15 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 导入向导 -->
+    <ImportWizardModal
+      ref="importWizardRef"
+      url="/epStdWord/importEpStdWord"
+      templateCode="ep_std_word"
+      @on-success="loadList"
+      @on-close="loadList"
+    />
   </div>
 </template>
 
@@ -152,10 +162,13 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import EpStdWordService from "@/views/document/service/EpStdWordService.ts";
 import type { GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
+import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+
+const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
 // 列表打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
