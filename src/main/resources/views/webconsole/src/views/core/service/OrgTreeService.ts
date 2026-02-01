@@ -9,6 +9,11 @@ export default class OrgTreeService {
     const treeData = ref<GetOrgTreeVo[]>([]);
     const loading = ref(false);
     const filterText = ref("");
+    const selectedOrg = ref<GetOrgTreeVo | null>(null);
+
+    const onSelectOrg = (org: GetOrgTreeVo | null) => {
+      selectedOrg.value = org;
+    };
 
     const loadTreeData = async () => {
       loading.value = true;
@@ -27,6 +32,8 @@ export default class OrgTreeService {
       loading,
       filterText,
       loadTreeData,
+      selectedOrg,
+      onSelectOrg,
     };
   }
 }

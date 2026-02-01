@@ -2,10 +2,10 @@
   <div class="list-container">
     <splitpanes class="custom-theme">
       <!-- 左侧树形列表：占满整个左侧 -->
-
       <pane size="20" min-size="10" max-size="40">
         <div class="mt-2 px-1">
-          <OrgTree :filter-text="filterText" :loading="loading" :tree-data="treeData" @on-select="loadList" />
+          {{ orgId }}
+          <OrgTree @on-select="onSelectOrg" />
         </div>
       </pane>
 
@@ -27,8 +27,8 @@
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-                <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+                <el-button type="primary" @click="loadList(orgId)" :disabled="listLoading">查询</el-button>
+                <el-button @click="resetList(orgId)" :disabled="listLoading">重置</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -192,16 +192,21 @@ import "splitpanes/dist/splitpanes.css";
 import UserManagerService from "@/views/core/service/UserManagerService.ts";
 import OrgTreeService from "@/views/core/service/OrgTreeService.ts";
 import OrgTree from "@/views/core/components/OrgTree.vue";
+import type { GetOrgTreeVo } from "./api/OrgApi";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-//部门树打包
-const { treeData, loading, filterText, loadTreeData } = OrgTreeService.useOrgTree();
+const onSelectOrg = (org: GetOrgTreeVo | null) => {
+  loadList(org?.id ?? null);
+  orgId.value = org?.id ?? null;
+};
+
+const orgId = ref<string | null>(null);
 
 // 列表打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList(orgId);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

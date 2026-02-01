@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { onMounted, reactive, ref, watch, type Ref } from "vue";
 import type {
   GetUserDetailsVo,
   GetUserListDto,
@@ -17,12 +17,13 @@ export default {
   /**
    * 用户列表打包
    */
-  useUserList() {
+  useUserList(orgId: Ref<string | null>) {
     const listForm = ref<GetUserListDto>({
       pageNum: 1,
       pageSize: 10,
       username: "",
       status: null,
+      orgId: null,
     });
 
     const listData = ref<GetUserListVo[]>([]);
@@ -32,7 +33,8 @@ export default {
     /**
      * 加载用户列表
      */
-    const loadList = async () => {
+    const loadList = async (orgId?: string | null) => {
+      listForm.value.orgId = orgId ?? null;
       listLoading.value = true;
       const result = await AdminUserApi.getUserList(listForm.value);
 
@@ -52,13 +54,13 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = () => {
+    const resetList = (orgId?: string | null) => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 10;
       listForm.value.username = "";
       listForm.value.status = null;
       QueryPersistService.clearQuery("user-manager");
-      loadList();
+      loadList(orgId ?? null);
     };
 
     /**
@@ -113,6 +115,7 @@ export default {
     const modalCurrentRow = ref<GetUserListVo | null>(null);
     const modalForm = reactive<GetUserDetailsVo>({
       id: "",
+      deptId: "",
       username: "",
       nickname: "",
       gender: 0,
