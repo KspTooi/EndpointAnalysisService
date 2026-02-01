@@ -5,6 +5,7 @@ import com.ksptooi.biz.document.model.epstdword.dto.AddEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.EditEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.GetEpStdWordListDto;
 import com.ksptooi.biz.document.model.epstdword.dto.ImportEpStdWordDto;
+import com.ksptooi.biz.document.model.epstdword.vo.ExportEpStdWordVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordDetailsVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordListVo;
 import com.ksptooi.biz.document.repository.EpStdWordRepository;
@@ -156,4 +157,20 @@ public class EpStdWordService {
 
         return addPos.size();
     }
+
+    /**
+     * 导出标准词
+     *
+     * @param dto 导出参数
+     * @param response 响应
+     * @throws BizException 业务异常
+     */
+    public List<ExportEpStdWordVo> exportEpStdWord(GetEpStdWordListDto dto) throws BizException {
+        EpStdWordPo query = new EpStdWordPo();
+        assign(dto, query);
+        List<EpStdWordPo> pos = repository.getEpStdWordListNotPage(query);
+        return as(pos, ExportEpStdWordVo.class);
+    }
+
+
 }

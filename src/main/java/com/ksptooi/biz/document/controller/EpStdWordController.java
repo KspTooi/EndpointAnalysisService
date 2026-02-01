@@ -4,16 +4,19 @@ import com.ksptooi.biz.document.model.epstdword.dto.AddEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.EditEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.GetEpStdWordListDto;
 import com.ksptooi.biz.document.model.epstdword.dto.ImportEpStdWordDto;
+import com.ksptooi.biz.document.model.epstdword.vo.ExportEpStdWordVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordDetailsVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordListVo;
 import com.ksptooi.biz.document.service.EpStdWordService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.dataprocess.ExportWizard;
 import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -86,6 +89,14 @@ public class EpStdWordController {
         var data = iw.getData();
         var count = epStdWordService.importEpStdWord(data);
         return Result.success("操作成功,已导入数据:" + count + "条");
+    }
+
+    @Operation(summary = "导出标准词")
+    @RequestMapping("/exportEpStdWord")
+    public void exportEpStdWord(@RequestBody @Valid GetEpStdWordListDto dto, HttpServletResponse hsrp) throws Exception {
+        //准备导出向导
+        var ew = new ExportWizard<ExportEpStdWordVo>(epStdWordService.exportEpStdWord(dto), hsrp);
+        ew.transfer("标准词");
     }
 
 }
