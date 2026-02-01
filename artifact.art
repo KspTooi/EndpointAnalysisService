@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.exceltemplate.service",
-  "pkgNamePo": "com.ksptooi.biz.exceltemplate.model.po",
+  "pkgNameService": "com.ksptooi.biz.epstdword.service",
+  "pkgNamePo": "com.ksptooi.biz.epstdword.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,34 +9,43 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "模板ID",
+        "comment": "标准词ID",
         "primary": false
       },
       {
-        "name": "attach_id",
-        "javaFieldName": "attachId",
-        "javaGetterName": "AttachId",
-        "type": "BIGINT",
-        "javaType": "Long",
-        "comment": "模板附件ID",
-        "primary": false
-      },
-      {
-        "name": "name",
-        "javaFieldName": "name",
-        "javaGetterName": "Name",
+        "name": "source_name",
+        "javaFieldName": "sourceName",
+        "javaGetterName": "SourceName",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "模板名称",
+        "comment": "简称",
         "primary": false
       },
       {
-        "name": "key",
-        "javaFieldName": "key",
-        "javaGetterName": "Key",
+        "name": "source_name_full",
+        "javaFieldName": "sourceNameFull",
+        "javaGetterName": "SourceNameFull",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "模板标识 唯一",
+        "comment": "全称",
+        "primary": false
+      },
+      {
+        "name": "target_name",
+        "javaFieldName": "targetName",
+        "javaGetterName": "TargetName",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "英文简称",
+        "primary": false
+      },
+      {
+        "name": "target_name_full",
+        "javaFieldName": "targetNameFull",
+        "javaGetterName": "TargetNameFull",
+        "type": "VARCHAR",
+        "javaType": "String",
+        "comment": "英文全称",
         "primary": false
       },
       {
@@ -45,16 +54,7 @@
         "javaGetterName": "Remark",
         "type": "TEXT",
         "javaType": "String",
-        "comment": "模板备注",
-        "primary": false
-      },
-      {
-        "name": "status",
-        "javaFieldName": "status",
-        "javaGetterName": "Status",
-        "type": "TINYINT",
-        "javaType": "Integer",
-        "comment": "状态 0:启用 1:禁用",
+        "comment": "备注",
         "primary": false
       },
       {
@@ -92,47 +92,38 @@
         "javaType": "Long",
         "comment": "更新人ID",
         "primary": false
-      },
-      {
-        "name": "delete_time",
-        "javaFieldName": "deleteTime",
-        "javaGetterName": "DeleteTime",
-        "type": "DATETIME",
-        "javaType": "Date",
-        "comment": "删除时间 NULL未删除",
-        "primary": false
       }
     ],
     "options": [
       {
         "key": "tableName",
-        "val": "core_excel_template",
-        "defaultVal": "core_excel_template"
+        "val": "EP_STD_WORD",
+        "defaultVal": "EP_STD_WORD"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.exceltemplate.controller",
+  "pkgNameController": "com.ksptooi.biz.epstdword.controller",
   "dirRoot": "src",
   "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "core_excel_template",
-  "classNamePo": "ExcelTemplatePo",
+  "tableName": "EP_STD_WORD",
+  "classNamePo": "EpStdWordPo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "excelTemplateService",
+  "fieldNameService": "epStdWordService",
   "password": "root",
-  "datetime": "2026-02-02 04:32:44",
+  "datetime": "2026-02-02 05:25:36",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "ExcelTemplateVo",
+  "classNameVo": "EpStdWordVo",
   "driver": "com.mysql.cj.jdbc.Driver",
   "excludeNames": "core_",
   "genPo": "true",
-  "table.name": "core_excel_template",
-  "classNameService": "ExcelTemplateService",
+  "table.name": "EP_STD_WORD",
+  "classNameService": "EpStdWordService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -141,34 +132,43 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "模板ID",
+      "comment": "标准词ID",
       "primary": false
     },
     {
-      "name": "attach_id",
-      "javaFieldName": "attachId",
-      "javaGetterName": "AttachId",
-      "type": "BIGINT",
-      "javaType": "Long",
-      "comment": "模板附件ID",
-      "primary": false
-    },
-    {
-      "name": "name",
-      "javaFieldName": "name",
-      "javaGetterName": "Name",
+      "name": "source_name",
+      "javaFieldName": "sourceName",
+      "javaGetterName": "SourceName",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "模板名称",
+      "comment": "简称",
       "primary": false
     },
     {
-      "name": "key",
-      "javaFieldName": "key",
-      "javaGetterName": "Key",
+      "name": "source_name_full",
+      "javaFieldName": "sourceNameFull",
+      "javaGetterName": "SourceNameFull",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "模板标识 唯一",
+      "comment": "全称",
+      "primary": false
+    },
+    {
+      "name": "target_name",
+      "javaFieldName": "targetName",
+      "javaGetterName": "TargetName",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "英文简称",
+      "primary": false
+    },
+    {
+      "name": "target_name_full",
+      "javaFieldName": "targetNameFull",
+      "javaGetterName": "TargetNameFull",
+      "type": "VARCHAR",
+      "javaType": "String",
+      "comment": "英文全称",
       "primary": false
     },
     {
@@ -177,16 +177,7 @@
       "javaGetterName": "Remark",
       "type": "TEXT",
       "javaType": "String",
-      "comment": "模板备注",
-      "primary": false
-    },
-    {
-      "name": "status",
-      "javaFieldName": "status",
-      "javaGetterName": "Status",
-      "type": "TINYINT",
-      "javaType": "Integer",
-      "comment": "状态 0:启用 1:禁用",
+      "comment": "备注",
       "primary": false
     },
     {
@@ -224,39 +215,30 @@
       "javaType": "Long",
       "comment": "更新人ID",
       "primary": false
-    },
-    {
-      "name": "delete_time",
-      "javaFieldName": "deleteTime",
-      "javaGetterName": "DeleteTime",
-      "type": "DATETIME",
-      "javaType": "Date",
-      "comment": "删除时间 NULL未删除",
-      "primary": false
     }
   ],
-  "fieldNameController": "excelTemplateController",
-  "pkgNameVo": "com.ksptooi.biz.core.model.exceltemplate.vo",
-  "fieldNameDto": "excelTemplateDto",
+  "fieldNameController": "epStdWordController",
+  "pkgNameVo": "com.ksptooi.biz.document.model.epstdword.vo",
+  "fieldNameDto": "epStdWordDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "ExcelTemplate",
-  "fieldNamePo": "excelTemplatePo",
-  "classNameController": "ExcelTemplateController",
-  "pkgNameDto": "com.ksptooi.biz.core.model.exceltemplate.dto",
-  "classNameRepository": "ExcelTemplateRepository",
-  "pkgNameRepository": "com.ksptooi.biz.exceltemplate.repository",
-  "comments": "导入模板表",
-  "fieldNameRepository": "excelTemplateRepository",
+  "apiTagName": "EpStdWord",
+  "fieldNamePo": "epStdWordPo",
+  "classNameController": "EpStdWordController",
+  "pkgNameDto": "com.ksptooi.biz.document.model.epstdword.dto",
+  "classNameRepository": "EpStdWordRepository",
+  "pkgNameRepository": "com.ksptooi.biz.epstdword.repository",
+  "comments": "标准词管理",
+  "fieldNameRepository": "epStdWordRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "excelTemplate",
+  "requestMappingName": "epStdWord",
   "genController": "true",
-  "fieldNameVo": "excelTemplateVo",
-  "businessClassName": "ExcelTemplate",
+  "fieldNameVo": "epStdWordVo",
+  "businessClassName": "EpStdWord",
   "genVo": "true",
   "dirClasses": "main.java",
   "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
-  "classNameDto": "ExcelTemplateDto",
+  "classNameDto": "EpStdWordDto",
   "username": "root"
 }
