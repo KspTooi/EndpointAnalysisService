@@ -39,6 +39,8 @@ export interface GetUserListVo {
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
   status: number; // 用户状态
+  rootName?: string; // 所属企业名称
+  deptName?: string; // 部门名称
   isSystem: number; // 是否为系统内置用户 0:否 1:是
 }
 

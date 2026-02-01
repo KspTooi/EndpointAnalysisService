@@ -4,7 +4,6 @@
       <!-- 左侧树形列表：占满整个左侧 -->
       <pane size="20" min-size="10" max-size="40">
         <div class="mt-2 px-1">
-          {{ orgId }}
           <OrgTree @on-select="onSelectOrg" />
         </div>
       </pane>
@@ -48,6 +47,18 @@
                   <span v-if="scope.row.gender === 0">男</span>
                   <span v-if="scope.row.gender === 1">女</span>
                   <span v-if="scope.row.gender === 2">不愿透露</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="rootName" label="企业" min-width="150" :v-show="orgId == null">
+                <template #default="scope">
+                  <span v-if="scope.row.rootName">{{ scope.row.rootName }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="deptName" label="部门" min-width="150">
+                <template #default="scope">
+                  <span v-if="scope.row.deptName">{{ scope.row.deptName }}</span>
+                  <span v-else>-</span>
                 </template>
               </el-table-column>
               <el-table-column prop="phone" label="手机号" min-width="120" />
@@ -116,7 +127,7 @@
       :close-on-click-modal="false"
       @close="
         resetModal();
-        loadList();
+        loadList(orgId);
       "
     >
       <el-form
@@ -141,6 +152,17 @@
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="modalForm.nickname" placeholder="请输入昵称" />
+        </el-form-item>
+        <el-form-item label="所属部门" prop="deptId">
+          <el-tree-select
+            v-model="modalForm.deptId"
+            :data="orgTreeOptions"
+            :props="{ label: 'name', value: 'id', children: 'children', disabled: 'disabled' }"
+            placeholder="请选择所属部门（可选）"
+            check-strictly
+            clearable
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="性别" prop="gender">
           <el-radio-group v-model="modalForm.gender">
@@ -211,6 +233,10 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
 
+const _loadList = () => {
+  loadList(orgId.value);
+};
+
 // 模态框打包
 const {
   modalVisible,
@@ -224,7 +250,8 @@ const {
   openModal,
   resetModal,
   submitModal,
-} = UserManagerService.useUserModal(modalFormRef, loadList);
+  orgTreeOptions,
+} = UserManagerService.useUserModal(modalFormRef, _loadList);
 </script>
 
 <style scoped>

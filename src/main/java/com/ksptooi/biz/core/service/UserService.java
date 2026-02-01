@@ -1,16 +1,18 @@
 package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.*;
 import com.ksptooi.biz.core.repository.GroupRepository;
+import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +41,9 @@ public class UserService {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private OrgRepository orgRepository;
+
 
     /**
      * 获取用户列表
@@ -47,7 +52,7 @@ public class UserService {
      * @return 用户列表VO
      */
     public PageResult<GetUserListVo> getUserList(GetUserListDto dto) {
-        
+
         var vPos = userRepository.getUserList(dto, dto.pageRequest());
 
         // 返回分页视图
@@ -92,7 +97,6 @@ public class UserService {
         // 获取用户权限信息
         List<PermissionPo> userPermissions = userRepository.findUserPermissions(id);
         vo.setPermissions(as(userPermissions, UserPermissionVo.class));
-
         return vo;
     }
 
@@ -123,6 +127,37 @@ public class UserService {
         user.setGroups(getGroupSet(dto.getGroupIds()));
         user.setIsSystem(0);
 
+        //处理组织架构
+        if (dto.getDeptId() != null) {
+
+            OrgPo org = orgRepository.getDeptById(dto.getDeptId());
+
+            if (org == null) {
+                throw new BizException("部门:" + dto.getDeptId() + "不存在");
+            }
+
+            //获取部门所在的公司
+            OrgPo rootOrg = orgRepository.getRootById(org.getRootId());
+
+            if (rootOrg == null) {
+                throw new BizException("公司:" + org.getRootId() + "不存在");
+            }
+
+            //设置用户所属公司和部门
+            user.setRootId(rootOrg.getId());
+            user.setRootName(rootOrg.getName());
+            user.setDeptId(org.getId());
+            user.setDeptName(org.getName());
+        }
+
+        if (dto.getDeptId() == null) {
+            user.setRootId(null);
+            user.setRootName(null);
+            user.setDeptId(null);
+            user.setDeptName(null);
+        }
+
+
         userRepository.save(user);
     }
 
@@ -147,6 +182,35 @@ public class UserService {
         assign(dto, user);
         user.setGroups(getGroupSet(dto.getGroupIds()));
 
+        //处理组织架构
+        if (dto.getDeptId() != null) {
+
+            OrgPo org = orgRepository.getDeptById(dto.getDeptId());
+
+            if (org == null) {
+                throw new BizException("部门:" + dto.getDeptId() + "不存在");
+            }
+
+            //获取部门所在的公司
+            OrgPo rootOrg = orgRepository.getRootById(org.getRootId());
+
+            if (rootOrg == null) {
+                throw new BizException("公司:" + org.getRootId() + "不存在");
+            }
+
+            //设置用户所属公司和部门
+            user.setRootId(rootOrg.getId());
+            user.setRootName(rootOrg.getName());
+            user.setDeptId(org.getId());
+            user.setDeptName(org.getName());
+        }
+
+        if (dto.getDeptId() == null) {
+            user.setRootId(null);
+            user.setRootName(null);
+            user.setDeptId(null);
+            user.setDeptName(null);
+        }
 
         userRepository.save(user);
         authService.refreshUserSession(user.getId());
