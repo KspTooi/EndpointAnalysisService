@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.exceltemplate.ExcelTemplatePo;
 import com.ksptooi.biz.core.model.exceltemplate.dto.AddExcelTemplateDto;
 import com.ksptooi.biz.core.model.exceltemplate.dto.EditExcelTemplateDto;
@@ -10,6 +11,7 @@ import com.ksptooi.biz.core.repository.ExcelTemplateRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,6 +200,68 @@ public class ExcelTemplateService {
 
         po.setName(tName);
         po.setCode(tCode);
+    }
+
+    /**
+     * 下载Excel模板
+     *
+     * @param code     模板标识
+     * @param response HTTP响应
+     * @throws BizException 业务异常
+     */
+    public void downloadExcelTemplate(String code, HttpServletResponse response) throws BizException {
+
+        if (StringUtils.isBlank(code)) {
+            throw new BizException("模板标识不能为空");
+        }
+
+        ExcelTemplatePo template = repository.getExcelTemplateByCode(code);
+
+        if (template == null) {
+            throw new BizException("模板不存在");
+        }
+
+        if (template.getStatus() == 1) {
+            throw new BizException("模板已禁用");
+        }
+
+        if (template.getAttachId() == null) {
+            throw new BizException("模板附件不存在");
+        }
+
+        AttachPo attach = attachService.requireAttach(template.getAttachId());
+
+        if (attach == null) {
+            throw new BizException("附件不存在");
+        }
+
+        Path filePath = attachService.getAttachLocalPath(Paths.get(attach.getPath()));
+
+        if (!Files.exists(filePath)) {
+            throw new BizException("模板文件不存在");
+        }
+
+        try {
+            String filename = template.getName() + "-" + template.getCode() + ".xlsx";
+            String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFilename);
+            response.setContentLengthLong(Files.size(filePath));
+
+            try (InputStream is = Files.newInputStream(filePath);
+                 OutputStream os = response.getOutputStream()) {
+
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.flush();
+            }
+        } catch (Exception e) {
+            throw new BizException("下载模板失败: " + e.getMessage());
+        }
     }
 
 

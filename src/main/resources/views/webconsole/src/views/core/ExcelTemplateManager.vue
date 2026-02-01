@@ -91,9 +91,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
-        <el-table-column label="操作" fixed="right" min-width="140">
+        <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openEditModal(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="success" size="small" @click="downloadTemplate(scope.row.code)" :icon="DownloadIcon">
+              下载
+            </el-button>
             <el-button link type="danger" size="small" @click="removeTemplate(scope.row.id)" :icon="DeleteIcon">
               删除
             </el-button>
@@ -229,7 +232,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Edit, Delete, UploadFilled, InfoFilled, WarningFilled, Loading } from "@element-plus/icons-vue";
+import { Edit, Delete, Download, UploadFilled, InfoFilled, WarningFilled, Loading } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance, UploadFile, UploadInstance } from "element-plus";
 import ExcelTemplateApi, {
@@ -254,6 +257,7 @@ const listLoading = ref(false);
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const DownloadIcon = markRaw(Download);
 
 // 上传对话框相关
 const uploadDialogVisible = ref(false);
@@ -557,6 +561,15 @@ const removeTemplateBatch = async () => {
     ElMessage.error(error.message);
   }
 };
+
+const downloadTemplate = async (code: string) => {
+  try {
+    await ExcelTemplateApi.downloadExcelTemplate(code);
+    ElMessage.success("下载成功");
+  } catch (error: any) {
+    ElMessage.error(error.message || "下载失败");
+  }
+};
 </script>
 
 <style scoped>
@@ -695,7 +708,7 @@ const removeTemplateBatch = async () => {
   border-radius: 0;
 }
 
-.is-loading {
+.el-icon.is-loading {
   animation: rotating 2s linear infinite;
 }
 

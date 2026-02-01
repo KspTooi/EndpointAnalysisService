@@ -86,4 +86,36 @@ export default {
       throw error;
     }
   },
+
+  /**
+   * 下载Excel模板
+   */
+  downloadExcelTemplate: async (code: string): Promise<void> => {
+    const response = await axios.get(`/excelTemplate/downloadExcelTemplate`, {
+      params: { code },
+      responseType: "blob",
+      headers: {
+        "AE-Request-With": "XHR",
+      },
+    });
+
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "template.xlsx";
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = decodeURIComponent(filenameMatch[1]);
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  },
 };

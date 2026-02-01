@@ -10,6 +10,8 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +37,6 @@ public class ExcelTemplateController {
         return excelTemplateService.getExcelTemplateList(dto);
     }
 
-/*    @Operation(summary = "新增Excel模板")
-    @PostMapping("/addExcelTemplate")
-    public Result<String> addExcelTemplate(@RequestBody @Valid AddExcelTemplateDto dto) throws Exception {
-        excelTemplateService.addExcelTemplate(dto);
-        return Result.success("新增成功");
-    }*/
-
     @Operation(summary = "编辑Excel模板")
     @PostMapping("/editExcelTemplate")
     public Result<String> editExcelTemplate(@RequestBody @Valid EditExcelTemplateDto dto) throws Exception {
@@ -49,15 +44,6 @@ public class ExcelTemplateController {
         return Result.success("修改成功");
     }
 
-/*    @Operation(summary = "查询Excel模板详情")
-    @PostMapping("/getExcelTemplateDetails")
-    public Result<GetExcelTemplateDetailsVo> getExcelTemplateDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetExcelTemplateDetailsVo details = excelTemplateService.getExcelTemplateDetails(dto);
-        if (details == null) {
-            return Result.error("无数据");
-        }
-        return Result.success(details);
-    }*/
 
     @Operation(summary = "删除Excel模板")
     @PostMapping("/removeExcelTemplate")
@@ -115,6 +101,12 @@ public class ExcelTemplateController {
         //处理上传
         excelTemplateService.uploadExcelTemplate(file);
         return Result.success("上传成功");
+    }
+
+    @Operation(summary = "下载Excel模板")
+    @RequestMapping("/downloadExcelTemplate")
+    public void downloadExcelTemplate(@RequestParam("code") String code, HttpServletResponse response) throws Exception {
+        excelTemplateService.downloadExcelTemplate(code, response);
     }
 
 }
