@@ -5,8 +5,6 @@ import com.ksptooi.biz.core.model.user.UserPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,55 +15,44 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "core_group")
+@Table(name = "core_group", comment = "用户组")
 @Getter
 @Setter
-@Comment("用户组")
 public class GroupPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("组ID")
+    @Column(name = "id", comment = "组ID")
     private Long id;
 
-    @Column(name = "code", nullable = false, unique = true, length = 50)
-    @Comment("组标识，如：admin、developer等")
+    @Column(name = "code", nullable = false, unique = true, length = 50, comment = "组标识，如：admin、developer等")
     private String code;
 
-    @Column(name = "name", nullable = false, unique = true, length = 50)
-    @Comment("组名称，如：管理员组、开发者组等")
+    @Column(name = "name", nullable = false, unique = true, length = 50, comment = "组名称，如：管理员组、开发者组等")
     private String name;
 
-    @Column(name = "description", length = 200)
-    @Comment("组描述")
+    @Column(name = "description", length = 200, comment = "组描述")
     private String description;
 
-    @Column(name = "is_system", nullable = false)
-    @Comment("是否系统内置组（内置组不可删除）")
+    @Column(name = "is_system", nullable = false, comment = "是否系统内置组（内置组不可删除）")
     private Boolean isSystem;
 
-    @Column(name = "status", nullable = false)
-    @Comment("组状态：0-禁用，1-启用")
+    @Column(name = "status", nullable = false, comment = "组状态：0-禁用，1-启用")
     private Integer status;
 
-    @Column(name = "sort_order", nullable = false)
-    @Comment("排序号")
+    @Column(name = "sort_order", nullable = false, comment = "排序号")
     private Integer sortOrder;
 
-    @Column(name = "create_user_id")
-    @Comment("创建人ID")
+    @Column(name = "create_user_id", comment = "创建人ID")
     private Long createUserId;
 
-    @Column(name = "update_user_id")
-    @Comment("修改人ID")
+    @Column(name = "update_user_id", comment = "修改人ID")
     private Long updateUserId;
 
-    @Column(name = "create_time", nullable = false, updatable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("修改时间")
+    @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
     @ManyToMany(fetch = FetchType.LAZY)

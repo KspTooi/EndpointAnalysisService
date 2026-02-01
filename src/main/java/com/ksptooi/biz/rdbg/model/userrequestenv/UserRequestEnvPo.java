@@ -5,8 +5,6 @@ import com.ksptooi.biz.rdbg.model.userrequestenvstorage.UserRequestEnvStoragePo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,33 +16,26 @@ public class UserRequestEnvPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @Comment("环境ID")
+    @Column(name = "id", comment = "环境ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("用户ID")
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "用户ID")
     private UserPo user;
 
-    @Column(name = "name", nullable = false, length = 32)
-    @Comment("环境名")
+    @Column(name = "name", nullable = false, length = 32, comment = "环境名")
     private String name;
 
-    @Column(name = "remark", columnDefinition = "text", length = 5000)
-    @Comment("描述")
+    @Column(name = "remark", columnDefinition = "text", length = 5000, comment = "描述")
     private String remark;
 
-    @Column(name = "create_time", nullable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "env", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Comment("环境共享存储")
     private List<UserRequestEnvStoragePo> storages;
 
     @PrePersist
