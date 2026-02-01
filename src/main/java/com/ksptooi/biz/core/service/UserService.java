@@ -2,9 +2,7 @@ package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
-import com.ksptooi.biz.core.model.dept.DeptPo;
 import com.ksptooi.biz.core.model.user.*;
-import com.ksptooi.biz.core.repository.DeptRepository;
 import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.enums.UserEnum;
@@ -30,22 +28,18 @@ import static com.ksptool.entities.Entities.assign;
 @Service
 public class UserService {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private GroupRepository groupRepository;
-
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private DeptRepository deptRepository;
-
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 获取用户列表
+     *
      * @param dto 获取用户列表DTO
      * @return 用户列表VO
      */
@@ -57,11 +51,6 @@ public class UserService {
         UserPo query = new UserPo();
         if (StringUtils.isNotBlank(dto.getUsername())) {
             query.setUsername(dto.getUsername());
-        }
-        if (dto.getDeptId() != null) {
-            DeptPo dept = new DeptPo();
-            dept.setId(dto.getDeptId());
-            query.setDept(dept);
         }
         if (dto.getStatus() != null) {
             query.setStatus(dto.getStatus());
@@ -96,6 +85,7 @@ public class UserService {
 
     /**
      * 获取用户详情
+     *
      * @param id 用户ID
      * @return 用户详情VO
      * @throws BizException 用户不存在
@@ -132,17 +122,13 @@ public class UserService {
         List<PermissionPo> userPermissions = userRepository.findUserPermissions(id);
         vo.setPermissions(as(userPermissions, UserPermissionVo.class));
 
-        //处理部门
-        if (user.getDept() != null) {
-            vo.setDeptId(user.getDept().getId());
-        }
-
         return vo;
     }
 
     /**
      * 新增用户
      * 新增用户时，用户默认不是系统内置用户
+     *
      * @param dto 新增用户DTO
      * @throws BizException 用户名已存在或无法新增用户
      */
@@ -159,25 +145,19 @@ public class UserService {
         if (userRepository.countByUsername(dto.getUsername()) > 0) {
             throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
         }
-        
+
         UserPo user = new UserPo();
         assign(dto, user);
         user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
         user.setGroups(getGroupSet(dto.getGroupIds()));
         user.setIsSystem(0);
 
-        //处理部门
-        if (dto.getDeptId() != null) {
-            var deptPo = deptRepository.findById(dto.getDeptId()).orElseThrow(() -> new BizException("部门不存在"));
-            user.setDept(deptPo);
-            user.setDeptName(deptPo.getName());
-        }
-
         userRepository.save(user);
     }
 
     /**
      * 编辑用户
+     *
      * @param dto 编辑用户DTO
      * @throws BizException 用户不存在或无法编辑系统内置用户
      */
@@ -196,13 +176,7 @@ public class UserService {
         assign(dto, user);
         user.setGroups(getGroupSet(dto.getGroupIds()));
 
-        //处理部门
-        if (dto.getDeptId() != null) {
-            var deptPo = deptRepository.findById(dto.getDeptId()).orElseThrow(() -> new BizException("部门不存在"));
-            user.setDept(deptPo);
-            user.setDeptName(deptPo.getName());
-        }
-
+        
         userRepository.save(user);
         authService.refreshUserSession(user.getId());
     }
@@ -210,6 +184,7 @@ public class UserService {
     /**
      * 移除用户
      * 如果用户是系统内置用户，则无法移除
+     *
      * @param id 用户ID
      * @throws BizException 用户不存在或无法移除系统内置用户
      */

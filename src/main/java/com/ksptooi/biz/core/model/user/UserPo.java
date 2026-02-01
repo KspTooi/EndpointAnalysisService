@@ -3,7 +3,6 @@ package com.ksptooi.biz.core.model.user;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
-import com.ksptooi.biz.core.model.dept.DeptPo;
 import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
@@ -69,13 +68,20 @@ public class UserPo {
     @Comment("最后登录时间")
     private LocalDateTime lastLoginTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dept_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("所属部门 为null时表示未所属任何部门")
-    private DeptPo dept;
+    @Column(name = "root_id")
+    @Comment("所属企业ID")
+    private Long rootId;
 
-    @Column(name = "dept_name", length = 32, nullable = true)
-    @Comment("所属部门名称")
+    @Column(name = "dept_id")
+    @Comment("所属部门ID")
+    private Long deptId;
+
+    @Column(name = "root_name", length = 32)
+    @Comment("所属企业名")
+    private String rootName;
+
+    @Column(name = "dept_name", length = 255)
+    @Comment("所属部门名")
     private String deptName;
 
     @ManyToOne(fetch = FetchType.LAZY)
