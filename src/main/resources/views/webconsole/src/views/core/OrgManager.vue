@@ -17,7 +17,7 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="filterData" :disabled="listLoading">查询</el-button>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
               <el-button @click="resetQuery" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
@@ -94,11 +94,11 @@
         <el-form-item label="上级组织" prop="parentId" v-show="modalKind == 0">
           <el-tree-select
             v-model="modalForm.parentId"
-            :data="treeSelectData"
+            :data="filterTreeSelectData"
             placeholder="请选择上级组织"
             clearable
             check-strictly
-            :render-after-expand="false"
+            :render-after-expand="true"
             :disabled="modalMode === 'add-item'"
             node-key="value"
           />
@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Edit, Delete, Plus } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance, TableInstance } from "element-plus";
@@ -155,6 +155,45 @@ const {
   resetModal,
   submitModal,
 } = OrgManagerService.useOrgModal(modalFormRef, loadList, treeSelectData);
+
+const filterTreeSelectData = computed(() => {
+  const disableNode = (tree: any[], id: string): any[] => {
+    return tree.map((node) => {
+      if (node.value === id) {
+        const disableAllChildren = (children: any[]): any[] => {
+          return children.map((child) => ({
+            ...child,
+            disabled: true,
+            children: child.children ? disableAllChildren(child.children) : undefined,
+          }));
+        };
+        return { ...node, disabled: true, children: node.children ? disableAllChildren(node.children) : undefined };
+      }
+      if (node.children && node.children.length > 0) {
+        return { ...node, children: disableNode(node.children, id) };
+      }
+      return node;
+    });
+  };
+
+  //如果当前正在编辑部门，则过滤掉当前部门、与其他公司
+  if (modalMode.value === "edit" && modalForm.kind === 0) {
+    const currentRootId = modalForm.rootId;
+    const currentId = modalForm.id;
+
+    //将列表中非当前公司的顶级节点设为disabled
+    for (let item of treeSelectData.value) {
+      if (item.value !== currentRootId) {
+        item.disabled = true;
+      }
+    }
+
+    //禁用当前正在编辑的部门及子节点
+    return disableNode(treeSelectData.value, currentId);
+  }
+
+  return treeSelectData.value;
+});
 </script>
 
 <style scoped>

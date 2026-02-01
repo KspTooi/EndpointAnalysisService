@@ -144,13 +144,15 @@ export default {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit" | "add-item">("add");
-    const modalForm = reactive({
+    const modalForm = reactive<GetOrgDetailsVo>({
       id: "",
       parentId: null as string | null,
       kind: 0, // 0:部门 1:企业
       name: "",
       principalId: null as string | null,
       seq: 0,
+      rootId: "",
+      principalName: "",
     });
 
     const modalRules = computed(() => ({
@@ -192,6 +194,8 @@ export default {
           modalForm.name = ret.name;
           modalForm.principalId = ret.principalId;
           modalForm.seq = ret.seq;
+          modalForm.rootId = ret.rootId;
+          modalForm.principalName = ret.principalName;
         } catch (error: any) {
           ElMessage.error(error.message || "获取组织机构详情失败");
           return;
