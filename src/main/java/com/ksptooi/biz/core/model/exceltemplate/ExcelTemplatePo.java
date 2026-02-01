@@ -1,0 +1,87 @@
+package com.ksptooi.biz.core.model.exceltemplate;
+
+
+import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.commons.utils.IdWorker;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+/**
+ * ${tableComment}
+ *
+ * @author: generator
+ * @date: ${.now?string("yyyy年MM月dd日 HH:mm")}
+ */
+@Getter
+@Setter
+@Entity
+@Table(name = "core_excel_template")
+public class ExcelTemplatePo {
+
+    @Id
+    @Column(name = "id", nullable = false, comment = "模板ID")
+    private Long id;
+
+    @Column(name = "attach_id", nullable = false, comment = "模板附件ID")
+    private Long attachId;
+
+    @Column(name = "name", nullable = false, length = 32, comment = "模板名称")
+    private String name;
+
+    @Column(name = "key", nullable = false, length = 32, comment = "模板标识 唯一")
+    private String key;
+
+    @Column(name = "remark", columnDefinition = "text", comment = "模板备注")
+    private String remark;
+
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "状态 0:启用 1:禁用")
+    private Integer status;
+
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
+    private LocalDateTime createTime;
+
+    @Column(name = "creator_id", nullable = false, comment = "创建人ID")
+    private Long creatorId;
+
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
+    private LocalDateTime updateTime;
+
+    @Column(name = "updater_id", nullable = false, comment = "更新人ID")
+    private Long updaterId;
+
+    @Column(name = "delete_time", comment = "删除时间 NULL未删除")
+    private LocalDateTime deleteTime;
+
+    @PrePersist
+    private void onCreate() {
+        if (this.id == null) {
+            this.id = IdWorker.nextId();
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (this.createTime == null) {
+            this.createTime = now;
+        }
+        if (this.updateTime == null) {
+            this.updateTime = this.createTime;
+        }
+
+        if (this.creatorId == null) {
+            this.creatorId = AuthService.getCurrentUserId();
+        }
+        if (this.updaterId == null) {
+            this.updaterId = AuthService.getCurrentUserId();
+        }
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        this.updateTime = LocalDateTime.now();
+        if (this.updaterId == null) {
+            this.updaterId = AuthService.getCurrentUserId();
+        }
+    }
+}

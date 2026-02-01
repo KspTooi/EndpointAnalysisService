@@ -1,6 +1,6 @@
 {
-  "pkgNameService": "com.ksptooi.biz.dept.service",
-  "pkgNamePo": "com.ksptooi.biz.dept.model.po",
+  "pkgNameService": "com.ksptooi.biz.exceltemplate.service",
+  "pkgNamePo": "com.ksptooi.biz.exceltemplate.model.po",
   "fieldHelper": {
     "fields": [
       {
@@ -9,16 +9,16 @@
         "javaGetterName": "Id",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "部门ID",
-        "primary": true
+        "comment": "模板ID",
+        "primary": false
       },
       {
-        "name": "parent_id",
-        "javaFieldName": "parentId",
-        "javaGetterName": "ParentId",
+        "name": "attach_id",
+        "javaFieldName": "attachId",
+        "javaGetterName": "AttachId",
         "type": "BIGINT",
         "javaType": "Long",
-        "comment": "父级部门 NULL为顶级",
+        "comment": "模板附件ID",
         "primary": false
       },
       {
@@ -27,25 +27,25 @@
         "javaGetterName": "Name",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "部门名",
+        "comment": "模板名称",
         "primary": false
       },
       {
-        "name": "principal_id",
-        "javaFieldName": "principalId",
-        "javaGetterName": "PrincipalId",
+        "name": "key",
+        "javaFieldName": "key",
+        "javaGetterName": "Key",
         "type": "VARCHAR",
         "javaType": "String",
-        "comment": "负责人ID",
+        "comment": "模板标识 唯一",
         "primary": false
       },
       {
-        "name": "principal_name",
-        "javaFieldName": "principalName",
-        "javaGetterName": "PrincipalName",
-        "type": "VARCHAR",
+        "name": "remark",
+        "javaFieldName": "remark",
+        "javaGetterName": "Remark",
+        "type": "TEXT",
         "javaType": "String",
-        "comment": "负责人名称",
+        "comment": "模板备注",
         "primary": false
       },
       {
@@ -54,16 +54,7 @@
         "javaGetterName": "Status",
         "type": "TINYINT",
         "javaType": "Integer",
-        "comment": "部门状态 0:正常 1:禁用",
-        "primary": false
-      },
-      {
-        "name": "seq",
-        "javaFieldName": "seq",
-        "javaGetterName": "Seq",
-        "type": "INT",
-        "javaType": "Integer",
-        "comment": "排序",
+        "comment": "状态 0:启用 1:禁用",
         "primary": false
       },
       {
@@ -101,38 +92,47 @@
         "javaType": "Long",
         "comment": "更新人ID",
         "primary": false
+      },
+      {
+        "name": "delete_time",
+        "javaFieldName": "deleteTime",
+        "javaGetterName": "DeleteTime",
+        "type": "DATETIME",
+        "javaType": "Date",
+        "comment": "删除时间 NULL未删除",
+        "primary": false
       }
     ],
     "options": [
       {
         "key": "tableName",
-        "val": "core_dept",
-        "defaultVal": "core_dept"
+        "val": "core_excel_template",
+        "defaultVal": "core_excel_template"
       }
     ],
     "optionDeclare": []
   },
-  "pkgNameController": "com.ksptooi.biz.dept.controller",
+  "pkgNameController": "com.ksptooi.biz.exceltemplate.controller",
   "dirRoot": "src",
   "dbName": "endpoint_analysis_service",
   "genService": "true",
-  "tableName": "core_dept",
-  "classNamePo": "DeptPo",
+  "tableName": "core_excel_template",
+  "classNamePo": "ExcelTemplatePo",
   "genRepository": "true",
   "logicExists": "0",
-  "fieldNameService": "deptService",
+  "fieldNameService": "excelTemplateService",
   "password": "root",
-  "datetime": "2026-01-25 05:15:38",
+  "datetime": "2026-02-02 04:32:44",
   "host": "127.0.0.1:3306",
   "template.namespace": "ns_main",
   "author": "DEAN",
   "params": "?serverTimezone\u003dAsia/Shanghai\u0026useUnicode\u003dtrue\u0026characterEncoding\u003dUTF-8",
-  "classNameVo": "DeptVo",
+  "classNameVo": "ExcelTemplateVo",
   "driver": "com.mysql.cj.jdbc.Driver",
   "excludeNames": "core_",
   "genPo": "true",
-  "table.name": "core_dept",
-  "classNameService": "DeptService",
+  "table.name": "core_excel_template",
+  "classNameService": "ExcelTemplateService",
   "logicRemoved": "1",
   "fields": [
     {
@@ -141,16 +141,16 @@
       "javaGetterName": "Id",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "部门ID",
-      "primary": true
+      "comment": "模板ID",
+      "primary": false
     },
     {
-      "name": "parent_id",
-      "javaFieldName": "parentId",
-      "javaGetterName": "ParentId",
+      "name": "attach_id",
+      "javaFieldName": "attachId",
+      "javaGetterName": "AttachId",
       "type": "BIGINT",
       "javaType": "Long",
-      "comment": "父级部门 NULL为顶级",
+      "comment": "模板附件ID",
       "primary": false
     },
     {
@@ -159,25 +159,25 @@
       "javaGetterName": "Name",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "部门名",
+      "comment": "模板名称",
       "primary": false
     },
     {
-      "name": "principal_id",
-      "javaFieldName": "principalId",
-      "javaGetterName": "PrincipalId",
+      "name": "key",
+      "javaFieldName": "key",
+      "javaGetterName": "Key",
       "type": "VARCHAR",
       "javaType": "String",
-      "comment": "负责人ID",
+      "comment": "模板标识 唯一",
       "primary": false
     },
     {
-      "name": "principal_name",
-      "javaFieldName": "principalName",
-      "javaGetterName": "PrincipalName",
-      "type": "VARCHAR",
+      "name": "remark",
+      "javaFieldName": "remark",
+      "javaGetterName": "Remark",
+      "type": "TEXT",
       "javaType": "String",
-      "comment": "负责人名称",
+      "comment": "模板备注",
       "primary": false
     },
     {
@@ -186,16 +186,7 @@
       "javaGetterName": "Status",
       "type": "TINYINT",
       "javaType": "Integer",
-      "comment": "部门状态 0:正常 1:禁用",
-      "primary": false
-    },
-    {
-      "name": "seq",
-      "javaFieldName": "seq",
-      "javaGetterName": "Seq",
-      "type": "INT",
-      "javaType": "Integer",
-      "comment": "排序",
+      "comment": "状态 0:启用 1:禁用",
       "primary": false
     },
     {
@@ -233,30 +224,39 @@
       "javaType": "Long",
       "comment": "更新人ID",
       "primary": false
+    },
+    {
+      "name": "delete_time",
+      "javaFieldName": "deleteTime",
+      "javaGetterName": "DeleteTime",
+      "type": "DATETIME",
+      "javaType": "Date",
+      "comment": "删除时间 NULL未删除",
+      "primary": false
     }
   ],
-  "fieldNameController": "deptController",
-  "pkgNameVo": "com.ksptooi.biz.core.model.dept.vo",
-  "fieldNameDto": "deptDto",
+  "fieldNameController": "excelTemplateController",
+  "pkgNameVo": "com.ksptooi.biz.core.model.exceltemplate.vo",
+  "fieldNameDto": "excelTemplateDto",
   "logicRemoveField": "is_deleted",
-  "apiTagName": "Dept",
-  "fieldNamePo": "deptPo",
-  "classNameController": "DeptController",
-  "pkgNameDto": "com.ksptooi.biz.core.model.dept.dto",
-  "classNameRepository": "DeptRepository",
-  "pkgNameRepository": "com.ksptooi.biz.dept.repository",
-  "comments": "部门表",
-  "fieldNameRepository": "deptRepository",
+  "apiTagName": "ExcelTemplate",
+  "fieldNamePo": "excelTemplatePo",
+  "classNameController": "ExcelTemplateController",
+  "pkgNameDto": "com.ksptooi.biz.core.model.exceltemplate.dto",
+  "classNameRepository": "ExcelTemplateRepository",
+  "pkgNameRepository": "com.ksptooi.biz.exceltemplate.repository",
+  "comments": "导入模板表",
+  "fieldNameRepository": "excelTemplateRepository",
   "genDto": "true",
   "dirXml": "src.main.resources.mapper",
   "pkgRoot": "com.ksptooi.biz",
-  "requestMappingName": "dept",
+  "requestMappingName": "excelTemplate",
   "genController": "true",
-  "fieldNameVo": "deptVo",
-  "businessClassName": "Dept",
+  "fieldNameVo": "excelTemplateVo",
+  "businessClassName": "ExcelTemplate",
   "genVo": "true",
   "dirClasses": "main.java",
   "gWorkspace": "F:\\ComRD\\Projects\\EndpointAnalysisService",
-  "classNameDto": "DeptDto",
+  "classNameDto": "ExcelTemplateDto",
   "username": "root"
 }
