@@ -153,6 +153,21 @@ public class OrgService {
             addPo.setPrincipalName(userPo.getUsername());
         }
 
+
+        var _parent = parentPo;
+        var pathIds = new ArrayList<String>();
+        pathIds.add(_parent.getId() + "");
+
+        //处理组织路径ID
+        while (_parent.getParentId() != null) {
+
+            _parent = repository.findById(_parent.getParentId())
+                    .orElseThrow(() -> new BizException("无法处理新增请求,父级组织不存在,导致组织路径ID处理失败."));
+
+            pathIds.add(_parent.getId() + "");
+        }
+
+        addPo.setOrgPathIds(String.join(",", pathIds));
         repository.save(addPo);
     }
 
@@ -224,6 +239,20 @@ public class OrgService {
                 updatePo.setPrincipalId(userPo.getId());
                 updatePo.setPrincipalName(userPo.getUsername());
             }
+
+            //处理组织路径ID
+            var _parent = parentPo;
+            var pathIds = new ArrayList<String>();
+            pathIds.add(_parent.getId() + "");
+
+            while (_parent.getParentId() != null) {
+
+                _parent = repository.findById(_parent.getParentId())
+                        .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在,导致组织路径ID处理失败."));
+
+                pathIds.add(_parent.getId() + "");
+            }
+            updatePo.setOrgPathIds(String.join(",", pathIds));
 
         }
 

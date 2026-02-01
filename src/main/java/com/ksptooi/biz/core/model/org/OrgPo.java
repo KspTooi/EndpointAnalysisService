@@ -6,7 +6,6 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -20,57 +19,47 @@ import java.time.LocalDateTime;
 @SQLDelete(sql = "UPDATE core_org SET delete_time = NOW() WHERE id = ?")
 public class OrgPo {
 
-    @Column(name = "id")
+    @Column(name = "id", comment = "主键id")
     @Id
-    @Comment("主键id")
     private Long id;
 
-    @Column(name = "root_id", nullable = false)
-    @Comment("一级组织ID")
+    @Column(name = "root_id", nullable = false, comment = "一级组织ID")
     private Long rootId;
 
-    @Column(name = "parent_id")
-    @Comment("上级组织ID NULL顶级组织")
+    @Column(name = "parent_id", comment = "上级组织ID NULL顶级组织")
     private Long parentId;
 
-    @Column(name = "kind", nullable = false, columnDefinition = "tinyint")
-    @Comment("0:部门 1:企业")
+    @Column(name = "org_path_ids", length = 1024, comment = "从顶级组织到当前组织的ID列表 以,分割")
+    private String orgPathIds;
+
+    @Column(name = "kind", nullable = false, columnDefinition = "tinyint", comment = "0:部门 1:企业")
     private Integer kind;
 
-    @Column(name = "name", nullable = false, length = 128)
-    @Comment("组织机构名称")
+    @Column(name = "name", nullable = false, length = 128, comment = "组织机构名称")
     private String name;
 
-    @Column(name = "principal_id")
-    @Comment("主管ID")
+    @Column(name = "principal_id", comment = "主管ID")
     private Long principalId;
 
-    @Column(name = "principal_name", length = 32)
-    @Comment("主管名称")
+    @Column(name = "principal_name", length = 32, comment = "主管名称")
     private String principalName;
 
-    @Column(name = "seq", nullable = false)
-    @Comment("排序")
+    @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
-    @Column(name = "create_time", nullable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "creator_id", nullable = false)
-    @Comment("创建人id")
+    @Column(name = "creator_id", nullable = false, comment = "创建人id")
     private Long creatorId;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updater_id", nullable = false)
-    @Comment("更新人id")
+    @Column(name = "updater_id", nullable = false, comment = "更新人id")
     private Long updaterId;
 
-    @Column(name = "delete_time")
-    @Comment("删除时间 NULL未删除")
+    @Column(name = "delete_time", comment = "删除时间 NULL未删除")
     private LocalDateTime deleteTime;
 
     @PrePersist
