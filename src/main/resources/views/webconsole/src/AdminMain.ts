@@ -19,6 +19,7 @@ import CoreRouteRegister from "./views/core/route/CoreRouteRegister";
 import DriveRouteRegister from "./views/drive/route/DriveRouteRegister";
 import RelayRouteRegister from "./views/relay/route/RelayRouteRegister";
 import RdbgRouteRegister from "@/views/rdbg/route/RdbgRouteRegister";
+import DocumentRouteRegister from "@/views/document/route/DocumentRouteRegister";
 
 setupIconify();
 
@@ -31,7 +32,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(createPinia());
 
-
 const { initialize, addRoute } = GenricRouteService.useGenricRoute();
 
 //注册业务路由
@@ -39,6 +39,7 @@ addRoute(new CoreRouteRegister());
 addRoute(new DriveRouteRegister());
 addRoute(new RelayRouteRegister());
 addRoute(new RdbgRouteRegister());
+addRoute(new DocumentRouteRegister());
 
 //初始化路由服务
 initialize(app);

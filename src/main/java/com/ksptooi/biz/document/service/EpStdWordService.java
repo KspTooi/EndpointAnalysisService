@@ -26,6 +26,11 @@ public class EpStdWordService {
     @Autowired
     private EpStdWordRepository repository;
 
+    /**
+     * 查询标准词列表
+     * @param dto 查询参数
+     * @return 标准词列表
+     */
     public PageResult<GetEpStdWordListVo> getEpStdWordList(GetEpStdWordListDto dto) {
         EpStdWordPo query = new EpStdWordPo();
         assign(dto, query);
@@ -39,12 +44,21 @@ public class EpStdWordService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增标准词
+     * @param dto 新增参数
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addEpStdWord(AddEpStdWordDto dto) {
         EpStdWordPo insertPo = as(dto, EpStdWordPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑标准词
+     * @param dto 编辑参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editEpStdWord(EditEpStdWordDto dto) throws BizException {
         EpStdWordPo updatePo = repository.findById(dto.getId())
@@ -54,12 +68,23 @@ public class EpStdWordService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询标准词详情
+     * @param dto 查询参数
+     * @return 标准词详情
+     * @throws BizException 业务异常
+     */
     public GetEpStdWordDetailsVo getEpStdWordDetails(CommonIdDto dto) throws BizException {
         EpStdWordPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
         return as(po, GetEpStdWordDetailsVo.class);
     }
 
+    /**
+     * 删除标准词
+     * @param dto 删除参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeEpStdWord(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
