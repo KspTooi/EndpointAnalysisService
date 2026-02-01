@@ -2,20 +2,17 @@ package com.ksptooi.commons.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Jackson全局配置
@@ -29,13 +26,15 @@ public class JacksonConfig {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return builder -> {
-            builder.serializerByType(Long.class, ToStringSerializer.instance);
-            builder.serializerByType(Long.TYPE, ToStringSerializer.instance);
-            builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer());
-            builder.deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer());
-        };
+    public Module jacksonModule() {
+        SimpleModule module = new SimpleModule();
+        // 注册Long类型转String序列化器
+        module.addSerializer(Long.class, ToStringSerializer.instance);
+        module.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        // 注册LocalDateTime序列化器与反序列化器
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+        return module;
     }
 
     /**
@@ -45,9 +44,10 @@ public class JacksonConfig {
     public static class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
         @Override
         public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            if (value != null) {
-                gen.writeString(value.format(DATE_TIME_FORMATTER));
+            if (value == null) {
+                return;
             }
+            gen.writeString(value.format(DATE_TIME_FORMATTER));
         }
     }
 
@@ -59,10 +59,10 @@ public class JacksonConfig {
         @Override
         public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             String value = p.getValueAsString();
-            if (StringUtils.isNotBlank(value)) {
-                return LocalDateTime.parse(value, DATE_TIME_FORMATTER);
+            if (StringUtils.isBlank(value)) {
+                return null;
             }
-            return null;
+            return LocalDateTime.parse(value, DATE_TIME_FORMATTER);
         }
     }
 }

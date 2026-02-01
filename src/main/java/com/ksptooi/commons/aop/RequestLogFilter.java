@@ -2,15 +2,12 @@ package com.ksptooi.commons.aop;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,18 +34,6 @@ public class RequestLogFilter implements Filter {
         return requestInfoThreadLocal.get();
     }
 
-    @Getter
-    @Setter
-    public static class RequestInfo {
-        private String gatewayRequestId;
-        private String uri;
-        private String method;
-        private String ip;
-        private Map<String, String> headers;
-        private Supplier<String> bodySupplier;
-        private long cost;
-    }
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -59,7 +44,7 @@ public class RequestLogFilter implements Filter {
         }
 
         //包装请求使其可以缓存请求体
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request, 0);
 
         try {
             //获取请求信息
@@ -74,7 +59,7 @@ public class RequestLogFilter implements Filter {
             info.setGatewayRequestId("UNKNOWN");
 
             //如果网关请求ID不为空，则设置到请求信息中
-            if(StringUtils.isNotBlank(gatewayRequestId)){
+            if (StringUtils.isNotBlank(gatewayRequestId)) {
                 info.setGatewayRequestId(gatewayRequestId);
             }
 
@@ -96,7 +81,6 @@ public class RequestLogFilter implements Filter {
             info.setCost(cost);
 
 
-
         } finally {
             //移除请求信息线程本地变量
             requestInfoThreadLocal.remove();
@@ -105,6 +89,7 @@ public class RequestLogFilter implements Filter {
 
     /**
      * 提取请求头
+     *
      * @param request 请求
      * @return 请求头
      */
@@ -118,6 +103,18 @@ public class RequestLogFilter implements Filter {
             }
         }
         return headers;
+    }
+
+    @Getter
+    @Setter
+    public static class RequestInfo {
+        private String gatewayRequestId;
+        private String uri;
+        private String method;
+        private String ip;
+        private Map<String, String> headers;
+        private Supplier<String> bodySupplier;
+        private long cost;
     }
 
 }
