@@ -5,17 +5,12 @@
       <el-form :model="queryForm">
         <el-row>
           <el-col :span="5" :offset="1">
-            <el-form-item label="部门名称">
-              <el-input v-model="queryForm.name" placeholder="输入部门名称查询" clearable />
+            <el-form-item label="组织机构名称">
+              <el-input v-model="queryForm.name" placeholder="输入组织机构名称查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
-            <el-form-item label="部门状态">
-              <el-select v-model="queryForm.status" placeholder="请选择状态" clearable>
-                <el-option label="正常" :value="0" />
-                <el-option label="禁用" :value="1" />
-              </el-select>
-            </el-form-item>
+            <!-- 占位，保持布局一致性 -->
           </el-col>
           <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
@@ -31,28 +26,20 @@
     </div>
 
     <div class="action-buttons">
-      <el-button type="success" @click="openModal('add', null)">创建部门</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建组织机构</el-button>
     </div>
 
-    <!-- 部门列表 -->
+    <!-- 组织机构列表 -->
     <div class="list-table">
       <el-table ref="listTableRef" :data="filteredData" stripe v-loading="listLoading" border row-key="id" default-expand-all>
-        <el-table-column prop="name" label="部门名称" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="principalName" label="负责人" min-width="120">
+        <el-table-column prop="name" label="组织机构名称" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="kind" label="类型" min-width="100">
           <template #default="scope">
-            <span v-if="scope.row.principalName">{{ scope.row.principalName }}</span>
-            <span v-else class="text-gray-400">未设置</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" min-width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
-              {{ scope.row.status === 0 ? "正常" : "禁用" }}
+            <el-tag :type="scope.row.kind === 1 ? 'primary' : 'info'">
+              {{ scope.row.kind === 1 ? "企业" : "部门" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="seq" label="排序" min-width="100" />
-        <el-table-column prop="createTime" label="创建时间" min-width="160" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
             <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
@@ -67,10 +54,16 @@
       </el-table>
     </div>
 
-    <!-- 部门编辑/新增模态框 -->
+    <!-- 组织机构编辑/新增模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑部门' : modalMode === 'add-item' ? '新增子级部门' : '添加部门'"
+      :title="
+        modalMode === 'edit'
+          ? '编辑' + modalKindName
+          : modalMode === 'add-item'
+            ? '新增子级' + modalKindName
+            : '添加' + modalKindName
+      "
       width="500px"
       :close-on-click-modal="false"
       @close="
@@ -83,14 +76,25 @@
         ref="modalFormRef"
         :model="modalForm"
         :rules="modalRules"
-        label-width="100px"
+        label-width="120px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="父级部门" prop="parentId">
+        <el-form-item :label="modalKindName + '名称'" prop="name">
+          <el-input v-model="modalForm.name" :placeholder="'请输入' + modalKindName + '名称'" />
+        </el-form-item>
+
+        <el-form-item :label="modalKindName + '类型'" prop="kind" v-if="modalMode !== 'edit'">
+          <el-radio-group v-model="modalForm.kind" :disabled="modalMode === 'add-item'">
+            <el-radio :value="1">企业</el-radio>
+            <el-radio :value="0">部门</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item :label="modalKindName + '上级组织'" prop="parentId" v-show="modalKind == 0">
           <el-tree-select
             v-model="modalForm.parentId"
             :data="treeSelectData"
-            placeholder="请选择父级部门（不选则为顶级）"
+            placeholder="请选择上级组织（不选则为顶级）"
             clearable
             check-strictly
             :render-after-expand="false"
@@ -98,20 +102,18 @@
             node-key="value"
           />
         </el-form-item>
-        <el-form-item label="部门名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入部门名称" />
+
+        <el-form-item :label="modalKindName + '主管ID'" prop="principalId" v-if="modalForm.kind === 0">
+          <el-input-number
+            v-model="modalForm.principalId"
+            placeholder="请输入主管ID"
+            clearable
+            :controls="false"
+            style="width: 100%"
+          />
         </el-form-item>
-        <el-form-item label="负责人ID" prop="principalId">
-          <el-input v-model="modalForm.principalId" placeholder="请输入负责人ID" clearable />
-        </el-form-item>
-        <el-form-item label="部门状态" prop="status">
-          <el-radio-group v-model="modalForm.status">
-            <el-radio :value="0">正常</el-radio>
-            <el-radio :value="1">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="排序" prop="seq">
-          <el-input-number v-model="modalForm.seq" :min="0" :max="655350" />
+        <el-form-item :label="modalKindName + '排序'" prop="seq">
+          <el-input-number v-model="modalForm.seq" :min="0" :max="655350" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -131,7 +133,7 @@ import { ref } from "vue";
 import { Edit, Delete, Plus } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance, TableInstance } from "element-plus";
-import DeptManagerService from "@/views/core/service/DeptManagerService.ts";
+import OrgManagerService from "@/views/core/service/OrgManagerService.ts";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -141,13 +143,23 @@ const PlusIcon = markRaw(Plus);
 const listTableRef = ref<TableInstance>();
 const modalFormRef = ref<FormInstance>();
 
-// 使用部门树服务
+// 使用组织机构树服务
 const { queryForm, listLoading, filteredData, treeSelectData, filterData, resetQuery, removeList, loadList } =
-  DeptManagerService.useDeptTree(listTableRef);
+  OrgManagerService.useOrgTree(listTableRef);
 
-// 使用部门模态框服务
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  DeptManagerService.useDeptModal(modalFormRef, loadList, treeSelectData);
+// 使用组织机构模态框服务
+const {
+  modalKindName,
+  modalKind,
+  modalVisible,
+  modalLoading,
+  modalMode,
+  modalForm,
+  modalRules,
+  openModal,
+  resetModal,
+  submitModal,
+} = OrgManagerService.useOrgModal(modalFormRef, loadList, treeSelectData);
 </script>
 
 <style scoped>
@@ -168,5 +180,11 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
   margin-bottom: 15px;
   border-top: 2px dashed var(--el-border-color);
   padding-top: 15px;
+}
+
+.form-tip {
+  font-size: 12px;
+  color: var(--el-color-info);
+  margin-top: 5px;
 }
 </style>

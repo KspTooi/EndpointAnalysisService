@@ -17,10 +17,10 @@ export default class CoreRouteRegister extends GenricRouteRegister {
       },
       {
         biz: "core",
-        path: "dept-manager",
-        name: "dept-manager",
-        component: () => import("@/views/core/DeptManager.vue"),
-        breadcrumb: "部门管理",
+        path: "org-manager",
+        name: "org-manager",
+        component: () => import("@/views/core/OrgManager.vue"),
+        breadcrumb: "组织机构管理",
       },
       {
         biz: "core",
