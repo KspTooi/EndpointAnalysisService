@@ -18,11 +18,11 @@ public interface EpStdWordRepository extends JpaRepository<EpStdWordPo, Long> {
             SELECT u FROM EpStdWordPo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.sourceName} IS NULL OR u.sourceName  = :#{#po.sourceName} )
-            AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull  = :#{#po.sourceNameFull} )
-            AND (:#{#po.targetName} IS NULL OR u.targetName  = :#{#po.targetName} )
-            AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull  = :#{#po.targetNameFull} )
-            AND (:#{#po.remark} IS NULL OR u.remark  = :#{#po.remark} )
+            AND (:#{#po.sourceName} IS NULL OR u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') )
+            AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull LIKE CONCAT('%', :#{#po.sourceNameFull}, '%') )
+            AND (:#{#po.targetName} IS NULL OR u.targetName LIKE CONCAT('%', :#{#po.targetName}, '%') )
+            AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull LIKE CONCAT('%', :#{#po.targetNameFull}, '%') )
+            AND (:#{#po.remark} IS NULL OR u.remark LIKE CONCAT('%', :#{#po.remark}, '%') )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
@@ -35,11 +35,11 @@ public interface EpStdWordRepository extends JpaRepository<EpStdWordPo, Long> {
         SELECT u FROM EpStdWordPo u
         WHERE
         (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-        AND (:#{#po.sourceName} IS NULL OR u.sourceName  = :#{#po.sourceName} )
-        AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull  = :#{#po.sourceNameFull} )
-        AND (:#{#po.targetName} IS NULL OR u.targetName  = :#{#po.targetName} )
-        AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull  = :#{#po.targetNameFull} )
-        AND (:#{#po.remark} IS NULL OR u.remark  = :#{#po.remark} )
+        AND (:#{#po.sourceName} IS NULL OR u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') )
+        AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull LIKE CONCAT('%', :#{#po.sourceNameFull}, '%') )
+        AND (:#{#po.targetName} IS NULL OR u.targetName LIKE CONCAT('%', :#{#po.targetName}, '%') )
+        AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull LIKE CONCAT('%', :#{#po.targetNameFull}, '%') )
+        AND (:#{#po.remark} IS NULL OR u.remark LIKE CONCAT('%', :#{#po.remark}, '%') )
         AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
         AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
         AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
