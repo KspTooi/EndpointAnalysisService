@@ -40,6 +40,7 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="seq" label="排序" min-width="100" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
             <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
@@ -90,11 +91,11 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item :label="modalKindName + '上级组织'" prop="parentId" v-show="modalKind == 0">
+        <el-form-item label="上级组织" prop="parentId" v-show="modalKind == 0">
           <el-tree-select
             v-model="modalForm.parentId"
             :data="treeSelectData"
-            placeholder="请选择上级组织（不选则为顶级）"
+            placeholder="请选择上级组织"
             clearable
             check-strictly
             :render-after-expand="false"
@@ -103,15 +104,9 @@
           />
         </el-form-item>
 
-        <el-form-item :label="modalKindName + '主管ID'" prop="principalId" v-if="modalForm.kind === 0">
-          <el-input-number
-            v-model="modalForm.principalId"
-            placeholder="请输入主管ID"
-            clearable
-            :controls="false"
-            style="width: 100%"
-          />
-        </el-form-item>
+        <!-- <el-form-item :label="modalKindName + '主管ID'" prop="principalId" v-if="modalForm.kind === 0">
+          <el-input v-model="modalForm.principalId" placeholder="请输入主管ID" clearable />
+        </el-form-item> -->
         <el-form-item :label="modalKindName + '排序'" prop="seq">
           <el-input-number v-model="modalForm.seq" :min="0" :max="655350" style="width: 100%" />
         </el-form-item>

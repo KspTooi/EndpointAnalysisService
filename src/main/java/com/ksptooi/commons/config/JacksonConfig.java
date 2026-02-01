@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -23,8 +22,8 @@ import java.util.TimeZone;
 
 /**
  * Jackson全局配置 (Spring Boot 4.0 / Jackson 3 适配版)
- * 1. Long/BigInteger -> String (解决前端精度丢失)
- * 2. LocalDateTime -> yyyy-MM-dd HH:mm:ss
+ * Long/BigInteger -> String (解决前端精度丢失)
+ * LocalDateTime -> yyyy-MM-dd HH:mm:ss
  */
 @Configuration
 public class JacksonConfig {
@@ -35,14 +34,14 @@ public class JacksonConfig {
     @Bean
     public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
         return builder -> {
-            // 1. 全局基础配置
+            //全局基础配置
             builder.defaultTimeZone(TimeZone.getTimeZone("GMT+8"));
             builder.defaultDateFormat(new SimpleDateFormat(DATE_TIME_PATTERN));
             
-            // 禁用 "遇到未知属性报错"
+            //禁用 "遇到未知属性报错"
             builder.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-            // 2. 创建自定义模块
+            //创建自定义模块
             SimpleModule simpleModule = new SimpleModule();
 
             // 处理精度丢失：Long/BigInteger -> String
@@ -54,7 +53,7 @@ public class JacksonConfig {
             simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
             simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
 
-            // 3. 将模块注册到 Builder
+            //将模块注册到 Builder
             builder.addModule(simpleModule);
         };
     }

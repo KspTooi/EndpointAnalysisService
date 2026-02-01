@@ -18,6 +18,7 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +46,8 @@ public class OrgService {
      */
     public List<GetOrgTreeVo> getOrgTree(GetOrgTreeDto dto) {
 
-        //全量查询组织
-        List<OrgPo> pos = repository.findAll();
+        //全量查询组织 按排序排序
+        List<OrgPo> pos = repository.findAll(Sort.by(Sort.Direction.ASC, "seq"));
 
         List<GetOrgTreeVo> flatTreeVos = as(pos, GetOrgTreeVo.class);
         List<GetOrgTreeVo> treeVos = new ArrayList<>();

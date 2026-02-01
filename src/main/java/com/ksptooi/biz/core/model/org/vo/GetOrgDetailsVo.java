@@ -23,6 +23,9 @@ public class GetOrgDetailsVo {
     @Schema(description = "组织机构名称")
     private String name;
 
+    @Schema(description = "排序")
+    private Integer seq;
+
     @Schema(description = "主管ID")
     private Long principalId;
 

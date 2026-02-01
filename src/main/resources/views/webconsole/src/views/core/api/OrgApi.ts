@@ -12,6 +12,7 @@ export interface GetOrgTreeVo {
   parentId: string | null; // 上级组织ID NULL顶级组织
   kind: number; // 0:部门 1:企业
   name: string; // 组织机构名称
+  seq: number; // 排序
   children: GetOrgTreeVo[]; // 子组织
 }
 

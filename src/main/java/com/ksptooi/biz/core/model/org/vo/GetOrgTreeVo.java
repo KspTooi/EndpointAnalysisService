@@ -25,6 +25,9 @@ public class GetOrgTreeVo {
     @Schema(description = "组织机构名称")
     private String name;
 
+    @Schema(description = "排序")
+    private Integer seq;
+
     @Schema(description = "子组织")
     private List<GetOrgTreeVo> children;
 }

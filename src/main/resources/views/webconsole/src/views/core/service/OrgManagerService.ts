@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref, type Ref } from "vue";
+import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { GetOrgTreeVo, GetOrgDetailsVo, AddOrgDto, EditOrgDto } from "@/views/core/api/OrgApi.ts";
 import OrgApi from "@/views/core/api/OrgApi.ts";
 import { Result } from "@/commons/entity/Result";
@@ -147,20 +147,21 @@ export default {
     const modalForm = reactive({
       id: "",
       parentId: null as string | null,
-      kind: 0,
+      kind: 0, // 0:部门 1:企业
       name: "",
       principalId: null as string | null,
       seq: 0,
     });
 
-    const modalRules = {
+    const modalRules = computed(() => ({
       kind: [{ required: true, message: "请选择组织机构类型", trigger: "change" }],
       name: [
         { required: true, message: "请输入组织机构名称", trigger: "blur" },
         { min: 1, max: 128, message: "组织机构名称长度必须在1-128个字符之间", trigger: "blur" },
       ],
+      parentId: modalForm.kind === 0 ? [{ required: true, message: "请选择上级组织", trigger: "change" }] : [],
       seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
-    };
+    }));
 
     /**
      * 打开模态框
@@ -286,6 +287,18 @@ export default {
       }
       return "部门";
     });
+
+    /**
+     * 监听组织机构类型变化 用于模态框改变类型时清空上级组织
+     */
+    watch(
+      () => modalForm.kind,
+      (newVal) => {
+        if (newVal == 1) {
+          modalForm.parentId = null;
+        }
+      }
+    );
 
     return {
       modalKindName,
