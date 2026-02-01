@@ -57,7 +57,6 @@
         <el-table-column prop="targetNameFull" label="英文全称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
-        <el-table-column prop="updateTime" label="更新时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="140">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">

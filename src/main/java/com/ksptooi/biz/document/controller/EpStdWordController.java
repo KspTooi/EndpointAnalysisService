@@ -3,10 +3,12 @@ package com.ksptooi.biz.document.controller;
 import com.ksptooi.biz.document.model.epstdword.dto.AddEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.EditEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.dto.GetEpStdWordListDto;
+import com.ksptooi.biz.document.model.epstdword.dto.ImportEpStdWordDto;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordDetailsVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordListVo;
 import com.ksptooi.biz.document.service.EpStdWordService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -14,11 +16,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @PrintLog
 @RestController
@@ -65,6 +66,26 @@ public class EpStdWordController {
     public Result<String> removeEpStdWord(@RequestBody @Valid CommonIdDto dto) throws Exception {
         epStdWordService.removeEpStdWord(dto);
         return Result.success("操作成功");
+    }
+
+    @Operation(summary = "导入标准词")
+    @PostMapping("/importEpStdWord")
+    public Result<String> importEpStdWord(@RequestParam("file") MultipartFile file) throws Exception {
+
+        //准备向导
+        var iw = new ImportWizard<>(file, ImportEpStdWordDto.class);
+
+        //验证导入数据
+        var errors = iw.validate();
+
+        if (StringUtils.isNotBlank(errors)) {
+            return Result.error(errors);
+        }
+
+        //获取导入数据
+        var data = iw.getData();
+        var count = epStdWordService.importEpStdWord(data);
+        return Result.success("操作成功,已导入数据:" + count + "条");
     }
 
 }

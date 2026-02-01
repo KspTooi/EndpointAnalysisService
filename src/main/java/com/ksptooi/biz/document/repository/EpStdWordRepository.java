@@ -27,4 +27,28 @@ public interface EpStdWordRepository extends JpaRepository<EpStdWordPo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<EpStdWordPo> getEpStdWordList(@Param("po") EpStdWordPo po, Pageable pageable);
+
+    /**
+     * 根据英文简称查找标准词
+     * @param targetName 英文简称
+     * @return 标准词
+     */
+    @Query("""
+            SELECT u FROM EpStdWordPo u
+            WHERE u.targetName = :targetName
+            """)
+    EpStdWordPo getStdWordByTargetName(@Param("targetName") String targetName);
+
+    /**
+     * 根据英文简称查找标准词，排除指定ID
+     * @param targetName 英文简称
+     * @param id 排除的ID
+     * @return 标准词
+     */
+    @Query("""
+            SELECT u FROM EpStdWordPo u
+            WHERE u.targetName = :targetName
+              AND u.id != :id
+            """)
+    EpStdWordPo getStdWordByTargetNameExcludeId(@Param("targetName") String targetName, @Param("id") Long id);
 }
