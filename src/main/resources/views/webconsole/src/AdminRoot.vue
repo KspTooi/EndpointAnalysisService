@@ -47,7 +47,7 @@ onMounted(() => {
 
 <template>
 
-  <console-framework />
+  <console-framework/>
 
 <!--  <admin-frame
     v-if="!isLoading"

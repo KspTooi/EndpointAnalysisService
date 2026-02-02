@@ -108,7 +108,19 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="seq" width="65" />
+        <el-table-column label="排序" prop="seq" width="65" >
+          <template #default="scope">
+            <el-button
+                link
+                type="success"
+                size="small"
+                @click="openModal('add-item', scope.row)"
+                :icon="EditIcon"
+              >
+                {{ scope.row.seq }}
+              </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" width="230">
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%">
@@ -124,7 +136,7 @@
                 新增子项
               </el-button>
 
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
                 编辑
               </el-button>
               <el-button
@@ -238,7 +250,7 @@
 <script setup lang="ts">
 import type { FormInstance, TableInstance } from "element-plus";
 import { ref } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled } from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled, Edit as EditIcon } from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
