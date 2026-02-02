@@ -4,57 +4,45 @@ package com.ksptooi.biz.rdbg.model.filter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rdbg_simple_filter_trigger")
+@Table(name = "rdbg_simple_filter_trigger", comment = "过滤器触发器")
 @Getter
 @Setter
-@Comment("过滤器触发器")
 public class SimpleFilterTriggerPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("触发器ID")
+    @Column(name = "id", comment = "触发器ID")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "filter_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("过滤器ID")
+    @JoinColumn(name = "filter_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "过滤器ID")
     private SimpleFilterPo filter;
 
-    @Comment("触发器名称")
-    @Column(name = "name", length = 128, nullable = false)
+    @Column(name = "name", length = 128, nullable = false, comment = "触发器名称")
     private String name;
 
-    @Comment("目标 0:标头 1:JSON载荷 2:URL 3:HTTP方法 4:总是触发")
-    @Column(name = "target", nullable = false, columnDefinition = "tinyint")
+    @Column(name = "target", nullable = false, columnDefinition = "tinyint", comment = "目标 0:标头 1:JSON载荷 2:URL 3:HTTP方法 4:总是触发")
     private Integer target;
 
-    @Comment("条件 0:包含 1:不包含 2:等于 3:不等于 4:总是触发")
-    @Column(name = "kind", nullable = false, columnDefinition = "tinyint")
+    @Column(name = "kind", nullable = false, columnDefinition = "tinyint", comment = "条件 0:包含 1:不包含 2:等于 3:不等于 4:总是触发")
     private Integer kind;
 
-    @Comment("目标键")
-    @Column(name = "tk", length = 128)
+    @Column(name = "tk", length = 128, comment = "目标键")
     private String tk;
 
-    @Comment("比较值")
-    @Column(name = "tv", length = 128)
+    @Column(name = "tv", length = 128, comment = "比较值")
     private String tv;
 
-    @Comment("排序")
-    @Column(name = "seq", nullable = false, columnDefinition = "int")
+    @Column(name = "seq", nullable = false, columnDefinition = "int", comment = "排序")
     private Integer seq;
 
-    @Column(name = "create_time", nullable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
 

@@ -3,57 +3,45 @@ package com.ksptooi.biz.rdbg.model.filter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rdbg_simple_filter_operation")
+@Table(name = "rdbg_simple_filter_operation", comment = "过滤器操作")
 @Getter
 @Setter
-@Comment("过滤器操作")
 public class SimpleFilterOperationPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("操作ID")
+    @Column(name = "id", comment = "操作ID")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "filter_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment("过滤器ID")
+    @JoinColumn(name = "filter_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "过滤器ID")
     private SimpleFilterPo filter;
 
-    @Comment("操作名称")
-    @Column(name = "name", length = 128, nullable = false)
+    @Column(name = "name", length = 128, nullable = false, comment = "操作名称")
     private String name;
 
-    @Comment("类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID")
-    @Column(name = "kind", nullable = false, columnDefinition = "tinyint")
+    @Column(name = "kind", nullable = false, columnDefinition = "tinyint", comment = "类型 0:持久化 1:缓存 2:注入缓存 3.注入持久化 4:覆写URL 50:标记请求状态 60:获取请求ID")
     private Integer kind;
 
-    @Comment("目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]")
-    @Column(name = "target", nullable = false, columnDefinition = "tinyint")
+    @Column(name = "target", nullable = false, columnDefinition = "tinyint", comment = "目标 0:标头 1:JSON载荷 2:URL(仅限kind=4) [50:正常 51:HTTP失败 52:业务失败 53:连接超时(仅限kind=50)]")
     private Integer target;
 
-    @Comment("原始键")
-    @Column(name = "f", length = 128)
+    @Column(name = "f", length = 128, comment = "原始键")
     private String f;
 
-    @Comment("目标键")
-    @Column(name = "t", length = 128)
+    @Column(name = "t", length = 128, comment = "目标键")
     private String t;
 
-    @Comment("排序")
-    @Column(name = "seq", nullable = false)
+    @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
-    @Column(name = "create_time", nullable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
 

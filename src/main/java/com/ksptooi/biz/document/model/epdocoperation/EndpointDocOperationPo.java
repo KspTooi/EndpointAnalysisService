@@ -7,79 +7,63 @@ import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ep_document_operation")
+@Table(name = "ep_document_operation", comment = "端点文档操作")
 @Getter
 @Setter
-@Comment("端点文档操作")
 public class EndpointDocOperationPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("端点文档操作ID")
+    @Column(name = "id", comment = "端点文档操作ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relay_server_id", nullable = false)
-    @Comment("中继通道ID")
+    @JoinColumn(name = "relay_server_id", nullable = false, comment = "中继通道ID")
     private RelayServerPo relayServer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ep_doc_id", nullable = false)
-    @Comment("端点文档ID")
+    @JoinColumn(name = "ep_doc_id", nullable = false, comment = "端点文档ID")
     private EndpointDocPo epDoc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ep_doc_version_id", nullable = false)
-    @Comment("端点文档版本ID")
+    @JoinColumn(name = "ep_doc_version_id", nullable = false, comment = "端点文档版本ID")
     private EndpointDocVersionPo version;
 
-    @Column(name = "tag", length = 255)
-    @Comment("接口标签")
+    @Column(name = "tag", length = 255, comment = "接口标签")
     private String tag;
 
-    @Column(name = "path", length = 320, nullable = false)
-    @Comment("接口路径")
+    @Column(name = "path", length = 320, nullable = false, comment = "接口路径")
     private String path;
 
-    @Column(name = "method", length = 10)
-    @Comment("请求方法")
+    @Column(name = "method", length = 10, comment = "请求方法")
     private String method;
 
-    @Column(name = "summary", length = 320)
-    @Comment("接口摘要")
+    @Column(name = "summary", length = 320, comment = "接口摘要")
     private String summary;
 
-    @Column(name = "description", columnDefinition = "text")
-    @Comment("接口描述")
+    @Column(name = "description", columnDefinition = "text", comment = "接口描述")
     private String description;
 
-    @Column(name = "operation_id", length = 255, nullable = false)
-    @Comment("唯一操作ID")
+    @Column(name = "operation_id", length = 255, nullable = false, comment = "唯一操作ID")
     private String operationId;
 
-    @Column(name = "req_query_json", columnDefinition = "longtext")
-    @Comment("请求参数JSON")
+    @Column(name = "req_query_json", columnDefinition = "longtext", comment = "请求参数JSON")
     private String reqQueryJson;
 
-    @Column(name = "res_query_json", columnDefinition = "longtext")
-    @Comment("响应列表JSON")
+    @Column(name = "res_query_json", columnDefinition = "longtext", comment = "响应列表JSON")
     private String resQueryJson;
 
-    @Column(name = "req_body_json", columnDefinition = "longtext")
-    @Comment("请求体JSON")
+    @Column(name = "req_body_json", columnDefinition = "longtext", comment = "请求体JSON")
     private String reqBodyJson;
 
-    @Column(name = "res_body_json", columnDefinition = "longtext")
-    @Comment("响应体JSON")
+    @Column(name = "res_body_json", columnDefinition = "longtext", comment = "响应体JSON")
     private String resBodyJson;
 
-    @Column(name = "create_time")
-    @Comment("创建时间")
+    @Column(name = "create_time", comment = "创建时间")
     private LocalDateTime createTime;
 
     @PrePersist

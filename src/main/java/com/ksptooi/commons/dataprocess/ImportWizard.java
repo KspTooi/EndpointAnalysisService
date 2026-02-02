@@ -1,11 +1,11 @@
 package com.ksptooi.commons.dataprocess;
 
+import com.alibaba.excel.EasyExcel;
 import com.ksptool.assembly.entity.exception.BizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,8 +48,7 @@ public class ImportWizard<T extends AbstractImportDto> {
 
         try (var is = file.getInputStream()) {
 
-            //List<T> list = EasyExcel.read(is).head(targetClazz).sheet().doReadSync();
-            List<T> list = new ArrayList<>();
+            List<T> list = EasyExcel.read(is).head(targetClazz).sheet().doReadSync();
 
             if (list == null || list.isEmpty()) {
                 throw new BizException("导入数据为空");

@@ -6,45 +6,38 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "rdbg_simple_filter")
+@Table(name = "rdbg_simple_filter", comment = "过滤器表")
 @Getter
 @Setter
-@Comment("过滤器表")
 public class SimpleFilterPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", comment = "过滤器ID")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @Comment("所属用户 为null表示系统过滤器")
+    @JoinColumn(name = "user_id", comment = "所属用户 为null表示系统过滤器")
     private UserPo user;
 
-    @Column(name = "name", length = 128, nullable = false)
-    @Comment("过滤器名称")
+    @Column(name = "name", length = 128, nullable = false, comment = "过滤器名称")
     private String name;
 
-    @Column(name = "direction", nullable = false, columnDefinition = "tinyint")
-    @Comment("过滤器方向 0:请求过滤器 1:响应过滤器")
+    @Column(name = "direction", nullable = false, columnDefinition = "tinyint", comment = "过滤器方向 0:请求过滤器 1:响应过滤器")
     private Integer direction;
 
-    @Column(name = "status", nullable = false, columnDefinition = "tinyint")
-    @Comment("状态 0:启用 1:禁用")
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "状态 0:启用 1:禁用")
     private Integer status;
 
-    @Column(name = "create_time", nullable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
     //过滤器下的触发器
@@ -63,7 +56,6 @@ public class SimpleFilterPo {
             joinColumns = @JoinColumn(name = "simple_filter_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
-    @Comment("过滤器所属的请求组")
     private List<UserRequestGroupPo> groups;
 
     @PrePersist

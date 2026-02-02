@@ -36,22 +36,29 @@ spring:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
 
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: lazy
+
   jpa:
     show-sql: false
     hibernate:
       #ddl-auto: update
-      ddl-auto: validate
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: false
-        #use_sql_comments: true
+        use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.MySQLDialect
 
   thymeleaf:
     cache: false # 开发环境禁用模板缓存
     prefix: classpath:/views/
     suffix: .html
+
+  main:
+    lazy-initialization: true
 
 server:
   port: 27500
@@ -61,9 +68,10 @@ session:
 
 springdoc:
   api-docs:
-    enabled: true
+    enabled: false
     path: /v3/api-docs
   swagger-ui:
+    enabled: false
     path: /swagger-ui
     display-request-duration: true
     try-it-out-enabled: true
@@ -71,7 +79,7 @@ springdoc:
     tags-sorter: alpha
 
 knife4j:
-  enable: true
+  enable: false
 
 application:
   version: 1.4ZCP3 # 应用版本号
@@ -94,3 +102,8 @@ module-drive:
 
   #签名有效时间(秒)
   ttl: 3600
+#logging:
+#  level:
+#    org.springframework.boot.context.logging: INFO
+#    # 开启 Spring Bean 初始化的详细日志
+#    org.springframework.beans.factory.support.DefaultListableBeanFactory: DEBUG

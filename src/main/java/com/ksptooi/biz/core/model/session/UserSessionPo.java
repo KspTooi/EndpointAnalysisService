@@ -2,47 +2,38 @@ package com.ksptooi.biz.core.model.session;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "core_user_session")
+@Table(name = "core_user_session", comment = "用户会话")
 @Data
-@Comment("用户会话")
 public class UserSessionPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("会话ID")
+    @Column(name = "id", comment = "会话ID")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    @Comment("用户ID")
+    @Column(name = "user_id", nullable = false, comment = "用户ID")
     private Long userId;
 
-    @Column(name = "company_id", nullable = true)
-    @Comment("公司ID")
+    @Column(name = "company_id", nullable = true, comment = "公司ID")
     private Long companyId;
 
-    @Column(name = "token", nullable = false, unique = true, length = 100)
-    @Comment("Token")
+    @Column(name = "token", nullable = false, unique = true, length = 100, comment = "Token")
     private String token;
 
-    @Column(name = "permissions", nullable = false, columnDefinition = "TEXT")
-    @Comment("用户权限JSON")
+    @Column(name = "permissions", nullable = false, columnDefinition = "TEXT", comment = "用户权限JSON")
     private String permissions;
 
-    @Column(name = "expires_at", nullable = false)
-    @Comment("过期时间")
+    @Column(name = "expires_at", nullable = false, comment = "过期时间")
     private LocalDateTime expiresAt;
 
-    @Column(name = "create_time", nullable = false, updatable = false)
-    @Comment("创建时间")
+    @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "update_time", nullable = false)
-    @Comment("修改时间")
+    @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
 

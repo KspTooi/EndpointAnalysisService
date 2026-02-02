@@ -1,102 +1,123 @@
 <template>
   <div class="list-container">
-    <div class="query-form">
-      <el-form :model="listForm">
-        <el-row>
-          <el-col :span="5" :offset="1">
-            <el-form-item label="用户名">
-              <el-input v-model="listForm.username" placeholder="输入用户名查询" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="5" :offset="1">
-            <el-form-item label="状态">
-              <el-select v-model="listForm.status" placeholder="选择状态" clearable>
-                <el-option label="正常" :value="0" />
-                <el-option label="封禁" :value="1" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5" :offset="1">
-            <!-- 占位，保持布局一致性 -->
-          </el-col>
-          <el-col :span="3" :offset="3">
-            <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
+    <splitpanes class="custom-theme">
+      <!-- 左侧树形列表：占满整个左侧 -->
+      <pane size="20" min-size="10" max-size="40">
+        <div class="mt-2 px-1">
+          <OrgTree @on-select="onSelectOrg" />
+        </div>
+      </pane>
 
-    <div class="action-buttons">
-      <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
-    </div>
+      <!-- 右侧内容区 -->
+      <pane size="80">
+        <div class="right-content">
+          <!-- 查询条件区域 -->
+          <div class="query-form">
+            <el-form :model="listForm" inline class="flex justify-between">
+              <div>
+                <el-form-item label="用户名">
+                  <el-input v-model="listForm.username" placeholder="输入用户名" clearable />
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-model="listForm.status" placeholder="选择状态" clearable style="width: 180px">
+                    <el-option label="正常" :value="0" />
+                    <el-option label="封禁" :value="1" />
+                  </el-select>
+                </el-form-item>
+              </div>
+              <el-form-item>
+                <el-button type="primary" @click="loadList(orgId)" :disabled="listLoading">查询</el-button>
+                <el-button @click="resetList(orgId)" :disabled="listLoading">重置</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
 
-    <div class="list-table">
-      <el-table :data="listData" stripe v-loading="listLoading" border>
-        <el-table-column prop="username" label="用户名" min-width="150" />
-        <el-table-column prop="nickname" label="昵称" min-width="150" />
-        <el-table-column label="性别" min-width="100">
-          <template #default="scope">
-            <span v-if="scope.row.gender === 0">男</span>
-            <span v-if="scope.row.gender === 1">女</span>
-            <span v-if="scope.row.gender === 2">不愿透露</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="phone" label="手机号" min-width="120" />
-        <el-table-column prop="email" label="邮箱" min-width="160" />
-        <el-table-column prop="createTime" label="创建时间" min-width="180" />
-        <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
-        <el-table-column label="状态" min-width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
-              {{ scope.row.status === 0 ? "正常" : "封禁" }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" fixed="right" min-width="180">
-          <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
-              编辑
-            </el-button>
-            <el-button
-              link
-              type="danger"
-              size="small"
-              @click="removeList(scope.row)"
-              :disabled="scope.row.isSystem === 1"
-              :icon="DeleteIcon"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <!-- 操作按钮区域 -->
+          <div class="action-buttons">
+            <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
+          </div>
 
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+          <!-- 列表表格区域 -->
+          <div class="list-table">
+            <el-table :data="listData" stripe v-loading="listLoading" border>
+              <el-table-column prop="username" label="用户名" min-width="150" />
+              <el-table-column prop="nickname" label="昵称" min-width="150" />
+              <el-table-column label="性别" min-width="100">
+                <template #default="scope">
+                  <span v-if="scope.row.gender === 0">男</span>
+                  <span v-if="scope.row.gender === 1">女</span>
+                  <span v-if="scope.row.gender === 2">不愿透露</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="rootName" label="企业" min-width="150" :v-show="orgId == null">
+                <template #default="scope">
+                  <span v-if="scope.row.rootName">{{ scope.row.rootName }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="deptName" label="部门" min-width="150">
+                <template #default="scope">
+                  <span v-if="scope.row.deptName">{{ scope.row.deptName }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="phone" label="手机号" min-width="120" />
+              <el-table-column prop="email" label="邮箱" min-width="160" />
+              <el-table-column prop="createTime" label="创建时间" min-width="180" />
+              <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
+              <el-table-column label="状态" min-width="100">
+                <template #default="scope">
+                  <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'" size="small">
+                    {{ scope.row.status === 0 ? "正常" : "封禁" }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" fixed="right" min-width="180">
+                <template #default="scope">
+                  <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+                    编辑
+                  </el-button>
+                  <el-button
+                    link
+                    type="danger"
+                    size="small"
+                    @click="removeList(scope.row)"
+                    :disabled="scope.row.isSystem === 1"
+                    :icon="DeleteIcon"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+
+            <div class="pagination-container">
+              <el-pagination
+                v-model:current-page="listForm.pageNum"
+                v-model:page-size="listForm.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="listTotal"
+                @size-change="
+                  (val: number) => {
+                    listForm.pageSize = val;
+                    loadList();
+                  }
+                "
+                @current-change="
+                  (val: number) => {
+                    listForm.pageNum = val;
+                    loadList();
+                  }
+                "
+                background
+                size="small"
+              />
+            </div>
+          </div>
+        </div>
+      </pane>
+    </splitpanes>
 
     <!-- 用户编辑/新增模态框 -->
     <el-dialog
@@ -106,7 +127,7 @@
       :close-on-click-modal="false"
       @close="
         resetModal();
-        loadList();
+        loadList(orgId);
       "
     >
       <el-form
@@ -131,6 +152,17 @@
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="modalForm.nickname" placeholder="请输入昵称" />
+        </el-form-item>
+        <el-form-item label="所属部门" prop="deptId">
+          <el-tree-select
+            v-model="modalForm.deptId"
+            :data="orgTreeOptions"
+            :props="{ label: 'name', value: 'id', children: 'children', disabled: 'disabled' }"
+            placeholder="请选择所属部门（可选）"
+            check-strictly
+            clearable
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="性别" prop="gender">
           <el-radio-group v-model="modalForm.gender">
@@ -177,17 +209,33 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 import UserManagerService from "@/views/core/service/UserManagerService.ts";
+import OrgTreeService from "@/views/core/service/OrgTreeService.ts";
+import OrgTree from "@/views/core/components/OrgTree.vue";
+import type { GetOrgTreeVo } from "./api/OrgApi";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
+const onSelectOrg = (org: GetOrgTreeVo | null) => {
+  loadList(org?.id ?? null);
+  orgId.value = org?.id ?? null;
+};
+
+const orgId = ref<string | null>(null);
+
 // 列表打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList(orgId);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
+
+const _loadList = () => {
+  loadList(orgId.value);
+};
 
 // 模态框打包
 const {
@@ -202,33 +250,81 @@ const {
   openModal,
   resetModal,
   submitModal,
-} = UserManagerService.useUserModal(modalFormRef, loadList);
+  orgTreeOptions,
+} = UserManagerService.useUserModal(modalFormRef, _loadList);
 </script>
 
 <style scoped>
 .list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--el-bg-color);
+}
+
+.right-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.query-form {
+  margin-bottom: 10px;
+  background-color: var(--el-fill-color-blank);
+  border-bottom: 1px dashed var(--el-border-color-light);
+}
+
+.action-buttons {
+  margin-bottom: 10px;
 }
 
 .list-table {
-  margin-bottom: 20px;
+  flex: 1;
   width: 100%;
-  overflow-x: auto;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* 自定义无边框主题 */
+:deep(.splitpanes.custom-theme) {
+  border: none;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__pane) {
+  background-color: transparent;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter) {
+  background-color: var(--el-border-color-extra-light);
+  width: 1px; /* 极简线条 */
+  border: none;
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter:hover) {
+  background-color: var(--el-color-primary);
+  width: 3px; /* 悬浮时加粗 */
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter:after) {
+  content: "";
+  position: absolute;
+  left: -5px;
+  right: -5px;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
 }
 
 .pagination-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
+  margin-top: 15px;
+  padding-bottom: 15px;
 }
 </style>

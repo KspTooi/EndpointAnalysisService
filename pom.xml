@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>4.0.2</version>
         <relativePath/>
     </parent>
 
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-            <version>3.5.7</version>
+            <version>4.0.2</version>
         </dependency>
 
         <dependency>
@@ -53,11 +53,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>3.0.5</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -194,6 +194,27 @@
         </dependency>
 
 
+        <!--Excel处理-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel-core</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel-support</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <!--Excel处理 结束-->
+
+
     </dependencies>
 
     <build>
@@ -299,26 +320,26 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/**.xml</include>
-                    <include>**/**.yaml</include>
-                    <include>**/**.yml</include>
-                    <include>**/**.mmdb</include>
-                    <include>**/**.txt</include>
-                    <include>**/**.js</include>
-                    <include>**/**.html</include>
-                    <include>**/**.css</include>
-                    <include>**/**.jpg</include>
-                    <include>**/**.png</include>
-                    <include>**/**.ico</include>
-                    <include>**/**.woff</include>
-                    <include>**/**.woff2</include>
-                    <include>**/**.jpeg</include>
-                    <include>**/**.sql</include>
-                    <include>**/**.worker.ts</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.yaml</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.mmdb</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.js</include>
+                    <include>**/*.html</include>
+                    <include>**/*.css</include>
+                    <include>**/*.jpg</include>
+                    <include>**/*.png</include>
+                    <include>**/*.ico</include>
+                    <include>**/*.woff</include>
+                    <include>**/*.woff2</include>
+                    <include>**/*.jpeg</include>
+                    <include>**/*.sql</include>
+                    <include>views/webconsole/src/**/*.worker.ts</include>
                 </includes>
                 <excludes>
-                    <exclude>views/webconsole/node_modules/**</exclude>
-                    <exclude>views/webconsole/node/**</exclude>
+                    <exclude>**/node_modules/**</exclude>
+                    <exclude>**/node/**</exclude>
                     <exclude>views/webconsole/dist/**</exclude>
                     <exclude>views/webconsole/*.json</exclude>
                     <exclude>views/webconsole/*.yaml</exclude>

@@ -3,18 +3,16 @@ package com.ksptooi.biz.document.model.epdocschema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "ep_document_schema")
+@Table(name = "ep_document_schema", comment = "端点架构定义")
 @Getter
 @Setter
-@Comment("端点架构定义")
 public class EndpointDocSchemaPo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("端点Schema ID")
+    @Column(name = "id", comment = "端点Schema ID")
     private Long id;
 
 }

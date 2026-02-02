@@ -48,7 +48,7 @@ public class ViteProxyController {
 
             // 组合成 Vite 的完整地址
             URI targetUri = UriComponentsBuilder
-                    .fromHttpUrl(VITE_TARGET + path)
+                    .fromUriString(VITE_TARGET + path)
                     .query(query)
                     .build(true)
                     .toUri();

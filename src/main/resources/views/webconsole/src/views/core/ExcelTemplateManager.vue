@@ -1,0 +1,723 @@
+<template>
+  <div class="list-container">
+    <!-- 查询表单 -->
+    <div class="query-form">
+      <el-form :model="listForm">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="模板名称">
+              <el-input v-model="listForm.name" placeholder="输入模板名称查询" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="模板标识">
+              <el-input v-model="listForm.code" placeholder="输入模板标识查询" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="状态">
+              <el-select v-model="listForm.status" placeholder="请选择状态" clearable>
+                <el-option label="启用" :value="0" />
+                <el-option label="禁用" :value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3" :offset="3">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+
+    <div class="action-buttons">
+      <el-button type="success" @click="openUploadDialog">上传模板</el-button>
+      <el-button type="danger" @click="removeTemplateBatch" :disabled="listSelected.length === 0" :loading="listLoading">
+        删除选中项
+      </el-button>
+    </div>
+
+    <!-- 模板列表 -->
+    <div class="list-table">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        row-key="id"
+        @selection-change="(val: GetExcelTemplateListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="40" />
+        <el-table-column
+          prop="name"
+          label="模板名称"
+          min-width="180"
+          show-overflow-tooltip
+          :show-overflow-tooltip-props="{
+            effect: 'dark',
+            placement: 'top',
+            enterable: false,
+          }"
+        />
+        <el-table-column
+          prop="code"
+          label="模板标识"
+          min-width="150"
+          show-overflow-tooltip
+          :show-overflow-tooltip-props="{
+            effect: 'dark',
+            placement: 'top',
+            enterable: false,
+          }"
+        />
+        <el-table-column
+          prop="remark"
+          label="模板备注"
+          min-width="200"
+          show-overflow-tooltip
+          :show-overflow-tooltip-props="{
+            effect: 'dark',
+            placement: 'top',
+            enterable: false,
+          }"
+        />
+        <el-table-column prop="status" label="状态" min-width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
+              {{ scope.row.status === 0 ? "启用" : "禁用" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" min-width="180" />
+        <el-table-column label="操作" fixed="right" min-width="200">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="openEditModal(scope.row)" :icon="EditIcon"> 编辑 </el-button>
+            <el-button link type="success" size="small" @click="downloadTemplate(scope.row.code)" :icon="DownloadIcon">
+              下载
+            </el-button>
+            <el-button link type="danger" size="small" @click="removeTemplate(scope.row.id)" :icon="DeleteIcon">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页 -->
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="listForm.pageNum"
+          v-model:page-size="listForm.pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="listTotal"
+          @size-change="
+            (val: number) => {
+              listForm.pageSize = val;
+              loadList();
+            }
+          "
+          @current-change="
+            (val: number) => {
+              listForm.pageNum = val;
+              loadList();
+            }
+          "
+          background
+        />
+      </div>
+    </div>
+
+    <!-- 上传模板对话框 -->
+    <el-dialog
+      v-model="uploadDialogVisible"
+      title="上传Excel模板"
+      width="600px"
+      :close-on-click-modal="false"
+      destroy-on-close
+      @close="resetUploadDialog"
+      class="upload-dialog"
+    >
+      <div class="upload-rules-container">
+        <el-alert title="上传规则说明" type="info" :closable="false" show-icon>
+          <template #default>
+            <div class="rule-list">
+              <div class="rule-item">
+                <span class="rule-label">命名规则：</span>
+                <span class="rule-value">模板名称-唯一标识符.xlsx</span>
+              </div>
+              <div class="rule-item">
+                <span class="rule-label">示例名称：</span>
+                <span class="rule-value">销售报表-salesReport.xlsx</span>
+              </div>
+              <div class="rule-tip">
+                <el-icon><InfoFilled /></el-icon>
+                <span>唯一标识符仅限字母、数字和下划线，单次限50个文件。</span>
+              </div>
+              <div class="rule-warning">
+                <el-icon><WarningFilled /></el-icon>
+                <span>重要：相同标识的模板将被新文件直接覆盖。</span>
+              </div>
+            </div>
+          </template>
+        </el-alert>
+      </div>
+
+      <div class="upload-area">
+        <el-upload
+          ref="uploadRef"
+          :auto-upload="false"
+          :on-change="handleFileChange"
+          :file-list="fileList"
+          :disabled="uploadLoading"
+          accept=".xlsx"
+          multiple
+          drag
+        >
+          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+          <div class="el-upload__text">将文件拖到此处，或 <em>点击选择</em></div>
+          <template #tip>
+            <div v-if="uploadLoading" class="upload-progress-tip">
+              <el-icon class="is-loading"><Loading /></el-icon>
+              <span>正在处理并上传模板，请耐心等待...</span>
+            </div>
+          </template>
+        </el-upload>
+      </div>
+    </el-dialog>
+
+    <!-- 编辑模板对话框 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="编辑Excel模板"
+      width="500px"
+      :close-on-click-modal="false"
+      @close="resetEditDialog"
+    >
+      <el-form
+        v-if="editDialogVisible"
+        ref="editFormRef"
+        :model="editForm"
+        :rules="editRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
+        <el-form-item label="模板名称" prop="name">
+          <el-input v-model="editForm.name" placeholder="请输入模板名称" />
+        </el-form-item>
+        <el-form-item label="模板标识" prop="code">
+          <el-input v-model="editForm.code" placeholder="请输入模板标识" />
+        </el-form-item>
+        <el-form-item label="模板备注" prop="remark">
+          <el-input v-model="editForm.remark" type="textarea" :rows="3" placeholder="请输入模板备注" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="editForm.status">
+            <el-radio :value="0">启用</el-radio>
+            <el-radio :value="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitEdit" :loading="editLoading"> 保存 </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { reactive, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Edit, Delete, Download, UploadFilled, InfoFilled, WarningFilled, Loading } from "@element-plus/icons-vue";
+import { markRaw } from "vue";
+import type { FormInstance, UploadFile, UploadInstance } from "element-plus";
+import ExcelTemplateApi, {
+  type GetExcelTemplateListDto,
+  type GetExcelTemplateListVo,
+  type EditExcelTemplateDto,
+} from "@/views/core/api/ExcelTemplateApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
+
+const listForm = reactive<GetExcelTemplateListDto>({
+  name: null,
+  code: null,
+  status: null,
+  pageNum: 1,
+  pageSize: 10,
+});
+
+const listData = ref<GetExcelTemplateListVo[]>([]);
+const listSelected = ref<GetExcelTemplateListVo[]>([]);
+const listTotal = ref(0);
+const listLoading = ref(false);
+
+const EditIcon = markRaw(Edit);
+const DeleteIcon = markRaw(Delete);
+const DownloadIcon = markRaw(Download);
+
+// 上传对话框相关
+const uploadDialogVisible = ref(false);
+const uploadRef = ref<UploadInstance>();
+const uploadLoading = ref(false);
+const fileList = ref<UploadFile[]>([]);
+
+// 编辑对话框相关
+const editDialogVisible = ref(false);
+const editFormRef = ref<FormInstance>();
+const editLoading = ref(false);
+const editForm = reactive<EditExcelTemplateDto>({
+  id: 0,
+  name: "",
+  code: "",
+  remark: "",
+  status: 0,
+});
+const editRules = {
+  name: [
+    { required: true, message: "模板名称不能为空", trigger: "blur" },
+    { min: 2, max: 32, message: "模板名称长度必须在2-32个字符之间", trigger: "blur" },
+  ],
+  code: [
+    { required: true, message: "模板标识不能为空", trigger: "blur" },
+    { pattern: /^[a-zA-Z0-9_]+$/, message: "模板标识只能包含字母、数字和下划线", trigger: "blur" },
+    { min: 2, max: 32, message: "模板标识长度必须在2-32个字符之间", trigger: "blur" },
+  ],
+  remark: [{ max: 1000, message: "模板备注长度不能超过1000个字符", trigger: "blur" }],
+  status: [
+    { required: true, message: "状态不能为空", trigger: "change" },
+    { type: "number", min: 0, max: 1, message: "状态只能在0-1之间", trigger: "change" },
+  ],
+};
+
+const loadList = async () => {
+  listLoading.value = true;
+  const result = await ExcelTemplateApi.getExcelTemplateList(listForm);
+
+  if (Result.isSuccess(result)) {
+    listData.value = result.data;
+    listTotal.value = result.total;
+  }
+
+  if (Result.isError(result)) {
+    ElMessage.error(result.message);
+  }
+
+  listLoading.value = false;
+};
+
+const resetList = () => {
+  listForm.pageNum = 1;
+  listForm.pageSize = 10;
+  listForm.name = null;
+  listForm.code = null;
+  listForm.status = null;
+  loadList();
+};
+
+loadList();
+
+const openUploadDialog = () => {
+  uploadDialogVisible.value = true;
+};
+
+const resetUploadDialog = () => {
+  fileList.value = [];
+  uploadRef.value?.clearFiles();
+};
+
+const handleFileChange = async (file: UploadFile, fileListParam: UploadFile[]) => {
+  console.log("=== handleFileChange 被调用 ===");
+  console.log("文件对象：", file);
+  console.log("文件名：", file.name);
+  console.log("当前文件列表：", fileListParam);
+
+  // 验证文件格式
+  if (!file.name.endsWith(".xlsx")) {
+    console.log("验证失败：文件格式不是.xlsx");
+    ElMessage.error(`文件 ${file.name} 格式错误：只能上传.xlsx格式的文件`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  // 验证文件名是否包含-
+  if (!file.name.includes("-")) {
+    console.log("验证失败：文件名不包含-");
+    ElMessage.error(`文件 ${file.name} 命名错误：文件名必须包含"-"符号`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  // 验证文件名格式
+  const parts = file.name.split("-");
+  if (parts.length !== 2) {
+    console.log("验证失败：文件名格式错误，parts.length =", parts.length);
+    ElMessage.error(`文件 ${file.name} 格式错误：应为"模板名称-唯一标识符.xlsx"`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  // 验证模板名称
+  const name = parts[0];
+  if (!name || name.trim().length === 0) {
+    console.log("验证失败：模板名称为空");
+    ElMessage.error(`文件 ${file.name} 错误：模板名称不能为空`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  // 验证唯一标识符
+  const key = parts[1].replace(".xlsx", "");
+  if (!key || key.trim().length === 0) {
+    console.log("验证失败：唯一标识符为空");
+    ElMessage.error(`文件 ${file.name} 错误：唯一标识符不能为空`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9_]+$/.test(key)) {
+    console.log("验证失败：唯一标识符格式错误，key =", key);
+    ElMessage.error(`文件 ${file.name} 错误：唯一标识符只能包含字母、数字和下划线`);
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  // 验证文件数量
+  if (fileListParam.length > 50) {
+    console.log("验证失败：文件数量超过50");
+    ElMessage.error("最多同时上传50个模板");
+    uploadRef.value?.handleRemove(file);
+    return;
+  }
+
+  console.log("文件验证通过，准备上传");
+  console.log("使用fileListParam上传，文件数量：", fileListParam.length);
+
+  // 文件验证通过，立即上传，使用fileListParam而不是fileList.value
+  await submitUpload(fileListParam);
+
+  console.log("submitUpload执行完毕");
+};
+
+const submitUpload = async (uploadFileList?: UploadFile[]) => {
+  console.log("=== submitUpload 被调用 ===");
+
+  // 使用传入的文件列表或者fileList.value
+  const currentFileList = uploadFileList || fileList.value;
+  console.log("currentFileList.length：", currentFileList.length);
+  console.log("uploadLoading.value：", uploadLoading.value);
+
+  if (currentFileList.length === 0) {
+    console.log("提前返回：文件列表为空");
+    return;
+  }
+
+  if (uploadLoading.value) {
+    console.log("提前返回：正在上传中");
+    return;
+  }
+
+  uploadLoading.value = true;
+  console.log("开始上传流程");
+
+  try {
+    const files = currentFileList.map((f) => f.raw as File).filter((f) => f !== undefined && f !== null);
+
+    console.log("提取的文件对象：", files);
+    console.log("文件数量：", files.length);
+
+    if (files.length === 0) {
+      console.log("没有可上传的文件");
+      ElMessage.warning("没有可上传的文件");
+      return;
+    }
+
+    console.log("准备上传文件：", files);
+    console.log(
+      "文件详情：",
+      files.map((f) => ({ name: f.name, size: f.size, type: f.type }))
+    );
+
+    console.log("调用API上传...");
+    const result = await ExcelTemplateApi.uploadExcelTemplate(files);
+
+    console.log("上传结果：", result);
+
+    if (Result.isSuccess(result)) {
+      ElMessage.success(`成功上传 ${files.length} 个模板文件`);
+      uploadDialogVisible.value = false;
+      resetUploadDialog();
+      await loadList();
+    } else if (Result.isError(result)) {
+      ElMessage.error(`上传失败：${result.message || "未知错误"}`);
+    }
+  } catch (error: any) {
+    console.error("上传异常：", error);
+    console.error("错误对象：", {
+      message: error.message,
+      response: error.response,
+      request: error.request,
+    });
+    if (error.response) {
+      ElMessage.error(`上传失败：${error.response.data?.message || error.message || "服务器错误"}`);
+    } else if (error.request) {
+      ElMessage.error("上传失败：网络请求失败，请检查网络连接");
+    } else {
+      ElMessage.error(`上传失败：${error.message || "未知错误"}`);
+    }
+  } finally {
+    console.log("上传流程结束，重置loading状态");
+    uploadLoading.value = false;
+  }
+};
+
+const openEditModal = (row: GetExcelTemplateListVo) => {
+  editForm.id = row.id;
+  editForm.name = row.name;
+  editForm.code = row.code;
+  editForm.remark = row.remark;
+  editForm.status = row.status;
+  editDialogVisible.value = true;
+};
+
+const resetEditDialog = () => {
+  editForm.id = 0;
+  editForm.name = "";
+  editForm.code = "";
+  editForm.remark = "";
+  editForm.status = 0;
+
+  if (editFormRef.value) {
+    editFormRef.value.resetFields();
+  }
+};
+
+const submitEdit = async () => {
+  try {
+    await editFormRef?.value?.validate();
+  } catch (error) {
+    return;
+  }
+
+  editLoading.value = true;
+
+  try {
+    const result = await ExcelTemplateApi.editExcelTemplate(editForm);
+    if (Result.isSuccess(result)) {
+      ElMessage.success("操作成功");
+      await loadList();
+    }
+    if (Result.isError(result)) {
+      ElMessage.error(result.message);
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  } finally {
+    editLoading.value = false;
+  }
+};
+
+const removeTemplate = async (id: number) => {
+  try {
+    await ElMessageBox.confirm("确定删除该模板吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await ExcelTemplateApi.removeExcelTemplate({ id: id.toString() });
+    ElMessage.success("删除成功");
+    await loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const removeTemplateBatch = async () => {
+  try {
+    await ElMessageBox.confirm("确定删除选中的模板吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    await ExcelTemplateApi.removeExcelTemplate({
+      ids: listSelected.value.map((item) => item.id.toString()),
+    });
+    ElMessage.success("删除成功");
+    await loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+const downloadTemplate = async (code: string) => {
+  try {
+    await ExcelTemplateApi.downloadExcelTemplate(code);
+    ElMessage.success("下载成功");
+  } catch (error: any) {
+    ElMessage.error(error.message || "下载失败");
+  }
+};
+</script>
+
+<style scoped>
+.list-container {
+  padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.list-table {
+  margin-bottom: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
+}
+
+.el-icon--upload {
+  font-size: 67px;
+  color: #8c939d;
+  margin-bottom: 16px;
+  line-height: 50px;
+}
+
+.el-upload__text {
+  color: #606266;
+  font-size: 14px;
+  text-align: center;
+}
+
+.el-upload__text em {
+  color: #409eff;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.upload-rules-container {
+  margin-bottom: 20px;
+}
+
+.rule-list {
+  margin-top: 8px;
+  line-height: 1.8;
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+}
+
+.rule-label {
+  color: #606266;
+  font-weight: bold;
+  width: 70px;
+}
+
+.rule-value {
+  color: #409eff;
+  font-family: monospace;
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 0;
+}
+
+.rule-tip,
+.rule-warning {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.rule-tip {
+  color: #e6a23c;
+}
+
+.rule-warning {
+  color: #f56c6c;
+  font-weight: bold;
+}
+
+.upload-area {
+  padding: 10px 0;
+}
+
+.upload-progress-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  color: #409eff;
+  font-size: 14px;
+}
+
+:deep(.el-upload-dragger) {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #dcdfe6;
+  border-radius: 0;
+  transition: all 0.3s;
+}
+
+:deep(.el-upload-dragger:hover) {
+  border-color: #409eff;
+  background-color: #f0f7ff;
+}
+
+.upload-dialog :deep(.el-dialog) {
+  border-radius: 0;
+}
+
+.upload-dialog :deep(.el-dialog__body) {
+  padding-top: 10px;
+}
+
+.upload-rules-container :deep(.el-alert) {
+  border-radius: 0;
+}
+
+.el-icon.is-loading {
+  animation: rotating 2s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

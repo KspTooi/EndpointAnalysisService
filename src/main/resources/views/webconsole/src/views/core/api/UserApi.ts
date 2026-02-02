@@ -23,7 +23,10 @@ export interface UserPermissionVo {
 
 export interface GetUserListDto extends PageQuery {
   username?: string; // 用户名查询
+  nickname?: string; // 昵称查询
+  phone?: string; // 手机号查询
   status?: number | null; // 用户状态查询: 0-正常, 1-封禁
+  orgId?: string | null; // 组织架构ID
 }
 
 export interface GetUserListVo {
@@ -36,6 +39,8 @@ export interface GetUserListVo {
   createTime: string; // 创建时间
   lastLoginTime: string; // 最后登录时间
   status: number; // 用户状态
+  rootName?: string; // 所属企业名称
+  deptName?: string; // 部门名称
   isSystem: number; // 是否为系统内置用户 0:否 1:是
 }
 

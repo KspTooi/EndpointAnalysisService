@@ -1,0 +1,138 @@
+/* 全局 Element Plus 按钮与标签：直角风格 + 精致化 */
+
+/* ================== Button 按钮 ================== */
+.el-button {
+  border-radius: 0 !important; /* 强制直角 */
+  font-weight: 500;
+  /* transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);  */ /* 优化过渡曲线 */
+
+  /* 基础交互效果 */
+  &:not(.is-disabled):not(.el-button--text):not(.is-link) {
+    &:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    &:active {
+      transform: translateY(0); /* 点击回弹 */
+      box-shadow: none;
+    }
+  }
+
+  /* 禁用状态 */
+  &.is-disabled {
+    opacity: 0.6; /* 稍微降低透明度 */
+  }
+
+  /* 主要按钮和其他实色按钮增加底部微阴影，增加立体感 */
+  /*   &--primary,
+  &--success,
+  &--warning,
+  &--danger,
+  &--info {
+    border: none;
+    &:not(.is-plain):not(.is-disabled) {
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+    }
+  } */
+
+  /* Plain 类型的按钮保持边框 */
+  &.is-plain {
+    background-color: #fff;
+    &:hover {
+      background-color: var(--el-color-primary-light-9);
+      border-color: var(--el-color-primary);
+      color: var(--el-color-primary);
+    }
+  }
+
+  /* 文本按钮 */
+  &.is-text,
+  &.el-button--text {
+    border: none;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+
+    &:hover {
+      background-color: transparent;
+      color: var(--el-color-primary-light-3);
+    }
+  }
+
+  /* 链接按钮 */
+  &.is-link,
+  &.el-button--link {
+    border: none;
+    background: transparent;
+
+    &:hover {
+      text-decoration: underline;
+      color: var(--el-color-primary);
+    }
+  }
+}
+
+/* 按钮组特殊处理 */
+.el-button-group {
+  .el-button {
+    border-radius: 0 !important;
+    margin: 0;
+
+    &:not(:last-child) {
+      margin-right: -1px; /* 消除双重边框 */
+    }
+
+    &:hover {
+      z-index: 2; /* 悬停时浮在上面 */
+    }
+
+    &--primary:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    &--success:not(:last-child),
+    &--warning:not(:last-child),
+    &--danger:not(:last-child),
+    &--info:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+/* ================== Tag 标签 ================== */
+.el-tag {
+  border-radius: 0 !important; /* 强制直角 */
+  border-width: 1px;
+  font-weight: 500;
+  box-sizing: border-box;
+
+  /* 各种主题的 Tag 微调 */
+
+  /* Dark 主题 Tag */
+  &--dark {
+    border-color: transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Light 主题 Tag (默认) */
+  &--light {
+    // border-color: transparent; /* 可选：去掉边框让背景色更纯粹，或者保留 */
+  }
+
+  /* Plain 主题 Tag */
+  &--plain {
+    background-color: #fff;
+  }
+
+  /* 关闭图标样式优化 */
+  .el-tag__close {
+    transform: scale(0.9);
+    margin-left: 4px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.15);
+      color: #fff;
+    }
+  }
+}

@@ -17,10 +17,10 @@ export default class CoreRouteRegister extends GenricRouteRegister {
       },
       {
         biz: "core",
-        path: "dept-manager",
-        name: "dept-manager",
-        component: () => import("@/views/core/DeptManager.vue"),
-        breadcrumb: "部门管理",
+        path: "org-manager",
+        name: "org-manager",
+        component: () => import("@/views/core/OrgManager.vue"),
+        breadcrumb: "组织机构管理",
       },
       {
         biz: "core",
@@ -84,6 +84,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         name: "company-member-manager",
         component: () => import("@/views/core/CompanyMember.vue"),
         breadcrumb: "公司成员管理",
+      },
+      {
+        biz: "core",
+        path: "excel-template-manager",
+        name: "excel-template-manager",
+        component: () => import("@/views/core/ExcelTemplateManager.vue"),
+        breadcrumb: "Excel模板管理",
       },
     ];
   }

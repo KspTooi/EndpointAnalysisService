@@ -1,14 +1,31 @@
 package com.ksptooi.biz.core.model.user;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import io.swagger.v3.oas.annotations.media.Schema;
 
-@Getter@Setter
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class GetUserListVo {
 
     @Schema(description = "用户ID")
     private Long id;
+
+    @Schema(description = "所属企业ID")
+    private Long rootId;
+
+    @Schema(description = "所属企业名称")
+    private String rootName;
+
+    @Schema(description = "所属部门ID")
+    private Long deptId;
+
+    @Schema(description = "所属部门名称")
+    private String deptName;
 
     @Schema(description = "用户名")
     private String username;
@@ -26,10 +43,10 @@ public class GetUserListVo {
     private String email;
 
     @Schema(description = "创建时间")
-    private String createTime;
+    private LocalDateTime createTime;
 
     @Schema(description = "最后登录时间")
-    private String lastLoginTime;
+    private LocalDateTime lastLoginTime;
 
     @Schema(description = "用户状态 0:正常 1:封禁")
     private Integer status;

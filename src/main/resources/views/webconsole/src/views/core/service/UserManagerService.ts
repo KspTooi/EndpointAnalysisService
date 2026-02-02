@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { onMounted, reactive, ref, watch, type Ref } from "vue";
 import type {
   GetUserDetailsVo,
   GetUserListDto,
@@ -12,17 +12,19 @@ import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import QueryPersistService from "@/service/QueryPersistService";
 import GroupApi from "@/views/core/api/GroupApi.ts";
+import OrgApi, { type GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 
 export default {
   /**
    * 用户列表打包
    */
-  useUserList() {
+  useUserList(orgId: Ref<string | null>) {
     const listForm = ref<GetUserListDto>({
       pageNum: 1,
       pageSize: 10,
       username: "",
       status: null,
+      orgId: null,
     });
 
     const listData = ref<GetUserListVo[]>([]);
@@ -32,7 +34,8 @@ export default {
     /**
      * 加载用户列表
      */
-    const loadList = async () => {
+    const loadList = async (orgId?: string | null) => {
+      listForm.value.orgId = orgId ?? null;
       listLoading.value = true;
       const result = await AdminUserApi.getUserList(listForm.value);
 
@@ -52,13 +55,13 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = () => {
+    const resetList = (orgId?: string | null) => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 10;
       listForm.value.username = "";
       listForm.value.status = null;
       QueryPersistService.clearQuery("user-manager");
-      loadList();
+      loadList(orgId ?? null);
     };
 
     /**
@@ -113,6 +116,7 @@ export default {
     const modalCurrentRow = ref<GetUserListVo | null>(null);
     const modalForm = reactive<GetUserDetailsVo>({
       id: "",
+      deptId: "",
       username: "",
       nickname: "",
       gender: 0,
@@ -128,6 +132,23 @@ export default {
     const modalFormPassword = ref("");
     const selectedGroupIds = ref<string[]>([]);
     const groupOptions = ref<UserGroupVo[]>([]);
+    const orgTreeOptions = ref<any[]>([]);
+
+    /**
+     * 处理组织架构树数据，禁用企业节点
+     */
+    const processOrgTreeData = (treeData: GetOrgTreeVo[]): any[] => {
+      return treeData.map((node) => {
+        const processedNode: any = {
+          ...node,
+          disabled: node.kind === 1, // kind === 1 表示企业，禁用选择
+        };
+        if (node.children && node.children.length > 0) {
+          processedNode.children = processOrgTreeData(node.children);
+        }
+        return processedNode;
+      });
+    };
 
     const modalRules = {
       username: [
@@ -174,6 +195,10 @@ export default {
       modalCurrentRow.value = currentRow;
       resetModal();
 
+      // 获取组织架构树并处理，禁用企业节点
+      const treeData = await OrgApi.getOrgTree({});
+      orgTreeOptions.value = processOrgTreeData(treeData);
+
       //如果是编辑模式则需要加载详情数据
       if (mode === "edit" && currentRow) {
         try {
@@ -188,6 +213,7 @@ export default {
           modalForm.status = ret.status;
           modalForm.isSystem = ret.isSystem ?? 0;
           modalForm.groups = ret.groups || [];
+          modalForm.deptId = ret.deptId;
 
           groupOptions.value = ret.groups || [];
           selectedGroupIds.value = ret.groups ? ret.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
@@ -229,6 +255,7 @@ export default {
       modalForm.status = 0;
       modalForm.isSystem = 0;
       modalForm.groups = [];
+      modalForm.deptId = "";
       modalFormPassword.value = "";
       selectedGroupIds.value = [];
 
@@ -261,6 +288,7 @@ export default {
             phone: modalForm.phone,
             email: modalForm.email,
             status: modalForm.status,
+            deptId: modalForm.deptId || undefined,
             groupIds: selectedGroupIds.value,
           };
           const result = await AdminUserApi.addUser(addDto);
@@ -283,6 +311,7 @@ export default {
             phone: modalForm.phone,
             email: modalForm.email,
             status: modalForm.status,
+            deptId: modalForm.deptId || undefined,
             groupIds: selectedGroupIds.value,
           };
           if (modalFormPassword.value) {
@@ -320,6 +349,7 @@ export default {
       openModal,
       resetModal,
       submitModal,
+      orgTreeOptions,
     };
   },
 };

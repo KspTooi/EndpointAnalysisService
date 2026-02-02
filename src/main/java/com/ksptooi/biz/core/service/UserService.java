@@ -1,18 +1,18 @@
 package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
-import com.ksptooi.biz.core.model.dept.DeptPo;
 import com.ksptooi.biz.core.model.user.*;
-import com.ksptooi.biz.core.repository.DeptRepository;
 import com.ksptooi.biz.core.repository.GroupRepository;
+import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +30,8 @@ import static com.ksptool.entities.Entities.assign;
 @Service
 public class UserService {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     private UserRepository userRepository;
 
@@ -40,62 +42,26 @@ public class UserService {
     private AuthService authService;
 
     @Autowired
-    private DeptRepository deptRepository;
+    private OrgRepository orgRepository;
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 获取用户列表
+     *
      * @param dto 获取用户列表DTO
      * @return 用户列表VO
      */
     public PageResult<GetUserListVo> getUserList(GetUserListDto dto) {
-        // 创建分页对象
-        Pageable pageable = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize(), Sort.Direction.DESC, "updateTime");
 
-        // 创建查询条件
-        UserPo query = new UserPo();
-        if (StringUtils.isNotBlank(dto.getUsername())) {
-            query.setUsername(dto.getUsername());
-        }
-        if (dto.getDeptId() != null) {
-            DeptPo dept = new DeptPo();
-            dept.setId(dto.getDeptId());
-            query.setDept(dept);
-        }
-        if (dto.getStatus() != null) {
-            query.setStatus(dto.getStatus());
-        }
-
-        // 创建Example查询对象
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withIgnoreCase()
-                .withIgnoreNullValues();
-
-        // 查询数据
-        Page<UserPo> userPage = userRepository.findAll(Example.of(query, matcher), pageable);
-
-        // 转换为VO列表
-        List<GetUserListVo> voList = new ArrayList<>();
-        for (UserPo po : userPage.getContent()) {
-            GetUserListVo vo = new GetUserListVo();
-            assign(po, vo);
-            if (po.getCreateTime() != null) {
-                vo.setCreateTime(po.getCreateTime().format(DATE_TIME_FORMATTER));
-            }
-            if (po.getLastLoginTime() != null) {
-                vo.setLastLoginTime(po.getLastLoginTime().format(DATE_TIME_FORMATTER));
-            }
-            voList.add(vo);
-        }
+        var vPos = userRepository.getUserList(dto, dto.pageRequest());
 
         // 返回分页视图
-        return PageResult.success(voList, userPage.getTotalElements());
+        return PageResult.success(vPos.getContent(), vPos.getTotalElements());
     }
 
     /**
      * 获取用户详情
+     *
      * @param id 用户ID
      * @return 用户详情VO
      * @throws BizException 用户不存在
@@ -131,18 +97,13 @@ public class UserService {
         // 获取用户权限信息
         List<PermissionPo> userPermissions = userRepository.findUserPermissions(id);
         vo.setPermissions(as(userPermissions, UserPermissionVo.class));
-
-        //处理部门
-        if (user.getDept() != null) {
-            vo.setDeptId(user.getDept().getId());
-        }
-
         return vo;
     }
 
     /**
      * 新增用户
      * 新增用户时，用户默认不是系统内置用户
+     *
      * @param dto 新增用户DTO
      * @throws BizException 用户名已存在或无法新增用户
      */
@@ -159,25 +120,50 @@ public class UserService {
         if (userRepository.countByUsername(dto.getUsername()) > 0) {
             throw new BizException("用户名 '" + dto.getUsername() + "' 已被使用");
         }
-        
+
         UserPo user = new UserPo();
         assign(dto, user);
         user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
         user.setGroups(getGroupSet(dto.getGroupIds()));
         user.setIsSystem(0);
 
-        //处理部门
+        //处理组织架构
         if (dto.getDeptId() != null) {
-            var deptPo = deptRepository.findById(dto.getDeptId()).orElseThrow(() -> new BizException("部门不存在"));
-            user.setDept(deptPo);
-            user.setDeptName(deptPo.getName());
+
+            OrgPo org = orgRepository.getDeptById(dto.getDeptId());
+
+            if (org == null) {
+                throw new BizException("部门:" + dto.getDeptId() + "不存在");
+            }
+
+            //获取部门所在的公司
+            OrgPo rootOrg = orgRepository.getRootById(org.getRootId());
+
+            if (rootOrg == null) {
+                throw new BizException("公司:" + org.getRootId() + "不存在");
+            }
+
+            //设置用户所属公司和部门
+            user.setRootId(rootOrg.getId());
+            user.setRootName(rootOrg.getName());
+            user.setDeptId(org.getId());
+            user.setDeptName(org.getName());
         }
+
+        if (dto.getDeptId() == null) {
+            user.setRootId(null);
+            user.setRootName(null);
+            user.setDeptId(null);
+            user.setDeptName(null);
+        }
+
 
         userRepository.save(user);
     }
 
     /**
      * 编辑用户
+     *
      * @param dto 编辑用户DTO
      * @throws BizException 用户不存在或无法编辑系统内置用户
      */
@@ -196,11 +182,34 @@ public class UserService {
         assign(dto, user);
         user.setGroups(getGroupSet(dto.getGroupIds()));
 
-        //处理部门
+        //处理组织架构
         if (dto.getDeptId() != null) {
-            var deptPo = deptRepository.findById(dto.getDeptId()).orElseThrow(() -> new BizException("部门不存在"));
-            user.setDept(deptPo);
-            user.setDeptName(deptPo.getName());
+
+            OrgPo org = orgRepository.getDeptById(dto.getDeptId());
+
+            if (org == null) {
+                throw new BizException("部门:" + dto.getDeptId() + "不存在");
+            }
+
+            //获取部门所在的公司
+            OrgPo rootOrg = orgRepository.getRootById(org.getRootId());
+
+            if (rootOrg == null) {
+                throw new BizException("公司:" + org.getRootId() + "不存在");
+            }
+
+            //设置用户所属公司和部门
+            user.setRootId(rootOrg.getId());
+            user.setRootName(rootOrg.getName());
+            user.setDeptId(org.getId());
+            user.setDeptName(org.getName());
+        }
+
+        if (dto.getDeptId() == null) {
+            user.setRootId(null);
+            user.setRootName(null);
+            user.setDeptId(null);
+            user.setDeptName(null);
         }
 
         userRepository.save(user);
@@ -210,6 +219,7 @@ public class UserService {
     /**
      * 移除用户
      * 如果用户是系统内置用户，则无法移除
+     *
      * @param id 用户ID
      * @throws BizException 用户不存在或无法移除系统内置用户
      */

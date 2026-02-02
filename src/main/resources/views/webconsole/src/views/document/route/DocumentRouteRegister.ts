@@ -1,0 +1,20 @@
+import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
+import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
+
+export default class DocumentRouteRegister extends GenricRouteRegister {
+  /**
+   * 注册路由
+   * @returns 路由条目数组
+   */
+  public doRegister(): RouteEntryPo[] {
+    return [
+      {
+        biz: "document",
+        path: "ep-std-word-manager",
+        name: "ep-std-word-manager",
+        component: () => import("@/views/document/EpStdWordManager.vue"),
+        breadcrumb: "标准词管理",
+      },
+    ];
+  }
+}
