@@ -7,50 +7,50 @@ import type Result from "@/commons/entity/Result.ts";
 import axios from "axios";
 
 export interface GetEpStdWordListDto extends PageQuery {
-  sourceName?: string | null;
-  sourceNameFull?: string | null;
-  targetName?: string | null;
-  targetNameFull?: string | null;
-  remark?: string | null;
+  sourceName?: string | null; //中文简称
+  sourceNameFull?: string | null; //中文全称
+  targetName?: string | null; //英文简称
+  targetNameFull?: string | null; //英文全称
+  remark?: string | null; //备注
 }
 
 export interface GetEpStdWordListVo {
-  id: string;
-  sourceName: string;
-  sourceNameFull: string | null;
-  targetName: string;
-  targetNameFull: string | null;
-  remark: string | null;
-  createTime: string;
-  creatorId: string;
-  updateTime: string;
-  updaterId: string;
+  id: string; //标准词ID
+  sourceName: string; //中文简称
+  sourceNameFull: string | null; //中文全称
+  targetName: string; //英文简称
+  targetNameFull: string | null; //英文全称
+  remark: string | null; //备注
+  createTime: string; //创建时间
+  creatorId: string; //创建人ID
+  updateTime: string; //更新时间
+  updaterId: string; //更新人ID
 }
 
 export interface GetEpStdWordDetailsVo {
-  id: string;
-  sourceName: string;
-  sourceNameFull: string | null;
-  targetName: string;
-  targetNameFull: string | null;
-  remark: string | null;
+  id: string; //标准词ID
+  sourceName: string; //中文简称
+  sourceNameFull: string | null; //中文全称
+  targetName: string; //英文简称
+  targetNameFull: string | null; //英文全称
+  remark: string | null; //备注
 }
 
 export interface AddEpStdWordDto {
-  sourceName: string;
-  sourceNameFull?: string | null;
-  targetName: string;
-  targetNameFull?: string | null;
-  remark?: string | null;
+  sourceName: string; //中文简称
+  sourceNameFull?: string | null; //中文全称
+  targetName: string; //英文简称
+  targetNameFull?: string | null; //英文全称
+  remark?: string | null; //备注
 }
 
 export interface EditEpStdWordDto {
-  id: string;
-  sourceName: string;
-  sourceNameFull?: string | null;
-  targetName: string;
-  targetNameFull?: string | null;
-  remark?: string | null;
+  id: string; //标准词ID
+  sourceName: string; //中文简称
+  sourceNameFull?: string | null; //中文全称
+  targetName: string; //英文简称
+  targetNameFull?: string | null; //英文全称
+  remark?: string | null; //备注
 }
 
 export default {

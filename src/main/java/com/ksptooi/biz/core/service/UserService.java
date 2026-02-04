@@ -290,6 +290,27 @@ public class UserService {
         newUser.setUsername(username);
         newUser.setPassword(hashedPassword);
         newUser.setGender(2);
+        newUser.setIsSystem(0);
+        // 根据需要，可设置其它字段（如邮箱、昵称等）
+
+        return userRepository.save(newUser);
+    }
+
+    public UserPo registerSystemUser(String username, String password) throws BizException {
+        // 检查是否已存在同名用户
+        if (userRepository.findByUsername(username) != null) {
+            throw new BizException("用户名已存在");
+        }
+
+        // 使用用户名作为盐，加密密码：password + username
+        String salted = password + username;
+        String hashedPassword = hashSHA256(salted);
+
+        UserPo newUser = new UserPo();
+        newUser.setUsername(username);
+        newUser.setPassword(hashedPassword);
+        newUser.setGender(2);
+        newUser.setIsSystem(1);
         // 根据需要，可设置其它字段（如邮箱、昵称等）
 
         return userRepository.save(newUser);
@@ -347,7 +368,7 @@ public class UserService {
 
             try {
                 // 创建新用户，密码与用户名相同
-                UserPo newUser = register(username, username);
+                UserPo newUser = registerSystemUser(username, username);
                 newUser.setNickname(userEnum.getNickname());
 
                 // 如果是admin用户，赋予所有用户组

@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-2 05:14:54",
+  "updatedTime": "2026-2-4 09:33:03",
   "dbConns": [],
   "profile": {
     "default": {
@@ -550,7 +550,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_USER",
+      "defKey": "core_user",
       "defName": "用户表",
       "comment": "",
       "properties": {
@@ -885,7 +885,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_CONFIG",
+      "defKey": "core_config",
       "defName": "配置表",
       "comment": "",
       "properties": {
@@ -1153,7 +1153,8 @@
           "attr8": "",
           "attr9": "",
           "id": "1382F520-9276-46D1-B266-F7B78C9D31C6",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_id",
@@ -1179,7 +1180,8 @@
           "attr8": "",
           "attr9": "",
           "id": "AB3773F7-CBF0-4D8C-8768-9DEBE8484306",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "config_key",
@@ -1205,7 +1207,8 @@
           "attr8": "",
           "attr9": "",
           "id": "4C35AC28-50AC-412F-AF20-E24E91B5AB23",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "config_value",
@@ -1231,7 +1234,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5C1FBC18-4935-4407-B216-AE48274BE9EB",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "description",
@@ -1257,7 +1261,8 @@
           "attr8": "",
           "attr9": "",
           "id": "DDD86D22-FA76-4294-A647-D079D5AE296F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -1283,7 +1288,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C94A6C0E-4515-40F8-BCCE-3470DE5A1C6C",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -1309,7 +1315,8 @@
           "attr8": "",
           "attr9": "",
           "id": "01CB2DCF-DDD3-4197-B9D0-C7B183082E29",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -1324,7 +1331,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_GROUP",
+      "defKey": "core_group",
       "defName": "用户组",
       "comment": "",
       "properties": {
@@ -1677,7 +1684,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_PERMISSION",
+      "defKey": "core_permission",
       "defName": "权限表",
       "comment": "",
       "properties": {
@@ -1976,7 +1983,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_USER_SESSION",
+      "defKey": "core_user_session",
       "defName": "用户会话",
       "comment": "",
       "properties": {
@@ -2142,7 +2149,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C3A67FE9-51E7-478C-8E38-6E21CFD84514",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_id",
@@ -2168,7 +2176,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5E102036-AC62-42E3-888C-DFC35C19689D",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "token",
@@ -2194,7 +2203,8 @@
           "attr8": "",
           "attr9": "",
           "id": "9CC1FF2B-C61B-4BDC-AC63-54BA7C7CBC0F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "permissions",
@@ -2220,7 +2230,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D004D779-276A-4BBF-AAD9-377E4D2B37F2",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "expires_at",
@@ -2246,7 +2257,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EDA1FB90-0013-4B75-A35C-D13C86E9B844",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -2272,7 +2284,8 @@
           "attr8": "",
           "attr9": "",
           "id": "FF87B886-804C-40D1-94A4-53600883C672",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -2298,7 +2311,8 @@
           "attr8": "",
           "attr9": "",
           "id": "16F4FE90-5A28-421D-8EBF-FF9B70991B86",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -2313,7 +2327,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_DOCUMENT",
+      "defKey": "ep_document",
       "defName": "端点文档定义",
       "comment": "",
       "properties": {
@@ -2479,7 +2493,8 @@
           "attr8": "",
           "attr9": "",
           "id": "25ACE8BA-C6EE-408D-AF7A-E84009BD1DDB",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "relay_server_id",
@@ -2505,7 +2520,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E95F1245-FDEC-4692-B1E0-2C73C182523E",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "doc_pull_url",
@@ -2531,7 +2547,8 @@
           "attr8": "",
           "attr9": "",
           "id": "92C429F9-8126-4884-85B2-C77F1270FAA0",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "pull_time",
@@ -2557,7 +2574,8 @@
           "attr8": "",
           "attr9": "",
           "id": "DA7FDC88-F8DE-4DD4-BC63-7EF4AFE2C8FB",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -2583,7 +2601,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D52102EB-31A7-46FD-B20D-DFB419D10F9C",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -2598,7 +2617,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_DOCUMENT_OPERATION",
+      "defKey": "ep_document_operation",
       "defName": "端点文档操作",
       "comment": "",
       "properties": {
@@ -2866,7 +2885,8 @@
           "attr8": "",
           "attr9": "",
           "id": "67C7184E-440F-4AC3-A32E-53E1FC7D4B4B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "relay_server_id",
@@ -2892,7 +2912,8 @@
           "attr8": "",
           "attr9": "",
           "id": "BF2204A8-56BB-4EC6-8B70-285F883A67D4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "ep_doc_id",
@@ -2918,7 +2939,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EE3E6154-2B10-41A1-963E-14A7BE91FE54",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "ep_doc_version_id",
@@ -2944,7 +2966,8 @@
           "attr8": "",
           "attr9": "",
           "id": "21F45CCB-A390-4BD0-B119-3DAE29135AAD",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "tag",
@@ -2970,7 +2993,8 @@
           "attr8": "",
           "attr9": "",
           "id": "FA0B2F03-C84E-460D-B580-272351BD1873",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "path",
@@ -2996,7 +3020,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F214D8F6-F8AA-41B5-A451-2F475670B5AB",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "method",
@@ -3022,7 +3047,8 @@
           "attr8": "",
           "attr9": "",
           "id": "76FE4A4C-E453-4432-A527-AFBDA88A3A7F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "summary",
@@ -3048,7 +3074,8 @@
           "attr8": "",
           "attr9": "",
           "id": "12DE4A06-9614-46BA-9D5B-64D8DA1FCABD",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "description",
@@ -3074,7 +3101,8 @@
           "attr8": "",
           "attr9": "",
           "id": "108716BC-2711-4B92-AC75-05B8E22705F3",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "operation_id",
@@ -3100,7 +3128,8 @@
           "attr8": "",
           "attr9": "",
           "id": "87660145-2B97-4F7C-935E-54B8919C039F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "req_query_json",
@@ -3126,7 +3155,8 @@
           "attr8": "",
           "attr9": "",
           "id": "197E0C96-34EE-485F-8839-C701B9C3A25D",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "res_query_json",
@@ -3152,7 +3182,8 @@
           "attr8": "",
           "attr9": "",
           "id": "45319D61-DD3B-4571-8205-D86852321EAF",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "req_body_json",
@@ -3178,7 +3209,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F0AE5C06-D9DE-4805-A4B2-22FE832657F8",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "res_body_json",
@@ -3204,7 +3236,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F233306F-1035-47E4-8923-1EE74543606B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -3230,7 +3263,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A467294F-0ECB-4102-AA01-51F45B8127B9",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -3245,7 +3279,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_DOCUMENT_SCHEMA",
+      "defKey": "ep_document_schema",
       "defName": "端点架构定义",
       "comment": "",
       "properties": {
@@ -3399,7 +3433,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_DOCUMENT_SYNC_LOG",
+      "defKey": "ep_document_sync_log",
       "defName": "端点文档拉取记录",
       "comment": "",
       "properties": {
@@ -3667,7 +3701,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5A492CE6-E0F0-4B04-8C2A-C9A866733DFC",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "ep_doc_id",
@@ -3693,7 +3728,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E20C634E-40AD-4378-9346-69EBA0F6773E",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "hash",
@@ -3719,7 +3755,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D01EF9BB-825C-4EBE-8671-71BCBB27836D",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "pull_url",
@@ -3745,7 +3782,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A1916452-FF89-4A0A-AE79-53F2AEDF5C84",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "new_version_created",
@@ -3771,7 +3809,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5EB6A753-CB7B-4073-83F8-5D47642283E1",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "new_version_num",
@@ -3797,7 +3836,8 @@
           "attr8": "",
           "attr9": "",
           "id": "806130B8-E9EB-46D0-9A41-1AB85950DDEA",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status",
@@ -3823,7 +3863,8 @@
           "attr8": "",
           "attr9": "",
           "id": "9EC86A08-DC34-404D-9D91-FC54A19A6011",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -3849,7 +3890,8 @@
           "attr8": "",
           "attr9": "",
           "id": "2D8B9C13-0D9D-427E-9300-A738C4856F8B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -3864,7 +3906,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_DOCUMENT_VERSION",
+      "defKey": "ep_document_version",
       "defName": "端点文档版本",
       "comment": "",
       "properties": {
@@ -4030,7 +4072,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E7073108-78BE-421F-98E8-27CDD19CF732",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "relay_server_id",
@@ -4056,7 +4099,8 @@
           "attr8": "",
           "attr9": "",
           "id": "123672EF-7F0D-42F7-A263-91CCF4E6BB69",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "ep_doc_id",
@@ -4082,7 +4126,8 @@
           "attr8": "",
           "attr9": "",
           "id": "0E762CE7-52B8-4C2C-8D40-1A99E271352C",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "version",
@@ -4108,7 +4153,8 @@
           "attr8": "",
           "attr9": "",
           "id": "240E8003-58CF-466D-BED8-C8ED5E2177AE",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "hash",
@@ -4134,7 +4180,8 @@
           "attr8": "",
           "attr9": "",
           "id": "DABAE7AA-E269-43B5-8A1F-A8DAF84214D9",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "api_total",
@@ -4160,7 +4207,8 @@
           "attr8": "",
           "attr9": "",
           "id": "26712A70-AB07-4E89-BF3D-D25E27739644",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "is_latest",
@@ -4186,7 +4234,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5B5C061A-EFB4-4BC8-A724-3042F00C649B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "doc_json",
@@ -4212,7 +4261,8 @@
           "attr8": "",
           "attr9": "",
           "id": "53297342-390A-4389-92BF-BFB0B9D84CA7",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "is_persisted",
@@ -4238,7 +4288,8 @@
           "attr8": "",
           "attr9": "",
           "id": "9FA113F0-ECA4-47BD-92D6-E6D05B105245",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -4264,7 +4315,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7DD480AC-F616-4F32-820F-FB24E29F2606",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -4279,7 +4331,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_SIMPLE_FILTER",
+      "defKey": "rdbg_simple_filter",
       "defName": "过滤器表",
       "comment": "",
       "properties": {
@@ -4445,7 +4497,8 @@
           "attr8": "",
           "attr9": "",
           "id": "2CF5EF45-AC3C-47A2-A867-8AC460EACF9A",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_id",
@@ -4471,7 +4524,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D813BED6-030E-4FFA-B6CF-59EF117AC636",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "name",
@@ -4497,7 +4551,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D0CF366B-87D1-483A-98C8-BD6A7B4F4066",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "direction",
@@ -4523,7 +4578,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A01BDFA4-C353-43D6-9EA7-C140AF7DDEDC",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status",
@@ -4549,7 +4605,8 @@
           "attr8": "",
           "attr9": "",
           "id": "842578BA-2C5F-4F2F-B09E-771C428BC991",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -4575,7 +4632,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C8C34A15-C004-4546-BE4D-FC9C85D3C6ED",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -4601,7 +4659,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EBE30B91-82D6-427F-B40B-81F778D3CC1C",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -4616,7 +4675,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_SIMPLE_FILTER_OPERATION",
+      "defKey": "rdbg_simple_filter_operation",
       "defName": "过滤器操作",
       "comment": "",
       "properties": {
@@ -4782,7 +4841,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5B313500-8BD6-43F2-8C32-4D59437AB250",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "filter_id",
@@ -4808,7 +4868,8 @@
           "attr8": "",
           "attr9": "",
           "id": "B11E5215-F072-48E1-AB22-890FA238CE7E",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "name",
@@ -4834,7 +4895,8 @@
           "attr8": "",
           "attr9": "",
           "id": "1FA69F74-17AC-4F26-B093-4E6B5856F0ED",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "kind",
@@ -4860,7 +4922,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A6F365D3-E75A-4331-AF94-F3A4BF83043F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "target",
@@ -4886,7 +4949,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C8D0342C-ADDA-4FCF-8FE5-F511900C979E",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "f",
@@ -4991,7 +5055,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_SIMPLE_FILTER_TRIGGER",
+      "defKey": "rdbg_simple_filter_trigger",
       "defName": "过滤器触发器",
       "comment": "",
       "properties": {
@@ -5157,7 +5221,8 @@
           "attr8": "",
           "attr9": "",
           "id": "387BC2D3-81C1-4138-822E-B68784097B19",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "filter_id",
@@ -5183,7 +5248,8 @@
           "attr8": "",
           "attr9": "",
           "id": "2E9AF8C8-707A-4880-A7CC-F21F456FD668",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "name",
@@ -5209,7 +5275,8 @@
           "attr8": "",
           "attr9": "",
           "id": "3E8C3748-932E-407E-B85C-901C488CA524",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "target",
@@ -5235,7 +5302,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F1F985BD-8C56-4702-979B-2F32BDF57B9F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "kind",
@@ -5261,7 +5329,8 @@
           "attr8": "",
           "attr9": "",
           "id": "755B8668-9087-4B67-BD90-2D4BB69A8397",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "tk",
@@ -5287,7 +5356,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F31B021E-D131-4B1D-9919-36D6D1AEED2F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "tv",
@@ -5313,7 +5383,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C397E692-1EEA-41E9-8AA4-6C431CF97AE4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "seq",
@@ -5339,7 +5410,8 @@
           "attr8": "",
           "attr9": "",
           "id": "9510431C-D2AE-4CB3-BDDF-A1ED589F0FF2",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -5365,7 +5437,8 @@
           "attr8": "",
           "attr9": "",
           "id": "DFF32CDB-5131-4F19-A13F-B3E52C2EC305",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -5391,7 +5464,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C52AB3D1-A626-4D93-BE76-D7109948C354",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -5406,7 +5480,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_SERVER",
+      "defKey": "relay_server",
       "defName": "中继服务器",
       "comment": "",
       "properties": {
@@ -5674,7 +5748,8 @@
           "attr8": "",
           "attr9": "",
           "id": "582EED9A-0AF0-485E-B83E-E4F417B7DE80",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "name",
@@ -5700,7 +5775,8 @@
           "attr8": "",
           "attr9": "",
           "id": "4F6475B9-EFFF-4B9D-BF15-5A9B242BF7E4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "host",
@@ -5726,7 +5802,8 @@
           "attr8": "",
           "attr9": "",
           "id": "1090C916-D33D-4856-982C-0FEF7DA0B551",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "port",
@@ -5752,7 +5829,8 @@
           "attr8": "",
           "attr9": "",
           "id": "6EEA82C9-B9E0-426B-9103-39DED3763567",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "forward_url",
@@ -5778,7 +5856,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8F01513D-9D9B-48CE-A052-095DEF51F422",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "auto_start",
@@ -5804,7 +5883,8 @@
           "attr8": "",
           "attr9": "",
           "id": "52F75A48-D19C-4024-97F5-0BB9CA6E882F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status",
@@ -5830,7 +5910,8 @@
           "attr8": "",
           "attr9": "",
           "id": "B8DB8773-2037-42AF-B5B4-6F98599567B3",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "error_message",
@@ -5856,7 +5937,8 @@
           "attr8": "",
           "attr9": "",
           "id": "38C7013C-AFAB-4330-8B84-34BB58463AFD",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "override_redirect",
@@ -5882,7 +5964,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8151C89E-9907-4DD8-A2E3-BDF8A4729F14",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "override_redirect_url",
@@ -5908,7 +5991,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F4162385-EDD6-41F0-B390-FFE67196AE4B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_id_strategy",
@@ -5934,7 +6018,8 @@
           "attr8": "",
           "attr9": "",
           "id": "75CEF308-8ACF-4AEB-B3CD-0C0B14248659",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_id_header_name",
@@ -5960,7 +6045,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EDB92EA6-9E82-49B4-BA78-BBD8924E2ED7",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "biz_error_strategy",
@@ -5986,7 +6072,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E1260F39-74DF-4B43-88B3-7EAC6AA40431",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "biz_error_code_field",
@@ -6012,7 +6099,8 @@
           "attr8": "",
           "attr9": "",
           "id": "102AB5DA-F335-4161-9EC8-ADF740E05A00",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "biz_success_code_value",
@@ -6038,7 +6126,8 @@
           "attr8": "",
           "attr9": "",
           "id": "474D3AF6-482C-4836-8265-6C8CE6B80A11",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -6064,7 +6153,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C498CD61-CD8A-49B4-971E-4D773C3CD9A4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -6090,7 +6180,8 @@
           "attr8": "",
           "attr9": "",
           "id": "BBA1E538-952F-4FC2-84C1-082B68EFD3AB",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -6105,7 +6196,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_SERVER_ROUTE",
+      "defKey": "relay_server_route",
       "defName": "中继服务器路由表",
       "comment": "",
       "properties": {
@@ -6368,7 +6459,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_REPLAY_REQUEST",
+      "defKey": "relay_replay_request",
       "defName": "重放请求记录",
       "comment": "",
       "properties": {
@@ -6636,7 +6727,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7D0E887E-3356-4ECA-A76B-A3976FD2F0E1",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "relay_server_id",
@@ -6662,7 +6754,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A3C5B5A7-3E26-456A-8BCA-732A052E8CF7",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "original_request_id",
@@ -6688,7 +6781,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F50D4B43-1700-43A1-8AC9-1313B3C628BE",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_id",
@@ -6714,7 +6808,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7FDF444F-E29F-4716-BFAD-4CB4EFEE7BAE",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_id",
@@ -6740,7 +6835,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E37CBD2D-6197-42E5-B45B-00270F72B904",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "method",
@@ -6766,7 +6862,8 @@
           "attr8": "",
           "attr9": "",
           "id": "65C34156-69F0-431C-99D8-B89D83FDD8B8",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "url",
@@ -6792,7 +6889,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5EB898A4-9E45-43A7-83E9-0CB5E1F87F45",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "source",
@@ -6818,7 +6916,8 @@
           "attr8": "",
           "attr9": "",
           "id": "3A36582E-18F2-40DB-8A5F-4B70A42E1167",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_headers",
@@ -6844,7 +6943,8 @@
           "attr8": "",
           "attr9": "",
           "id": "D5D91045-B6EA-4241-970E-0D189370A338",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body_length",
@@ -6870,7 +6970,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7F064447-728E-4EC0-ACB7-B11B18770141",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body_type",
@@ -6896,7 +6997,8 @@
           "attr8": "",
           "attr9": "",
           "id": "78BC14AA-2F25-45A1-916B-58BE2239CCF5",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body",
@@ -6922,7 +7024,8 @@
           "attr8": "",
           "attr9": "",
           "id": "13B3450B-3F6C-4D8E-9D8D-788D2CD62FAC",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_headers",
@@ -6948,7 +7051,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EF9A595C-6923-4C42-AB61-A97D9E11D15F",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body_length",
@@ -6974,7 +7078,8 @@
           "attr8": "",
           "attr9": "",
           "id": "2BC4A261-9ADD-425E-B6F0-A6637C33CEF2",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body_type",
@@ -7000,7 +7105,8 @@
           "attr8": "",
           "attr9": "",
           "id": "E62721F2-DA14-423A-97C8-1645CCFDF0D1",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body",
@@ -7026,7 +7132,8 @@
           "attr8": "",
           "attr9": "",
           "id": "66AE6718-A1FE-4207-A7DA-9F543EAFCBDD",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status_code",
@@ -7052,7 +7159,8 @@
           "attr8": "",
           "attr9": "",
           "id": "48840AB8-0211-4AB9-8C7D-A73C5994B575",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "redirect_url",
@@ -7078,7 +7186,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8FC1D249-852E-48ED-BCE5-EADCEA53C85E",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status",
@@ -7104,7 +7213,8 @@
           "attr8": "",
           "attr9": "",
           "id": "ADC04782-F0BF-4922-B44F-A003A820DE29",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -7130,7 +7240,8 @@
           "attr8": "",
           "attr9": "",
           "id": "A53DB1FD-6386-4943-9007-9BEC23271167",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_time",
@@ -7156,7 +7267,8 @@
           "attr8": "",
           "attr9": "",
           "id": "627F5925-C67A-41AE-A692-E43459EA2F07",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -7171,7 +7283,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_REQUEST",
+      "defKey": "relay_request",
       "defName": "请求表",
       "comment": "",
       "properties": {
@@ -7337,7 +7449,8 @@
           "attr8": "",
           "attr9": "",
           "id": "664347F3-CF59-4F25-9669-D8A2D71285B8",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "relay_server_id",
@@ -7363,7 +7476,8 @@
           "attr8": "",
           "attr9": "",
           "id": "C2FD5B66-20BB-43C1-B489-13529EC686E3",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -7378,7 +7492,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_RESOURCE",
+      "defKey": "core_resource",
       "defName": "菜单与资源",
       "comment": "",
       "properties": {
@@ -7873,7 +7987,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_ROUTE_RULE",
+      "defKey": "relay_route_rule",
       "defName": "路由策略",
       "comment": "",
       "properties": {
@@ -8208,7 +8322,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RELAY_ROUTE_SERVER",
+      "defKey": "relay_route_server",
       "defName": "路由服务器",
       "comment": "",
       "properties": {
@@ -8507,7 +8621,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_SIMPLE_FILTER_REQUEST_GROUP",
+      "defKey": "rdbg_simple_filter_request_group",
       "defName": "过滤器组关联表",
       "comment": "",
       "properties": {
@@ -8698,7 +8812,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_USER_ENV",
+      "defKey": "rdbg_user_env",
       "defName": "用户请求环境",
       "comment": "",
       "properties": {
@@ -8979,7 +9093,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_USER_ENV_STORAGE",
+      "defKey": "rdbg_user_env_storage",
       "defName": "用户请求环境共享变量",
       "comment": "",
       "properties": {
@@ -9278,7 +9392,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_GROUP_PERMISSION",
+      "defKey": "core_group_permission",
       "defName": "用户组-权限关联",
       "comment": "",
       "properties": {
@@ -9469,7 +9583,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_USER_GROUP",
+      "defKey": "core_user_group",
       "defName": "用户-组关联表",
       "comment": "",
       "properties": {
@@ -9660,7 +9774,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_REQUEST",
+      "defKey": "rdbg_request",
       "defName": "调试请求",
       "comment": "",
       "properties": {
@@ -10049,7 +10163,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_REQUEST_GROUP",
+      "defKey": "rdbg_request_group",
       "defName": "调试请求组",
       "comment": "",
       "properties": {
@@ -10330,7 +10444,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_REQUEST_LOG",
+      "defKey": "rdbg_request_log",
       "defName": "调试请求日志",
       "comment": "",
       "properties": {
@@ -10496,7 +10610,8 @@
           "attr8": "",
           "attr9": "",
           "id": "35CA1410-7F59-437F-AEF2-DFF936EFB4D4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_request_id",
@@ -10522,7 +10637,8 @@
           "attr8": "",
           "attr9": "",
           "id": "3058BC4B-874F-4874-9158-0C639124FBDD",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_id",
@@ -10548,7 +10664,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7DA1A0E0-3ECC-448E-9768-800971F43820",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "method",
@@ -10574,7 +10691,8 @@
           "attr8": "",
           "attr9": "",
           "id": "234A64AE-2469-421F-B6B3-4FCF167CE1B5",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "url",
@@ -10600,7 +10718,8 @@
           "attr8": "",
           "attr9": "",
           "id": "4B80EB55-8CC7-43FC-AFD7-9745F9377D68",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "source",
@@ -10626,7 +10745,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7328750D-B8E3-476D-9BB6-9DA7FDDC5736",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_headers",
@@ -10652,7 +10772,8 @@
           "attr8": "",
           "attr9": "",
           "id": "4D4DDBBA-45B4-440B-B009-BBA8EF86F874",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body_length",
@@ -10678,7 +10799,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EAB06AEB-A158-432A-949B-357B1695FE95",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body_type",
@@ -10704,7 +10826,8 @@
           "attr8": "",
           "attr9": "",
           "id": "6CD02F2D-DBFE-4720-9E14-D8A482BE8DD8",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_body",
@@ -10730,7 +10853,8 @@
           "attr8": "",
           "attr9": "",
           "id": "5BD160F9-75C8-4C7E-8038-EF8E9D158BBE",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_headers",
@@ -10756,7 +10880,8 @@
           "attr8": "",
           "attr9": "",
           "id": "758AFE0D-2D67-4FF7-9A14-8B470815EF02",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body_length",
@@ -10782,7 +10907,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8E8F1290-9306-4237-B93C-008BEB62C24D",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body_type",
@@ -10808,7 +10934,8 @@
           "attr8": "",
           "attr9": "",
           "id": "CDCF9699-3A9F-4453-99FE-E330D3D53A17",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_body",
@@ -10834,7 +10961,8 @@
           "attr8": "",
           "attr9": "",
           "id": "B947C692-6DCF-4729-8940-947FDE79BAC1",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status_code",
@@ -10860,7 +10988,8 @@
           "attr8": "",
           "attr9": "",
           "id": "EE151300-B32C-468D-9652-6C9F7CDB3052",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "redirect_url",
@@ -10886,7 +11015,8 @@
           "attr8": "",
           "attr9": "",
           "id": "309DC188-E78B-4F4F-98BF-C21D942E0166",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "status",
@@ -10912,7 +11042,8 @@
           "attr8": "",
           "attr9": "",
           "id": "1208A137-DCF4-4B6E-B98F-BDA11F6132C4",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -10938,7 +11069,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8406A648-19FB-403B-B99F-A1B478341208",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "response_time",
@@ -10964,7 +11096,8 @@
           "attr8": "",
           "attr9": "",
           "id": "2EDD6A87-7B55-41A1-AF5C-BF04FE15AA62",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -10979,7 +11112,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_REQUEST_TREE",
+      "defKey": "rdbg_request_tree",
       "defName": "调试请求树",
       "comment": "",
       "properties": {
@@ -11145,7 +11278,8 @@
           "attr8": "",
           "attr9": "",
           "id": "8C9F42CB-AF8E-4E5D-9DA3-169912FD4644",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "user_id",
@@ -11171,7 +11305,8 @@
           "attr8": "",
           "attr9": "",
           "id": "7048D598-4ADB-4591-9F1D-31DD297FC51D",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "parent_id",
@@ -11197,7 +11332,8 @@
           "attr8": "",
           "attr9": "",
           "id": "FD4EFF62-8464-4B1D-B39C-CD416CFDCBC3",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "name",
@@ -11223,7 +11359,8 @@
           "attr8": "",
           "attr9": "",
           "id": "F96688A3-FB55-409A-82A1-E23295F3D95C",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "kind",
@@ -11249,7 +11386,8 @@
           "attr8": "",
           "attr9": "",
           "id": "202E8A21-A7C0-42D0-9E2D-8AB09B85C919",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "seq",
@@ -11275,7 +11413,8 @@
           "attr8": "",
           "attr9": "",
           "id": "352511F5-DAB4-4165-8009-060FF1AA240B",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "create_time",
@@ -11301,7 +11440,8 @@
           "attr8": "",
           "attr9": "",
           "id": "22FD786F-6FCB-4F2A-9173-6805D0074BDC",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "update_time",
@@ -11327,7 +11467,8 @@
           "attr8": "",
           "attr9": "",
           "id": "B2BA8703-E65A-47FA-A107-24A844A268E2",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "request_id",
@@ -11353,7 +11494,8 @@
           "attr8": "",
           "attr9": "",
           "id": "3946D268-BAC6-44FC-BE14-9E1F6559B916",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         },
         {
           "defKey": "group_id",
@@ -11379,7 +11521,8 @@
           "attr8": "",
           "attr9": "",
           "id": "84C82AD6-5C1A-4F59-BB34-528BFE6A51FC",
-          "baseType": ""
+          "baseType": "",
+          "type": ""
         }
       ],
       "correlations": [],
@@ -11394,7 +11537,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_COMPANY",
+      "defKey": "core_company",
       "defName": "公司表",
       "comment": "",
       "properties": {
@@ -11675,7 +11818,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_COMPANY_MEMBER",
+      "defKey": "core_company_member",
       "defName": "公司成员",
       "comment": "",
       "properties": {
@@ -11938,7 +12081,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_COMPANY_OFFER",
+      "defKey": "core_company_offer",
       "defName": "公司OFFER",
       "comment": "",
       "properties": {
@@ -12092,7 +12235,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_REGISTRY",
+      "defKey": "core_registry",
       "defName": "注册表",
       "comment": "",
       "properties": {
@@ -12481,7 +12624,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "RDBG_VOCABULARY",
+      "defKey": "rdbg_vocabulary",
       "defName": "词汇表",
       "comment": "",
       "properties": {
@@ -12834,7 +12977,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_DEPT",
+      "defKey": "core_dept",
       "defName": "部门表",
       "comment": "",
       "properties": {
@@ -13205,7 +13348,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "CORE_EXCEL_TEMPLATE",
+      "defKey": "core_excel_template",
       "defName": "导入模板表",
       "comment": "",
       "properties": {
@@ -13608,7 +13751,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "EP_STD_WORD",
+      "defKey": "ep_std_word",
       "defName": "标准词管理",
       "comment": "",
       "properties": {
@@ -13974,6 +14117,399 @@
       "correlations": [],
       "indexes": [],
       "type": "P"
+    },
+    {
+      "id": "1C6407F4-D5A0-4991-856E-08E4923C916B",
+      "env": {
+        "base": {
+          "nameSpace": "",
+          "codeRoot": ""
+        }
+      },
+      "defKey": "ep_side",
+      "defName": "站点",
+      "comment": "",
+      "properties": {
+        "partitioned by": "(date string)",
+        "row format delimited": "",
+        "fields terminated by ','": "",
+        "collection items terminated by '-'": "",
+        "map keys terminated by ':'": "",
+        "store as textfile;": ""
+      },
+      "sysProps": {
+        "nameTemplate": "{defKey}[{defName}]"
+      },
+      "notes": {},
+      "headers": [
+        {
+          "refKey": "hideInGraph",
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "defName",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "primaryKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "notNull",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "autoIncrement",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "domain",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "type",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "len",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "scale",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "comment",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "refDict",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defaultValue",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "isStandard",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "uiHint",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "extProps",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr1",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr2",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr3",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr4",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr5",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr6",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr7",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr8",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr9",
+          "freeze": false,
+          "hideInGraph": true
+        }
+      ],
+      "fields": [
+        {
+          "defKey": "id",
+          "defName": "站点ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
+          "id": "8A0EBDB1-8450-4D72-8107-C4C851C21288"
+        },
+        {
+          "defKey": "name",
+          "defName": "站点名称",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "id": "79A86091-4923-4786-9AEC-93752A98D9E0"
+        },
+        {
+          "defKey": "address",
+          "defName": "地址",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "id": "A46AB2B2-0625-47B3-BFA0-E3957816A449"
+        },
+        {
+          "defKey": "username",
+          "defName": "账户",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 500,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "3F0657AD-C697-472C-AC2A-0D87C4495ACE"
+        },
+        {
+          "defKey": "password",
+          "defName": "密码",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 500,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "DD5B18C2-8A69-4EE2-BD3E-5342B8F9B6E8"
+        },
+        {
+          "defKey": "remark",
+          "defName": "备注",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 1000,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "D2CD8AA7-ACE8-4B58-8DB0-A665A5E844AA"
+        },
+        {
+          "defKey": "seq",
+          "defName": "排序",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "extProps": {},
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "id": "016EF067-58CB-4166-B34C-AA58AB319689"
+        },
+        {
+          "defKey": "create_time",
+          "defName": "创建时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
+          "refDict": "",
+          "extProps": {},
+          "notes": {},
+          "attr1": "",
+          "attr2": "",
+          "attr3": "",
+          "attr4": "",
+          "attr5": "",
+          "attr6": "",
+          "attr7": "",
+          "attr8": "",
+          "attr9": "",
+          "id": "B7872047-97F1-4138-A13B-B66B8F70E3D0",
+          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5"
+        },
+        {
+          "defKey": "creator_id",
+          "defName": "创建人ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "refDict": "",
+          "extProps": {},
+          "notes": {},
+          "attr1": "",
+          "attr2": "",
+          "attr3": "",
+          "attr4": "",
+          "attr5": "",
+          "attr6": "",
+          "attr7": "",
+          "attr8": "",
+          "attr9": "",
+          "id": "E345F11A-0F7A-475C-B93A-D0CF15646C19",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D"
+        },
+        {
+          "defKey": "update_time",
+          "defName": "更新时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
+          "refDict": "",
+          "extProps": {},
+          "notes": {},
+          "attr1": "",
+          "attr2": "",
+          "attr3": "",
+          "attr4": "",
+          "attr5": "",
+          "attr6": "",
+          "attr7": "",
+          "attr8": "",
+          "attr9": "",
+          "id": "C35A3A12-D8FE-4173-AFA6-2058DD0BD680",
+          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5"
+        },
+        {
+          "defKey": "updater_id",
+          "defName": "更新人ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "refDict": "",
+          "extProps": {},
+          "notes": {},
+          "attr1": "",
+          "attr2": "",
+          "attr3": "",
+          "attr4": "",
+          "attr5": "",
+          "attr6": "",
+          "attr7": "",
+          "attr8": "",
+          "attr9": "",
+          "id": "FFF4BFE6-42D9-45D1-B22B-D7591B650CFD",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D"
+        }
+      ],
+      "correlations": [],
+      "indexes": [],
+      "type": "P"
     }
   ],
   "views": [],
@@ -14019,7 +14555,8 @@
         "10A99086-49AD-4CDF-B762-B0AA30AF9213",
         "4101DF9E-6133-4DAC-B650-57CB92B54E47",
         "0D4BE8D1-5C53-4745-9128-AF237F7CE7C6",
-        "04FAB774-4E76-49E1-9456-BAC4C04B55B2"
+        "04FAB774-4E76-49E1-9456-BAC4C04B55B2",
+        "1C6407F4-D5A0-4991-856E-08E4923C916B"
       ],
       "refViews": [],
       "refDiagrams": [],
@@ -14049,7 +14586,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "String",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "String",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "string",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "string",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "STRING",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "string",
         "BDF457FD-9F98-4AC3-A705-7587B00A3BAB": "String",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "VARCHAR",
@@ -14075,7 +14612,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "Double",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "Double",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "decimal",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "double",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "DOUBLE",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "*float64",
         "BDF457FD-9F98-4AC3-A705-7587B00A3BAB": "f64",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "DECIMAL",
@@ -14101,7 +14638,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "Integer",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "Integer",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "float",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "int",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "INT",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "*int",
         "BDF457FD-9F98-4AC3-A705-7587B00A3BAB": "i32",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "INTEGER",
@@ -14127,7 +14664,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "Date",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "Date",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "DateTime",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "timestamp",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "TIMESTAMP",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "*time.Time",
         "BDF457FD-9F98-4AC3-A705-7587B00A3BAB": "DateTime<Local>",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "DATE",
@@ -14153,7 +14690,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "byte[]",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "byte[]",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "binary",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "binary",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "BINARY",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "[]byte",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "BYTE",
         "ABF5836C-0B7C-4007-A41C-F869325E5842": "BYTEA",
@@ -14177,7 +14714,7 @@
         "895CFD1D-4273-4D32-A2C4-CAC70200AB5B": "String",
         "A2EE7B4A-CE62-4290-B00C-B26C1BF18073": "String",
         "F3AC2415-E86B-40C6-9FEB-F4B7937D2C30": "string",
-        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "string",
+        "81CCA482-3F4D-4EAC-8CF9-F5E7BC098AD2": "STRING",
         "B91D99E0-9B7C-416C-8737-B760957DAF09": "string",
         "BDF457FD-9F98-4AC3-A705-7587B00A3BAB": "String",
         "56F4B55B-F0B8-4049-9E6B-50B95C1D793A": "TEXT",
@@ -14218,7 +14755,7 @@
         "defKey": "text",
         "defName": "文本",
         "id": "B283AF71-114C-45F0-AAA1-FE89710DF493",
-        "29D1CE08-4C35-4D2D-AAA9-23D93305B52E": "text",
+        "29D1CE08-4C35-4D2D-AAA9-23D93305B52E": "TEXT",
         "797A1496-D649-4261-89B4-544132EC3F36": "String",
         "065B6AF2-FADF-45D6-A146-5CFDC3AB5CD2": "CHARACTER VARYING"
       },
@@ -14226,7 +14763,7 @@
         "defKey": "longtext",
         "defName": "长文本",
         "id": "28BD266F-DA23-4DF5-972F-7A02DBC2DA36",
-        "29D1CE08-4C35-4D2D-AAA9-23D93305B52E": "longtext",
+        "29D1CE08-4C35-4D2D-AAA9-23D93305B52E": "LONGTEXT",
         "065B6AF2-FADF-45D6-A146-5CFDC3AB5CD2": "CHARACTER VARYING"
       },
       {
