@@ -40,7 +40,18 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="seq" label="排序" min-width="100" />
+        <el-table-column prop="seq" label="排序" min-width="100">
+          <template #default="scope">
+            <SeqQuickPopover
+              :id="scope.row.id"
+              :seqField="'seq'"
+              :getDetailApi="getOrgDetail"
+              :editApi="editOrgSeq"
+              :displayValue="scope.row.seq"
+              :onSuccess="loadList"
+            />
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
             <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
@@ -129,6 +140,9 @@ import { Edit, Delete, Plus } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance, TableInstance } from "element-plus";
 import OrgManagerService from "@/views/core/service/OrgManagerService.ts";
+import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import OrgApi from "@/views/core/api/OrgApi.ts";
+import { Result } from "@/commons/entity/Result";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -194,6 +208,21 @@ const filterTreeSelectData = computed(() => {
 
   return treeSelectData.value;
 });
+
+const getOrgDetail = async (id: string) => {
+  const result = await OrgApi.getOrgDetails({ id });
+  if (!result) {
+    throw new Error("获取数据失败");
+  }
+  return result;
+};
+
+const editOrgSeq = async (id: string, dto: any) => {
+  const result = await OrgApi.editOrg(dto);
+  if (!Result.isSuccess(result)) {
+    throw new Error(result.message);
+  }
+};
 </script>
 
 <style scoped>

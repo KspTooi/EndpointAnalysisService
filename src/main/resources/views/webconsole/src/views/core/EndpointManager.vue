@@ -1,7 +1,12 @@
 <template>
   <div class="list-container">
     <!-- 说明文档 -->
-    <el-alert type="info" :closable="false" style="margin-bottom: 25px; margin-top: 15px; padding: 4px 8px 2px 8px" size="small">
+    <el-alert
+      type="info"
+      :closable="false"
+      style="margin-bottom: 25px; margin-top: 15px; padding: 4px 8px 2px 8px"
+      size="small"
+    >
       <template #title>
         <div style="display: flex; align-items: center; gap: 8px">
           <el-icon><InfoFilled /></el-icon>
@@ -77,7 +82,18 @@
           </template>
         </el-table-column>
         <el-table-column label="端点描述" prop="description" show-overflow-tooltip />
-        <el-table-column label="排序" prop="seq" width="100" />
+        <el-table-column label="排序" prop="seq" width="100">
+          <template #default="scope">
+            <SeqQuickPopover
+              :id="scope.row.id"
+              :seqField="'seq'"
+              :getDetailApi="getEndpointDetail"
+              :editApi="editEndpointSeq"
+              :displayValue="scope.row.seq"
+              :onSuccess="loadList"
+            />
+          </template>
+        </el-table-column>
         <el-table-column label="已缓存" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.cached === 1 ? 'success' : 'info'">
@@ -88,9 +104,20 @@
         <el-table-column label="操作" fixed="right" width="230">
           <template #default="scope">
             <div style="display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%">
-              <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon"> 新增子端点 </el-button>
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
-              <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon" :disabled="scope.row.children && scope.row.children.length > 0">
+              <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
+                新增子端点
+              </el-button>
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="removeList(scope.row.id)"
+                :icon="DeleteIcon"
+                :disabled="scope.row.children && scope.row.children.length > 0"
+              >
                 删除
               </el-button>
             </div>
@@ -110,7 +137,14 @@
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="父级端点" prop="parentId">
           <el-tree-select
             v-model="modalForm.parentId"
@@ -254,7 +288,10 @@
               <div style="background: #fff3e0; padding: 12px; border-radius: 4px; margin-top: 16px">
                 <p style="margin: 0; font-weight: bold; color: #e6a23c">⚠️ 特殊情况处理：</p>
                 <ul style="margin: 8px 0 0 0; line-height: 1.8">
-                  <li><strong>端点未配置：</strong>如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问</li>
+                  <li>
+                    <strong>端点未配置：</strong
+                    >如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问
+                  </li>
                   <li><strong>权限为*：</strong>如果端点的权限字段设置为"*"，表示该接口无需权限验证，所有用户都可以访问</li>
                   <li><strong>多个匹配：</strong>如果多个端点都匹配请求路径，系统会选择最精确的匹配规则</li>
                 </ul>
@@ -345,7 +382,9 @@
 
               <div class="qa-item">
                 <p class="question">Q4: 清空缓存会影响系统运行吗？</p>
-                <p class="answer">A: 清空缓存后，系统会在下次请求时重新从数据库加载端点配置，可能会有轻微的性能影响，但不会影响系统正常运行。</p>
+                <p class="answer">
+                  A: 清空缓存后，系统会在下次请求时重新从数据库加载端点配置，可能会有轻微的性能影响，但不会影响系统正常运行。
+                </p>
               </div>
             </div>
           </el-collapse-item>
@@ -380,6 +419,7 @@ import {
 import QueryPersistService from "@/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import ExpandButton from "@/components/common/ExpandButton.vue";
+import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
 
 const listForm = reactive<GetEndpointTreeDto>({
   name: "",
@@ -638,6 +678,21 @@ const submitModal = async () => {
   }
 
   await loadList();
+};
+
+const getEndpointDetail = async (id: string) => {
+  const result = await EndpointApi.getEndpointDetails({ id });
+  if (!Result.isSuccess(result)) {
+    throw new Error(result.message);
+  }
+  return result.data;
+};
+
+const editEndpointSeq = async (id: string, dto: any) => {
+  const result = await EndpointApi.editEndpoint(dto);
+  if (!Result.isSuccess(result)) {
+    throw new Error(result.message);
+  }
 };
 </script>
 

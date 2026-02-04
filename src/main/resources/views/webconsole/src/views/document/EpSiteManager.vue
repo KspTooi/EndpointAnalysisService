@@ -130,7 +130,18 @@
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="seq" label="排序" width="80" />
+        <el-table-column prop="seq" label="排序" width="80">
+          <template #default="scope">
+            <SeqQuickPopover
+              :id="scope.row.id"
+              :seqField="'seq'"
+              :getDetailApi="getEpSiteDetail"
+              :editApi="editEpSiteSeq"
+              :displayValue="scope.row.seq"
+              :onSuccess="loadList"
+            />
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
@@ -249,6 +260,8 @@ import EpSiteService from "@/views/document/service/EpSiteService.ts";
 import EpSiteApi, { type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
+import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import { Result } from "@/commons/entity/Result";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
@@ -315,6 +328,21 @@ const modalFormRef = ref<FormInstance>();
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   EpSiteService.useEpSiteModal(modalFormRef, loadList);
+
+const getEpSiteDetail = async (id: string) => {
+  const result = await EpSiteApi.getEpSiteDetails({ id });
+  if (!result) {
+    throw new Error("获取数据失败");
+  }
+  return result;
+};
+
+const editEpSiteSeq = async (id: string, dto: any) => {
+  const result = await EpSiteApi.editEpSite(dto);
+  if (!result) {
+    throw new Error("修改失败");
+  }
+};
 </script>
 
 <style scoped>
