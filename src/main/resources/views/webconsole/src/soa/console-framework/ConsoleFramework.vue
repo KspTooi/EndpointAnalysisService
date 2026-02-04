@@ -7,7 +7,7 @@
         :items="menuTree"
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
-        version="版本:1.5J CP9"
+        version="版本:1.5K CP2"
         @item-click="handleMenuClick"
         @action="handleMenuAction"
       />
