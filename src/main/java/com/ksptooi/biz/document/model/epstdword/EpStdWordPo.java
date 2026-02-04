@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "EP_STD_WORD", comment = "标准词管理")
+@Table(name = "ep_std_word", comment = "标准词管理")
 public class EpStdWordPo {
 
     @Id

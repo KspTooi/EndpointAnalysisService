@@ -5,12 +5,12 @@
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
-            <el-form-item label="简称">
+            <el-form-item label="中文简称">
               <el-input v-model="listForm.sourceName" placeholder="请输入简称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
-            <el-form-item label="全称">
+            <el-form-item label="中文全称">
               <el-input v-model="listForm.sourceNameFull" placeholder="请输入全称" clearable />
             </el-form-item>
           </el-col>
@@ -59,9 +59,9 @@
         @selection-change="(val: GetEpStdWordListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
-        <el-table-column prop="sourceName" label="简称" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="sourceNameFull" label="全称" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="sourceName" label="中文简称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="targetName" label="英文简称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="sourceNameFull" label="中文全称" min-width="200" show-overflow-tooltip />
         <el-table-column prop="targetNameFull" label="英文全称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="180" />

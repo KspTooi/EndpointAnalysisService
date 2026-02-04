@@ -1,4 +1,3 @@
-
 -- 用于既有系统1.0B->1.2F(Later)的版本升级迁移 仅限MYSQL数据库 不支持H2DB
 
 -- 处理核心表
@@ -11,9 +10,9 @@ ALTER TABLE `users` RENAME TO core_user;
 ALTER TABLE `user_group` RENAME TO core_user_group;
 ALTER TABLE `user_session` RENAME TO core_user_session;
 
---处理文档模块表(暂无变更)
+-- 处理文档模块表(暂无变更)
 
---处理调试模块表(RDBG)
+-- 处理调试模块表(RDBG)
 ALTER TABLE `user_request` RENAME TO rdbg_request;
 ALTER TABLE `user_request_group` RENAME TO rdbg_request_group;
 ALTER TABLE `user_request_log` RENAME TO rdbg_request_log;
@@ -25,7 +24,7 @@ ALTER TABLE `simple_filter_trigger` RENAME TO rdbg_simple_filter_trigger;
 ALTER TABLE `user_request_env` RENAME TO rdbg_user_env;
 ALTER TABLE `user_request_env_storage` RENAME TO rdbg_user_env_storage;
 
---处理中继模块表(RELAY)
+-- 处理中继模块表(RELAY)
 ALTER TABLE `replay_requets` RENAME TO relay_replay_request;
 ALTER TABLE `relay_request` RENAME TO relay_request;
 ALTER TABLE `route_rule` RENAME TO relay_route_rule;
@@ -33,16 +32,20 @@ ALTER TABLE `route_server` RENAME TO relay_route_server;
 ALTER TABLE `relay_server` RENAME TO relay_server;
 ALTER TABLE `relay_server_route` RENAME TO relay_server_route;
 
---处理中继模块表索引
-ALTER TABLE `relay_request` ADD INDEX `idx_relay_server_id` (`relay_server_id`);
-ALTER TABLE `relay_server` ADD COLUMN `deleted_time` DATETIME DEFAULT NULL COMMENT '移除时间 为null代表未删除';
-
+-- 处理中继模块表索引
+ALTER TABLE `relay_request`
+    ADD INDEX `idx_relay_server_id` (`relay_server_id`);
+ALTER TABLE `relay_server`
+    ADD COLUMN `deleted_time` DATETIME DEFAULT NULL COMMENT '移除时间 为null代表未删除';
 
 
 -- 后处理资源表
-ALTER TABLE `core_resource` ADD COLUMN `menu_btn_id` VARCHAR(64) DEFAULT NULL COMMENT '按钮ID(menuKind = 2时必填)';
-ALTER TABLE `core_resource` ADD COLUMN `menu_hidden` TINYINT(1) DEFAULT NULL COMMENT '是否隐藏 0:否 1:是(menuKind = 1/2时生效)';
-UPDATE `core_resource` SET menu_hidden = 0;
+ALTER TABLE `core_resource`
+    ADD COLUMN `menu_btn_id` VARCHAR(64) DEFAULT NULL COMMENT '按钮ID(menuKind = 2时必填)';
+ALTER TABLE `core_resource`
+    ADD COLUMN `menu_hidden` TINYINT(1) DEFAULT NULL COMMENT '是否隐藏 0:否 1:是(menuKind = 1/2时生效)';
+UPDATE `core_resource`
+SET menu_hidden = 0;
 
 
 
