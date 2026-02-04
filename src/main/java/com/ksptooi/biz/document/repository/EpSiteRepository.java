@@ -17,9 +17,9 @@ public interface EpSiteRepository extends JpaRepository<EpSitePo, Long> {
             SELECT u FROM EpSitePo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%') )
+            AND (:#{#po.name} IS NULL OR (u.name LIKE CONCAT('%', :#{#po.name}, '%') OR u.namePyIdx LIKE CONCAT('%', :#{#po.name}, '%')) )
             AND (:#{#po.address} IS NULL OR u.address LIKE CONCAT('%', :#{#po.address}, '%') )
-            AND (:#{#po.username} IS NULL OR u.username LIKE CONCAT('%', :#{#po.username}, '%') )
+            AND (:#{#po.username} IS NULL OR (u.username LIKE CONCAT('%', :#{#po.username}, '%') OR u.usernamePyIdx LIKE CONCAT('%', :#{#po.username}, '%')) )
             AND (:#{#po.password} IS NULL OR u.password  = :#{#po.password} )
             AND (:#{#po.remark} IS NULL OR u.remark LIKE CONCAT('%', :#{#po.remark}, '%') )
             AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
@@ -31,9 +31,9 @@ public interface EpSiteRepository extends JpaRepository<EpSitePo, Long> {
             SELECT u FROM EpSitePo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%') )
+            AND (:#{#po.name} IS NULL OR (u.name LIKE CONCAT('%', :#{#po.name}, '%') OR u.namePyIdx LIKE CONCAT('%', :#{#po.name}, '%')) )
             AND (:#{#po.address} IS NULL OR u.address LIKE CONCAT('%', :#{#po.address}, '%') )
-            AND (:#{#po.username} IS NULL OR u.username LIKE CONCAT('%', :#{#po.username}, '%') )
+            AND (:#{#po.username} IS NULL OR (u.username LIKE CONCAT('%', :#{#po.username}, '%') OR u.usernamePyIdx LIKE CONCAT('%', :#{#po.username}, '%')) )
             AND (:#{#po.password} IS NULL OR u.password  = :#{#po.password} )
             AND (:#{#po.remark} IS NULL OR u.remark LIKE CONCAT('%', :#{#po.remark}, '%') )
             AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )

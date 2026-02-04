@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-4 09:33:03",
+  "updatedTime": "2026-2-4 11:18:49",
   "dbConns": [],
   "profile": {
     "default": {
@@ -14393,6 +14393,42 @@
           "extProps": {},
           "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
           "id": "016EF067-58CB-4166-B34C-AA58AB319689"
+        },
+        {
+          "defKey": "name_py_idx",
+          "defName": "站点名称-用于查询的拼音首字母索引",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 320,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "DBEC6905-3F36-4883-AFD4-EF962EE3BB27"
+        },
+        {
+          "defKey": "username_py_idx",
+          "defName": "账户-用于查询的拼音首字母索引",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 320,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "89289F2D-B1C0-4267-A3BC-09D72699ECA3"
         },
         {
           "defKey": "create_time",

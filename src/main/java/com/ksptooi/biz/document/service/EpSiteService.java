@@ -9,6 +9,7 @@ import com.ksptooi.biz.document.model.epsite.vo.ExportEpSiteVo;
 import com.ksptooi.biz.document.model.epsite.vo.GetEpSiteDetailsVo;
 import com.ksptooi.biz.document.model.epsite.vo.GetEpSiteListVo;
 import com.ksptooi.biz.document.repository.EpSiteRepository;
+import com.ksptooi.commons.utils.PinyinUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -50,6 +51,10 @@ public class EpSiteService {
         }
 
         EpSitePo insertPo = as(dto, EpSitePo.class);
+
+        //处理拼音索引
+        insertPo.setNamePyIdx(PinyinUtils.getFirstLetters(dto.getName()));
+        insertPo.setUsernamePyIdx(PinyinUtils.getFirstLetters(dto.getUsername()));
         repository.save(insertPo);
     }
 
@@ -64,6 +69,10 @@ public class EpSiteService {
         }
 
         assign(dto, updatePo);
+
+        //处理拼音索引
+        updatePo.setNamePyIdx(PinyinUtils.getFirstLetters(dto.getName()));
+        updatePo.setUsernamePyIdx(PinyinUtils.getFirstLetters(dto.getUsername()));
         repository.save(updatePo);
     }
 
@@ -104,10 +113,18 @@ public class EpSiteService {
                 existingSite.setPassword(item.getPassword());
                 existingSite.setRemark(item.getRemark());
                 existingSite.setSeq(item.getSeq());
+
+                //处理拼音索引
+                existingSite.setNamePyIdx(PinyinUtils.getFirstLetters(item.getName()));
+                existingSite.setUsernamePyIdx(PinyinUtils.getFirstLetters(item.getUsername()));
                 updatePos.add(existingSite);
                 continue;
             } 
             var addPo = as(item, EpSitePo.class);
+
+            //处理拼音索引
+            addPo.setNamePyIdx(PinyinUtils.getFirstLetters(item.getName()));
+            addPo.setUsernamePyIdx(PinyinUtils.getFirstLetters(item.getUsername()));
             addPos.add(addPo);
         }
 

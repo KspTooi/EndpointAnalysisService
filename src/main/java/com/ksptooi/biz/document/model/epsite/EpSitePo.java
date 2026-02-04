@@ -43,6 +43,12 @@ public class EpSitePo {
     @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
+    @Column(name = "name_py_idx", length = 320, comment = "站点名称-用于查询的拼音首字母索引")
+    private String namePyIdx;
+
+    @Column(name = "username_py_idx", length = 320, comment = "账户-用于查询的拼音首字母索引")
+    private String usernamePyIdx;
+
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
