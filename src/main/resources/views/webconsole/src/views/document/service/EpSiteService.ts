@@ -9,6 +9,7 @@ import type {
 import EpSiteApi from "@/views/document/api/EpSiteApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import QueryPersistService from "@/service/QueryPersistService.ts";
 
 export default {
   /**
@@ -51,6 +52,7 @@ export default {
       if (Result.isSuccess(result)) {
         listData.value = result.data;
         listTotal.value = result.total;
+        QueryPersistService.persistQuery("ep-site-manager", listForm.value);
       }
 
       if (Result.isError(result)) {
@@ -73,6 +75,7 @@ export default {
       listForm.value.remark = null;
       listForm.value.seq = null;
       listForm.value.createTime = null;
+      QueryPersistService.clearQuery("ep-site-manager");
       loadList();
     };
 
@@ -130,6 +133,7 @@ export default {
 
     //初始化
     onMounted(async () => {
+      QueryPersistService.loadQuery("ep-site-manager", listForm.value);
       await loadList();
     });
 

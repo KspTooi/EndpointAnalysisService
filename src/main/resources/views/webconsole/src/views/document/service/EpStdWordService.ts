@@ -9,6 +9,7 @@ import type {
 import EpStdWordApi from "@/views/document/api/EpStdWordApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import QueryPersistService from "@/service/QueryPersistService.ts";
 
 export default {
   /**
@@ -39,6 +40,7 @@ export default {
       if (Result.isSuccess(result)) {
         listData.value = result.data;
         listTotal.value = result.total;
+        QueryPersistService.persistQuery("ep-std-word-manager", listForm.value);
       }
 
       if (Result.isError(result)) {
@@ -59,6 +61,7 @@ export default {
       listForm.value.targetName = null;
       listForm.value.targetNameFull = null;
       listForm.value.remark = null;
+      QueryPersistService.clearQuery("ep-std-word-manager");
       loadList();
     };
 
@@ -116,6 +119,7 @@ export default {
 
     //初始化
     onMounted(async () => {
+      QueryPersistService.loadQuery("ep-std-word-manager", listForm.value);
       await loadList();
     });
 

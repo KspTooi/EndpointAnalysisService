@@ -1,8 +1,9 @@
 <template>
   <div class="list-container">
+    <QueryPersistTip class="mt-2" />
     <!-- 查询表单 -->
     <div class="query-form">
-      <div class="warning-alert">
+      <div class="warning-alert mt-2">
         <el-alert
           title="警告: 不要在此录入任何敏感信息，仅限录入测试环境中所使用到的数据"
           type="warning"
@@ -14,7 +15,7 @@
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="站点名称">
-              <el-input v-model="listForm.name" placeholder="请输入站点名称" clearable />
+              <el-input v-model="listForm.name" placeholder="支持拼音首字母查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -247,6 +248,7 @@ import type { FormInstance } from "element-plus";
 import EpSiteService from "@/views/document/service/EpSiteService.ts";
 import EpSiteApi, { type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);

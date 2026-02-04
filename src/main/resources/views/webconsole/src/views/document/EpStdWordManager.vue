@@ -2,11 +2,12 @@
   <div class="list-container">
     <!-- 查询表单 -->
     <div class="query-form">
+      <QueryPersistTip class="mt-2" />
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="中文简称">
-              <el-input v-model="listForm.sourceName" placeholder="请输入简称" clearable />
+              <el-input v-model="listForm.sourceName" placeholder="支持拼音首字母查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -170,6 +171,7 @@ import type { FormInstance } from "element-plus";
 import EpStdWordService from "@/views/document/service/EpStdWordService.ts";
 import EpStdWordApi, { type GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
