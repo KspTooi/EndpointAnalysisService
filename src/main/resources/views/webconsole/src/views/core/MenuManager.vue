@@ -108,17 +108,16 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="seq" width="65" >
+        <el-table-column label="排序" prop="seq" width="100">
           <template #default="scope">
-            <el-button
-                link
-                type="success"
-                size="small"
-                @click="openModal('add-item', scope.row)"
-                :icon="EditIcon"
-              >
-                {{ scope.row.seq }}
-              </el-button>
+            <SeqQuickPopover
+              :id="scope.row.id"
+              :seqField="'seq'"
+              :getDetailApi="getMenuDetail"
+              :editApi="editMenuSeq"
+              :displayValue="scope.row.seq"
+              :onSuccess="loadList"
+            />
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="230">
@@ -250,12 +249,21 @@
 <script setup lang="ts">
 import type { FormInstance, TableInstance } from "element-plus";
 import { ref } from "vue";
-import { Delete as DeleteIcon, View as ViewIcon, Plus as PlusIcon, InfoFilled, Edit as EditIcon } from "@element-plus/icons-vue";
+import {
+  Delete as DeleteIcon,
+  View as ViewIcon,
+  Plus as PlusIcon,
+  InfoFilled,
+  Edit as EditIcon,
+} from "@element-plus/icons-vue";
 import IconPicker from "@/components/common/IconPicker.vue";
 import { Icon } from "@iconify/vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
+import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import MenuApi from "@/views/core/api/MenuApi.ts";
+import { Result } from "@/commons/entity/Result";
 
 const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
 
@@ -291,6 +299,21 @@ const {
   resetModal,
   submitModal,
 } = MenuManagerService.useMenuModal(modalFormRef, loadList, fullMenuTree);
+
+const getMenuDetail = async (id: string) => {
+  const result = await MenuApi.getMenuDetails({ id });
+  if (!Result.isSuccess(result)) {
+    throw new Error(result.message);
+  }
+  return result.data;
+};
+
+const editMenuSeq = async (id: string, dto: any) => {
+  const result = await MenuApi.editMenu(dto);
+  if (!Result.isSuccess(result)) {
+    throw new Error(result.message);
+  }
+};
 </script>
 
 <style scoped>
