@@ -18,7 +18,7 @@ public interface EpStdWordRepository extends JpaRepository<EpStdWordPo, Long> {
             SELECT u FROM EpStdWordPo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.sourceName} IS NULL OR u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') )
+            AND (:#{#po.sourceName} IS NULL OR (u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') OR u.sourceNamePyIdx LIKE CONCAT('%', :#{#po.sourceName}, '%')) )
             AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull LIKE CONCAT('%', :#{#po.sourceNameFull}, '%') )
             AND (:#{#po.targetName} IS NULL OR u.targetName LIKE CONCAT('%', :#{#po.targetName}, '%') )
             AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull LIKE CONCAT('%', :#{#po.targetNameFull}, '%') )
@@ -35,7 +35,7 @@ public interface EpStdWordRepository extends JpaRepository<EpStdWordPo, Long> {
         SELECT u FROM EpStdWordPo u
         WHERE
         (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-        AND (:#{#po.sourceName} IS NULL OR u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') )
+        AND (:#{#po.sourceName} IS NULL OR (u.sourceName LIKE CONCAT('%', :#{#po.sourceName}, '%') OR u.sourceNamePyIdx LIKE CONCAT('%', :#{#po.sourceName}, '%')) )
         AND (:#{#po.sourceNameFull} IS NULL OR u.sourceNameFull LIKE CONCAT('%', :#{#po.sourceNameFull}, '%') )
         AND (:#{#po.targetName} IS NULL OR u.targetName LIKE CONCAT('%', :#{#po.targetName}, '%') )
         AND (:#{#po.targetNameFull} IS NULL OR u.targetNameFull LIKE CONCAT('%', :#{#po.targetNameFull}, '%') )

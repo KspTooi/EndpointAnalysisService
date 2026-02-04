@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-4 11:18:49",
+  "updatedTime": "2026-2-4 13:18:57",
   "dbConns": [],
   "profile": {
     "default": {
@@ -13984,6 +13984,24 @@
           "id": "87416B4F-6095-419F-81CD-5DFB5703FC9B"
         },
         {
+          "defKey": "source_name_py_idx",
+          "defName": "简称 拼音首字母索引",
+          "comment": "",
+          "type": "CHARACTER VARYING",
+          "len": 320,
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "",
+          "id": "5CCAF8D0-6FE7-4A93-9AAB-A4653195659F"
+        },
+        {
           "defKey": "remark",
           "defName": "备注",
           "comment": "",
@@ -14112,6 +14130,24 @@
           "attr9": "",
           "id": "C8217CD2-BA1C-4CB8-A2C7-EBF3FCD6576A",
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D"
+        },
+        {
+          "defKey": "delete_time",
+          "defName": "删除时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5",
+          "extProps": {},
+          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
+          "id": "8379923A-CFBD-428A-97E7-DB81CCCB566E"
         }
       ],
       "correlations": [],

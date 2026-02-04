@@ -5,6 +5,8 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +18,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "ep_std_word", comment = "标准词管理")
+@Table(name = "ep_std_word", comment = "标准词管理", indexes = {
+    @Index(name = "uk_source_name_delete", unique = true, columnList = "source_name,delete_time")
+})
+@SQLDelete(sql = "UPDATE ep_std_word SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class EpStdWordPo {
 
     @Id
@@ -38,6 +44,9 @@ public class EpStdWordPo {
     @Column(name = "remark", columnDefinition = "text", comment = "备注")
     private String remark;
 
+    @Column(name = "source_name_py_idx", length = 320, comment = "简称 拼音首字母索引")
+    private String sourceNamePyIdx;
+
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
@@ -49,6 +58,9 @@ public class EpStdWordPo {
 
     @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
+
+    @Column(name = "delete_time", comment = "删除时间 NULL未删")
+    private LocalDateTime deleteTime;
 
     @PrePersist
     private void onCreate() {

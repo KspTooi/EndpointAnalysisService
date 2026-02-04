@@ -9,6 +9,7 @@ import com.ksptooi.biz.document.model.epstdword.vo.ExportEpStdWordVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordDetailsVo;
 import com.ksptooi.biz.document.model.epstdword.vo.GetEpStdWordListVo;
 import com.ksptooi.biz.document.repository.EpStdWordRepository;
+import com.ksptooi.commons.utils.PinyinUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -67,6 +68,9 @@ public class EpStdWordService {
         }
 
         EpStdWordPo insertPo = as(dto, EpStdWordPo.class);
+
+        //处理拼音索引
+        insertPo.setSourceNamePyIdx(PinyinUtils.getFirstLetters(dto.getSourceName()));
         repository.save(insertPo);
     }
 
@@ -92,6 +96,9 @@ public class EpStdWordService {
         }
 
         assign(dto, updatePo);
+
+        //处理拼音索引
+        updatePo.setSourceNamePyIdx(PinyinUtils.getFirstLetters(dto.getSourceName()));
         repository.save(updatePo);
     }
 
@@ -139,6 +146,9 @@ public class EpStdWordService {
         for (var item : data) {
 
             var addPo = as(item, EpStdWordPo.class);
+
+            //处理拼音索引
+            addPo.setSourceNamePyIdx(PinyinUtils.getFirstLetters(item.getSourceName()));
 
             //检查英文简称是否重复
             var existingWord = repository.getStdWordByTargetName(addPo.getTargetName());
