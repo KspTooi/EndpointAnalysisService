@@ -27,7 +27,7 @@
             <dependency>
                 <groupId>com.ksptool</groupId>
                 <artifactId>assembly</artifactId>
-                <version>2.2H</version>
+                <version>2.2S-RC1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -222,6 +222,26 @@
         </dependency>
         <!--Excel处理 结束-->
 
+        <!-- 代码生成器 -->
+        <dependency>
+            <groupId>com.ksptool</groupId>
+            <artifactId>assembly-blueprint</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ksptool</groupId>
+                    <artifactId>assembly-text-processor</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ksptool</groupId>
+            <artifactId>assembly-text-processor</artifactId>
+            <version>2.2S-RC1</version>
+        </dependency>
+
+
 
     </dependencies>
 
@@ -322,6 +342,7 @@
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
+
 
         </plugins>
         <resources>

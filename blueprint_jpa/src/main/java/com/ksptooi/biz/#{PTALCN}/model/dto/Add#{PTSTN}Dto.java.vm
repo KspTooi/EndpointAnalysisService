@@ -1,0 +1,27 @@
+package com.ksptooi.biz.${ptalcn}.model.dto;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+#foreach ($import in $imports)
+import ${import};
+#end
+
+@Getter
+@Setter
+public class Add${ptstn}Dto {
+
+    #foreach ($field in $fields)
+    #if(!${field.primaryKey})
+
+    #if(${field.comment} != "")
+    @Schema(description="${field.comment}")
+    #end
+    private ${field.type} ${field.pfscn};
+    #end
+    #end
+
+}
+
