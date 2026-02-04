@@ -1,72 +1,101 @@
 <template>
-  <el-popover placement="bottom" trigger="click" :width="300" @before-enter="handleBeforeShow">
+  <el-popover
+    v-model:visible="popoverVisible"
+    placement="bottom"
+    trigger="hover"
+    :width="180"
+    :hide-after="50"
+    @before-enter="handleBeforeShow"
+  >
     <template #reference>
-      <el-button>修改排序</el-button>
+      <el-button link type="success" :icon="Edit">{{ displayValue ?? "修改排序" }}</el-button>
     </template>
-    <el-form :model="queryForm" v-loading="loading">
-      <el-form-item label="排序">
-        <el-input-number v-model.number="queryForm.seq" :min="0" :max="655350" placeholder="请输入排序" clearable />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleConfirm">确定</el-button>
-        <el-button @click="handleCancel">取消</el-button>
-      </el-form-item>
-    </el-form>
+    <div v-loading="loading">
+      <div class="popover-title">修改排序</div>
+      <div class="popover-content">
+        <el-input-number
+          v-model.number="queryForm.seq"
+          :min="0"
+          :max="655350"
+          size="small"
+          :controls="false"
+          class="seq-input"
+        />
+        <el-button-group class="quick-btns">
+          <el-button
+            size="small"
+            :icon="ArrowUp"
+            :disabled="queryForm.seq <= 0"
+            @click="
+              queryForm.seq--;
+              handleConfirm();
+            "
+          />
+          <el-button
+            size="small"
+            :icon="ArrowDown"
+            @click="
+              queryForm.seq++;
+              handleConfirm();
+            "
+          />
+        </el-button-group>
+      </div>
+      <div class="popover-footer">
+        <el-button type="primary" size="small" @click="handleConfirm">修改</el-button>
+        <el-button size="small" @click="handleCancel">关闭</el-button>
+      </div>
+    </div>
   </el-popover>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
+import { Edit, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
+import SeqQuickPopoverService from "./service/SeqQuickPopoverService";
 
 const props = defineProps<{
+  id: string; //数据ID
   seqField: string; //排序字段名称
-  getDetailApi: () => Promise<any>; //获取详情接口
-  editApi: (dto: any) => Promise<any>; //编辑接口
+  getDetailApi: (id: string) => Promise<any>; //获取详情接口
+  editApi: (id: string, dto: any) => Promise<any>; //编辑接口
+  displayValue?: number | string; //显示值
+  onSuccess?: () => void; //成功回调
 }>();
 
-const queryForm = reactive({
-  seq: 0,
-});
-
-const loading = ref(false);
-const popoverVisible = ref(false);
-
-const handleBeforeShow = async () => {
-  loading.value = true;
-  try {
-    const res = await props.getDetailApi();
-    if (!res) {
-      return;
-    }
-    queryForm.seq = res[props.seqField] || 0;
-  } catch (error) {
-    ElMessage.error("获取数据失败");
-    console.error("获取详情失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleConfirm = async () => {
-  loading.value = true;
-  try {
-    const dto: any = {};
-    dto[props.seqField] = queryForm.seq;
-    await props.editApi(dto);
-    ElMessage.success("修改成功");
-    popoverVisible.value = false;
-  } catch (error) {
-    ElMessage.error("修改失败");
-    console.error("修改失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleCancel = () => {
-  popoverVisible.value = false;
-};
+const { queryForm, loading, popoverVisible, handleBeforeShow, handleConfirm, handleCancel } =
+  SeqQuickPopoverService.useSeqQuickPopover(props.id, props.getDetailApi, props.editApi, props.seqField, props.onSuccess);
 </script>
 
-<style scoped></style>
+<style scoped>
+.popover-title {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--el-text-color-primary);
+}
+
+.popover-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.seq-input {
+  width: 80px;
+}
+
+.quick-btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.popover-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 0;
+}
+</style>
