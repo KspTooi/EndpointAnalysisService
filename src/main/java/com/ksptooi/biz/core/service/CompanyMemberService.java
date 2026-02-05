@@ -27,6 +27,7 @@ import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Service
 public class CompanyMemberService {
@@ -41,7 +42,7 @@ public class CompanyMemberService {
     private CompanyRepository companyRepository;
 
     @Autowired
-    private AuthService authService;
+    private SessionService sessionService;
 
     @Autowired
     private UserService userService;
@@ -56,7 +57,7 @@ public class CompanyMemberService {
     public PageResult<GetCompanyMemberListVo> getCompanyMemberList(GetCompanyMemberListDto dto) throws Exception {
 
         //非该公司的成员，无法获取成员列表
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new BizException("公司不存在"));
@@ -90,7 +91,7 @@ public class CompanyMemberService {
     public Result<GetCurrentUserActiveCompanyMemberListVo> getCurrentUserActiveCompanyMemberList(GetCurrentUserActiveCompanyMemberListDto dto) throws Exception {
 
         //查询用户当前激活的公司
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
 
         if (user.getActiveCompany() == null) {
             throw new BizException("用户当前没有激活的公司");
@@ -139,7 +140,7 @@ public class CompanyMemberService {
         CompanyPo companyPo = companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new BizException("公司不存在"));
 
-        Long currentUserId = AuthService.requireUserId();
+        Long currentUserId = session().getUserId();
         CompanyMemberPo currentMember = repository.findByCompanyIdAndUserId(dto.getCompanyId(), currentUserId);
 
         if (currentMember == null) {
@@ -240,7 +241,7 @@ public class CompanyMemberService {
         companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new BizException("公司不存在"));
 
-        Long currentUserId = AuthService.requireUserId();
+        Long currentUserId = session().getUserId();
         CompanyMemberPo currentMember = repository.findByCompanyIdAndUserId(dto.getCompanyId(), currentUserId);
 
         if (currentMember == null) {

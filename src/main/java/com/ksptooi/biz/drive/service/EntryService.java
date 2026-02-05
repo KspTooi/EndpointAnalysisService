@@ -3,7 +3,6 @@ package com.ksptooi.biz.drive.service;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.repository.AttachRepository;
 import com.ksptooi.biz.core.service.AttachService;
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.*;
 import com.ksptooi.biz.drive.model.vo.*;
@@ -24,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Slf4j
 @Service
@@ -31,9 +31,6 @@ public class EntryService {
 
     @Autowired
     private EntryRepository repository;
-
-    @Autowired
-    private AuthService authService;
 
     @Autowired
     private AttachRepository attachRepository;
@@ -46,9 +43,9 @@ public class EntryService {
      *
      * @return 云盘信息
      */
-    public GetDriveInfo getDriveInfo() throws AuthException {
+    public GetDriveInfo getDriveInfo() throws Exception {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
         var ret = repository.getDriveInfo(companyId);
 
         //总容量为2TB
@@ -62,9 +59,9 @@ public class EntryService {
      * @param dto 查询条件
      * @return 条目列表
      */
-    public GetEntryListVo getEntryList(GetEntryListDto dto) throws AuthException, BizException {
+    public GetEntryListVo getEntryList(GetEntryListDto dto) throws Exception, BizException {
 
-        Long companyId = AuthService.requireCompanyId();
+        Long companyId = session().getCompanyId();
 
         Long dirId = null;
         String dirName = null;
@@ -124,10 +121,10 @@ public class EntryService {
      * @param dto 新增条目
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addEntry(AddEntryDto dto) throws BizException, AuthException {
+    public void addEntry(AddEntryDto dto) throws BizException, Exception {
 
-        var companyId = AuthService.requireCompanyId();
-        var userId = AuthService.requireUserId();
+        var companyId = session().getCompanyId();
+        var userId = session().getUserId();
 
         if (repository.countByName(companyId, dto.getParentId(), dto.getName()) > 0) {
             throw new BizException("指定的条目与已存在的条目名称重复");
@@ -182,9 +179,9 @@ public class EntryService {
      * @param dto 复制条目
      */
     @Transactional(rollbackFor = Exception.class)
-    public void copyEntry(CopyEntryDto dto) throws BizException, AuthException {
+    public void copyEntry(CopyEntryDto dto) throws BizException, Exception {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
 
         //查询要复制的条目
         var entryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
@@ -273,7 +270,7 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void renameEntry(RenameEntry dto) throws BizException, AuthException {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
 
         EntryPo updatePo = repository.findById(dto.getEntryId())
                 .orElseThrow(() -> new BizException("重命名失败,数据不存在."));
@@ -292,7 +289,7 @@ public class EntryService {
             throw new BizException("此位置已存在同名文件,无法重命名.");
         }
         updatePo.setName(dto.getName());
-        updatePo.setUpdaterId(AuthService.requireUserId());
+        updatePo.setUpdaterId(session().getUserId());
         updatePo.setUpdateTime(LocalDateTime.now());
         repository.save(updatePo);
     }
@@ -307,7 +304,7 @@ public class EntryService {
         var ret = new CheckEntryMoveVo();
         ret.setCanMove(2); //0:可以移动 1:名称冲突 2:不可移动
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
         Long targetId = null;
 
         //移动到非根目录 
@@ -366,7 +363,7 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void moveEntry(MoveEntryDto dto) throws BizException, AuthException {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
 
         EntryPo targetDir = null;
 
@@ -468,7 +465,7 @@ public class EntryService {
 
     public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = session().getCompanyId();
         var result = new ArrayList<EntryPo>();
 
         for (var entryPo : entryPos) {

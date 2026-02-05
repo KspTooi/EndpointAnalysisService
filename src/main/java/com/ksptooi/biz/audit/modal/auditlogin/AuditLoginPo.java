@@ -17,34 +17,34 @@ public class AuditLoginPo {
     @Id
     private Long id;
 
-    @Column(name = "user_id", comment = "用户ID")
+    @Column(name = "user_id", nullable = false, comment = "用户ID")
     private Long userId;
 
-    @Column(name = "username", comment = "用户账号")
+    @Column(name = "username", nullable = false, length = 32, comment = "用户账号")
     private String username;
 
-    @Column(name = "login_kind", comment = "登录方式 0:用户名密码")
+    @Column(name = "login_kind", nullable = false,columnDefinition = "tinyint", comment = "登录方式 0:用户名密码")
     private Integer loginKind;
 
-    @Column(name = "ip_addr", comment = "登录 IP")
+    @Column(name = "ip_addr", nullable = false, length = 32, comment = "登录 IP")
     private String ipAddr;
 
-    @Column(name = "location", comment = "IP 归属地")
+    @Column(name = "location", nullable = false, length = 32, comment = "IP 归属地")
     private String location;
 
-    @Column(name = "browser", comment = "浏览器/客户端指纹")
+    @Column(name = "browser", nullable = false, length = 32, comment = "浏览器/客户端指纹")
     private String browser;
 
-    @Column(name = "os", comment = "操作系统")
+    @Column(name = "os", nullable = false, length = 32, comment = "操作系统")
     private String os;
 
-    @Column(name = "status", comment = "状态: 0:成功 1:失败")
+    @Column(name = "status", nullable = false, length = 32, comment = "状态: 0:成功 1:失败")
     private String status;
 
-    @Column(name = "message", comment = "提示消息")
+    @Column(name = "message", nullable = false, length = 255, comment = "提示消息")
     private String message;
 
-    @Column(name = "create_time", comment = "创建时间")
+    @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
 

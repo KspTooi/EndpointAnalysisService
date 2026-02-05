@@ -101,8 +101,7 @@ public class UserPo {
             inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
     private Set<GroupPo> groups = new HashSet<>();
-
-
+    
     @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
     private Set<CompanyPo> createdCompanies = new HashSet<>();
 

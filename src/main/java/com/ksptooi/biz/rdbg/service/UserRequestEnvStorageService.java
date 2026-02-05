@@ -1,6 +1,5 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.UserRequestEnvStoragePo;
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.dto.AddUserRequestEnvStorageDto;
@@ -22,6 +21,7 @@ import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Service
 public class UserRequestEnvStorageService {
@@ -36,7 +36,7 @@ public class UserRequestEnvStorageService {
     public PageResult<GetUserRequestEnvStorageListVo> getUserRequestEnvStorageList(GetUserRequestEnvStorageListDto dto) throws Exception {
 
         //查询该用户下的环境
-        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), AuthService.requireUserId());
+        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), session().getUserId());
 
         if (env == null) {
             throw new BizException("用户环境不存在或无权限访问");
@@ -55,7 +55,7 @@ public class UserRequestEnvStorageService {
         UserRequestEnvStoragePo insertPo = as(dto, UserRequestEnvStoragePo.class);
 
         //查询该用户下的环境
-        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), AuthService.requireUserId());
+        UserRequestEnvPo env = userRequestEnvRepository.getByIdAndUserId(dto.getRequestEnvId(), session().getUserId());
         if (env == null) {
             throw new BizException("用户环境不存在或无权限访问");
         }

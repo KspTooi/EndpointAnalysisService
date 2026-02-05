@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserPo, Long> {
@@ -100,7 +101,22 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             JOIN g.permissions p
             WHERE u.id = :userId
             """)
-    List<PermissionPo> findUserPermissions(@Param("userId") Long userId);
+    List<PermissionPo> getUserPermissions(@Param("userId") Long userId);
 
+
+    /**
+     * 获取用户权限代码列表
+     *
+     * @param userId 用户ID
+     * @return 权限代码列表
+     */
+    @Query("""
+            SELECT DISTINCT p.code
+            FROM UserPo u
+            JOIN u.groups g
+            JOIN g.permissions p
+            WHERE u.id = :userId
+            """)
+    Set<String> getUserPermissionCodes(@Param("userId") Long userId);
 
 }

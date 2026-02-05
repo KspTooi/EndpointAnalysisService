@@ -3,15 +3,16 @@ package com.ksptooi.biz.relay.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.relay.model.replayrequest.*;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.repository.ReplayRequestRepository;
 import com.ksptooi.biz.relay.repository.RequestRepository;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.GsonUtils;
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import io.micrometer.common.util.StringUtils;
-import com.ksptool.assembly.entity.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,8 @@ public class ReplayRequestService {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private SessionService sessionService;
 
     public void replayRequest(String requestId) throws Exception {
 
@@ -114,7 +117,7 @@ public class ReplayRequestService {
         ReplayRequestPo replayRequestPo = new ReplayRequestPo();
         replayRequestPo.setRelayServer(originalRequest.getRelayServer());
         replayRequestPo.setOriginalRequest(originalRequest);
-        replayRequestPo.setUser(authService.requireUser());
+        replayRequestPo.setUser(sessionService.requireUser());
         replayRequestPo.setRequestId(UUID.randomUUID().toString());
         replayRequestPo.setMethod(method);
         replayRequestPo.setUrl(url);
@@ -210,7 +213,7 @@ public class ReplayRequestService {
      * @return 请求列表
      */
     public PageResult<GetReplayRequestListVo> getReplayRequestList(GetReplayRequestListDto dto) throws AuthException {
-        Page<GetReplayRequestListVo> page = replayRequestRepository.getReplayRequestList(dto, AuthService.requireUserId(), dto.pageRequest());
+        Page<GetReplayRequestListVo> page = replayRequestRepository.getReplayRequestList(dto, SessionService.session().getUserId(), dto.pageRequest());
         return PageResult.success(page.getContent(), page.getTotalElements());
     }
 

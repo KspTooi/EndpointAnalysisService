@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import static com.ksptooi.biz.core.service.SessionService.session;
 import com.ksptool.assembly.entity.exception.AuthException;
 
 @Service
@@ -23,7 +24,7 @@ public class ConfigService {
 
     public PageResult<GetConfigListVo> getConfigList(GetConfigListDto dto) throws AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         if (AuthService.hasPermission("panel:config:view:global")) {
             userId = null;
@@ -49,7 +50,7 @@ public class ConfigService {
 
         //无全局数据权限时仅查询当前玩家下的配置
         if (!AuthService.hasPermission("panel:config:view:global")) {
-            query.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+            query.setUser(Any.of().val("id", session().getUserId()).as(UserPo.class));
         }
 
         ConfigPo po = repository.findOne(Example.of(query))
@@ -70,12 +71,12 @@ public class ConfigService {
 
     @Transactional
     public void addConfig(AddConfigDto dto) throws BizException, AuthException {
-        if (repository.existsByUserIdAndConfigKey(AuthService.requireUserId(), dto.getConfigKey())) {
+        if (repository.existsByUserIdAndConfigKey(session().getUserId(), dto.getConfigKey())) {
             throw new RuntimeException("配置键已存在");
         }
         ConfigPo config = new ConfigPo();
         assign(dto, config);
-        config.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+        config.setUser(Any.of().val("id", session().getUserId()).as(UserPo.class));
         repository.save(config);
     }
 
@@ -85,7 +86,7 @@ public class ConfigService {
         query.setId(dto.getId());
 
         if (!AuthService.hasPermission("panel:config:view:global")) {
-            query.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+            query.setUser(Any.of().val("id", session().getUserId()).as(UserPo.class));
         }
 
         ConfigPo po = repository.findOne(Example.of(query))
@@ -104,7 +105,7 @@ public class ConfigService {
 
         //无全局数据权限时仅查询当前用户下的配置
         if (!AuthService.hasPermission("panel:config:view:global")) {
-            query.setUser(Any.of().val("id", AuthService.requireUserId()).as(UserPo.class));
+            query.setUser(Any.of().val("id", session().getUserId()).as(UserPo.class));
         }
 
         ConfigPo po = repository.findOne(Example.of(query))

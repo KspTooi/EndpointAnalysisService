@@ -43,6 +43,8 @@ public class UserService {
 
     @Autowired
     private OrgRepository orgRepository;
+    @Autowired
+    private SessionService sessionService;
 
 
     /**
@@ -95,7 +97,7 @@ public class UserService {
         vo.setGroups(groupVos);
 
         // 获取用户权限信息
-        List<PermissionPo> userPermissions = userRepository.findUserPermissions(id);
+        List<PermissionPo> userPermissions = userRepository.getUserPermissions(id);
         vo.setPermissions(as(userPermissions, UserPermissionVo.class));
         return vo;
     }
@@ -168,7 +170,7 @@ public class UserService {
      * @throws BizException 用户不存在或无法编辑系统内置用户
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editUser(EditUserDto dto) throws BizException {
+    public void editUser(EditUserDto dto) throws Exception {
 
         UserPo user = userRepository.findById(dto.getId()).orElseThrow(() -> new BizException("用户不存在"));
 
@@ -213,7 +215,7 @@ public class UserService {
         }
 
         userRepository.save(user);
-        authService.refreshUserSession(user.getId());
+        sessionService.updateSession(user.getId());
     }
 
     /**

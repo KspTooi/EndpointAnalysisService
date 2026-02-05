@@ -1,7 +1,7 @@
 package com.ksptooi.biz.rdbg.model.collection;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 
 @Getter
@@ -81,7 +83,7 @@ public class CollectionPo {
     private List<CollectionPo> children;
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws AuthException {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
@@ -95,22 +97,22 @@ public class CollectionPo {
         }
 
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = session().getUserId();
         }
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
         if (this.companyId == null) {
-            this.companyId = AuthService.getCurrentCompanyId();
+            this.companyId = session().getCompanyId();
         }
 
     }
 
     @PreUpdate
-    private void onUpdate() {
+    private void onUpdate() throws AuthException {
         this.updateTime = LocalDateTime.now();
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 }

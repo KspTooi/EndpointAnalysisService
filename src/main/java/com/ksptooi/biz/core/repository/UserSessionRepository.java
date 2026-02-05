@@ -6,6 +6,7 @@ import com.ksptooi.biz.core.model.session.UserSessionPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,13 @@ import java.util.List;
 @Repository
 public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long> {
 
-
+    /**
+     * 获取会话列表
+     *
+     * @param dto  查询条件
+     * @param page 分页信息
+     * @return 会话列表
+     */
     @Query("""
             SELECT new com.ksptooi.biz.core.model.session.GetSessionListVo(
               us.id,
@@ -30,11 +37,42 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             """)
     Page<GetSessionListVo> getSessionList(@Param("dto") GetSessionListDto dto, Pageable page);
 
-    UserSessionPo findByToken(String token);
 
-    UserSessionPo findByUserId(Long userId);
+    /**
+     * 根据SessionId获取会话
+     *
+     * @param sessionId 会话SessionId
+     * @return 会话
+     */
+    @Query("""
+                SELECT us FROM UserSessionPo us
+                WHERE us.sessionId = :sessionId
+            """)
+    UserSessionPo getSessionBySessionId(@Param("sessionId") String sessionId);
 
-    void deleteByToken(String token);
+
+    /**
+     * 根据用户ID获取会话
+     *
+     * @param userId 用户ID
+     * @return 会话
+     */
+    @Query("""
+                SELECT us FROM UserSessionPo us
+                WHERE us.userId = :userId
+            """)
+    UserSessionPo getSessionByUserId(@Param("userId") Long userId);
+
+
+    /**
+     * 根据SessionId删除会话
+     */
+    @Modifying
+    @Query("""
+            DELETE FROM UserSessionPo us
+            WHERE us.sessionId = :sessionId
+            """)
+    void removeUserSessionBySessionId(@Param("sessionId") String sessionId);
 
     /**
      * 根据用户组ID查询该组下所有在线用户的会话信息

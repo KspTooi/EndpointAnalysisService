@@ -8,12 +8,13 @@ import com.ksptooi.biz.core.model.session.UserSessionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.PermissionRepository;
-import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.biz.core.repository.ResourceRepository;
+import com.ksptooi.biz.core.repository.UserSessionRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,8 @@ import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
 
+
+@Slf4j
 @Service
 public class GroupService {
 
@@ -38,10 +41,9 @@ public class GroupService {
     private PermissionRepository permissionRepository;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private ResourceRepository resourceRepository;
+    @Autowired
+    private SessionService sessionService;
 
 
     public List<GetGroupDefinitionsVo> getGroupDefinitions() {
@@ -135,14 +137,18 @@ public class GroupService {
         List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
 
         for (UserSessionPo session : activeSessions) {
-            authService.refreshUserSession(session.getUserId());
+            try {
+                sessionService.updateSession(session.getUserId());
+            } catch (Exception e) {
+                log.error("更新用户会话失败:{}", e.getMessage());
+            }
+
         }
     }
 
 
-    
     public List<GetGroupPermissionMenuViewVo> getGroupPermissionMenuView(GetGroupPermissionMenuViewDto dto) throws BizException {
-        
+
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
         if (group == null) {
             throw new BizException("用户组不存在");
@@ -181,7 +187,7 @@ public class GroupService {
             GetGroupPermissionMenuViewVo parent = map.get(vo.getParentId());
             if (parent != null) {
                 parent.getChildren().add(vo);
-            }else{
+            } else {
                 treeVos.add(vo);
             }
         }
@@ -246,9 +252,9 @@ public class GroupService {
             var total = menuPerms.size();
             var has = 0;
 
-            for(var menuPerm : menuPerms){
-                for(var groupPerm : groupPerms){
-                    if(menuPerm.contains(groupPerm.getCode())){
+            for (var menuPerm : menuPerms) {
+                for (var groupPerm : groupPerms) {
+                    if (menuPerm.contains(groupPerm.getCode())) {
                         has++;
                     }
                 }
@@ -256,19 +262,19 @@ public class GroupService {
 
             //0:没有权限 1:有权限
             vo.setHasPermission(0);
-            
-            if(has >= total){
+
+            if (has >= total) {
                 vo.setHasPermission(1);
             }
             //部分授权
-            if(has > 0 && has < total){
+            if (has > 0 && has < total) {
                 vo.setHasPermission(2);
             }
 
         }
-        
+
         //如果hasPermission不为空，则递归过滤出hasPermission为hasPermission的菜单
-        if(dto.getHasPermission() != null){
+        if (dto.getHasPermission() != null) {
             treeVos = filterMenuTreeByHasPermission(treeVos, dto.getHasPermission());
         }
 
@@ -308,6 +314,7 @@ public class GroupService {
 
     /**
      * 获取组权限节点视图
+     *
      * @param dto 获取组权限节点视图参数
      * @return 组权限节点视图列表
      * @throws BizException 业务异常
@@ -320,7 +327,7 @@ public class GroupService {
         }
 
         //查找权限节点
-        var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(),dto.getHasPermission(), dto.pageRequest());
+        var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(), dto.getHasPermission(), dto.pageRequest());
         List<GetGroupPermissionNodeVo> vos = as(pPos.getContent(), GetGroupPermissionNodeVo.class);
 
         var groupPerms = group.getPermissions();
@@ -354,19 +361,18 @@ public class GroupService {
         var groupPerms = group.getPermissions();
 
         //模式授权 0:授权 1:取消授权
-        if(dto.getType() == 0){
+        if (dto.getType() == 0) {
             groupPerms.addAll(allPermPos);
         }
 
         //取消授权
-        if(dto.getType() == 1){
+        if (dto.getType() == 1) {
             groupPerms.removeAll(allPermPos);
         }
-    
+
         //保存更改
         repository.save(group);
     }
-
 
 
     @Transactional
@@ -414,10 +420,13 @@ public class GroupService {
 
         // 刷新每个用户的会话
         for (UserSessionPo session : activeSessions) {
-            authService.refreshUserSession(session.getUserId());
+            try {
+                sessionService.updateSession(session.getUserId());
+            } catch (Exception e) {
+                log.error("刷新用户会话失败:{}", e.getMessage());
+            }
         }
     }
-
 
 
     /**

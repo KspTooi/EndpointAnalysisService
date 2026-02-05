@@ -1,11 +1,13 @@
 package com.ksptooi.biz.core.model.resource.po;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
+
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 /**
  * 资源
@@ -76,7 +78,7 @@ public class ResourcePo {
     private Long updaterId;
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws AuthException {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
@@ -91,18 +93,18 @@ public class ResourcePo {
         }
 
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = session().getUserId();
         }
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 
     @PreUpdate
-    private void onUpdate() {
+    private void onUpdate() throws AuthException {
         this.updateTime = LocalDateTime.now();
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 }

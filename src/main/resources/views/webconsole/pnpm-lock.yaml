@@ -21,14 +21,14 @@ importers:
         specifier: ^1.7.14
         version: 1.7.14(vue-demi@0.14.10(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))
       axios:
-        specifier: ^1.8.4
-        version: 1.11.0
+        specifier: 1.12.0
+        version: 1.12.0
       bootstrap-icons:
         specifier: ^1.11.3
         version: 1.13.1
       element-plus:
-        specifier: ^2.9.7
-        version: 2.10.7(vue@3.5.18(typescript@5.8.3))
+        specifier: 2.11.3
+        version: 2.11.3(vue@3.5.18(typescript@5.8.3))
       hash-wasm:
         specifier: ^4.12.0
         version: 4.12.0
@@ -1057,8 +1057,8 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
-  axios@1.11.0:
-    resolution: {integrity: sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==}
+  axios@1.12.0:
+    resolution: {integrity: sha512-oXTDccv8PcfjZmPGlWsPSwtOJCZ/b6W5jAMCNcfwJbCzDckwG0jrYJFaWH1yvivfCXjVzV/SPDEhMB3Q+DSurg==}
 
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
@@ -1219,8 +1219,8 @@ packages:
   electron-to-chromium@1.5.202:
     resolution: {integrity: sha512-NxbYjRmiHcHXV1Ws3fWUW+SLb62isauajk45LUJ/HgIOkUA7jLZu/X2Iif+X9FBNK8QkF9Zb4Q2mcwXCcY30mg==}
 
-  element-plus@2.10.7:
-    resolution: {integrity: sha512-bL4yhepL8/0NEQA5+N2Q6ZVKLipIDkiQjK2mqtSmGh6CxJk1yaBMdG5HXfYkbk1htNcT3ULk9g23lzT323JGcA==}
+  element-plus@2.11.3:
+    resolution: {integrity: sha512-769xsjLR4B9Vf9cl5PDXnwTEdmFJvMgAkYtthdJKPhjVjU3hdAwTJ+gXKiO+PUyo2KWFwOYKZd4Ywh6PHfkbJg==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -3174,7 +3174,7 @@ snapshots:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
 
-  axios@1.11.0:
+  axios@1.12.0:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.4
@@ -3316,7 +3316,7 @@ snapshots:
 
   electron-to-chromium@1.5.202: {}
 
-  element-plus@2.10.7(vue@3.5.18(typescript@5.8.3)):
+  element-plus@2.11.3(vue@3.5.18(typescript@5.8.3)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.2(vue@3.5.18(typescript@5.8.3))

@@ -7,6 +7,7 @@ import com.ksptooi.biz.core.model.user.LoginDto;
 import com.ksptooi.biz.core.model.user.RegisterDto;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
@@ -25,11 +26,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -50,6 +47,9 @@ public class AuthController {
     @Autowired
     private GlobalConfigService globalConfigService;
 
+    @Autowired
+    private SessionService sessionService;
+
     @Operation(summary = "登录")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/login")
@@ -58,7 +58,7 @@ public class AuthController {
             var token = authService.loginByPassword(dto.getUsername(), dto.getPassword());
 
             // 设置 cookie
-            var cookie = new Cookie("token", token);
+            var cookie = new Cookie("eas-session-id", token);
             cookie.setPath("/");
             cookie.setHttpOnly(true);  // 防止 XSS 攻击
             cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
@@ -120,7 +120,7 @@ public class AuthController {
             // 获取当前用户
             var user = authService.verifyUser(request);
             // 清除数据库中的 session
-            authService.logout(user);
+            sessionService.closeSession(user.getId());
             // 清除 HTTP session
             request.getSession().invalidate();
             // 重定向到登录页
@@ -165,15 +165,8 @@ public class AuthController {
     @Operation(summary = "获取权限")
     @PostMapping("/getPermissions")
     @ResponseBody
-    public Result<Set<String>> getPermissions() {
-
-        UserSessionVo session = AuthService.getCurrentUserSession();
-
-        if (session == null) {
-            return Result.error("获取权限节点失败.");
-        }
-
-        return Result.success(session.getPermissions());
+    public Result<Set<String>> getPermissions(UserSessionVo session) {
+        return Result.success(session.getPermissionCodes());
     }
 
     @Operation(summary = "获取当前用户信息")

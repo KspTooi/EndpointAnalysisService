@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.ksptool.entities.Entities.*;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Service
 public class CollectionService {
@@ -53,10 +54,10 @@ public class CollectionService {
      *
      * @return 请求集合树
      */
-    public List<GetCollectionTreeVo> getCollectionTree() {
+    public List<GetCollectionTreeVo> getCollectionTree() throws Exception {
 
         //获取当前公司ID
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
 
         //获取公司所拥有的全部请求集合树节点
         List<CollectionPo> nodePos = repository.getCollectionTreeListByCompanyId(companyId);
@@ -106,9 +107,9 @@ public class CollectionService {
      * @param dto 新增请求集合参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addCollection(AddCollectionDto dto) throws BizException {
+    public void addCollection(AddCollectionDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
         CollectionPo parentPo = null;
 
         //如果父级ID不为空，则校验父级节点
@@ -149,9 +150,9 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void moveCollection(MoveCollectionDto dto) throws BizException {
+    public void moveCollection(MoveCollectionDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
 
         //查找对象节点
         CollectionPo nodePo = repository.getByIdAndCompanyId(dto.getNodeId(), companyId);
@@ -345,9 +346,9 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void copyCollection(CommonIdDto dto) throws BizException {
+    public void copyCollection(CommonIdDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
 
         CollectionPo sourceNodePo = repository.getByIdAndCompanyId(dto.getId(), companyId);
 
@@ -429,9 +430,9 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editCollection(EditCollectionDto dto) throws BizException {
+    public void editCollection(EditCollectionDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
         CollectionPo updatePo = repository.getByIdAndCompanyId(dto.getId(), companyId);
 
         if (updatePo == null) {
@@ -477,9 +478,9 @@ public class CollectionService {
      * @return 请求集合详情
      * @throws BizException 业务异常
      */
-    public GetCollectionDetailsVo getCollectionDetails(CommonIdDto dto) throws BizException {
+    public GetCollectionDetailsVo getCollectionDetails(CommonIdDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
         CollectionPo po = repository.getByIdAndCompanyId(dto.getId(), companyId);
         if (po == null) {
             throw new BizException("对象节点不存在或无权限访问");
@@ -513,9 +514,9 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeCollection(CommonIdDto dto) throws BizException {
+    public void removeCollection(CommonIdDto dto) throws BizException, Exception {
 
-        Long companyId = AuthService.getCurrentCompanyId();
+        Long companyId = session().getCompanyId();
 
         var ids = dto.toIds();
 
@@ -537,9 +538,9 @@ public class CollectionService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public GetCollectionHistoryDetailsVo sendRequest(CommonIdDto dto) throws BizException {
+    public GetCollectionHistoryDetailsVo sendRequest(CommonIdDto dto) throws BizException, Exception {
 
-        var companyId = AuthService.getCurrentCompanyId();
+        var companyId = session().getCompanyId();
 
         CollectionPo po = repository.getByIdAndCompanyId(dto.getId(), companyId);
 

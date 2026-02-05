@@ -1,7 +1,7 @@
 package com.ksptooi.biz.rdbg.service;
 
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterOperationPo;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterPo;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterTriggerPo;
@@ -33,7 +33,7 @@ public class SimpleFilterService {
     private SimpleFilterRepository repository;
 
     @Autowired
-    private AuthService authService;
+    private SessionService sessionService;
 
     /**
      * 获取过滤器列表
@@ -55,7 +55,7 @@ public class SimpleFilterService {
     public String addSimpleFilter(AddSimpleFilterDto dto) throws AuthException {
 
         //获取当前登录用户
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
 
         //创建过滤器
         SimpleFilterPo insertPo = new SimpleFilterPo();
@@ -111,7 +111,7 @@ public class SimpleFilterService {
     public void editSimpleFilter(EditSimpleFilterDto dto) throws BizException, AuthException {
 
         //获取当前登录用户
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
 
         SimpleFilterPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
@@ -265,7 +265,7 @@ public class SimpleFilterService {
                 .orElseThrow(() -> new BizException("过滤器不存在"));
 
         //判断过滤器是否属于当前用户
-        if (po.getUser() != null && !po.getUser().getId().equals(authService.requireUser().getId())) {
+        if (po.getUser() != null && !po.getUser().getId().equals(sessionService.requireUser().getId())) {
             throw new AuthException("无权限操作该过滤器");
         }
 
@@ -326,7 +326,7 @@ public class SimpleFilterService {
                 .orElseThrow(() -> new BizException("过滤器不存在"));
 
         //判断过滤器是否属于当前用户
-        if (po.getUser() != null && !po.getUser().getId().equals(authService.requireUser().getId())) {
+        if (po.getUser() != null && !po.getUser().getId().equals(sessionService.requireUser().getId())) {
             throw new AuthException("无权限操作该过滤器");
         }
 

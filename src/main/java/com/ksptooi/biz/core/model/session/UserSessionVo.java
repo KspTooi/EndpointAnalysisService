@@ -1,52 +1,40 @@
 package com.ksptooi.biz.core.model.session;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
-
-import static com.ksptool.entities.Entities.assign;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 public class UserSessionVo {
-    private Long id;
+
+    @Schema(description = "用户凭据SessionID")
+    private String sessionId;
+
+    @Schema(description = "用户ID")
     private Long userId;
+
+    @Schema(description = "所属企业ID")
+    private Long rootId;
+
+    @Schema(description = "所属企业名称")
+    private String rootName;
+
+    @Schema(description = "所属部门ID")
+    private Long deptId;
+
+    @Schema(description = "所属部门名称")
+    private String deptName;
+
+    @Schema(description = "公司ID")
     private Long companyId;
-    private Long playerId;
-    private String playerName;
-    private String playerAvatarUrl;
-    private String token;
-    private Set<String> permissions;
+    
+    @Schema(description = "用户权限代码集合")
+    private Set<String> permissionCodes;
+
+    @Schema(description = "过期时间")
     private LocalDateTime expiresAt;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 
-    public UserSessionVo(UserSessionPo po) {
-        // 复制基本字段
-        assign(po, this);
-
-        // 反序列化权限
-        try {
-            this.permissions = new Gson().fromJson(
-                    po.getPermissions(),
-                    new TypeToken<HashSet<String>>() {
-                    }.getType()
-            );
-        } catch (Exception e) {
-            // 如果解析失败，至少提供一个空集合
-            this.permissions = new HashSet<>();
-        }
-    }
-
-    public String getPlayerAvatarUrl() {
-        if (StringUtils.isBlank(playerAvatarUrl)) {
-            return null;
-        }
-        return "/res/" + playerAvatarUrl;
-    }
 
 } 

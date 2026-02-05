@@ -3,6 +3,7 @@ package com.ksptooi.biz.rdbg.service;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.dto.AddUserRequestEnvDto;
 import com.ksptooi.biz.rdbg.model.userrequestenv.dto.EditUserRequestEnvDto;
@@ -34,18 +35,21 @@ public class UserRequestEnvService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SessionService sessionService;
+
     public PageResult<GetUserRequestEnvListVo> getUserRequestEnvList(GetUserRequestEnvListDto dto) throws AuthException {
         UserRequestEnvPo query = new UserRequestEnvPo();
         assign(dto, query);
 
-        Page<GetUserRequestEnvListVo> page = repository.getUserRequestEnvList(query, AuthService.requireUserId(), dto.pageRequest());
+        Page<GetUserRequestEnvListVo> page = repository.getUserRequestEnvList(query, SessionService.session().getUserId(), dto.pageRequest());
         return PageResult.success(page.getContent(), page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void addUserRequestEnv(AddUserRequestEnvDto dto) throws AuthException {
         UserRequestEnvPo insertPo = as(dto, UserRequestEnvPo.class);
-        insertPo.setUser(authService.requireUser());
+        insertPo.setUser(sessionService.requireUser());
         repository.save(insertPo);
     }
 
@@ -81,7 +85,7 @@ public class UserRequestEnvService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void activateUserRequestEnv(CommonIdDto dto) throws Exception {
-        Long userId = AuthService.requireUserId();
+        Long userId = SessionService.session().getUserId();
 
         //查询环境
         UserRequestEnvPo env = repository.getByIdAndUserId(dto.getId(), userId);
@@ -90,7 +94,7 @@ public class UserRequestEnvService {
         }
 
         //更新用户已激活的环境
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
 
         //检查是否已重复激活相同环境
         if (user.getActiveEnv() != null && user.getActiveEnv().getId().equals(env.getId())) {

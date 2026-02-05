@@ -1,4 +1,4 @@
-package com.ksptooi.commons.aop;
+package com.ksptooi.commons.aop.relay;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -264,14 +264,14 @@ public class HttpRelayServlet extends HttpServlet {
 
             if (routeSelector != null) {
                 routeSelector.breakHostPort(targetUri.getHost(), targetUri.getPort());
-                log.error("doRequest 请求失败,目标URL: {} 已报告熔断状态", targetUri.toString());
+                log.error("doRequest 请求失败,目标URL: {} 已报告熔断状态", targetUri);
             }
 
             if (routeSelector == null) {
-                log.error("doRequest 请求失败,目标URL: {} 错误信息: {}", targetUri.toString(), e.getMessage());
+                log.error("doRequest 请求失败,目标URL: {} 错误信息: {}", targetUri, e.getMessage());
             }
 
-            throw new Exception("doRequest 请求失败,目标URL: " + targetUri.toString(), e);
+            throw new Exception("doRequest 请求失败,目标URL: " + targetUri, e);
         }
     }
 

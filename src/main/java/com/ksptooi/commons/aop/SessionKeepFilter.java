@@ -3,6 +3,7 @@ package com.ksptooi.commons.aop;
 import com.google.gson.Gson;
 import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptool.assembly.entity.web.Result;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,12 +21,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * SessionKeepFilter 是一个全局 Servlet 过滤器，负责处理用户会话校验与 URL 访问权限控制。
+ * 主要功能包括：
+ * 1. 白名单放行：预定义静态资源、登录、注册等无需校验的路径。
+ * 2. 会话校验：拦截非白名单请求，验证用户登录状态。若会话失效，根据请求类型（AJAX 或 普通请求）返回 401 状态码或重定向至登录页。
+ * 3. 上下文存储：校验通过后，将会话信息 (UserSessionVo) 存入 RequestContextHolder，供后续业务逻辑使用。
+ * 4. 权限控制：
+ * - 黑名单校验：针对特定敏感路径（如 /actuator）进行强制权限检查。
+ * - 通用权限校验：调用 AuthService 根据当前请求的 URI 校验用户是否拥有访问权限。
+ * 5. 响应处理：针对 AJAX 请求返回标准化 JSON 结果 (Result)，针对普通请求执行页面重定向。
+ */
 @Component
-@Order(1) // 设置过滤器顺序，确保在其他过滤器之前执行
-public class TokenFilter implements Filter {
+@Order(1)
+public class SessionKeepFilter implements Filter {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private SessionService sessionService;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final Gson gson = new Gson();
@@ -72,7 +90,7 @@ public class TokenFilter implements Filter {
         }
 
         // 获取并验证会话
-        UserSessionVo session = authService.getUserSessionByHSR(req);
+        UserSessionVo session = sessionService.getUserSessionByHSR(req);
         if (session == null) {
             // 检查是否为 AJAX 请求 (通过自定义请求头)
             String requestWithHeader = req.getHeader("AE-Request-With");
@@ -97,7 +115,7 @@ public class TokenFilter implements Filter {
         }
 
         // 将会话信息存储到请求上下文中
-        AuthService.setCurrentUserSession(session);
+        RequestContextHolder.currentRequestAttributes().setAttribute(SessionService.SESSION_ATTRIBUTE, session, RequestAttributes.SCOPE_REQUEST);
 
         // 检查黑名单路径权限
         for (Map.Entry<String, String> entry : BLACK_LIST.entrySet()) {

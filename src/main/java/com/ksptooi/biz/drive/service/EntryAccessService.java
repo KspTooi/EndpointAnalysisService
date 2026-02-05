@@ -3,6 +3,7 @@ package com.ksptooi.biz.drive.service;
 import com.google.gson.Gson;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
@@ -11,6 +12,8 @@ import com.ksptooi.commons.config.DriveConfig;
 import com.ksptooi.commons.utils.Base64;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
+
+import org.h2.engine.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -57,7 +60,7 @@ public class EntryAccessService {
         //单文件签名
         if (ids.size() < 2) {
 
-            var entryPo = entryRepository.getByIdAndCompanyId(ids.getFirst(), AuthService.requireCompanyId());
+            var entryPo = entryRepository.getByIdAndCompanyId(ids.getFirst(), SessionService.session().getCompanyId());
 
             if (entryPo == null) {
                 throw new BizException("条目不存在!");
@@ -89,7 +92,7 @@ public class EntryAccessService {
         }
 
         //多文件签名
-        var entryPos = entryRepository.getByIdAndCompanyIds(ids, AuthService.requireCompanyId());
+        var entryPos = entryRepository.getByIdAndCompanyIds(ids, SessionService.session().getCompanyId());
 
         if (entryPos.isEmpty() || (entryPos.size() != ids.size())) {
             throw new BizException("至少有一个文件不存在或无权限访问!");
@@ -107,7 +110,7 @@ public class EntryAccessService {
         }
 
         var params = new HashMap<String, Object>();
-        params.put("cid", AuthService.requireCompanyId());
+        params.put("cid", SessionService.session().getCompanyId());
         params.put("eids", entryPos.stream().map(EntryPo::getId).map(String::valueOf).collect(Collectors.joining(",")));
         params.put("t", System.currentTimeMillis());
         params.put("s", driveConfig.getSignSecretKey());
@@ -206,7 +209,7 @@ public class EntryAccessService {
      */
     public Map<Long, File> getEntryFiles(List<Long> entryIds) throws BizException, AuthException {
 
-        var companyId = AuthService.requireCompanyId();
+        var companyId = SessionService.session().getCompanyId();
 
         var entryPos = entryRepository.getByIdAndCompanyIds(entryIds, companyId);
 

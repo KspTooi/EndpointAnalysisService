@@ -1,6 +1,5 @@
 package com.ksptooi.biz.drive.controller;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.drive.model.dto.*;
 import com.ksptooi.biz.drive.model.vo.CheckEntryMoveVo;
 import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.ksptooi.biz.core.service.SessionService.session;
+
 @PrintLog
 @RestController
 @RequestMapping("/drive/entry")
@@ -34,7 +35,7 @@ public class EntryController {
     @Operation(summary = "获取云盘信息")
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -45,7 +46,7 @@ public class EntryController {
     @Operation(summary = "查询条目列表")
     public Result<GetEntryListVo> getEntryList(@RequestBody @Valid GetEntryListDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -57,7 +58,7 @@ public class EntryController {
     @PostMapping("/addEntry")
     public Result<String> addEntry(@RequestBody @Valid AddEntryDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -75,7 +76,7 @@ public class EntryController {
     @PostMapping("/copyEntry")
     public Result<String> copyEntry(@RequestBody @Valid CopyEntryDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -87,7 +88,7 @@ public class EntryController {
     @PostMapping("/renameEntry")
     public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -99,7 +100,7 @@ public class EntryController {
     @PostMapping("/checkEntryMove")
     public Result<CheckEntryMoveVo> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -112,7 +113,7 @@ public class EntryController {
     @PostMapping("/moveEntry")
     public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -124,7 +125,7 @@ public class EntryController {
     @PostMapping("/getEntryDetails")
     public Result<GetEntryDetailsVo> getEntryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -139,7 +140,7 @@ public class EntryController {
     @PostMapping("/removeEntry")
     public Result<String> removeEntry(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 

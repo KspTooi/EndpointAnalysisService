@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Service
 public class CompanyService {
@@ -34,7 +35,7 @@ public class CompanyService {
     private CompanyMemberRepository memberRepository;
 
     @Autowired
-    private AuthService authService;
+    private SessionService sessionService;
 
     @Autowired
     private UserRepository userRepository;
@@ -46,7 +47,7 @@ public class CompanyService {
      * @return
      */
     public PageResult<GetCurrentUserCompanyListVo> getCurrentUserCompanyList(GetCurrentUserCompanyListDto dto) throws AuthException {
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
         Page<GetCurrentUserCompanyListVo> pVos = repository.getCurrentUserCompanyList(dto.getName(), user.getId(), dto.pageRequest());
         return PageResult.success(pVos.getContent(), pVos.getTotalElements());
     }
@@ -58,7 +59,7 @@ public class CompanyService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addCompany(AddCompanyDto dto) throws Exception {
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
         CompanyPo insertPo = as(dto, CompanyPo.class);
 
         Long count = repository.countByCompanyName(dto.getName());
@@ -98,7 +99,7 @@ public class CompanyService {
         assign(dto, updatePo);
 
         //只有CEO才可以编辑公司
-        CompanyMemberPo currentMember = memberRepository.findByCompanyIdAndUserId(updatePo.getId(), AuthService.requireUserId());
+        CompanyMemberPo currentMember = memberRepository.findByCompanyIdAndUserId(updatePo.getId(), session().getUserId());
         if (currentMember == null) {
             throw new BizException("您不是此公司成员");
         }
@@ -153,7 +154,7 @@ public class CompanyService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void leaveCompany(CommonIdDto dto) throws Exception {
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
         Long companyId = dto.getId();
 
         repository.findById(companyId)
@@ -177,14 +178,14 @@ public class CompanyService {
         if (memberCount <= 1) {
             repository.deleteById(companyId);
             // 更新用户已激活的公司
-            UserPo user = authService.requireUser();
+            UserPo user = sessionService.requireUser();
             if (user.getActiveCompany() != null && user.getActiveCompany().getId().equals(companyId)) {
                 user.setActiveCompany(null);
                 userRepository.save(user);
             }
 
             //刷新用户Session
-            authService.refreshUserSession(userId);
+            sessionService.updateSession(userId);
             return;
         }
 
@@ -192,13 +193,13 @@ public class CompanyService {
         memberRepository.deleteById(currentMember.getId());
 
         // 更新用户已激活的公司（退出后将无法访问团队资源）
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
         if (user.getActiveCompany() != null && user.getActiveCompany().getId().equals(companyId)) {
             user.setActiveCompany(null);
             userRepository.save(user);
         }
         //刷新用户Session
-        authService.refreshUserSession(userId);
+        sessionService.updateSession(userId);
     }
 
     /**
@@ -209,7 +210,7 @@ public class CompanyService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void activateCompany(CommonIdDto dto) throws Exception {
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         //查询公司
         CompanyPo company = repository.findById(dto.getId())
@@ -223,7 +224,7 @@ public class CompanyService {
         }
 
         //更新用户已激活的公司
-        UserPo user = authService.requireUser();
+        UserPo user = sessionService.requireUser();
 
         //检查是否已重复激活相同公司
         if (user.getActiveCompany() != null && user.getActiveCompany().getId().equals(company.getId())) {
@@ -233,7 +234,7 @@ public class CompanyService {
         user.setActiveCompany(company);
 
         //激活团队后，刷新用户会话
-        authService.refreshUserSession(user.getId());
+        sessionService.updateSession(user.getId());
         userRepository.save(user);
     }
 
@@ -249,7 +250,7 @@ public class CompanyService {
         repository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new BizException("公司不存在"));
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         //查询用户是否在该公司中
         CompanyMemberPo currentMember = memberRepository.findByCompanyIdAndUserId(dto.getCompanyId(), userId);

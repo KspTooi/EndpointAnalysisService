@@ -1,6 +1,5 @@
 package com.ksptooi.biz.rdbg.controller;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.rdbg.model.collection.dto.AddCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.dto.EditCollectionDto;
 import com.ksptooi.biz.rdbg.model.collection.dto.MoveCollectionDto;
@@ -23,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+import static com.ksptooi.biz.core.service.SessionService.session;
+import com.ksptool.assembly.entity.exception.AuthException;
+
 @PrintLog
 @RestController
 @RequestMapping("/collection")
@@ -38,7 +40,7 @@ public class CollectionController {
     @Operation(summary = "查询请求集合列表树")
     public Result<List<GetCollectionTreeVo>> getCollectionTree() throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -49,7 +51,7 @@ public class CollectionController {
     @PostMapping("/addCollection")
     public Result<String> addCollection(@RequestBody @Valid AddCollectionDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -61,7 +63,7 @@ public class CollectionController {
     @PostMapping("/moveCollection")
     public Result<String> moveCollection(@RequestBody @Valid MoveCollectionDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -73,7 +75,7 @@ public class CollectionController {
     @PostMapping("/copyCollection")
     public Result<String> copyCollection(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -85,7 +87,7 @@ public class CollectionController {
     @PostMapping("/editCollection")
     public Result<String> editCollection(@RequestBody @Valid EditCollectionDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -97,7 +99,7 @@ public class CollectionController {
     @PostMapping("/getCollectionDetails")
     public Result<GetCollectionDetailsVo> getCollectionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -114,7 +116,7 @@ public class CollectionController {
     @PostMapping("/removeCollection")
     public Result<String> removeCollection(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 
@@ -125,9 +127,9 @@ public class CollectionController {
 
     @Operation(summary = "发送请求")
     @PostMapping("/sendRequest")
-    public Result<Map<String, Object>> sendRequest(@RequestBody @Valid CommonIdDto dto) throws Exception {
+    public Result<Map<String, Object>> sendRequest(@RequestBody @Valid CommonIdDto dto) throws AuthException {
 
-        if (AuthService.getCurrentCompanyId() == null) {
+        if (session().getCompanyId() == null) {
             return Result.error(101, "该操作需要用户加入团队后才能执行");
         }
 

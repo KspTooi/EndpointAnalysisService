@@ -1,8 +1,8 @@
 package com.ksptooi.biz;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.PanelInstallWizardService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class Router {
 
     @Autowired
-    private AuthService authService;
+    private SessionService sessionService;
 
     @Autowired
     private GlobalConfigService globalConfigService;
@@ -31,8 +31,8 @@ public class Router {
             return new ModelAndView("redirect:/install-wizard/");
         }
 
-        //用户未登录或登录失效 不再转发到SPA入口
-        if (authService.verifyUser(hsr) == null) {
+        //用户未登录或登录失效 直接转发到登录页
+        if (sessionService.getUserSessionByHSR(hsr) == null) {
             return new ModelAndView("redirect:/login");
         }
 
@@ -48,7 +48,7 @@ public class Router {
         }
 
         //用户已登录则不再响应视图
-        if (authService.verifyUser(hsr) != null) {
+        if (sessionService.getUserSessionByHSR(hsr) != null) {
             return new ModelAndView("redirect:/");
         }
 

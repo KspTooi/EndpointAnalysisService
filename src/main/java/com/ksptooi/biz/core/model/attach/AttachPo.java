@@ -1,22 +1,17 @@
 package com.ksptooi.biz.core.model.attach;
 
 import com.ksptooi.commons.utils.IdWorker;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import com.ksptool.assembly.entity.exception.AuthException;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
-import com.ksptooi.biz.core.service.AuthService;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 
 @Getter
@@ -67,9 +62,9 @@ public class AttachPo {
     @BatchSize(size = 100)
     private List<AttachChunkPo> chunks;
 
-    public void addChunk(long chunkId){
+    public void addChunk(long chunkId) {
 
-        if(chunks == null){
+        if (chunks == null) {
             chunks = new ArrayList<>();
         }
 
@@ -82,17 +77,17 @@ public class AttachPo {
     }
 
     @PrePersist
-    public void prePersist() {
+    public void prePersist() throws AuthException {
 
-        if(this.id == null){
+        if (this.id == null) {
             this.id = IdWorker.nextId();
         }
 
         createTime = LocalDateTime.now();
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = session().getUserId();
         }
     }
-    
+
 
 }

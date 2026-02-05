@@ -1,6 +1,6 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.rdbg.model.userrequest.RemoveUserRequestTreeDto;
 import com.ksptooi.biz.rdbg.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.UserRequestGroupPo;
@@ -13,14 +13,16 @@ import com.ksptooi.biz.rdbg.model.userrequesttree.vo.GetUserRequestTreeVo;
 import com.ksptooi.biz.rdbg.repository.UserRequestGroupRepository;
 import com.ksptooi.biz.rdbg.repository.UserRequestRepository;
 import com.ksptooi.biz.rdbg.repository.UserRequestTreeRepository;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.exception.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 
 @Service
@@ -30,13 +32,12 @@ public class UserRequestTreeService {
     private UserRequestTreeRepository userRequestTreeRepository;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private UserRequestGroupRepository userRequestGroupRepository;
 
     @Autowired
     private UserRequestRepository userRequestRepository;
+    @Autowired
+    private SessionService sessionService;
 
 
     /**
@@ -48,7 +49,7 @@ public class UserRequestTreeService {
      */
     public List<GetUserRequestTreeVo> getUserRequestTree(GetUserRequestTreeDto dto) throws AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         //获取该用户所拥有的全部树节点
         List<UserRequestTreePo> nodePos = userRequestTreeRepository.getRequestTreeListByUserId(userId);
@@ -137,7 +138,7 @@ public class UserRequestTreeService {
         }
 
         UserRequestTreePo userRequestTreePo = new UserRequestTreePo();
-        userRequestTreePo.setUser(authService.requireUser());
+        userRequestTreePo.setUser(sessionService.requireUser());
         userRequestTreePo.setParent(parentPo);
         userRequestTreePo.setName(dto.getName());
         userRequestTreePo.setKind(dto.getKind());
@@ -149,7 +150,7 @@ public class UserRequestTreeService {
         if (dto.getKind() == 0) {
             UserRequestGroupPo userRequestGroupPo = new UserRequestGroupPo();
             userRequestGroupPo.setTree(userRequestTreePo);
-            userRequestGroupPo.setUser(authService.requireUser());
+            userRequestGroupPo.setUser(sessionService.requireUser());
             userRequestGroupPo.setName(dto.getName());
             userRequestGroupPo.setDescription(null);
             userRequestTreePo.setGroup(userRequestGroupPo);
@@ -164,7 +165,7 @@ public class UserRequestTreeService {
             userRequestPo.setTree(userRequestTreePo);
             userRequestPo.setGroup(null);
             userRequestPo.setOriginalRequest(null);
-            userRequestPo.setUser(authService.requireUser());
+            userRequestPo.setUser(sessionService.requireUser());
             userRequestPo.setName(dto.getName());
             userRequestPo.setMethod("POST");
             userRequestPo.setUrl("/");
@@ -191,7 +192,7 @@ public class UserRequestTreeService {
     @Transactional(rollbackFor = Exception.class)
     public List<GetUserRequestTreeVo> moveUserRequestTree(MoveUserRequestTreeDto dto) throws BizException, AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         UserRequestTreePo nodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getNodeId(), userId);
 
@@ -444,7 +445,7 @@ public class UserRequestTreeService {
     @Transactional(rollbackFor = Exception.class)
     public void copyUserRequestTree(CommonIdDto dto) throws BizException, AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         UserRequestTreePo sourceNodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getId(), userId);
 
@@ -461,7 +462,7 @@ public class UserRequestTreeService {
         var nodeName = sourceNodePo.getName() + " 副本";
 
         UserRequestTreePo newNodePo = new UserRequestTreePo();
-        newNodePo.setUser(authService.requireUser());
+        newNodePo.setUser(sessionService.requireUser());
         newNodePo.setParent(sourceNodePo.getParent());
         newNodePo.setName(nodeName);
         newNodePo.setKind(sourceNodePo.getKind());
@@ -511,9 +512,8 @@ public class UserRequestTreeService {
                 newRequestPo.setGroup(parentTree.getGroup());
             }
 
-            newRequestPo.setUser(authService.requireUser());
+            newRequestPo.setUser(sessionService.requireUser());
             newRequestPo.setOriginalRequest(null);
-            newRequestPo.setUser(authService.requireUser());
             newRequestPo.setName(nodeName);
             newRequestPo.setMethod(null);
             newRequestPo.setUrl(null);
@@ -552,7 +552,7 @@ public class UserRequestTreeService {
             //为树对象创建组
             var newGroupPo = new UserRequestGroupPo();
             newGroupPo.setTree(newNodePo);
-            newGroupPo.setUser(authService.requireUser());
+            newGroupPo.setUser(sessionService.requireUser());
             newGroupPo.setName(nodeName);
             newGroupPo.setDescription(sourceGroupPo.getDescription());
             newNodePo.setGroup(newGroupPo);
@@ -570,7 +570,7 @@ public class UserRequestTreeService {
 
                 //先为请求创建树对象
                 var newRequestTreePo = new UserRequestTreePo();
-                newRequestTreePo.setUser(authService.requireUser());
+                newRequestTreePo.setUser(sessionService.requireUser());
                 newRequestTreePo.setParent(newNodePo);
                 newRequestTreePo.setName(item.getName());
                 newRequestTreePo.setKind(1);
@@ -587,7 +587,7 @@ public class UserRequestTreeService {
                 newRequestPo.setTree(newRequestTreePo);
                 newRequestPo.setGroup(newGroupPo);
                 newRequestPo.setOriginalRequest(oldRequestPo.getOriginalRequest());
-                newRequestPo.setUser(authService.requireUser());
+                newRequestPo.setUser(sessionService.requireUser());
                 newRequestPo.setName(item.getName());
                 newRequestPo.setMethod(oldRequestPo.getMethod());
                 newRequestPo.setUrl(oldRequestPo.getUrl());
@@ -627,7 +627,7 @@ public class UserRequestTreeService {
     @Transactional(rollbackFor = Exception.class)
     public void editUserRequestTree(EditUserRequestTreeDto dto) throws BizException, AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
         UserRequestTreePo nodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getId(), userId);
 
         if (nodePo == null) {
@@ -661,7 +661,7 @@ public class UserRequestTreeService {
     @Transactional(rollbackFor = Exception.class)
     public void removeUserRequestTree(RemoveUserRequestTreeDto dto) throws BizException, AuthException {
 
-        Long userId = AuthService.requireUserId();
+        Long userId = session().getUserId();
 
         UserRequestTreePo nodePo = userRequestTreeRepository.getNodeByIdAndUserId(dto.getId(), userId);
 

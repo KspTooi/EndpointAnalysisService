@@ -3,7 +3,7 @@ package com.ksptooi.biz.rdbg.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.repository.RequestRepository;
 import com.ksptooi.biz.rdbg.model.userrequest.EditUserRequestDto;
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.ksptool.entities.Entities.as;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Slf4j
 @Service
@@ -51,7 +52,7 @@ public class UserRequestService {
     private RequestRepository requestRepository;
 
     @Autowired
-    private AuthService authService;
+    private SessionService sessionService;
 
     @Autowired
     private UserRequestTreeRepository userRequestTreeRepository;
@@ -85,7 +86,7 @@ public class UserRequestService {
         UserRequestPo userRequestPo = new UserRequestPo();
         userRequestPo.setGroup(null);
         userRequestPo.setOriginalRequest(requestPo);
-        userRequestPo.setUser(authService.requireUser());
+        userRequestPo.setUser(sessionService.requireUser());
         userRequestPo.setName(requestPo.getRequestId());//如果未提供名称 则使用请求ID作为名称
         userRequestPo.setMethod(requestPo.getMethod());
         userRequestPo.setUrl(requestPo.getUrl());
@@ -116,7 +117,7 @@ public class UserRequestService {
 
         //创建用户请求树
         UserRequestTreePo treePo = new UserRequestTreePo();
-        treePo.setUser(authService.requireUser());
+        treePo.setUser(sessionService.requireUser());
         treePo.setParent(null);
         treePo.setName(userRequestPo.getName());
         treePo.setKind(1); //0:请求组 1:用户请求
@@ -131,7 +132,7 @@ public class UserRequestService {
     @Transactional(rollbackFor = Exception.class)
     public void editUserRequest(EditUserRequestDto dto) throws BizException, AuthException {
 
-        UserRequestPo updatePo = repository.getByIdAndUserId(dto.getId(), AuthService.requireUserId());
+        UserRequestPo updatePo = repository.getByIdAndUserId(dto.getId(), session().getUserId());
 
         if (updatePo == null) {
             throw new BizException("数据不存在或无权限操作.");
@@ -173,7 +174,7 @@ public class UserRequestService {
 
     public void sendUserRequest(CommonIdDto dto) throws BizException, AuthException {
 
-        UserPo userPo = authService.requireUser();
+        UserPo userPo = sessionService.requireUser();
         UserRequestPo userRequestPo = repository.getByIdAndUserId(dto.getId(), userPo.getId());
 
         if (userRequestPo == null) {
