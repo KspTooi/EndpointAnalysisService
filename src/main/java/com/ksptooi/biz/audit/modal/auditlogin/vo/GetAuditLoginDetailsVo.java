@@ -35,7 +35,7 @@ public class GetAuditLoginDetailsVo {
     private String os;
 
     @Schema(description = "状态: 0:成功 1:失败")
-    private String status;
+    private Integer status;
 
     @Schema(description = "提示消息")
     private String message;

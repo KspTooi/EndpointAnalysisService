@@ -14,7 +14,7 @@ export default {
       pageNum: 1,
       pageSize: 10,
       username: "",
-      status: "",
+      status: null,
     });
 
     const listData = ref<GetAuditLoginListVo[]>([]);
@@ -48,7 +48,7 @@ export default {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 10;
       listForm.value.username = "";
-      listForm.value.status = "";
+      listForm.value.status = null;
       QueryPersistService.clearQuery("audit-login-rcd");
       loadList();
     };

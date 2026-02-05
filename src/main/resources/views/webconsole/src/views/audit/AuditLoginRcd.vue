@@ -10,8 +10,8 @@
             </el-form-item>
             <el-form-item label="状态">
               <el-select v-model="listForm.status" placeholder="选择状态" clearable style="width: 180px">
-                <el-option label="成功" value="0" />
-                <el-option label="失败" value="1" />
+                <el-option label="成功" :value="0" />
+                <el-option label="失败" :value="1" />
               </el-select>
             </el-form-item>
           </div>
@@ -41,8 +41,8 @@
           <el-table-column prop="os" label="操作系统" min-width="120" />
           <el-table-column label="状态" min-width="100">
             <template #default="scope">
-              <el-tag :type="scope.row.status === '0' ? 'success' : 'danger'" size="small">
-                {{ scope.row.status === "0" ? "成功" : "失败" }}
+              <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'" size="small">
+                {{ scope.row.status === 0 ? "成功" : "失败" }}
               </el-tag>
             </template>
           </el-table-column>

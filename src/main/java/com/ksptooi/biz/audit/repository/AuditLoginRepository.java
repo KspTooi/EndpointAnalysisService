@@ -23,6 +23,7 @@ public interface AuditLoginRepository extends JpaRepository<AuditLoginPo, Long> 
             AND (:#{#po.browser} IS NULL OR u.browser  LIKE CONCAT('%', :#{#po.browser}, '%') )
             AND (:#{#po.os} IS NULL OR u.os  LIKE CONCAT('%', :#{#po.os}, '%') )
             AND (:#{#po.message} IS NULL OR u.message  LIKE CONCAT('%', :#{#po.message}, '%') )
+            AND (:#{#po.status} IS NULL OR u.status = :#{#po.status})
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             ORDER BY u.createTime DESC
             """)

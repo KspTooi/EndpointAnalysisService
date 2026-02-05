@@ -6,7 +6,7 @@ import type Result from "@/commons/entity/Result.ts";
 
 export interface GetAuditLoginListDto extends PageQuery {
   username?: string; // 用户名查询
-  status?: string; // 状态查询: 0-成功, 1-失败
+  status?: number | null; // 状态查询: 0-成功, 1-失败
 }
 
 export interface GetAuditLoginListVo {
@@ -18,7 +18,7 @@ export interface GetAuditLoginListVo {
   location: string; // IP 归属地
   browser: string; // 浏览器/客户端指纹
   os: string; // 操作系统
-  status: string; // 状态: 0:成功 1:失败
+  status: number; // 状态: 0:成功 1:失败
   message: string; // 提示消息
   createTime: string; // 创建时间
 }
@@ -32,7 +32,7 @@ export interface GetAuditLoginDetailsVo {
   location: string; // IP 归属地
   browser: string; // 浏览器/客户端指纹
   os: string; // 操作系统
-  status: string; // 状态: 0:成功 1:失败
+  status: number; // 状态: 0:成功 1:失败
   message: string; // 提示消息
   createTime: string; // 创建时间
 }
