@@ -326,4 +326,8 @@ const {
   margin-top: 15px;
   padding-bottom: 15px;
 }
+
+:deep(.splitpanes__pane) {
+  transition: none !important;
+}
 </style>
