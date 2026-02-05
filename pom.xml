@@ -241,6 +241,13 @@
             <version>2.2S-RC1</version>
         </dependency>
 
+        <!-- Source: https://mvnrepository.com/artifact/eu.bitwalker/UserAgentUtils -->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>

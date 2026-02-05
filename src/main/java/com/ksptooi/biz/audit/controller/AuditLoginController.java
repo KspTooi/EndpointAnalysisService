@@ -1,7 +1,5 @@
 package com.ksptooi.biz.audit.controller;
 
-import com.ksptooi.biz.audit.modal.auditlogin.dto.AddAuditLoginDto;
-import com.ksptooi.biz.audit.modal.auditlogin.dto.EditAuditLoginDto;
 import com.ksptooi.biz.audit.modal.auditlogin.dto.GetAuditLoginListDto;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginDetailsVo;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginListVo;
@@ -30,26 +28,12 @@ public class AuditLoginController {
     private AuditLoginService auditLoginService;
 
     @PostMapping("/getAuditLoginList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "获取登录日志列表")
     public PageResult<GetAuditLoginListVo> getAuditLoginList(@RequestBody @Valid GetAuditLoginListDto dto) throws Exception {
         return auditLoginService.getAuditLoginList(dto);
     }
-
-    @Operation(summary = "新增")
-    @PostMapping("/addAuditLogin")
-    public Result<String> addAuditLogin(@RequestBody @Valid AddAuditLoginDto dto) throws Exception {
-        auditLoginService.addAuditLogin(dto);
-        return Result.success("新增成功");
-    }
-
-    @Operation(summary = "编辑")
-    @PostMapping("/editAuditLogin")
-    public Result<String> editAuditLogin(@RequestBody @Valid EditAuditLoginDto dto) throws Exception {
-        auditLoginService.editAuditLogin(dto);
-        return Result.success("修改成功");
-    }
-
-    @Operation(summary = "查询详情")
+    
+    @Operation(summary = "获取登录日志详情")
     @PostMapping("/getAuditLoginDetails")
     public Result<GetAuditLoginDetailsVo> getAuditLoginDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetAuditLoginDetailsVo details = auditLoginService.getAuditLoginDetails(dto);
@@ -59,7 +43,7 @@ public class AuditLoginController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除登录日志")
     @PostMapping("/removeAuditLogin")
     public Result<String> removeAuditLogin(@RequestBody @Valid CommonIdDto dto) throws Exception {
         auditLoginService.removeAuditLogin(dto);

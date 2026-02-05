@@ -15,11 +15,12 @@ public class GsonUtils {
 
     /**
      * 根据JSONPath获取JSON对象中的内容 例如 result.code 则返回 result 对象中的 code 字段的值
-     * @param obj  JSON对象
+     *
+     * @param obj      JSON对象
      * @param jsonPath JSONPath
      * @return 内容 获取失败返回null
      */
-    public static String getFromPath(JsonElement obj,String jsonPath){
+    public static String getFromPath(JsonElement obj, String jsonPath) {
 
         if (obj == null || obj.isJsonNull()) {
             return null;
@@ -64,10 +65,7 @@ public class GsonUtils {
     }
 
 
-
-
-
-    public static JsonElement replaceContent(JsonElement obj, String jsonPath, String content){
+    public static JsonElement replaceContent(JsonElement obj, String jsonPath, String content) {
         if (obj == null || jsonPath == null || jsonPath.isEmpty()) {
             return obj;
         }
@@ -132,14 +130,13 @@ public class GsonUtils {
     }
 
 
-
     public static JsonElement injectContent(JsonElement json, Map<String, String> map) {
 
         if (json == null) {
             json = new JsonObject();
         }
 
-        if(map == null){
+        if (map == null) {
             return json;
         }
 
@@ -157,19 +154,19 @@ public class GsonUtils {
 
                 for (int i = 0; i < parts.length - 1; i++) {
                     String part = parts[i];
-                    
+
                     if (!currentObj.has(part)) {
                         currentObj.add(part, new JsonObject());
                     }
-                    
+
                     JsonElement element = currentObj.get(part);
                     if (!(element instanceof JsonObject)) {
                         continue;
                     }
-                    
+
                     currentObj = (JsonObject) element;
                 }
-                
+
                 String lastPart = parts[parts.length - 1];
                 if (!currentObj.has(lastPart)) {
                     currentObj.add(lastPart, new JsonPrimitive(value));

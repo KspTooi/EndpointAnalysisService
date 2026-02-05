@@ -17,7 +17,7 @@ public class AuditLoginPo {
     @Id
     private Long id;
 
-    @Column(name = "user_id", nullable = false, comment = "用户ID")
+    @Column(name = "user_id", comment = "用户ID")
     private Long userId;
 
     @Column(name = "username", nullable = false, length = 32, comment = "用户账号")
@@ -38,8 +38,8 @@ public class AuditLoginPo {
     @Column(name = "os", nullable = false, length = 32, comment = "操作系统")
     private String os;
 
-    @Column(name = "status", nullable = false, length = 32, comment = "状态: 0:成功 1:失败")
-    private String status;
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "状态: 0:成功 1:失败")
+    private Integer status;
 
     @Column(name = "message", nullable = false, length = 255, comment = "提示消息")
     private String message;
@@ -54,7 +54,6 @@ public class AuditLoginPo {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-
 
         LocalDateTime now = LocalDateTime.now();
 

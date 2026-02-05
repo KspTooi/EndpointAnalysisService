@@ -53,9 +53,9 @@ public class AuthController {
     @Operation(summary = "登录")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/login")
-    public String login(@Valid LoginDto dto, HttpServletResponse response, RedirectAttributes ra) {
+    public String login(@Valid LoginDto dto, HttpServletResponse response, HttpServletRequest hsr, RedirectAttributes ra) {
         try {
-            var token = authService.loginByPassword(dto.getUsername(), dto.getPassword());
+            var token = authService.loginByPassword(dto.getUsername(), dto.getPassword(), hsr);
 
             // 设置 cookie
             var cookie = new Cookie("eas-session-id", token);

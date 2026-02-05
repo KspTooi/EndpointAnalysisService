@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.audit.service.AuditLoginService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfilePermissionVo;
 import com.ksptooi.biz.core.model.group.GroupPo;
@@ -56,6 +57,9 @@ public class AuthService {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private AuditLoginService auditLoginService;
+
 
     /**
      * 检查当前用户是否拥有指定权限
@@ -89,16 +93,24 @@ public class AuthService {
      * @param username 用户名
      * @param password 密码
      */
-    public String loginByPassword(String username, String password) throws BizException {
+    public String loginByPassword(String username, String password, HttpServletRequest hsr) throws BizException {
+
+
         // 根据用户名查询用户
-        UserPo user = userRepository.findByUsername(username);
+        var user = userRepository.findByUsername(username);
+        var ipAddr = getIpAddr(hsr);
+        var uaString = hsr.getHeader("User-Agent");
+
         if (user == null) {
+            auditLoginService.recordLoginAudit(null, username, 1, "用户不存在", ipAddr, uaString);
             throw new BizException("用户名或密码错误");
         }
+
         // 使用用户名作为盐，对密码进行加密：password + username
         String salted = password + username;
         String hashedPassword = SHA256.hex(salted);
         if (!hashedPassword.equals(user.getPassword())) {
+            auditLoginService.recordLoginAudit(null, username, 1, "密码错误", ipAddr, uaString);
             throw new BizException("用户名或密码错误");
         }
 
@@ -109,6 +121,7 @@ public class AuthService {
 
         // 登录成功，创建或返回 token
         UserSessionVo session = sessionService.createSession(user.getId());
+        auditLoginService.recordLoginAudit(user.getId(), username, 0, "登录成功", ipAddr, uaString);
         return session.getSessionId();
     }
 
@@ -334,6 +347,27 @@ public class AuthService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename)
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
+    }
+
+
+    /*
+     * 获取IP地址
+     * @param request 请求
+     * @return IP地址
+     */
+    private String getIpAddr(HttpServletRequest request) {
+
+        if (request == null) {
+            return "unknown";
+        }
+
+        String ip = request.getHeader("X-REAL-IP");
+
+        if (StringUtils.isNotBlank(ip)) {
+            return ip;
+        }
+
+        return request.getRemoteAddr();
     }
 
 

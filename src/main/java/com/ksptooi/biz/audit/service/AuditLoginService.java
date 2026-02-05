@@ -1,8 +1,6 @@
 package com.ksptooi.biz.audit.service;
 
 import com.ksptooi.biz.audit.modal.auditlogin.AuditLoginPo;
-import com.ksptooi.biz.audit.modal.auditlogin.dto.AddAuditLoginDto;
-import com.ksptooi.biz.audit.modal.auditlogin.dto.EditAuditLoginDto;
 import com.ksptooi.biz.audit.modal.auditlogin.dto.GetAuditLoginListDto;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginDetailsVo;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginListVo;
@@ -10,8 +8,12 @@ import com.ksptooi.biz.audit.repository.AuditLoginRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import eu.bitwalker.useragentutils.UserAgent;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +23,25 @@ import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
 
+@Slf4j
 @Service
 public class AuditLoginService {
 
     @Autowired
     private AuditLoginRepository repository;
 
+    /*
+     * 获取登录日志列表
+     * @param dto 查询条件
+     * @return 登录日志列表
+     */
     public PageResult<GetAuditLoginListVo> getAuditLoginList(GetAuditLoginListDto dto) {
+
         AuditLoginPo query = new AuditLoginPo();
         assign(dto, query);
 
         Page<AuditLoginPo> page = repository.getAuditLoginList(query, dto.pageRequest());
+
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -40,27 +50,23 @@ public class AuditLoginService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void addAuditLogin(AddAuditLoginDto dto) {
-        AuditLoginPo insertPo = as(dto, AuditLoginPo.class);
-        repository.save(insertPo);
-    }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void editAuditLogin(EditAuditLoginDto dto) throws BizException {
-        AuditLoginPo updatePo = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
-
-        assign(dto, updatePo);
-        repository.save(updatePo);
-    }
-
+    /*
+     * 获取登录日志详情
+     * @param dto 查询条件
+     * @return 登录日志详情
+     */
     public GetAuditLoginDetailsVo getAuditLoginDetails(CommonIdDto dto) throws BizException {
         AuditLoginPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetAuditLoginDetailsVo.class);
     }
 
+    /*
+     * 删除登录日志
+     * @param dto 删除条件
+     * @return 删除结果
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeAuditLogin(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
@@ -69,5 +75,52 @@ public class AuditLoginService {
         }
         repository.deleteById(dto.getId());
     }
+
+
+    /**
+     * 异步记录登录审计日志
+     */
+    @Async
+    @Transactional(rollbackFor = Exception.class)
+    public void recordLoginAudit(Long userId, String username, Integer status, String message, String ipAddr, String uaString) {
+        try {
+
+            var po = new AuditLoginPo();
+            po.setUserId(userId);
+            po.setUsername(username);
+            po.setLoginKind(0); // 0:用户名密码
+            po.setIpAddr("Unknown");
+            po.setLocation("不支持");
+            po.setBrowser("Unknown");
+            po.setOs("Unknown");
+            po.setStatus(status); // 0:成功 1:失败
+            po.setMessage(message);
+
+            UserAgent userAgent = UserAgent.parseUserAgentString(uaString);
+            po.setIpAddr(ipAddr);
+            po.setBrowser(userAgent.getBrowser().getName());
+            po.setOs(userAgent.getOperatingSystem().getName());
+
+            // 再次检查关键字段，防止获取到的值为 null 或空字符串
+            if (StringUtils.isBlank(po.getIpAddr())) {
+                po.setIpAddr("Unknown");
+            }
+            if (StringUtils.isBlank(po.getBrowser())) {
+                po.setBrowser("Unknown");
+            }
+            if (StringUtils.isBlank(po.getOs())) {
+                po.setOs("Unknown");
+            }
+            if (StringUtils.isBlank(po.getLocation())) {
+                po.setLocation("Unknown");
+            }
+
+            repository.save(po);
+        } catch (Exception e) {
+            // 审计日志记录失败不应影响正常登录流程
+            log.error("记录登录审计日志失败: username={}", username, e);
+        }
+    }
+
 
 }
