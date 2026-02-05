@@ -111,7 +111,6 @@
                   }
                 "
                 background
-                size="small"
               />
             </div>
           </div>

@@ -22,6 +22,10 @@
         </el-form>
       </div>
 
+      <div class="action-buttons">
+
+      </div>
+
       <!-- 列表表格区域 -->
       <div class="list-table">
         <el-table :data="listData" stripe v-loading="listLoading" border>
@@ -106,10 +110,10 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
   box-sizing: border-box;
 }
 
-.query-form {
-  margin-bottom: 10px;
-  background-color: var(--el-fill-color-blank);
-  border-bottom: 1px dashed var(--el-border-color-light);
+.action-buttons {
+  margin-bottom: 15px;
+  border-top: 2px dashed var(--el-border-color);
+  padding-top: 15px;
 }
 
 .list-table {
