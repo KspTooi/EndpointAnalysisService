@@ -102,7 +102,7 @@ import {
   Upload,
   Refresh,
 } from "@element-plus/icons-vue";
-import DriveEntryRightMenuService from "../service/DriveEntryRightMenuService";
+import DriveEntryRightMenuService from "@/views/drive/service/DriveEntryRightMenuService";
 import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
 
 const rightMenuRef = ref<HTMLElement>();

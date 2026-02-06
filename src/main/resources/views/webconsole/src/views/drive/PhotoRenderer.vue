@@ -2,7 +2,7 @@
 import { computed, ref, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { RefreshLeft } from "@element-plus/icons-vue";
-import DriveRendererService from "./service/DriveRendererService";
+import DriveRendererService from "@/views/drive/service/DriveRendererService";
 
 const route = useRoute();
 const imgRef = ref<HTMLImageElement | null>(null);

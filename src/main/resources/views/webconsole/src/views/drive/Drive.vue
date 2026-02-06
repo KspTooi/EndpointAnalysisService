@@ -88,7 +88,7 @@ import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
 import DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 import type { EntryPo, GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
-import DriveService from "./service/DriveService";
+import DriveService from "@/views/drive/service/DriveService";
 import ElementFocusService from "@/service/ElmentFocusService";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
 import type Result from "@/commons/entity/Result";

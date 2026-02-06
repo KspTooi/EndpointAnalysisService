@@ -27,7 +27,7 @@ import * as XLSX from "xlsx";
 import VueOfficeExcel from "@vue-office/excel/lib/v3/vue-office-excel.mjs";
 import "@vue-office/excel/lib/v3/index.css";
 // 1. 引入缩放服务
-import DriveRendererService from "./service/DriveRendererService";
+import DriveRendererService from "@/views/drive/service/DriveRendererService";
 
 const route = useRoute();
 const loading = ref(false);
