@@ -218,27 +218,27 @@ public class ExcelTemplateService {
         ExcelTemplatePo template = repository.getExcelTemplateByCode(code);
 
         if (template == null) {
-            throw new BizException("模板不存在");
+            throw new BizException("模板:[" + code + "]不存在，请联系管理员");
         }
 
         if (template.getStatus() == 1) {
-            throw new BizException("模板已禁用");
+            throw new BizException("模板:[" + code + "]已禁用，请联系管理员");
         }
 
         if (template.getAttachId() == null) {
-            throw new BizException("模板附件不存在");
+            throw new BizException("模板:[" + code + "]附件不存在，请联系管理员");
         }
 
         AttachPo attach = attachService.requireAttach(template.getAttachId());
 
         if (attach == null) {
-            throw new BizException("附件不存在");
+            throw new BizException("模板:[" + code + "]附件不存在，请联系管理员");
         }
 
         Path filePath = attachService.getAttachLocalPath(Paths.get(attach.getPath()));
 
         if (!Files.exists(filePath)) {
-            throw new BizException("模板文件不存在");
+            throw new BizException("模板:[" + code + "]文件不存在，请联系管理员");
         }
 
         try {
@@ -260,7 +260,7 @@ public class ExcelTemplateService {
                 os.flush();
             }
         } catch (Exception e) {
-            throw new BizException("下载模板失败: " + e.getMessage());
+            throw new BizException("下载模板:[" + code + "]失败: " + e.getMessage() + "，请联系管理员");
         }
     }
 
