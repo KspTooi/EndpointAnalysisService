@@ -55,7 +55,7 @@
 import { nextTick, ref, watch } from "vue";
 import type { TableInstance } from "element-plus";
 import GenricRouteChooseModalService from "@/soa/genric-route/service/GenricRouteChooseModalService";
-import type { RouteEntryPo } from "./api/RouteEntryPo";
+import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 
 const modelValue = defineModel<string | null>({ default: null });
 const searchKeywordModel = defineModel<string>("searchKeyword", { default: "" });

@@ -58,7 +58,7 @@
 import { computed } from "vue";
 import { ElAvatar, ElTag, ElIcon } from "element-plus";
 import { Message, Phone, User, Operation, Key, Calendar, Clock } from "@element-plus/icons-vue";
-import type { GetCurrentUserProfile } from "../api/AuthApi";
+import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 
 const props = defineProps<{
   profile: GetCurrentUserProfile | null;
