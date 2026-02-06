@@ -14,6 +14,15 @@ import java.util.List;
 public interface OrgRepository extends JpaRepository<OrgPo, Long> {
 
     /**
+     * 根据名称查询企业
+     *
+     * @param name 企业名称
+     * @return 企业
+     */
+    @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 1")
+    OrgPo getRootByName(@Param("name") String name);
+
+    /**
      * 根据id查询企业
      *
      * @param id 企业id

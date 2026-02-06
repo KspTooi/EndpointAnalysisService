@@ -3,21 +3,27 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.user.dto.AddUserDto;
 import com.ksptooi.biz.core.model.user.dto.EditUserDto;
 import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
+import com.ksptooi.biz.core.model.user.dto.ImportUserDto;
 import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @PrintLog
 @RestController
@@ -63,5 +69,24 @@ public class UserController {
         return Result.success("success");
     }
 
-    
+
+    @Operation(summary = "导入用户")
+    @PostMapping("importUser")
+    public Result<String> importUser(@RequestParam("file") MultipartFile file) throws Exception {
+
+        var iw = new ImportWizard<>(file, ImportUserDto.class);
+        iw.transfer();
+
+        var errors = iw.validate();
+        
+        if (StringUtils.isNotBlank(errors)) {
+            return Result.error(errors);
+        }
+
+        var data = iw.getData();
+        var count = service.importUser(data);
+        return Result.success("导入成功,已导入数据:" + count + "条", null);
+    }
+
+
 }

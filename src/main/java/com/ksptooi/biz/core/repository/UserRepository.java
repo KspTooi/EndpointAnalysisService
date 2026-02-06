@@ -119,4 +119,18 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             """)
     Set<String> getUserPermissionCodes(@Param("userId") Long userId);
 
+
+    /**
+     * 根据用户名列表查找用户
+     * 
+     * @param usernames 用户名列表
+     * @return 用户名列表
+     */
+    @Query("""
+            SELECT DISTINCT p.username
+            FROM UserPo p
+            WHERE p.username IN :usernames
+            """)
+    Set<String> getUsernameSetByUsernames(@Param("usernames") List<String> usernames);
+
 }

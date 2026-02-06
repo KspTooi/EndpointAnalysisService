@@ -70,15 +70,15 @@ public class UserPo {
     private String deptName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "active_company_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的公司 为null时表示未激活任何公司")
+    @JoinColumn(name = "active_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的公司 为null时表示未激活任何公司")
     private CompanyPo activeCompany;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "active_env_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的环境 为null时表示未激活任何环境")
+    @JoinColumn(name = "active_env_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的环境 为null时表示未激活任何环境")
     private UserRequestEnvPo activeEnv;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "avatar_attach_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "用户头像附件")
+    @JoinColumn(name = "avatar_attach_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "用户头像附件")
     private AttachPo avatarAttach;
 
     @Column(name = "is_system", columnDefinition = "tinyint", nullable = false, comment = "是否为系统用户 0:否 1:是")

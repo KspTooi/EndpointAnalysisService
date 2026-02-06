@@ -7,6 +7,7 @@ import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.model.user.dto.AddUserDto;
 import com.ksptooi.biz.core.model.user.dto.EditUserDto;
 import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
+import com.ksptooi.biz.core.model.user.dto.ImportUserDto;
 import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import com.ksptooi.biz.core.model.user.vo.UserGroupVo;
@@ -14,6 +15,7 @@ import com.ksptooi.biz.core.model.user.vo.UserPermissionVo;
 import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -416,6 +418,96 @@ public class UserService {
 
         // 保存更改
         userRepository.save(adminUser);
+    }
+
+
+    /**
+     * 导入用户
+     * 
+     * @param data 导入用户数据
+     * @return 导入用户数量
+     * @throws BizException 导入用户失败
+     */
+    public int importUser(List<ImportUserDto> data) throws BizException {
+
+        var addPos = new ArrayList<UserPo>();
+
+        //搜集所有用户名
+        var usernameSet = new HashSet<String>();
+        for (ImportUserDto dto : data) {
+            usernameSet.add(dto.getUsername());
+        }
+
+        //搜集所有被占用的用户名
+        var occupiedNames = userRepository.getUsernameSetByUsernames(new ArrayList<>(usernameSet));
+
+        if (occupiedNames.size() > 0) {
+            throw new BizException("以下用户名已被占用: " + String.join(",", occupiedNames));
+        }
+
+        for (ImportUserDto dto : data) {
+
+            UserPo user = new UserPo();
+            user.setUsername(dto.getUsername());
+            user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+            user.setNickname(dto.getNickname());
+
+            //处理性别 0:男 1:女 2:不愿透露
+            if(Str.isNotBlank(dto.getGender())){
+
+                var genderStr = dto.getGender();
+
+                if(genderStr.equals("男")){
+                    user.setGender(0);
+                }
+
+                if(genderStr.equals("女")){
+                    user.setGender(1);
+                }
+
+                if(genderStr.equals("不愿透露")){
+                    user.setGender(2);
+                }
+
+            }
+
+            user.setPhone(dto.getPhone());
+            user.setEmail(dto.getEmail());
+            user.setLoginCount(0);
+            user.setStatus(0);//正常
+            
+            //处理所属企业(如果有)
+            if(Str.isNotBlank(dto.getRootName())){
+                var rootName = dto.getRootName();
+                var root = orgRepository.getRootByName(rootName);
+                if(root == null){
+                    throw new BizException("所属企业:" + rootName + "不存在");
+                }
+                user.setRootId(root.getId());
+                user.setRootName(root.getName());
+            }
+
+            //处理所属部门(如果有)
+            if(Str.isNotBlank(dto.getDeptName())){
+                var deptName = dto.getDeptName();
+                var dept = orgRepository.getDeptByName(deptName, user.getRootId());
+                if(dept == null){
+                    throw new BizException("所属部门:" + deptName + "不存在或不属于指定企业");
+                }
+                user.setDeptId(dept.getId());
+                user.setDeptName(dept.getName());
+            }
+
+            user.setActiveCompany(null);
+            user.setActiveEnv(null);
+            user.setAvatarAttach(null);
+            user.setIsSystem(0);//0:否 1:是
+            addPos.add(user);
+        }
+
+        //批量新增用户
+        userRepository.saveAll(addPos);
+        return addPos.size();
     }
 
 
