@@ -102,13 +102,13 @@
                 @size-change="
                   (val: number) => {
                     listForm.pageSize = val;
-                    loadList();
+                    loadList(orgId);
                   }
                 "
                 @current-change="
                   (val: number) => {
                     listForm.pageNum = val;
-                    loadList();
+                    loadList(orgId);
                   }
                 "
                 background
