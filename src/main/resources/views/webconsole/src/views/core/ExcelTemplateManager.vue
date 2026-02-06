@@ -185,6 +185,15 @@
           </template>
         </el-upload>
       </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="uploadDialogVisible = false" :disabled="uploadLoading">取消</el-button>
+          <el-button type="primary" @click="submitUpload()" :loading="uploadLoading" :disabled="fileList.length === 0">
+            上传 {{ fileList.length > 0 ? `(${fileList.length})` : "" }}
+          </el-button>
+        </div>
+      </template>
     </el-dialog>
 
     <!-- 编辑模板对话框 -->
@@ -329,122 +338,76 @@ const resetUploadDialog = () => {
   uploadRef.value?.clearFiles();
 };
 
-const handleFileChange = async (file: UploadFile, fileListParam: UploadFile[]) => {
-  console.log("=== handleFileChange 被调用 ===");
-  console.log("文件对象：", file);
-  console.log("文件名：", file.name);
-  console.log("当前文件列表：", fileListParam);
-
-  // 验证文件格式
+const handleFileChange = (file: UploadFile, fileListParam: UploadFile[]) => {
   if (!file.name.endsWith(".xlsx")) {
-    console.log("验证失败：文件格式不是.xlsx");
     ElMessage.error(`文件 ${file.name} 格式错误：只能上传.xlsx格式的文件`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  // 验证文件名是否包含-
   if (!file.name.includes("-")) {
-    console.log("验证失败：文件名不包含-");
     ElMessage.error(`文件 ${file.name} 命名错误：文件名必须包含"-"符号`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  // 验证文件名格式
   const parts = file.name.split("-");
   if (parts.length !== 2) {
-    console.log("验证失败：文件名格式错误，parts.length =", parts.length);
     ElMessage.error(`文件 ${file.name} 格式错误：应为"模板名称-唯一标识符.xlsx"`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  // 验证模板名称
   const name = parts[0];
   if (!name || name.trim().length === 0) {
-    console.log("验证失败：模板名称为空");
     ElMessage.error(`文件 ${file.name} 错误：模板名称不能为空`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  // 验证唯一标识符
   const key = parts[1].replace(".xlsx", "");
   if (!key || key.trim().length === 0) {
-    console.log("验证失败：唯一标识符为空");
     ElMessage.error(`文件 ${file.name} 错误：唯一标识符不能为空`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
   if (!/^[a-zA-Z0-9_]+$/.test(key)) {
-    console.log("验证失败：唯一标识符格式错误，key =", key);
     ElMessage.error(`文件 ${file.name} 错误：唯一标识符只能包含字母、数字和下划线`);
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  // 验证文件数量
   if (fileListParam.length > 50) {
-    console.log("验证失败：文件数量超过50");
     ElMessage.error("最多同时上传50个模板");
     uploadRef.value?.handleRemove(file);
     return;
   }
 
-  console.log("文件验证通过，准备上传");
-  console.log("使用fileListParam上传，文件数量：", fileListParam.length);
-
-  // 文件验证通过，立即上传，使用fileListParam而不是fileList.value
-  await submitUpload(fileListParam);
-
-  console.log("submitUpload执行完毕");
+  fileList.value = fileListParam;
 };
 
-const submitUpload = async (uploadFileList?: UploadFile[]) => {
-  console.log("=== submitUpload 被调用 ===");
-
-  // 使用传入的文件列表或者fileList.value
-  const currentFileList = uploadFileList || fileList.value;
-  console.log("currentFileList.length：", currentFileList.length);
-  console.log("uploadLoading.value：", uploadLoading.value);
-
-  if (currentFileList.length === 0) {
-    console.log("提前返回：文件列表为空");
+const submitUpload = async () => {
+  if (fileList.value.length === 0) {
+    ElMessage.warning("请先选择要上传的文件");
     return;
   }
 
   if (uploadLoading.value) {
-    console.log("提前返回：正在上传中");
     return;
   }
 
   uploadLoading.value = true;
-  console.log("开始上传流程");
 
   try {
-    const files = currentFileList.map((f) => f.raw as File).filter((f) => f !== undefined && f !== null);
-
-    console.log("提取的文件对象：", files);
-    console.log("文件数量：", files.length);
+    const files = fileList.value.map((f) => f.raw as File).filter((f) => f !== undefined && f !== null);
 
     if (files.length === 0) {
-      console.log("没有可上传的文件");
       ElMessage.warning("没有可上传的文件");
       return;
     }
 
-    console.log("准备上传文件：", files);
-    console.log(
-      "文件详情：",
-      files.map((f) => ({ name: f.name, size: f.size, type: f.type }))
-    );
-
-    console.log("调用API上传...");
     const result = await ExcelTemplateApi.uploadExcelTemplate(files);
-
-    console.log("上传结果：", result);
 
     if (Result.isSuccess(result)) {
       ElMessage.success(`成功上传 ${files.length} 个模板文件`);
@@ -455,12 +418,6 @@ const submitUpload = async (uploadFileList?: UploadFile[]) => {
       ElMessage.error(`上传失败：${result.message || "未知错误"}`);
     }
   } catch (error: any) {
-    console.error("上传异常：", error);
-    console.error("错误对象：", {
-      message: error.message,
-      response: error.response,
-      request: error.request,
-    });
     if (error.response) {
       ElMessage.error(`上传失败：${error.response.data?.message || error.message || "服务器错误"}`);
     } else if (error.request) {
@@ -469,7 +426,6 @@ const submitUpload = async (uploadFileList?: UploadFile[]) => {
       ElMessage.error(`上传失败：${error.message || "未知错误"}`);
     }
   } finally {
-    console.log("上传流程结束，重置loading状态");
     uploadLoading.value = false;
   }
 };
