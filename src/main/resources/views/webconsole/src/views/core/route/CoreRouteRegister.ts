@@ -96,7 +96,7 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         biz: "core",
         path: "notice",
         name: "notice",
-        component: () => import("@/views/core/Notice.vue"),
+        component: () => import("@/views/core/NoticeManager.vue"),
         breadcrumb: "消息管理",
       },
     ];

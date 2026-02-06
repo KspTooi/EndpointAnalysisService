@@ -44,8 +44,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="5" :offset="1">
-                <el-form-item label="业务类型/分类">
-                  <el-input v-model="listForm.category" placeholder="请输入业务类型/分类" clearable />
+                <el-form-item label="业务类型">
+                  <el-input v-model="listForm.category" placeholder="请输入业务类型" clearable />
                 </el-form-item>
               </el-col>
               <el-col :span="5" :offset="1">
@@ -81,7 +81,7 @@
               <el-tag v-else-if="scope.row.priority === 2" type="danger">高</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="category" label="业务类型/分类" min-width="120" show-overflow-tooltip>
+          <el-table-column prop="category" label="业务类型" min-width="120" show-overflow-tooltip>
             <template #default="scope">
               <span>{{ scope.row.category || "-" }}</span>
             </template>
@@ -126,6 +126,8 @@
       </div>
     </div>
 
+    <CoreUserSelectInput />
+
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
@@ -166,7 +168,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务类型" prop="category">
-          <el-input v-model="modalForm.category" placeholder="请输入业务类型/分类" maxlength="32" show-word-limit clearable />
+          <el-input v-model="modalForm.category" placeholder="请输入业务类型" maxlength="32" show-word-limit clearable />
+        </el-form-item>
+        <el-form-item label="接收人" prop="receiverId">
+          <CoreUserSelectInput multiple />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -187,6 +192,7 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import NoticeService from "@/views/core/service/NoticeService.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
+import CoreUserSelectInput from "@/views/core/components/public/CoreUserSelectInput.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

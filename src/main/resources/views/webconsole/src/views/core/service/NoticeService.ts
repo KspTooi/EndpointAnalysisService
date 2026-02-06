@@ -144,7 +144,7 @@ export default {
         { required: true, message: "优先级不能为空", trigger: "blur" },
         { type: "number", min: 0, max: 2, message: "优先级只能在0-2之间", trigger: "blur" },
       ],
-      category: [{ max: 32, message: "业务类型/分类长度不能超过32个字符", trigger: "blur" }],
+      category: [{ max: 32, message: "业务类型长度不能超过32个字符", trigger: "blur" }],
     };
 
     /**
