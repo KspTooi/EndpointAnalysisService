@@ -5,6 +5,7 @@ import com.ksptooi.biz.relay.model.routeserver.po.RouteServerPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class RouteRulePo {
     private String matchValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "route_server_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "目标服务器")
+    @JoinColumn(name = "route_server_id", nullable = false, foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "目标服务器")
     private RouteServerPo routeServer;
 
     @Column(name = "remark", length = 5000, columnDefinition = "text", comment = "策略描述")

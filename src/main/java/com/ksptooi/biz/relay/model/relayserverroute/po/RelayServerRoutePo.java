@@ -5,6 +5,7 @@ import com.ksptooi.biz.relay.model.routerule.po.RouteRulePo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,11 +20,11 @@ public class RelayServerRoutePo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relay_server_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "中继服务器ID")
+    @JoinColumn(name = "relay_server_id", nullable = false, foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "中继服务器ID")
     private RelayServerPo relayServer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "route_rule_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "路由策略ID")
+    @JoinColumn(name = "route_rule_id", nullable = false, foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "路由策略ID")
     private RouteRulePo routeRule;
 
     @Column(name = "seq", nullable = false, comment = "权重")
@@ -35,7 +36,6 @@ public class RelayServerRoutePo {
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    
 
     @PrePersist
     private void onCreate() {

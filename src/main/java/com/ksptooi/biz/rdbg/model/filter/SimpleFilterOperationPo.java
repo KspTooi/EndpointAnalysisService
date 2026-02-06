@@ -3,6 +3,7 @@ package com.ksptooi.biz.rdbg.model.filter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,7 +33,7 @@ public class SimpleFilterOperationPo {
     @Column(name = "f", length = 128, comment = "原始键")
     private String f;
 
-    @Column(name = "t", length = 128, comment = "目标键")
+    @Column(name = "t", nullable = false, length = 128, comment = "目标键")
     private String t;
 
     @Column(name = "seq", nullable = false, comment = "排序")

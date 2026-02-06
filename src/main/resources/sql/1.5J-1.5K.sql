@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS core_user_session;
 CREATE TABLE core_user_session(
-                                  `id` INT AUTO_INCREMENT COMMENT '会话ID' ,
+                                  `id` BIGINT AUTO_INCREMENT COMMENT '会话ID' ,
                                   `session_id` VARCHAR(128) NOT NULL  COMMENT '用户凭据SessionID' ,
                                   `user_id` BIGINT NOT NULL  COMMENT '用户ID' ,
                                   `root_id` BIGINT NOT NULL  COMMENT '所属企业ID' ,

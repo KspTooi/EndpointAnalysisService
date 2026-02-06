@@ -25,7 +25,7 @@ public interface NoticeRepository extends JpaRepository<NoticePo, Long> {
             AND (:#{#po.forward} IS NULL OR u.forward  LIKE CONCAT('%', :#{#po.forward}, '%') )
             AND (:#{#po.params} IS NULL OR u.params  LIKE CONCAT('%', :#{#po.params}, '%') )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<NoticePo> getNoticeList(@Param("po") NoticePo po, Pageable pageable);
 }
