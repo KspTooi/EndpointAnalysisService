@@ -30,26 +30,26 @@ public class NoticeTemplateController {
     private NoticeTemplateService noticeTemplateService;
 
     @PostMapping("/getNoticeTemplateList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询通知模板列表")
     public PageResult<GetNoticeTemplateListVo> getNoticeTemplateList(@RequestBody @Valid GetNoticeTemplateListDto dto) throws Exception {
         return noticeTemplateService.getNoticeTemplateList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增通知模板")
     @PostMapping("/addNoticeTemplate")
     public Result<String> addNoticeTemplate(@RequestBody @Valid AddNoticeTemplateDto dto) throws Exception {
         noticeTemplateService.addNoticeTemplate(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑通知模板")
     @PostMapping("/editNoticeTemplate")
     public Result<String> editNoticeTemplate(@RequestBody @Valid EditNoticeTemplateDto dto) throws Exception {
         noticeTemplateService.editNoticeTemplate(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询通知模板详情")
     @PostMapping("/getNoticeTemplateDetails")
     public Result<GetNoticeTemplateDetailsVo> getNoticeTemplateDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetNoticeTemplateDetailsVo details = noticeTemplateService.getNoticeTemplateDetails(dto);
@@ -59,7 +59,7 @@ public class NoticeTemplateController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除通知模板")
     @PostMapping("/removeNoticeTemplate")
     public Result<String> removeNoticeTemplate(@RequestBody @Valid CommonIdDto dto) throws Exception {
         noticeTemplateService.removeNoticeTemplate(dto);

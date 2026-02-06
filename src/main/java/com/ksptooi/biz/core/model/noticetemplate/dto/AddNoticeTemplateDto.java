@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class AddNoticeTemplateDto {
@@ -37,21 +35,6 @@ public class AddNoticeTemplateDto {
     @Schema(description = "备注")
     @Length(max = 1000, message = "备注长度不能超过1000个字符")
     private String remark;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description = "创建人ID")
-    private Long creatorId;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "更新人ID")
-    private Long updaterId;
-
-    @Schema(description = "删除时间 NULL未删")
-    private LocalDateTime deleteTime;
 
 }
 

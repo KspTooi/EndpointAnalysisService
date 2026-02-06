@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class AddNoticeDto {
@@ -36,23 +34,6 @@ public class AddNoticeDto {
     @Schema(description = "业务类型/分类")
     @Length(max = 32, message = "业务类型/分类长度不能超过32个字符")
     private String category;
-
-    @Schema(description = "发送人ID (NULL为系统)")
-    private Long senderId;
-
-    @Schema(description = "发送人姓名")
-    @Length(max = 32, message = "发送人姓名长度不能超过32个字符")
-    private String senderName;
-
-    @Schema(description = "跳转URL/路由地址")
-    @Length(max = 320, message = "跳转URL/路由地址长度不能超过320个字符")
-    private String forward;
-
-    @Schema(description = "动态参数 (JSON格式)")
-    private String params;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
 
 }
 

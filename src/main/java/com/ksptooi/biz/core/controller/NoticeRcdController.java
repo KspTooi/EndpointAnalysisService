@@ -30,26 +30,26 @@ public class NoticeRcdController {
     private NoticeRcdService noticeRcdService;
 
     @PostMapping("/getNoticeRcdList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询用户通知记录列表")
     public PageResult<GetNoticeRcdListVo> getNoticeRcdList(@RequestBody @Valid GetNoticeRcdListDto dto) throws Exception {
         return noticeRcdService.getNoticeRcdList(dto);
     }
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增用户通知记录")
     @PostMapping("/addNoticeRcd")
     public Result<String> addNoticeRcd(@RequestBody @Valid AddNoticeRcdDto dto) throws Exception {
         noticeRcdService.addNoticeRcd(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑用户通知记录")
     @PostMapping("/editNoticeRcd")
     public Result<String> editNoticeRcd(@RequestBody @Valid EditNoticeRcdDto dto) throws Exception {
         noticeRcdService.editNoticeRcd(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询详情")
+    @Operation(summary = "查询用户通知记录详情")
     @PostMapping("/getNoticeRcdDetails")
     public Result<GetNoticeRcdDetailsVo> getNoticeRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetNoticeRcdDetailsVo details = noticeRcdService.getNoticeRcdDetails(dto);
@@ -59,7 +59,7 @@ public class NoticeRcdController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除用户通知记录")
     @PostMapping("/removeNoticeRcd")
     public Result<String> removeNoticeRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
         noticeRcdService.removeNoticeRcd(dto);

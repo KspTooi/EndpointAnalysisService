@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class EditNoticeDto {
@@ -55,8 +53,6 @@ public class EditNoticeDto {
     @Schema(description = "动态参数 (JSON格式)")
     private String params;
 
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
 
 }
 
