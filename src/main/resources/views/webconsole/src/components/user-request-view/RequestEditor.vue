@@ -89,8 +89,8 @@
 import UserRequestApi, { type GetUserRequestDetailsVo, type RequestHeaderVo } from "@/views/rdbg/api/UserRequestApi.ts";
 import { ref, watch, onMounted, nextTick, onUnmounted } from "vue";
 import RequestUrlInput from "@/components/user-request-view/RequestUrlInput.vue";
-import RequestPayload from "./RequestPayload.vue";
-import UrResponseList from "./UrResponseList.vue";
+import RequestPayload from "@/components/user-request-view/RequestPayload.vue";
+import UrResponseList from "@/components/user-request-view/UrResponseList.vue";
 import { ElMessage } from "element-plus";
 import { RequestTreeHolder } from "@/store/RequestTreeHolder";
 import { EventHolder } from "@/store/EventHolder";

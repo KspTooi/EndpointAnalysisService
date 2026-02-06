@@ -170,8 +170,8 @@ import type {
   AddSimpleFilterTriggerDto,
   AddSimpleFilterOperationDto,
 } from "@/views/rdbg/api/SimpleFilterApi.ts";
-import SimpleFilterFormTrigger from "./SimpleFilterFormTrigger.vue";
-import SimpleFilterFormOperation from "./SimpleFilterFormOperation.vue";
+import SimpleFilterFormTrigger from "@/components/simple-filter/SimpleFilterFormTrigger.vue";
+import SimpleFilterFormOperation from "@/components/simple-filter/SimpleFilterFormOperation.vue";
 
 const filterStore = SimpleFilterStore();
 const loading = ref(false);

@@ -80,8 +80,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import AdminSidePanel from "./AdminSidePanel.vue";
-import TabPanel from "./TabPanel.vue";
+import AdminSidePanel from "@/components/element-ui-admin/AdminSidePanel.vue";
+import TabPanel from "@/components/element-ui-admin/TabPanel.vue";
 import {
   ElContainer,
   ElHeader,

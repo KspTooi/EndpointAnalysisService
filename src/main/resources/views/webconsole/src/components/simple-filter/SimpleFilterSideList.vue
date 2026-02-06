@@ -49,7 +49,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Loading } from "@element-plus/icons-vue";
 import SimpleFilterApi, { type GetSimpleFilterListDto, type GetSimpleFilterListVo } from "@/views/rdbg/api/SimpleFilterApi.ts";
-import SimpleFilterSideItem from "./SimpleFilterSideItem.vue";
+import SimpleFilterSideItem from "@/components/simple-filter/SimpleFilterSideItem.vue";
 import { SimpleFilterStore } from "@/store/SimpleFilterStore";
 
 //显示更多查询条件
