@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import RdbgCollectionTree from "./components/RdbgCollectionTree.vue";
+import RdbgCollectionTree from "@/views/rdbg/components/RdbgCollectionTree.vue";
 import RdbgEditor from "@/views/rdbg/components/RdbgEditor.vue";
 import { computed } from "vue";
 import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";

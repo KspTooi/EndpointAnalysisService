@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import draggable from "vuedraggable";
-import type { RequestHeaderJson } from "../api/CollectionApi";
+import type { RequestHeaderJson } from "@/views/rdbg/api/CollectionApi";
 
 const headers = defineModel<RequestHeaderJson[]>({ required: true });
 

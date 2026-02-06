@@ -38,9 +38,9 @@
 
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref } from "vue";
-import type { AddCollectionDto } from "../api/CollectionApi";
+import type { AddCollectionDto } from "@/views/rdbg/api/CollectionApi";
 import { ElMessage, type FormInstance } from "element-plus";
-import CollectionApi from "../api/CollectionApi";
+import CollectionApi from "@/views/rdbg/api/CollectionApi";
 import { Result } from "@/commons/entity/Result";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
 
