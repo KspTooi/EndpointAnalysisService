@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.user;
+package com.ksptooi.biz.core.model.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterDto {
+public class LoginDto {
 
     @Schema(description = "用户名")
     @NotBlank(message = "用户名不能为空")

@@ -1,9 +1,9 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.permission.PermissionPo;
-import com.ksptooi.biz.core.model.user.GetUserListDto;
-import com.ksptooi.biz.core.model.user.GetUserListVo;
 import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
+import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

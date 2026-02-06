@@ -3,8 +3,8 @@ package com.ksptooi.biz.core.controller;
 
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.session.UserSessionVo;
-import com.ksptooi.biz.core.model.user.LoginDto;
-import com.ksptooi.biz.core.model.user.RegisterDto;
+import com.ksptooi.biz.core.model.user.dto.LoginDto;
+import com.ksptooi.biz.core.model.user.dto.RegisterDto;
 import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.SessionService;

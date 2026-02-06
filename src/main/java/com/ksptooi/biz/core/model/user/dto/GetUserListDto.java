@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.user;
+package com.ksptooi.biz.core.model.user.dto;
 
 
 import com.ksptool.assembly.entity.web.PageQuery;
@@ -24,5 +24,5 @@ public class GetUserListDto extends PageQuery {
 
     @Schema(description = "0:正常 1:封禁")
     private Integer status;
-    
+
 }

@@ -1,7 +1,8 @@
-package com.ksptooi.biz.core.model.user;
+package com.ksptooi.biz.core.model.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -13,16 +14,15 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SaveUserDto {
-
-    @Schema(description = "用户ID，创建时为空")
-    private Long id;
+public class AddUserDto {
 
     @Schema(description = "用户名")
+    @NotBlank(message = "用户名不能为空")
     @Pattern(regexp = "^[a-zA-Z0-9_]{4,20}$", message = "用户名只能包含4-20位字母、数字和下划线")
     private String username;
 
-    @Schema(description = "用户密码，创建时必填，编辑时可选")
+    @Schema(description = "用户密码")
+    @NotBlank(message = "用户密码不能为空")
     @Length(max = 128, message = "用户密码长度不能超过128个字符")
     private String password;
 
@@ -47,6 +47,9 @@ public class SaveUserDto {
     @Range(min = 0, max = 1, message = "用户状态只能在0或1之间")
     @Schema(description = "用户状态：0-禁用，1-启用")
     private Integer status;
+
+    @Schema(description = "所属组织架构ID 只能为部门")
+    private Long deptId;
 
     @Schema(description = "用户组ID列表")
     private List<Long> groupIds;

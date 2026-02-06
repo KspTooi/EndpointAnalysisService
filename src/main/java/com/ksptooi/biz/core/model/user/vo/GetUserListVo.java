@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.user;
+package com.ksptooi.biz.core.model.user.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
