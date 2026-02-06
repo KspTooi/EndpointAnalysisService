@@ -99,6 +99,14 @@ export default {
       },
     });
 
+    const contentType = response.headers["content-type"];
+    
+    if (contentType && contentType.includes("application/json")) {
+      const text = await response.data.text();
+      const result = JSON.parse(text);
+      throw new Error(result.message || "下载模板失败");
+    }
+
     const contentDisposition = response.headers["content-disposition"];
     let filename = "template.xlsx";
 
