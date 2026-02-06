@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
 
 
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.user.GetUserListVo(
+            SELECT new com.ksptooi.biz.core.model.user.vo.GetUserListVo(
                 p.id,
                 p.rootId,
                 p.rootName,
@@ -122,7 +122,7 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
 
     /**
      * 根据用户名列表查找用户
-     * 
+     *
      * @param usernames 用户名列表
      * @return 用户名列表
      */
