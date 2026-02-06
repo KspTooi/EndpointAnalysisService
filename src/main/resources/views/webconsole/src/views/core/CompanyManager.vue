@@ -152,7 +152,7 @@ import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";
-import CompanyMemberModal from "./components/CompanyMemberModal.vue";
+import CompanyMemberModal from "@/views/core/components/CompanyMemberModal.vue";
 import type { GetCompanyMemberListVo } from "@/views/core/api/CompanyMemberApi.ts";
 
 const listForm = reactive<GetCurrentUserCompanyListDto>({

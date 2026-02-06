@@ -45,8 +45,8 @@
 import { ref, watch, markRaw, onMounted } from "vue";
 import type { ElTree } from "element-plus";
 import { Search, OfficeBuilding, Management } from "@element-plus/icons-vue";
-import type { GetOrgTreeVo } from "../api/OrgApi";
-import OrgTreeService from "../service/OrgTreeService";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
+import OrgTreeService from "@/views/core/service/OrgTreeService";
 
 const SearchIcon = markRaw(Search);
 const OfficeBuildingIcon = markRaw(OfficeBuilding);

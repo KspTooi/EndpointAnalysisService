@@ -213,7 +213,7 @@ import "splitpanes/dist/splitpanes.css";
 import UserManagerService from "@/views/core/service/UserManagerService.ts";
 import OrgTreeService from "@/views/core/service/OrgTreeService.ts";
 import OrgTree from "@/views/core/components/OrgTree.vue";
-import type { GetOrgTreeVo } from "./api/OrgApi";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

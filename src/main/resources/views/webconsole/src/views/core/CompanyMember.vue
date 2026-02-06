@@ -118,7 +118,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Delete as DeleteIcon } from "@element-plus/icons-vue";
-import UserModal from "./components/UserModal.vue";
+import UserModal from "@/views/core/components/UserModal.vue";
 import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
 
 const listForm = reactive<GetCurrentUserActiveCompanyMemberListDto>({

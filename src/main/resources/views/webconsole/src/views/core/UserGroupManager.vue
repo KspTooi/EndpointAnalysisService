@@ -215,7 +215,7 @@ import AdminGroupApi, {
 import AdminPermissionApi from "@/views/core/api/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import { Result } from "@/commons/entity/Result.ts";
-import UserGroupPermissionModal from "./components/UserGroupPermissionModal.vue";
+import UserGroupPermissionModal from "@/views/core/components/UserGroupPermissionModal.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
