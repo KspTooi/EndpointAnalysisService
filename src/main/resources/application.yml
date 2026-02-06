@@ -60,6 +60,10 @@ spring:
   main:
     lazy-initialization: true
 
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
 server:
   port: 27500
 

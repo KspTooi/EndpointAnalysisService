@@ -46,7 +46,7 @@ public class CodeGenerator {
         factory.setOutputBasePathFromRelative("./");
 
         //选择要收集的表
-        factory.selectTables("audit_login");
+        factory.selectTables("core_notice", "core_notice_rcd", "core_notice_template");
 
         //需移除的表前缀 可多个
         factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
