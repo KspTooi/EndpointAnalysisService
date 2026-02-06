@@ -57,6 +57,7 @@
             drag
             :auto-upload="false"
             :on-change="handleFileChange"
+            :on-remove="handleFileRemove"
             :limit="1"
             :on-exceed="handleExceed"
             accept=".xlsx"
@@ -114,6 +115,25 @@ const fileList = ref<any[]>([]);
 const importing = ref(false);
 const uploadRef = ref();
 
+const clearSelectedFile = () => {
+  selectedFile.value = null;
+  fileList.value = [];
+};
+
+const tryReadFileHead = async (raw: File) => {
+  if (!raw) {
+    return false;
+  }
+
+  try {
+    const head = raw.slice(0, 64);
+    await head.arrayBuffer();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const openModal = () => {
   visible.value = true;
   selectedFile.value = null;
@@ -135,7 +155,17 @@ const handleDownload = async () => {
 };
 
 const handleFileChange = (file: any) => {
+  if (!file || !file.raw) {
+    clearSelectedFile();
+    ElMessage.warning("文件已失效，请重新选择");
+    return;
+  }
   selectedFile.value = file;
+  fileList.value = [file];
+};
+
+const handleFileRemove = () => {
+  clearSelectedFile();
 };
 
 const handleExceed = (files: any) => {
@@ -145,8 +175,17 @@ const handleExceed = (files: any) => {
 };
 
 const handleImport = async () => {
-  if (!selectedFile.value) {
+  const raw = selectedFile.value?.raw as File | undefined;
+
+  if (!raw) {
     ElMessage.warning("请先选择要上传的文件");
+    return;
+  }
+
+  const readable = await tryReadFileHead(raw);
+  if (!readable) {
+    clearSelectedFile();
+    ElMessage.warning("文件已失效，请重新选择");
     return;
   }
 
@@ -154,12 +193,18 @@ const handleImport = async () => {
 
   try {
     const res = await Http.postForm<any>(props.url, {
-      file: selectedFile.value.raw,
+      file: raw,
     });
     ElMessage.success(res.message || "导入成功");
     emit("on-success", res);
     visible.value = false;
   } catch (e: any) {
+    const stillReadable = await tryReadFileHead(raw);
+    if (!stillReadable) {
+      clearSelectedFile();
+      ElMessage.warning("文件已失效，请重新选择");
+      return;
+    }
     ElMessage.error(e.message || "导入失败");
   } finally {
     importing.value = false;
