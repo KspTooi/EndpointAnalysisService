@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class GetNoticeListVo {
@@ -25,14 +23,8 @@ public class GetNoticeListVo {
     @Schema(description = "业务类型/分类")
     private String category;
 
-    @Schema(description = "发送人ID (NULL为系统)")
-    private Long senderId;
-
     @Schema(description = "发送人姓名")
     private String senderName;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
 
 }
 

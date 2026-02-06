@@ -5,20 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class GetNoticeListDto extends PageQuery {
 
-
-    @Schema(description = "主键ID")
-    private Long id;
-
     @Schema(description = "标题")
     private String title;
 
-    @Schema(description = "种类: 0公告, 1业务提醒, 2私信")
+    @Schema(description = "种类: 0:公告, 1:业务提醒, 2:私信")
     private Integer kind;
 
     @Schema(description = "通知内容")
@@ -30,19 +24,8 @@ public class GetNoticeListDto extends PageQuery {
     @Schema(description = "业务类型/分类")
     private String category;
 
-    @Schema(description = "发送人ID (NULL为系统)")
-    private Long senderId;
-
     @Schema(description = "发送人姓名")
     private String senderName;
 
-    @Schema(description = "跳转URL/路由地址")
-    private String forward;
-
-    @Schema(description = "动态参数 (JSON格式)")
-    private String params;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
 }
 

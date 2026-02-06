@@ -16,10 +16,10 @@ public class CodeGeneratorVue {
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test");
+        coll.setUrl("jdbc:mysql://127.0.0.1:3306/endpoint_analysis_service");
         coll.setUsername("root");
         coll.setPassword("root");
-        coll.setDatabase("endpoint_analysis_service_test");
+        coll.setDatabase("endpoint_analysis_service");
 
         //创建蓝图采集器 & 投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
