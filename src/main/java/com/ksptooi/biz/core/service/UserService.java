@@ -21,6 +21,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -423,7 +424,7 @@ public class UserService {
 
     /**
      * 导入用户
-     * 
+     *
      * @param data 导入用户数据
      * @return 导入用户数量
      * @throws BizException 导入用户失败
@@ -453,19 +454,19 @@ public class UserService {
             user.setNickname(dto.getNickname());
 
             //处理性别 0:男 1:女 2:不愿透露
-            if(Str.isNotBlank(dto.getGender())){
+            if (Str.isNotBlank(dto.getGender())) {
 
                 var genderStr = dto.getGender();
 
-                if(genderStr.equals("男")){
+                if (genderStr.equals("男")) {
                     user.setGender(0);
                 }
 
-                if(genderStr.equals("女")){
+                if (genderStr.equals("女")) {
                     user.setGender(1);
                 }
 
-                if(genderStr.equals("不愿透露")){
+                if (genderStr.equals("不愿透露")) {
                     user.setGender(2);
                 }
 
@@ -475,12 +476,12 @@ public class UserService {
             user.setEmail(dto.getEmail());
             user.setLoginCount(0);
             user.setStatus(0);//正常
-            
+
             //处理所属企业(如果有)
-            if(Str.isNotBlank(dto.getRootName())){
+            if (Str.isNotBlank(dto.getRootName())) {
                 var rootName = dto.getRootName();
                 var root = orgRepository.getRootByName(rootName);
-                if(root == null){
+                if (root == null) {
                     throw new BizException("所属企业:" + rootName + "不存在");
                 }
                 user.setRootId(root.getId());
@@ -488,14 +489,22 @@ public class UserService {
             }
 
             //处理所属部门(如果有)
-            if(Str.isNotBlank(dto.getDeptName())){
+            if (Str.isNotBlank(dto.getDeptName())) {
                 var deptName = dto.getDeptName();
-                var dept = orgRepository.getDeptByName(deptName, user.getRootId());
-                if(dept == null){
-                    throw new BizException("所属部门:" + deptName + "不存在或不属于指定企业");
+
+                try {
+                    var dept = orgRepository.getDeptByName(deptName, user.getRootId());
+
+                    if (dept == null) {
+                        throw new BizException("所属部门:" + deptName + "不存在或不属于指定企业");
+                    }
+                    user.setDeptId(dept.getId());
+                    user.setDeptName(dept.getName());
+
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    throw new BizException("公司:" + user.getRootName() + "下存在多个同名称部门:" + deptName + "，不支持批量导入");
                 }
-                user.setDeptId(dept.getId());
-                user.setDeptName(dept.getName());
+
             }
 
             user.setActiveCompany(null);

@@ -1,13 +1,11 @@
 package com.ksptooi.biz.core.model.user.dto;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ksptooi.commons.dataprocess.AbstractImportDto;
 import com.ksptooi.commons.dataprocess.Str;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
@@ -22,7 +20,7 @@ public class ImportUserDto extends AbstractImportDto {
     @ExcelProperty(value = "昵称/姓名")
     private String nickname;
 
-    @ExcelProperty(value = "性别 0:男 1:女 2:不愿透露")
+    @ExcelProperty(value = "性别")// 0:男 1:女 2:不愿透露
     private String gender;
 
     @ExcelProperty(value = "手机号")
@@ -30,7 +28,7 @@ public class ImportUserDto extends AbstractImportDto {
 
     @ExcelProperty(value = "邮箱")
     private String email;
-    
+
     @ExcelProperty(value = "所属企业")
     private String rootName;
 
@@ -72,12 +70,12 @@ public class ImportUserDto extends AbstractImportDto {
         }
 
         //校验性别
-        if(StringUtils.isNotBlank(gender) && Str.isNotIn(gender, "男", "女", "不愿透露")){
+        if (StringUtils.isNotBlank(gender) && Str.isNotIn(gender, "男", "女", "不愿透露")) {
             return "性别只能为男、女、不愿透露";
         }
 
         //如果填写了部门则必须填写所属企业
-        if(StringUtils.isNotBlank(deptName) && StringUtils.isBlank(rootName)){
+        if (StringUtils.isNotBlank(deptName) && StringUtils.isBlank(rootName)) {
             return "填写部门时必须填写所属企业";
         }
 

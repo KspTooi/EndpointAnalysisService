@@ -35,6 +35,7 @@
           <!-- 操作按钮区域 -->
           <div class="action-buttons">
             <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
+            <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入用户</el-button>
           </div>
 
           <!-- 列表表格区域 -->
@@ -117,6 +118,15 @@
         </div>
       </pane>
     </splitpanes>
+
+    <!-- 导入向导 -->
+    <ImportWizardModal
+      ref="importWizardRef"
+      url="/user/importUser"
+      templateCode="core_user"
+      @on-success="loadList"
+      @on-close="loadList"
+    />
 
     <!-- 用户编辑/新增模态框 -->
     <el-dialog
@@ -206,7 +216,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
@@ -214,10 +224,14 @@ import UserManagerService from "@/views/core/service/UserManagerService.ts";
 import OrgTreeService from "@/views/core/service/OrgTreeService.ts";
 import OrgTree from "@/views/core/components/OrgTree.vue";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
+import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const UploadIcon = markRaw(Upload);
+
+const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
 const onSelectOrg = (org: GetOrgTreeVo | null) => {
   loadList(org?.id ?? null);
