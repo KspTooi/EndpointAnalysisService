@@ -24,7 +24,7 @@
 
       <!-- 操作按钮区域 -->
       <div class="action-buttons">
-        <el-button type="primary" @click="openAddDialog" :icon="PlusIcon">新增</el-button>
+        <el-button type="success" @click="openModal('add', null)">新增</el-button>
       </div>
 
       <!-- 列表表格区域 -->
@@ -43,12 +43,10 @@
           <el-table-column prop="updateTime" label="更新时间" min-width="180" />
           <el-table-column label="操作" fixed="right" min-width="180">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="openEditDialog(scope.row)" :icon="EditIcon">
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
                 编辑
               </el-button>
-              <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon">
-                删除
-              </el-button>
+              <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -78,72 +76,69 @@
       </div>
     </div>
 
-    <!-- 新增对话框 -->
-    <el-dialog v-model="addDialogVisible" title="新增示例" width="600px" :close-on-click-modal="false">
-      <el-form :model="addForm" label-width="100px">
-        <el-form-item label="名称" required>
-          <el-input v-model="addForm.name" placeholder="请输入名称" clearable />
+    <!-- 新增/编辑模态框 -->
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'edit' ? '编辑示例' : '新增示例'"
+      width="600px"
+      :close-on-click-modal="false"
+      @close="
+        resetModal();
+        loadList();
+      "
+    >
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+        :validate-on-rule-change="false"
+      >
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="modalForm.name" placeholder="请输入名称" clearable />
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="addForm.description" type="textarea" :rows="3" placeholder="请输入描述" />
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="modalForm.description" type="textarea" :rows="3" placeholder="请输入描述" />
         </el-form-item>
-        <el-form-item label="状态" required>
-          <el-radio-group v-model="addForm.status">
-            <el-radio :value="0">启用</el-radio>
-            <el-radio :value="1">禁用</el-radio>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="modalForm.status">
+            <el-radio :label="0">启用</el-radio>
+            <el-radio :label="1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="closeAddDialog" :disabled="addLoading">取消</el-button>
-        <el-button type="primary" @click="submitAdd(() => loadList())" :loading="addLoading">确定</el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 编辑对话框 -->
-    <el-dialog v-model="editDialogVisible" title="编辑示例" width="600px" :close-on-click-modal="false">
-      <el-form :model="editForm" label-width="100px">
-        <el-form-item label="名称" required>
-          <el-input v-model="editForm.name" placeholder="请输入名称" clearable />
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="editForm.description" type="textarea" :rows="3" placeholder="请输入描述" />
-        </el-form-item>
-        <el-form-item label="状态" required>
-          <el-radio-group v-model="editForm.status">
-            <el-radio :value="0">启用</el-radio>
-            <el-radio :value="1">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="closeEditDialog" :disabled="editLoading">取消</el-button>
-        <el-button type="primary" @click="submitEdit(() => loadList())" :loading="editLoading">确定</el-button>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { markRaw } from "vue";
-import { Plus, Edit, Delete } from "@element-plus/icons-vue";
+import { ref, markRaw } from "vue";
+import { Edit, Delete } from "@element-plus/icons-vue";
+import type { FormInstance } from "element-plus";
 import ExampleService from "@/soa/template/service/ExampleService.ts";
 
-const PlusIcon = markRaw(Plus);
+// 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 列表管理
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
-  ExampleService.useExampleList();
+// 列表管理打包
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = ExampleService.useExampleList();
 
-// 新增管理
-const { addDialogVisible, addForm, addLoading, openAddDialog, closeAddDialog, submitAdd } =
-  ExampleService.useAddExample();
+// 模态框表单引用
+const modalFormRef = ref<FormInstance>();
 
-// 编辑管理
-const { editDialogVisible, editForm, editLoading, openEditDialog, closeEditDialog, submitEdit } =
-  ExampleService.useEditExample();
+// 模态框打包
+const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
+  ExampleService.useExampleModal(modalFormRef, loadList);
 </script>
 
 <style scoped>

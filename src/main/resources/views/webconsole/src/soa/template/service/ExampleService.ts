@@ -1,7 +1,9 @@
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref, type Ref } from "vue";
+import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetExampleListDto,
   GetExampleListVo,
+  GetExampleDetailsVo,
   AddExampleDto,
   EditExampleDto,
 } from "@/soa/template/api/ExampleApi.ts";
@@ -9,6 +11,11 @@ import ExampleApi from "@/soa/template/api/ExampleApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import QueryPersistService from "@/service/QueryPersistService";
+
+/**
+ * 模态框模式类型
+ */
+type ModalMode = "add" | "edit";
 
 export default {
   /**
@@ -98,131 +105,155 @@ export default {
   },
 
   /**
-   * 新增示例管理
+   * 模态框管理（统一处理新增和编辑）
    */
-  useAddExample() {
-    const addDialogVisible = ref(false);
-    const addForm = ref<AddExampleDto>({
-      name: "",
-      description: "",
-      status: 0,
-    });
-    const addLoading = ref(false);
-
-    /**
-     * 打开新增对话框
-     */
-    const openAddDialog = () => {
-      addForm.value = {
-        name: "",
-        description: "",
-        status: 0,
-      };
-      addDialogVisible.value = true;
-    };
-
-    /**
-     * 关闭新增对话框
-     */
-    const closeAddDialog = () => {
-      addDialogVisible.value = false;
-    };
-
-    /**
-     * 提交新增
-     */
-    const submitAdd = async (callback?: () => void) => {
-      addLoading.value = true;
-
-      try {
-        await ExampleApi.addExample(addForm.value);
-        ElMessage.success("新增成功");
-        closeAddDialog();
-        if (callback) {
-          callback();
-        }
-      } catch (error: any) {
-        ElMessage.error(error.message);
-      }
-
-      addLoading.value = false;
-    };
-
-    return {
-      addDialogVisible,
-      addForm,
-      addLoading,
-      openAddDialog,
-      closeAddDialog,
-      submitAdd,
-    };
-  },
-
-  /**
-   * 编辑示例管理
-   */
-  useEditExample() {
-    const editDialogVisible = ref(false);
-    const editForm = ref<EditExampleDto>({
+  useExampleModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+    const modalVisible = ref(false);
+    const modalLoading = ref(false);
+    const modalMode = ref<ModalMode>("add");
+    const modalForm = reactive<GetExampleDetailsVo>({
       id: "",
       name: "",
       description: "",
       status: 0,
+      createTime: "",
+      updateTime: "",
     });
-    const editLoading = ref(false);
 
     /**
-     * 打开编辑对话框
+     * 表单验证规则
      */
-    const openEditDialog = async (row: GetExampleListVo) => {
-      try {
-        const details = await ExampleApi.getExampleDetails({ id: row.id });
-        editForm.value = {
-          id: details.id,
-          name: details.name,
-          description: details.description,
-          status: details.status,
-        };
-        editDialogVisible.value = true;
-      } catch (error: any) {
-        ElMessage.error(error.message);
+    const modalRules: FormRules = {
+      name: [{ required: true, message: "请输入名称", trigger: "blur" }],
+      status: [{ required: true, message: "请选择状态", trigger: "change" }],
+    };
+
+    /**
+     * 打开模态框
+     * @param mode 模式: 'add' | 'edit'
+     * @param row 编辑时传入的行数据
+     */
+    const openModal = async (mode: ModalMode, row: GetExampleListVo | null) => {
+      modalMode.value = mode;
+
+      if (mode === "add") {
+        modalForm.id = "";
+        modalForm.name = "";
+        modalForm.description = "";
+        modalForm.status = 0;
+        modalForm.createTime = "";
+        modalForm.updateTime = "";
+        modalVisible.value = true;
+        return;
       }
-    };
 
-    /**
-     * 关闭编辑对话框
-     */
-    const closeEditDialog = () => {
-      editDialogVisible.value = false;
-    };
-
-    /**
-     * 提交编辑
-     */
-    const submitEdit = async (callback?: () => void) => {
-      editLoading.value = true;
-
-      try {
-        await ExampleApi.editExample(editForm.value);
-        ElMessage.success("编辑成功");
-        closeEditDialog();
-        if (callback) {
-          callback();
+      if (mode === "edit") {
+        if (!row) {
+          ElMessage.error("未选择要编辑的数据");
+          return;
         }
-      } catch (error: any) {
-        ElMessage.error(error.message);
+
+        try {
+          const details = await ExampleApi.getExampleDetails({ id: row.id });
+          modalForm.id = details.id;
+          modalForm.name = details.name;
+          modalForm.description = details.description;
+          modalForm.status = details.status;
+          modalForm.createTime = details.createTime;
+          modalForm.updateTime = details.updateTime;
+          modalVisible.value = true;
+        } catch (error: any) {
+          ElMessage.error(error.message);
+        }
+      }
+    };
+
+    /**
+     * 重置模态框
+     */
+    const resetModal = () => {
+      if (!modalFormRef.value) {
+        return;
+      }
+      modalFormRef.value.resetFields();
+      modalForm.id = "";
+      modalForm.name = "";
+      modalForm.description = "";
+      modalForm.status = 0;
+      modalForm.createTime = "";
+      modalForm.updateTime = "";
+    };
+
+    /**
+     * 提交模态框
+     */
+    const submitModal = async () => {
+      if (!modalFormRef.value) {
+        return;
       }
 
-      editLoading.value = false;
+      try {
+        await modalFormRef.value.validate();
+      } catch (error) {
+        return;
+      }
+
+      modalLoading.value = true;
+
+      if (modalMode.value === "add") {
+        try {
+          const addDto: AddExampleDto = {
+            name: modalForm.name,
+            description: modalForm.description,
+            status: modalForm.status,
+          };
+          await ExampleApi.addExample(addDto);
+          ElMessage.success("新增成功");
+          modalVisible.value = false;
+          resetModal();
+          reloadCallback();
+        } catch (error: any) {
+          ElMessage.error(error.message);
+        }
+        modalLoading.value = false;
+        return;
+      }
+
+      if (modalMode.value === "edit") {
+        if (!modalForm.id) {
+          ElMessage.error("缺少ID参数");
+          modalLoading.value = false;
+          return;
+        }
+
+        try {
+          const editDto: EditExampleDto = {
+            id: modalForm.id,
+            name: modalForm.name,
+            description: modalForm.description,
+            status: modalForm.status,
+          };
+          await ExampleApi.editExample(editDto);
+          ElMessage.success("编辑成功");
+          modalVisible.value = false;
+          resetModal();
+          reloadCallback();
+        } catch (error: any) {
+          ElMessage.error(error.message);
+        }
+        modalLoading.value = false;
+      }
     };
 
     return {
-      editDialogVisible,
-      editForm,
-      editLoading,
-      openEditDialog,
-      closeEditDialog,
-      submitEdit,
+      modalVisible,
+      modalLoading,
+      modalMode,
+      modalForm,
+      modalRules,
+      openModal,
+      resetModal,
+      submitModal,
     };
   },
 };
