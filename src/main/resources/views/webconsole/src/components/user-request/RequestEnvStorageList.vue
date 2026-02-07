@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListContainer>
+    <StdListAreaQuery>
       <el-form :model="query">
         <el-row>
           <el-col :span="6" :offset="1">
@@ -24,15 +23,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </StdListAreaQuery>
 
-    <div class="action-buttons">
+    <StdListAreaAction>
       <el-button type="success" @click="openModal('add', null)">创建共享存储变量</el-button>
-    </div>
+    </StdListAreaAction>
 
-    <!-- 列表 -->
-    <div class="list-table">
-      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all>
+    <StdListAreaTable>
+      <el-table :data="list" v-loading="loading" border row-key="id" default-expand-all height="100%">
         <el-table-column label="变量名" prop="name" min-width="180" show-overflow-tooltip />
         <el-table-column label="初始值" prop="initValue" min-width="180" show-overflow-tooltip />
         <el-table-column label="当前值" prop="value" min-width="180" show-overflow-tooltip>
@@ -43,19 +41,23 @@
         </el-table-column>
         <el-table-column label="状态" prop="status" width="90" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">{{ scope.row.status === 0 ? "启用" : "禁用" }}</el-tag>
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">{{
+              scope.row.status === 0 ? "启用" : "禁用"
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" prop="createTime" width="180" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"> 编辑 </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              编辑
+            </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <div class="pagination-container">
+
+      <template #pagination>
         <el-pagination
           v-model:current-page="query.pageNum"
           v-model:page-size="query.pageSize"
@@ -76,22 +78,28 @@
           "
           background
         />
-      </div>
-    </div>
+      </template>
+    </StdListAreaTable>
 
     <!-- 共享存储编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑共享存储变量' : '添加共享存储变量'"
       width="550px"
-      class="modal-centered"
       :close-on-click-modal="false"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="95px" :validate-on-rule-change="false">
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="95px"
+        :validate-on-rule-change="false"
+      >
         <el-form-item label="变量名" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入变量名" />
         </el-form-item>
@@ -117,7 +125,7 @@
         </div>
       </template>
     </el-dialog>
-  </div>
+  </StdListContainer>
 </template>
 
 <script setup lang="ts">
@@ -130,6 +138,10 @@ import UserRequestEnvStorageApi, {
   type GetUserRequestEnvStorageListDto,
   type GetUserRequestEnvStorageListVo,
 } from "@/views/rdbg/api/UserRequestEnvStorageApi.ts";
+import StdListContainer from "@/soa/std-series/StdListContainer.vue";
+import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
+import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
+import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
 const props = defineProps<{
   requestEnvId: string | null;
@@ -334,41 +346,4 @@ const submitModal = async () => {
 };
 </script>
 
-<style scoped>
-.list-container {
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-  flex: 1;
-  min-height: 0;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-  flex-shrink: 0;
-}
-
-:deep(.modal-centered) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-}
-</style>
+<style scoped></style>

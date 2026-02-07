@@ -172,28 +172,4 @@ const submitModal = async () => {
   flex: 1;
   min-width: 0;
 }
-
-/* .list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-} */
-
-.query-form {
-  margin-bottom: 20px;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
 </style>
