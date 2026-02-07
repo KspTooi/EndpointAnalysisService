@@ -18,25 +18,35 @@
 
         <pane size="80">
           <div class="right-content">
-            <div class="query-form">
-              <el-form :model="listForm" inline>
-                <el-form-item label="用户名">
-                  <el-input v-model="listForm.username" placeholder="输入用户名" clearable style="width: 180px" />
-                </el-form-item>
-                <el-form-item label="状态">
-                  <el-select v-model="listForm.status" placeholder="选择状态" clearable style="width: 180px">
-                    <el-option label="正常" :value="0" />
-                    <el-option label="封禁" :value="1" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="loadList(selectedOrgId)" :disabled="listLoading">查询</el-button>
-                  <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-                </el-form-item>
+            <StdListAreaQuery>
+              <el-form :model="listForm">
+                <el-row>
+                  <el-col :span="5" :offset="1">
+                    <el-form-item label="用户名">
+                      <el-input v-model="listForm.username" placeholder="请输入用户名" clearable />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="5" :offset="1">
+                    <el-form-item label="状态">
+                      <el-select v-model="listForm.status" placeholder="请选择状态" clearable style="width: 100%">
+                        <el-option label="正常" :value="0" />
+                        <el-option label="封禁" :value="1" />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <!-- 占位列 -->
+                  <el-col :span="5" :offset="1"> </el-col>
+                  <el-col :span="5" :offset="1">
+                    <el-form-item>
+                      <el-button type="primary" @click="loadList(selectedOrgId)" :disabled="listLoading">查询</el-button>
+                      <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
               </el-form>
-            </div>
+            </StdListAreaQuery>
 
-            <div class="list-table">
+            <StdListAreaTable>
               <el-table
                 :data="listData"
                 stripe
@@ -50,6 +60,7 @@
                 style="cursor: pointer"
                 ref="tableRef"
                 row-key="id"
+                height="100%"
               >
                 <el-table-column v-if="multiple" type="selection" width="55" :reserve-selection="true" />
                 <el-table-column prop="username" label="用户名" min-width="120" />
@@ -78,7 +89,7 @@
                 </el-table-column>
               </el-table>
 
-              <div class="pagination-container">
+              <template #pagination>
                 <el-pagination
                   v-model:current-page="listForm.pageNum"
                   v-model:page-size="listForm.pageSize"
@@ -89,8 +100,8 @@
                   @current-change="handlePageChange"
                   background
                 />
-              </div>
-            </div>
+              </template>
+            </StdListAreaTable>
           </div>
         </pane>
       </splitpanes>
@@ -99,11 +110,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleCancel">取消</el-button>
-        <el-button
-          type="primary"
-          @click="handleConfirm"
-          :disabled="multiple ? selectedUsers.length === 0 : !selectedUser"
-        >
+        <el-button type="primary" @click="handleConfirm" :disabled="multiple ? selectedUsers.length === 0 : !selectedUser">
           确定{{ multiple && selectedUsers.length > 0 ? `(${selectedUsers.length})` : "" }}
         </el-button>
       </div>
@@ -117,16 +124,18 @@ import { Splitpanes, Pane } from "splitpanes";
 import type { ElTable } from "element-plus";
 import "splitpanes/dist/splitpanes.css";
 import OrgTree from "@/views/core/components/OrgTree.vue";
+import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
+import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import CoreUserSelectInputService from "@/views/core/service/CoreUserSelectInputService";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 import type { GetUserListVo } from "@/views/core/api/UserApi";
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: boolean;             // 弹窗显隐控制 (支持 v-model)
-    title?: string;                   // 弹窗标题，默认为 "选择用户"
-    width?: string | number;          // 弹窗宽度，默认为 "75%"
-    multiple?: boolean;               // 是否开启多选模式，默认为 false
+    modelValue?: boolean; // 弹窗显隐控制 (支持 v-model)
+    title?: string; // 弹窗标题，默认为 "选择用户"
+    width?: string | number; // 弹窗宽度，默认为 "75%"
+    multiple?: boolean; // 是否开启多选模式，默认为 false
     defaultSelected?: string | string[]; // 默认选中的用户 ID 或 ID 数组
   }>(),
   {
@@ -344,27 +353,9 @@ defineExpose({
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 10px;
   box-sizing: border-box;
-}
-
-.query-form {
-  margin-bottom: 10px;
-  background-color: var(--el-fill-color-blank);
-  border-bottom: 1px dashed var(--el-border-color-light);
-}
-
-.list-table {
-  flex: 1;
-  width: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
+  overflow: hidden;
 }
 
 .dialog-footer {
