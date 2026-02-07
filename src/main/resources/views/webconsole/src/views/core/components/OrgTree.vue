@@ -12,7 +12,7 @@
     </div>
 
     <div class="tree-wrapper">
-      <div v-if="showHeader" class="all-org-node" :class="{ 'is-active': isAllSelected }" @click="handleSelectAll">
+      <div v-if="showHeader && !multiple" class="all-org-node" :class="{ 'is-active': isAllSelected }" @click="handleSelectAll">
         <el-icon class="node-icon"><OfficeBuildingIcon /></el-icon>
         <span class="node-label">全部公司</span>
       </div>
@@ -22,10 +22,12 @@
         :props="defaultProps"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
+        :show-checkbox="multiple"
         node-key="id"
         highlight-current
         default-expand-all
         @node-click="handleNodeClick"
+        @check="handleCheckChange"
         class="custom-tree"
       >
         <template #default="{ node, data }">
@@ -54,14 +56,19 @@ const ManagementIcon = markRaw(Management);
 
 const emit = defineEmits<{
   (e: "on-select", node: GetOrgTreeVo | null): void;
+  (e: "on-check", nodes: GetOrgTreeVo[]): void;
 }>();
 
 const props = withDefaults(
   defineProps<{
     showHeader?: boolean;
+    multiple?: boolean;
+    defaultCheckedKeys?: string[];
   }>(),
   {
     showHeader: true,
+    multiple: false,
+    defaultCheckedKeys: () => [],
   }
 );
 
@@ -91,13 +98,31 @@ const filterNode = (value: string, data: GetOrgTreeVo) => {
 };
 
 const handleNodeClick = (data: GetOrgTreeVo) => {
+  if (props.multiple) return;
   isAllSelected.value = false;
   emit("on-select", data);
   onSelectOrg(data);
 };
 
+const handleCheckChange = () => {
+  if (!treeRef.value) return;
+  const checkedNodes = treeRef.value.getCheckedNodes() as GetOrgTreeVo[];
+  emit("on-check", checkedNodes);
+};
+
 const reset = () => {
   handleSelectAll();
+  if (props.multiple && treeRef.value) {
+    treeRef.value.setCheckedKeys([]);
+  }
+};
+
+const getCheckedNodes = () => {
+  return treeRef.value?.getCheckedNodes() as GetOrgTreeVo[];
+};
+
+const setCheckedKeys = (keys: string[]) => {
+  treeRef.value?.setCheckedKeys(keys);
 };
 
 onMounted(() => {
@@ -106,6 +131,8 @@ onMounted(() => {
 
 defineExpose({
   reset,
+  getCheckedNodes,
+  setCheckedKeys,
 });
 </script>
 
