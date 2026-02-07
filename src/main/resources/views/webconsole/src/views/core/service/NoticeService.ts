@@ -289,7 +289,7 @@ export default {
           await NoticeApi.editNotice(editDto);
           ElMessage.success("修改成功");
           //modalVisible.value = false;
-          resetModal();
+          //resetModal();
           reloadCallback();
         } catch (error: any) {
           ElMessage.error(error.message);
