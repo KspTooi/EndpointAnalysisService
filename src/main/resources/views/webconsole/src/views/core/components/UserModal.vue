@@ -109,7 +109,7 @@ const queryForm = reactive<GetUserListDto>({
   username: undefined,
   status: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 watch(
@@ -149,7 +149,7 @@ const loadList = async () => {
 
 const resetQuery = () => {
   queryForm.pageNum = 1;
-  queryForm.pageSize = 10;
+  queryForm.pageSize = 20;
   queryForm.username = undefined;
   queryForm.status = null;
   loadList();

@@ -178,7 +178,7 @@ const listForm = reactive<GetConfigListDto>({
   keyword: null,
   userName: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetConfigListVo[]>([]);
@@ -234,7 +234,7 @@ const loadList = async () => {
 
 const resetList = () => {
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   listForm.keyword = null;
   listForm.userName = null;
   loadList();

@@ -1,5 +1,12 @@
 <template>
-  <el-dialog v-model="visible" title="公司成员列表" width="800px" :close-on-click-modal="false" @close="handleClose" class="modal-centered">
+  <el-dialog
+    v-model="visible"
+    title="公司成员列表"
+    width="800px"
+    :close-on-click-modal="false"
+    @close="handleClose"
+    class="modal-centered"
+  >
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="queryForm">
@@ -110,7 +117,7 @@ const queryForm = reactive<GetCompanyMemberListDto>({
   username: null,
   role: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 watch(
@@ -183,7 +190,7 @@ const loadList = async () => {
 
 const resetQuery = () => {
   queryForm.pageNum = 1;
-  queryForm.pageSize = 10;
+  queryForm.pageSize = 20;
   queryForm.username = null;
   if (props.role === undefined) {
     queryForm.role = null;

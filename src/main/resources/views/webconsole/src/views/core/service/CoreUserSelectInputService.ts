@@ -11,7 +11,7 @@ export default {
   useUserSelect(initialUserId?: string | string[] | null, multiple?: boolean) {
     const listForm = ref<GetUserListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       username: "",
       status: null,
       orgId: null,
@@ -43,7 +43,7 @@ export default {
 
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.username = "";
       listForm.value.status = null;
       loadList(listForm.value.orgId);

@@ -21,7 +21,7 @@ export default {
   useUserList(orgId: Ref<string | null>) {
     const listForm = ref<GetUserListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       username: "",
       status: null,
       orgId: null,
@@ -57,7 +57,7 @@ export default {
      */
     const resetList = (orgId?: string | null) => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.username = "";
       listForm.value.status = null;
       QueryPersistService.clearQuery("user-manager");

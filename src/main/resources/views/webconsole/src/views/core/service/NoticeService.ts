@@ -24,7 +24,7 @@ export default {
   useNoticeList() {
     const listForm = ref<GetNoticeListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       title: "",
       kind: undefined,
       content: "",
@@ -62,7 +62,7 @@ export default {
      */
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.title = "";
       listForm.value.kind = undefined;
       listForm.value.content = "";

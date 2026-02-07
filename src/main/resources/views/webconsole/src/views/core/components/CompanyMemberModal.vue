@@ -110,7 +110,7 @@ const queryForm = reactive<GetCompanyMemberListDto>({
   username: null,
   role: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 watch(
@@ -183,7 +183,7 @@ const loadList = async () => {
 
 const resetQuery = () => {
   queryForm.pageNum = 1;
-  queryForm.pageSize = 10;
+  queryForm.pageSize = 20;
   queryForm.username = null;
   if (props.role === undefined) {
     queryForm.role = null;

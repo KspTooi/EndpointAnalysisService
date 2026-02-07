@@ -126,7 +126,7 @@ const listForm = reactive<GetCurrentUserActiveCompanyMemberListDto>({
   username: null,
   role: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetCompanyMemberListVo[]>([]);
@@ -171,7 +171,7 @@ const loadList = async () => {
 
 const resetList = () => {
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   listForm.username = null;
   listForm.role = null;
   loadList();

@@ -223,7 +223,7 @@ const DeleteIcon = markRaw(Delete);
 
 const listForm = reactive<GetGroupListDto>({
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
   keyword: "",
   status: undefined,
 });
@@ -312,7 +312,7 @@ const loadList = async () => {
 
 const resetList = () => {
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   listForm.keyword = "";
   listForm.status = undefined;
   loadList();
