@@ -1,6 +1,6 @@
 <template>
   <StdListContainer>
-    <StdListAreaQuery v-if="$slots.query">
+    <StdListAreaQuery v-if="$slots.query" :show-persist-tip="showPersistTip">
       <slot name="query"></slot>
     </StdListAreaQuery>
 
@@ -19,6 +19,10 @@ import StdListContainer from "./StdListContainer.vue";
 import StdListAreaQuery from "./StdListAreaQuery.vue";
 import StdListAreaAction from "./StdListAreaAction.vue";
 import StdListAreaTable from "./StdListAreaTable.vue";
+
+defineProps<{
+  showPersistTip?: boolean;
+}>();
 </script>
 
 <style scoped></style>
