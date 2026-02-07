@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetNoticeListDto,
@@ -11,6 +11,8 @@ import NoticeApi from "@/views/core/api/NoticeApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import QueryPersistService from "@/service/QueryPersistService.ts";
+import type { GetOrgTreeVo } from "../api/OrgApi";
+import type { GetUserListVo } from "../api/UserApi";
 
 /**
  * 模态框模式类型
@@ -126,6 +128,8 @@ export default {
       content: "",
       priority: 0,
       category: "",
+      targetKind: 0,
+      targetIds: [],
     });
 
     /**
@@ -145,6 +149,26 @@ export default {
         { type: "number", min: 0, max: 2, message: "优先级只能在0-2之间", trigger: "blur" },
       ],
       category: [{ max: 32, message: "业务类型长度不能超过32个字符", trigger: "blur" }],
+      targetKind: [
+        { required: true, message: "接收对象类型不能为空", trigger: "blur" },
+        { type: "number", min: 0, max: 2, message: "接收对象类型只能在0-2之间", trigger: "blur" },
+      ],
+      targetIds: [
+        {
+          validator: (rule: any, value: any, callback: any) => {
+            if (modalForm.targetKind === 0) {
+              callback();
+              return;
+            }
+            if (!value || value.length === 0) {
+              callback(new Error(`${modalForm.targetKind === 1 ? "接收部门" : "接收用户"}不能为空`));
+              return;
+            }
+            callback();
+          },
+          trigger: "blur",
+        },
+      ],
     };
 
     /**
@@ -162,6 +186,8 @@ export default {
         modalForm.content = "";
         modalForm.priority = 0;
         modalForm.category = "";
+        modalForm.targetKind = 0;
+        modalForm.targetIds = [];
         modalVisible.value = true;
         return;
       }
@@ -201,6 +227,8 @@ export default {
       modalForm.content = "";
       modalForm.priority = 0;
       modalForm.category = "";
+      modalForm.targetKind = 0;
+      modalForm.targetIds = [];
     };
 
     /**
@@ -227,6 +255,8 @@ export default {
             content: modalForm.content || undefined,
             priority: modalForm.priority,
             category: modalForm.category || undefined,
+            targetKind: modalForm.targetKind,
+            targetIds: modalForm.targetIds,
           };
           await NoticeApi.addNotice(addDto);
           ElMessage.success("新增成功");
@@ -268,6 +298,35 @@ export default {
       }
     };
 
+    /**
+     * 选择部门
+     */
+    const onDeptSelect = (depts: GetOrgTreeVo[]) => {
+      if (modalForm.targetKind !== 1) {
+        return;
+      }
+
+      modalForm.targetIds = depts.map((dept) => dept.id);
+    };
+
+    /**
+     * 选择用户
+     */
+    const onUserSelect = (users: GetUserListVo[]) => {
+      if (modalForm.targetKind !== 2) {
+        return;
+      }
+      modalForm.targetIds = users.map((user) => user.id);
+    };
+
+    //处理接收对象类型变化时清空接收对象ID列表
+    watch(
+      () => modalForm.targetKind,
+      (newVal) => {
+        modalForm.targetIds = [];
+      }
+    );
+
     return {
       modalVisible,
       modalLoading,
@@ -277,6 +336,8 @@ export default {
       openModal,
       resetModal,
       submitModal,
+      onDeptSelect,
+      onUserSelect,
     };
   },
 };

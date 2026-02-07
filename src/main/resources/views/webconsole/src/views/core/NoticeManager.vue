@@ -62,31 +62,41 @@
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="kind" label="种类" width="100" align="center">
+        <el-table-column prop="title" label="标题" min-width="128" show-overflow-tooltip />
+        <el-table-column prop="kind" label="种类" width="100">
           <template #default="scope">
             <el-tag v-if="scope.row.kind === 0" type="info">公告</el-tag>
-            <el-tag v-else-if="scope.row.kind === 1" type="warning">业务提醒</el-tag>
-            <el-tag v-else-if="scope.row.kind === 2" type="success">私信</el-tag>
+            <el-tag v-if="scope.row.kind === 1" type="warning">业务提醒</el-tag>
+            <el-tag v-if="scope.row.kind === 2" type="success">私信</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="80" align="center">
+        <el-table-column prop="priority" label="优先级" width="75">
           <template #default="scope">
             <el-tag v-if="scope.row.priority === 0" type="info">低</el-tag>
-            <el-tag v-else-if="scope.row.priority === 1" type="warning">中</el-tag>
-            <el-tag v-else-if="scope.row.priority === 2" type="danger">高</el-tag>
+            <el-tag v-if="scope.row.priority === 1" type="warning">中</el-tag>
+            <el-tag v-if="scope.row.priority === 2" type="danger">高</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="category" label="业务类型" min-width="120" show-overflow-tooltip>
+        <el-table-column prop="category" label="业务类型" width="90" show-overflow-tooltip>
           <template #default="scope">
-            <span>{{ scope.row.category || "-" }}</span>
+            <span v-if="scope.row.category">{{ scope.row.category }}</span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="senderName" label="发送人" min-width="100" show-overflow-tooltip>
+        <el-table-column prop="senderName" label="发送人" width="100" show-overflow-tooltip>
           <template #default="scope">
             <span>{{ scope.row.senderName || "系统" }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="targetKind" label="接收对象类型" width="120" align="center">
+          <template #default="scope">
+            <span v-if="scope.row.targetKind === 0"> 全员 </span>
+            <span v-if="scope.row.targetKind === 1"> 指定部门 </span>
+            <span v-if="scope.row.targetKind === 2"> 指定用户 </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="targetCount" label="接收人数" width="90" />
+        <el-table-column prop="createTime" label="创建时间" width="200" />
         <el-table-column label="操作" fixed="right" width="150" align="center">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -120,63 +130,99 @@
         background
       />
     </template>
-  </StdListLayout>
 
-  <!-- 新增/编辑模态框 -->
-  <el-dialog
-    v-model="modalVisible"
-    :title="modalMode === 'edit' ? '编辑消息' : '新增消息'"
-    width="600px"
-    :close-on-click-modal="false"
-    @close="
-      resetModal();
-      loadList();
-    "
-  >
-    <el-form
-      v-if="modalVisible"
-      ref="modalFormRef"
-      :model="modalForm"
-      :rules="modalRules"
-      label-width="100px"
-      :validate-on-rule-change="false"
-    >
-      <el-form-item label="标题" prop="title">
-        <el-input v-model="modalForm.title" placeholder="请输入标题" maxlength="32" show-word-limit clearable />
-      </el-form-item>
-      <el-form-item label="种类" prop="kind">
-        <el-select v-model="modalForm.kind" placeholder="请选择种类" style="width: 100%">
-          <el-option label="公告" :value="0" />
-          <el-option label="业务提醒" :value="1" />
-          <el-option label="私信" :value="2" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="通知内容" prop="content">
-        <el-input v-model="modalForm.content" type="textarea" :rows="4" placeholder="请输入通知内容" clearable />
-      </el-form-item>
-      <el-form-item label="优先级" prop="priority">
-        <el-select v-model="modalForm.priority" placeholder="请选择优先级" style="width: 100%">
-          <el-option label="低" :value="0" />
-          <el-option label="中" :value="1" />
-          <el-option label="高" :value="2" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="业务类型" prop="category">
-        <el-input v-model="modalForm.category" placeholder="请输入业务类型" maxlength="32" show-word-limit clearable />
-      </el-form-item>
-      <el-form-item label="接收人" prop="receiverId">
-        <CoreUserSelectInput multiple />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
-          {{ modalMode === "add" ? "创建" : "保存" }}
-        </el-button>
-      </div>
+    <template #modal>
+      <!-- 部门选择器 -->
+      <CoreOrgDeptSelectModal
+        v-model="deptSelectVisible"
+        :default-selected="modalForm.targetIds"
+        title="选择接收部门"
+        multiple
+        @confirm="onDeptSelect"
+      />
+
+      <CoreUserSelectModal
+        v-model="userSelectVisible"
+        :default-selected="modalForm.targetIds"
+        title="选择接收用户"
+        multiple
+        @confirm="onUserSelect"
+      />
+
+      <!-- 新增/编辑模态框 -->
+      <el-dialog
+        v-model="modalVisible"
+        :title="modalMode === 'edit' ? '编辑消息' : '新增消息'"
+        width="600px"
+        :close-on-click-modal="false"
+        @close="
+          resetModal();
+          loadList();
+        "
+      >
+        <el-form
+          v-if="modalVisible"
+          ref="modalFormRef"
+          :model="modalForm"
+          :rules="modalRules"
+          label-width="110px"
+          :validate-on-rule-change="false"
+        >
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="modalForm.title" placeholder="请输入标题" maxlength="32" show-word-limit clearable />
+          </el-form-item>
+          <el-form-item label="种类" prop="kind">
+            <el-select v-model="modalForm.kind" placeholder="请选择种类" style="width: 100%">
+              <el-option label="公告" :value="0" />
+              <el-option label="业务提醒" :value="1" />
+              <el-option label="私信" :value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="通知内容" prop="content">
+            <el-input v-model="modalForm.content" type="textarea" :rows="4" placeholder="请输入通知内容" clearable />
+          </el-form-item>
+          <el-form-item label="优先级" prop="priority">
+            <el-select v-model="modalForm.priority" placeholder="请选择优先级" style="width: 100%">
+              <el-option label="低" :value="0" />
+              <el-option label="中" :value="1" />
+              <el-option label="高" :value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="业务类型" prop="category">
+            <el-input v-model="modalForm.category" placeholder="请输入业务类型" maxlength="32" show-word-limit clearable />
+          </el-form-item>
+          <el-form-item label="接收对象类型" prop="targetKind">
+            <el-radio-group v-model="modalForm.targetKind" style="width: 100%" :disabled="modalMode === 'edit'">
+              <el-radio label="全员" :value="0" />
+              <el-radio label="指定部门" :value="1" />
+              <el-radio label="指定用户" :value="2" />
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item v-if="modalForm.targetKind === 1 && modalMode === 'add'" label="选择接收部门" prop="targetIds">
+            <div class="flex items-center gap-4 text-cyan-600 ml-4">
+              <el-button type="primary" @click="deptSelectVisible = true" size="small">选择接收部门</el-button>
+              <span>已选择 {{ modalForm.targetIds.length }} 个部门</span>
+            </div>
+          </el-form-item>
+          <el-form-item v-if="modalForm.targetKind === 2 && modalMode === 'add'" label="选择接收用户" prop="targetIds">
+            <div class="flex items-center gap-4 text-cyan-600 ml-4">
+              <el-button type="primary" @click="userSelectVisible = true" size="small">选择接收用户</el-button>
+              <span>已选择 {{ modalForm.targetIds.length }} 位用户</span>
+            </div>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="modalVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+              {{ modalMode === "add" ? "创建" : "保存" }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
     </template>
-  </el-dialog>
+  </StdListLayout>
 </template>
 
 <script setup lang="ts">
@@ -185,8 +231,15 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import NoticeService from "@/views/core/service/NoticeService.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
-import CoreUserSelectInput from "@/views/core/components/public/CoreUserSelectInput.vue";
+import CoreUserSelectModal from "@/views/core/components/public/CoreUserSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
+
+// 部门选择器引用
+const deptSelectVisible = ref(false);
+
+// 用户选择器引用
+const userSelectVisible = ref(false);
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -204,8 +257,18 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
 const modalFormRef = ref<FormInstance>();
 
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  NoticeService.useNoticeModal(modalFormRef, loadList);
+const {
+  modalVisible,
+  modalLoading,
+  modalMode,
+  modalForm,
+  modalRules,
+  openModal,
+  resetModal,
+  submitModal,
+  onDeptSelect,
+  onUserSelect,
+} = NoticeService.useNoticeModal(modalFormRef, loadList);
 </script>
 
 <style scoped></style>

@@ -26,6 +26,9 @@ export interface GetNoticeListVo {
   priority: number; // 优先级: 0:低 1:中 2:高
   category: string; // 业务类型/分类
   senderName: string; // 发送人姓名
+  targetKind: number; // 接收对象类型 0:全员 1:指定部门 2:指定用户
+  targetCount: number; // 接收人数
+  createTime: string; // 创建时间
 }
 
 /**
@@ -54,6 +57,8 @@ export interface AddNoticeDto {
   content?: string; // 通知内容
   priority: number; // 优先级: 0:低 1:中 2:高
   category?: string; // 业务类型/分类
+  targetKind: number; // 接收对象类型 0:全员 1:指定部门 2:指定用户
+  targetIds: string[]; // 接收对象ID列表
 }
 
 /**
