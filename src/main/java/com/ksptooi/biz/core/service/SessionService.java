@@ -19,6 +19,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.ksptool.entities.Entities.fromJsonArray;
@@ -76,15 +77,16 @@ public class SessionService {
      * @param uid 用户ID
      */
     public void closeSession(Long uid) {
+        closeSession(List.of(uid));
+    }
 
-        var existingSession = userSessionRepository.getSessionByUserId(uid);
-
-        if (existingSession == null) {
-            log.warn("尝试关闭用户会话失败,用户会话不存在: {}", uid);
-            return;
-        }
-
-        userSessionRepository.delete(existingSession);
+    /**
+     * 批量关闭用户会话
+     *
+     * @param uids 用户ID列表
+     */
+    public void closeSession(List<Long> uids){
+        userSessionRepository.removeUserSessionByUserIds(uids);
     }
 
 

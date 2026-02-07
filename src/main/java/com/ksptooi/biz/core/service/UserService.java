@@ -55,6 +55,7 @@ public class UserService {
 
     @Autowired
     private OrgRepository orgRepository;
+    
     @Autowired
     private SessionService sessionService;
 
@@ -560,6 +561,22 @@ public class UserService {
             userRepository.saveAll(userPos);
             return userPos.size();
         }
+
+        //批量删除
+        if (dto.getKind() == 2) {
+
+            //直接剔除内置用户
+            userPos = userPos.stream().filter(user -> !user.isSystem()).collect(Collectors.toList());
+
+            //批量删除用户
+            userRepository.deleteAll(userPos);
+
+            //销毁被删除用户的session(如果有) 强行踢他们下线
+            
+
+            return userPos.size();
+        }
+
 
         //批量变更部门
         if (dto.getKind() == 3) {

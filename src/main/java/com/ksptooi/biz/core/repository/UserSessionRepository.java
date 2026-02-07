@@ -63,6 +63,12 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             """)
     UserSessionPo getSessionByUserId(@Param("userId") Long userId);
 
+    @Modifying
+    @Query("""
+            DELETE FROM UserSessionPo us
+            WHERE us.userId IN :userIds
+            """)
+    int removeUserSessionByUserIds(@Param("userIds") List<Long> userIds);
 
     /**
      * 根据SessionId删除会话
