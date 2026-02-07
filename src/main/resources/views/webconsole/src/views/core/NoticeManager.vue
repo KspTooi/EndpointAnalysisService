@@ -136,6 +136,7 @@
       <CoreOrgDeptSelectModal
         v-model="deptSelectVisible"
         :default-selected="modalForm.targetIds"
+          
         title="选择接收部门"
         multiple
         @confirm="onDeptSelect"

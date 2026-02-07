@@ -26,9 +26,9 @@
         <el-button
           type="primary"
           @click="handleConfirm"
-          :disabled="multiple ? selectedNodes.length === 0 : !selectedNode"
+          :disabled="multiple ? validDeptCount === 0 : !selectedNode"
         >
-          确定{{ multiple && selectedNodes.length > 0 ? `(${selectedNodes.length})` : "" }}
+          确定{{ multiple && validDeptCount > 0 ? `(${validDeptCount})` : "" }}
         </el-button>
       </div>
     </template>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, computed } from "vue";
 import OrgTree from "@/views/core/components/OrgTree.vue";
 import CoreOrgDeptSelectModalService from "@/views/core/service/CoreOrgDeptSelectModalService";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
@@ -66,6 +66,11 @@ const emit = defineEmits<{
 const visible = ref(false);
 const orgTreeRef = ref();
 const { selectedNode, selectedNodes, onSelect, onCheck } = CoreOrgDeptSelectModalService.useDeptSelect(props.multiple);
+
+// 计算有效的部门节点数量（过滤掉企业节点 kind === 1）
+const validDeptCount = computed(() => {
+  return selectedNodes.value.filter((node) => node.kind === 0).length;
+});
 
 // 用于 Promise 式调用的状态
 let promiseResolve: (value: GetOrgTreeVo | GetOrgTreeVo[]) => void;
@@ -130,15 +135,20 @@ const handleConfirm = () => {
   let result: GetOrgTreeVo | GetOrgTreeVo[] | null = null;
   
   if (props.multiple) {
-    result = [...selectedNodes.value];
+    // 多选模式：过滤掉企业节点（kind === 1），只保留部门节点（kind === 0）
+    result = selectedNodes.value.filter((node) => node.kind === 0);
   }
   if (!props.multiple) {
     result = selectedNode.value;
   }
   
-  if (!result) return;
+  if (!result) {
+    return;
+  }
 
-  if (promiseResolve) promiseResolve(result);
+  if (promiseResolve) {
+    promiseResolve(result);
+  }
   emit("confirm", result);
   visible.value = false;
 };

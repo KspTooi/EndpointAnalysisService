@@ -148,11 +148,7 @@
     />
 
     <!-- 部门选择器 (用于批量变更部门等操作) -->
-    <CoreOrgDeptSelectModal
-      ref="deptSelectModalRef"
-      v-model="deptSelectVisible"
-      title="选择目标部门"
-    />
+    <CoreOrgDeptSelectModal ref="deptSelectModalRef" v-model="deptSelectVisible" title="选择目标部门" />
 
     <!-- 用户编辑/新增模态框 -->
     <el-dialog
@@ -306,7 +302,10 @@ const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();
 const deptSelectVisible = ref(false);
 
 // 批量操作打包
-const { onBatchAction, onSelectionChange, canBatchAction, batchCount } = UserManagerService.useBatchAction(_loadList, deptSelectModalRef);
+const { onBatchAction, onSelectionChange, canBatchAction, batchCount } = UserManagerService.useBatchAction(
+  _loadList,
+  deptSelectModalRef
+);
 </script>
 
 <style scoped>
