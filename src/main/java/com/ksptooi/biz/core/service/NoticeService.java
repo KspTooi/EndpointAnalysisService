@@ -27,6 +27,12 @@ public class NoticeService {
     @Autowired
     private NoticeRepository repository;
 
+    /**
+     * 查询消息列表
+     * 
+     * @param dto 查询条件
+     * @return 消息列表
+     */
     public PageResult<GetNoticeListVo> getNoticeList(GetNoticeListDto dto) {
         NoticePo query = new NoticePo();
         assign(dto, query);
@@ -40,12 +46,23 @@ public class NoticeService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增消息
+     * 
+     * @param dto 新增消息DTO
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addNotice(AddNoticeDto dto) {
         NoticePo insertPo = as(dto, NoticePo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑消息
+     * 
+     * @param dto 编辑消息DTO
+     * @throws BizException 编辑消息失败
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editNotice(EditNoticeDto dto) throws BizException {
         NoticePo updatePo = repository.findById(dto.getId())
@@ -55,12 +72,25 @@ public class NoticeService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询消息详情
+     * 
+     * @param dto 查询消息详情DTO
+     * @return 消息详情
+     * @throws BizException 查询消息详情失败
+     */
     public GetNoticeDetailsVo getNoticeDetails(CommonIdDto dto) throws BizException {
         NoticePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetNoticeDetailsVo.class);
     }
 
+    /**
+     * 删除消息
+     * 
+     * @param dto 删除消息DTO
+     * @throws BizException 删除消息失败
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeNotice(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

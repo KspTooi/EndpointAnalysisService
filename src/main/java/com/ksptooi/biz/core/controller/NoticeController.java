@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +40,14 @@ public class NoticeController {
     @Operation(summary = "新增消息")
     @PostMapping("/addNotice")
     public Result<String> addNotice(@RequestBody @Valid AddNoticeDto dto) throws Exception {
+
+        //验证参数
+        String validate = dto.validate();
+        
+        if (StringUtils.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
         noticeService.addNotice(dto);
         return Result.success("新增成功");
     }

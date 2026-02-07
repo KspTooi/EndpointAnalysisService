@@ -26,5 +26,11 @@ public class GetNoticeListVo {
     @Schema(description = "发送人姓名")
     private String senderName;
 
+    @Schema(description = "接收对象类型 0:全员 1:指定部门 2:指定用户")
+    private String targetKindName;
+
+    @Schema(description = "预计接收人数")
+    private Integer targetCount;
+
 }
 

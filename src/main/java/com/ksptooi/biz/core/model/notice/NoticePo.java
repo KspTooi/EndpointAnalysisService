@@ -38,6 +38,12 @@ public class NoticePo {
     @Column(name = "sender_name", length = 32, nullable = true, comment = "发送人姓名")
     private String senderName;
 
+    @Column(name = "target_kind", columnDefinition = "TINYINT", nullable = false, comment = "接收人类型 0:全员 1:指定部门 2:指定用户")
+    private Integer targetKind;
+
+    @Column(name = "target_count", length = 255, nullable = true, comment = "预计接收人数")
+    private String targetCount;
+
     @Column(name = "forward", length = 320, nullable = true, comment = "跳转URL/路由地址")
     private String forward;
 
@@ -46,7 +52,6 @@ public class NoticePo {
 
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
-
 
     @PrePersist
     private void onCreate() {
@@ -65,7 +70,6 @@ public class NoticePo {
 
     @PreUpdate
     private void onUpdate() {
-
 
     }
 }
