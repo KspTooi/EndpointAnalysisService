@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -23,13 +22,10 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons"></div>
-
-    <!-- 会话列表 -->
-    <div class="list-table">
-      <el-table :data="listData" stripe v-loading="listLoading" border>
+    <template #table>
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="id" label="会话ID" min-width="100" />
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="createTime" label="登入时间" min-width="180" />
@@ -41,29 +37,29 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            () => {
-              loadList();
-            }
-          "
-          @current-change="
-            () => {
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          () => {
+            loadList();
+          }
+        "
+        @current-change="
+          () => {
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+  </StdListLayout>
 
     <!-- 会话详情模态框 -->
     <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
@@ -93,7 +89,6 @@
         </span>
       </template>
     </el-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -102,6 +97,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
 import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/views/core/api/SessionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const ViewIcon = markRaw(View);
 const CloseIcon = markRaw(CloseBold);
@@ -184,32 +180,6 @@ loadList();
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
 .el-descriptions {
   margin-top: 0; /* Reset margin if any default from el-dialog content */
 }
