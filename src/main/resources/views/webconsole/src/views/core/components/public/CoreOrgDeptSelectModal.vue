@@ -14,6 +14,7 @@
           ref="orgTreeRef"
           :multiple="multiple"
           :show-header="!multiple"
+          select-kind="dept"
           @on-select="onSelect"
           @on-check="onCheck"
         />

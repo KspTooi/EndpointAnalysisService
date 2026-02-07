@@ -31,7 +31,7 @@
         class="custom-tree"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
+          <span class="custom-tree-node" :class="{ 'is-disabled': isNodeDisabled(data) }">
             <el-icon class="node-icon">
               <component :is="data.kind === 1 ? OfficeBuildingIcon : ManagementIcon" />
             </el-icon>
@@ -64,16 +64,19 @@ const props = withDefaults(
     showHeader?: boolean;
     multiple?: boolean;
     defaultCheckedKeys?: string[];
+    selectKind?: 'all' | 'root' | 'dept';
   }>(),
   {
     showHeader: true,
     multiple: false,
     defaultCheckedKeys: () => [],
+    selectKind: 'all',
   }
 );
 
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const isAllSelected = ref(true);
+const currentSelectedKey = ref<string | number | null>(null);
 const { treeData, loading, filterText, loadTreeData, onSelectOrg } = OrgTreeService.useOrgTree();
 
 const defaultProps = {
@@ -83,6 +86,7 @@ const defaultProps = {
 
 const handleSelectAll = () => {
   isAllSelected.value = true;
+  currentSelectedKey.value = null;
   treeRef.value?.setCurrentKey(null);
   emit("on-select", null);
   onSelectOrg(null);
@@ -97,9 +101,21 @@ const filterNode = (value: string, data: GetOrgTreeVo) => {
   return data.name.includes(value);
 };
 
+const isNodeDisabled = (data: GetOrgTreeVo) => {
+  if (props.selectKind === 'all') return false;
+  if (props.selectKind === 'root') return data.kind !== 1;
+  if (props.selectKind === 'dept') return data.kind === 1;
+  return false;
+};
+
 const handleNodeClick = (data: GetOrgTreeVo) => {
   if (props.multiple) return;
+  if (isNodeDisabled(data)) {
+    treeRef.value?.setCurrentKey(currentSelectedKey.value);
+    return;
+  }
   isAllSelected.value = false;
+  currentSelectedKey.value = data.id;
   emit("on-select", data);
   onSelectOrg(data);
 };
@@ -199,6 +215,16 @@ defineExpose({
   color: var(--el-text-color-regular);
 }
 
+.custom-tree-node.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.custom-tree-node.is-disabled .node-icon,
+.custom-tree-node.is-disabled .node-label {
+  color: var(--el-text-color-disabled);
+}
+
 :deep(.el-input__wrapper) {
   border-radius: 0;
 }
@@ -211,6 +237,11 @@ defineExpose({
 
 :deep(.el-tree-node__content:hover) {
   background-color: var(--el-color-primary-light-9);
+}
+
+:deep(.el-tree-node__content:has(.is-disabled):hover) {
+  background-color: transparent;
+  cursor: not-allowed;
 }
 
 :deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
