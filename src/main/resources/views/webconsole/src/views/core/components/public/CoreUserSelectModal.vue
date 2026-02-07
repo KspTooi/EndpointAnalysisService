@@ -7,8 +7,9 @@
     append-to-body
     destroy-on-close
     class="core-user-select-modal"
+    @opened="handleOpened"
   >
-    <div class="modal-body">
+    <div class="modal-body" v-loading="listLoading">
       <splitpanes class="custom-theme">
         <pane size="20" min-size="10" max-size="40">
           <div class="mt-2 px-1">
@@ -169,13 +170,6 @@ watch(
   () => props.modelValue,
   (val) => {
     visible.value = val;
-    if (val) {
-      nextTick(() => {
-        loadList(selectedOrgId.value).then(() => {
-          initSelection();
-        });
-      });
-    }
   },
   { immediate: true }
 );
@@ -187,6 +181,14 @@ watch(
     emit("update:modelValue", val);
   }
 );
+
+/**
+ * 弹窗打开后加载数据
+ */
+const handleOpened = async () => {
+  await loadList(selectedOrgId.value);
+  initSelection();
+};
 
 /**
  * 命令式调用方法：打开弹窗并等待选择结果

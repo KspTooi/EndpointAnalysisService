@@ -7,8 +7,9 @@
     append-to-body
     destroy-on-close
     class="core-org-dept-select-modal"
+    @opened="handleOpened"
   >
-    <div class="modal-body">
+    <div class="modal-body" v-loading="loading">
       <div class="tree-container">
         <OrgTree
           ref="orgTreeRef"
@@ -64,6 +65,7 @@ const emit = defineEmits<{
 }>();
 
 const visible = ref(false);
+const loading = ref(false);
 const orgTreeRef = ref();
 const { selectedNode, selectedNodes, onSelect, onCheck } = CoreOrgDeptSelectModalService.useDeptSelect(props.multiple);
 
@@ -79,23 +81,27 @@ let promiseReject: (reason?: any) => void;
 // 同步外部 visible
 watch(
   () => props.modelValue,
-  async (val) => {
+  (val) => {
     visible.value = val;
-
-    if (val) {
-      // 等待组件挂载后再访问 orgTreeRef
-      await nextTick();
-      
-      // 等待树数据加载完成后再初始化选中状态
-      if (orgTreeRef.value) {
-        await orgTreeRef.value.loadTreeData();
-      }
-      
-      initSelection();
-    }
   },
   { immediate: true }
 );
+
+/**
+ * 弹窗打开后处理逻辑
+ */
+const handleOpened = async () => {
+  loading.value = true;
+  try {
+    // 等待树数据加载完成后再初始化选中状态
+    if (orgTreeRef.value) {
+      await orgTreeRef.value.loadTreeData();
+    }
+    initSelection();
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 同步内部 visible 到外部
 watch(
