@@ -141,6 +141,7 @@
         @confirm="onDeptSelect"
       />
 
+      <!-- 用户选择器 -->
       <CoreUserSelectModal
         v-model="userSelectVisible"
         :default-selected="modalForm.targetIds"

@@ -109,10 +109,20 @@ const select = (): Promise<GetOrgTreeVo | GetOrgTreeVo[]> => {
 };
 
 const initSelection = () => {
-  if (!props.defaultSelected || !orgTreeRef.value) return;
+  if (!orgTreeRef.value) {
+    return;
+  }
 
-  if (props.multiple && Array.isArray(props.defaultSelected)) {
-    orgTreeRef.value.setCheckedKeys(props.defaultSelected);
+  // 清除旧的选中状态
+  orgTreeRef.value.setCheckedKeys([]);
+  selectedNode.value = null;
+  selectedNodes.value = [];
+
+  // 如果有默认选中，则恢复选中状态
+  if (props.defaultSelected && Array.isArray(props.defaultSelected) && props.defaultSelected.length > 0) {
+    if (props.multiple) {
+      orgTreeRef.value.setCheckedKeys(props.defaultSelected);
+    }
   }
 };
 

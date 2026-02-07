@@ -171,8 +171,9 @@ watch(
     visible.value = val;
     if (val) {
       nextTick(() => {
-        loadList(selectedOrgId.value);
-        initSelection();
+        loadList(selectedOrgId.value).then(() => {
+          initSelection();
+        });
       });
     }
   },
@@ -193,8 +194,9 @@ watch(
 const select = (): Promise<GetUserListVo | GetUserListVo[]> => {
   visible.value = true;
   nextTick(() => {
-    loadList(selectedOrgId.value);
-    initSelection();
+    loadList(selectedOrgId.value).then(() => {
+      initSelection();
+    });
   });
 
   return new Promise((resolve, reject) => {
@@ -204,14 +206,22 @@ const select = (): Promise<GetUserListVo | GetUserListVo[]> => {
 };
 
 const initSelection = () => {
-  if (!props.defaultSelected || !tableRef.value) {
+  if (!tableRef.value) {
     return;
   }
 
-  if (props.multiple && Array.isArray(props.defaultSelected)) {
-    nextTick(() => {
-      restoreMultipleSelection();
-    });
+  // 清除旧的选中状态
+  tableRef.value.clearSelection();
+  selectedUsers.value = [];
+  selectedUser.value = null;
+
+  // 如果有默认选中，则恢复选中状态
+  if (props.defaultSelected && Array.isArray(props.defaultSelected) && props.defaultSelected.length > 0) {
+    if (props.multiple) {
+      nextTick(() => {
+        restoreMultipleSelection();
+      });
+    }
   }
 };
 
