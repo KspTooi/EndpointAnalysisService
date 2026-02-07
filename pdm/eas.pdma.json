@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-6 13:08:28",
+  "updatedTime": "2026-2-8 04:48:44",
   "dbConns": [],
   "profile": {
     "default": {
@@ -20476,7 +20476,7 @@
         }
       },
       "defKey": "core_notice",
-      "defName": "消息表",
+      "defName": "消息通知表",
       "comment": "",
       "properties": {
         "partitioned by": "(date string)",
@@ -20840,6 +20840,42 @@
           "attr9": "",
           "id": "1A05BBD4-8281-4B66-9D6D-48C233D5403B",
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0"
+        },
+        {
+          "defKey": "target_kind",
+          "defName": "接收人类型 0:全员 1:指定部门 2:指定用户",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
+          "extProps": {},
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
+          "id": "7F272157-79F9-455F-AAD8-3149BCF07FDB"
+        },
+        {
+          "defKey": "target_count",
+          "defName": "预计接收人数",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "id": "3138B117-DE61-4339-AD10-11732496375C"
         },
         {
           "defKey": "forward",
