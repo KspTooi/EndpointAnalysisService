@@ -1,5 +1,5 @@
 <template>
-  <StdListLayout show-persist-tip>
+  <StdListLayout>
     <template #query>
       <el-form :model="queryForm">
         <el-row>
@@ -29,7 +29,16 @@
     </template>
 
     <template #table>
-      <el-table ref="listTableRef" :data="filteredData" stripe v-loading="listLoading" border row-key="id" default-expand-all height="100%">
+      <el-table
+        ref="listTableRef"
+        :data="filteredData"
+        stripe
+        v-loading="listLoading"
+        border
+        row-key="id"
+        default-expand-all
+        height="100%"
+      >
         <el-table-column prop="name" label="组织机构名称" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="类型" min-width="100">
           <template #default="scope">

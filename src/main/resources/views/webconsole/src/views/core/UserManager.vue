@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="list-layout">
     <splitpanes class="custom-theme">
       <!-- 左侧树形列表：占满整个左侧 -->
       <pane size="20" min-size="10" max-size="40">
@@ -10,9 +10,8 @@
 
       <!-- 右侧内容区 -->
       <pane size="80">
-        <div class="right-content">
-          <!-- 查询条件区域 -->
-          <div class="query-form">
+        <StdListContainer>
+          <StdListAreaQuery>
             <el-form :model="listForm" inline class="flex justify-between">
               <div>
                 <el-form-item label="用户名">
@@ -30,10 +29,9 @@
                 <el-button @click="resetList(orgId)" :disabled="listLoading">重置</el-button>
               </el-form-item>
             </el-form>
-          </div>
+          </StdListAreaQuery>
 
-          <!-- 操作按钮区域 -->
-          <div class="mb-2 flex gap-2">
+          <StdListAreaAction>
             <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
             <el-dropdown @command="onBatchAction">
               <el-button type="primary" :disabled="!canBatchAction">
@@ -50,10 +48,9 @@
               </template>
             </el-dropdown>
             <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入用户</el-button>
-          </div>
+          </StdListAreaAction>
 
-          <!-- 列表表格区域 -->
-          <div class="list-table">
+          <StdListAreaTable>
             <el-table
               :data="listData"
               stripe
@@ -114,7 +111,7 @@
               </el-table-column>
             </el-table>
 
-            <div class="pagination-container">
+            <template #pagination>
               <el-pagination
                 v-model:current-page="listForm.pageNum"
                 v-model:page-size="listForm.pageSize"
@@ -135,9 +132,9 @@
                 "
                 background
               />
-            </div>
-          </div>
-        </div>
+            </template>
+          </StdListAreaTable>
+        </StdListContainer>
       </pane>
     </splitpanes>
 
@@ -243,10 +240,13 @@ import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import UserManagerService from "@/views/core/service/UserManagerService.ts";
-import OrgTreeService from "@/views/core/service/OrgTreeService.ts";
 import OrgTree from "@/views/core/components/OrgTree.vue";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import StdListContainer from "@/soa/std-series/StdListContainer.vue";
+import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
+import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
+import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -297,37 +297,12 @@ const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserMan
 </script>
 
 <style scoped>
-.list-container {
+.list-layout {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   background-color: var(--el-bg-color);
-}
-
-.right-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  box-sizing: border-box;
-}
-
-.query-form {
-  margin-bottom: 10px;
-  background-color: var(--el-fill-color-blank);
-  border-bottom: 1px dashed var(--el-border-color-light);
-}
-
-.action-buttons {
-  margin-bottom: 10px;
-}
-
-.list-table {
-  flex: 1;
-  width: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
 }
 
 /* 自定义无边框主题 */
@@ -341,7 +316,7 @@ const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserMan
 
 :deep(.splitpanes.custom-theme .splitpanes__splitter) {
   background-color: var(--el-border-color-extra-light);
-  width: 1px; /* 极简线条 */
+  width: 1px;
   border: none;
   cursor: col-resize;
   position: relative;
@@ -350,7 +325,7 @@ const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserMan
 
 :deep(.splitpanes.custom-theme .splitpanes__splitter:hover) {
   background-color: var(--el-color-primary);
-  width: 3px; /* 悬浮时加粗 */
+  width: 3px;
 }
 
 :deep(.splitpanes.custom-theme .splitpanes__splitter:after) {
@@ -363,14 +338,13 @@ const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserMan
   z-index: 1;
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
-  padding-bottom: 15px;
-}
-
 :deep(.splitpanes__pane) {
   transition: none !important;
+}
+
+.form-tip {
+  font-size: 12px;
+  color: var(--el-color-info);
+  margin-top: 5px;
 }
 </style>

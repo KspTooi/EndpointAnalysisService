@@ -1,6 +1,6 @@
 <template>
-  <div class="list-container">
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -22,14 +22,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
-    </div>
+    </template>
 
-    <div class="list-table">
-      <el-table :data="listData" stripe v-loading="listLoading" border>
+    <template #table>
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="code" label="组标识" min-width="120" />
         <el-table-column prop="name" label="组名称" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
@@ -70,133 +70,133 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+  </StdListLayout>
 
-    <UserGroupPermissionModal
-      :visible="modalPermissionEditVisible"
-      :row="modalPermissionEditRow"
-      @close="modalPermissionEditVisible = false"
-    />
+  <UserGroupPermissionModal
+    :visible="modalPermissionEditVisible"
+    :row="modalPermissionEditRow"
+    @close="modalPermissionEditVisible = false"
+  />
 
-    <!-- 用户组编辑/新增模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
-      width="800px"
-      :close-on-click-modal="false"
-      @close="
-        (async () => {
-          await resetModal();
-          loadList();
-        })()
-      "
+  <!-- 用户组编辑/新增模态框 -->
+  <el-dialog
+    v-model="modalVisible"
+    :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
+    width="800px"
+    :close-on-click-modal="false"
+    @close="
+      (async () => {
+        await resetModal();
+        loadList();
+      })()
+    "
+  >
+    <el-form
+      v-if="modalVisible"
+      ref="modalFormRef"
+      :model="modalForm"
+      :rules="modalRules"
+      label-width="100px"
+      :validate-on-rule-change="false"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
-        <div class="form-two-columns">
-          <div class="form-left-column">
-            <el-form-item label="组标识" prop="code" label-for="group-code">
-              <el-input
-                v-model="modalForm.code"
-                :disabled="modalMode === 'edit' && isSystemGroup"
-                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
-                id="group-code"
-              />
-            </el-form-item>
-            <el-form-item label="组名称" prop="name" label-for="group-name">
-              <el-input
-                v-model="modalForm.name"
-                :disabled="modalMode === 'edit' && isSystemGroup"
-                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
-                id="group-name"
-              />
-            </el-form-item>
-            <el-form-item label="描述" prop="description" label-for="group-description">
-              <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
-            </el-form-item>
-            <el-form-item label="状态" prop="status" label-for="group-status">
-              <el-radio-group v-model="modalForm.status" id="group-status">
-                <el-radio :value="1">启用</el-radio>
-                <el-radio :value="0">禁用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </div>
+      <div class="form-two-columns">
+        <div class="form-left-column">
+          <el-form-item label="组标识" prop="code" label-for="group-code">
+            <el-input
+              v-model="modalForm.code"
+              :disabled="modalMode === 'edit' && isSystemGroup"
+              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
+              id="group-code"
+            />
+          </el-form-item>
+          <el-form-item label="组名称" prop="name" label-for="group-name">
+            <el-input
+              v-model="modalForm.name"
+              :disabled="modalMode === 'edit' && isSystemGroup"
+              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
+              id="group-name"
+            />
+          </el-form-item>
+          <el-form-item label="描述" prop="description" label-for="group-description">
+            <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
+          </el-form-item>
+          <el-form-item label="状态" prop="status" label-for="group-status">
+            <el-radio-group v-model="modalForm.status" id="group-status">
+              <el-radio :value="1">启用</el-radio>
+              <el-radio :value="0">禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
 
-          <div class="form-right-column">
-            <el-form-item label="权限节点" prop="permissionIds" label-for="permission-search" class="permission-form-item">
-              <div class="permission-container">
-                <div class="permission-search">
-                  <el-input v-model="permissionSearch" placeholder="搜索权限节点" clearable id="permission-search">
-                    <template #prefix>
-                      <el-icon><Search /></el-icon>
-                    </template>
-                  </el-input>
-                  <div class="permission-select-buttons">
-                    <el-button-group>
-                      <el-button type="primary" size="small" @click="selectAllPermissions"> 全选 </el-button>
-                      <el-button type="primary" size="small" @click="deselectAllPermissions"> 取消全选 </el-button>
-                    </el-button-group>
-                  </div>
-                </div>
-                <div class="permission-list">
-                  <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
-                    <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
-                      <el-checkbox :value="permission.id">
-                        <div class="permission-info">
-                          <span class="permission-name">{{ permission.name }}</span>
-                          <span class="permission-code">{{ permission.code }}</span>
-                        </div>
-                      </el-checkbox>
-                    </div>
-                  </el-checkbox-group>
-                  <div v-if="filteredPermissions.length === 0" class="no-permission">
-                    <el-empty description="未找到匹配的权限节点" />
-                  </div>
+        <div class="form-right-column">
+          <el-form-item label="权限节点" prop="permissionIds" label-for="permission-search" class="permission-form-item">
+            <div class="permission-container">
+              <div class="permission-search">
+                <el-input v-model="permissionSearch" placeholder="搜索权限节点" clearable id="permission-search">
+                  <template #prefix>
+                    <el-icon><Search /></el-icon>
+                  </template>
+                </el-input>
+                <div class="permission-select-buttons">
+                  <el-button-group>
+                    <el-button type="primary" size="small" @click="selectAllPermissions"> 全选 </el-button>
+                    <el-button type="primary" size="small" @click="deselectAllPermissions"> 取消全选 </el-button>
+                  </el-button-group>
                 </div>
               </div>
-            </el-form-item>
-          </div>
+              <div class="permission-list">
+                <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
+                  <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
+                    <el-checkbox :value="permission.id">
+                      <div class="permission-info">
+                        <span class="permission-name">{{ permission.name }}</span>
+                        <span class="permission-code">{{ permission.code }}</span>
+                      </div>
+                    </el-checkbox>
+                  </div>
+                </el-checkbox-group>
+                <div v-if="filteredPermissions.length === 0" class="no-permission">
+                  <el-empty description="未找到匹配的权限节点" />
+                </div>
+              </div>
+            </div>
+          </el-form-item>
         </div>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+      </div>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="modalVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          {{ modalMode === "add" ? "创建" : "保存" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -216,6 +216,7 @@ import AdminPermissionApi from "@/views/core/api/PermissionApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import UserGroupPermissionModal from "@/views/core/components/UserGroupPermissionModal.vue";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -491,32 +492,6 @@ loadList();
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
 .form-two-columns {
   display: flex;
   flex-direction: row;
