@@ -133,4 +133,37 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             """)
     Set<String> getUsernameSetByUsernames(@Param("usernames") List<String> usernames);
 
+
+    /**
+     * 获取用户ID列表
+     *
+     * @param pageable 分页信息
+     * @return 用户ID列表
+     */
+    @Query("""
+            SELECT p.id
+            FROM UserPo p
+            """)
+    List<Long> getUserIdsList(Pageable pageable);
+
+    /**
+     * 统计用户数量
+     */
+    @Query("""
+            SELECT COUNT(p.id) FROM UserPo p
+            """)
+    Long countUser();
+
+    /**
+     * 根据部门ID列表获取用户列表
+     *
+     * @param deptIds 部门ID列表
+     * @return 用户列表
+     */
+    @Query("""
+            SELECT p FROM UserPo p
+            WHERE p.deptId IN :deptIds
+            """)
+    List<UserPo> getUserListByDeptIds(@Param("deptIds") List<Long> deptIds);
+
 }

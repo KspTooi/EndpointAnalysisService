@@ -23,7 +23,7 @@ public class NoticeRcdPo {
     @Column(name = "user_id", nullable = false, comment = "接收人用户ID")
     private Long userId;
 
-    @Column(name = "read_time", nullable = false, comment = "读取时间 (NULL代表未读)")
+    @Column(name = "read_time", comment = "读取时间 (NULL代表未读)")
     private LocalDateTime readTime;
 
     @Column(name = "create_time", nullable = false, comment = "下发时间")
@@ -39,7 +39,6 @@ public class NoticeRcdPo {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-
 
         LocalDateTime now = LocalDateTime.now();
 

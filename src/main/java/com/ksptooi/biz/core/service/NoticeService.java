@@ -1,20 +1,28 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.core.controller.NoticeRcdController;
 import com.ksptooi.biz.core.model.notice.NoticePo;
 import com.ksptooi.biz.core.model.notice.dto.AddNoticeDto;
 import com.ksptooi.biz.core.model.notice.dto.EditNoticeDto;
 import com.ksptooi.biz.core.model.notice.dto.GetNoticeListDto;
 import com.ksptooi.biz.core.model.notice.vo.GetNoticeDetailsVo;
 import com.ksptooi.biz.core.model.notice.vo.GetNoticeListVo;
+import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
+import com.ksptooi.biz.core.repository.NoticeRcdRepository;
 import com.ksptooi.biz.core.repository.NoticeRepository;
+import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageQuery;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -26,6 +34,12 @@ public class NoticeService {
 
     @Autowired
     private NoticeRepository repository;
+
+    @Autowired
+    private NoticeRcdRepository noticeRcdRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * 查询消息列表
@@ -53,9 +67,100 @@ public class NoticeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addNotice(AddNoticeDto dto) {
-        NoticePo insertPo = as(dto, NoticePo.class);
+
+        var noticeId = IdWorker.nextId();
+
+        //直接添加消息
+        var insertPo = as(dto, NoticePo.class);
+        insertPo.setId(noticeId);
+        insertPo.setCreateTime(LocalDateTime.now());
         repository.save(insertPo);
+
+        var insertRcdPos = new ArrayList<NoticeRcdPo>();
+
+        //处理消息RCD转发 - 全员
+        if(dto.getTargetKind() == 0){
+
+            //分页批量发送消息RCD
+            var page = new PageQuery();
+            page.setPageNum(1);
+            page.setPageSize(1000);
+
+            //预计接收人数
+            var targetCount = 0;
+            
+            while (true) {
+            
+                var userIds = userRepository.getUserIdsList(page.pageRequest());
+
+                if(userIds.isEmpty()){
+                    break;
+                }
+
+                for (var userId : userIds) {
+                    var insertRcdPo = new NoticeRcdPo();
+                    insertRcdPo.setNoticeId(noticeId);
+                    insertRcdPo.setUserId(userId);
+                    insertRcdPos.add(insertRcdPo);
+                }
+
+                page.setPageNum(page.getPageNum() + 1);
+
+                //保存本次批量插入的数据
+                noticeRcdRepository.saveAll(insertRcdPos);
+                targetCount += insertRcdPos.size();
+                insertRcdPos.clear();
+            }
+
+            //更新消息预计接收人数
+            insertPo.setTargetCount(targetCount);
+            repository.save(insertPo);
+        }
+
+        //处理消息RCD转发 - 指定部门
+        if(dto.getTargetKind() == 1){
+
+            //查询部门下全部用户列表
+            var userPos = userRepository.getUserListByDeptIds(dto.getTargetIds());
+
+            for (var userPo : userPos) {
+                var insertRcdPo = new NoticeRcdPo();
+                insertRcdPo.setNoticeId(noticeId);
+                insertRcdPo.setUserId(userPo.getId());
+                insertRcdPos.add(insertRcdPo);
+            }
+
+            //保存消息RCD转发
+            noticeRcdRepository.saveAll(insertRcdPos);
+
+            //更新消息预计接收人数
+            insertPo.setTargetCount(userPos.size());
+            repository.save(insertPo);
+        }
+
+        //处理消息RCD转发 - 指定用户
+        if(dto.getTargetKind() == 2){
+
+            var userPos = userRepository.findAllById(dto.getTargetIds());
+
+            for (var userPo : userPos) {
+                var insertRcdPo = new NoticeRcdPo();
+                insertRcdPo.setNoticeId(noticeId);
+                insertRcdPo.setUserId(userPo.getId());
+                insertRcdPos.add(insertRcdPo);
+            }
+
+            //保存消息RCD转发
+            noticeRcdRepository.saveAll(insertRcdPos);
+
+            //更新消息预计接收人数
+            insertPo.setTargetCount(userPos.size());
+            repository.save(insertPo);
+        }
+
+
     }
+
 
     /**
      * 编辑消息

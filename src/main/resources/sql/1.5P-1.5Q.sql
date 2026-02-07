@@ -15,3 +15,15 @@ CREATE TABLE core_notice(
                             `create_time` DATETIME NOT NULL  COMMENT '创建时间' ,
                             PRIMARY KEY (id)
 )  COMMENT = '消息通知表';
+
+DROP TABLE IF EXISTS core_notice_rcd;
+CREATE TABLE core_notice_rcd(
+                                `id` BIGINT NOT NULL  COMMENT '主键ID' ,
+                                `notice_id` BIGINT NOT NULL  COMMENT '关联通知ID' ,
+                                `user_id` BIGINT NOT NULL  COMMENT '接收人用户ID' ,
+                                `read_time` DATETIME   COMMENT '读取时间 (NULL代表未读)' ,
+                                `create_time` DATETIME NOT NULL  COMMENT '下发时间' ,
+                                `delete_time` DATETIME   COMMENT '删除时间 (NULL代表未删)' ,
+                                PRIMARY KEY (id)
+)  COMMENT = '用户通知记录(接收状态)';
+

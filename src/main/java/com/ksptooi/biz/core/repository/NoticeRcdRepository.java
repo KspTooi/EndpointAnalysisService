@@ -20,7 +20,7 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
             AND (:#{#po.readTime} IS NULL OR u.readTime  = :#{#po.readTime} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
             AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<NoticeRcdPo> getNoticeRcdList(@Param("po") NoticeRcdPo po, Pageable pageable);
 }
