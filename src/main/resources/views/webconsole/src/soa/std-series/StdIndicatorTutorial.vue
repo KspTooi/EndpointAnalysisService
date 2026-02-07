@@ -2,7 +2,7 @@
   <!-- 说明文档指示器 -->
   <div class="std-indicator" @click="onClick">
     <el-tooltip content="说明文档指示器: 此页面有可用的说明文档供查阅，点击可查看详细说明" placement="left">
-      <IEpDocument :class="active ? 'active-color' : 'color'" />
+      <IRivetIconsQuestionMark :class="active ? 'active-color' : 'color'" />
     </el-tooltip>
   </div>
 </template>
