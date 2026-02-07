@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { computed, onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetExampleListDto,
@@ -10,7 +10,6 @@ import type {
 import ExampleApi from "@/soa/template/api/ExampleApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
-import QueryPersistService from "@/service/QueryPersistService";
 
 /**
  * 模态框模式类型
@@ -24,7 +23,7 @@ export default {
   useExampleList() {
     const listForm = ref<GetExampleListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       name: "",
       status: null,
     });
@@ -43,7 +42,6 @@ export default {
       if (Result.isSuccess(result)) {
         listData.value = result.data;
         listTotal.value = result.total;
-        QueryPersistService.persistQuery("example-list", listForm.value);
       }
 
       if (Result.isError(result)) {
@@ -58,10 +56,9 @@ export default {
      */
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.status = null;
-      QueryPersistService.clearQuery("example-list");
       loadList();
     };
 
@@ -89,7 +86,6 @@ export default {
     };
 
     onMounted(async () => {
-      QueryPersistService.loadQuery("example-list", listForm.value);
       await loadList();
     });
 

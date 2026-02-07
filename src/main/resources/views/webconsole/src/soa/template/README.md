@@ -49,8 +49,8 @@ GetExampleListDto / GetExampleListVo / AddExampleDto / EditExampleDto / GetExamp
 
 **Vue 层** - 修改三个位置：
 
-1. 查询表单 `<div class="query-form">` - 修改查询条件输入框
-2. 表格列 `<el-table-column>` - 修改显示字段
+1. 查询表单 `<StdListAreaQuery>` - 修改查询条件输入框
+2. 表格列 `<StdListAreaTable>` 内部的 `<el-table-column>` - 修改显示字段
 3. 模态框表单 `<el-dialog>` - 修改新增/编辑字段（统一模态框）
 
 ## 核心方法说明
