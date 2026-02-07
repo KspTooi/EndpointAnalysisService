@@ -8,8 +8,17 @@
 
 <style scoped>
 .std-list-area-table {
-  margin-bottom: 20px;
+  flex: 1;
   width: 100%;
-  overflow-x: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.std-list-area-table :deep(.el-table) {
+  flex: 1;
+  overflow: hidden;
 }
 </style>
