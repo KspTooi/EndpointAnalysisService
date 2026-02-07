@@ -6,6 +6,7 @@ import type {
   AddUserDto,
   EditUserDto,
   UserGroupVo,
+  BatchEditUserDto,
 } from "@/views/core/api/UserApi.ts";
 import AdminUserApi from "@/views/core/api/UserApi.ts";
 import { Result } from "@/commons/entity/Result";
@@ -377,10 +378,12 @@ export default {
         return;
       }
 
-      const dto: any = { ids };
+      let kind = 0;
+      let deptId: string | undefined = undefined;
 
       // 处理变更部门：需要先选择部门
       if (command === "changeDept") {
+        kind = 3;
         try {
           const dept = await deptSelectModalRef.value?.select();
           if (!dept) {
@@ -389,7 +392,7 @@ export default {
           if (Array.isArray(dept)) {
             return;
           }
-          dto.deptId = dept.id;
+          deptId = dept.id;
         } catch {
           // 用户取消选择
           return;
@@ -398,6 +401,7 @@ export default {
 
       // 处理批量启用：需要确认
       if (command === "enable") {
+        kind = 0;
         try {
           await ElMessageBox.confirm(`确定要批量启用选中的 ${ids.length} 个用户吗？`, "提示", {
             type: "info",
@@ -407,11 +411,11 @@ export default {
         } catch {
           return;
         }
-        dto.status = 0;
       }
 
       // 处理批量封禁：需要确认
       if (command === "disable") {
+        kind = 1;
         try {
           await ElMessageBox.confirm(`确定要批量封禁选中的 ${ids.length} 个用户吗？`, "警告", {
             type: "warning",
@@ -421,12 +425,11 @@ export default {
         } catch {
           return;
         }
-        dto.status = 1;
       }
 
       // 处理批量删除：需要确认
       if (command === "remove") {
-        dto.isDelete = true;
+        kind = 2;
         try {
           await ElMessageBox.confirm(`确定要批量删除选中的 ${ids.length} 个用户吗？`, "警告", {
             type: "warning",
@@ -437,6 +440,8 @@ export default {
           return;
         }
       }
+
+      const dto: BatchEditUserDto = { ids, kind, deptId };
 
       // 执行批量操作
       try {

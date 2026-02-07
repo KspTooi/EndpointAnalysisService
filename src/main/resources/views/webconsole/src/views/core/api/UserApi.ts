@@ -86,10 +86,9 @@ export interface EditUserDto {
 }
 
 export interface BatchEditUserDto {
-  ids: string[]; // 用户ID列表
-  status?: number; // 状态：0-启用，1-禁用
-  deptId?: string; // 部门ID
-  isDelete?: boolean; // 是否删除
+  ids: string[]; // 用户ID列表（后端Long类型对应前端string）
+  kind: number; // 批量操作类型 0:启用 1:封禁 2:删除 3:变更部门
+  deptId?: string; // 变更部门ID 当kind为3时必填（后端Long类型对应前端string）
 }
 
 export default {
