@@ -11,14 +11,13 @@
     </el-empty>
   </div>
 
-  <div class="list-container" v-if="!noActiveCompany">
-    <!-- 公司信息展示 -->
-    <div v-if="companyName" class="company-info">
-      <span>当前管理的团队：{{ companyName }}</span>
-    </div>
+  <StdListLayout v-if="!noActiveCompany">
+    <template #query>
+      <!-- 公司信息展示 -->
+      <div v-if="companyName" class="company-info">
+        <span>当前管理的团队：{{ companyName }}</span>
+      </div>
 
-    <!-- 查询表单 -->
-    <div class="query-form">
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -45,15 +44,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openInviteModal">邀请加入团队</el-button>
-    </div>
+    </template>
 
-    <!-- 列表 -->
-    <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id">
+    <template #table>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
         <el-table-column label="用户名称" prop="username" show-overflow-tooltip />
         <el-table-column label="职务" prop="role" width="100" align="center">
           <template #default="scope">
@@ -77,10 +75,9 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
+    </template>
 
-    <!-- 分页 -->
-    <div class="pagination-container">
+    <template #pagination>
       <el-pagination
         v-model:current-page="listForm.pageNum"
         v-model:page-size="listForm.pageSize"
@@ -98,11 +95,11 @@
           }
         "
       />
-    </div>
+    </template>
+  </StdListLayout>
 
-    <!-- 用户选择模态框 -->
-    <UserModal v-model="userModalVisible" :allow-select="true" @on-user-selected="handleUserSelected" />
-  </div>
+  <!-- 用户选择模态框 -->
+  <UserModal v-if="!noActiveCompany" v-model="userModalVisible" :allow-select="true" @on-user-selected="handleUserSelected" />
 </template>
 
 <script setup lang="ts">
@@ -120,6 +117,7 @@ import { useRouter } from "vue-router";
 import { Delete as DeleteIcon } from "@element-plus/icons-vue";
 import UserModal from "@/views/core/components/UserModal.vue";
 import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetCurrentUserActiveCompanyMemberListDto>({
   username: null,
@@ -264,13 +262,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
 .company-info {
   margin-bottom: 10px;
   font-size: 16px;
@@ -281,25 +272,6 @@ onMounted(() => {
 .company-info span {
   color: #057483;
   font-weight: bold;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
 }
 
 .no-active-company {
