@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, watch, type Ref } from "vue";
+import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type {
   GetUserDetailsVo,
   GetUserListDto,
@@ -350,6 +350,30 @@ export default {
       resetModal,
       submitModal,
       orgTreeOptions,
+    };
+  },
+
+  /**
+   * 批量操作打包
+   */
+  useBatchAction() {
+    const selectedRows = ref<GetUserListVo[]>([]);
+    const batchCount = ref(0);
+
+    const onSelectionChange = (rows: GetUserListVo[]) => {
+      selectedRows.value = rows;
+      batchCount.value = rows.length;
+    };
+
+    const onBatchAction = (command: string) => {
+      console.log("批量操作", command);
+    };
+
+    return {
+      onBatchAction,
+      onSelectionChange,
+      canBatchAction: computed(() => batchCount.value > 0),
+      batchCount,
     };
   },
 };

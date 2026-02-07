@@ -33,14 +33,36 @@
           </div>
 
           <!-- 操作按钮区域 -->
-          <div class="action-buttons">
+          <div class="mb-2 flex gap-2">
             <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
+            <el-dropdown @command="onBatchAction">
+              <el-button type="primary" :disabled="!canBatchAction">
+                批量操作<template v-if="canBatchAction">({{ batchCount }})</template>
+                <el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown v-if="canBatchAction">
+                <el-dropdown-menu>
+                  <el-dropdown-item command="enable" icon="Check">批量启用</el-dropdown-item>
+                  <el-dropdown-item command="disable" icon="Close">批量封禁</el-dropdown-item>
+                  <el-dropdown-item command="remove" icon="Delete">批量删除</el-dropdown-item>
+                  <el-dropdown-item command="changeDept" icon="ArrowRight">变更部门</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
             <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入用户</el-button>
           </div>
 
           <!-- 列表表格区域 -->
           <div class="list-table">
-            <el-table :data="listData" stripe v-loading="listLoading" border>
+            <el-table
+              :data="listData"
+              stripe
+              v-loading="listLoading"
+              border
+              @selection-change="onSelectionChange"
+              height="100%"
+            >
+              <el-table-column type="selection" width="40" />
               <el-table-column prop="username" label="用户名" min-width="150" />
               <el-table-column prop="nickname" label="昵称" min-width="150" />
               <el-table-column label="性别" min-width="100">
@@ -64,8 +86,6 @@
               </el-table-column>
               <el-table-column prop="phone" label="手机号" min-width="120" />
               <el-table-column prop="email" label="邮箱" min-width="160" />
-              <el-table-column prop="createTime" label="创建时间" min-width="180" />
-              <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
               <el-table-column label="状态" min-width="100">
                 <template #default="scope">
                   <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'" size="small">
@@ -73,6 +93,8 @@
                   </el-tag>
                 </template>
               </el-table-column>
+              <el-table-column prop="createTime" label="创建时间" min-width="180" />
+              <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
               <el-table-column label="操作" fixed="right" min-width="180">
                 <template #default="scope">
                   <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -233,6 +255,10 @@ const UploadIcon = markRaw(Upload);
 
 const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
+/**
+ * 选择组织
+ * @param org 组织
+ */
 const onSelectOrg = (org: GetOrgTreeVo | null) => {
   loadList(org?.id ?? null);
   orgId.value = org?.id ?? null;
@@ -265,6 +291,9 @@ const {
   submitModal,
   orgTreeOptions,
 } = UserManagerService.useUserModal(modalFormRef, _loadList);
+
+// 批量操作打包
+const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserManagerService.useBatchAction();
 </script>
 
 <style scoped>
