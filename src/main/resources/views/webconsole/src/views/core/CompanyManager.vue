@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -23,15 +22,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add')">创建新团队</el-button>
-    </div>
+    </template>
 
-    <!-- 列表 -->
-    <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id">
+    <template #table>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
         <el-table-column label="团队名称" prop="name" show-overflow-tooltip />
         <el-table-column label="团队描述" prop="description" show-overflow-tooltip />
         <el-table-column label="创始人" prop="founderName" width="120" />
@@ -49,11 +47,12 @@
                 size="small"
                 @click="activateCompany(scope.row.id)"
                 :icon="Refresh"
-                >激活</el-button
               >
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon"
-                >编辑</el-button
-              >
+                激活
+              </el-button>
+              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+                编辑
+              </el-button>
               <el-button
                 v-if="scope.row.isCeo === 1"
                 link
@@ -61,20 +60,20 @@
                 size="small"
                 @click="openResignCeoModal(scope.row)"
                 :icon="SwitchButton"
-                >辞去CEO职位</el-button
               >
-              <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton"
-                >退出</el-button
-              >
+                辞去CEO职位
+              </el-button>
+              <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton">
+                退出
+              </el-button>
               <!-- <el-button link type="danger" size="small" @click="removeCompany(scope.row.id)" :icon="DeleteIcon">删除</el-button> -->
             </div>
           </template>
         </el-table-column>
       </el-table>
-    </div>
+    </template>
 
-    <!-- 分页 -->
-    <div class="pagination-container">
+    <template #pagination>
       <el-pagination
         v-model:current-page="listForm.pageNum"
         v-model:page-size="listForm.pageSize"
@@ -92,50 +91,50 @@
           }
         "
       />
-    </div>
+    </template>
+  </StdListLayout>
 
-    <!-- 团队编辑模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑团队' : '添加团队'"
-      width="550px"
-      :close-on-click-modal="false"
-      @close="resetModal()"
+  <!-- 团队编辑模态框 -->
+  <el-dialog
+    v-model="modalVisible"
+    :title="modalMode === 'edit' ? '编辑团队' : '添加团队'"
+    width="550px"
+    :close-on-click-modal="false"
+    @close="resetModal()"
+  >
+    <el-form
+      v-if="modalVisible"
+      ref="modalFormRef"
+      :model="modalForm"
+      :rules="modalRules"
+      label-width="80px"
+      :validate-on-rule-change="false"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="80px"
-        :validate-on-rule-change="false"
-      >
-        <el-form-item label="团队名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入团队名称" clearable />
-        </el-form-item>
-        <el-form-item label="团队描述" prop="description">
-          <el-input v-model="modalForm.description" placeholder="请输入团队描述" clearable type="textarea" :rows="3" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">关闭</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
+      <el-form-item label="团队名称" prop="name">
+        <el-input v-model="modalForm.name" placeholder="请输入团队名称" clearable />
+      </el-form-item>
+      <el-form-item label="团队描述" prop="description">
+        <el-input v-model="modalForm.description" placeholder="请输入团队描述" clearable type="textarea" :rows="3" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="modalVisible = false">关闭</el-button>
+        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          {{ modalMode === "add" ? "创建" : "保存" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 
-    <!-- 成员选择模态框 -->
-    <CompanyMemberModal
-      v-model="memberModalVisible"
-      :company-id="currentResignCompanyId"
-      :allow-select="true"
-      :role="1"
-      @on-member-selected="handleMemberSelected"
-    />
-  </div>
+  <!-- 成员选择模态框 -->
+  <CompanyMemberModal
+    v-model="memberModalVisible"
+    :company-id="currentResignCompanyId"
+    :allow-select="true"
+    :role="1"
+    @on-member-selected="handleMemberSelected"
+  />
 </template>
 
 <script setup lang="ts">
@@ -154,6 +153,7 @@ import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";
 import CompanyMemberModal from "@/views/core/components/CompanyMemberModal.vue";
 import type { GetCompanyMemberListVo } from "@/views/core/api/CompanyMemberApi.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetCurrentUserCompanyListDto>({
   name: "",
@@ -423,30 +423,4 @@ const handleMemberSelected = async (member: GetCompanyMemberListVo) => {
 };
 </script>
 
-<style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-</style>
+<style scoped></style>
