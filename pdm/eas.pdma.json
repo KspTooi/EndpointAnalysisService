@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-8 04:48:44",
+  "updatedTime": "2026-2-8 05:07:30",
   "dbConns": [],
   "profile": {
     "default": {
@@ -20872,9 +20872,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
           "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
           "id": "3138B117-DE61-4339-AD10-11732496375C"
         },
         {
