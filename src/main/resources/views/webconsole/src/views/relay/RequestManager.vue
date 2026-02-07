@@ -1,8 +1,7 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
-      <QueryPersistTip />
+  <StdListLayout show-persist-tip>
+    <!-- 查询条件 -->
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -78,19 +77,19 @@
           </el-row>
         </template>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
-      <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-      <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-    </div>
+    <!-- 操作按钮 -->
+    <template #actions>
+      <!-- 操作按钮区域为空 -->
+    </template>
 
-    <!-- 配置列表 -->
-    <div class="list-table">
+    <!-- 表格 -->
+    <template #table>
       <div v-if="!listForm.relayServerId" class="empty-state">
         <el-empty description="请先选择中继服务器" />
       </div>
-      <el-table v-else :data="listData" stripe v-loading="listLoading" border>
+      <el-table v-else :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
           <template #default="scope">
             <el-tooltip content="点击复制" placement="top">
@@ -197,62 +196,66 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <!-- 分页 -->
-      <div v-if="listForm.relayServerId" class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    <!-- 分页 -->
+    <template #pagination>
+      <el-pagination
+        v-if="listForm.relayServerId"
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
 
-    <RequestPreviewModal ref="requestPreviewModalRef" />
+    <!-- 模态框等其他不可见组件 -->
+    <template #modal>
+      <RequestPreviewModal ref="requestPreviewModalRef" />
 
-    <!-- 保存请求对话框 -->
-    <el-dialog
-      v-model="saveDialogVisible"
-      title="另存为"
-      width="400px"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-    >
-      <el-form
-        ref="saveFormRef"
-        :model="saveForm"
-        label-width="80px"
-        :rules="{
-          name: [{ required: true, message: '请输入请求名称', trigger: 'blur' }],
-        }"
+      <!-- 保存请求对话框 -->
+      <el-dialog
+        v-model="saveDialogVisible"
+        title="另存为"
+        width="400px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
       >
-        <el-form-item label="请求名称" prop="name">
-          <el-input v-model="saveForm.name" placeholder="请输入请求名称" maxlength="100" show-word-limit />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="saveDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="confirmSaveRequest" :loading="saveSubmitLoading"> 保存 </el-button>
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+        <el-form
+          ref="saveFormRef"
+          :model="saveForm"
+          label-width="80px"
+          :rules="{
+            name: [{ required: true, message: '请输入请求名称', trigger: 'blur' }],
+          }"
+        >
+          <el-form-item label="请求名称" prop="name">
+            <el-input v-model="saveForm.name" placeholder="请输入请求名称" maxlength="100" show-word-limit />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="saveDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="confirmSaveRequest" :loading="saveSubmitLoading"> 保存 </el-button>
+          </span>
+        </template>
+      </el-dialog>
+    </template>
+  </StdListLayout>
 </template>
 
 <script setup lang="ts">
@@ -272,6 +275,7 @@ import ExpandButton from "@/components/common/ExpandButton.vue";
 import type { GetRelayServerListVo } from "@/views/relay/api/RelayServerApi.ts";
 import RelayServerApi from "@/views/relay/api/RelayServerApi.ts";
 import { Result } from "@/commons/entity/Result";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 图标常量
 const ViewIcon = markRaw(View);
@@ -546,25 +550,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
 .empty-state {
   display: flex;
   justify-content: center;
@@ -573,13 +558,6 @@ onMounted(async () => {
   background-color: var(--el-bg-color);
   border-radius: 4px;
   border: 1px solid var(--el-border-color-light);
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
 }
 
 .copy-icon {

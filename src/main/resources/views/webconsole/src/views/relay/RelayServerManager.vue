@@ -1,8 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
-      <QueryPersistTip />
+  <StdListLayout show-persist-tip>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -21,15 +19,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建中继通道</el-button>
-    </div>
+    </template>
 
-    <!-- 列表 -->
-    <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
+    <template #table>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
         <el-table-column label="通道名称" prop="name" />
         <el-table-column label="主机" prop="host" />
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
@@ -88,79 +85,79 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+  </StdListLayout>
+
+  <!-- 路由状态模态框 -->
+  <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false">
+    <el-table :data="routeStateData" v-loading="routeStateLoading" border>
+      <el-table-column label="目标主机" prop="targetHost" />
+      <el-table-column label="目标端口" prop="targetPort" width="100" />
+      <el-table-column label="请求数量" prop="hitCount" width="120" />
+      <el-table-column label="熔断状态" prop="isBreaked" width="100" align="center">
+        <template #default="scope">
+          <span v-show="scope.row.isBreaked === 0" style="color: #67c23a">正常</span>
+          <span v-show="scope.row.isBreaked === 1" style="color: #f56c6c">已熔断</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="150" align="center">
+        <template #default="scope">
+          <el-button link type="primary" size="small" @click="resetBreaker(scope.row)">复位熔断</el-button>
+          <el-button link type="danger" size="small" @click="breakHost(scope.row)">置为熔断</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="refreshRouteState" :loading="routeStateLoading">刷新</el-button>
+        <el-button type="primary" @click="resetAllBreaker">复位所有</el-button>
+        <el-button @click="routeStateModalVisible = false">关闭</el-button>
       </div>
-    </div>
+    </template>
+  </el-dialog>
 
-    <!-- 路由状态模态框 -->
-    <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false">
-      <el-table :data="routeStateData" v-loading="routeStateLoading" border>
-        <el-table-column label="目标主机" prop="targetHost" />
-        <el-table-column label="目标端口" prop="targetPort" width="100" />
-        <el-table-column label="请求数量" prop="hitCount" width="120" />
-        <el-table-column label="熔断状态" prop="isBreaked" width="100" align="center">
-          <template #default="scope">
-            <span v-show="scope.row.isBreaked === 0" style="color: #67c23a">正常</span>
-            <span v-show="scope.row.isBreaked === 1" style="color: #f56c6c">已熔断</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
-          <template #default="scope">
-            <el-button link type="primary" size="small" @click="resetBreaker(scope.row)">复位熔断</el-button>
-            <el-button link type="danger" size="small" @click="breakHost(scope.row)">置为熔断</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="refreshRouteState" :loading="routeStateLoading">刷新</el-button>
-          <el-button type="primary" @click="resetAllBreaker">复位所有</el-button>
-          <el-button @click="routeStateModalVisible = false">关闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- 请求编辑模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑中继通道' : '添加中继通道'"
-      width="550px"
-      :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
+  <!-- 请求编辑模态框 -->
+  <el-dialog
+    v-model="modalVisible"
+    :title="modalMode === 'edit' ? '编辑中继通道' : '添加中继通道'"
+    width="550px"
+    :close-on-click-modal="false"
+    @close="
+      resetModal();
+      loadList();
+    "
+  >
+    <el-form
+      v-if="modalVisible"
+      ref="modalFormRef"
+      :model="modalForm"
+      :rules="modalRules"
+      label-width="115px"
+      :validate-on-rule-change="false"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="115px"
-        :validate-on-rule-change="false"
-      >
         <el-form-item label="名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入中继通道名称" />
         </el-form-item>
@@ -271,20 +268,19 @@
         <el-form-item label="业务错误码字段" prop="bizErrorCodeField" v-show="modalForm.bizErrorStrategy === 1">
           <el-input v-model="modalForm.bizErrorCodeField" placeholder="例如：$.code 或 $.result.errorCode" />
         </el-form-item>
-        <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="modalForm.bizErrorStrategy === 1">
-          <el-input v-model="modalForm.bizSuccessCodeValue" placeholder="例如：0 或 success" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+      <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="modalForm.bizErrorStrategy === 1">
+        <el-input v-model="modalForm.bizSuccessCodeValue" placeholder="例如：0 或 success" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="modalVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          {{ modalMode === "add" ? "创建" : "保存" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -303,7 +299,7 @@ import type { GetRouteRuleListVo } from "@/views/relay/api/RouteRuleApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import RouteRuleApi from "@/views/relay/api/RouteRuleApi.ts";
 import QueryPersistService from "@/service/QueryPersistService.ts";
-import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 图标常量
 const ViewIcon = markRaw(View);
@@ -752,32 +748,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
 .copy-icon {
   cursor: pointer;
 }

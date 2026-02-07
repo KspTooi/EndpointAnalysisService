@@ -7,7 +7,13 @@
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="原始请求ID">
-              <el-input ref="originRequestIdInput" v-model="listForm.originRequestId" placeholder="请输入原始请求ID" clearable style="width: 200px" /> </el-form-item
+              <el-input
+                ref="originRequestIdInput"
+                v-model="listForm.originRequestId"
+                placeholder="请输入原始请求ID"
+                clearable
+                style="width: 200px"
+              /> </el-form-item
           ></el-col>
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="5" :offset="1"></el-col>
@@ -34,7 +40,11 @@
     </div>
 
     <div class="request-area" v-if="originRequestList.length > 0">
-      <div class="origin-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac" v-if="originRequestList.length > 0">
+      <div
+        class="origin-request-title"
+        style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac"
+        v-if="originRequestList.length > 0"
+      >
         原始请求ID: {{ listForm.originRequestId }}
       </div>
       <!-- 原始请求列表 -->
@@ -73,8 +83,27 @@
           <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span :style="{ color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6' }">
-                {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "HTTP失败" : scope.row.status === 2 ? "业务失败" : "连接超时" }}
+              <span
+                :style="{
+                  color:
+                    scope.row.status === 0
+                      ? '#2ECC71'
+                      : scope.row.status === 1
+                        ? '#E74C3C'
+                        : scope.row.status === 2
+                          ? '#F1C40F'
+                          : '#95A5A6',
+                }"
+              >
+                {{
+                  scope.row.status === 0
+                    ? "正常"
+                    : scope.row.status === 1
+                      ? "HTTP失败"
+                      : scope.row.status === 2
+                        ? "业务失败"
+                        : "连接超时"
+                }}
               </span>
             </template>
           </el-table-column>
@@ -100,13 +129,20 @@
 
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="openOriginViewModal(scope.row)" :icon="ViewIcon"> 预览请求 </el-button>
+              <el-button link type="primary" size="small" @click="openOriginViewModal(scope.row)" :icon="ViewIcon">
+                预览请求
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
-      <div class="replay-request-title" style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #009175">重放请求列表</div>
+      <div
+        class="replay-request-title"
+        style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #009175"
+      >
+        重放请求列表
+      </div>
 
       <!-- 回放请求列表 -->
       <div class="replay-request-table">
@@ -144,8 +180,27 @@
           <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span :style="{ color: scope.row.status === 0 ? '#2ECC71' : scope.row.status === 1 ? '#E74C3C' : scope.row.status === 2 ? '#F1C40F' : '#95A5A6' }">
-                {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "HTTP失败" : scope.row.status === 2 ? "业务失败" : "连接超时" }}
+              <span
+                :style="{
+                  color:
+                    scope.row.status === 0
+                      ? '#2ECC71'
+                      : scope.row.status === 1
+                        ? '#E74C3C'
+                        : scope.row.status === 2
+                          ? '#F1C40F'
+                          : '#95A5A6',
+                }"
+              >
+                {{
+                  scope.row.status === 0
+                    ? "正常"
+                    : scope.row.status === 1
+                      ? "HTTP失败"
+                      : scope.row.status === 2
+                        ? "业务失败"
+                        : "连接超时"
+                }}
               </span>
             </template>
           </el-table-column>
@@ -171,7 +226,9 @@
 
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon"> 预览请求 </el-button>
+              <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon">
+                预览请求
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -208,7 +265,12 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, markRaw } from "vue";
-import type { GetReplayRequestListDto, GetReplayRequestListVo, GetReplayRequestDetailsVo, GetOriginRequestVo } from "@/views/relay/api/ReplayRequestApi.ts";
+import type {
+  GetReplayRequestListDto,
+  GetReplayRequestListVo,
+  GetReplayRequestDetailsVo,
+  GetOriginRequestVo,
+} from "@/views/relay/api/ReplayRequestApi.ts";
 import ReplayRequestApi from "@/views/relay/api/ReplayRequestApi.ts";
 import { ElMessage } from "element-plus";
 import { View } from "@element-plus/icons-vue";
