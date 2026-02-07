@@ -9,10 +9,15 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "core_notice_template")
+@SQLDelete(sql = "UPDATE core_notice_template SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class NoticeTemplatePo {
 
     @Column(name = "id", nullable = false, comment = "主键ID")

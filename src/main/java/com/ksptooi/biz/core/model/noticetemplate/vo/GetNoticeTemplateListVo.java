@@ -19,9 +19,6 @@ public class GetNoticeTemplateListVo {
     @Schema(description = "模板唯一编码 (业务调用用)")
     private String code;
 
-    @Schema(description = "模板内容 (含占位符)")
-    private String content;
-
     @Schema(description = "状态: 0启用, 1禁用")
     private Integer status;
 
@@ -31,17 +28,8 @@ public class GetNoticeTemplateListVo {
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description = "创建人ID")
-    private Long creatorId;
-
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
-
-    @Schema(description = "更新人ID")
-    private Long updaterId;
-
-    @Schema(description = "删除时间 NULL未删")
-    private LocalDateTime deleteTime;
 
 }
 
