@@ -1,5 +1,7 @@
 package com.ksptooi.biz.core.model.notice.vo;
 
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,10 +29,13 @@ public class GetNoticeListVo {
     private String senderName;
 
     @Schema(description = "接收对象类型 0:全员 1:指定部门 2:指定用户")
-    private String targetKindName;
+    private Integer targetKind;
 
     @Schema(description = "预计接收人数")
     private Integer targetCount;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
 
 }
 
