@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "../api/CollectionApi";
+import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 
 /**
  * 提交详情

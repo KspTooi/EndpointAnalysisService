@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
-import type { RightMenuEmitter } from "../components/RdbgCollectionTreeRightMenu.vue";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
+import type { RightMenuEmitter } from "@/views/rdbg/components/RdbgCollectionTreeRightMenu.vue";
 
 export default {
   /**

@@ -9,7 +9,7 @@ import type {
   GetEntryListVo,
   GetEntrySignVo,
   MoveEntryDto, RenameEntryDto,
-} from "./DriveTypes"
+} from "@/views/drive/api/DriveTypes"
 
 export default {
   /**

@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import OrgApi, { type GetOrgTreeVo } from "../api/OrgApi";
+import OrgApi, { type GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 export default class OrgTreeService {
   /**

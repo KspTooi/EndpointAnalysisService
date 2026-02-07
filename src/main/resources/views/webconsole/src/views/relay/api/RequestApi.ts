@@ -1,5 +1,5 @@
 import type PageQuery from "@/commons/entity/PageQuery.ts";
-import Http from "../../../commons/Http.ts";
+import Http from "@/commons/Http.ts";
 import type RestPageableView from "@/commons/entity/RestPageableView.ts";
 import type Result from "@/commons/entity/Result.ts";
 

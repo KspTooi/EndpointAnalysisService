@@ -1,5 +1,5 @@
 import { computed, ref, type Ref } from "vue";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 import { ElMessage } from "element-plus";
 
 /**

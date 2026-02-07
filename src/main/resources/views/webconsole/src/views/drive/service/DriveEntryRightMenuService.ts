@@ -1,7 +1,7 @@
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
-import type { EntryPo } from "../api/DriveTypes";
-import type { RightMenuEmitter } from "../components/DriveEntryRightMenu.vue";
+import type { EntryPo } from "@/views/drive/api/DriveTypes";
+import type { RightMenuEmitter } from "@/views/drive/components/DriveEntryRightMenu.vue";
 
 export default {
   /**

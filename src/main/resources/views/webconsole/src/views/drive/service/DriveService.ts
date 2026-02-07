@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-import type { CurrentDirPo, EntryPo } from "../api/DriveTypes";
+import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
@@ -8,12 +8,12 @@ import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/compon
 import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
-import DriveApi from "../api/DriveApi";
+import DriveApi from "@/views/drive/api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/entity/Result";
 import { useTabStore } from "@/store/TabHolder";
 import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
-import type DriveModalDownloadUrl from "../components/DriveModalDownloadUrl.vue";
+import type DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 
 //当前目录信息
 const currentDir = ref<CurrentDirPo>({

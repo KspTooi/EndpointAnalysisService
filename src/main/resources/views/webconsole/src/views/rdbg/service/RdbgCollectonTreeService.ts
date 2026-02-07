@@ -1,7 +1,7 @@
 import { onMounted, ref } from "vue";
-import type { GetCollectionTreeVo } from "../api/CollectionApi";
+import type { GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 import { ElMessage } from "element-plus";
-import { useRdbgStore } from "./RdbgStore";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
 const rdbgStore = useRdbgStore();
 
 export default {

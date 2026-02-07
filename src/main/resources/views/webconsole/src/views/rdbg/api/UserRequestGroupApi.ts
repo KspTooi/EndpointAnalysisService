@@ -1,6 +1,6 @@
 import type Result from "@/commons/entity/Result.ts";
 import Http from "@/commons/Http.ts";
-import type { GetSimpleFilterListVo } from "./SimpleFilterApi.ts";
+import type { GetSimpleFilterListVo } from "@/views/rdbg/api/SimpleFilterApi.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 
 export interface AddUserRequestGroupDto {

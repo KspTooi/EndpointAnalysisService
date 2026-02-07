@@ -3,8 +3,8 @@ import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { ElMessage } from "element-plus";
 import { ref, onUnmounted, type Ref, reactive, computed, type Reactive } from "vue";
 import type { CurrentDirPo, EntryPo, GetEntryListDto, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
-import type { EntryGridEmitter } from "../components/DriveEntryGrid.vue";
-import { DriveStore } from "./DriveStore";
+import type { EntryGridEmitter } from "@/views/drive/components/DriveEntryGrid.vue";
+import { DriveStore } from "@/views/drive/service/DriveStore";
 
 /**
  * DriveEntryGrid 服务模块

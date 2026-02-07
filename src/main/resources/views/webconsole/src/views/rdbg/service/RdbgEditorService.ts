@@ -1,7 +1,7 @@
 import { computed, reactive, ref, watch } from "vue";
-import type { GetCollectionDetailsVo } from "../api/CollectionApi";
-import type { RdbgEditorProps } from "../components/RdbgEditor.vue";
-import { useRdbgStore } from "./RdbgStore";
+import type { GetCollectionDetailsVo } from "@/views/rdbg/api/CollectionApi";
+import type { RdbgEditorProps } from "@/views/rdbg/components/RdbgEditor.vue";
+import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
 
 const rdbgStore = useRdbgStore();
 
