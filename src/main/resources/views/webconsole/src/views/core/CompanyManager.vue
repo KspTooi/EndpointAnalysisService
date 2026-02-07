@@ -81,15 +81,18 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
         @size-change="
-          () => {
+          (val: number) => {
+            listForm.pageSize = val;
             loadList();
           }
         "
         @current-change="
-          () => {
+          (val: number) => {
+            listForm.pageNum = val;
             loadList();
           }
         "
+        background
       />
     </template>
   </StdListLayout>
