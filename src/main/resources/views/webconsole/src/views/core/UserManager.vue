@@ -11,7 +11,7 @@
       <!-- 右侧内容区 -->
       <pane size="80">
         <StdListContainer>
-          <StdListAreaQuery>
+          <StdListAreaQuery show-persist-tip>
             <el-form :model="listForm" inline class="flex justify-between">
               <div>
                 <el-form-item label="用户名">

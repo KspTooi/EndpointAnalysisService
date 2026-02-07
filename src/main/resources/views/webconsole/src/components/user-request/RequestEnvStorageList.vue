@@ -153,7 +153,7 @@ const query = reactive<GetUserRequestEnvStorageListDto>({
   name: null,
   status: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const list = ref<GetUserRequestEnvStorageListVo[]>([]);
@@ -187,7 +187,7 @@ const resetList = () => {
   query.name = null;
   query.status = null;
   query.pageNum = 1;
-  query.pageSize = 10;
+  query.pageSize = 20;
   loadList();
 };
 
