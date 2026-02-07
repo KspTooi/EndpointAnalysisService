@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -46,24 +45,23 @@
           </el-row>
         </template>
       </el-form>
-    </div>
+    </template>
 
-    <!-- 操作按钮 -->
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
-      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading"
-        >删除选中项</el-button
-      >
-    </div>
+      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading">
+        删除选中项
+      </el-button>
+    </template>
 
-    <!-- 列表 -->
-    <div class="list-table">
+    <template #table>
       <el-table
         :data="listData"
         v-loading="listLoading"
         border
         row-key="id"
         default-expand-all
+        height="100%"
         @selection-change="(val: GetRouteServerListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
@@ -97,79 +95,81 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    </template>
 
-    <!-- 菜单编辑模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑服务器' : '添加服务器'"
-      width="550px"
-      :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
-    >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="95px"
-        :validate-on-rule-change="false"
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+
+    <template #modal>
+      <!-- 菜单编辑模态框 -->
+      <el-dialog
+        v-model="modalVisible"
+        :title="modalMode === 'edit' ? '编辑服务器' : '添加服务器'"
+        width="550px"
+        :close-on-click-modal="false"
+        @close="
+          resetModal();
+          loadList();
+        "
       >
-        <el-form-item label="服务器名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入服务器名称" />
-        </el-form-item>
-        <el-form-item label="服务器主机" prop="host">
-          <el-input v-model="modalForm.host" placeholder="请输入服务器主机" />
-        </el-form-item>
-        <el-form-item label="服务器端口" prop="port">
-          <el-input v-model.number="modalForm.port" placeholder="请输入服务器端口" type="number" :min="1" :max="65535" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="服务器状态" prop="status">
-          <el-select v-model="modalForm.status" placeholder="请选择服务器状态" clearable>
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+        <el-form
+          v-if="modalVisible"
+          ref="modalFormRef"
+          :model="modalForm"
+          :rules="modalRules"
+          label-width="95px"
+          :validate-on-rule-change="false"
+        >
+          <el-form-item label="服务器名称" prop="name">
+            <el-input v-model="modalForm.name" placeholder="请输入服务器名称" />
+          </el-form-item>
+          <el-form-item label="服务器主机" prop="host">
+            <el-input v-model="modalForm.host" placeholder="请输入服务器主机" />
+          </el-form-item>
+          <el-form-item label="服务器端口" prop="port">
+            <el-input v-model.number="modalForm.port" placeholder="请输入服务器端口" type="number" :min="1" :max="65535" />
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input v-model="modalForm.remark" placeholder="请输入备注" />
+          </el-form-item>
+          <el-form-item label="服务器状态" prop="status">
+            <el-select v-model="modalForm.status" placeholder="请选择服务器状态" clearable>
+              <el-option label="启用" :value="1" />
+              <el-option label="禁用" :value="0" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="modalVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+              {{ modalMode === "add" ? "创建" : "保存" }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </template>
+  </StdListLayout>
 </template>
 
 <script setup lang="ts">
@@ -180,6 +180,7 @@ import { Delete, View } from "@element-plus/icons-vue";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
 import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
 import ExpandButton from "@/components/common/ExpandButton.vue";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 图标常量
 const ViewIcon = markRaw(View);
@@ -403,30 +404,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-</style>
+<style scoped></style>

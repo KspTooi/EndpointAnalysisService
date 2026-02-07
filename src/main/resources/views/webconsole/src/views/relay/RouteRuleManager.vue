@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -30,15 +29,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建路由规则</el-button>
-    </div>
+    </template>
 
-    <!-- 列表 -->
-    <div class="list-table">
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all>
+    <template #table>
+      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
         <el-table-column label="路由规则名" prop="name" width="220" show-overflow-tooltip />
         <el-table-column label="目标服务器" prop="routeServerName" width="180" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
@@ -86,91 +84,93 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    </template>
 
-    <!-- 路由规则编辑模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑路由规则' : '添加路由规则'"
-      width="550px"
-      :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
-    >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="95px"
-        :validate-on-rule-change="false"
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+
+    <template #modal>
+      <!-- 路由规则编辑模态框 -->
+      <el-dialog
+        v-model="modalVisible"
+        :title="modalMode === 'edit' ? '编辑路由规则' : '添加路由规则'"
+        width="550px"
+        :close-on-click-modal="false"
+        @close="
+          resetModal();
+          loadList();
+        "
       >
-        <el-form-item label="路由规则名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入路由规则名" />
-        </el-form-item>
-        <el-form-item label="匹配类型" prop="matchType">
-          <el-select v-model="modalForm.matchType" placeholder="请选择匹配类型">
-            <el-option label="全部" :value="0" />
-            <el-option label="IP地址" :value="1" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="匹配键" prop="matchKey" v-if="modalForm.matchType == 2">
-          <el-input v-model="modalForm.matchKey" placeholder="请输入匹配键" />
-        </el-form-item>
-        <el-form-item label="匹配操作" prop="matchOperator" v-if="modalForm.matchType != 0">
-          <el-select v-model="modalForm.matchOperator" placeholder="请选择匹配操作">
-            <el-option label="等于" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="匹配值" prop="matchValue" v-if="modalForm.matchType != 0">
-          <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
-        </el-form-item>
-        <el-form-item label="目标服务器" prop="routeServerId">
-          <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器" clearable filterable>
-            <el-option v-for="item in routeServerList" :key="item.id" :label="item.name" :value="item.id">
-              <span :style="{ color: item.status === 0 ? 'var(--el-color-danger)' : '' }">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="策略描述" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入策略描述" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+        <el-form
+          v-if="modalVisible"
+          ref="modalFormRef"
+          :model="modalForm"
+          :rules="modalRules"
+          label-width="95px"
+          :validate-on-rule-change="false"
+        >
+          <el-form-item label="路由规则名" prop="name">
+            <el-input v-model="modalForm.name" placeholder="请输入路由规则名" />
+          </el-form-item>
+          <el-form-item label="匹配类型" prop="matchType">
+            <el-select v-model="modalForm.matchType" placeholder="请选择匹配类型">
+              <el-option label="全部" :value="0" />
+              <el-option label="IP地址" :value="1" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="匹配键" prop="matchKey" v-if="modalForm.matchType == 2">
+            <el-input v-model="modalForm.matchKey" placeholder="请输入匹配键" />
+          </el-form-item>
+          <el-form-item label="匹配操作" prop="matchOperator" v-if="modalForm.matchType != 0">
+            <el-select v-model="modalForm.matchOperator" placeholder="请选择匹配操作">
+              <el-option label="等于" :value="0" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="匹配值" prop="matchValue" v-if="modalForm.matchType != 0">
+            <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
+          </el-form-item>
+          <el-form-item label="目标服务器" prop="routeServerId">
+            <el-select v-model="modalForm.routeServerId" placeholder="请选择目标服务器" clearable filterable>
+              <el-option v-for="item in routeServerList" :key="item.id" :label="item.name" :value="item.id">
+                <span :style="{ color: item.status === 0 ? 'var(--el-color-danger)' : '' }">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="策略描述" prop="remark">
+            <el-input v-model="modalForm.remark" placeholder="请输入策略描述" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="modalVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+              {{ modalMode === "add" ? "创建" : "保存" }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </template>
+  </StdListLayout>
 </template>
 
 <script setup lang="ts">
@@ -185,6 +185,7 @@ import RouteRuleApi, {
 } from "@/views/relay/api/RouteRuleApi.ts";
 import type { GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
 import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 图标常量
 const ViewIcon = markRaw(View);
@@ -404,30 +405,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-</style>
+<style scoped></style>
