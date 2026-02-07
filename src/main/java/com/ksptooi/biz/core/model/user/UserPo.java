@@ -139,4 +139,13 @@ public class UserPo {
         return activeCompany.getId();
     }
 
+    /**
+     * 判断是否为内置用户
+     *
+     * @return 是否为内置用户
+     */
+    public boolean isSystem() {
+        return isSystem == 1;
+    }
+
 }

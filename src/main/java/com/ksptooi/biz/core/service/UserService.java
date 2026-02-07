@@ -34,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -535,6 +536,7 @@ public class UserService {
             throw new BizException("部分用户不存在");
         }
 
+
         //处理批量解封
         if (dto.getKind() == 0) {
             for (UserPo user : userPos) {
@@ -547,6 +549,12 @@ public class UserService {
         //批量封禁
         if (dto.getKind() == 1) {
             for (UserPo user : userPos) {
+
+                //跳过内置用户
+                if (user.isSystem()) {
+                    continue;
+                }
+
                 user.setStatus(1);
             }
             userRepository.saveAll(userPos);

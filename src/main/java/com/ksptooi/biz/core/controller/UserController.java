@@ -84,6 +84,12 @@ public class UserController {
     @Operation(summary = "批量编辑用户")
     @PostMapping("batchEditUser")
     public Result<String> batchEditUser(@RequestBody @Valid BatchEditUserDto dto) throws Exception {
+
+        //校验变更部门ID
+        if (dto.getKind() == 3 && dto.getDeptId() == null) {
+            return Result.error("变更部门ID不能为空");
+        }
+
         var count = service.batchEditUser(dto);
         return Result.success("批量操作成功,已操作数据:" + count + "条");
     }
