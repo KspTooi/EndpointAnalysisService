@@ -149,6 +149,7 @@ defineExpose({
   reset,
   getCheckedNodes,
   setCheckedKeys,
+  loadTreeData,
 });
 </script>
 

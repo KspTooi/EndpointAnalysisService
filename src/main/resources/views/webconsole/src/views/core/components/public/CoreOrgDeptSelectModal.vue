@@ -79,12 +79,19 @@ let promiseReject: (reason?: any) => void;
 // 同步外部 visible
 watch(
   () => props.modelValue,
-  (val) => {
+  async (val) => {
     visible.value = val;
+
     if (val) {
-      nextTick(() => {
-        initSelection();
-      });
+      // 等待组件挂载后再访问 orgTreeRef
+      await nextTick();
+      
+      // 等待树数据加载完成后再初始化选中状态
+      if (orgTreeRef.value) {
+        await orgTreeRef.value.loadTreeData();
+      }
+      
+      initSelection();
     }
   },
   { immediate: true }
@@ -101,11 +108,18 @@ watch(
 /**
  * 命令式调用方法：打开弹窗并等待选择结果
  */
-const select = (): Promise<GetOrgTreeVo | GetOrgTreeVo[]> => {
+const select = async (): Promise<GetOrgTreeVo | GetOrgTreeVo[]> => {
   visible.value = true;
-  nextTick(() => {
-    initSelection();
-  });
+  
+  // 等待组件挂载后再访问 orgTreeRef
+  await nextTick();
+  
+  // 等待树数据加载完成
+  if (orgTreeRef.value) {
+    await orgTreeRef.value.loadTreeData();
+  }
+  
+  initSelection();
 
   return new Promise((resolve, reject) => {
     promiseResolve = resolve;
@@ -126,7 +140,16 @@ const initSelection = () => {
   // 如果有默认选中，则恢复选中状态
   if (props.defaultSelected && Array.isArray(props.defaultSelected) && props.defaultSelected.length > 0) {
     if (props.multiple) {
+      // 恢复树组件的视觉勾选状态
       orgTreeRef.value.setCheckedKeys(props.defaultSelected);
+      
+      // 手动同步 selectedNodes（setCheckedKeys 不会触发 on-check 事件）
+      nextTick(() => {
+        if (orgTreeRef.value) {
+          const checkedNodes = orgTreeRef.value.getCheckedNodes();
+          onCheck(checkedNodes);
+        }
+      });
     }
   }
 };

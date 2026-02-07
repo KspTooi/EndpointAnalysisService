@@ -32,12 +32,12 @@ public class NoticeController {
     private NoticeService noticeService;
 
     @PostMapping("/getNoticeList")
-    @Operation(summary = "查询消息列表")
+    @Operation(summary = "查询消息通知列表")
     public PageResult<GetNoticeListVo> getNoticeList(@RequestBody @Valid GetNoticeListDto dto) throws Exception {
         return noticeService.getNoticeList(dto);
     }
 
-    @Operation(summary = "新增消息")
+    @Operation(summary = "新增消息通知")
     @PostMapping("/addNotice")
     public Result<String> addNotice(@RequestBody @Valid AddNoticeDto dto) throws Exception {
 
@@ -49,17 +49,17 @@ public class NoticeController {
         }
 
         noticeService.addNotice(dto);
-        return Result.success("新增成功");
+        return Result.success("新增消息通知成功");
     }
 
-    @Operation(summary = "编辑消息")
+    @Operation(summary = "编辑消息通知")
     @PostMapping("/editNotice")
     public Result<String> editNotice(@RequestBody @Valid EditNoticeDto dto) throws Exception {
         noticeService.editNotice(dto);
-        return Result.success("修改成功");
+        return Result.success("修改消息通知成功");
     }
 
-    @Operation(summary = "查询消息详情")
+    @Operation(summary = "查询消息通知详情")
     @PostMapping("/getNoticeDetails")
     public Result<GetNoticeDetailsVo> getNoticeDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetNoticeDetailsVo details = noticeService.getNoticeDetails(dto);
@@ -69,11 +69,11 @@ public class NoticeController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除消息")
+    @Operation(summary = "删除消息通知")
     @PostMapping("/removeNotice")
     public Result<String> removeNotice(@RequestBody @Valid CommonIdDto dto) throws Exception {
         noticeService.removeNotice(dto);
-        return Result.success("操作成功");
+        return Result.success("删除消息通知成功");
     }
 
 }
