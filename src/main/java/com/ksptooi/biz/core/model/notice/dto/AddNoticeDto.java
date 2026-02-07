@@ -57,6 +57,21 @@ public class AddNoticeDto {
                 return "当接收对象类型为指定部门或指定用户时，必须选择一个合法的接收对象";
             }
         }
+
+        //最多选择500个部门
+        if (targetKind == 1) {
+            if (targetIds.size() > 500) {
+                return "最多选择500个部门";
+            }
+        }
+
+        //最多选择5000个用户
+        if (targetKind == 2) {
+            if (targetIds.size() > 5000) {
+                return "最多选择5000个用户";
+            }
+        }
+
         return null;
     }
 
