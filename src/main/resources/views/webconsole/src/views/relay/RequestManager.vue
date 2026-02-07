@@ -294,7 +294,7 @@ const listForm = reactive<GetRequestListDto>({
   endTime: null,
   replay: 0,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetRequestListVo[]>([]);
@@ -404,6 +404,7 @@ const resetList = () => {
   listForm.endTime = null;
 
   listForm.pageNum = 1;
+  listForm.pageSize = 20;
   queryPersistService.clearQuery("request-manager");
   loadList();
 };

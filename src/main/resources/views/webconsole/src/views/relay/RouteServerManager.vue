@@ -194,7 +194,7 @@ const listForm = reactive<GetRouteServerListDto>({
   remark: "",
   status: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetRouteServerListVo[]>([]);
@@ -264,7 +264,7 @@ const loadList = async () => {
 // 重置查询条件
 const resetList = () => {
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   listForm.name = null;
   listForm.host = null;
   listForm.port = null;

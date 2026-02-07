@@ -197,7 +197,7 @@ const listForm = reactive<GetRouteRuleListDto>({
   matchType: null,
   matchValue: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetRouteRuleListVo[]>([]);
@@ -227,7 +227,7 @@ const resetList = () => {
   listForm.matchType = null;
   listForm.matchValue = null;
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   loadList();
 };
 

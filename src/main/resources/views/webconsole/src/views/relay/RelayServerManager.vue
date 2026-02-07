@@ -312,7 +312,7 @@ const listForm = reactive<GetRelayServerListDto>({
   name: null,
   forwardUrl: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetRelayServerListVo[]>([]);
@@ -459,7 +459,7 @@ const resetList = () => {
   listForm.name = null;
   listForm.forwardUrl = null;
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
   loadList();
   QueryPersistService.clearQuery("relay-server-manager");
 };

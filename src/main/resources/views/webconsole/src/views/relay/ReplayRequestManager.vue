@@ -292,7 +292,7 @@ const listForm = reactive<GetReplayRequestListDto>({
   source: null,
   status: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,
 });
 
 const listData = ref<GetReplayRequestListVo[]>([]);
@@ -354,7 +354,7 @@ const resetList = () => {
   listData.value = [];
   listTotal.value = 0;
   listForm.pageNum = 1;
-  listForm.pageSize = 10;
+  listForm.pageSize = 20;
 };
 
 // 执行重放
