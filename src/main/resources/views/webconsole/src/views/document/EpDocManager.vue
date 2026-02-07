@@ -192,7 +192,7 @@ import EpDocSyncLogApi from "@/views/document/api/EpDocSyncLogApi.ts";
 //查询条件
 const query = reactive<GetEpDocListDto>({
   pageNum: 1,
-  pageSize: 10
+  pageSize: 20
 })
 
 //列表
@@ -219,7 +219,7 @@ const syncLogModalVisible = ref(false)
 const syncLogQuery = reactive<GetEpDocSyncLogListDto>({
   epDocId: "0",
   pageNum: 1,
-  pageSize: 10
+  pageSize: 20
 })
 const syncLogList = ref<GetEpDocSyncLogListVo[]>([])
 const syncLogTotal = ref(0)

@@ -18,7 +18,7 @@ export default {
   useEpStdWordList() {
     const listForm = ref<GetEpStdWordListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       sourceName: null,
       sourceNameFull: null,
       targetName: null,
@@ -55,7 +55,7 @@ export default {
      */
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.sourceName = null;
       listForm.value.sourceNameFull = null;
       listForm.value.targetName = null;

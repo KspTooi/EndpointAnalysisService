@@ -18,7 +18,7 @@ export default {
   useEpSiteList() {
     const listForm = ref<GetEpSiteListDto>({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       id: null,
       name: null,
       address: null,
@@ -67,7 +67,7 @@ export default {
      */
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
+      listForm.value.pageSize = 20;
       listForm.value.id = null;
       listForm.value.name = null;
       listForm.value.address = null;
