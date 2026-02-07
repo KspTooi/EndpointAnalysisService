@@ -8,8 +8,11 @@
       <slot name="actions"></slot>
     </StdListAreaAction>
 
-    <StdListAreaTable v-if="$slots.table">
+    <StdListAreaTable v-if="$slots.table || $slots.pagination">
       <slot name="table"></slot>
+      <template #pagination v-if="$slots.pagination">
+        <slot name="pagination"></slot>
+      </template>
     </StdListAreaTable>
   </StdListContainer>
 </template>
