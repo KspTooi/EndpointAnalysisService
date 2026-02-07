@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -25,15 +24,14 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建配置</el-button>
-    </div>
+    </template>
 
-    <!-- 配置列表 -->
-    <div class="list-table">
-      <el-table :data="listData" stripe v-loading="listLoading" border>
+    <template #table>
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column
           prop="configKey"
           label="配置键"
@@ -77,31 +75,31 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+  </StdListLayout>
 
     <!-- 配置编辑/新增模态框 -->
     <el-dialog
@@ -158,7 +156,6 @@
         </div>
       </template>
     </el-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -175,6 +172,7 @@ import ConfigApi, {
   type EditConfigDto,
 } from "@/views/core/api/ConfigApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetConfigListDto>({
   keyword: null,
@@ -359,30 +357,4 @@ const removeList = async (id: string) => {
 };
 </script>
 
-<style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-</style>
+<style scoped></style>

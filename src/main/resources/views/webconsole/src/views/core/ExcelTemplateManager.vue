@@ -1,7 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
+  <StdListLayout>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -30,23 +29,23 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="openUploadDialog">上传模板</el-button>
       <el-button type="danger" @click="removeTemplateBatch" :disabled="listSelected.length === 0" :loading="listLoading">
         删除选中项
       </el-button>
-    </div>
+    </template>
 
-    <!-- 模板列表 -->
-    <div class="list-table">
+    <template #table>
       <el-table
         :data="listData"
         stripe
         v-loading="listLoading"
         border
         row-key="id"
+        height="100%"
         @selection-change="(val: GetExcelTemplateListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
@@ -103,31 +102,31 @@
           </template>
         </el-table-column>
       </el-table>
+    </template>
 
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="listForm.pageNum"
-          v-model:page-size="listForm.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="listTotal"
-          @size-change="
-            (val: number) => {
-              listForm.pageSize = val;
-              loadList();
-            }
-          "
-          @current-change="
-            (val: number) => {
-              listForm.pageNum = val;
-              loadList();
-            }
-          "
-          background
-        />
-      </div>
-    </div>
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+  </StdListLayout>
 
     <!-- 上传模板对话框 -->
     <el-dialog
@@ -235,7 +234,6 @@
         </div>
       </template>
     </el-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -250,6 +248,7 @@ import ExcelTemplateApi, {
   type EditExcelTemplateDto,
 } from "@/views/core/api/ExcelTemplateApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetExcelTemplateListDto>({
   name: null,
@@ -529,32 +528,6 @@ const downloadTemplate = async (code: string) => {
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.list-table {
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
 .el-icon--upload {
   font-size: 67px;
   color: #8c939d;

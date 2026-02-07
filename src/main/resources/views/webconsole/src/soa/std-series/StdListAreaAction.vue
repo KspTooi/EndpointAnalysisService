@@ -9,7 +9,7 @@
 <style scoped>
 .std-list-area-action {
   margin-bottom: 15px;
-  display: flex;
-  gap: 8px;
+  /*   display: flex;
+  gap: 8px; */
 }
 </style>
