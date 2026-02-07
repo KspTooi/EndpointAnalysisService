@@ -5,6 +5,7 @@ import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.model.user.dto.AddUserDto;
+import com.ksptooi.biz.core.model.user.dto.BatchEditUserDto;
 import com.ksptooi.biz.core.model.user.dto.EditUserDto;
 import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
 import com.ksptooi.biz.core.model.user.dto.ImportUserDto;
@@ -517,6 +518,69 @@ public class UserService {
         //批量新增用户
         userRepository.saveAll(addPos);
         return addPos.size();
+    }
+
+    /**
+     * 批量编辑用户
+     * 
+     * @param dto 批量编辑用户DTO
+     * @throws BizException 批量编辑用户失败
+     */
+    public int batchEditUser(BatchEditUserDto dto) throws BizException {
+
+        var userIds = dto.getIds();
+        var userPos = userRepository.findAllById(userIds);
+        
+        if (userPos.size() != userIds.size()) {
+            throw new BizException("部分用户不存在");
+        }
+
+        //处理批量解封
+        if (dto.getKind() == 0) {
+            for (UserPo user : userPos) {
+                user.setStatus(0);
+            }
+            userRepository.saveAll(userPos);
+            return userPos.size();
+        }
+
+        //批量封禁
+        if (dto.getKind() == 1) {
+            for (UserPo user : userPos) {
+                user.setStatus(1);
+            }
+            userRepository.saveAll(userPos);
+            return userPos.size();
+        }
+
+        //批量变更部门
+        if (dto.getKind() == 3) {
+
+            var dept = orgRepository.getDeptById(dto.getDeptId());
+
+            if (dept == null) {
+                throw new BizException("部门:" + dto.getDeptId() + "不存在");
+            }
+
+            var root = orgRepository.getRootById(dept.getRootId());
+
+            if (root == null) {
+                throw new BizException("部门上级企业:" + dept.getRootId() + "不存在");
+            }
+
+            for (UserPo user : userPos) {
+                user.setRootId(root.getId());
+                user.setRootName(root.getName());
+                user.setDeptId(dept.getId());
+                user.setDeptName(dept.getName());
+            }
+
+            //批量更新用户
+            userRepository.saveAll(userPos);
+            return userPos.size();
+        }
+
+        throw new BizException("不支持的批量操作类型: " + dto.getKind() + "，请检查kind参数");
     }
 
 

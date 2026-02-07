@@ -1,9 +1,6 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.core.model.user.dto.AddUserDto;
-import com.ksptooi.biz.core.model.user.dto.EditUserDto;
-import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
-import com.ksptooi.biz.core.model.user.dto.ImportUserDto;
+import com.ksptooi.biz.core.model.user.dto.*;
 import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import com.ksptooi.biz.core.service.UserService;
@@ -15,15 +12,11 @@ import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+    
 
 @PrintLog
 @RestController
@@ -78,7 +71,7 @@ public class UserController {
         iw.transfer();
 
         var errors = iw.validate();
-        
+
         if (StringUtils.isNotBlank(errors)) {
             return Result.error(errors);
         }
@@ -86,6 +79,13 @@ public class UserController {
         var data = iw.getData();
         var count = service.importUser(data);
         return Result.success("导入成功,已导入数据:" + count + "条", null);
+    }
+
+    @Operation(summary = "批量编辑用户")
+    @PostMapping("batchEditUser")
+    public Result<String> batchEditUser(@RequestBody @Valid BatchEditUserDto dto) throws Exception {
+        var count = service.batchEditUser(dto);
+        return Result.success("批量操作成功,已操作数据:" + count + "条");
     }
 
 
