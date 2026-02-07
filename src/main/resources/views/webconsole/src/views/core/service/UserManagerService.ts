@@ -355,8 +355,10 @@ export default {
 
   /**
    * 批量操作打包
+   * @param loadList 列表加载函数
+   * @param deptSelectModalRef 部门选择器 ref
    */
-  useBatchAction() {
+  useBatchAction(loadList: () => void, deptSelectModalRef: Ref<any>) {
     const selectedRows = ref<GetUserListVo[]>([]);
     const batchCount = ref(0);
 
@@ -365,8 +367,90 @@ export default {
       batchCount.value = rows.length;
     };
 
-    const onBatchAction = (command: string) => {
-      console.log("批量操作", command);
+    /**
+     * 批量操作调度器
+     * @param command 操作指令: enable, disable, remove, changeDept
+     */
+    const onBatchAction = async (command: string) => {
+      const ids = selectedRows.value.map((row) => row.id);
+      if (ids.length === 0) {
+        return;
+      }
+
+      const dto: any = { ids };
+
+      // 处理变更部门：需要先选择部门
+      if (command === "changeDept") {
+        try {
+          const dept = await deptSelectModalRef.value?.select();
+          if (!dept) {
+            return;
+          }
+          if (Array.isArray(dept)) {
+            return;
+          }
+          dto.deptId = dept.id;
+        } catch {
+          // 用户取消选择
+          return;
+        }
+      }
+
+      // 处理批量启用：需要确认
+      if (command === "enable") {
+        try {
+          await ElMessageBox.confirm(`确定要批量启用选中的 ${ids.length} 个用户吗？`, "提示", {
+            type: "info",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+          });
+        } catch {
+          return;
+        }
+        dto.status = 0;
+      }
+
+      // 处理批量封禁：需要确认
+      if (command === "disable") {
+        try {
+          await ElMessageBox.confirm(`确定要批量封禁选中的 ${ids.length} 个用户吗？`, "警告", {
+            type: "warning",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+          });
+        } catch {
+          return;
+        }
+        dto.status = 1;
+      }
+
+      // 处理批量删除：需要确认
+      if (command === "remove") {
+        dto.isDelete = true;
+        try {
+          await ElMessageBox.confirm(`确定要批量删除选中的 ${ids.length} 个用户吗？`, "警告", {
+            type: "warning",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+          });
+        } catch {
+          return;
+        }
+      }
+
+      // 执行批量操作
+      try {
+        const res = await AdminUserApi.batchEditUser(dto);
+        if (Result.isError(res)) {
+          ElMessage.error(res.message);
+          return;
+        }
+
+        ElMessage.success("批量操作成功");
+        loadList();
+      } catch (err: any) {
+        ElMessage.error(err.message || "操作失败");
+      }
     };
 
     return {

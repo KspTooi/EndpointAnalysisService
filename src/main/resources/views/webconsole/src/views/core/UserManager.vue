@@ -147,6 +147,13 @@
       @on-close="loadList"
     />
 
+    <!-- 部门选择器 (用于批量变更部门等操作) -->
+    <CoreOrgDeptSelectModal
+      ref="deptSelectModalRef"
+      v-model="deptSelectVisible"
+      title="选择目标部门"
+    />
+
     <!-- 用户编辑/新增模态框 -->
     <el-dialog
       v-model="modalVisible"
@@ -247,6 +254,8 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
+import { ElMessage } from "element-plus";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -292,8 +301,12 @@ const {
   orgTreeOptions,
 } = UserManagerService.useUserModal(modalFormRef, _loadList);
 
+// 部门选择器逻辑
+const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();
+const deptSelectVisible = ref(false);
+
 // 批量操作打包
-const { canBatchAction, batchCount, onBatchAction, onSelectionChange } = UserManagerService.useBatchAction();
+const { onBatchAction, onSelectionChange, canBatchAction, batchCount } = UserManagerService.useBatchAction(_loadList, deptSelectModalRef);
 </script>
 
 <style scoped>

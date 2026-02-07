@@ -85,6 +85,13 @@ export interface EditUserDto {
   groupIds?: string[]; // 用户组ID列表
 }
 
+export interface BatchEditUserDto {
+  ids: string[]; // 用户ID列表
+  status?: number; // 状态：0-启用，1-禁用
+  deptId?: string; // 部门ID
+  isDelete?: boolean; // 是否删除
+}
+
 export default {
   /**
    * 获取用户列表
@@ -116,6 +123,13 @@ export default {
    */
   editUser: async (dto: EditUserDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/user/editUser", dto);
+  },
+
+  /**
+   * 批量编辑用户
+   */
+  batchEditUser: async (dto: BatchEditUserDto): Promise<Result<string>> => {
+    return await Http.postEntity<Result<string>>("/user/batchEditUser", dto);
   },
 
   /**
