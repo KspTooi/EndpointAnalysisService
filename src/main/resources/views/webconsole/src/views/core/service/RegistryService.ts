@@ -155,9 +155,11 @@ export default class RegistryService {
         // 绑定编辑模式的字段值 (仅提取后端支持编辑的字段)
         modalForm.value = {
           id: row.id,
+          nkey: row.nkey,
           nvalueKind: row.nvalueKind,
           nvalue: row.nvalue,
           label: row.label,
+          status: row.status,
           seq: row.seq,
           remark: row.remark,
         };

@@ -83,8 +83,8 @@
         :rules="modalRules"
         label-width="100px"
       >
-        <el-form-item label="Key" prop="nkey" v-if="modalMode === 'add'">
-          <el-input v-model="modalForm.nkey" placeholder="请输入Key" maxlength="128" show-word-limit />
+        <el-form-item label="Key" prop="nkey">
+          <el-input v-model="modalForm.nkey" placeholder="请输入Key" maxlength="128" show-word-limit :disabled="modalMode === 'edit'" />
         </el-form-item>
         <el-form-item label="标签" prop="label">
           <el-input v-model="modalForm.label" placeholder="请输入标签" maxlength="32" show-word-limit />
@@ -103,8 +103,8 @@
         <el-form-item label="排序" prop="seq">
           <el-input-number v-model="modalForm.seq" :min="0" />
         </el-form-item>
-        <el-form-item label="状态" prop="status" v-if="modalMode === 'add'">
-          <el-radio-group v-model="modalForm.status">
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="modalForm.status" :disabled="modalMode === 'edit'">
             <el-radio :label="0">正常</el-radio>
             <el-radio :label="1">停用</el-radio>
           </el-radio-group>

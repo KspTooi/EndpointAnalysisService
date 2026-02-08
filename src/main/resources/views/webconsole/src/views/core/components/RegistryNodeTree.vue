@@ -60,17 +60,17 @@
             <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
               <el-icon
                 class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
-                title="编辑节点"
-                @click.stop="openModal('edit', data)"
-              >
-                <EditIcon />
-              </el-icon>
-              <el-icon
-                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
                 title="新建子节点"
                 @click.stop="openModal('add', null, data)"
               >
                 <PlusIcon />
+              </el-icon>
+              <el-icon
+                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
+                title="编辑节点"
+                @click.stop="openModal('edit', data)"
+              >
+                <EditIcon />
               </el-icon>
               <el-icon
                 class="p-0.5 rounded hover:bg-red-50 hover:text-red-500 cursor-pointer"
