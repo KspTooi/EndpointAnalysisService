@@ -57,6 +57,11 @@ public class RegistryService {
 
         RegistryPo insertPo = as(dto, RegistryPo.class);
 
+        //如果是顶级节点 KEY_PATH为自身
+        if (dto.getParentId() == null) {
+            insertPo.setKeyPath(insertPo.getNkey());
+        }
+
         //如果父级ID不为空，则需要查询父级是否存在
         if (dto.getParentId() != null) {
 
@@ -65,27 +70,7 @@ public class RegistryService {
             insertPo.setParentId(parentPo.getId());
 
             //如果配置了父级 需要处理KEY的全路径
-            var pathNKeys = new ArrayList<String>();
-            pathNKeys.add(insertPo.getNkey());
-            pathNKeys.add(parentPo.getNkey());
-
-            var _parentPo = parentPo;
-
-            while (_parentPo.getParentId() != null) {
-
-                var parentId = _parentPo.getParentId();
-                _parentPo = repository.findById(parentId)
-                        .orElseThrow(() -> new BizException("无法处理新增请求,父级项不存在 ID:" + parentId));
-
-                pathNKeys.add(_parentPo.getNkey());
-
-                if(_parentPo.getParentId() == null){
-                    break;
-                }
-
-            }
-
-            insertPo.setKeyPath(String.join(".", pathNKeys));
+            insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
         }
 
         repository.save(insertPo);
@@ -128,35 +113,37 @@ public class RegistryService {
     @Transactional(rollbackFor = Exception.class)
     public void removeRegistry(CommonIdDto dto) throws BizException {
 
-        var ids = dto.toIds();
+        List<Long> ids = dto.toIds();
+        if (ids == null || ids.isEmpty()) return;
 
-        //验证这些ID是否存在
-        if (repository.countByIds(ids) != ids.size()) {
-            throw new BizException("删除失败,数据不存在或无权限访问.");
+        //查出实际存在的ID，避免报错
+        List<RegistryPo> existPos = repository.findAllById(ids);
+
+        if (existPos.isEmpty()) {
+            throw new BizException("删除失败, 数据不存在.");
         }
 
-        var safeRemoveIds = new ArrayList<Long>();
+        List<Long> safeRemoveIds = new ArrayList<>();
 
-        for (var id : ids) {
+        for (RegistryPo po : existPos) {
+            //检查是否有子节点
+            long childCount = repository.countByParentId(po.getId());
 
-            //如果该项下有子项，则不能删除
-            if (repository.countByParentId(id) > 0) {
-
-                //如果只是单个删除 则直接返回错误 如果为多个删除 则跳过该项目 静默删除其他项
+            if (childCount > 0) {
+                //如果是单删，必须报错提示
                 if (!dto.isBatch()) {
-                    throw new BizException("无法处理删除请求,该项下有子项,不能删除.");
+                    throw new BizException("无法删除 [" + po.getLabel() + "], 请先删除其下级节点.");
                 }
+                //如果是批量，跳过该节点(静默失败)
                 continue;
             }
-
-            safeRemoveIds.add(id);
+            safeRemoveIds.add(po.getId());
         }
 
         if (safeRemoveIds.isEmpty()) {
-            throw new BizException("删除失败,没有查找到合法的项以供进行操作!");
+            throw new BizException("删除失败, 所选节点均包含子节点或不可删除.");
         }
 
-        //删除合法的项
         repository.deleteAllById(safeRemoveIds);
     }
 
