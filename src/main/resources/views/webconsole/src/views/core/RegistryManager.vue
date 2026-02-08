@@ -3,7 +3,7 @@
     <splitpanes class="custom-theme">
       <!-- 左侧树形列表 -->
       <pane size="20" min-size="10" max-size="40">
-        <div class="mt-2 px-1">
+        <div class="h-full flex flex-col pt-2 px-1">
           <RegistryNodeTree @on-select="onSelectNode" />
         </div>
       </pane>

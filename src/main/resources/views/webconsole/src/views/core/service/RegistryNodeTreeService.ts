@@ -1,8 +1,9 @@
-import { ref, type Ref } from "vue";
+import { ref, reactive, type Ref } from "vue";
 import RegistryApi, {
   type GetRegistryNodeTreeVo,
   type AddRegistryDto,
   type EditRegistryDto,
+  type GetRegistryDetailsVo,
 } from "@/views/core/api/RegistryApi";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 
@@ -10,12 +11,12 @@ import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
  * 注册表节点树服务层
  * 封装了树数据的加载、筛选、节点选择以及新增节点的业务逻辑
  */
-export default class RegistryNodeTreeService {
+export default {
   /**
    * 注册表节点树基础逻辑 Hook
    * 处理数据加载、搜索过滤和统一的选择状态管理
    */
-  public static useRegistryNodeTree() {
+  useRegistryNodeTree() {
     const treeData = ref<GetRegistryNodeTreeVo[]>([]); // 树形结构数据
     const loading = ref(false); // 加载状态标识
     const filterText = ref(""); // 搜索关键字映射
@@ -56,11 +57,15 @@ export default class RegistryNodeTreeService {
           cancelButtonText: "取消",
           type: "warning",
         });
+      } catch (error) {
+        return;
+      }
+
+      try {
         await RegistryApi.removeRegistry({ id: node.id });
         ElMessage.success("删除节点成功");
         onRefresh();
       } catch (error: any) {
-        if (error === "cancel") return;
         ElMessage.error(error.message || "删除节点失败");
       }
     };
@@ -74,25 +79,30 @@ export default class RegistryNodeTreeService {
       onSelectNode,
       removeNode,
     };
-  }
+  },
 
   /**
    * 节点新增模态框逻辑 Hook
    * @param formRef 表单实例引用，用于提交校验
    * @param onRefresh 提交成功后的刷新回调
    */
-  public static useNodeModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
+  useNodeModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
     const modalVisible = ref(false); // 模态框显示状态
     const modalLoading = ref(false); // 提交中状态
     const modalMode = ref<"add" | "edit">("add"); // 模态框模式
 
-    // 初始表单数据模型 (kind=0 固定表示节点)
-    const modalForm = ref<AddRegistryDto | EditRegistryDto | any>({
+    // 初始表单数据模型
+    const modalForm = reactive<GetRegistryDetailsVo>({
+      id: "",
       parentId: undefined,
-      kind: 0,
+      kind: 0, // 0 固定表示节点
       nkey: "",
+      nvalueKind: 0,
+      nvalue: "",
       label: "",
       remark: "",
+      metadata: "{}",
+      status: 0,
       seq: 0,
     });
 
@@ -109,6 +119,27 @@ export default class RegistryNodeTreeService {
     };
 
     /**
+     * 重置表单状态
+     */
+    const resetModal = () => {
+      modalForm.id = "";
+      modalForm.parentId = undefined;
+      modalForm.kind = 0;
+      modalForm.nkey = "";
+      modalForm.nvalueKind = 0;
+      modalForm.nvalue = "";
+      modalForm.label = "";
+      modalForm.remark = "";
+      modalForm.metadata = "{}";
+      modalForm.status = 0;
+      modalForm.seq = 0;
+
+      if (formRef.value) {
+        formRef.value.resetFields();
+      }
+    };
+
+    /**
      * 打开新增/编辑模态框
      * @param mode 操作模式
      * @param node 当前节点数据（仅编辑模式需要）
@@ -119,29 +150,22 @@ export default class RegistryNodeTreeService {
       node: GetRegistryNodeTreeVo | null = null,
       parentNode: GetRegistryNodeTreeVo | null = null
     ) => {
-      modalVisible.value = true;
       modalMode.value = mode;
+      resetModal();
 
       if (mode === "add") {
-        modalForm.value = {
-          parentId: parentNode?.id ?? undefined,
-          kind: 0,
-          nkey: "",
-          label: "",
-          remark: "",
-          seq: 0,
-        };
+        modalForm.parentId = parentNode?.id ?? undefined;
+        modalVisible.value = true;
         return;
       }
 
       if (node) {
-        modalForm.value = {
-          id: node.id,
-          nkey: node.nkey, // 节点Key通常不支持修改，但在DTO定义中AddRegistryDto包含nkey，EditRegistryDto不含。根据后端逻辑，编辑节点可能直接使用editRegistry并按字段更新。
-          label: node.label,
-          seq: node.seq,
-          remark: "", // 树节点VO可能不包含remark，如果需要可以先查询详情
-        };
+        modalForm.id = node.id;
+        modalForm.nkey = node.nkey;
+        modalForm.label = node.label;
+        modalForm.seq = node.seq;
+        modalForm.remark = ""; // 树节点 VO 不含说明，若需可扩展详情接口
+        modalVisible.value = true;
       }
     };
 
@@ -149,35 +173,60 @@ export default class RegistryNodeTreeService {
      * 提交表单数据并保存
      */
     const submitModal = async () => {
-      if (!formRef.value) return;
+      if (!formRef.value) {
+        return;
+      }
+
       try {
         await formRef.value.validate();
-        modalLoading.value = true;
+      } catch (error) {
+        return;
+      }
 
+      modalLoading.value = true;
+
+      try {
         if (modalMode.value === "add") {
-          await RegistryApi.addRegistry(modalForm.value);
+          const addDto: AddRegistryDto = {
+            parentId: modalForm.parentId,
+            kind: modalForm.kind,
+            nkey: modalForm.nkey,
+            nvalueKind: modalForm.nvalueKind,
+            nvalue: modalForm.nvalue,
+            label: modalForm.label,
+            remark: modalForm.remark,
+            metadata: null,
+            status: null,
+            seq: modalForm.seq,
+          };
+          await RegistryApi.addRegistry(addDto);
+          resetModal();
           ElMessage.success("新增节点成功");
-        } else {
-          await RegistryApi.editRegistry(modalForm.value);
+        }
+
+        if (modalMode.value === "edit") {
+          if (!modalForm.id) {
+            throw new Error("节点ID不能为空");
+          }
+          const editDto: EditRegistryDto = {
+            id: modalForm.id,
+            nvalueKind: modalForm.nvalueKind,
+            nvalue: modalForm.nvalue,
+            label: modalForm.label,
+            seq: modalForm.seq,
+            remark: modalForm.remark,
+          };
+          await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改节点成功");
         }
 
-        modalVisible.value = false;
+        //modalVisible.value = false;
         onRefresh(); // 刷新外部树数据
       } catch (error: any) {
-        if (error.message) {
-          ElMessage.error(error.message || "提交失败");
-        }
+        ElMessage.error(error.message || "提交失败");
       } finally {
         modalLoading.value = false;
       }
-    };
-
-    /**
-     * 重置表单状态
-     */
-    const resetModal = () => {
-      formRef.value?.resetFields();
     };
 
     return {
@@ -190,5 +239,5 @@ export default class RegistryNodeTreeService {
       submitModal,
       resetModal,
     };
-  }
-}
+  },
+};

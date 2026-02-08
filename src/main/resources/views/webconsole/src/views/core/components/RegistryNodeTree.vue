@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--el-bg-color)] box-border">
+  <div class="flex flex-col h-full bg-[var(--el-bg-color)] box-border overflow-hidden">
     <!-- 搜索栏 -->
-    <div class="px-2 mb-2">
+    <div class="px-2 mb-2 flex-shrink-0">
       <el-input
         v-model="filterText"
         placeholder="搜索注册表节点"
@@ -14,7 +14,7 @@
     </div>
 
     <!-- 树容器 -->
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 min-h-0 overflow-y-auto px-2">
       <!-- 全部节点行 -->
       <div
         v-if="showHeader"
