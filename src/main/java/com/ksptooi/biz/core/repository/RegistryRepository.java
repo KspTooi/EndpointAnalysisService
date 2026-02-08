@@ -62,4 +62,26 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             """)
     int countByParentId(@Param("parentId") Long parentId);
 
+    /**
+     * 根据键统计注册表数量
+     * @param nkey 键
+     * @return 注册表数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM RegistryPo u
+            WHERE u.nkey = :nkey
+            """)
+    int countByNkey(@Param("nkey") String nkey);
+
+    /**
+     * 根据KEY的全路径统计注册表数量
+     * @param keyPath KEY的全路径
+     * @return 注册表数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM RegistryPo u
+            WHERE u.keyPath = :keyPath
+            """)
+    int countByKeyPath(@Param("keyPath") String keyPath);
+
 }

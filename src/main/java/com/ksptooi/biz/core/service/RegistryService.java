@@ -57,6 +57,11 @@ public class RegistryService {
 
         RegistryPo insertPo = as(dto, RegistryPo.class);
 
+        //校验key是否唯一
+        if (repository.countByNkey(insertPo.getNkey()) > 0) {
+            throw new BizException("新增失败,key已存在: " + insertPo.getNkey());
+        }
+
         //如果是顶级节点 KEY_PATH为自身
         if (dto.getParentId() == null) {
             insertPo.setKeyPath(insertPo.getNkey());
@@ -71,6 +76,11 @@ public class RegistryService {
 
             //如果配置了父级 需要处理KEY的全路径
             insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
+        }
+
+        //校验keypath是否唯一
+        if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
+            throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
         }
 
         repository.save(insertPo);
