@@ -28,16 +28,16 @@ public class RegistryService {
     private RegistryRepository repository;
 
     /**
-     * 获取注册表节点列表
+     * 获取注册表条目列表
      *
      * @param dto 查询条件
-     * @return 注册表节点列表
+     * @return 注册表条目列表
      */
-    public PageResult<GetRegistryListVo> getRegistryNodeList(GetRegistryListDto dto) {
+    public PageResult<GetRegistryListVo> getRegistryList(GetRegistryListDto dto) {
         RegistryPo query = new RegistryPo();
         assign(dto, query);
 
-        Page<RegistryPo> page = repository.getRegistryNodeList(query, dto.pageRequest());
+        Page<RegistryPo> page = repository.getRegistryList(query, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -47,12 +47,12 @@ public class RegistryService {
     }
 
     /**
-     * 新增注册表节点
+     * 新增注册表条目
      *
-     * @param dto 新增注册表节点
+     * @param dto 新增注册表条目
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addRegistryNode(AddRegistryDto dto) throws BizException {
+    public void addRegistry(AddRegistryDto dto) throws BizException {
 
         RegistryPo insertPo = as(dto, RegistryPo.class);
 
@@ -81,13 +81,13 @@ public class RegistryService {
     }
 
     /**
-     * 编辑注册表节点
+     * 编辑注册表条目
      *
-     * @param dto 编辑注册表节点
+     * @param dto 编辑注册表条目
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editRegistryNode(EditRegistryDto dto) throws BizException {
+    public void editRegistry(EditRegistryDto dto) throws BizException {
         RegistryPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
@@ -96,26 +96,26 @@ public class RegistryService {
     }
 
     /**
-     * 获取注册表节点详情
+     * 获取注册表条目详情
      *
      * @param dto 查询条件
-     * @return 注册表节点详情
+     * @return 注册表条目详情
      * @throws BizException 业务异常
      */
-    public GetRegistryDetailsVo getRegistryNodeDetails(CommonIdDto dto) throws BizException {
+    public GetRegistryDetailsVo getRegistryDetails(CommonIdDto dto) throws BizException {
         RegistryPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetRegistryDetailsVo.class);
     }
 
     /**
-     * 删除注册表节点
+     * 删除注册表条目
      *
      * @param dto 删除条件
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeRegistryNode(CommonIdDto dto) throws BizException {
+    public void removeRegistry(CommonIdDto dto) throws BizException {
 
         List<Long> ids = dto.toIds();
         if (ids == null || ids.isEmpty())

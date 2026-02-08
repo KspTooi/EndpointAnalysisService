@@ -21,50 +21,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/registry")
-@Tag(name = "registry", description = "注册表节点")
+@Tag(name = "registry", description = "注册表条目")
 @Slf4j
 public class RegistryController {
 
     @Autowired
     private RegistryService registryService;
 
-    @PostMapping("/getRegistryNodeList")
-    @Operation(summary = "列表查询注册表节点列表")
-    public PageResult<GetRegistryListVo> getRegistryNodeList(@RequestBody @Valid GetRegistryListDto dto)
+    @PostMapping("/getRegistryList")
+    @Operation(summary = "列表查询注册表条目列表")
+    public PageResult<GetRegistryListVo> getRegistryList(@RequestBody @Valid GetRegistryListDto dto)
             throws Exception {
-        return registryService.getRegistryNodeList(dto);
+        return registryService.getRegistryList(dto);
     }
 
-    @Operation(summary = "新增注册表节点")
-    @PostMapping("/addRegistryNode")
-    public Result<String> addRegistryNode(@RequestBody @Valid AddRegistryDto dto) throws Exception {
+    @Operation(summary = "新增注册表条目")
+    @PostMapping("/addRegistry")
+    public Result<String> addRegistry(@RequestBody @Valid AddRegistryDto dto) throws Exception {
 
-        registryService.addRegistryNode(dto);
+        registryService.addRegistry(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑注册表节点")
-    @PostMapping("/editRegistryNode")
-    public Result<String> editRegistryNode(@RequestBody @Valid EditRegistryDto dto) throws Exception {
+    @Operation(summary = "编辑注册表条目")
+    @PostMapping("/editRegistry")
+    public Result<String> editRegistry(@RequestBody @Valid EditRegistryDto dto) throws Exception {
 
-        registryService.editRegistryNode(dto);
+        registryService.editRegistry(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询注册表节点详情")
-    @PostMapping("/getRegistryNodeDetails")
+    @Operation(summary = "查询注册表条目详情")
+    @PostMapping("/getRegistryDetails")
     public Result<GetRegistryDetailsVo> getRegistryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetRegistryDetailsVo details = registryService.getRegistryNodeDetails(dto);
+        GetRegistryDetailsVo details = registryService.getRegistryDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
         return Result.success(details);
     }
 
-    @Operation(summary = "删除注册表节点")
-    @PostMapping("/removeRegistryNode")
-    public Result<String> removeRegistryNode(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        registryService.removeRegistryNode(dto);
+    @Operation(summary = "删除注册表条目")
+    @PostMapping("/removeRegistry")
+    public Result<String> removeRegistry(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        registryService.removeRegistry(dto);
         return Result.success("操作成功");
     }
 

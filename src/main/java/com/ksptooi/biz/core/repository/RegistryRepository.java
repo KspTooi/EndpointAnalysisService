@@ -35,7 +35,7 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
             ORDER BY u.updateTime DESC
             """)
-    Page<RegistryPo> getRegistryNodeList(@Param("po") RegistryPo po, Pageable pageable);
+    Page<RegistryPo> getRegistryList(@Param("po") RegistryPo po, Pageable pageable);
 
 
     /**
