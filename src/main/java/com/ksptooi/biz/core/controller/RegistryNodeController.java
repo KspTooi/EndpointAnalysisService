@@ -13,13 +13,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/registry")
@@ -32,21 +30,14 @@ public class RegistryNodeController {
 
     @PostMapping("/getRegistryNodeList")
     @Operation(summary = "列表查询注册表节点列表")
-    public PageResult<GetRegistryNodeListVo> getRegistryNodeList(@RequestBody @Valid GetRegistryNodeListDto dto) throws Exception {
+    public PageResult<GetRegistryNodeListVo> getRegistryNodeList(@RequestBody @Valid GetRegistryNodeListDto dto)
+            throws Exception {
         return registryNodeService.getRegistryNodeList(dto);
     }
 
     @Operation(summary = "新增注册表节点")
     @PostMapping("/addRegistryNode")
     public Result<String> addRegistryNode(@RequestBody @Valid AddRegistryNodeDto dto) throws Exception {
-
-        //验证输入参数
-        String validate = dto.validate();
-
-        if (StringUtils.isNotBlank(validate)) {
-            return Result.error(validate);
-        }
-
 
         registryNodeService.addRegistryNode(dto);
         return Result.success("新增成功");
@@ -55,12 +46,6 @@ public class RegistryNodeController {
     @Operation(summary = "编辑注册表节点")
     @PostMapping("/editRegistryNode")
     public Result<String> editRegistryNode(@RequestBody @Valid EditRegistryNodeDto dto) throws Exception {
-
-        //验证输入参数
-        String validate = dto.validate();
-        if (StringUtils.isNotBlank(validate)) {
-            return Result.error(validate);
-        }
 
         registryNodeService.editRegistryNode(dto);
         return Result.success("修改成功");

@@ -21,7 +21,6 @@ import java.util.List;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
-
 @Service
 public class RegistryNodeService {
 
@@ -57,23 +56,23 @@ public class RegistryNodeService {
 
         RegistryNodePo insertPo = as(dto, RegistryNodePo.class);
 
-        //如果是顶级节点 KEY_PATH为自身
+        // 如果是顶级节点 KEY_PATH为自身
         if (dto.getParentId() == null) {
             insertPo.setKeyPath(insertPo.getNkey());
         }
 
-        //如果父级ID不为空，则需要查询父级是否存在
+        // 如果父级ID不为空，则需要查询父级是否存在
         if (dto.getParentId() != null) {
 
             var parentPo = repository.findById(dto.getParentId())
                     .orElseThrow(() -> new BizException("无法处理新增请求,父级项不存在 ID:" + dto.getParentId()));
             insertPo.setParentId(parentPo.getId());
 
-            //如果配置了父级 需要处理KEY的全路径
+            // 如果配置了父级 需要处理KEY的全路径
             insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
         }
 
-        //校验keypath是否唯一
+        // 校验keypath是否唯一
         if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
             throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
         }
@@ -119,9 +118,10 @@ public class RegistryNodeService {
     public void removeRegistryNode(CommonIdDto dto) throws BizException {
 
         List<Long> ids = dto.toIds();
-        if (ids == null || ids.isEmpty()) return;
+        if (ids == null || ids.isEmpty())
+            return;
 
-        //查出实际存在的ID，避免报错
+        // 查出实际存在的ID，避免报错
         List<RegistryNodePo> existPos = repository.findAllById(ids);
 
         if (existPos.isEmpty()) {
@@ -131,20 +131,15 @@ public class RegistryNodeService {
         List<Long> safeRemoveIds = new ArrayList<>();
 
         for (RegistryNodePo po : existPos) {
-            //检查是否有子节点
+            // 检查是否有子节点
             long childCount = repository.countByParentId(po.getId());
 
             if (childCount > 0) {
-                //如果是单删，必须报错提示
+                // 如果是单删，必须报错提示
                 if (!dto.isBatch()) {
                     throw new BizException("无法删除 [" + po.getLabel() + "], 请先删除其下级节点.");
                 }
-                //如果是批量，跳过该节点(静默失败)
-                continue;
-            }
-
-            //检查是否是内置注册表(直接跳过)
-            if (po.getIsSystem() == 1) {
+                // 如果是批量，跳过该节点(静默失败)
                 continue;
             }
 

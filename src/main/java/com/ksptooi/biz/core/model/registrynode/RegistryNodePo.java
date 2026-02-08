@@ -24,38 +24,23 @@ public class RegistryNodePo {
     @Id
     private Long id;
 
-    @Column(name = "parent_id", comment = "父级ID NULL顶级")
+    @Column(name = "parent_id", comment = "父级项ID NULL顶级")
     private Long parentId;
 
-    @Column(name = "key_path", length = 1024, nullable = false, comment = "KEY的全路径")
+    @Column(name = "key_path", length = 1024, nullable = false, comment = "节点Key的全路径")
     private String keyPath;
 
-    @Column(name = "nkey", length = 128, nullable = false, comment = "键")
+    @Column(name = "nkey", length = 128, nullable = false, comment = "节点Key")
     private String nkey;
 
-    @Column(name = "nvalue_kind", columnDefinition = "TINYINT", nullable = false, comment = "数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)")
-    private Integer nvalueKind;
-
-    @Column(name = "nvalue", columnDefinition = "LONGTEXT", comment = "值")
-    private String nvalue;
-
-    @Column(name = "label", length = 512, comment = "标签")
+    @Column(name = "label", length = 32, comment = "节点标签")
     private String label;
-
-    @Column(name = "status", columnDefinition = "TINYINT", nullable = false, comment = "状态 0:正常 1:停用")
-    private Integer status;
 
     @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
     @Column(name = "remark", columnDefinition = "TEXT", comment = "说明")
     private String remark;
-
-    @Column(name = "metadata", columnDefinition = "JSON", nullable = false, comment = "元数据JSON")
-    private String metadata;
-
-    @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "内置项 0:否 1:是")
-    private Integer isSystem;
 
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
