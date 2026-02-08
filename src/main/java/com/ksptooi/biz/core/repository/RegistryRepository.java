@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.repository;
 
-import com.ksptooi.biz.core.model.registrynode.RegistryNodePo;
+import com.ksptooi.biz.core.model.registry.RegistryPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Long> {
+public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
 
     @Query("""
-            SELECT u FROM RegistryNodePo u
+            SELECT u FROM RegistryPo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.parentId} IS NULL OR u.parentId  = :#{#po.parentId} )
@@ -35,7 +35,7 @@ public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Lo
             AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
             ORDER BY u.updateTime DESC
             """)
-    Page<RegistryNodePo> getRegistryNodeList(@Param("po") RegistryNodePo po, Pageable pageable);
+    Page<RegistryPo> getRegistryNodeList(@Param("po") RegistryPo po, Pageable pageable);
 
 
     /**
@@ -45,7 +45,7 @@ public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Lo
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryNodePo u
+            SELECT COUNT(u) FROM RegistryPo u
             WHERE u.id IN :ids
             """)
     int countByIds(@Param("ids") List<Long> ids);
@@ -58,7 +58,7 @@ public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Lo
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryNodePo u
+            SELECT COUNT(u) FROM RegistryPo u
             WHERE u.parentId = :parentId
             """)
     int countByParentId(@Param("parentId") Long parentId);
@@ -70,7 +70,7 @@ public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Lo
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryNodePo u
+            SELECT COUNT(u) FROM RegistryPo u
             WHERE u.nkey = :nkey
             """)
     int countByNkey(@Param("nkey") String nkey);
@@ -82,7 +82,7 @@ public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Lo
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryNodePo u
+            SELECT COUNT(u) FROM RegistryPo u
             WHERE u.keyPath = :keyPath
             """)
     int countByKeyPath(@Param("keyPath") String keyPath);

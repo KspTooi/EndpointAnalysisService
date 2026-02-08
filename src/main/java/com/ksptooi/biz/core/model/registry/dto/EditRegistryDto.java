@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.registrynode.dto;
+package com.ksptooi.biz.core.model.registry.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
-public class EditRegistryNodeDto {
+public class EditRegistryDto {
 
     @Schema(description = "ID")
     @NotNull(message = "ID不能为空")

@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.registrynode.dto;
+package com.ksptooi.biz.core.model.registry.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
-public class AddRegistryNodeDto {
+public class AddRegistryDto {
 
     @Schema(description = "父级项ID NULL顶级")
     private Long parentId;

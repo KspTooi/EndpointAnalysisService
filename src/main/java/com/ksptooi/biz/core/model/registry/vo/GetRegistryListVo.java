@@ -1,13 +1,14 @@
-package com.ksptooi.biz.core.model.registrynode.dto;
+package com.ksptooi.biz.core.model.registry.vo;
 
-import com.ksptool.assembly.entity.web.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class GetRegistryNodeListDto extends PageQuery {
+public class GetRegistryListVo {
 
     @Schema(description = "ID")
     private Long id;
@@ -29,5 +30,8 @@ public class GetRegistryNodeListDto extends PageQuery {
 
     @Schema(description = "说明")
     private String remark;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
 
 }

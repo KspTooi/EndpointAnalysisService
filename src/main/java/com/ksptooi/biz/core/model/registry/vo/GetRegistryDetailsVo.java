@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.registrynode.vo;
+package com.ksptooi.biz.core.model.registry.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetRegistryNodeDetailsVo {
+public class GetRegistryDetailsVo {
 
     @Schema(description = "ID")
     private Long id;
