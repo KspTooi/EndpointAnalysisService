@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.registry;
+package com.ksptooi.biz.core.model.registrynode;
 
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
@@ -15,10 +15,10 @@ import static com.ksptooi.biz.core.service.SessionService.session;
 @Getter
 @Setter
 @Entity
-@Table(name = "core_registry")
-@SQLDelete(sql = "UPDATE core_registry SET delete_time = NOW() WHERE id = ?")
+@Table(name = "core_registry_node")
+@SQLDelete(sql = "UPDATE core_registry_node SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
-public class RegistryPo {
+public class RegistryNodePo {
 
     @Column(name = "id", nullable = false, comment = "ID")
     @Id

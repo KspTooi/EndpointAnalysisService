@@ -1,9 +1,6 @@
 package com.ksptooi.biz.core.repository;
 
-import com.ksptooi.biz.core.model.registry.RegistryPo;
-
-import java.util.List;
-
+import com.ksptooi.biz.core.model.registrynode.RegistryNodePo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,11 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
+public interface RegistryNodeRepository extends JpaRepository<RegistryNodePo, Long> {
 
     @Query("""
-            SELECT u FROM RegistryPo u
+            SELECT u FROM RegistryNodePo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.parentId} IS NULL OR u.parentId  = :#{#po.parentId} )
@@ -36,16 +35,17 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
             ORDER BY u.updateTime DESC
             """)
-    Page<RegistryPo> getRegistryList(@Param("po") RegistryPo po, Pageable pageable);
+    Page<RegistryNodePo> getRegistryNodeList(@Param("po") RegistryNodePo po, Pageable pageable);
 
 
     /**
      * 根据ID列表统计注册表数量
+     *
      * @param ids ID列表
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryPo u
+            SELECT COUNT(u) FROM RegistryNodePo u
             WHERE u.id IN :ids
             """)
     int countByIds(@Param("ids") List<Long> ids);
@@ -53,33 +53,36 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
 
     /**
      * 根据父级ID统计注册表数量
+     *
      * @param parentId 父级ID
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryPo u
+            SELECT COUNT(u) FROM RegistryNodePo u
             WHERE u.parentId = :parentId
             """)
     int countByParentId(@Param("parentId") Long parentId);
 
     /**
      * 根据键统计注册表数量
+     *
      * @param nkey 键
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryPo u
+            SELECT COUNT(u) FROM RegistryNodePo u
             WHERE u.nkey = :nkey
             """)
     int countByNkey(@Param("nkey") String nkey);
 
     /**
      * 根据KEY的全路径统计注册表数量
+     *
      * @param keyPath KEY的全路径
      * @return 注册表数量
      */
     @Query("""
-            SELECT COUNT(u) FROM RegistryPo u
+            SELECT COUNT(u) FROM RegistryNodePo u
             WHERE u.keyPath = :keyPath
             """)
     int countByKeyPath(@Param("keyPath") String keyPath);

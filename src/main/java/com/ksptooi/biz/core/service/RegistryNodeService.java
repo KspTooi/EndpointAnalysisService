@@ -1,12 +1,12 @@
 package com.ksptooi.biz.core.service;
 
-import com.ksptooi.biz.core.model.registry.RegistryPo;
-import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
-import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
-import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
-import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
-import com.ksptooi.biz.core.model.registry.vo.GetRegistryListVo;
-import com.ksptooi.biz.core.repository.RegistryRepository;
+import com.ksptooi.biz.core.model.registrynode.RegistryNodePo;
+import com.ksptooi.biz.core.model.registrynode.dto.AddRegistryNodeDto;
+import com.ksptooi.biz.core.model.registrynode.dto.EditRegistryNodeDto;
+import com.ksptooi.biz.core.model.registrynode.dto.GetRegistryNodeListDto;
+import com.ksptooi.biz.core.model.registrynode.vo.GetRegistryNodeDetailsVo;
+import com.ksptooi.biz.core.model.registrynode.vo.GetRegistryNodeListVo;
+import com.ksptooi.biz.core.repository.RegistryNodeRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -14,17 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
 
 @Service
-public class RegistryService {
+public class RegistryNodeService {
 
     @Autowired
-    private RegistryRepository repository;
+    private RegistryNodeRepository repository;
 
     /**
      * 获取注册表列表
@@ -32,16 +34,16 @@ public class RegistryService {
      * @param dto 查询条件
      * @return 注册表列表
      */
-    public PageResult<GetRegistryListVo> getRegistryList(GetRegistryListDto dto) {
-        RegistryPo query = new RegistryPo();
+    public PageResult<GetRegistryNodeListVo> getRegistryNodeList(GetRegistryNodeListDto dto) {
+        RegistryNodePo query = new RegistryNodePo();
         assign(dto, query);
 
-        Page<RegistryPo> page = repository.getRegistryList(query, dto.pageRequest());
+        Page<RegistryNodePo> page = repository.getRegistryNodeList(query, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<GetRegistryListVo> vos = as(page.getContent(), GetRegistryListVo.class);
+        List<GetRegistryNodeListVo> vos = as(page.getContent(), GetRegistryNodeListVo.class);
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
@@ -51,9 +53,9 @@ public class RegistryService {
      * @param dto 新增注册表
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addRegistry(AddRegistryDto dto) throws BizException {
+    public void addRegistryNode(AddRegistryNodeDto dto) throws BizException {
 
-        RegistryPo insertPo = as(dto, RegistryPo.class);
+        RegistryNodePo insertPo = as(dto, RegistryNodePo.class);
 
         //如果是顶级节点 KEY_PATH为自身
         if (dto.getParentId() == null) {
@@ -86,8 +88,8 @@ public class RegistryService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editRegistry(EditRegistryDto dto) throws BizException {
-        RegistryPo updatePo = repository.findById(dto.getId())
+    public void editRegistryNode(EditRegistryNodeDto dto) throws BizException {
+        RegistryNodePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
@@ -101,10 +103,10 @@ public class RegistryService {
      * @return 注册表详情
      * @throws BizException 业务异常
      */
-    public GetRegistryDetailsVo getRegistryDetails(CommonIdDto dto) throws BizException {
-        RegistryPo po = repository.findById(dto.getId())
+    public GetRegistryNodeDetailsVo getRegistryNodeDetails(CommonIdDto dto) throws BizException {
+        RegistryNodePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po, GetRegistryDetailsVo.class);
+        return as(po, GetRegistryNodeDetailsVo.class);
     }
 
     /**
@@ -114,13 +116,13 @@ public class RegistryService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeRegistry(CommonIdDto dto) throws BizException {
+    public void removeRegistryNode(CommonIdDto dto) throws BizException {
 
         List<Long> ids = dto.toIds();
         if (ids == null || ids.isEmpty()) return;
 
         //查出实际存在的ID，避免报错
-        List<RegistryPo> existPos = repository.findAllById(ids);
+        List<RegistryNodePo> existPos = repository.findAllById(ids);
 
         if (existPos.isEmpty()) {
             throw new BizException("删除失败, 数据不存在.");
@@ -128,7 +130,7 @@ public class RegistryService {
 
         List<Long> safeRemoveIds = new ArrayList<>();
 
-        for (RegistryPo po : existPos) {
+        for (RegistryNodePo po : existPos) {
             //检查是否有子节点
             long childCount = repository.countByParentId(po.getId());
 

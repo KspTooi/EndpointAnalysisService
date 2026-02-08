@@ -1,5 +1,6 @@
-package com.ksptooi.biz.core.model.registry.dto;
+package com.ksptooi.biz.core.model.registrynode.dto;
 
+import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,11 +10,9 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import com.ksptooi.commons.dataprocess.Str;
-
 @Getter
 @Setter
-public class AddRegistryDto {
+public class AddRegistryNodeDto {
 
     @Schema(description = "父级ID NULL顶级")
     private Long parentId;
@@ -53,7 +52,7 @@ public class AddRegistryDto {
 
     /**
      * 验证接口参数
-     * 
+     *
      * @return 错误信息 无错误返回null
      */
     public String validate() {

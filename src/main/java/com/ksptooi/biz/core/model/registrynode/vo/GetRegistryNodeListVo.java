@@ -1,6 +1,5 @@
-package com.ksptooi.biz.core.model.registry.dto;
+package com.ksptooi.biz.core.model.registrynode.vo;
 
-import com.ksptool.assembly.entity.web.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetRegistryListDto extends PageQuery {
-
+public class GetRegistryNodeListVo {
 
     @Schema(description = "ID")
     private Long id;
@@ -62,5 +60,6 @@ public class GetRegistryListDto extends PageQuery {
 
     @Schema(description = "删除时间 NULL未删")
     private LocalDateTime deleteTime;
+
 }
 

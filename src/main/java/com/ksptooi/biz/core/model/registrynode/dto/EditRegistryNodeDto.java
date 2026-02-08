@@ -1,16 +1,16 @@
-package com.ksptooi.biz.core.model.registry.dto;
+package com.ksptooi.biz.core.model.registrynode.dto;
 
+import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
-import com.ksptooi.commons.dataprocess.Str;
 
 @Getter
 @Setter
-public class EditRegistryDto {
+public class EditRegistryNodeDto {
 
     @Schema(description = "ID")
     @NotNull(message = "ID不能为空")
@@ -45,32 +45,33 @@ public class EditRegistryDto {
 
     /**
      * 验证接口参数
+     *
      * @return 错误信息 无错误返回null
      */
     public String validate() {
 
         //处理数据类型(如果用户填写了value)
-        if(Str.isNotBlank(nvalue)){
+        if (Str.isNotBlank(nvalue)) {
 
-            if(nvalueKind == 1 && Str.isNotInteger(nvalue)){
+            if (nvalueKind == 1 && Str.isNotInteger(nvalue)) {
                 return "值必须为整数 当前值:" + nvalue;
             }
-    
-            if(nvalueKind == 2 && Str.isNotDouble(nvalue)){
+
+            if (nvalueKind == 2 && Str.isNotDouble(nvalue)) {
                 return "值必须为浮点数 当前值:" + nvalue;
             }
-    
-            if(nvalueKind == 3 && Str.isNotDateTime(nvalue)){
+
+            if (nvalueKind == 3 && Str.isNotDateTime(nvalue)) {
                 return "值必须为日期时间(yyyy-MM-dd HH:mm:ss) 当前值:" + nvalue;
-            }  
+            }
 
         }
 
         //处理元数据
-        if(Str.isBlank(metadata)){
+        if (Str.isBlank(metadata)) {
             metadata = "{}";
         }
- 
+
         return null;
     }
 
