@@ -12,7 +12,7 @@ public class CodeGeneratorVue {
 
     public static void main(String[] args) {
 
-        var tables = List.of("audit_error_rcd");
+        var tables = List.of("core_registry");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();

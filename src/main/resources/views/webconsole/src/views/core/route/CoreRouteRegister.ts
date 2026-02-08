@@ -106,6 +106,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/core/NoticeTemplate.vue"),
         breadcrumb: "通知模板",
       },
+      {
+        biz: "core",
+        path: "registry-manager",
+        name: "registry-manager",
+        component: () => import("@/views/core/Registry.vue"),
+        breadcrumb: "注册表管理",
+      },
     ];
   }
 }
