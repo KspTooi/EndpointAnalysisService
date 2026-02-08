@@ -46,17 +46,34 @@
     </template>
 
     <!-- 操作按钮区域 -->
-    <template #actions> </template>
+    <template #actions>
+      <el-button
+        type="danger"
+        @click="() => removeListBatch(listSelected)"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中项
+      </el-button>
+    </template>
 
     <!-- 列表表格区域 -->
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="errorCode" label="错误代码" min-width="120" show-overflow-tooltip />
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetAuditErrorRcdListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="45" />
+        <el-table-column prop="errorCode" label="错误代码" min-width="50" show-overflow-tooltip />
         <el-table-column prop="requestUri" label="请求地址" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="userName" label="操作人用户名" min-width="120" show-overflow-tooltip />
+
         <el-table-column prop="errorType" label="异常类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="发生时间" min-width="120" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('view', scope.row)" :icon="ViewIcon">
               查看
@@ -199,6 +216,7 @@ import { ref, markRaw, reactive } from "vue";
 import { View, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import AuditErrorRcdService from "@/views/audit/service/AuditErrorRcdService.ts";
+import type { GetAuditErrorRcdListVo } from "@/views/audit/api/AuditErrorRcdApi.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import ExpandButton from "@/components/common/ExpandButton.vue";
 
@@ -212,8 +230,11 @@ const uiState = reactive({
 });
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   AuditErrorRcdService.useAuditErrorRcdList();
+
+// 选中的列表项
+const listSelected = ref<GetAuditErrorRcdListVo[]>([]);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

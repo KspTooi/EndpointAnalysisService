@@ -90,6 +90,37 @@ export default {
       }
     };
 
+    /**
+     * 批量删除记录
+     */
+    const removeListBatch = async (selectedItems: GetAuditErrorRcdListVo[]) => {
+      if (selectedItems.length === 0) {
+        ElMessage.warning("请选择要删除的记录");
+        return;
+      }
+
+      try {
+        await ElMessageBox.confirm(`确定删除选中的${selectedItems.length}条错误记录吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        const ids = selectedItems.map((item) => ({ id: item.id }));
+        for (const item of ids) {
+          await AuditErrorRcdApi.removeAuditErrorRcd(item);
+        }
+        ElMessage.success("删除成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     onMounted(async () => {
       await loadList();
     });
@@ -102,6 +133,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      removeListBatch,
     };
   },
 
