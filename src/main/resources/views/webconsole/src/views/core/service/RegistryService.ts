@@ -108,8 +108,21 @@ export default class RegistryService {
 
     // 条目表单校验规则
     const modalRules = {
-      nkey: [{ required: true, message: "请输入节点Key", trigger: "blur" }],
-      nvalue: [{ required: true, message: "请输入节点值", trigger: "blur" }],
+      nkey: [
+        { required: true, message: "请输入节点Key", trigger: "blur" },
+        { max: 128, message: "Key长度不能超过128个字符", trigger: "blur" },
+        { pattern: /^[a-zA-Z0-9_\-]+$/, message: "Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
+      ],
+      nvalue: [
+        { required: true, message: "请输入节点值", trigger: "blur" },
+        { max: 1024, message: "值长度不能超过1024个字符", trigger: "blur" },
+      ],
+      label: [
+        { max: 32, message: "标签长度不能超过32个字符", trigger: "blur" },
+      ],
+      remark: [
+        { max: 1000, message: "说明长度不能超过1000个字符", trigger: "blur" },
+      ],
       kind: [{ required: true, message: "请选择类型", trigger: "change" }],
     };
 

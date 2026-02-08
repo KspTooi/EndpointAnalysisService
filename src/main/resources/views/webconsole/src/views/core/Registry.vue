@@ -84,10 +84,10 @@
         label-width="100px"
       >
         <el-form-item label="Key" prop="nkey" v-if="modalMode === 'add'">
-          <el-input v-model="modalForm.nkey" placeholder="请输入Key" />
+          <el-input v-model="modalForm.nkey" placeholder="请输入Key" maxlength="128" show-word-limit />
         </el-form-item>
         <el-form-item label="标签" prop="label">
-          <el-input v-model="modalForm.label" placeholder="请输入标签" />
+          <el-input v-model="modalForm.label" placeholder="请输入标签" maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="数据类型" prop="nvalueKind">
           <el-select v-model="modalForm.nvalueKind" placeholder="选择类型" style="width: 100%">
@@ -98,7 +98,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="数据值" prop="nvalue">
-          <el-input v-model="modalForm.nvalue" type="textarea" :rows="3" placeholder="请输入数据值" />
+          <el-input v-model="modalForm.nvalue" type="textarea" :rows="3" placeholder="请输入数据值" maxlength="1024" show-word-limit />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input-number v-model="modalForm.seq" :min="0" />
@@ -110,7 +110,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="说明" prop="remark">
-          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入说明" />
+          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入说明" maxlength="1000" show-word-limit />
         </el-form-item>
       </el-form>
       <template #footer>

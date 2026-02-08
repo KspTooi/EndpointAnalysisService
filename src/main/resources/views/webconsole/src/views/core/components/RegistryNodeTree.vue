@@ -99,16 +99,18 @@
             v-model="modalForm.nkey"
             placeholder="请输入节点Key（字母、数字、下划线或中划线）"
             :disabled="modalMode === 'edit'"
+            maxlength="128"
+            show-word-limit
           />
         </el-form-item>
         <el-form-item label="节点标签" prop="label">
-          <el-input v-model="modalForm.label" placeholder="请输入节点标签" />
+          <el-input v-model="modalForm.label" placeholder="请输入节点标签" maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input-number v-model="modalForm.seq" :min="0" />
         </el-form-item>
         <el-form-item label="说明" prop="remark">
-          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入说明" />
+          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入说明" maxlength="1000" show-word-limit />
         </el-form-item>
       </el-form>
       <template #footer>
