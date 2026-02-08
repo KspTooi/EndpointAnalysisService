@@ -29,10 +29,9 @@ import static com.ksptool.entities.Entities.assign;
 @Service
 public class AuditErrorRcdService {
 
+    private final Map<String, AtomicLong> errorCodeMap = new ConcurrentHashMap<>();
     @Autowired
     private AuditErrorRcdRepository repository;
-
-    private Map<String, AtomicLong> errorCodeMap = new ConcurrentHashMap<>();
 
     /**
      * 获取下一个错误代码

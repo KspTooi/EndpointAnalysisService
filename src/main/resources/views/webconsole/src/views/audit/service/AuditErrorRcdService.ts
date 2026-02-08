@@ -58,6 +58,7 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
+      listForm.value.errorCode = "";
       listForm.value.requestUri = "";
       listForm.value.userId = "";
       listForm.value.userName = "";
