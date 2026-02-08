@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import com.ksptooi.commons.dataprocess.Str;
 
@@ -19,6 +20,7 @@ public class AddRegistryDto {
 
     @Schema(description = "类型 0:节点 1:条目")
     @NotNull(message = "类型不能为空")
+    @Range(min = 0, max = 1, message = "类型只能在0-1之间")
     private Integer kind;
 
     @Schema(description = "节点Key")
@@ -28,7 +30,7 @@ public class AddRegistryDto {
     private String nkey;
 
     @Schema(description = "数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)")
-    @NotNull(message = "数据类型不能为空")
+    @Range(min = 0, max = 3, message = "数据类型只能在0-3之间")
     private Integer nvalueKind;
 
     @Schema(description = "节点Value")
@@ -43,11 +45,10 @@ public class AddRegistryDto {
     private String remark;
 
     @Schema(description = "元数据JSON")
-    @NotBlank(message = "元数据JSON不能为空")
     private String metadata;
 
     @Schema(description = "状态 0:正常 1:停用")
-    @NotNull(message = "状态不能为空")
+    @Range(min = 0, max = 1, message = "状态只能在0-1之间")
     private Integer status;
 
     @Schema(description = "排序")
@@ -75,12 +76,21 @@ public class AddRegistryDto {
                 return "节点不能填写元数据";
             }
 
+            //节点不允许填写状态
+            if (status != null) {
+                return "节点不能填写状态";
+            }
+
             return null;
         }
 
 
         //处理添加条目
 
+        //条目必须有父级
+        if (parentId == null) {
+            return "条目必须有父级";
+        }
 
         // 处理数据类型(如果用户填写了value)
         if (Str.isNotBlank(nvalue)) {

@@ -7,6 +7,7 @@ import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryListVo;
 import com.ksptooi.biz.core.repository.RegistryRepository;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -56,25 +57,60 @@ public class RegistryService {
 
         RegistryPo insertPo = as(dto, RegistryPo.class);
 
-        // 如果是顶级节点 KEY_PATH为自身
-        if (dto.getParentId() == null) {
-            insertPo.setKeyPath(insertPo.getNkey());
+        //处理新增节点 0:节点 1:条目
+        if (dto.getKind() == 0) {
+
+            // 如果是顶级节点 KEY_PATH为自身
+            if (dto.getParentId() == null) {
+                insertPo.setKeyPath(insertPo.getNkey());
+            }
+
+            // 如果父级ID不为空，则需要查询父级是否存在
+            if (dto.getParentId() != null) {
+
+                var parentPo = repository.findById(dto.getParentId())
+                        .orElseThrow(() -> new BizException("无法处理新增请求,父级项不存在 ID:" + dto.getParentId()));
+                insertPo.setParentId(parentPo.getId());
+
+                // 如果配置了父级 需要处理KEY的全路径
+                insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
+            }
+
+            // 校验keypath是否唯一
+            if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
+                throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
+            }
+
+            insertPo.setKind(0);
+            insertPo.setNvalueKind(null);
+            insertPo.setNvalue(null);
+            insertPo.setMetadata(null);
+            insertPo.setIsSystem(0);
+            insertPo.setStatus(0);
+
         }
 
-        // 如果父级ID不为空，则需要查询父级是否存在
-        if (dto.getParentId() != null) {
+        //处理新增条目 1:条目
+        if (dto.getKind() == 1) {
 
+            //条目必须有父级
             var parentPo = repository.findById(dto.getParentId())
-                    .orElseThrow(() -> new BizException("无法处理新增请求,父级项不存在 ID:" + dto.getParentId()));
+                    .orElseThrow(() -> new BizException("无法处理新增条目请求,父级节点不存在 ID:" + dto.getParentId()));
             insertPo.setParentId(parentPo.getId());
 
-            // 如果配置了父级 需要处理KEY的全路径
-            insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
-        }
+            //条目的父级必须是节点
+            if (parentPo.getKind() != 0) {
+                throw new BizException("无法处理新增条目请求,父级节点必须是节点 ID:" + dto.getParentId());
+            }
 
-        // 校验keypath是否唯一
-        if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
-            throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
+            //处理条目Key的全路径
+            insertPo.setKeyPath(parentPo.getKeyPath() + "." + insertPo.getNkey());
+
+            //校验keypath是否唯一
+            if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
+                throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
+            }
+
         }
 
         repository.save(insertPo);
@@ -90,6 +126,13 @@ public class RegistryService {
     public void editRegistry(EditRegistryDto dto) throws BizException {
         RegistryPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        //如果是节点则不允许修改value    
+        if (updatePo.getKind() == 0) {
+            if (Str.isNotBlank(dto.getNvalue())) {
+                throw new BizException("无法处理编辑请求,节点不允许修改Value");
+            }
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);
