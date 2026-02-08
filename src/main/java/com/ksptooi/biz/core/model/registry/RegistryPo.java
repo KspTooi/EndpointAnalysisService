@@ -27,20 +27,35 @@ public class RegistryPo {
     @Column(name = "parent_id", comment = "父级项ID NULL顶级")
     private Long parentId;
 
-    @Column(name = "key_path", length = 1024, nullable = false, comment = "节点Key的全路径")
+    @Column(name = "key_path", length = 1024, nullable = false, comment = "条目Key的全路径")
     private String keyPath;
+
+    @Column(name = "kind", columnDefinition = "TINYINT", nullable = false, comment = "类型 0:节点 1:条目")
+    private Integer kind;
 
     @Column(name = "nkey", length = 128, nullable = false, comment = "节点Key")
     private String nkey;
 
+    @Column(name = "nvalue", columnDefinition = "LONGTEXT", comment = "节点Value")
+    private String nvalue;
+
     @Column(name = "label", length = 32, comment = "节点标签")
     private String label;
 
-    @Column(name = "seq", nullable = false, comment = "排序")
-    private Integer seq;
-
     @Column(name = "remark", columnDefinition = "TEXT", comment = "说明")
     private String remark;
+
+    @Column(name = "metadata", columnDefinition = "JSON", nullable = false, comment = "元数据JSON")
+    private String metadata;
+
+    @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "内置值 0:否 1:是")
+    private Integer isSystem;
+
+    @Column(name = "status", columnDefinition = "TINYINT", nullable = false, comment = "状态 0:正常 1:停用")
+    private Integer status;
+
+    @Column(name = "seq", nullable = false, comment = "排序")
+    private Integer seq;
 
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
