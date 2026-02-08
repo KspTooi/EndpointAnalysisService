@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -58,11 +55,6 @@ public class RegistryService {
 
         RegistryPo insertPo = as(dto, RegistryPo.class);
 
-        //校验key是否唯一
-        if (repository.countByNkey(insertPo.getNkey()) > 0) {
-            throw new BizException("新增失败,key已存在: " + insertPo.getNkey());
-        }
-
         //如果是顶级节点 KEY_PATH为自身
         if (dto.getParentId() == null) {
             insertPo.setKeyPath(insertPo.getNkey());
@@ -97,16 +89,6 @@ public class RegistryService {
     public void editRegistry(EditRegistryDto dto) throws BizException {
         RegistryPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
-
-        //系统内置注册表不允许修改value
-        if (updatePo.getIsSystem() == 1) {
-
-            //检查是否修改了value
-            if (!Objects.equals(updatePo.getNvalue(), dto.getNvalue())) {
-                throw new BizException("更新失败,系统内置注册表不允许修改value.");
-            }
-
-        }
 
         assign(dto, updatePo);
         repository.save(updatePo);
