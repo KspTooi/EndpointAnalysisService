@@ -1,16 +1,13 @@
-package com.ksptooi.biz.registryentry.model;
+package com.ksptooi.biz.core.model.registryentry;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
+
 import java.time.LocalDateTime;
 
-import java.util.Date;
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Getter
 @Setter
@@ -72,39 +69,39 @@ public class RegistryEntryPo {
 
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws Exception {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-        
-        
+
+
         LocalDateTime now = LocalDateTime.now();
-        
+
         if (this.createTime == null) {
             this.createTime = now;
         }
-        
+
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
-        
+
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = session().getUserId();
         }
-        
+
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 
     @PreUpdate
-    private void onUpdate() {
-        
+    private void onUpdate() throws Exception {
+
         this.updateTime = LocalDateTime.now();
-        
+
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 }
