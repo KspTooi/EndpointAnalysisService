@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +40,15 @@ public class RegistryController {
     @Operation(summary = "新增注册表")
     @PostMapping("/addRegistry")
     public Result<String> addRegistry(@RequestBody @Valid AddRegistryDto dto) throws Exception {
+
+        //验证输入参数
+        String validate = dto.validate();
+
+        if (StringUtils.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
+
         registryService.addRegistry(dto);
         return Result.success("新增成功");
     }
@@ -45,6 +56,13 @@ public class RegistryController {
     @Operation(summary = "编辑注册表")
     @PostMapping("/editRegistry")
     public Result<String> editRegistry(@RequestBody @Valid EditRegistryDto dto) throws Exception {
+
+        //验证输入参数
+        String validate = dto.validate();
+        if (StringUtils.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
         registryService.editRegistry(dto);
         return Result.success("修改成功");
     }

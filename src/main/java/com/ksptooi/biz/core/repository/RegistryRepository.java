@@ -1,6 +1,9 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.registry.RegistryPo;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,4 +37,29 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<RegistryPo> getRegistryList(@Param("po") RegistryPo po, Pageable pageable);
+
+
+    /**
+     * 根据ID列表统计注册表数量
+     * @param ids ID列表
+     * @return 注册表数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM RegistryPo u
+            WHERE u.id IN :ids
+            """)
+    int countByIds(@Param("ids") List<Long> ids);
+
+
+    /**
+     * 根据父级ID统计注册表数量
+     * @param parentId 父级ID
+     * @return 注册表数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM RegistryPo u
+            WHERE u.parentId = :parentId
+            """)
+    int countByParentId(@Param("parentId") Long parentId);
+
 }
