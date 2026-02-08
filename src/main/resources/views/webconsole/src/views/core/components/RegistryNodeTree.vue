@@ -26,7 +26,7 @@
           <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
           <span class="node-label text-[var(--el-text-color-regular)]">全部注册表节点</span>
         </div>
-        <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal(null)">
+        <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal('add', null, null)">
           <el-icon class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer" title="新建根节点">
             <PlusIcon />
           </el-icon>
@@ -52,13 +52,23 @@
               <el-icon class="mr-1.5 text-[14px]">
                 <FolderIcon />
               </el-icon>
-              <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
+              <div class="flex gap-1 items-center">
+                <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
+                <span class="text-[var(--el-text-color-regular)] text-[12px]" v-if="data.label">({{ data.label }})</span>
+              </div>
             </div>
             <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
               <el-icon
                 class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
+                title="编辑节点"
+                @click.stop="openModal('edit', data)"
+              >
+                <EditIcon />
+              </el-icon>
+              <el-icon
+                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
                 title="新建子节点"
-                @click.stop="openModal(data)"
+                @click.stop="openModal('add', null, data)"
               >
                 <PlusIcon />
               </el-icon>
@@ -75,11 +85,21 @@
       </el-tree>
     </div>
 
-    <!-- 创建节点模态框 -->
-    <el-dialog v-model="modalVisible" title="新建节点" width="500px" :close-on-click-modal="false" @close="resetModal">
+    <!-- 节点模态框 -->
+    <el-dialog
+      v-model="modalVisible"
+      :title="modalMode === 'add' ? '新建节点' : '编辑节点'"
+      width="500px"
+      :close-on-click-modal="false"
+      @close="resetModal"
+    >
       <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px">
         <el-form-item label="节点Key" prop="nkey">
-          <el-input v-model="modalForm.nkey" placeholder="请输入节点Key（字母、数字、下划线或中划线）" />
+          <el-input
+            v-model="modalForm.nkey"
+            placeholder="请输入节点Key（字母、数字、下划线或中划线）"
+            :disabled="modalMode === 'edit'"
+          />
         </el-form-item>
         <el-form-item label="节点标签" prop="label">
           <el-input v-model="modalForm.label" placeholder="请输入节点标签" />
@@ -94,7 +114,9 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">创建</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            {{ modalMode === "add" ? "创建" : "保存" }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -104,7 +126,7 @@
 <script setup lang="ts">
 import { ref, markRaw, onMounted } from "vue";
 import type { ElTree } from "element-plus";
-import { Search, List, Folder, Plus, Delete } from "@element-plus/icons-vue";
+import { Search, List, Folder, Plus, Delete, Edit } from "@element-plus/icons-vue";
 import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import RegistryNodeTreeService from "@/views/core/service/RegistryNodeTreeService";
 import type { FormInstance } from "element-plus";
@@ -115,6 +137,7 @@ const ListIcon = markRaw(List);
 const FolderIcon = markRaw(Folder);
 const PlusIcon = markRaw(Plus);
 const DeleteIcon = markRaw(Delete);
+const EditIcon = markRaw(Edit);
 
 // 事件定义
 const emit = defineEmits<{
@@ -145,8 +168,8 @@ const { treeData, loading, filterText, loadTreeData, onSelectNode, removeNode } 
 // 辅助方法：用于刷新后重新加载
 const _loadTreeData = () => loadTreeData();
 
-// 核心业务 Hook：节点新增模态框逻辑
-const { modalVisible, modalLoading, modalForm, modalRules, openModal, submitModal, resetModal } =
+// 核心业务 Hook：节点模态框逻辑
+const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal, resetModal } =
   RegistryNodeTreeService.useNodeModal(modalFormRef, _loadTreeData);
 
 // ElTree 基础配置

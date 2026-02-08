@@ -42,6 +42,7 @@ public class AddRegistryDto {
     private String label;
 
     @Schema(description = "说明")
+    @Length(max = 1000, message = "说明长度不能超过1000个字符")
     private String remark;
 
     @Schema(description = "元数据JSON")

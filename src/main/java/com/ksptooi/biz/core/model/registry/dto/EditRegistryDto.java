@@ -32,8 +32,9 @@ public class EditRegistryDto {
     private Integer seq;
 
     @Schema(description = "说明")
+    @Length(max = 1000, message = "说明长度不能超过1000个字符")
     private String remark;
-    
+
     public String validate() {
         return null;
     }

@@ -1,5 +1,5 @@
 import { ref, type Ref } from "vue";
-import RegistryApi, { type GetRegistryNodeTreeVo, type AddRegistryDto } from "@/views/core/api/RegistryApi";
+import RegistryApi, { type GetRegistryNodeTreeVo, type AddRegistryDto, type EditRegistryDto } from "@/views/core/api/RegistryApi";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 
 /**
@@ -80,9 +80,10 @@ export default class RegistryNodeTreeService {
     public static useNodeModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
         const modalVisible = ref(false); // 模态框显示状态
         const modalLoading = ref(false); // 提交中状态
+        const modalMode = ref<"add" | "edit">("add"); // 模态框模式
 
         // 初始表单数据模型 (kind=0 固定表示节点)
-        const modalForm = ref<AddRegistryDto>({
+        const modalForm = ref<AddRegistryDto | EditRegistryDto | any>({
             parentId: undefined,
             kind: 0,
             nkey: "",
@@ -95,25 +96,49 @@ export default class RegistryNodeTreeService {
         const modalRules = {
             nkey: [
                 { required: true, message: "请输入节点Key", trigger: "blur" },
+                { max: 128, message: "节点Key长度不能超过128个字符", trigger: "blur" },
                 { pattern: /^[a-zA-Z0-9_\-]+$/, message: "节点Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
+            ],
+            label: [
+                { max: 32, message: "节点标签长度不能超过32个字符", trigger: "blur" },
+            ],
+            remark: [
+                { max: 1000, message: "说明长度不能超过1000个字符", trigger: "blur" },
             ],
             seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
         };
 
         /**
-         * 打开新增模态框
-         * @param parentNode 父级节点，若为空则创建根节点
+         * 打开新增/编辑模态框
+         * @param mode 操作模式
+         * @param node 当前节点数据（仅编辑模式需要）
+         * @param parentNode 父级节点（仅新增模式需要）
          */
-        const openModal = (parentNode: GetRegistryNodeTreeVo | null = null) => {
+        const openModal = (mode: "add" | "edit", node: GetRegistryNodeTreeVo | null = null, parentNode: GetRegistryNodeTreeVo | null = null) => {
             modalVisible.value = true;
-            modalForm.value = {
-                parentId: parentNode?.id ?? undefined,
-                kind: 0,
-                nkey: "",
-                label: "",
-                remark: "",
-                seq: 0,
-            };
+            modalMode.value = mode;
+
+            if (mode === "add") {
+                modalForm.value = {
+                    parentId: parentNode?.id ?? undefined,
+                    kind: 0,
+                    nkey: "",
+                    label: "",
+                    remark: "",
+                    seq: 0,
+                };
+                return;
+            }
+
+            if (node) {
+                modalForm.value = {
+                    id: node.id,
+                    nkey: node.nkey, // 节点Key通常不支持修改，但在DTO定义中AddRegistryDto包含nkey，EditRegistryDto不含。根据后端逻辑，编辑节点可能直接使用editRegistry并按字段更新。
+                    label: node.label,
+                    seq: node.seq,
+                    remark: "", // 树节点VO可能不包含remark，如果需要可以先查询详情
+                };
+            }
         };
 
         /**
@@ -124,8 +149,15 @@ export default class RegistryNodeTreeService {
             try {
                 await formRef.value.validate();
                 modalLoading.value = true;
-                await RegistryApi.addRegistry(modalForm.value);
-                ElMessage.success("新增节点成功");
+
+                if (modalMode.value === "add") {
+                    await RegistryApi.addRegistry(modalForm.value);
+                    ElMessage.success("新增节点成功");
+                } else {
+                    await RegistryApi.editRegistry(modalForm.value);
+                    ElMessage.success("修改节点成功");
+                }
+
                 modalVisible.value = false;
                 onRefresh(); // 刷新外部树数据
             } catch (error: any) {
@@ -147,6 +179,7 @@ export default class RegistryNodeTreeService {
         return {
             modalVisible,
             modalLoading,
+            modalMode,
             modalForm,
             modalRules,
             openModal,
