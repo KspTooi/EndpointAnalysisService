@@ -1,9 +1,10 @@
-import { ref, type Ref } from "vue";
+import { ref, reactive, type Ref } from "vue";
 import RegistryApi, {
   type GetRegistryListDto,
   type GetRegistryEntryListVo,
   type AddRegistryDto,
   type EditRegistryDto,
+  type GetRegistryDetailsVo,
 } from "@/views/core/api/RegistryApi";
 import type CommonIdDto from "@/commons/entity/CommonIdDto";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
@@ -12,12 +13,12 @@ import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
  * 注册表业务服务层
  * 处理注册表条目列表的展示、增删改查逻辑
  */
-export default class RegistryService {
+export default {
   /**
    * 注册表条目列表管理 Hook
    * @param keyPath 当前选中的节点路径引用，用于同步查询条件
    */
-  public static useRegistryList(keyPath: Ref<string | null>) {
+  useRegistryList(keyPath: Ref<string | null>) {
     const listData = ref<GetRegistryEntryListVo[]>([]); // 列表数据
     const listLoading = ref(false); // 列表加载状态标识
 
@@ -80,7 +81,9 @@ export default class RegistryService {
         ElMessage.success("删除成功");
         loadList(); // 成功后刷新列表
       } catch (error: any) {
-        if (error === "cancel") return;
+        if (error === "cancel") {
+          return;
+        }
         ElMessage.error(error.message || "删除失败");
       }
     };
@@ -93,18 +96,32 @@ export default class RegistryService {
       resetList,
       removeList,
     };
-  }
+  },
 
   /**
    * 注册表条目新增/编辑模态框管理 Hook
    * @param formRef 绑定的表单组件实例引用
    * @param onRefresh 操作成功后的刷新列表回调
    */
-  public static useRegistryModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
+  useRegistryModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
     const modalVisible = ref(false); // 模态框显隐状态
     const modalLoading = ref(false); // 提交加载状态
     const modalMode = ref<"add" | "edit">("add"); // 模态框模式：新增、编辑
-    const modalForm = ref<AddRegistryDto | EditRegistryDto | any>({}); // 表单响应式数据对象
+
+    // 使用详情 VO 类型定义表单
+    const modalForm = reactive<GetRegistryDetailsVo>({
+      id: "",
+      parentId: undefined,
+      kind: 1,
+      nkey: "",
+      nvalueKind: 0,
+      nvalue: "",
+      label: "",
+      remark: "",
+      metadata: "{}",
+      status: 0,
+      seq: 0,
+    });
 
     // 条目表单校验规则
     const modalRules = {
@@ -127,42 +144,53 @@ export default class RegistryService {
     };
 
     /**
+     * 重置模态框数据
+     */
+    const resetModal = () => {
+      modalForm.id = "";
+      modalForm.parentId = undefined;
+      modalForm.kind = 1;
+      modalForm.nkey = "";
+      modalForm.nvalueKind = 0;
+      modalForm.nvalue = "";
+      modalForm.label = "";
+      modalForm.remark = "";
+      modalForm.metadata = "{}";
+      modalForm.status = 0;
+      modalForm.seq = 0;
+
+      if (formRef.value) {
+        formRef.value.resetFields();
+      }
+    };
+
+    /**
      * 打开条目模态框并初始化数据
      * @param mode 操作模式
      * @param row 编辑时的原始数据
      * @param parentId 新增所属的父节点 ID
      */
-    const openModal = (mode: "add" | "edit", row: any = null, parentId: string | null = null) => {
+    const openModal = (mode: "add" | "edit", row: GetRegistryEntryListVo | null = null, parentId: string | null = null) => {
       modalMode.value = mode;
-      modalVisible.value = true;
+      resetModal();
+
       if (mode === "add") {
-        // 初始化新增模式的默认值 (kind=1 代表 Entry)
-        modalForm.value = {
-          parentId: parentId ?? undefined,
-          kind: 1,
-          nkey: "",
-          nvalueKind: 0,
-          nvalue: "",
-          label: "",
-          remark: "",
-          metadata: "{}",
-          status: 0,
-          seq: 0,
-        };
+        modalForm.parentId = parentId ?? undefined;
+        modalVisible.value = true;
         return;
       }
+
       if (row) {
-        // 绑定编辑模式的字段值 (仅提取后端支持编辑的字段)
-        modalForm.value = {
-          id: row.id,
-          nkey: row.nkey,
-          nvalueKind: row.nvalueKind,
-          nvalue: row.nvalue,
-          label: row.label,
-          status: row.status,
-          seq: row.seq,
-          remark: row.remark,
-        };
+        // 绑定编辑模式的字段值
+        modalForm.id = row.id;
+        modalForm.nkey = row.nkey;
+        modalForm.nvalueKind = row.nvalueKind;
+        modalForm.nvalue = row.nvalue;
+        modalForm.label = row.label;
+        modalForm.status = row.status;
+        modalForm.seq = row.seq;
+        modalForm.remark = row.remark;
+        modalVisible.value = true;
       }
     };
 
@@ -170,22 +198,50 @@ export default class RegistryService {
      * 执行表单提交过程
      */
     const submitModal = async () => {
-      if (!formRef.value) return;
+      if (!formRef.value) {
+        return;
+      }
       try {
         await formRef.value.validate();
         modalLoading.value = true;
+
         if (modalMode.value === "add") {
-          await RegistryApi.addRegistry(modalForm.value);
+          const addDto: AddRegistryDto = {
+            parentId: modalForm.parentId,
+            kind: modalForm.kind,
+            nkey: modalForm.nkey,
+            nvalueKind: modalForm.nvalueKind,
+            nvalue: modalForm.nvalue,
+            label: modalForm.label,
+            remark: modalForm.remark,
+            metadata: modalForm.metadata,
+            status: modalForm.status,
+            seq: modalForm.seq,
+          };
+          await RegistryApi.addRegistry(addDto);
           ElMessage.success("新增成功");
+          modalVisible.value = false;
+          onRefresh();
         }
+
         if (modalMode.value === "edit") {
-          await RegistryApi.editRegistry(modalForm.value);
+          const editDto: EditRegistryDto = {
+            id: modalForm.id ?? "",
+            nvalueKind: modalForm.nvalueKind,
+            nvalue: modalForm.nvalue,
+            label: modalForm.label,
+            seq: modalForm.seq,
+            remark: modalForm.remark,
+          };
+          await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改成功");
+          modalVisible.value = false;
+          onRefresh();
         }
-        modalVisible.value = false;
-        onRefresh(); // 通知外部组件刷新
       } catch (error: any) {
-        ElMessage.error(error.message || "提交失败");
+        if (error?.message) {
+          ElMessage.error(error.message);
+        }
       } finally {
         modalLoading.value = false;
       }
@@ -198,7 +254,8 @@ export default class RegistryService {
       modalForm,
       modalRules,
       openModal,
+      resetModal,
       submitModal,
     };
-  }
-}
+  },
+};

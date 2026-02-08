@@ -24,7 +24,7 @@
       >
         <div class="flex items-center">
           <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
-          <span class="node-label text-[var(--el-text-color-regular)]">全部注册表节点</span>
+          <span class="node-label text-[var(--el-text-color-regular)]">根节点</span>
         </div>
         <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal('add', null, null)">
           <el-icon class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer" title="新建根节点">

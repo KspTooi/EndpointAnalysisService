@@ -69,6 +69,23 @@ export interface GetRegistryNodeTreeVo {
 }
 
 /**
+ * 注册表详情VO (包含新增和编辑所需的所有字段)
+ */
+export interface GetRegistryDetailsVo {
+  id?: string; // ID
+  parentId?: string; // 父级项ID NULL顶级
+  kind: number; // 类型 0:节点 1:条目
+  nkey: string; // 节点Key
+  nvalueKind: number; // 数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+  nvalue: string; // 节点Value
+  label: string; // 节点标签
+  remark: string; // 说明
+  metadata: string; // 元数据JSON
+  status: number; // 状态 0:正常 1:停用
+  seq: number; // 排序
+}
+
+/**
  * 注册表 API 接口
  */
 export default {

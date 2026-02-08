@@ -131,7 +131,7 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import RegistryService from "@/views/core/service/RegistryService";
+import RegistryManagerService from "@/views/core/service/RegistryManagerService.ts";
 import RegistryNodeTree from "@/views/core/components/RegistryNodeTree.vue";
 import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -159,14 +159,14 @@ const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
 };
 
 // 列表业务 Hook
-const { listForm, listData, listLoading, loadList, resetList, removeList } = RegistryService.useRegistryList(currentKeyPath);
+const { listForm, listData, listLoading, loadList, resetList, removeList } = RegistryManagerService.useRegistryList(currentKeyPath);
 
 // 模态框逻辑 Hook
 const modalFormRef = ref<FormInstance>();
 const _loadList = () => loadList(currentKeyPath.value);
 
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } = 
-  RegistryService.useRegistryModal(modalFormRef, _loadList);
+  RegistryManagerService.useRegistryModal(modalFormRef, _loadList);
 
 /**
  * 触发查询动作
