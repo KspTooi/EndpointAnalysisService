@@ -86,7 +86,7 @@ knife4j:
   enable: false
 
 application:
-  version: 1.5KCP2 # 应用版本号
+  version: 1.5SCP18 # 应用版本号
 
 #附件模块配置
 module-attach:
