@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -97,6 +98,16 @@ public class RegistryService {
         RegistryPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
+        //系统内置注册表不允许修改value
+        if (updatePo.getIsSystem() == 1) {
+
+            //检查是否修改了value
+            if (!Objects.equals(updatePo.getNvalue(), dto.getNvalue())) {
+                throw new BizException("更新失败,系统内置注册表不允许修改value.");
+            }
+
+        }
+
         assign(dto, updatePo);
         repository.save(updatePo);
     }
@@ -147,6 +158,12 @@ public class RegistryService {
                 //如果是批量，跳过该节点(静默失败)
                 continue;
             }
+
+            //检查是否是内置注册表(直接跳过)
+            if (po.getIsSystem() == 1) {
+                continue;
+            }
+
             safeRemoveIds.add(po.getId());
         }
 
