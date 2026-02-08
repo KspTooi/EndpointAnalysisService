@@ -36,6 +36,9 @@ public class RegistryPo {
     @Column(name = "nkey", length = 128, nullable = false, comment = "节点Key")
     private String nkey;
 
+    @Column(name = "nvalue_kind", columnDefinition = "TINYINT", comment = "数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)")
+    private Integer nvalueKind;
+
     @Column(name = "nvalue", columnDefinition = "LONGTEXT", comment = "节点Value")
     private String nvalue;
 
@@ -45,10 +48,10 @@ public class RegistryPo {
     @Column(name = "remark", columnDefinition = "TEXT", comment = "说明")
     private String remark;
 
-    @Column(name = "metadata", columnDefinition = "JSON", nullable = false, comment = "元数据JSON")
+    @Column(name = "metadata", columnDefinition = "JSON", comment = "元数据JSON")
     private String metadata;
 
-    @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "内置值 0:否 1:是")
+    @Column(name = "is_system", columnDefinition = "TINYINT", comment = "内置值 0:否 1:是")
     private Integer isSystem;
 
     @Column(name = "status", columnDefinition = "TINYINT", nullable = false, comment = "状态 0:正常 1:停用")

@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-9 04:02:54",
+  "updatedTime": "2026-2-9 04:13:40",
   "dbConns": [],
   "profile": {
     "default": {
@@ -24058,6 +24058,24 @@
           "uiHint": null
         },
         {
+          "defKey": "nvalue_kind",
+          "defName": "数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": false,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
+          "extProps": {},
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
+          "id": "3FBD7CBF-43EC-44EC-9685-F7CB94AF36A2"
+        },
+        {
           "defKey": "nvalue",
           "defName": "节点Value",
           "comment": "",
@@ -24119,7 +24137,7 @@
           "len": "",
           "scale": "",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
@@ -24147,7 +24165,7 @@
           "len": "",
           "scale": "",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,

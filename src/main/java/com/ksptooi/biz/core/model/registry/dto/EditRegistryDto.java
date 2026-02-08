@@ -14,7 +14,11 @@ public class EditRegistryDto {
     @NotNull(message = "ID不能为空")
     private Long id;
 
-    @Schema(description = "节点标签")
+    @Schema(description = "条目Value")
+    @Length(max = 1024, message = "节点Value长度不能超过1024个字符")
+    private String nvalue;
+
+    @Schema(description = "条目标签")
     @Length(max = 32, message = "节点标签长度不能超过32个字符")
     private String label;
 
@@ -24,5 +28,6 @@ public class EditRegistryDto {
 
     @Schema(description = "说明")
     private String remark;
+    
 
 }
