@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ep_document_sync_log", comment = "端点文档拉取记录")
+@Table(name = "ep_document_sync_rcd", comment = "端点文档拉取记录")
 @Getter
 @Setter
 public class EndpointDocSyncLogPo {

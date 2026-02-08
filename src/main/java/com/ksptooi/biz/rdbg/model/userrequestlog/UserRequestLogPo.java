@@ -10,7 +10,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rdbg_request_log", comment = "用户请求记录")
+@Table(name = "rdbg_request_rcd", comment = "用户请求记录")
 @Getter
 @Setter
 public class UserRequestLogPo {
