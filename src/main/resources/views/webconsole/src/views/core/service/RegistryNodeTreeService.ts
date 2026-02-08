@@ -2,20 +2,32 @@ import { ref, type Ref } from "vue";
 import RegistryApi, { type GetRegistryNodeTreeVo, type AddRegistryDto } from "@/views/core/api/RegistryApi";
 import { ElMessage, type FormInstance } from "element-plus";
 
+/**
+ * 注册表节点树服务层
+ * 封装了树数据的加载、筛选、节点选择以及新增节点的业务逻辑
+ */
 export default class RegistryNodeTreeService {
     /**
-     * 注册表节点树逻辑
+     * 注册表节点树基础逻辑 Hook
+     * 处理数据加载、搜索过滤和统一的选择状态管理
      */
     public static useRegistryNodeTree() {
-        const treeData = ref<GetRegistryNodeTreeVo[]>([]);
-        const loading = ref(false);
-        const filterText = ref("");
-        const selectedNode = ref<GetRegistryNodeTreeVo | null>(null);
+        const treeData = ref<GetRegistryNodeTreeVo[]>([]); // 树形结构数据
+        const loading = ref(false); // 加载状态标识
+        const filterText = ref(""); // 搜索关键字映射
+        const selectedNode = ref<GetRegistryNodeTreeVo | null>(null); // 当前选中的节点对象
 
+        /**
+         * 选择节点事件
+         * @param node 被选中的节点，null 表示选择“全部”
+         */
         const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
             selectedNode.value = node;
         };
 
+        /**
+         * 调用 API 加载注册表树结构
+         */
         const loadTreeData = async () => {
             loading.value = true;
             try {
@@ -39,11 +51,15 @@ export default class RegistryNodeTreeService {
     }
 
     /**
-     * 节点创建模态框逻辑
+     * 节点新增模态框逻辑 Hook
+     * @param formRef 表单实例引用，用于提交校验
+     * @param onRefresh 提交成功后的刷新回调
      */
     public static useNodeModal(formRef: Ref<FormInstance | undefined>, onRefresh: () => void) {
-        const modalVisible = ref(false);
-        const modalLoading = ref(false);
+        const modalVisible = ref(false); // 模态框显示状态
+        const modalLoading = ref(false); // 提交中状态
+
+        // 初始表单数据模型 (kind=0 固定表示节点)
         const modalForm = ref<AddRegistryDto>({
             parentId: undefined,
             kind: 0,
@@ -53,6 +69,7 @@ export default class RegistryNodeTreeService {
             seq: 0,
         });
 
+        // 表单校验规则
         const modalRules = {
             nkey: [
                 { required: true, message: "请输入节点Key", trigger: "blur" },
@@ -61,6 +78,10 @@ export default class RegistryNodeTreeService {
             seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
         };
 
+        /**
+         * 打开新增模态框
+         * @param parentNode 父级节点，若为空则创建根节点
+         */
         const openModal = (parentNode: GetRegistryNodeTreeVo | null = null) => {
             modalVisible.value = true;
             modalForm.value = {
@@ -73,6 +94,9 @@ export default class RegistryNodeTreeService {
             };
         };
 
+        /**
+         * 提交表单数据并保存
+         */
         const submitModal = async () => {
             if (!formRef.value) return;
             try {
@@ -81,7 +105,7 @@ export default class RegistryNodeTreeService {
                 await RegistryApi.addRegistry(modalForm.value);
                 ElMessage.success("新增节点成功");
                 modalVisible.value = false;
-                onRefresh();
+                onRefresh(); // 刷新外部树数据
             } catch (error: any) {
                 if (error.message) {
                     ElMessage.error(error.message || "提交失败");
@@ -91,6 +115,9 @@ export default class RegistryNodeTreeService {
             }
         };
 
+        /**
+         * 重置表单状态
+         */
         const resetModal = () => {
             formRef.value?.resetFields();
         };

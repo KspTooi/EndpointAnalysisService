@@ -68,9 +68,14 @@ export interface GetRegistryNodeTreeVo {
   children?: GetRegistryNodeTreeVo[]; // 子级节点
 }
 
+/**
+ * 注册表 API 接口
+ */
 export default {
   /**
    * 获取注册表条目列表
+   * @param dto 查询参数
+   * @returns 注册表条目 VO 数组
    */
   getRegistryEntryList: async (dto: GetRegistryListDto): Promise<GetRegistryEntryListVo[]> => {
     const result = await Http.postEntity<Result<GetRegistryEntryListVo[]>>("/registry/getRegistryEntryList", dto);
@@ -82,6 +87,7 @@ export default {
 
   /**
    * 获取注册表节点树
+   * @returns 注册表节点树 VO 数组
    */
   getRegistryNodeTree: async (): Promise<GetRegistryNodeTreeVo[]> => {
     const result = await Http.postEntity<Result<GetRegistryNodeTreeVo[]>>("/registry/getRegistryNodeTree", {});
@@ -92,7 +98,9 @@ export default {
   },
 
   /**
-   * 新增注册表
+   * 新增注册表条目或节点
+   * @param dto 新增参数
+   * @returns 成功消息
    */
   addRegistry: async (dto: AddRegistryDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/registry/addRegistry", dto);
@@ -103,7 +111,9 @@ export default {
   },
 
   /**
-   * 编辑注册表
+   * 编辑注册表条目
+   * @param dto 编辑参数
+   * @returns 成功消息
    */
   editRegistry: async (dto: EditRegistryDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/registry/editRegistry", dto);
@@ -114,7 +124,9 @@ export default {
   },
 
   /**
-   * 删除注册表
+   * 删除注册表条目
+   * @param dto 删除参数（含 ID）
+   * @returns 成功消息
    */
   removeRegistry: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/registry/removeRegistry", dto);

@@ -1,6 +1,7 @@
 <template>
-  <div class="registry-tree-container" v-loading="loading">
-    <div class="filter-wrapper pr-2 pl-2">
+  <div class="flex flex-col h-full bg-[var(--el-bg-color)] box-border">
+    <!-- 搜索栏 -->
+    <div class="px-2 mb-2">
       <el-input
         v-model="filterText"
         placeholder="搜索注册表节点"
@@ -8,20 +9,31 @@
         :prefix-icon="SearchIcon"
         @input="onFilterInput"
         size="small"
+        class="custom-input"
       />
     </div>
 
-    <div class="action-wrapper pr-2 pl-2 mb-2">
-      <el-button type="primary" size="small" :icon="PlusIcon" @click="handleAddRootNode">
-        新建根节点
-      </el-button>
-    </div>
-
-    <div class="tree-wrapper">
-      <div v-if="showHeader" class="all-registry-node" :class="{ 'is-active': isAllSelected }" @click="handleSelectAll">
-        <el-icon class="node-icon"><ListIcon /></el-icon>
-        <span class="node-label">全部注册表</span>
+    <!-- 树容器 -->
+    <div class="flex-1 overflow-y-auto">
+      <!-- 全部节点行 -->
+      <div
+        v-if="showHeader"
+        class="all-registry-node group flex items-center justify-between h-[28px] pl-[27.5px] pr-2 cursor-pointer mb-[1px] transition-colors duration-200 text-[13px]"
+        :class="{ 'is-active': isAllSelected }"
+        @click="handleSelectAll"
+      >
+        <div class="flex items-center">
+          <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
+          <span class="node-label text-[var(--el-text-color-regular)]">全部注册表节点</span>
+        </div>
+        <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal(null)">
+          <el-icon class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer" title="新建根节点">
+            <PlusIcon />
+          </el-icon>
+        </div>
       </div>
+
+      <!-- 核心树组件 -->
       <el-tree
         ref="treeRef"
         :data="treeData"
@@ -32,51 +44,33 @@
         highlight-current
         default-expand-all
         @node-click="handleNodeClick"
-        @node-contextmenu="handleNodeContextMenu"
         class="custom-tree"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <el-icon class="node-icon">
-              <FolderIcon />
-            </el-icon>
-            <span class="node-label">{{ node.label }}</span>
+          <span class="custom-tree-node group flex-1 flex items-center justify-between pr-2 text-[13px]">
+            <div class="flex items-center">
+              <el-icon class="mr-1.5 text-[14px]">
+                <FolderIcon />
+              </el-icon>
+              <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
+            </div>
+            <div class="hidden group-hover:flex items-center text-[20px] font-bold">
+              <el-icon
+                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
+                title="新建子节点"
+                @click.stop="openModal(data)"
+              >
+                <PlusIcon />
+              </el-icon>
+            </div>
           </span>
         </template>
       </el-tree>
     </div>
 
-    <!-- 右键菜单 -->
-    <el-dropdown
-      ref="contextMenuRef"
-      trigger="contextmenu"
-      :virtual-triggering="true"
-      :virtual-ref="triggerRef"
-      @command="handleContextMenuCommand"
-    >
-      <span></span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="addChild" :icon="PlusIcon">新建子节点</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-
     <!-- 创建节点模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      title="新建节点"
-      width="500px"
-      :close-on-click-modal="false"
-      @close="resetModal"
-    >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-      >
+    <el-dialog v-model="modalVisible" title="新建节点" width="500px" :close-on-click-modal="false" @close="resetModal">
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px">
         <el-form-item label="节点Key" prop="nkey">
           <el-input v-model="modalForm.nkey" placeholder="请输入节点Key（字母、数字、下划线或中划线）" />
         </el-form-item>
@@ -101,51 +95,62 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, onMounted, computed } from "vue";
-import type { ElTree, ElDropdown } from "element-plus";
+import { ref, markRaw, onMounted } from "vue";
+import type { ElTree } from "element-plus";
 import { Search, List, Folder, Plus } from "@element-plus/icons-vue";
 import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import RegistryNodeTreeService from "@/views/core/service/RegistryNodeTreeService";
 import type { FormInstance } from "element-plus";
 
+// 注册图标
 const SearchIcon = markRaw(Search);
 const ListIcon = markRaw(List);
 const FolderIcon = markRaw(Folder);
 const PlusIcon = markRaw(Plus);
 
+// 事件定义
 const emit = defineEmits<{
-  (e: "on-select", node: GetRegistryNodeTreeVo | null): void;
+  (e: "on-select", node: GetRegistryNodeTreeVo | null): void; // 节点选中回调
 }>();
 
+// 组件属性
 const props = withDefaults(
   defineProps<{
-    showHeader?: boolean;
+    showHeader?: boolean; // 是否显示“全部节点”顶栏
   }>(),
   {
     showHeader: true,
   }
 );
 
+// DOM & 组件引用
 const treeRef = ref<InstanceType<typeof ElTree>>();
-const contextMenuRef = ref<InstanceType<typeof ElDropdown>>();
 const modalFormRef = ref<FormInstance>();
-const isAllSelected = ref(true);
-const currentSelectedKey = ref<string | number | null>(null);
-const contextMenuNode = ref<GetRegistryNodeTreeVo | null>(null);
-const triggerRef = computed(() => contextMenuRef.value?.$el);
 
+// 组件内部状态
+const isAllSelected = ref(true); // 是否处于“全部节点”状态
+const currentSelectedKey = ref<string | number | null>(null); // 当前树内选中的 Key
+
+// 核心业务 Hook：节点树逻辑
 const { treeData, loading, filterText, loadTreeData, onSelectNode } = RegistryNodeTreeService.useRegistryNodeTree();
 
+// 辅助方法：用于刷新后重新加载
 const _loadTreeData = () => loadTreeData();
 
+// 核心业务 Hook：节点新增模态框逻辑
 const { modalVisible, modalLoading, modalForm, modalRules, openModal, submitModal, resetModal } =
   RegistryNodeTreeService.useNodeModal(modalFormRef, _loadTreeData);
 
+// ElTree 基础配置
 const defaultProps = {
   children: "children",
   label: "label",
 };
 
+/**
+ * 处理“全部注册表节点”点击事件
+ * 清空树选中状态，通知父组件加载全部数据
+ */
 const handleSelectAll = () => {
   isAllSelected.value = true;
   currentSelectedKey.value = null;
@@ -154,15 +159,25 @@ const handleSelectAll = () => {
   onSelectNode(null);
 };
 
+/**
+ * 实时过滤搜索输入
+ */
 const onFilterInput = (val: string) => {
   treeRef.value?.filter(val);
 };
 
+/**
+ * Element Plus 树搜索逻辑
+ * 支持按 Key 或 Label 模糊搜索
+ */
 const filterNode = (value: string, data: GetRegistryNodeTreeVo) => {
   if (!value) return true;
-  return data.label.includes(value);
+  return (data.nkey || "").includes(value) || (data.label || "").includes(value);
 };
 
+/**
+ * 处理常规树节点点击事件
+ */
 const handleNodeClick = (data: GetRegistryNodeTreeVo) => {
   isAllSelected.value = false;
   currentSelectedKey.value = data.id;
@@ -170,69 +185,25 @@ const handleNodeClick = (data: GetRegistryNodeTreeVo) => {
   onSelectNode(data);
 };
 
-const handleNodeContextMenu = (event: MouseEvent, data: any, node: any) => {
-  event.preventDefault();
-  contextMenuNode.value = data;
-  if (contextMenuRef.value) {
-    contextMenuRef.value.handleOpen();
-  }
-};
-
-const handleContextMenuCommand = (command: string) => {
-  if (command === "addChild") {
-    openModal(contextMenuNode.value);
-  }
-};
-
-const handleAddRootNode = () => {
-  openModal(null);
-};
-
-const reset = () => {
-  handleSelectAll();
-};
-
+// 生命周期：挂载后加载树
 onMounted(() => {
   loadTreeData();
 });
 
-defineExpose({
-  reset,
-  loadTreeData,
-});
+// 暴露 API 给父组件使用
+defineExpose({ loadTreeData });
 </script>
 
 <style scoped>
-.registry-tree-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--el-bg-color);
-  box-sizing: border-box;
-}
-
-.filter-wrapper {
-  margin-bottom: 8px;
-}
-
-.tree-wrapper {
-  flex: 1;
-  overflow-y: auto;
-}
-
+/* 无法使用 Tailwind 覆盖的 Element Plus 深度样式或变量交互 */
 .custom-tree {
   background: transparent;
 }
 
-.all-registry-node {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  padding-left: 27.5px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  transition: background-color 0.2s;
-  font-size: 13px;
+/* 统一图标颜色，确保非选中状态下也有颜色 */
+.all-registry-node .el-icon,
+.custom-tree-node .el-icon {
+  color: var(--el-color-primary);
 }
 
 .all-registry-node:hover {
@@ -249,23 +220,7 @@ defineExpose({
   color: var(--el-color-primary);
 }
 
-.custom-tree-node {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-}
-
-.node-icon {
-  margin-right: 6px;
-  font-size: 14px;
-  color: var(--el-color-primary);
-}
-
-.node-label {
-  color: var(--el-text-color-regular);
-}
-
-:deep(.el-input__wrapper) {
+:deep(.custom-input .el-input__wrapper) {
   border-radius: 0;
 }
 
@@ -281,12 +236,13 @@ defineExpose({
 
 :deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: var(--el-color-primary-light-8);
-  color: var(--el-color-primary);
   font-weight: bold;
 }
 
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content .node-label) {
-  color: var(--el-color-primary);
+/* 确保选中节点的图标和文字都变为 Primary 颜色 */
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) .el-icon,
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) span {
+  color: var(--el-color-primary) !important;
 }
 
 :deep(.el-tree-node__expand-icon) {

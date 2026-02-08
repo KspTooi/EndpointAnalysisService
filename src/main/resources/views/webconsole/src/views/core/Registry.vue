@@ -139,32 +139,46 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
+// 静态图标引用 (使用 markRaw 避免响应式开销)
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-const currentKeyPath = ref<string | null>(null);
-const currentNodeId = ref<string | null>(null);
-const searchText = ref("");
+// 组件状态管理
+const currentKeyPath = ref<string | null>(null); // 当前选中的树节点路径
+const currentNodeId = ref<string | null>(null); // 当前选中的树节点 ID
+const searchText = ref(""); // 右侧列表模糊查询文本
 
+/**
+ * 处理树节点选中事件
+ * @param node 树形组件传回的节点对象
+ */
 const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
   currentKeyPath.value = node?.keyPath ?? null;
   currentNodeId.value = node?.id ?? null;
-  loadList(currentKeyPath.value);
+  loadList(currentKeyPath.value); // 选中节点后自动刷新列表
 };
 
+// 列表业务 Hook
 const { listForm, listData, listLoading, loadList, resetList, removeList } = RegistryService.useRegistryList(currentKeyPath);
 
+// 模态框逻辑 Hook
 const modalFormRef = ref<FormInstance>();
 const _loadList = () => loadList(currentKeyPath.value);
 
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } = 
   RegistryService.useRegistryModal(modalFormRef, _loadList);
 
+/**
+ * 触发查询动作
+ */
 const handleSearch = () => {
-  // 本地过滤示例，或者根据需要修改 DTO 进行服务端过滤
-  // 这里暂时实现本地过滤以简化演示
+  // 当前过滤逻辑由计算属性 filteredListData 实现
 };
 
+/**
+ * 计算属性：本地过滤后的列表数据
+ * 支持根据 Key 或标签进行模糊匹配
+ */
 const filteredListData = computed(() => {
   if (!searchText.value) return listData.value;
   const lowerSearch = searchText.value.toLowerCase();
