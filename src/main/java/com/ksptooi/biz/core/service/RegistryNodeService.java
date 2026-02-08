@@ -29,10 +29,10 @@ public class RegistryNodeService {
     private RegistryNodeRepository repository;
 
     /**
-     * 获取注册表列表
+     * 获取注册表节点列表
      *
      * @param dto 查询条件
-     * @return 注册表列表
+     * @return 注册表节点列表
      */
     public PageResult<GetRegistryNodeListVo> getRegistryNodeList(GetRegistryNodeListDto dto) {
         RegistryNodePo query = new RegistryNodePo();
@@ -48,9 +48,9 @@ public class RegistryNodeService {
     }
 
     /**
-     * 新增注册表
+     * 新增注册表节点
      *
-     * @param dto 新增注册表
+     * @param dto 新增注册表节点
      */
     @Transactional(rollbackFor = Exception.class)
     public void addRegistryNode(AddRegistryNodeDto dto) throws BizException {
@@ -82,9 +82,9 @@ public class RegistryNodeService {
     }
 
     /**
-     * 编辑注册表
+     * 编辑注册表节点
      *
-     * @param dto 编辑注册表
+     * @param dto 编辑注册表节点
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
@@ -97,10 +97,10 @@ public class RegistryNodeService {
     }
 
     /**
-     * 获取注册表详情
+     * 获取注册表节点详情
      *
      * @param dto 查询条件
-     * @return 注册表详情
+     * @return 注册表节点详情
      * @throws BizException 业务异常
      */
     public GetRegistryNodeDetailsVo getRegistryNodeDetails(CommonIdDto dto) throws BizException {
@@ -110,7 +110,7 @@ public class RegistryNodeService {
     }
 
     /**
-     * 删除注册表
+     * 删除注册表节点
      *
      * @param dto 删除条件
      * @throws BizException 业务异常

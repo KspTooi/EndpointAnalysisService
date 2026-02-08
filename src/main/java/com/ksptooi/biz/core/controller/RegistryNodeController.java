@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/registry")
-@Tag(name = "registry", description = "注册表")
+@Tag(name = "registry", description = "注册表节点")
 @Slf4j
 public class RegistryNodeController {
 
@@ -31,12 +31,12 @@ public class RegistryNodeController {
     private RegistryNodeService registryNodeService;
 
     @PostMapping("/getRegistryNodeList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "列表查询注册表节点列表")
     public PageResult<GetRegistryNodeListVo> getRegistryNodeList(@RequestBody @Valid GetRegistryNodeListDto dto) throws Exception {
         return registryNodeService.getRegistryNodeList(dto);
     }
 
-    @Operation(summary = "新增注册表")
+    @Operation(summary = "新增注册表节点")
     @PostMapping("/addRegistryNode")
     public Result<String> addRegistryNode(@RequestBody @Valid AddRegistryNodeDto dto) throws Exception {
 
@@ -52,7 +52,7 @@ public class RegistryNodeController {
         return Result.success("新增成功");
     }
 
-    @Operation(summary = "编辑注册表")
+    @Operation(summary = "编辑注册表节点")
     @PostMapping("/editRegistryNode")
     public Result<String> editRegistryNode(@RequestBody @Valid EditRegistryNodeDto dto) throws Exception {
 
@@ -66,7 +66,7 @@ public class RegistryNodeController {
         return Result.success("修改成功");
     }
 
-    @Operation(summary = "查询注册表详情")
+    @Operation(summary = "查询注册表节点详情")
     @PostMapping("/getRegistryNodeDetails")
     public Result<GetRegistryNodeDetailsVo> getRegistryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetRegistryNodeDetailsVo details = registryNodeService.getRegistryNodeDetails(dto);
@@ -76,7 +76,7 @@ public class RegistryNodeController {
         return Result.success(details);
     }
 
-    @Operation(summary = "删除注册表")
+    @Operation(summary = "删除注册表节点")
     @PostMapping("/removeRegistryNode")
     public Result<String> removeRegistryNode(@RequestBody @Valid CommonIdDto dto) throws Exception {
         registryNodeService.removeRegistryNode(dto);
