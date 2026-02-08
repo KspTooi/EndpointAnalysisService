@@ -15,6 +15,13 @@ export default class AuditRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/audit/AuditLoginRcd.vue"),
         breadcrumb: "登录审计日志",
       },
+      {
+        biz: "audit",
+        path: "audit-error-rcd",
+        name: "audit-error-rcd",
+        component: () => import("@/views/audit/AuditErrorRcd.vue"),
+        breadcrumb: "系统错误记录",
+      },
     ];
   }
 }

@@ -111,3 +111,8 @@ module-drive:
 #    org.springframework.boot.context.logging: INFO
 #    # 开启 Spring Bean 初始化的详细日志
 #    org.springframework.beans.factory.support.DefaultListableBeanFactory: DEBUG
+
+#审计模块配置
+audit:
+  #是否记录系统错误记录
+  record-error-rcd: true

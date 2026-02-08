@@ -1,0 +1,233 @@
+<template>
+  <StdListLayout>
+    <!-- 查询条件区域 -->
+    <template #query>
+      <el-form :model="listForm">
+        <el-row>
+          <el-col :span="4" :offset="1">
+            <el-form-item label="错误代码">
+              <el-input v-model="listForm.errorCode" placeholder="输入错误代码" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="4" :offset="1">
+            <el-form-item label="请求地址">
+              <el-input v-model="listForm.requestUri" placeholder="输入请求地址" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="4" :offset="1">
+            <el-form-item label="异常类型">
+              <el-input v-model="listForm.errorType" placeholder="输入异常类型" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="4">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <template v-if="uiState.isAdvancedSearch">
+          <el-row>
+            <el-col :span="4" :offset="1">
+              <el-form-item label="操作人ID">
+                <el-input v-model="listForm.userId" placeholder="输入操作人ID" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="4" :offset="1">
+              <el-form-item label="异常简述">
+                <el-input v-model="listForm.errorMessage" placeholder="输入异常简述" clearable />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </template>
+      </el-form>
+    </template>
+
+    <!-- 操作按钮区域 -->
+    <template #actions> </template>
+
+    <!-- 列表表格区域 -->
+    <template #table>
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column prop="errorCode" label="错误代码" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="requestUri" label="请求地址" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="userName" label="操作人用户名" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="errorType" label="异常类型" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="发生时间" min-width="120" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" min-width="180">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="openModal('view', scope.row)" :icon="ViewIcon">
+              查看
+            </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </template>
+
+    <template #pagination>
+      <el-pagination
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+
+    <template #modal>
+      <!-- 查看/新增/编辑模态框 -->
+      <el-dialog
+        v-model="modalVisible"
+        :title="modalMode === 'view' ? '查看系统错误记录' : modalMode === 'edit' ? '编辑系统错误记录' : '新增系统错误记录'"
+        width="800px"
+        :close-on-click-modal="false"
+        @close="loadList()"
+      >
+        <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" label-width="120px" :validate-on-rule-change="false">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="请求地址" prop="requestUri">
+                <el-input
+                  v-model="modalForm.requestUri"
+                  :readonly="modalMode === 'view'"
+                  placeholder="请输入请求地址"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="错误代码" prop="errorCode">
+                <el-input
+                  v-model="modalForm.errorCode"
+                  :readonly="modalMode === 'view'"
+                  placeholder="请输入错误代码"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="操作人ID" prop="userId">
+                <el-input
+                  v-model="modalForm.userId"
+                  :readonly="modalMode === 'view'"
+                  placeholder="请输入操作人ID"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="操作人用户名" prop="userName">
+                <el-input
+                  v-model="modalForm.userName"
+                  :readonly="modalMode === 'view'"
+                  placeholder="请输入操作人用户名"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="异常类型" prop="errorType">
+                <el-input
+                  v-model="modalForm.errorType"
+                  :readonly="modalMode === 'view'"
+                  placeholder="请输入异常类型"
+                  clearable
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item v-if="modalMode === 'view'" label="发生时间" prop="createTime">
+                <el-input v-model="modalForm.createTime" readonly placeholder="发生时间" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-form-item label="异常简述" prop="errorMessage">
+            <el-input
+              v-model="modalForm.errorMessage"
+              type="textarea"
+              :rows="3"
+              :readonly="modalMode === 'view'"
+              placeholder="请输入异常简述"
+            />
+          </el-form-item>
+
+          <el-form-item label="完整堆栈信息" prop="errorStackTrace">
+            <el-input
+              v-model="modalForm.errorStackTrace"
+              type="textarea"
+              :rows="12"
+              :readonly="modalMode === 'view'"
+              placeholder="请输入完整堆栈信息"
+            />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="modalVisible = false">关闭</el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </template>
+  </StdListLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, markRaw, reactive } from "vue";
+import { View, Delete } from "@element-plus/icons-vue";
+import type { FormInstance } from "element-plus";
+import AuditErrorRcdService from "@/views/audit/service/AuditErrorRcdService.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import ExpandButton from "@/components/common/ExpandButton.vue";
+
+// 使用markRaw包装图标组件，防止被Vue响应式系统处理
+const ViewIcon = markRaw(View);
+const DeleteIcon = markRaw(Delete);
+
+// UI状态
+const uiState = reactive({
+  isAdvancedSearch: false,
+});
+
+// 列表管理打包
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  AuditErrorRcdService.useAuditErrorRcdList();
+
+// 模态框表单引用
+const modalFormRef = ref<FormInstance>();
+
+// 模态框打包
+const { modalVisible, modalLoading, modalMode, modalForm, openModal } = AuditErrorRcdService.useAuditErrorRcdModal(loadList);
+</script>
+
+<style scoped>
+:deep(.el-input.is-readonly .el-input__wrapper) {
+  background-color: var(--el-fill-color-light);
+}
+
+:deep(.el-textarea.is-readonly .el-textarea__inner) {
+  background-color: var(--el-fill-color-light);
+}
+</style>

@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-8 08:55:51",
+  "updatedTime": "2026-2-8 09:17:31",
   "dbConns": [],
   "profile": {
     "default": {
@@ -21919,6 +21919,24 @@
           "extProps": {},
           "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "A23A19FB-29DE-4533-8A05-C58585723A82"
+        },
+        {
+          "defKey": "error_code",
+          "defName": "错误代码",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "id": "7910FED2-8A11-46A8-AE75-D648286D8C62"
         },
         {
           "defKey": "request_uri",
