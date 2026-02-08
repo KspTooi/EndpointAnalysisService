@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "audit_login")
+@Table(name = "audit_login_rcd")
 public class AuditLoginPo {
 
     @Column(name = "id", comment = "登录日志主键")
@@ -23,7 +23,7 @@ public class AuditLoginPo {
     @Column(name = "username", nullable = false, length = 32, comment = "用户账号")
     private String username;
 
-    @Column(name = "login_kind", nullable = false,columnDefinition = "tinyint", comment = "登录方式 0:用户名密码")
+    @Column(name = "login_kind", nullable = false, columnDefinition = "tinyint", comment = "登录方式 0:用户名密码")
     private Integer loginKind;
 
     @Column(name = "ip_addr", nullable = false, length = 32, comment = "登录 IP")
