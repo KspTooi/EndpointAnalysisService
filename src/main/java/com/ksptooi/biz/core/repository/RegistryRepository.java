@@ -13,6 +13,20 @@ import java.util.List;
 @Repository
 public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
 
+
+    /**
+     * 获取注册表全部节点
+     *
+     * @return 注册表全部节点
+     */
+    @Query("""
+            SELECT u FROM RegistryPo u
+            WHERE u.kind = 0
+            ORDER BY u.seq ASC
+            """)
+    List<RegistryPo> getRegistryAllNodes();
+
+
     @Query("""
             SELECT u FROM RegistryPo u
             WHERE
@@ -86,5 +100,32 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             WHERE u.keyPath = :keyPath
             """)
     int countByKeyPath(@Param("keyPath") String keyPath);
+
+
+    /**
+     * 根据KEY的全路径查询注册表节点
+     *
+     * @param keyPath KEY的全路径
+     * @return 注册表节点
+     */
+    @Query("""
+            SELECT u FROM RegistryPo u
+            WHERE u.keyPath = :keyPath AND u.kind = 0
+            """)
+     RegistryPo getRegistryNodeByKeyPath(@Param("keyPath") String keyPath);
+
+
+    /**
+     * 根据父级ID查询注册表条目列表
+     *
+     * @param parentId 父级ID
+     * @return 注册表条目列表
+     */
+    @Query("""
+            SELECT u FROM RegistryPo u
+            WHERE u.parentId = :parentId AND u.kind = 1
+            ORDER BY u.seq ASC
+            """)
+    List<RegistryPo> getRegistryEntryListByParentId(@Param("parentId") Long parentId);
 
 }

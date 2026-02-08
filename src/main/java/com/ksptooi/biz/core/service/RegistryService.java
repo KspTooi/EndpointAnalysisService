@@ -5,19 +5,20 @@ import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
-import com.ksptooi.biz.core.model.registry.vo.GetRegistryListVo;
+import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
+import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.repository.RegistryRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -31,21 +32,67 @@ public class RegistryService {
     /**
      * 获取注册表条目列表
      *
-     * @param dto 查询条件
      * @return 注册表条目列表
      */
-    public PageResult<GetRegistryListVo> getRegistryList(GetRegistryListDto dto) {
-        RegistryPo query = new RegistryPo();
-        assign(dto, query);
+    public List<GetRegistryNodeTreeVo> getRegistryNodeTree() {
 
-        Page<RegistryPo> page = repository.getRegistryList(query, dto.pageRequest());
-        if (page.isEmpty()) {
-            return PageResult.successWithEmpty();
+        List<RegistryPo> nodePos = repository.getRegistryAllNodes();
+
+        List<GetRegistryNodeTreeVo> flatNodeVos = new ArrayList<>();
+        List<GetRegistryNodeTreeVo> treeNodeVos = new ArrayList<>();
+
+        //处理PO为平面节点
+        for (RegistryPo item : nodePos) {
+            GetRegistryNodeTreeVo vo = as(item, GetRegistryNodeTreeVo.class);
+            vo.setChildren(new ArrayList<>());
+            flatNodeVos.add(vo);
         }
 
-        List<GetRegistryListVo> vos = as(page.getContent(), GetRegistryListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        //将平面节点转换为树结构
+        Map<Long, GetRegistryNodeTreeVo> idToNode = new HashMap<>();
+
+        //先将所有节点添加到映射中
+        for (GetRegistryNodeTreeVo node : flatNodeVos) {
+            idToNode.put(node.getId(), node);
+        }
+
+        //构建树结构
+        for (GetRegistryNodeTreeVo node : flatNodeVos) {
+            Long parentId = node.getParentId();
+            if (parentId == null) {
+                treeNodeVos.add(node);
+                continue;
+            }
+            GetRegistryNodeTreeVo parent = idToNode.get(parentId);
+            if (parent == null) {
+                treeNodeVos.add(node);
+                continue;
+            }
+            parent.getChildren().add(node);
+        }
+
+        return treeNodeVos;
     }
+
+    /**
+     * 获取注册表条目列表
+     *
+     * @return 注册表条目列表
+     */
+    public List<GetRegistryEntryListVo> getRegistryEntryList(GetRegistryListDto dto) throws BizException {
+
+        //先根据全路径查询到节点
+        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(dto.getKeyPath());
+
+        if (nodePo == null) {
+            throw new BizException("查询注册表条目列表失败,节点不存在: " + dto.getKeyPath());
+        }
+
+        //查询该节点下全部子项
+        List<RegistryPo> entryPos = repository.getRegistryEntryListByParentId(nodePo.getId());
+        return as(entryPos, GetRegistryEntryListVo.class);
+    }
+
 
     /**
      * 新增注册表条目

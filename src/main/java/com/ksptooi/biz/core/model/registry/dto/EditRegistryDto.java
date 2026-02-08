@@ -29,5 +29,8 @@ public class EditRegistryDto {
     @Schema(description = "说明")
     private String remark;
     
+    public String validate() {
+        return null;
+    }
 
 }
