@@ -128,22 +128,18 @@ export default {
     const modalRules: FormRules = {
       name: [
         { required: true, message: "模板名称不能为空", trigger: "blur" },
-        { max: 32, message: "模板名称长度不能超过32个字符", trigger: "blur" }
+        { max: 32, message: "模板名称长度不能超过32个字符", trigger: "blur" },
       ],
       code: [
         { required: true, message: "模板唯一编码不能为空", trigger: "blur" },
-        { max: 32, message: "模板唯一编码长度不能超过32个字符", trigger: "blur" }
+        { max: 32, message: "模板唯一编码长度不能超过32个字符", trigger: "blur" },
       ],
-      content: [
-        { required: true, message: "模板内容不能为空", trigger: "blur" }
-      ],
+      content: [{ required: true, message: "模板内容不能为空", trigger: "blur" }],
       status: [
         { required: true, message: "状态不能为空", trigger: "blur" },
-        { type: "number", min: 0, max: 1, message: "状态只能在0-1之间", trigger: "blur" }
+        { type: "number", min: 0, max: 1, message: "状态只能在0-1之间", trigger: "blur" },
       ],
-      remark: [
-        { max: 1000, message: "备注长度不能超过1000个字符", trigger: "blur" }
-      ]
+      remark: [{ max: 1000, message: "备注长度不能超过1000个字符", trigger: "blur" }],
     };
 
     /**
@@ -229,7 +225,7 @@ export default {
           };
           await NoticeTemplateApi.addNoticeTemplate(addDto);
           ElMessage.success("新增成功");
-          modalVisible.value = false;
+          //modalVisible.value = false;
           resetModal();
           reloadCallback();
         } catch (error: any) {
@@ -257,8 +253,8 @@ export default {
           };
           await NoticeTemplateApi.editNoticeTemplate(editDto);
           ElMessage.success("编辑成功");
-          modalVisible.value = false;
-          resetModal();
+          //modalVisible.value = false;
+          //resetModal();
           reloadCallback();
         } catch (error: any) {
           ElMessage.error(error.message);
