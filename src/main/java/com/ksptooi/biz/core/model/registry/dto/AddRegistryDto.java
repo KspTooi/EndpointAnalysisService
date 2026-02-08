@@ -92,21 +92,25 @@ public class AddRegistryDto {
             return "条目必须有父级";
         }
 
-        // 处理数据类型(如果用户填写了value)
-        if (Str.isNotBlank(nvalue)) {
+        //条目必填Value和数据类型
+        if (nvalueKind == null) {
+            return "条目必须填写数据类型";
+        }
 
-            if (nvalueKind == 1 && Str.isNotInteger(nvalue)) {
-                return "值必须为整数 当前值:" + nvalue;
-            }
+        if (Str.isBlank(nvalue)) {
+            return "条目必须填写Value";
+        }
 
-            if (nvalueKind == 2 && Str.isNotDouble(nvalue)) {
-                return "值必须为浮点数 当前值:" + nvalue;
-            }
+        if (nvalueKind == 1 && Str.isNotInteger(nvalue)) {
+            return "值必须为整数 当前值:" + nvalue;
+        }
 
-            if (nvalueKind == 3 && Str.isNotDateTime(nvalue)) {
-                return "值必须为日期时间(yyyy-MM-dd HH:mm:ss) 当前值:" + nvalue;
-            }
+        if (nvalueKind == 2 && Str.isNotDouble(nvalue)) {
+            return "值必须为浮点数 当前值:" + nvalue;
+        }
 
+        if (nvalueKind == 3 && Str.isNotDateTime(nvalue)) {
+            return "值必须为日期时间(yyyy-MM-dd HH:mm:ss) 当前值:" + nvalue;
         }
 
         // 处理元数据
