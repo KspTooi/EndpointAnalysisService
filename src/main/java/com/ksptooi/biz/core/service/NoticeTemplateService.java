@@ -50,10 +50,18 @@ public class NoticeTemplateService {
      * 新增通知模板
      * 
      * @param dto 新增模板
+     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addNoticeTemplate(AddNoticeTemplateDto dto) {
+    public void addNoticeTemplate(AddNoticeTemplateDto dto) throws BizException {
         NoticeTemplatePo insertPo = as(dto, NoticeTemplatePo.class);
+
+        //查询code是否被占用
+        var existPo = repository.countNoticeTemplateByCode(dto.getCode());
+        if (existPo > 0) {
+            throw new BizException("模板标识已存在:[" + dto.getCode() + "]");
+        }
+
         repository.save(insertPo);
     }
 
@@ -67,6 +75,14 @@ public class NoticeTemplateService {
     public void editNoticeTemplate(EditNoticeTemplateDto dto) throws BizException {
         NoticeTemplatePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+
+        //查询code是否被占用
+        var existPo = repository.countNoticeTemplateByCodeExcludeId(dto.getCode(), updatePo.getId());
+
+        if (existPo > 0) {
+            throw new BizException("模板标识已存在:[" + dto.getCode() + "]");
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);

@@ -28,4 +28,30 @@ public interface NoticeTemplateRepository extends JpaRepository<NoticeTemplatePo
             ORDER BY u.updateTime DESC
             """)
     Page<NoticeTemplatePo> getNoticeTemplateList(@Param("po") NoticeTemplatePo po, Pageable pageable);
+
+
+    /**
+     * 查询通知模板数量
+     * 
+     * @param code 通知模板编码
+     * @return 通知模板数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM NoticeTemplatePo u
+            WHERE u.code = :code
+            """)
+    int countNoticeTemplateByCode(@Param("code") String code);
+
+    /**
+     * 查询通知模板数量 排除指定ID
+     * 
+     * @param code 通知模板编码
+     * @param id 通知模板ID
+     * @return 通知模板数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM NoticeTemplatePo u
+            WHERE u.code = :code AND u.id != :id
+            """)
+    int countNoticeTemplateByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
 }
