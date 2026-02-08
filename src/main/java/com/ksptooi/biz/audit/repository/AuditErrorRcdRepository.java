@@ -15,6 +15,7 @@ public interface AuditErrorRcdRepository extends JpaRepository<AuditErrorRcdPo, 
             SELECT u FROM AuditErrorRcdPo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
+            AND (:#{#po.errorCode} IS NULL OR u.errorCode  LIKE CONCAT('%', :#{#po.errorCode}, '%') )
             AND (:#{#po.requestUri} IS NULL OR u.requestUri  LIKE CONCAT('%', :#{#po.requestUri}, '%') )
             AND (:#{#po.userId} IS NULL OR u.userId  = :#{#po.userId} )
             AND (:#{#po.userName} IS NULL OR u.userName  LIKE CONCAT('%', :#{#po.userName}, '%') )
