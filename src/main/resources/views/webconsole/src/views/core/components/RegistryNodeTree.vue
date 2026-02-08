@@ -11,6 +11,12 @@
       />
     </div>
 
+    <div class="action-wrapper pr-2 pl-2 mb-2">
+      <el-button type="primary" size="small" :icon="PlusIcon" @click="handleAddRootNode">
+        新建根节点
+      </el-button>
+    </div>
+
     <div class="tree-wrapper">
       <div v-if="showHeader" class="all-registry-node" :class="{ 'is-active': isAllSelected }" @click="handleSelectAll">
         <el-icon class="node-icon"><ListIcon /></el-icon>
@@ -26,9 +32,10 @@
         highlight-current
         default-expand-all
         @node-click="handleNodeClick"
+        @node-contextmenu="handleNodeContextMenu"
         class="custom-tree"
       >
-        <template #default="{ node }">
+        <template #default="{ node, data }">
           <span class="custom-tree-node">
             <el-icon class="node-icon">
               <FolderIcon />
@@ -38,19 +45,73 @@
         </template>
       </el-tree>
     </div>
+
+    <!-- 右键菜单 -->
+    <el-dropdown
+      ref="contextMenuRef"
+      trigger="contextmenu"
+      :virtual-triggering="true"
+      :virtual-ref="triggerRef"
+      @command="handleContextMenuCommand"
+    >
+      <span></span>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="addChild" :icon="PlusIcon">新建子节点</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+
+    <!-- 创建节点模态框 -->
+    <el-dialog
+      v-model="modalVisible"
+      title="新建节点"
+      width="500px"
+      :close-on-click-modal="false"
+      @close="resetModal"
+    >
+      <el-form
+        v-if="modalVisible"
+        ref="modalFormRef"
+        :model="modalForm"
+        :rules="modalRules"
+        label-width="100px"
+      >
+        <el-form-item label="节点Key" prop="nkey">
+          <el-input v-model="modalForm.nkey" placeholder="请输入节点Key（字母、数字、下划线或中划线）" />
+        </el-form-item>
+        <el-form-item label="节点标签" prop="label">
+          <el-input v-model="modalForm.label" placeholder="请输入节点标签" />
+        </el-form-item>
+        <el-form-item label="排序" prop="seq">
+          <el-input-number v-model="modalForm.seq" :min="0" />
+        </el-form-item>
+        <el-form-item label="说明" prop="remark">
+          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入说明" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="modalVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitModal" :loading="modalLoading">创建</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, onMounted } from "vue";
-import type { ElTree } from "element-plus";
-import { Search, List, Folder } from "@element-plus/icons-vue";
+import { ref, markRaw, onMounted, computed } from "vue";
+import type { ElTree, ElDropdown } from "element-plus";
+import { Search, List, Folder, Plus } from "@element-plus/icons-vue";
 import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import RegistryNodeTreeService from "@/views/core/service/RegistryNodeTreeService";
+import type { FormInstance } from "element-plus";
 
 const SearchIcon = markRaw(Search);
 const ListIcon = markRaw(List);
 const FolderIcon = markRaw(Folder);
+const PlusIcon = markRaw(Plus);
 
 const emit = defineEmits<{
   (e: "on-select", node: GetRegistryNodeTreeVo | null): void;
@@ -66,9 +127,19 @@ const props = withDefaults(
 );
 
 const treeRef = ref<InstanceType<typeof ElTree>>();
+const contextMenuRef = ref<InstanceType<typeof ElDropdown>>();
+const modalFormRef = ref<FormInstance>();
 const isAllSelected = ref(true);
 const currentSelectedKey = ref<string | number | null>(null);
+const contextMenuNode = ref<GetRegistryNodeTreeVo | null>(null);
+const triggerRef = computed(() => contextMenuRef.value?.$el);
+
 const { treeData, loading, filterText, loadTreeData, onSelectNode } = RegistryNodeTreeService.useRegistryNodeTree();
+
+const _loadTreeData = () => loadTreeData();
+
+const { modalVisible, modalLoading, modalForm, modalRules, openModal, submitModal, resetModal } =
+  RegistryNodeTreeService.useNodeModal(modalFormRef, _loadTreeData);
 
 const defaultProps = {
   children: "children",
@@ -97,6 +168,24 @@ const handleNodeClick = (data: GetRegistryNodeTreeVo) => {
   currentSelectedKey.value = data.id;
   emit("on-select", data);
   onSelectNode(data);
+};
+
+const handleNodeContextMenu = (event: MouseEvent, data: any, node: any) => {
+  event.preventDefault();
+  contextMenuNode.value = data;
+  if (contextMenuRef.value) {
+    contextMenuRef.value.handleOpen();
+  }
+};
+
+const handleContextMenuCommand = (command: string) => {
+  if (command === "addChild") {
+    openModal(contextMenuNode.value);
+  }
+};
+
+const handleAddRootNode = () => {
+  openModal(null);
 };
 
 const reset = () => {
