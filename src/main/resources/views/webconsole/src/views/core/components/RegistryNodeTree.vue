@@ -54,13 +54,20 @@
               </el-icon>
               <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
             </div>
-            <div class="hidden group-hover:flex items-center text-[20px] font-bold">
+            <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
               <el-icon
                 class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
                 title="新建子节点"
                 @click.stop="openModal(data)"
               >
                 <PlusIcon />
+              </el-icon>
+              <el-icon
+                class="p-0.5 rounded hover:bg-red-50 hover:text-red-500 cursor-pointer"
+                title="移除节点"
+                @click.stop="removeNode(data, loadTreeData)"
+              >
+                <DeleteIcon />
               </el-icon>
             </div>
           </span>
@@ -97,7 +104,7 @@
 <script setup lang="ts">
 import { ref, markRaw, onMounted } from "vue";
 import type { ElTree } from "element-plus";
-import { Search, List, Folder, Plus } from "@element-plus/icons-vue";
+import { Search, List, Folder, Plus, Delete } from "@element-plus/icons-vue";
 import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import RegistryNodeTreeService from "@/views/core/service/RegistryNodeTreeService";
 import type { FormInstance } from "element-plus";
@@ -107,6 +114,7 @@ const SearchIcon = markRaw(Search);
 const ListIcon = markRaw(List);
 const FolderIcon = markRaw(Folder);
 const PlusIcon = markRaw(Plus);
+const DeleteIcon = markRaw(Delete);
 
 // 事件定义
 const emit = defineEmits<{
@@ -132,7 +140,7 @@ const isAllSelected = ref(true); // 是否处于“全部节点”状态
 const currentSelectedKey = ref<string | number | null>(null); // 当前树内选中的 Key
 
 // 核心业务 Hook：节点树逻辑
-const { treeData, loading, filterText, loadTreeData, onSelectNode } = RegistryNodeTreeService.useRegistryNodeTree();
+const { treeData, loading, filterText, loadTreeData, onSelectNode, removeNode } = RegistryNodeTreeService.useRegistryNodeTree();
 
 // 辅助方法：用于刷新后重新加载
 const _loadTreeData = () => loadTreeData();
@@ -200,10 +208,15 @@ defineExpose({ loadTreeData });
   background: transparent;
 }
 
-/* 统一图标颜色，确保非选中状态下也有颜色 */
-.all-registry-node .el-icon,
-.custom-tree-node .el-icon {
+/* 统一图标颜色，但排除掉有特殊悬停颜色的图标 */
+.all-registry-node .el-icon:not(.hover\:text-red-500),
+.custom-tree-node .el-icon:not(.hover\:text-red-500) {
   color: var(--el-color-primary);
+}
+
+/* 确保删除图标悬停时颜色正确 */
+.hover\:text-red-500:hover {
+  color: #ef4444 !important; /* 直接强制使用红色 */
 }
 
 .all-registry-node:hover {
@@ -239,8 +252,8 @@ defineExpose({ loadTreeData });
   font-weight: bold;
 }
 
-/* 确保选中节点的图标和文字都变为 Primary 颜色 */
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) .el-icon,
+/* 确保选中节点的文字和普通图标变为 Primary 颜色，但允许删除图标的 hover 覆盖 */
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) .el-icon:not(:hover),
 :deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) span {
   color: var(--el-color-primary) !important;
 }

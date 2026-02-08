@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 import RegistryApi, { type GetRegistryNodeTreeVo, type AddRegistryDto } from "@/views/core/api/RegistryApi";
-import { ElMessage, type FormInstance } from "element-plus";
+import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 
 /**
  * 注册表节点树服务层
@@ -40,6 +40,27 @@ export default class RegistryNodeTreeService {
             }
         };
 
+        /**
+         * 删除指定节点
+         * @param node 待删除的节点对象
+         * @param onRefresh 删除成功后的刷新回调
+         */
+        const removeNode = async (node: GetRegistryNodeTreeVo, onRefresh: () => void) => {
+            try {
+                await ElMessageBox.confirm(`确定要删除节点 [${node.nkey}] 及其下所有子节点吗？`, "确认删除", {
+                    confirmButtonText: "确认",
+                    cancelButtonText: "取消",
+                    type: "warning",
+                });
+                await RegistryApi.removeRegistry({ id: node.id });
+                ElMessage.success("删除节点成功");
+                onRefresh();
+            } catch (error: any) {
+                if (error === "cancel") return;
+                ElMessage.error(error.message || "删除节点失败");
+            }
+        };
+
         return {
             treeData,
             loading,
@@ -47,6 +68,7 @@ export default class RegistryNodeTreeService {
             loadTreeData,
             selectedNode,
             onSelectNode,
+            removeNode,
         };
     }
 
