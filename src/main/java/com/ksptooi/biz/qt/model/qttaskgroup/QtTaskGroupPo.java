@@ -1,16 +1,14 @@
 package com.ksptooi.biz.qt.model.qttaskgroup;
 
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.ksptooi.biz.core.service.SessionService.session;
-
 import java.time.LocalDateTime;
+
+import static com.ksptooi.biz.core.service.SessionService.session;
 
 @Getter
 @Setter
@@ -25,7 +23,7 @@ public class QtTaskGroupPo {
     @Column(name = "name", nullable = false, unique = true, length = 80, comment = "分组名")
     private String name;
 
-    @Column(name = "remark",length = 1000, comment = "分组备注")
+    @Column(name = "remark", length = 1000, comment = "分组备注")
     private String remark;
 
     @Column(name = "create_time", nullable = false, comment = "创建时间")
@@ -60,6 +58,10 @@ public class QtTaskGroupPo {
 
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
+        }
+
+        if (this.updaterId == null) {
+            this.updaterId = session().getUserId();
         }
 
         if (this.creatorId == null) {
