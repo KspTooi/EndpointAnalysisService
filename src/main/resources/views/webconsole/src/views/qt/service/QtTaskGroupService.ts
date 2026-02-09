@@ -1,16 +1,15 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  GetNoticeListDto,
-  GetNoticeListVo,
-  GetNoticeDetailsVo,
-  AddNoticeDto,
-  EditNoticeDto,
-} from "@/views/notice/api/NoticeApi.ts";
-import NoticeApi from "@/views/notice/api/NoticeApi.ts";
-import { Result } from "@/commons/entity/Result";
+  GetQtTaskGroupListDto,
+  GetQtTaskGroupListVo,
+  GetQtTaskGroupDetailsVo,
+  AddQtTaskGroupDto,
+  EditQtTaskGroupDto,
+} from "@/views/qt/api/QtTaskGroupApi.ts";
+import QtTaskGroupApi from "@/views/qt/api/QtTaskGroupApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
-import QueryPersistService from "@/service/QueryPersistService";
 
 /**
  * 模态框模式类型
@@ -19,24 +18,17 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 消息表列表管理
+   * 任务分组列表管理
    */
-  useNoticeList() {
-    const listForm = ref<GetNoticeListDto>({
+  useQtTaskGroupList() {
+    const listForm = ref<GetQtTaskGroupListDto>({
       pageNum: 1,
-      pageSize: 10,
-      title: "",
-      kind: null,
-      content: "",
-      priority: null,
-      category: "",
-      senderId: "",
-      senderName: "",
-      forward: "",
-      params: "",
+      pageSize: 20,
+      name: "",
+      remark: "",
     });
 
-    const listData = ref<GetNoticeListVo[]>([]);
+    const listData = ref<GetQtTaskGroupListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -45,12 +37,11 @@ export default {
      */
     const loadList = async () => {
       listLoading.value = true;
-      const result = await NoticeApi.getNoticeList(listForm.value);
+      const result = await QtTaskGroupApi.getQtTaskGroupList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
         listTotal.value = result.total;
-        QueryPersistService.persistQuery("notice-list", listForm.value);
       }
 
       if (Result.isError(result)) {
@@ -65,24 +56,16 @@ export default {
      */
     const resetList = () => {
       listForm.value.pageNum = 1;
-      listForm.value.pageSize = 10;
-      listForm.value.title = "";
-      listForm.value.kind = null;
-      listForm.value.content = "";
-      listForm.value.priority = null;
-      listForm.value.category = "";
-      listForm.value.senderId = "";
-      listForm.value.senderName = "";
-      listForm.value.forward = "";
-      listForm.value.params = "";
-      QueryPersistService.clearQuery("notice-list");
+      listForm.value.pageSize = 20;
+      listForm.value.name = "";
+      listForm.value.remark = "";
       loadList();
     };
 
     /**
      * 删除记录
      */
-    const removeList = async (row: GetNoticeListVo) => {
+    const removeList = async (row: GetQtTaskGroupListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -94,7 +77,7 @@ export default {
       }
 
       try {
-        await NoticeApi.removeNotice({ id: row.id });
+        await QtTaskGroupApi.removeQtTaskGroup({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -103,7 +86,6 @@ export default {
     };
 
     onMounted(async () => {
-      QueryPersistService.loadQuery("notice-list", listForm.value);
       await loadList();
     });
 
@@ -121,31 +103,26 @@ export default {
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  useNoticeModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useQtTaskGroupModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetNoticeDetailsVo>({
+    const modalForm = reactive<GetQtTaskGroupDetailsVo>({
       id: "",
-      title: "",
-      kind: 0,
-      content: "",
-      priority: 0,
-      category: "",
-      senderId: "",
-      senderName: "",
-      forward: "",
-      params: "",
+      name: "",
+      remark: "",
       createTime: "",
+      creatorId: "",
+      updateTime: "",
+      updaterId: "",
+      deleteTime: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      title: [{ required: true, message: "请输入标题", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入种类: 0公告, 1业务提醒, 2私信", trigger: "blur" }],
-      priority: [{ required: true, message: "请输入优先级: 0:低 1:中 2:高", trigger: "blur" }],
+      name: [{ required: true, message: "请输入分组名", trigger: "blur" }],
     };
 
     /**
@@ -153,21 +130,18 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetNoticeListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetQtTaskGroupListVo | null) => {
       modalMode.value = mode;
 
       if (mode === "add") {
         modalForm.id = "";
-        modalForm.title = "";
-        modalForm.kind = 0;
-        modalForm.content = "";
-        modalForm.priority = 0;
-        modalForm.category = "";
-        modalForm.senderId = "";
-        modalForm.senderName = "";
-        modalForm.forward = "";
-        modalForm.params = "";
+        modalForm.name = "";
+        modalForm.remark = "";
         modalForm.createTime = "";
+        modalForm.creatorId = "";
+        modalForm.updateTime = "";
+        modalForm.updaterId = "";
+        modalForm.deleteTime = "";
         modalVisible.value = true;
         return;
       }
@@ -179,18 +153,15 @@ export default {
         }
 
         try {
-          const details = await NoticeApi.getNoticeDetails({ id: row.id });
+          const details = await QtTaskGroupApi.getQtTaskGroupDetails({ id: row.id });
           modalForm.id = details.id;
-          modalForm.title = details.title;
-          modalForm.kind = details.kind;
-          modalForm.content = details.content;
-          modalForm.priority = details.priority;
-          modalForm.category = details.category;
-          modalForm.senderId = details.senderId;
-          modalForm.senderName = details.senderName;
-          modalForm.forward = details.forward;
-          modalForm.params = details.params;
+          modalForm.name = details.name;
+          modalForm.remark = details.remark;
           modalForm.createTime = details.createTime;
+          modalForm.creatorId = details.creatorId;
+          modalForm.updateTime = details.updateTime;
+          modalForm.updaterId = details.updaterId;
+          modalForm.deleteTime = details.deleteTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -207,16 +178,13 @@ export default {
       }
       modalFormRef.value.resetFields();
       modalForm.id = "";
-      modalForm.title = "";
-      modalForm.kind = 0;
-      modalForm.content = "";
-      modalForm.priority = 0;
-      modalForm.category = "";
-      modalForm.senderId = "";
-      modalForm.senderName = "";
-      modalForm.forward = "";
-      modalForm.params = "";
+      modalForm.name = "";
+      modalForm.remark = "";
       modalForm.createTime = "";
+      modalForm.creatorId = "";
+      modalForm.updateTime = "";
+      modalForm.updaterId = "";
+      modalForm.deleteTime = "";
     };
 
     /**
@@ -237,18 +205,11 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: AddNoticeDto = {
-            title: modalForm.title,
-            kind: modalForm.kind,
-            content: modalForm.content,
-            priority: modalForm.priority,
-            category: modalForm.category,
-            senderId: modalForm.senderId,
-            senderName: modalForm.senderName,
-            forward: modalForm.forward,
-            params: modalForm.params,
+          const addDto: AddQtTaskGroupDto = {
+            name: modalForm.name,
+            remark: modalForm.remark,
           };
-          await NoticeApi.addNotice(addDto);
+          await QtTaskGroupApi.addQtTaskGroup(addDto);
           ElMessage.success("新增成功");
           modalVisible.value = false;
           resetModal();
@@ -268,19 +229,12 @@ export default {
         }
 
         try {
-          const editDto: EditNoticeDto = {
+          const editDto: EditQtTaskGroupDto = {
             id: modalForm.id,
-            title: modalForm.title,
-            kind: modalForm.kind,
-            content: modalForm.content,
-            priority: modalForm.priority,
-            category: modalForm.category,
-            senderId: modalForm.senderId,
-            senderName: modalForm.senderName,
-            forward: modalForm.forward,
-            params: modalForm.params,
+            name: modalForm.name,
+            remark: modalForm.remark,
           };
-          await NoticeApi.editNotice(editDto);
+          await QtTaskGroupApi.editQtTaskGroup(editDto);
           ElMessage.success("编辑成功");
           modalVisible.value = false;
           resetModal();
