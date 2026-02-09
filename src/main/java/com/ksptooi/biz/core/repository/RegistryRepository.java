@@ -1,6 +1,8 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.registry.RegistryPo;
+import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -123,9 +125,12 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
      */
     @Query("""
             SELECT u FROM RegistryPo u
-            WHERE u.parentId = :parentId AND u.kind = 1
+            WHERE u.parentId = :#{#dto.parentId} AND u.kind = 1
+            AND (:#{#dto.nkey} IS NULL OR u.nkey  LIKE CONCAT('%', :#{#dto.nkey}, '%') )
+            AND (:#{#dto.label} IS NULL OR u.label  LIKE CONCAT('%', :#{#dto.label}, '%') )
+            AND (:#{#dto.nvalueKind} IS NULL OR u.nvalueKind  = :#{#dto.nvalueKind} )
             ORDER BY u.seq ASC
             """)
-    List<RegistryPo> getRegistryEntryListByParentId(@Param("parentId") Long parentId);
+    List<RegistryPo> getRegistryEntryList(@Param("dto") GetRegistryListDto dto);
 
 }

@@ -8,13 +8,11 @@ import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.repository.RegistryRepository;
-import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +87,7 @@ public class RegistryService {
         }
 
         //查询该节点下全部子项
-        List<RegistryPo> entryPos = repository.getRegistryEntryListByParentId(nodePo.getId());
+        List<RegistryPo> entryPos = repository.getRegistryEntryList(dto);
         return as(entryPos, GetRegistryEntryListVo.class);
     }
 
@@ -134,7 +132,6 @@ public class RegistryService {
             insertPo.setMetadata(null);
             insertPo.setIsSystem(0);
             insertPo.setStatus(0);
-
         }
 
         //处理新增条目 1:条目
@@ -158,6 +155,8 @@ public class RegistryService {
                 throw new BizException("新增失败,KEY的全路径已存在: " + insertPo.getKeyPath());
             }
 
+            //设置固定字段
+            insertPo.setIsSystem(0);
         }
 
         repository.save(insertPo);
@@ -174,11 +173,13 @@ public class RegistryService {
         RegistryPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
-        //如果是节点则不允许修改value    
-        if (updatePo.getKind() == 0) {
-            if (Str.isNotBlank(dto.getNvalue())) {
-                throw new BizException("无法处理编辑请求,节点不允许修改Value");
-            }
+        //校验数值真实性
+        if(updatePo.getKind() != dto.getKind()){
+            throw new BizException("无法处理编辑请求,输入类型与实际类型不一致. 输入类型:" + dto.getKind() + ",实际类型:" + updatePo.getKind());
+        }
+
+        if(updatePo.getNvalueKind() != dto.getNvalueKind()){
+            throw new BizException("无法处理编辑请求,输入数据类型与实际数据类型不一致. 输入数据类型:" + dto.getNvalueKind() + ",实际数据类型:" + updatePo.getNvalueKind());
         }
 
         assign(dto, updatePo);

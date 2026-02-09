@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.registry.dto;
 
+import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,8 +10,29 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import com.ksptooi.commons.dataprocess.Str;
-
+/**
+ * 添加注册表节点DTO
+ * <p>
+ * 当记录为"节点"时可接受的字段如下
+ * 1.parentId 父级项ID NULL顶级
+ * 2.*kind 类型 0:节点
+ * 3.*nkey 节点Key
+ * 4.label 节点标签
+ * 5.remark 说明
+ * 6.*seq 排序
+ * <p>
+ * 当记录为"条目"时可接受的字段如下
+ * 1.parentId 父级项ID NULL顶级
+ * 2.kind 类型 1:条目
+ * 3.nkey 条目Key
+ * 4.nvalueKind 数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+ * 5.nvalue 条目Value
+ * 6.label 条目标签
+ * 7.remark 说明
+ * 8.metadata 元数据JSON
+ * 9.status 状态 0:正常 1:停用
+ * 10.seq 排序
+ */
 @Getter
 @Setter
 public class AddRegistryDto {
@@ -58,14 +80,18 @@ public class AddRegistryDto {
 
     /**
      * 验证接口参数
-     * 
+     *
      * @return 错误信息 无错误返回null
      */
     public String validate() {
 
-
         //处理添加节点
         if (kind == 0) {
+
+            //节点不允许填写数据类型
+            if (nvalueKind != null) {
+                return "节点不能填写数据类型";
+            }
 
             //处理不允许填写
             if (Str.isNotBlank(nvalue)) {
@@ -117,6 +143,11 @@ public class AddRegistryDto {
         // 处理元数据
         if (Str.isBlank(metadata)) {
             metadata = "{}";
+        }
+
+        //条目必填状态
+        if (status == null) {
+            return "条目必须填写状态";
         }
 
         return null;
