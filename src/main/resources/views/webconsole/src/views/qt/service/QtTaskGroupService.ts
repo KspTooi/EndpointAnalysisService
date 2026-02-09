@@ -122,7 +122,11 @@ export default {
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入分组名", trigger: "blur" }],
+      name: [
+        { required: true, message: "分组名不能为空", trigger: "blur" },
+        { max: 80, message: "分组名长度不能超过80个字符", trigger: "blur" },
+      ],
+      remark: [{ max: 1000, message: "分组备注长度不能超过1000个字符", trigger: "blur" }],
     };
 
     /**

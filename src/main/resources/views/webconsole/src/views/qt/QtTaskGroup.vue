@@ -2,19 +2,28 @@
   <StdListContainer>
     <!-- 查询条件区域 -->
     <StdListAreaQuery>
-      <el-form :model="listForm" inline class="flex justify-between">
-        <div>
-          <el-form-item label="分组名">
-            <el-input v-model="listForm.name" placeholder="输入分组名" clearable />
-          </el-form-item>
-          <el-form-item label="分组备注">
-            <el-input v-model="listForm.remark" placeholder="输入分组备注" clearable />
-          </el-form-item>
-        </div>
-        <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-          <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-        </el-form-item>
+      <el-form :model="listForm">
+        <el-row>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="分组名">
+              <el-input v-model="listForm.name" placeholder="输入分组名" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <el-form-item label="分组备注">
+              <el-input v-model="listForm.remark" placeholder="输入分组备注" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="5" :offset="1">
+            <!-- 占位列 -->
+          </el-col>
+          <el-col :span="4" :offset="2">
+            <el-form-item>
+              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </StdListAreaQuery>
 
@@ -26,11 +35,11 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="name" label="分组名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="remark" label="分组备注" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="id" label="ID" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="name" label="分组名" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="remark" label="分组备注" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="updateTime" label="更新时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -85,10 +94,18 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="分组名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入分组名" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入分组名" maxlength="80" show-word-limit clearable />
         </el-form-item>
         <el-form-item label="分组备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入分组备注" clearable />
+          <el-input
+            v-model="modalForm.remark"
+            type="textarea"
+            placeholder="请输入分组备注"
+            maxlength="1000"
+            show-word-limit
+            :rows="4"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
