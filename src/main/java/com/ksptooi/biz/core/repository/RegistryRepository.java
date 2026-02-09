@@ -132,4 +132,20 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             """)
     Page<RegistryPo> getRegistryEntryList(@Param("parentId") Long parentId, @Param("dto") GetRegistryListDto dto, Pageable pageable);
 
+    /**
+     * 根据父级ID查询注册表条目列表(不分页)
+     *
+     * @param parentId 父级ID
+     * @return 注册表条目列表
+     */
+    @Query("""
+            SELECT u FROM RegistryPo u
+            WHERE u.parentId = :parentId AND u.kind = 1
+            AND (:#{#dto.nkey} IS NULL OR u.nkey  LIKE CONCAT('%', :#{#dto.nkey}, '%') )
+            AND (:#{#dto.label} IS NULL OR u.label  LIKE CONCAT('%', :#{#dto.label}, '%') )
+            AND (:#{#dto.nvalueKind} IS NULL OR u.nvalueKind  = :#{#dto.nvalueKind} )
+            ORDER BY u.seq ASC
+            """)
+    List<RegistryPo> getRegistryEntryListNotPage(@Param("parentId") Long parentId, @Param("dto") GetRegistryListDto dto);
+
 }

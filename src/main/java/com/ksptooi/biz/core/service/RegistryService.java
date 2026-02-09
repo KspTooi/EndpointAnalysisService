@@ -5,6 +5,7 @@ import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
 import com.ksptooi.biz.core.model.registry.dto.ImportRegistryDto;
+import com.ksptooi.biz.core.model.registry.vo.ExportRegistryVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
@@ -335,6 +336,75 @@ public class RegistryService {
 
         repository.saveAll(importPos);
         return importPos.size();
+    }
+
+    /**
+     * 导出注册表条目
+     *
+     * @param dto 查询条件
+     * @return 导出数据列表
+     * @throws BizException 业务异常
+     */
+    public List<ExportRegistryVo> exportRegistry(GetRegistryListDto dto) throws BizException {
+
+        //先根据全路径查询到节点
+        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(dto.getKeyPath());
+
+        if (nodePo == null) {
+            throw new BizException("导出注册表条目失败,节点不存在: " + dto.getKeyPath());
+        }
+
+        //查询该节点下全部子项(不分页)
+        List<RegistryPo> entryList = repository.getRegistryEntryListNotPage(nodePo.getId(), dto);
+
+        //转换为导出VO
+        List<ExportRegistryVo> exportList = new ArrayList<>();
+
+        for (RegistryPo po : entryList) {
+            ExportRegistryVo vo = new ExportRegistryVo();
+            vo.setNkey(po.getNkey());
+
+            //处理数据类型转换 0:字串 1:整数 2:浮点 3:日期
+            String nvalueKind = "";
+            if (po.getNvalueKind() != null) {
+                if (po.getNvalueKind() == 0) {
+                    nvalueKind = "字串";
+                }
+                if (po.getNvalueKind() == 1) {
+                    nvalueKind = "整数";
+                }
+                if (po.getNvalueKind() == 2) {
+                    nvalueKind = "浮点";
+                }
+                if (po.getNvalueKind() == 3) {
+                    nvalueKind = "日期";
+                }
+            }
+            vo.setNvalueKind(nvalueKind);
+
+            vo.setNvalue(po.getNvalue());
+            vo.setLabel(po.getLabel());
+            vo.setRemark(po.getRemark());
+            vo.setMetadata(po.getMetadata());
+
+            //处理状态转换 0:正常 1:停用
+            String status = "";
+            if (po.getStatus() != null) {
+                if (po.getStatus() == 0) {
+                    status = "正常";
+                }
+                if (po.getStatus() == 1) {
+                    status = "停用";
+                }
+            }
+            vo.setStatus(status);
+
+            vo.setSeq(po.getSeq() != null ? po.getSeq().toString() : "");
+
+            exportList.add(vo);
+        }
+
+        return exportList;
     }
 
 }

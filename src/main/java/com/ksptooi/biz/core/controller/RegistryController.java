@@ -4,16 +4,19 @@ import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
 import com.ksptooi.biz.core.model.registry.dto.ImportRegistryDto;
+import com.ksptooi.biz.core.model.registry.vo.ExportRegistryVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.service.RegistryService;
+import com.ksptooi.commons.dataprocess.ExportWizard;
 import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +121,15 @@ public class RegistryController {
         var data = iw.getData();
         var count = registryService.importRegistry(keyPath, data);
         return Result.success("导入成功,已导入数据:" + count + "条", null);
+    }
+    
+    @Operation(summary = "导出注册表条目")
+    @RequestMapping("/exportRegistry")
+    public void exportRegistry(@RequestBody @Valid GetRegistryListDto dto, HttpServletResponse response) throws Exception {
+
+        //准备导出向导
+        ExportWizard<ExportRegistryVo> ew = new ExportWizard<>(registryService.exportRegistry(dto), response);
+        ew.transfer("注册表条目");
     }
 
 }
