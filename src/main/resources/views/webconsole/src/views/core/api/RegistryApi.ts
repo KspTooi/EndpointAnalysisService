@@ -3,6 +3,7 @@ import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type PageQuery from "@/commons/entity/PageQuery.ts";
 import type Result from "@/commons/entity/Result.ts";
+import axios from "axios";
 
 /**
  * 查询列表DTO
@@ -157,5 +158,37 @@ export default {
       return result.message;
     }
     throw new Error(result.message);
+  },
+
+  /**
+   * 导出注册表条目
+   * @param dto 查询参数
+   */
+  exportRegistry: async (dto: GetRegistryListDto): Promise<void> => {
+    const response = await axios.post(`/registry/exportRegistry`, dto, {
+      responseType: "blob",
+      headers: {
+        "AE-Request-With": "XHR",
+      },
+    });
+
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "注册表条目导出.xlsx";
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = decodeURIComponent(filenameMatch[1]);
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   },
 };

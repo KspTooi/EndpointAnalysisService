@@ -22,8 +22,15 @@
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-button type="primary" @click="handleSearch" :disabled="listLoading">查询</el-button>
-                <el-button @click="resetList(currentKeyPath)" :disabled="listLoading">重置</el-button>
+                <el-dropdown split-button type="primary" @click="handleSearch" :disabled="listLoading || !currentKeyPath">
+                  查询
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item :icon="DownloadIcon" @click="handleExport">导出查询结果</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <el-button @click="resetList(currentKeyPath)" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
               </el-form-item>
             </el-form>
           </StdListAreaQuery>
@@ -187,23 +194,25 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete, Upload } from "@element-plus/icons-vue";
+import { Edit, Delete, Upload, Download } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import RegistryManagerService from "@/views/core/service/RegistryManagerService.ts";
+import RegistryApi, { type GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import RegistryNodeTree from "@/views/core/components/RegistryNodeTree.vue";
-import type { GetRegistryNodeTreeVo } from "@/views/core/api/RegistryApi";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import { ElMessage } from "element-plus";
 
 // 静态图标引用 (使用 markRaw 避免响应式开销)
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const UploadIcon = markRaw(Upload);
+const DownloadIcon = markRaw(Download);
 
 // 导入向导引用
 const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
@@ -239,6 +248,23 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
 const handleSearch = () => {
   listForm.value.pageNum = 1; // 重置为第一页
   loadList(currentKeyPath.value);
+};
+
+/**
+ * 导出查询结果
+ */
+const handleExport = async () => {
+  if (!currentKeyPath.value) {
+    ElMessage.warning("请先选择节点");
+    return;
+  }
+  
+  try {
+    await RegistryApi.exportRegistry(listForm.value);
+  } catch (e: any) {
+    console.error(e);
+    ElMessage.error("导出失败");
+  }
 };
 </script>
 
