@@ -183,9 +183,11 @@ export default {
     /**
      * 重置模态框数据
      */
-    const resetModal = () => {
+    const resetModal = (excludeParent: boolean = false) => {
       modalForm.id = "";
-      modalForm.parentId = undefined;
+      if (!excludeParent) {
+        modalForm.parentId = undefined;
+      }
       modalForm.kind = 1;
       modalForm.nkey = "";
       modalForm.nvalueKind = 0;
@@ -259,8 +261,9 @@ export default {
           };
           await RegistryApi.addRegistry(addDto);
           ElMessage.success("新增成功");
-          modalVisible.value = false;
+          //modalVisible.value = false;
           onRefresh();
+          resetModal(true);
         }
 
         if (modalMode.value === "edit") {
@@ -277,7 +280,7 @@ export default {
           };
           await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改成功");
-          modalVisible.value = false;
+          //modalVisible.value = false;
           onRefresh();
         }
       } catch (error: any) {
