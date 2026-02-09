@@ -21,10 +21,10 @@ public class CodeGenerator {
 
         //创建Mysql采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://127.0.0.1:3306/endpoint_analysis_service");
+        coll.setUrl("jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test");
         coll.setUsername("root");
         coll.setPassword("root");
-        coll.setDatabase("endpoint_analysis_service");
+        coll.setDatabase("endpoint_analysis_service_test");
 
         //创建蓝图采集器、聚合转换器、投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
@@ -46,7 +46,7 @@ public class CodeGenerator {
         factory.setOutputBasePathFromRelative("./");
 
         //选择要收集的表
-        factory.selectTables("core_registry_entry");
+        factory.selectTables("qt_task_group");
 
         //需移除的表前缀 可多个
         factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
