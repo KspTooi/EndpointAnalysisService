@@ -31,7 +31,7 @@
             </el-form>
           </StdListAreaQuery>
 
-          <StdListAreaAction class="flex gap-2">
+          <StdListAreaAction class="flex gap-3">
             <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
             <el-dropdown @command="onBatchAction">
               <el-button type="primary" :disabled="!canBatchAction">
