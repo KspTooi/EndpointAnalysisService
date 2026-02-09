@@ -98,6 +98,7 @@ import { Download, UploadFilled, Document } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import ExcelTemplateApi from "@/views/core/api/ExcelTemplateApi.ts";
 import Http from "@/commons/Http.ts";
+import type Result from "@/commons/entity/Result.ts";
 
 const props = defineProps<{
   url: string;
@@ -114,6 +115,9 @@ const selectedFile = ref<any>(null);
 const fileList = ref<any[]>([]);
 const importing = ref(false);
 const uploadRef = ref();
+
+// 可选的附加参数(将会随文件一起上传)
+const params = ref<any>(null);
 
 const clearSelectedFile = () => {
   selectedFile.value = null;
@@ -134,11 +138,16 @@ const tryReadFileHead = async (raw: File) => {
   }
 };
 
-const openModal = () => {
+/**
+ * 打开导入向导
+ * @param _params 可选的附加参数(将会随文件一起上传)
+ */
+const openModal = (_params?: any) => {
   visible.value = true;
   selectedFile.value = null;
   fileList.value = [];
   importing.value = false;
+  params.value = _params;
 };
 
 const handleDownload = async () => {
@@ -192,9 +201,20 @@ const handleImport = async () => {
   importing.value = true;
 
   try {
-    const res = await Http.postForm<any>(props.url, {
+    let query = {
       file: raw,
-    });
+    };
+
+    if (params.value) {
+      query = {
+        ...query,
+        ...params.value,
+      };
+    }
+
+    console.log(query);
+
+    const res = await Http.postForm<Result<string>>(props.url, query);
     ElMessage.success(res.message || "导入成功");
     emit("on-success", res);
     visible.value = false;
