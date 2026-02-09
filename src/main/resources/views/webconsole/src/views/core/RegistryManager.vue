@@ -32,6 +32,13 @@
             <el-button type="danger" :disabled="!currentKeyPath || listSelected.length === 0" @click="removeListBatch"
               >删除选中项</el-button
             >
+            <el-button
+              type="primary"
+              :disabled="!currentKeyPath"
+              @click="importWizardRef?.openModal({ keyPath: currentKeyPath })"
+              :icon="UploadIcon"
+              >导入条目</el-button
+            >
           </StdListAreaAction>
 
           <StdListAreaTable>
@@ -79,6 +86,15 @@
         </StdListContainer>
       </pane>
     </splitpanes>
+
+    <!-- 导入向导 -->
+    <ImportWizardModal
+      ref="importWizardRef"
+      url="/registry/importRegistry"
+      templateCode="core_registry"
+      @on-success="loadList(currentKeyPath)"
+      @on-close="loadList(currentKeyPath)"
+    />
 
     <!-- 注册表编辑/新增模态框 -->
     <el-dialog
@@ -145,7 +161,7 @@
 
 <script setup lang="ts">
 import { ref, computed, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
@@ -156,10 +172,15 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
 
 // 静态图标引用 (使用 markRaw 避免响应式开销)
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const UploadIcon = markRaw(Upload);
+
+// 导入向导引用
+const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
 // 组件状态管理
 const currentKeyPath = ref<string | null>(null); // 当前选中的树节点路径

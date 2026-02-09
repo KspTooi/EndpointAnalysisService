@@ -4,12 +4,15 @@ import com.ksptooi.biz.core.model.registry.RegistryPo;
 import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
+import com.ksptooi.biz.core.model.registry.dto.ImportRegistryDto;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.repository.RegistryRepository;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import java.util.Map;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
+@Slf4j
 @Service
 public class RegistryService {
 
@@ -243,6 +247,91 @@ public class RegistryService {
         }
 
         repository.deleteAllById(safeRemoveIds);
+    }
+
+    /**
+     * 导入注册表条目
+     *
+     * @param file 导入文件
+     * @throws BizException 业务异常
+     */
+    public int importRegistry(String keyPath, List<ImportRegistryDto> data) throws BizException {
+
+        //先根据全路径查询到要放置的节点
+        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            throw new BizException("导入失败,节点不存在: " + keyPath);
+        }
+
+        //检查节点类型
+        if (nodePo.getKind() != 0) {
+            throw new BizException("导入失败,父级目标必须是节点: " + keyPath);
+        }
+
+        var importPos = new ArrayList<RegistryPo>();
+
+        //处理导入数据
+        for (ImportRegistryDto dto : data) {
+            RegistryPo insertPo = new RegistryPo();
+            insertPo.setParentId(nodePo.getId());
+            insertPo.setKeyPath(nodePo.getKeyPath() + "." + insertPo.getNkey());
+            insertPo.setKind(1); //0:节点 1:条目
+            insertPo.setNkey(dto.getNkey());
+
+            //校验Keypath是否唯一
+            if (repository.countByKeyPath(insertPo.getKeyPath()) > 0) {
+                log.warn("导入失败,KEY的全路径已存在,跳过: " + insertPo.getKeyPath());
+                continue;
+            }
+
+            if (Str.isNotIn(dto.getNvalueKind(), "字串", "整数", "浮点", "日期")) {
+                throw new BizException("导入失败,数据类型不支持: " + dto.getNvalueKind());
+            }
+
+            var nValueKind = -1;
+
+            if (dto.getNvalueKind().equals("字串")) {
+                nValueKind = 0;
+            }
+            if (dto.getNvalueKind().equals("整数")) {
+                nValueKind = 1;
+            }
+            if (dto.getNvalueKind().equals("浮点")) {
+                nValueKind = 2;
+            }
+            if (dto.getNvalueKind().equals("日期")) {
+                nValueKind = 3;
+            }
+
+
+            insertPo.setNvalueKind(nValueKind);
+            insertPo.setNvalue(dto.getNvalue());
+            insertPo.setLabel(dto.getLabel());
+            insertPo.setRemark(dto.getRemark());
+            insertPo.setMetadata(dto.getMetadata());
+            insertPo.setIsSystem(0);
+
+            if (Str.isNotIn(dto.getStatus(), "正常", "停用")) {
+                throw new BizException("导入失败,状态不支持: " + dto.getStatus());
+            }
+
+            var status = -1;
+
+            if (dto.getStatus().equals("正常")) {
+                status = 0;
+            }
+            if (dto.getStatus().equals("停用")) {
+                status = 1;
+            }
+
+            insertPo.setStatus(status);
+            insertPo.setSeq(Integer.parseInt(dto.getSeq()));
+            importPos.add(insertPo);
+        }
+
+        repository.saveAll(importPos);
+        return importPos.size();
     }
 
 }

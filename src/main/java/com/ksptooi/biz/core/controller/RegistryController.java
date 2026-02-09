@@ -3,10 +3,12 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.registry.dto.AddRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.EditRegistryDto;
 import com.ksptooi.biz.core.model.registry.dto.GetRegistryListDto;
+import com.ksptooi.biz.core.model.registry.dto.ImportRegistryDto;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryDetailsVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryEntryListVo;
 import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.service.RegistryService;
+import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -86,6 +90,33 @@ public class RegistryController {
     public Result<String> removeRegistry(@RequestBody @Valid CommonIdDto dto) throws Exception {
         registryService.removeRegistry(dto);
         return Result.success("操作成功");
+    }
+
+    @Operation(summary = "导入注册表条目")
+    @PostMapping("/importRegistry")
+    public Result<String> importRegistry(@RequestParam("file") MultipartFile file,@RequestParam("keyPath") String keyPath) throws Exception {
+        
+        //必填KeyPath
+        if(StringUtils.isBlank(keyPath)){
+            return Result.error("KeyPath不能为空");
+        }
+        
+        //准备向导
+        ImportWizard<ImportRegistryDto> iw = new ImportWizard<>(file, ImportRegistryDto.class);
+
+        //开始传输
+        iw.transfer();
+
+        //验证导入数据
+        var errors = iw.validate();
+        if (StringUtils.isNotBlank(errors)) {
+            return Result.error(errors);
+        }
+
+        //获取导入数据
+        var data = iw.getData();
+        var count = registryService.importRegistry(keyPath, data);
+        return Result.success("导入成功,已导入数据:" + count + "条", null);
     }
 
 }
