@@ -279,7 +279,7 @@ public class RegistryService {
         for (ImportRegistryDto dto : data) {
             RegistryPo insertPo = new RegistryPo();
             insertPo.setParentId(nodePo.getId());
-            insertPo.setKeyPath(nodePo.getKeyPath() + "." + insertPo.getNkey());
+            insertPo.setKeyPath(nodePo.getKeyPath() + "." + dto.getNkey());
             insertPo.setKind(1); //0:节点 1:条目
             insertPo.setNkey(dto.getNkey());
 
