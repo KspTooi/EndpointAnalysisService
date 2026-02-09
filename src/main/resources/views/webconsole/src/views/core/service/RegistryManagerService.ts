@@ -183,6 +183,7 @@ export default {
       if (row) {
         // 绑定编辑模式的字段值
         modalForm.id = row.id;
+        modalForm.kind = 1; // 条目固定为1
         modalForm.nkey = row.nkey;
         modalForm.nvalueKind = row.nvalueKind;
         modalForm.nvalue = row.nvalue;
@@ -190,6 +191,7 @@ export default {
         modalForm.status = row.status;
         modalForm.seq = row.seq;
         modalForm.remark = row.remark;
+        modalForm.metadata = "{}"; // 默认空JSON
         modalVisible.value = true;
       }
     };
@@ -227,11 +229,14 @@ export default {
         if (modalMode.value === "edit") {
           const editDto: EditRegistryDto = {
             id: modalForm.id ?? "",
+            kind: modalForm.kind,
             nvalueKind: modalForm.nvalueKind,
             nvalue: modalForm.nvalue,
             label: modalForm.label,
             seq: modalForm.seq,
             remark: modalForm.remark,
+            metadata: modalForm.metadata,
+            status: modalForm.status,
           };
           await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改成功");

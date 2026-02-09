@@ -48,11 +48,14 @@ export interface AddRegistryDto {
  */
 export interface EditRegistryDto {
   id: string; // ID
-  nvalueKind?: number; // 数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
-  nvalue?: string; // 条目Value
+  kind: number; // 类型 0:节点 1:条目
+  nvalueKind?: number; // 数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)（节点不需要）
+  nvalue?: string; // 条目Value（节点不需要）
   label?: string; // 条目标签
   seq: number; // 排序
   remark?: string; // 说明
+  metadata?: string; // 元数据JSON（节点不需要）
+  status?: number; // 状态 0:正常 1:停用（节点不需要）
 }
 
 /**

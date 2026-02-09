@@ -13,6 +13,7 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,17 +78,17 @@ public class RegistryService {
      *
      * @return 注册表条目列表
      */
-    public List<GetRegistryEntryListVo> getRegistryEntryList(GetRegistryListDto dto) throws BizException {
+    public List<GetRegistryEntryListVo> getRegistryEntryList(GetRegistryListDto query) throws BizException {
 
         //先根据全路径查询到节点
-        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(dto.getKeyPath());
+        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(query.getKeyPath());
 
         if (nodePo == null) {
-            throw new BizException("查询注册表条目列表失败,节点不存在: " + dto.getKeyPath());
+            throw new BizException("查询注册表条目列表失败,节点不存在: " + query.getKeyPath());
         }
 
         //查询该节点下全部子项
-        List<RegistryPo> entryPos = repository.getRegistryEntryList(dto);
+        List<RegistryPo> entryPos = repository.getRegistryEntryList(nodePo.getId(), query);
         return as(entryPos, GetRegistryEntryListVo.class);
     }
 
@@ -174,11 +175,11 @@ public class RegistryService {
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         //校验数值真实性
-        if(updatePo.getKind() != dto.getKind()){
+        if (updatePo.getKind() != dto.getKind()) {
             throw new BizException("无法处理编辑请求,输入类型与实际类型不一致. 输入类型:" + dto.getKind() + ",实际类型:" + updatePo.getKind());
         }
 
-        if(updatePo.getNvalueKind() != dto.getNvalueKind()){
+        if (updatePo.getNvalueKind() != dto.getNvalueKind()) {
             throw new BizException("无法处理编辑请求,输入数据类型与实际数据类型不一致. 输入数据类型:" + dto.getNvalueKind() + ",实际数据类型:" + updatePo.getNvalueKind());
         }
 

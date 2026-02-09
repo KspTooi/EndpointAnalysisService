@@ -76,35 +76,42 @@
       width="500px"
       :close-on-click-modal="false"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-      >
+      <el-form v-if="modalVisible" ref="modalFormRef" :model="modalForm" :rules="modalRules" label-width="100px">
         <el-form-item label="Key" prop="nkey">
-          <el-input v-model="modalForm.nkey" placeholder="请输入Key" maxlength="128" show-word-limit :disabled="modalMode === 'edit'" />
+          <el-input
+            v-model="modalForm.nkey"
+            placeholder="请输入Key（字母、数字、下划线或中划线）"
+            maxlength="128"
+            show-word-limit
+            :disabled="modalMode === 'edit'"
+          />
         </el-form-item>
         <el-form-item label="标签" prop="label">
           <el-input v-model="modalForm.label" placeholder="请输入标签" maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="数据类型" prop="nvalueKind">
-          <el-select v-model="modalForm.nvalueKind" placeholder="选择类型" style="width: 100%">
+          <el-select v-model="modalForm.nvalueKind" placeholder="选择类型" style="width: 100%" :disabled="modalMode === 'edit'">
             <el-option label="字符串" :value="0" />
             <el-option label="整数" :value="1" />
             <el-option label="浮点" :value="2" />
-            <el-option label="日期" :value="3" />
+            <el-option label="日期(yyyy-MM-dd HH:mm:ss)" :value="3" />
           </el-select>
         </el-form-item>
         <el-form-item label="数据值" prop="nvalue">
-          <el-input v-model="modalForm.nvalue" type="textarea" :rows="3" placeholder="请输入数据值" maxlength="1024" show-word-limit />
+          <el-input
+            v-model="modalForm.nvalue"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入数据值"
+            maxlength="1024"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input-number v-model="modalForm.seq" :min="0" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="modalForm.status" :disabled="modalMode === 'edit'">
+          <el-radio-group v-model="modalForm.status">
             <el-radio :label="0">正常</el-radio>
             <el-radio :label="1">停用</el-radio>
           </el-radio-group>
@@ -159,13 +166,14 @@ const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
 };
 
 // 列表业务 Hook
-const { listForm, listData, listLoading, loadList, resetList, removeList } = RegistryManagerService.useRegistryList(currentKeyPath);
+const { listForm, listData, listLoading, loadList, resetList, removeList } =
+  RegistryManagerService.useRegistryList(currentKeyPath);
 
 // 模态框逻辑 Hook
 const modalFormRef = ref<FormInstance>();
 const _loadList = () => loadList(currentKeyPath.value);
 
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } = 
+const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } =
   RegistryManagerService.useRegistryModal(modalFormRef, _loadList);
 
 /**
@@ -182,9 +190,8 @@ const handleSearch = () => {
 const filteredListData = computed(() => {
   if (!searchText.value) return listData.value;
   const lowerSearch = searchText.value.toLowerCase();
-  return listData.value.filter(item => 
-    (item.nkey?.toLowerCase().includes(lowerSearch)) || 
-    (item.label?.toLowerCase().includes(lowerSearch))
+  return listData.value.filter(
+    (item) => item.nkey?.toLowerCase().includes(lowerSearch) || item.label?.toLowerCase().includes(lowerSearch)
   );
 });
 </script>

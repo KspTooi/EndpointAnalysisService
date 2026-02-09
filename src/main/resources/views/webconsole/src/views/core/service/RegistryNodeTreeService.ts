@@ -191,12 +191,8 @@ export default {
             parentId: modalForm.parentId,
             kind: modalForm.kind,
             nkey: modalForm.nkey,
-            nvalueKind: modalForm.nvalueKind,
-            nvalue: modalForm.nvalue,
             label: modalForm.label,
             remark: modalForm.remark,
-            metadata: null,
-            status: null,
             seq: modalForm.seq,
           };
           await RegistryApi.addRegistry(addDto);
@@ -210,8 +206,7 @@ export default {
           }
           const editDto: EditRegistryDto = {
             id: modalForm.id,
-            nvalueKind: modalForm.nvalueKind,
-            nvalue: modalForm.nvalue,
+            kind: modalForm.kind,
             label: modalForm.label,
             seq: modalForm.seq,
             remark: modalForm.remark,
