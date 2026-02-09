@@ -22,6 +22,8 @@ export default {
     const listData = ref<GetRegistryEntryListVo[]>([]); // 列表数据
     const listLoading = ref(false); // 列表加载状态标识
 
+    const listSelected = ref<GetRegistryEntryListVo[]>([]); // 选中项
+
     // 分页查询表单数据
     const listForm = ref<GetRegistryListDto>({
       keyPath: "",
@@ -88,6 +90,34 @@ export default {
       }
     };
 
+    /**
+     * 删除选中项
+     */
+    const removeListBatch = async () => {
+      try {
+        await ElMessageBox.confirm(`确定要删除选中的 ${listSelected.value.length} 项吗？`, "提示", {
+          type: "warning",
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        const ids = listSelected.value.map((item) => item.id);
+        await RegistryApi.removeRegistry({ ids });
+        ElMessage.success("删除成功");
+        loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message || "删除失败");
+      }
+    };
+
+    const onSelectionChange = (rows: GetRegistryEntryListVo[]) => {
+      listSelected.value = rows;
+    };
+
     return {
       listForm,
       listData,
@@ -95,6 +125,9 @@ export default {
       loadList,
       resetList,
       removeList,
+      removeListBatch,
+      onSelectionChange,
+      listSelected,
     };
   },
 
@@ -134,12 +167,8 @@ export default {
         { required: true, message: "请输入节点值", trigger: "blur" },
         { max: 1024, message: "值长度不能超过1024个字符", trigger: "blur" },
       ],
-      label: [
-        { max: 32, message: "标签长度不能超过32个字符", trigger: "blur" },
-      ],
-      remark: [
-        { max: 1000, message: "说明长度不能超过1000个字符", trigger: "blur" },
-      ],
+      label: [{ max: 32, message: "标签长度不能超过32个字符", trigger: "blur" }],
+      remark: [{ max: 1000, message: "说明长度不能超过1000个字符", trigger: "blur" }],
       kind: [{ required: true, message: "请选择类型", trigger: "change" }],
     };
 

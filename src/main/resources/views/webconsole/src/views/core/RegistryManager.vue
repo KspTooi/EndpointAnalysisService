@@ -25,14 +25,25 @@
             </el-form>
           </StdListAreaQuery>
 
-          <StdListAreaAction class="flex gap-2">
+          <StdListAreaAction>
             <el-button type="success" :disabled="!currentKeyPath" @click="openModal('add', null, currentNodeId)">
               新增条目
             </el-button>
+            <el-button type="danger" :disabled="!currentKeyPath || listSelected.length === 0" @click="removeListBatch"
+              >删除选中项</el-button
+            >
           </StdListAreaAction>
 
           <StdListAreaTable>
-            <el-table :data="filteredListData" stripe v-loading="listLoading" border height="100%">
+            <el-table
+              :data="filteredListData"
+              stripe
+              v-loading="listLoading"
+              border
+              height="100%"
+              @selection-change="onSelectionChange"
+            >
+              <el-table-column type="selection" width="40" />
               <el-table-column prop="nkey" label="Key" min-width="150" show-overflow-tooltip />
               <el-table-column prop="label" label="标签" min-width="120" />
               <el-table-column label="数据类型" width="100">
@@ -165,14 +176,14 @@ const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
   loadList(currentKeyPath.value); // 选中节点后自动刷新列表
 };
 
-// 列表业务 Hook
-const { listForm, listData, listLoading, loadList, resetList, removeList } =
+// 注册表条目列表打包
+const { listForm, listData, listLoading, loadList, resetList, removeList, removeListBatch, onSelectionChange, listSelected } =
   RegistryManagerService.useRegistryList(currentKeyPath);
 
-// 模态框逻辑 Hook
 const modalFormRef = ref<FormInstance>();
 const _loadList = () => loadList(currentKeyPath.value);
 
+// 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } =
   RegistryManagerService.useRegistryModal(modalFormRef, _loadList);
 
