@@ -35,11 +35,9 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="分组名" min-width="150" show-overflow-tooltip />
         <el-table-column prop="remark" label="分组备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
