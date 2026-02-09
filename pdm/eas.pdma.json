@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-9 04:13:40",
+  "updatedTime": "2026-2-9 20:34:47",
   "dbConns": [],
   "profile": {
     "default": {
@@ -21969,7 +21969,7 @@
           "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5"
         },
         {
-          "defKey": "updator_id",
+          "defKey": "updater_id",
           "defName": "更新人ID",
           "comment": "",
           "type": "",
@@ -22468,7 +22468,7 @@
           "id": "948DA2A3-6C2B-42C4-B1F4-C46485A406D3"
         },
         {
-          "defKey": "updator_id",
+          "defKey": "updater_id",
           "defName": "更新人ID",
           "comment": "",
           "type": "",
