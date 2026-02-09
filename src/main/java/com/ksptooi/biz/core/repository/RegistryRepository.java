@@ -22,7 +22,7 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
     @Query("""
             SELECT u FROM RegistryPo u
             WHERE u.kind = 0
-            ORDER BY u.seq ASC
+            ORDER BY u.seq ASC,u.nkey ASC
             """)
     List<RegistryPo> getRegistryAllNodes();
 
@@ -112,7 +112,7 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             SELECT u FROM RegistryPo u
             WHERE u.keyPath = :keyPath AND u.kind = 0
             """)
-     RegistryPo getRegistryNodeByKeyPath(@Param("keyPath") String keyPath);
+    RegistryPo getRegistryNodeByKeyPath(@Param("keyPath") String keyPath);
 
 
     /**

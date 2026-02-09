@@ -14,76 +14,78 @@
     </div>
 
     <!-- 树容器 -->
-    <div class="flex-1 min-h-0 overflow-y-auto px-2">
-      <!-- 全部节点行 -->
-      <div
-        v-if="showHeader"
-        class="all-registry-node group flex items-center justify-between h-[28px] pl-[27.5px] pr-2 cursor-pointer mb-[1px] transition-colors duration-200 text-[13px]"
-        :class="{ 'is-active': isAllSelected }"
-        @click="handleSelectAll"
-      >
-        <div class="flex items-center">
-          <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
-          <span class="node-label text-[var(--el-text-color-regular)]">根节点</span>
+    <el-scrollbar class="flex-1 min-h-0">
+      <div class="px-2">
+        <!-- 全部节点行 -->
+        <div
+          v-if="showHeader"
+          class="all-registry-node group flex items-center justify-between h-[28px] pl-[27.5px] pr-2 cursor-pointer mb-[1px] transition-colors duration-200 text-[13px]"
+          :class="{ 'is-active': isAllSelected }"
+          @click="handleSelectAll"
+        >
+          <div class="flex items-center">
+            <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
+            <span class="node-label text-[var(--el-text-color-regular)]">根节点</span>
+          </div>
+          <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal('add', null, null)">
+            <el-icon class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer" title="新建根节点">
+              <PlusIcon />
+            </el-icon>
+          </div>
         </div>
-        <div class="hidden group-hover:flex items-center text-[20px] font-bold" @click.stop="openModal('add', null, null)">
-          <el-icon class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer" title="新建根节点">
-            <PlusIcon />
-          </el-icon>
-        </div>
-      </div>
 
-      <!-- 核心树组件 -->
-      <el-tree
-        ref="treeRef"
-        :data="treeData"
-        :props="defaultProps"
-        :filter-node-method="filterNode"
-        :expand-on-click-node="false"
-        node-key="id"
-        highlight-current
-        default-expand-all
-        @node-click="handleNodeClick"
-        class="custom-tree"
-      >
-        <template #default="{ node, data }">
-          <span class="custom-tree-node group flex-1 flex items-center justify-between pr-2 text-[13px]">
-            <div class="flex items-center">
-              <el-icon class="mr-1.5 text-[14px]">
-                <FolderIcon />
-              </el-icon>
-              <div class="flex gap-1 items-center">
-                <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
-                <span class="text-[var(--el-text-color-regular)] text-[12px]" v-if="data.label">({{ data.label }})</span>
+        <!-- 核心树组件 -->
+        <el-tree
+          ref="treeRef"
+          :data="treeData"
+          :props="defaultProps"
+          :filter-node-method="filterNode"
+          :expand-on-click-node="false"
+          node-key="id"
+          highlight-current
+          default-expand-all
+          @node-click="handleNodeClick"
+          class="custom-tree"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node group flex-1 flex items-center justify-between pr-2 text-[13px]">
+              <div class="flex items-center">
+                <el-icon class="mr-1.5 text-[14px]">
+                  <FolderIcon />
+                </el-icon>
+                <div class="flex gap-1 items-center">
+                  <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
+                  <span class="text-[var(--el-text-color-regular)] text-[12px]" v-if="data.label">({{ data.label }})</span>
+                </div>
               </div>
-            </div>
-            <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
-              <el-icon
-                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
-                title="新建子节点"
-                @click.stop="openModal('add', null, data)"
-              >
-                <PlusIcon />
-              </el-icon>
-              <el-icon
-                class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
-                title="编辑节点"
-                @click.stop="openModal('edit', data)"
-              >
-                <EditIcon />
-              </el-icon>
-              <el-icon
-                class="p-0.5 rounded hover:bg-red-50 hover:text-red-500 cursor-pointer"
-                title="移除节点"
-                @click.stop="removeNode(data, loadTreeData)"
-              >
-                <DeleteIcon />
-              </el-icon>
-            </div>
-          </span>
-        </template>
-      </el-tree>
-    </div>
+              <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
+                <el-icon
+                  class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
+                  title="新建子节点"
+                  @click.stop="openModal('add', null, data)"
+                >
+                  <PlusIcon />
+                </el-icon>
+                <el-icon
+                  class="p-0.5 rounded hover:bg-[var(--el-color-primary-light-7)] cursor-pointer"
+                  title="编辑节点"
+                  @click.stop="openModal('edit', data)"
+                >
+                  <EditIcon />
+                </el-icon>
+                <el-icon
+                  class="p-0.5 rounded hover:bg-red-50 hover:text-red-500 cursor-pointer"
+                  title="移除节点"
+                  @click.stop="removeNode(data, loadTreeData)"
+                >
+                  <DeleteIcon />
+                </el-icon>
+              </div>
+            </span>
+          </template>
+        </el-tree>
+      </div>
+    </el-scrollbar>
 
     <!-- 节点模态框 -->
     <el-dialog

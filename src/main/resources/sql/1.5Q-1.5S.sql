@@ -25,3 +25,17 @@ CREATE TABLE core_registry(
                               `delete_time` DATETIME   COMMENT '删除时间 NULL未删' ,
                               PRIMARY KEY (id)
 )  COMMENT = '注册表';
+
+DROP TABLE `audit_error_rcd`;
+CREATE TABLE `audit_error_rcd` (
+                                   `id` bigint NOT NULL COMMENT '错误ID',
+                                   `error_code` varchar(32) COLLATE utf8mb4_general_ci NOT NULL COMMENT '错误代码',
+                                   `request_uri` varchar(1000) COLLATE utf8mb4_general_ci NOT NULL COMMENT '请求地址',
+                                   `user_id` bigint DEFAULT NULL COMMENT '操作人ID',
+                                   `user_name` varchar(32) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作人用户名',
+                                   `error_type` varchar(320) COLLATE utf8mb4_general_ci NOT NULL COMMENT '异常类型',
+                                   `error_message` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '异常简述',
+                                   `error_stack_trace` longtext COLLATE utf8mb4_general_ci COMMENT '完整堆栈信息',
+                                   `create_time` datetime NOT NULL COMMENT '创建时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统错误记录';
