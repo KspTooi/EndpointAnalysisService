@@ -14,8 +14,11 @@
           <StdListAreaQuery>
             <el-form :model="listForm" inline class="flex justify-between">
               <div>
-                <el-form-item label="模糊搜索">
-                  <el-input v-model="searchText" placeholder="搜索条目Key/标签" clearable @keyup.enter="handleSearch" />
+                <el-form-item label="条目Key">
+                  <el-input v-model="listForm.nkey" placeholder="输入条目Key" clearable @keyup.enter="handleSearch" />
+                </el-form-item>
+                <el-form-item label="标签">
+                  <el-input v-model="listForm.label" placeholder="输入标签" clearable @keyup.enter="handleSearch" />
                 </el-form-item>
               </div>
               <el-form-item>
@@ -43,7 +46,7 @@
 
           <StdListAreaTable>
             <el-table
-              :data="filteredListData"
+              :data="listData"
               stripe
               v-loading="listLoading"
               border
@@ -82,6 +85,29 @@
                 </template>
               </el-table-column>
             </el-table>
+
+            <template #pagination>
+              <el-pagination
+                v-model:current-page="listForm.pageNum"
+                v-model:page-size="listForm.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="listTotal"
+                @size-change="
+                  (val: number) => {
+                    listForm.pageSize = val;
+                    loadList(currentKeyPath);
+                  }
+                "
+                @current-change="
+                  (val: number) => {
+                    listForm.pageNum = val;
+                    loadList(currentKeyPath);
+                  }
+                "
+                background
+              />
+            </template>
           </StdListAreaTable>
         </StdListContainer>
       </pane>
@@ -160,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, markRaw } from "vue";
+import { ref, markRaw } from "vue";
 import { Edit, Delete, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { Splitpanes, Pane } from "splitpanes";
@@ -185,7 +211,6 @@ const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 // 组件状态管理
 const currentKeyPath = ref<string | null>(null); // 当前选中的树节点路径
 const currentNodeId = ref<string | null>(null); // 当前选中的树节点 ID
-const searchText = ref(""); // 右侧列表模糊查询文本
 
 /**
  * 处理树节点选中事件
@@ -194,11 +219,11 @@ const searchText = ref(""); // 右侧列表模糊查询文本
 const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
   currentKeyPath.value = node?.keyPath ?? null;
   currentNodeId.value = node?.id ?? null;
-  loadList(currentKeyPath.value); // 选中节点后自动刷新列表
+  resetList(currentKeyPath.value); // 选中节点后重置并刷新列表
 };
 
 // 注册表条目列表打包
-const { listForm, listData, listLoading, loadList, resetList, removeList, removeListBatch, onSelectionChange, listSelected } =
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch, onSelectionChange, listSelected } =
   RegistryManagerService.useRegistryList(currentKeyPath);
 
 const modalFormRef = ref<FormInstance>();
@@ -212,20 +237,9 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
  * 触发查询动作
  */
 const handleSearch = () => {
-  // 当前过滤逻辑由计算属性 filteredListData 实现
+  listForm.value.pageNum = 1; // 重置为第一页
+  loadList(currentKeyPath.value);
 };
-
-/**
- * 计算属性：本地过滤后的列表数据
- * 支持根据 Key 或标签进行模糊匹配
- */
-const filteredListData = computed(() => {
-  if (!searchText.value) return listData.value;
-  const lowerSearch = searchText.value.toLowerCase();
-  return listData.value.filter(
-    (item) => item.nkey?.toLowerCase().includes(lowerSearch) || item.label?.toLowerCase().includes(lowerSearch)
-  );
-});
 </script>
 
 <style scoped>

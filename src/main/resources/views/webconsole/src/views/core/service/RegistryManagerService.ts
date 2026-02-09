@@ -20,6 +20,7 @@ export default {
    */
   useRegistryList(keyPath: Ref<string | null>) {
     const listData = ref<GetRegistryEntryListVo[]>([]); // 列表数据
+    const listTotal = ref(0); // 列表总数
     const listLoading = ref(false); // 列表加载状态标识
 
     const listSelected = ref<GetRegistryEntryListVo[]>([]); // 选中项
@@ -29,6 +30,8 @@ export default {
       keyPath: "",
       pageNum: 1,
       pageSize: 20,
+      nkey: "",
+      label: "",
     });
 
     /**
@@ -40,13 +43,15 @@ export default {
       if (!targetPath) {
         // 如果没有选中任何节点，清空列表
         listData.value = [];
+        listTotal.value = 0;
         return;
       }
       listLoading.value = true;
       listForm.value.keyPath = targetPath;
       try {
-        const data = await RegistryApi.getRegistryEntryList(listForm.value);
-        listData.value = data;
+        const result = await RegistryApi.getRegistryEntryList(listForm.value);
+        listData.value = result.data;
+        listTotal.value = result.total;
       } catch (error: any) {
         ElMessage.error(error.message || "加载注册表条目失败");
       } finally {
@@ -63,6 +68,8 @@ export default {
         keyPath: path ?? keyPath.value ?? "",
         pageNum: 1,
         pageSize: 20,
+        nkey: "",
+        label: "",
       };
       loadList(path);
     };
@@ -121,6 +128,7 @@ export default {
     return {
       listForm,
       listData,
+      listTotal,
       listLoading,
       loadList,
       resetList,

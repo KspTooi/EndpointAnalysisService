@@ -12,8 +12,10 @@ import com.ksptooi.biz.core.repository.RegistryRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +84,7 @@ public class RegistryService {
      *
      * @return 注册表条目列表
      */
-    public List<GetRegistryEntryListVo> getRegistryEntryList(GetRegistryListDto query) throws BizException {
+    public PageResult<GetRegistryEntryListVo> getRegistryEntryList(GetRegistryListDto query) throws BizException {
 
         //先根据全路径查询到节点
         RegistryPo nodePo = repository.getRegistryNodeByKeyPath(query.getKeyPath());
@@ -92,8 +94,9 @@ public class RegistryService {
         }
 
         //查询该节点下全部子项
-        List<RegistryPo> entryPos = repository.getRegistryEntryList(nodePo.getId(), query);
-        return as(entryPos, GetRegistryEntryListVo.class);
+        Page<RegistryPo> entryPage = repository.getRegistryEntryList(nodePo.getId(), query, query.pageRequest());
+        List<GetRegistryEntryListVo> voList = as(entryPage.getContent(), GetRegistryEntryListVo.class);
+        return PageResult.success(voList, entryPage.getTotalElements());
     }
 
 

@@ -130,6 +130,6 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             AND (:#{#dto.nvalueKind} IS NULL OR u.nvalueKind  = :#{#dto.nvalueKind} )
             ORDER BY u.seq ASC
             """)
-    List<RegistryPo> getRegistryEntryList(@Param("parentId") Long parentId, @Param("dto") GetRegistryListDto dto);
+    Page<RegistryPo> getRegistryEntryList(@Param("parentId") Long parentId, @Param("dto") GetRegistryListDto dto, Pageable pageable);
 
 }

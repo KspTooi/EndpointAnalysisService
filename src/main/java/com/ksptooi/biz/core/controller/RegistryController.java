@@ -10,6 +10,7 @@ import com.ksptooi.biz.core.model.registry.vo.GetRegistryNodeTreeVo;
 import com.ksptooi.biz.core.service.RegistryService;
 import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,8 +44,8 @@ public class RegistryController {
 
     @PostMapping("/getRegistryEntryList")
     @Operation(summary = "查询注册表条目列表")
-    public Result<List<GetRegistryEntryListVo>> getRegistryEntryList(@RequestBody @Valid GetRegistryListDto dto) throws Exception {
-        return Result.success(registryService.getRegistryEntryList(dto));
+    public PageResult<GetRegistryEntryListVo> getRegistryEntryList(@RequestBody @Valid GetRegistryListDto dto) throws Exception {
+        return registryService.getRegistryEntryList(dto);
     }
 
     @Operation(summary = "新增注册表条目")

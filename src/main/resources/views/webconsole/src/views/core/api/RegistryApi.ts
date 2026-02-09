@@ -9,6 +9,9 @@ import type Result from "@/commons/entity/Result.ts";
  */
 export interface GetRegistryListDto extends PageQuery {
   keyPath: string; // 节点Key的全路径
+  nkey?: string; // 节点Key（模糊查询）
+  label?: string; // 节点标签（模糊查询）
+  nvalueKind?: number; // 数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
 }
 
 /**
@@ -95,12 +98,12 @@ export default {
   /**
    * 获取注册表条目列表
    * @param dto 查询参数
-   * @returns 注册表条目 VO 数组
+   * @returns 分页结果
    */
-  getRegistryEntryList: async (dto: GetRegistryListDto): Promise<GetRegistryEntryListVo[]> => {
-    const result = await Http.postEntity<Result<GetRegistryEntryListVo[]>>("/registry/getRegistryEntryList", dto);
+  getRegistryEntryList: async (dto: GetRegistryListDto): Promise<PageResult<GetRegistryEntryListVo>> => {
+    const result = await Http.postEntity<PageResult<GetRegistryEntryListVo>>("/registry/getRegistryEntryList", dto);
     if (result.code === 0) {
-      return result.data;
+      return result;
     }
     throw new Error(result.message);
   },
