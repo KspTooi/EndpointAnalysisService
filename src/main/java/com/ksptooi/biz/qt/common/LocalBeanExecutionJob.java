@@ -1,20 +1,32 @@
 package com.ksptooi.biz.qt.common;
 
+import com.ksptooi.biz.qt.service.QtTaskService;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.ss.formula.functions.Log;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.ResolvableType;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Component
 public class LocalBeanExecutionJob extends QuartzJobBean {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private QtTaskService qtTaskService;
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
@@ -32,15 +44,45 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
         try {
             //查找 Bean (安全检查)
             QuickTask<?> handler = QuickTaskRegistry.getBean(beanName);
+
             if (handler == null) {
                 throw new RuntimeException("本地任务Bean不存在: " + beanName);
             }
 
-            //参数自动转换 (黑科技：获取接口泛型 T 的类型)
-            Class<?> paramType = GenericTypeResolver.resolveTypeArgument(handler.getClass(), QuickTask.class);
+            //提供给执行器的参数
             Object paramObj = null;
-            if (jsonParams != null && paramType != null) {
-                paramObj = objectMapper.readValue(jsonParams, paramType);
+
+            //入参不为空 需要处理参数映射
+            if (StringUtils.isNotBlank(jsonParams)) {
+
+                try {
+
+                    //参数自动转换黑科技
+                    ResolvableType resolvableType = ResolvableType.forClass(AopUtils.getTargetClass(handler)).as(QuickTask.class);
+                    Class<?> paramType = resolvableType.getGeneric(0).resolve();
+
+                    //处理特殊情况
+                    if (paramType != null) {
+
+                        //用户想直接要 JSON 字符串或未定义泛型
+                        if (String.class.isAssignableFrom(paramType)) {
+                            paramObj = jsonParams;
+                        }
+
+                        //复用Spring Boot 默认配置好的 ObjectMapper
+                        if (!String.class.isAssignableFrom(paramType)) {
+                            JavaType javaType = objectMapper.getTypeFactory().constructType(resolvableType.getType());
+                            paramObj = objectMapper.readValue(jsonParams, javaType);
+                        }
+
+                    }
+
+                } catch (Exception e) {
+                    //处理参数转换时出现异常,终止任务
+                    log.error(e.getMessage(), e);
+                    qtTaskService.abortTask(taskId);
+                }
+
             }
 
             //执行业务

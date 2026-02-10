@@ -236,8 +236,33 @@ public class QtTaskService {
             throw new BizException("处理QuartZ任务时发生了一个错误,请联系管理员.");
         }
 
+    }
+
+    /**
+     * 终止任务
+     *
+     * @param id 任务ID
+     */
+    public void abortTask(Long id){
+
+        var taskPo = repository.findById(id).orElse(null);
+
+        //如果非空 将任务更改为暂停状态
+        if (taskPo != null) {
+            taskPo.setStatus(1);
+            repository.save(taskPo);
+        }
+
+        //删除Quartz Job
+        try {
+            scheduler.deleteJob(new JobKey("TASK_" + id));
+        } catch (SchedulerException e) {
+            log.error(e.getMessage(), e);
+            //忽略异常
+        }
 
     }
+
 
 
 }
