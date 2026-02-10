@@ -106,7 +106,15 @@ public class QtTaskPo {
 
     @PreUpdate
     private void onUpdate() {
-
         this.updateTime = LocalDateTime.now();
     }
+
+    /**
+     * 获取任务唯一标识
+     * @return 任务唯一标识
+     */
+    public String getIdentity() {
+        return "TASK_" + this.getId();
+    }
+
 }
