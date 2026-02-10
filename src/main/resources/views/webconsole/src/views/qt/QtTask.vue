@@ -81,7 +81,7 @@
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑任务调度表' : '新增任务调度表'"
-      width="600px"
+      width="850px"
       :close-on-click-modal="false"
       @close="
         resetModal();
@@ -96,74 +96,119 @@
         label-width="120px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="任务分组ID" prop="groupId">
-          <el-input v-model="modalForm.groupId" placeholder="请输入任务分组ID" clearable />
-        </el-form-item>
-        <el-form-item label="任务分组名" prop="groupName">
-          <el-input v-model="modalForm.groupName" placeholder="请输入任务分组名" clearable maxlength="80" show-word-limit />
-        </el-form-item>
-        <el-form-item label="任务名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable maxlength="80" show-word-limit />
-        </el-form-item>
-        <el-form-item label="任务类型" prop="kind">
-          <el-radio-group v-model="modalForm.kind" placeholder="请选择任务类型" clearable>
-            <el-radio label="本地BEAN" :value="0" />
-            <el-radio label="远程HTTP" :value="1" />
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="CRON表达式" prop="cron">
-          <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
-        </el-form-item>
-        <el-form-item label="调用目标" prop="target">
-          <el-input
-            v-model="modalForm.target"
-            placeholder="请输入BEAN代码或HTTP地址"
-            clearable
-            type="textarea"
-            :rows="2"
-            maxlength="1000"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item label="调用参数JSON" prop="targetParam">
-          <el-input v-model="modalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
-        </el-form-item>
-        <el-form-item label="请求方法" prop="reqMethod">
-          <el-select v-model="modalForm.reqMethod" placeholder="请选择请求方法" clearable>
-            <el-option label="GET" value="GET" />
-            <el-option label="POST" value="POST" />
-            <el-option label="PUT" value="PUT" />
-            <el-option label="DELETE" value="DELETE" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="并发执行" prop="concurrent">
-          <el-radio-group v-model="modalForm.concurrent" placeholder="请选择并发执行" clearable>
-            <el-radio label="允许" :value="0" />
-            <el-radio label="禁止" :value="1" />
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="过期策略" prop="misfirePolicy">
-          <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable>
-            <el-option label="放弃执行" :value="0" />
-            <el-option label="立即执行" :value="1" />
-            <el-option label="全部执行" :value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="任务有效期截止" prop="expireTime">
-          <el-date-picker
-            v-model="modalForm.expireTime"
-            type="datetime"
-            placeholder="请选择任务有效期截止"
-            clearable
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="modalForm.status" placeholder="请选择状态" clearable>
-            <el-radio label="正常" :value="0" />
-            <el-radio label="暂停" :value="1" />
-          </el-radio-group>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="任务分组ID" prop="groupId">
+              <el-input v-model="modalForm.groupId" placeholder="请输入任务分组ID" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="任务分组名" prop="groupName">
+              <el-input v-model="modalForm.groupName" placeholder="请输入任务分组名" clearable maxlength="80" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="任务名" prop="name">
+              <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable maxlength="80" show-word-limit />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="任务类型" prop="kind">
+              <el-radio-group v-model="modalForm.kind">
+                <el-radio label="本地BEAN" :value="0" />
+                <el-radio label="远程HTTP" :value="1" />
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="CRON表达式" prop="cron">
+              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="请求方法" prop="reqMethod">
+              <el-select v-model="modalForm.reqMethod" placeholder="请选择请求方法" clearable style="width: 100%">
+                <el-option label="GET" value="GET" />
+                <el-option label="POST" value="POST" />
+                <el-option label="PUT" value="PUT" />
+                <el-option label="DELETE" value="DELETE" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="并发执行" prop="concurrent">
+              <el-radio-group v-model="modalForm.concurrent">
+                <el-radio label="允许" :value="0" />
+                <el-radio label="禁止" :value="1" />
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="过期策略" prop="misfirePolicy">
+              <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable style="width: 100%">
+                <el-option label="放弃执行" :value="0" />
+                <el-option label="立即执行" :value="1" />
+                <el-option label="全部执行" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="任务有效期截止" prop="expireTime">
+              <el-date-picker
+                v-model="modalForm.expireTime"
+                type="datetime"
+                placeholder="请选择任务有效期截止"
+                clearable
+                value-format="YYYY-MM-DD HH:mm:ss"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="modalForm.status">
+                <el-radio label="正常" :value="0" />
+                <el-radio label="暂停" :value="1" />
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="调用目标" prop="target">
+              <el-input
+                v-model="modalForm.target"
+                placeholder="请输入BEAN代码或HTTP地址"
+                clearable
+                type="textarea"
+                :rows="2"
+                maxlength="1000"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="调用参数JSON" prop="targetParam">
+              <el-input v-model="modalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
