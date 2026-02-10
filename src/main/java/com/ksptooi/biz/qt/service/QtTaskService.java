@@ -243,7 +243,7 @@ public class QtTaskService {
      *
      * @param id 任务ID
      */
-    public void abortTask(Long id){
+    public void abortTask(Long id) {
 
         var taskPo = repository.findById(id).orElse(null);
 
@@ -262,7 +262,6 @@ public class QtTaskService {
         }
 
     }
-
 
 
 }

@@ -1,12 +1,9 @@
 package com.ksptooi.biz.qt.common;
 
 import com.ksptooi.biz.qt.service.QtTaskService;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.ss.formula.functions.Log;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
