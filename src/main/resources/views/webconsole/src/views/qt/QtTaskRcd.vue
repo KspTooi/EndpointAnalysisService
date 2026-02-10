@@ -11,7 +11,7 @@
             <el-input v-model="listForm.groupName" placeholder="输入分组名" clearable />
           </el-form-item>
           <el-form-item label="运行状态">
-            <el-select v-model="listForm.status" placeholder="选择运行状态" clearable>
+            <el-select v-model="listForm.status" placeholder="选择运行状态" clearable class="!w-[180px]">
               <el-option label="正常" :value="0" />
               <el-option label="失败" :value="1" />
               <el-option label="超时" :value="2" />
