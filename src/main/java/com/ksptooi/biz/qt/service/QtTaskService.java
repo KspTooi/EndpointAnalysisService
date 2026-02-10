@@ -1,0 +1,95 @@
+package com.ksptooi.biz.qt.service;
+
+import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
+import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
+import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
+import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
+import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
+import com.ksptooi.biz.qt.repository.QtTaskRepository;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.assign;
+
+
+@Service
+public class QtTaskService {
+
+    @Autowired
+    private QtTaskRepository repository;
+
+    /**
+     * 获取任务列表
+     * @param dto 查询条件
+     * @return 任务列表
+     */     
+    public PageResult<GetQtTaskListVo> getQtTaskList(GetQtTaskListDto dto) {
+        QtTaskPo query = new QtTaskPo();
+        assign(dto, query);
+
+        Page<QtTaskPo> page = repository.getQtTaskList(query, dto.pageRequest());
+        if (page.isEmpty()) {
+            return PageResult.successWithEmpty();
+        }
+
+        List<GetQtTaskListVo> vos = as(page.getContent(), GetQtTaskListVo.class);
+        return PageResult.success(vos, (int) page.getTotalElements());
+    }
+
+    /**
+     * 新增任务
+     * @param dto 新增任务信息
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void addQtTask(AddQtTaskDto dto) {
+        QtTaskPo insertPo = as(dto, QtTaskPo.class);
+        repository.save(insertPo);
+    }
+
+    /**
+     * 编辑任务
+     * @param dto 编辑任务信息
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void editQtTask(EditQtTaskDto dto) throws BizException {
+        QtTaskPo updatePo = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        assign(dto, updatePo);
+        repository.save(updatePo);
+    }
+
+    /**
+     * 获取任务详情
+     * @param dto 获取任务详情条件
+     * @return 任务详情
+     */
+    public GetQtTaskDetailsVo getQtTaskDetails(CommonIdDto dto) throws BizException {
+        QtTaskPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
+        return as(po, GetQtTaskDetailsVo.class);
+    }
+
+    /**
+     * 删除任务
+     * @param dto 删除任务条件
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void removeQtTask(CommonIdDto dto) throws BizException {
+        if (dto.isBatch()) {
+            repository.deleteAllById(dto.getIds());
+            return;
+        }
+        repository.deleteById(dto.getId());
+    }
+
+}
