@@ -243,6 +243,7 @@ public class QtTaskService {
      *
      * @param id 任务ID
      */
+    @Transactional(rollbackFor = Exception.class)
     public void abortTask(Long id) {
 
         var taskPo = repository.findById(id).orElse(null);
@@ -253,12 +254,24 @@ public class QtTaskService {
             repository.save(taskPo);
         }
 
-        //删除Quartz Job
+        String jobName = "TASK_" + id;
+        JobKey jobKey = new JobKey(jobName);
+
+        //安全删除 Quartz Job
         try {
-            scheduler.deleteJob(new JobKey("TASK_" + id));
+            //先检查是否存在，避免 Quartz 内部抛出 NoRecordFoundException
+            if (scheduler.checkExists(jobKey)) {
+                //暂不支持任务中断  !!可以尝试中断正在运行的线程(需要 Job 实现 InterruptableJob)
+                //scheduler.interrupt(jobKey);
+                //删除任务（这会自动删除关联的 Trigger）
+                boolean deleted = scheduler.deleteJob(jobKey);
+                log.info("Quartz任务 ID: {} 删除结果: {}", id, deleted);
+            } else {
+                log.warn("Quartz任务 ID: {} 在调度器中不存在，无需删除", id);
+            }
         } catch (SchedulerException e) {
-            log.error(e.getMessage(), e);
-            //忽略异常
+            //这里的异常通常是数据库连接问题或严重的配置问题
+            log.error("删除 Quartz 任务失败: " + e.getMessage(), e);
         }
 
     }
