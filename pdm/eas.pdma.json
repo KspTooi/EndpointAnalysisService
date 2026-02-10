@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-10 19:58:02",
+  "updatedTime": "2026-2-10 20:01:28",
   "dbConns": [],
   "profile": {
     "default": {
@@ -22385,14 +22385,14 @@
           "len": "",
           "scale": "",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
           "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
           "id": "E956DA58-7268-4AE5-9A7B-A94C62A1EBE8"
         },
         {
@@ -22403,14 +22403,14 @@
           "len": "",
           "scale": "",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
           "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
           "id": "DE56C750-DC07-44EA-BFC4-192E3C019E5A"
         },
         {
