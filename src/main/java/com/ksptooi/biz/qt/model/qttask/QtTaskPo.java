@@ -90,12 +90,16 @@ public class QtTaskPo {
             this.createTime = now;
         }
 
+        if (this.creatorId == null) {
+            this.creatorId = session().getUserId();
+        }
+
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
 
-        if (this.creatorId == null) {
-            this.creatorId = session().getUserId();
+        if (this.updatorId == null) {
+            this.updatorId = session().getUserId();
         }
 
     }
