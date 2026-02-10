@@ -14,7 +14,28 @@ EAS 是一个面向企业级应用的快速开发平台，但我们更关注：
 - ✅ **易部署** - 单 JAR 包部署，支持 H2 零配置启动
 - ✅ **易维护** - 严格的编码规范，清晰的模块划分
 
-**技术选型**：Spring Boot 4 + Vue 3 + Element Plus + JPA + MySQL
+## 🛠️ 技术栈
+
+**后端框架**
+- Spring Boot 4.0.2 + Spring Data JPA
+- Java 21 + Lombok
+- Quartz 4.1（任务调度）
+- Caffeine（本地缓存）
+
+**前端框架**
+- Vue 3.5 + TypeScript 5.8
+- Element Plus 2.11（UI 组件）
+- Vite 6.2（构建工具）
+- Pinia 3.0（状态管理）
+
+**数据库**
+- MySQL 8+（生产环境）
+- H2 2.2（开发环境，零配置启动）
+
+**开发工具**
+- Knife4j 4.5（API 文档）
+- EasyExcel 4.0（Excel 处理）
+- Maven 前端插件（自动构建前端）
 
 ## 🗺️ 功能路线图
 
