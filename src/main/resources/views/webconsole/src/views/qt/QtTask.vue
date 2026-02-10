@@ -132,7 +132,7 @@
             <el-form-item label="任务类型" prop="kind">
               <el-radio-group v-model="modalForm.kind">
                 <el-radio label="本地BEAN" :value="0" />
-                <el-radio label="远程HTTP" :value="1" />
+                <el-radio label="远程HTTP(暂不支持)" :value="1" disabled />
               </el-radio-group>
             </el-form-item>
           </el-col>

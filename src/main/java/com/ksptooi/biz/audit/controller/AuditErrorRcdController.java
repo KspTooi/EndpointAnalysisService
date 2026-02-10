@@ -1,7 +1,6 @@
 package com.ksptooi.biz.audit.controller;
 
-import com.ksptooi.biz.audit.modal.auditerrorrcd.dto.AddAuditErrorRcdDto;
-import com.ksptooi.biz.audit.modal.auditerrorrcd.dto.EditAuditErrorRcdDto;
+
 import com.ksptooi.biz.audit.modal.auditerrorrcd.dto.GetAuditErrorRcdListDto;
 import com.ksptooi.biz.audit.modal.auditerrorrcd.vo.GetAuditErrorRcdDetailsVo;
 import com.ksptooi.biz.audit.modal.auditerrorrcd.vo.GetAuditErrorRcdListVo;

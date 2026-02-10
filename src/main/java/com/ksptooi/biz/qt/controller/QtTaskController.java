@@ -46,6 +46,12 @@ public class QtTaskController {
     @PostMapping("/addQtTask")
     public Result<String> addQtTask(@RequestBody @Valid AddQtTaskDto dto) throws Exception {
 
+        //暂不支持HTTP模式
+        if (dto.getKind() == 1) {
+            return Result.error("暂不支持HTTP模式");
+        }
+
+
         //验证参数
         String validate = dto.validate();
         if (Str.isNotBlank(validate)) {
@@ -59,6 +65,11 @@ public class QtTaskController {
     @Operation(summary = "编辑任务")
     @PostMapping("/editQtTask")
     public Result<String> editQtTask(@RequestBody @Valid EditQtTaskDto dto) throws Exception {
+
+        //暂不支持HTTP模式
+        if (dto.getKind() == 1) {
+            return Result.error("暂不支持HTTP模式");
+        }
 
         //验证参数
         String validate = dto.validate();

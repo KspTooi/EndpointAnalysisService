@@ -199,7 +199,7 @@ public class QtTaskService {
         //构建Trigger
         var cronSchedule = CronScheduleBuilder.cronSchedule(po.getCron());
 
-        //处理过期策略 0:放弃执行(不补跑)
+        //处理过期策略 0:放弃执行等待下一次(不补跑)
         if (po.getMisfirePolicy() == 0) {
             cronSchedule.withMisfireHandlingInstructionDoNothing();
         }
