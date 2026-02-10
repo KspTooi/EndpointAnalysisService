@@ -22,8 +22,11 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
         Map<String, QuickTask> beans = event.getApplicationContext().getBeansOfType(QuickTask.class);
 
-        beans.forEach((name, bean) -> {
 
+        for(Map.Entry<String, QuickTask> entry : beans.entrySet()){
+
+            var name = entry.getKey();
+            var bean = entry.getValue();
             var simpleName = bean.getClass().getSimpleName();
 
             //如果出现冲突则抛出异常
@@ -33,7 +36,9 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
             QT_BEAN_MAP.put(simpleName, bean);
             log.info("QuickTask 加载本地任务: {}", simpleName);
-        });
+            
+        }
+
 
 
     }
