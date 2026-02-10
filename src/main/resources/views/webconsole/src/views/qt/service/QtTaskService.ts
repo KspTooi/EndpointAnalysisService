@@ -132,6 +132,7 @@ export default {
     const modalRules: FormRules = {
       name: [{ required: true, message: "请输入任务名", trigger: "blur" }],
       kind: [{ required: true, message: "请选择任务类型", trigger: "blur" }],
+      target: [{ required: true, message: "请输入调用目标", trigger: "blur" }],
       cron: [{ required: true, message: "请输入CRON表达式", trigger: "blur" }],
       concurrent: [{ required: true, message: "请选择并发执行", trigger: "blur" }],
       misfirePolicy: [{ required: true, message: "请选择过期策略", trigger: "blur" }],

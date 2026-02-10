@@ -4,22 +4,26 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
-          <el-form-item label="任务分组ID">
-            <el-input v-model="listForm.groupId" placeholder="输入任务分组ID" clearable />
+          <el-form-item label="任务分组">
+            <el-select v-model="listForm.groupId" placeholder="选择任务分组" clearable class="!w-[200px]" filterable>
+              <el-option v-for="item in groupListData" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
           </el-form-item>
           <el-form-item label="任务名">
             <el-input v-model="listForm.name" placeholder="输入任务名" clearable />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="listForm.status" placeholder="请选择状态" clearable>
+            <el-select v-model="listForm.status" placeholder="请选择状态" clearable class="!w-[180px]">
               <el-option label="正常" :value="0" />
               <el-option label="暂停" :value="1" />
             </el-select>
           </el-form-item>
         </div>
         <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-          <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+          <div class="w-[140px]">
+            <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
+            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+          </div>
         </el-form-item>
       </el-form>
     </StdListAreaQuery>
@@ -98,23 +102,20 @@
       >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="任务分组ID" prop="groupId">
-              <el-input v-model="modalForm.groupId" placeholder="请输入任务分组ID" clearable />
+            <el-form-item label="任务名称" prop="name">
+              <el-input v-model="modalForm.name" placeholder="请输入任务名称" clearable maxlength="80" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="任务分组名" prop="groupName">
-              <el-input v-model="modalForm.groupName" placeholder="请输入任务分组名" clearable maxlength="80" show-word-limit />
+            <el-form-item label="任务分组" prop="groupId">
+              <el-select v-model="modalForm.groupId" placeholder="选择任务分组" clearable filterable>
+                <el-option v-for="item in groupListData" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="任务名" prop="name">
-              <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable maxlength="80" show-word-limit />
-            </el-form-item>
-          </el-col>
           <el-col :span="12">
             <el-form-item label="任务类型" prop="kind">
               <el-radio-group v-model="modalForm.kind">
@@ -123,22 +124,62 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="CRON表达式" prop="cron">
-              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="请求方法" prop="reqMethod">
+            <el-form-item label="请求方法" prop="reqMethod" v-if="modalForm.kind === 1">
               <el-select v-model="modalForm.reqMethod" placeholder="请选择请求方法" clearable style="width: 100%">
                 <el-option label="GET" value="GET" />
                 <el-option label="POST" value="POST" />
                 <el-option label="PUT" value="PUT" />
                 <el-option label="DELETE" value="DELETE" />
               </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="调用目标" prop="target">
+              <el-input
+                v-model="modalForm.target"
+                placeholder="请输入BEAN代码或HTTP地址"
+                clearable
+                type="text"
+                :rows="2"
+                maxlength="1000"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col>
+            <el-form-item label="CRON表达式" prop="cron">
+              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="过期策略" prop="misfirePolicy">
+              <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable style="width: 100%">
+                <el-option label="放弃执行" :value="0" />
+                <el-option label="立即执行" :value="1" />
+                <el-option label="全部执行" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="任务有效期截止" prop="expireTime">
+              <el-date-picker
+                v-model="modalForm.expireTime"
+                type="datetime"
+                placeholder="请选择任务有效期截止"
+                clearable
+                value-format="YYYY-MM-DD HH:mm:ss"
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -153,51 +194,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="过期策略" prop="misfirePolicy">
-              <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable style="width: 100%">
-                <el-option label="放弃执行" :value="0" />
-                <el-option label="立即执行" :value="1" />
-                <el-option label="全部执行" :value="2" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="任务有效期截止" prop="expireTime">
-              <el-date-picker
-                v-model="modalForm.expireTime"
-                type="datetime"
-                placeholder="请选择任务有效期截止"
-                clearable
-                value-format="YYYY-MM-DD HH:mm:ss"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="modalForm.status">
                 <el-radio label="正常" :value="0" />
                 <el-radio label="暂停" :value="1" />
               </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="调用目标" prop="target">
-              <el-input
-                v-model="modalForm.target"
-                placeholder="请输入BEAN代码或HTTP地址"
-                clearable
-                type="textarea"
-                :rows="2"
-                maxlength="1000"
-                show-word-limit
-              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -231,6 +232,7 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import QtTaskGroupService from "./service/QtTaskGroupService";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -238,6 +240,10 @@ const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskService.useQtTaskList();
+
+// 任务分组列表管理打包
+const { listData: groupListData, listForm: groupListForm, loadList: loadGroupList } = QtTaskGroupService.useQtTaskGroupList();
+groupListForm.value.pageSize = 10000;
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
