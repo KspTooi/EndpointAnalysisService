@@ -43,8 +43,5 @@ public class GetQtTaskRcdDetailsVo {
     @Schema(description = "耗时(MS)")
     private Integer costTime;
 
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
 }
 

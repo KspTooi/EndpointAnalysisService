@@ -1,7 +1,5 @@
 package com.ksptooi.biz.qt.controller;
 
-import com.ksptooi.biz.qt.model.qttaskrcd.dto.AddQtTaskRcdDto;
-import com.ksptooi.biz.qt.model.qttaskrcd.dto.EditQtTaskRcdDto;
 import com.ksptooi.biz.qt.model.qttaskrcd.dto.GetQtTaskRcdListDto;
 import com.ksptooi.biz.qt.model.qttaskrcd.vo.GetQtTaskRcdDetailsVo;
 import com.ksptooi.biz.qt.model.qttaskrcd.vo.GetQtTaskRcdListVo;
