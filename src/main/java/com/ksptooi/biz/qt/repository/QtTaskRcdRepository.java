@@ -26,7 +26,7 @@ public interface QtTaskRcdRepository extends JpaRepository<QtTaskRcdPo, Long> {
             AND (:#{#po.endTime} IS NULL OR u.endTime  = :#{#po.endTime} )
             AND (:#{#po.costTime} IS NULL OR u.costTime  = :#{#po.costTime} )
             AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.startTime DESC
             """)
     Page<QtTaskRcdPo> getQtTaskRcdList(@Param("po") QtTaskRcdPo po, Pageable pageable);
 }
