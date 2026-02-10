@@ -73,7 +73,7 @@ export default {
   },
 
   /**
-   * 删除任务调度日志表
+   * 删除任务调度日志表（支持批量删除）
    */
   removeQtTaskRcd: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/qtTaskRcd/removeQtTaskRcd", dto);

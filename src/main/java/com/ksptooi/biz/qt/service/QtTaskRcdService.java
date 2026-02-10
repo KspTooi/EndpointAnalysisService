@@ -65,11 +65,14 @@ public class QtTaskRcdService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeQtTaskRcd(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
+
+        var ids = dto.getIds();
+
+        if (ids == null || ids.isEmpty()) {
             return;
         }
-        repository.deleteById(dto.getId());
+
+        repository.deleteAllById(ids);
     }
 
 }

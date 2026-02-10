@@ -26,9 +26,15 @@
       </el-form>
     </StdListAreaQuery>
 
+    <!-- 操作按钮区域 -->
+    <StdListAreaAction>
+      <el-button type="danger" :disabled="listSelected.length === 0" @click="removeListBatch"> 删除选中项 </el-button>
+    </StdListAreaAction>
+
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
+        <el-table-column type="selection" width="40" />
         <el-table-column prop="id" label="调度日志ID" min-width="150" show-overflow-tooltip />
         <el-table-column prop="taskName" label="任务名" min-width="150" show-overflow-tooltip />
         <el-table-column prop="groupName" label="分组名" min-width="120" show-overflow-tooltip />
@@ -121,6 +127,7 @@ import { View, Delete } from "@element-plus/icons-vue";
 import QtTaskRcdService from "@/views/qt/service/QtTaskRcdService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
+import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
@@ -128,7 +135,18 @@ const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskRcdService.useQtTaskRcdList();
+const {
+  listForm,
+  listData,
+  listTotal,
+  listLoading,
+  listSelected,
+  loadList,
+  resetList,
+  removeList,
+  removeListBatch,
+  onSelectionChange,
+} = QtTaskRcdService.useQtTaskRcdList();
 
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, openModal, resetModal } = QtTaskRcdService.useQtTaskRcdModal();
