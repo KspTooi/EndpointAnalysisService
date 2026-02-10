@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
-public class LocalExecutionJob extends QuartzJobBean {
+public class LocalBeanExecutionJob extends QuartzJobBean {
 
     @Autowired
     private ObjectMapper objectMapper;

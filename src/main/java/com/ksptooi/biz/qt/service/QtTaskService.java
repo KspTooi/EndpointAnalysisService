@@ -1,6 +1,6 @@
 package com.ksptooi.biz.qt.service;
 
-import com.ksptooi.biz.qt.common.LocalExecutionJob;
+import com.ksptooi.biz.qt.common.LocalBeanExecutionJob;
 import com.ksptooi.biz.qt.common.QuickTask;
 import com.ksptooi.biz.qt.common.QuickTaskRegistry;
 import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
@@ -189,7 +189,7 @@ public class QtTaskService {
     public void updateQuartzJob(QtTaskPo po) throws BizException {
 
         //构建JobDetail
-        JobDetail jobDetail = JobBuilder.newJob(LocalExecutionJob.class)
+        JobDetail jobDetail = JobBuilder.newJob(LocalBeanExecutionJob.class)
                 .withIdentity(po.getIdentity())
                 .usingJobData("taskId", po.getId())
                 .usingJobData("target", po.getTarget()) // Bean Name
