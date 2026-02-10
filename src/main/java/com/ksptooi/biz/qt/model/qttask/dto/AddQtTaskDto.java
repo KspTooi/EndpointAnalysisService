@@ -69,7 +69,7 @@ public class AddQtTaskDto {
 
     @Schema(description = "0:正常 1:暂停 2:暂停(异常)")
     @NotNull(message = "状态不能为空")
-    @Range(min = 0, max = 2, message = "状态只能为0-2")
+    @Range(min = 0, max = 2, message = "状态只能为0-1")
     private Integer status;
 
 
