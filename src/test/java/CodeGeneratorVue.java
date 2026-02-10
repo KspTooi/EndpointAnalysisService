@@ -12,14 +12,18 @@ public class CodeGeneratorVue {
 
     public static void main(String[] args) {
 
-        var tables = List.of("qt_task_group");
+        //数据库名称
+        var databaseName = "endpoint_analysis_service_test";
+
+        //需要生成的
+        var tableNames = List.of("qt_task_group");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test");
+        coll.setUrl("jdbc:mysql://192.168.10.202:3306/" + databaseName);
         coll.setUsername("root");
         coll.setPassword("root");
-        coll.setDatabase("endpoint_analysis_service_test");
+        coll.setDatabase(databaseName);
 
         //创建蓝图采集器 & 投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
@@ -44,7 +48,7 @@ public class CodeGeneratorVue {
         factory.setOutputBasePathFromRelative("./src/main/resources/views/webconsole/");
 
         //选择表 & 设置前缀
-        factory.selectTables(tables.toArray(new String[0]));
+        factory.selectTables(tableNames.toArray(new String[0]));
         factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
         factory.setOverwriteEnabled(true);
 

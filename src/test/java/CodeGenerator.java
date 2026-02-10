@@ -9,11 +9,21 @@ import com.ksptool.assembly.blueprint.projector.VelocityProjector;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CodeGenerator {
 
 
     public static void main(String[] args) {
+
+        //数据库名称
+        var databaseName = "endpoint_analysis_service_test";
+
+        //需要生成的表名
+        var tableNames = List.of("qt_task");
+
+
+        
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
         MysqlToJavaPolyConverter.TYPE_MAP.put("DATE", JavaTypeInfo.of(LocalDate.class));
@@ -21,10 +31,10 @@ public class CodeGenerator {
 
         //创建Mysql采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test");
+        coll.setUrl("jdbc:mysql://192.168.10.202:3306/" + databaseName);
         coll.setUsername("root");
         coll.setPassword("root");
-        coll.setDatabase("endpoint_analysis_service_test");
+        coll.setDatabase(databaseName);
 
         //创建蓝图采集器、聚合转换器、投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
@@ -46,7 +56,7 @@ public class CodeGenerator {
         factory.setOutputBasePathFromRelative("./");
 
         //选择要收集的表
-        factory.selectTables("qt_task");
+        factory.selectTables(tableNames.toArray(new String[0]));
 
         //需移除的表前缀 可多个
         factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
