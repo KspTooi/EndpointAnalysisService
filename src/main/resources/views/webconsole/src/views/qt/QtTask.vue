@@ -36,8 +36,13 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="groupName" label="任务分组名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="name" label="任务名" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="name" label="任务名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <span class="text-gray-400 text-sm" v-if="!scope.row.groupId"> 未配置 </span>
+            <span v-else>({{ scope.row.groupId }}) </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="kind" label="任务类型" min-width="100" show-overflow-tooltip>
           <template #default="scope">
             {{ scope.row.kind === 0 ? "本地BEAN" : "远程HTTP" }}
