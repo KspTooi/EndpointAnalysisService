@@ -7,41 +7,14 @@
           <el-form-item label="任务分组ID">
             <el-input v-model="listForm.groupId" placeholder="输入任务分组ID" clearable />
           </el-form-item>
-          <el-form-item label="任务分组名">
-            <el-input v-model="listForm.groupName" placeholder="输入任务分组名" clearable />
-          </el-form-item>
           <el-form-item label="任务名">
             <el-input v-model="listForm.name" placeholder="输入任务名" clearable />
           </el-form-item>
-          <el-form-item label="0:本地BEAN 1:远程HTTP">
-            <el-input v-model.number="listForm.kind" placeholder="输入0:本地BEAN 1:远程HTTP" clearable />
-          </el-form-item>
-          <el-form-item label="CRON表达式">
-            <el-input v-model="listForm.cron" placeholder="输入CRON表达式" clearable />
-          </el-form-item>
-          <el-form-item label="调用目标(BEAN代码或HTTP地址)">
-            <el-input v-model="listForm.target" placeholder="输入调用目标(BEAN代码或HTTP地址)" clearable />
-          </el-form-item>
-          <el-form-item label="调用参数JSON">
-            <el-input v-model="listForm.targetParam" placeholder="输入调用参数JSON" clearable />
-          </el-form-item>
-          <el-form-item label="请求方法">
-            <el-input v-model="listForm.reqMethod" placeholder="输入请求方法" clearable />
-          </el-form-item>
-          <el-form-item label="并发执行 0:允许 1:禁止">
-            <el-input v-model.number="listForm.concurrent" placeholder="输入并发执行 0:允许 1:禁止" clearable />
-          </el-form-item>
-          <el-form-item label="过期策略 0:放弃执行 1:立即执行 2:全部执行">
-            <el-input v-model.number="listForm.misfirePolicy" placeholder="输入过期策略 0:放弃执行 1:立即执行 2:全部执行" clearable />
-          </el-form-item>
-          <el-form-item label="任务有效期截止">
-            <el-input v-model="listForm.expireTime" placeholder="输入任务有效期截止" clearable />
-          </el-form-item>
-          <el-form-item label="0:正常 1:暂停">
-            <el-input v-model.number="listForm.status" placeholder="输入0:正常 1:暂停" clearable />
-          </el-form-item>
-          <el-form-item label="更新人ID">
-            <el-input v-model="listForm.updatorId" placeholder="输入更新人ID" clearable />
+          <el-form-item label="状态">
+            <el-select v-model="listForm.status" placeholder="请选择状态" clearable>
+              <el-option label="正常" :value="0" />
+              <el-option label="暂停" :value="1" />
+            </el-select>
           </el-form-item>
         </div>
         <el-form-item>
@@ -60,21 +33,16 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="id" label="任务ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="groupId" label="任务分组ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="groupName" label="任务分组名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="name" label="任务名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="0:本地BEAN 1:远程HTTP" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="cron" label="CRON表达式" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="target" label="调用目标(BEAN代码或HTTP地址)" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="targetParam" label="调用参数JSON" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="reqMethod" label="请求方法" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="concurrent" label="并发执行 0:允许 1:禁止" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="misfirePolicy" label="过期策略 0:放弃执行 1:立即执行 2:全部执行" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="expireTime" label="任务有效期截止" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="0:正常 1:暂停" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updatorId" label="更新人ID" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="name" label="任务名" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="kind" label="任务类型" min-width="100" show-overflow-tooltip>
+          <template #default="scope">
+            {{ scope.row.kind === 0 ? "本地BEAN" : "远程HTTP" }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -125,7 +93,7 @@
         ref="modalFormRef"
         :model="modalForm"
         :rules="modalRules"
-        label-width="100px"
+        label-width="120px"
         :validate-on-rule-change="false"
       >
         <el-form-item label="任务分组ID" prop="groupId">
@@ -137,35 +105,56 @@
         <el-form-item label="任务名" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable />
         </el-form-item>
-        <el-form-item label="0:本地BEAN 1:远程HTTP" prop="kind">
-          <el-input v-model.number="modalForm.kind" placeholder="请输入0:本地BEAN 1:远程HTTP" clearable />
+        <el-form-item label="任务类型" prop="kind">
+          <el-select v-model="modalForm.kind" placeholder="请选择任务类型" clearable>
+            <el-option label="本地BEAN" :value="0" />
+            <el-option label="远程HTTP" :value="1" />
+          </el-select>
         </el-form-item>
         <el-form-item label="CRON表达式" prop="cron">
           <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable />
         </el-form-item>
-        <el-form-item label="调用目标(BEAN代码或HTTP地址)" prop="target">
-          <el-input v-model="modalForm.target" placeholder="请输入调用目标(BEAN代码或HTTP地址)" clearable />
+        <el-form-item label="调用目标" prop="target">
+          <el-input v-model="modalForm.target" placeholder="请输入BEAN代码或HTTP地址" clearable type="textarea" :rows="2" />
         </el-form-item>
         <el-form-item label="调用参数JSON" prop="targetParam">
-          <el-input v-model="modalForm.targetParam" placeholder="请输入调用参数JSON" clearable />
+          <el-input v-model="modalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
         </el-form-item>
         <el-form-item label="请求方法" prop="reqMethod">
-          <el-input v-model="modalForm.reqMethod" placeholder="请输入请求方法" clearable />
+          <el-select v-model="modalForm.reqMethod" placeholder="请选择请求方法" clearable>
+            <el-option label="GET" value="GET" />
+            <el-option label="POST" value="POST" />
+            <el-option label="PUT" value="PUT" />
+            <el-option label="DELETE" value="DELETE" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="并发执行 0:允许 1:禁止" prop="concurrent">
-          <el-input v-model.number="modalForm.concurrent" placeholder="请输入并发执行 0:允许 1:禁止" clearable />
+        <el-form-item label="并发执行" prop="concurrent">
+          <el-select v-model="modalForm.concurrent" placeholder="请选择并发执行" clearable>
+            <el-option label="允许" :value="0" />
+            <el-option label="禁止" :value="1" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="过期策略 0:放弃执行 1:立即执行 2:全部执行" prop="misfirePolicy">
-          <el-input v-model.number="modalForm.misfirePolicy" placeholder="请输入过期策略 0:放弃执行 1:立即执行 2:全部执行" clearable />
+        <el-form-item label="过期策略" prop="misfirePolicy">
+          <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable>
+            <el-option label="放弃执行" :value="0" />
+            <el-option label="立即执行" :value="1" />
+            <el-option label="全部执行" :value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="任务有效期截止" prop="expireTime">
-          <el-input v-model="modalForm.expireTime" placeholder="请输入任务有效期截止" clearable />
+          <el-date-picker
+            v-model="modalForm.expireTime"
+            type="datetime"
+            placeholder="请选择任务有效期截止"
+            clearable
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
-        <el-form-item label="0:正常 1:暂停" prop="status">
-          <el-input v-model.number="modalForm.status" placeholder="请输入0:正常 1:暂停" clearable />
-        </el-form-item>
-        <el-form-item label="更新人ID" prop="updatorId">
-          <el-input v-model="modalForm.updatorId" placeholder="请输入更新人ID" clearable />
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="modalForm.status" placeholder="请选择状态" clearable>
+            <el-option label="正常" :value="0" />
+            <el-option label="暂停" :value="1" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>

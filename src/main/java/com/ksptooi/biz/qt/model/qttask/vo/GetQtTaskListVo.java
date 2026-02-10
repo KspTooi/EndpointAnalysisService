@@ -13,9 +13,6 @@ public class GetQtTaskListVo {
     @Schema(description = "任务ID")
     private Long id;
 
-    @Schema(description = "任务分组ID")
-    private Long groupId;
-
     @Schema(description = "任务分组名")
     private String groupName;
 
@@ -31,38 +28,9 @@ public class GetQtTaskListVo {
     @Schema(description = "调用目标(BEAN代码或HTTP地址)")
     private String target;
 
-    @Schema(description = "调用参数JSON")
-    private String targetParam;
-
-    @Schema(description = "请求方法")
-    private String reqMethod;
-
-    @Schema(description = "并发执行 0:允许 1:禁止")
-    private Integer concurrent;
-
-    @Schema(description = "过期策略 0:放弃执行 1:立即执行 2:全部执行")
-    private Integer misfirePolicy;
-
     @Schema(description = "任务有效期截止")
     private LocalDateTime expireTime;
 
-    @Schema(description = "0:正常 1:暂停")
-    private Integer status;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description = "创建人ID")
-    private Long creatorId;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "更新人ID")
-    private Long updatorId;
-
-    @Schema(description = "删除时间 NULL未删")
-    private LocalDateTime deleteTime;
 
 }
 

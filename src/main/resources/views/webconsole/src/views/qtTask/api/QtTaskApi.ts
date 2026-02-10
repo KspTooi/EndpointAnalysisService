@@ -9,18 +9,8 @@ import type Result from "@/commons/entity/Result.ts";
  */
 export interface GetQtTaskListDto extends PageQuery {
   groupId?: string; // 任务分组ID
-  groupName?: string; // 任务分组名
   name?: string; // 任务名
-  kind?: number; // 0:本地BEAN 1:远程HTTP
-  cron?: string; // CRON表达式
-  target?: string; // 调用目标(BEAN代码或HTTP地址)
-  targetParam?: string; // 调用参数JSON
-  reqMethod?: string; // 请求方法
-  concurrent?: number; // 并发执行 0:允许 1:禁止
-  misfirePolicy?: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
-  expireTime?: string; // 任务有效期截止
   status?: number; // 0:正常 1:暂停
-  updatorId?: string; // 更新人ID
 }
 
 /**
@@ -28,23 +18,12 @@ export interface GetQtTaskListDto extends PageQuery {
  */
 export interface GetQtTaskListVo {
   id: string; // 任务ID
-  groupId: string; // 任务分组ID
   groupName: string; // 任务分组名
   name: string; // 任务名
   kind: number; // 0:本地BEAN 1:远程HTTP
   cron: string; // CRON表达式
   target: string; // 调用目标(BEAN代码或HTTP地址)
-  targetParam: string; // 调用参数JSON
-  reqMethod: string; // 请求方法
-  concurrent: number; // 并发执行 0:允许 1:禁止
-  misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
   expireTime: string; // 任务有效期截止
-  status: number; // 0:正常 1:暂停
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updatorId: string; // 更新人ID
-  deleteTime: string; // 删除时间 NULL未删
 }
 
 /**
@@ -65,10 +44,6 @@ export interface GetQtTaskDetailsVo {
   expireTime: string; // 任务有效期截止
   status: number; // 0:正常 1:暂停
   createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updatorId: string; // 更新人ID
-  deleteTime: string; // 删除时间 NULL未删
 }
 
 /**
@@ -76,7 +51,6 @@ export interface GetQtTaskDetailsVo {
  */
 export interface AddQtTaskDto {
   groupId: string; // 任务分组ID
-  groupName: string; // 任务分组名
   name: string; // 任务名
   kind: number; // 0:本地BEAN 1:远程HTTP
   cron: string; // CRON表达式
@@ -87,7 +61,6 @@ export interface AddQtTaskDto {
   misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
   expireTime: string; // 任务有效期截止
   status: number; // 0:正常 1:暂停
-  updatorId: string; // 更新人ID
 }
 
 /**
@@ -107,7 +80,6 @@ export interface EditQtTaskDto {
   misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
   expireTime: string; // 任务有效期截止
   status: number; // 0:正常 1:暂停
-  updatorId: string; // 更新人ID
 }
 
 export default {

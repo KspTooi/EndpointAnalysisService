@@ -25,18 +25,8 @@ export default {
       pageNum: 1,
       pageSize: 20,
       groupId: "",
-      groupName: "",
       name: "",
-      kind: null,
-      cron: "",
-      target: "",
-      targetParam: "",
-      reqMethod: "",
-      concurrent: null,
-      misfirePolicy: null,
-      expireTime: "",
       status: null,
-      updatorId: "",
     });
 
     const listData = ref<GetQtTaskListVo[]>([]);
@@ -69,18 +59,8 @@ export default {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.groupId = "";
-      listForm.value.groupName = "";
       listForm.value.name = "";
-      listForm.value.kind = null;
-      listForm.value.cron = "";
-      listForm.value.target = "";
-      listForm.value.targetParam = "";
-      listForm.value.reqMethod = "";
-      listForm.value.concurrent = null;
-      listForm.value.misfirePolicy = null;
-      listForm.value.expireTime = "";
       listForm.value.status = null;
-      listForm.value.updatorId = "";
       loadList();
     };
 
@@ -144,10 +124,6 @@ export default {
       expireTime: "",
       status: 0,
       createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updatorId: "",
-      deleteTime: "",
     });
 
     /**
@@ -155,12 +131,11 @@ export default {
      */
     const modalRules: FormRules = {
       name: [{ required: true, message: "请输入任务名", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入0:本地BEAN 1:远程HTTP", trigger: "blur" }],
+      kind: [{ required: true, message: "请选择任务类型", trigger: "blur" }],
       cron: [{ required: true, message: "请输入CRON表达式", trigger: "blur" }],
-      concurrent: [{ required: true, message: "请输入并发执行 0:允许 1:禁止", trigger: "blur" }],
-      misfirePolicy: [{ required: true, message: "请输入过期策略 0:放弃执行 1:立即执行 2:全部执行", trigger: "blur" }],
-      status: [{ required: true, message: "请输入0:正常 1:暂停", trigger: "blur" }],
-      updatorId: [{ required: true, message: "请输入更新人ID", trigger: "blur" }],
+      concurrent: [{ required: true, message: "请选择并发执行", trigger: "blur" }],
+      misfirePolicy: [{ required: true, message: "请选择过期策略", trigger: "blur" }],
+      status: [{ required: true, message: "请选择状态", trigger: "blur" }],
     };
 
     /**
@@ -186,10 +161,6 @@ export default {
         modalForm.expireTime = "";
         modalForm.status = 0;
         modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updatorId = "";
-        modalForm.deleteTime = "";
         modalVisible.value = true;
         return;
       }
@@ -216,10 +187,6 @@ export default {
           modalForm.expireTime = details.expireTime;
           modalForm.status = details.status;
           modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updatorId = details.updatorId;
-          modalForm.deleteTime = details.deleteTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -249,10 +216,6 @@ export default {
       modalForm.expireTime = "";
       modalForm.status = 0;
       modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updatorId = "";
-      modalForm.deleteTime = "";
     };
 
     /**
@@ -275,7 +238,6 @@ export default {
         try {
           const addDto: AddQtTaskDto = {
             groupId: modalForm.groupId,
-            groupName: modalForm.groupName,
             name: modalForm.name,
             kind: modalForm.kind,
             cron: modalForm.cron,
@@ -286,7 +248,6 @@ export default {
             misfirePolicy: modalForm.misfirePolicy,
             expireTime: modalForm.expireTime,
             status: modalForm.status,
-            updatorId: modalForm.updatorId,
           };
           await QtTaskApi.addQtTask(addDto);
           ElMessage.success("新增成功");
@@ -322,7 +283,6 @@ export default {
             misfirePolicy: modalForm.misfirePolicy,
             expireTime: modalForm.expireTime,
             status: modalForm.status,
-            updatorId: modalForm.updatorId,
           };
           await QtTaskApi.editQtTask(editDto);
           ElMessage.success("编辑成功");
