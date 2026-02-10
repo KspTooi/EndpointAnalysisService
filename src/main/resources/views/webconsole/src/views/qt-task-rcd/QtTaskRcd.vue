@@ -4,35 +4,19 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
-          <el-form-item label="任务ID">
-            <el-input v-model="listForm.taskId" placeholder="输入任务ID" clearable />
-          </el-form-item>
           <el-form-item label="任务名">
             <el-input v-model="listForm.taskName" placeholder="输入任务名" clearable />
           </el-form-item>
           <el-form-item label="分组名">
             <el-input v-model="listForm.groupName" placeholder="输入分组名" clearable />
           </el-form-item>
-          <el-form-item label="调用目标">
-            <el-input v-model="listForm.target" placeholder="输入调用目标" clearable />
-          </el-form-item>
-          <el-form-item label="调用目标参数">
-            <el-input v-model="listForm.targetParam" placeholder="输入调用目标参数" clearable />
-          </el-form-item>
-          <el-form-item label="调用目标返回内容(错误时为异常堆栈)">
-            <el-input v-model="listForm.targetResult" placeholder="输入调用目标返回内容(错误时为异常堆栈)" clearable />
-          </el-form-item>
-          <el-form-item label="运行状态 0:正常 1:失败 2:超时 3:已调度">
-            <el-input v-model.number="listForm.status" placeholder="输入运行状态 0:正常 1:失败 2:超时 3:已调度" clearable />
-          </el-form-item>
-          <el-form-item label="运行开始时间">
-            <el-input v-model="listForm.startTime" placeholder="输入运行开始时间" clearable />
-          </el-form-item>
-          <el-form-item label="运行结束时间">
-            <el-input v-model="listForm.endTime" placeholder="输入运行结束时间" clearable />
-          </el-form-item>
-          <el-form-item label="耗时(MS)">
-            <el-input v-model.number="listForm.costTime" placeholder="输入耗时(MS)" clearable />
+          <el-form-item label="运行状态">
+            <el-select v-model="listForm.status" placeholder="选择运行状态" clearable>
+              <el-option label="正常" :value="0" />
+              <el-option label="失败" :value="1" />
+              <el-option label="超时" :value="2" />
+              <el-option label="已调度" :value="3" />
+            </el-select>
           </el-form-item>
         </div>
         <el-form-item>
@@ -42,31 +26,27 @@
       </el-form>
     </StdListAreaQuery>
 
-    <!-- 操作按钮区域 -->
-    <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增任务调度日志表</el-button>
-    </StdListAreaAction>
-
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="调度日志ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="taskId" label="任务ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="taskName" label="任务名" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="id" label="调度日志ID" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="taskName" label="任务名" min-width="150" show-overflow-tooltip />
         <el-table-column prop="groupName" label="分组名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="target" label="调用目标" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="targetParam" label="调用目标参数" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="targetResult" label="调用目标返回内容(错误时为异常堆栈)" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="运行状态 0:正常 1:失败 2:超时 3:已调度" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="startTime" label="运行开始时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="endTime" label="运行结束时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="costTime" label="耗时(MS)" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="status" label="运行状态" min-width="100">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
-              编辑
-            </el-button>
+            <el-tag v-if="scope.row.status === 0" type="success">正常</el-tag>
+            <el-tag v-else-if="scope.row.status === 1" type="danger">失败</el-tag>
+            <el-tag v-else-if="scope.row.status === 2" type="warning">超时</el-tag>
+            <el-tag v-else-if="scope.row.status === 3" type="info">已调度</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="startTime" label="运行开始时间" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="endTime" label="运行结束时间" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="costTime" label="耗时(MS)" min-width="100" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" min-width="150">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 查看 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -96,62 +76,39 @@
       </template>
     </StdListAreaTable>
 
-    <!-- 新增/编辑模态框 -->
+    <!-- 查看详情模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑任务调度日志表' : '新增任务调度日志表'"
-      width="600px"
+      title="查看调度日志详情"
+      width="700px"
       :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
+      @close="resetModal()"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
-        <el-form-item label="任务ID" prop="taskId">
-          <el-input v-model="modalForm.taskId" placeholder="请输入任务ID" clearable />
-        </el-form-item>
-        <el-form-item label="任务名" prop="taskName">
-          <el-input v-model="modalForm.taskName" placeholder="请输入任务名" clearable />
-        </el-form-item>
-        <el-form-item label="分组名" prop="groupName">
-          <el-input v-model="modalForm.groupName" placeholder="请输入分组名" clearable />
-        </el-form-item>
-        <el-form-item label="调用目标" prop="target">
-          <el-input v-model="modalForm.target" placeholder="请输入调用目标" clearable />
-        </el-form-item>
-        <el-form-item label="调用目标参数" prop="targetParam">
-          <el-input v-model="modalForm.targetParam" placeholder="请输入调用目标参数" clearable />
-        </el-form-item>
-        <el-form-item label="调用目标返回内容(错误时为异常堆栈)" prop="targetResult">
-          <el-input v-model="modalForm.targetResult" placeholder="请输入调用目标返回内容(错误时为异常堆栈)" clearable />
-        </el-form-item>
-        <el-form-item label="运行状态 0:正常 1:失败 2:超时 3:已调度" prop="status">
-          <el-input v-model.number="modalForm.status" placeholder="请输入运行状态 0:正常 1:失败 2:超时 3:已调度" clearable />
-        </el-form-item>
-        <el-form-item label="运行开始时间" prop="startTime">
-          <el-input v-model="modalForm.startTime" placeholder="请输入运行开始时间" clearable />
-        </el-form-item>
-        <el-form-item label="运行结束时间" prop="endTime">
-          <el-input v-model="modalForm.endTime" placeholder="请输入运行结束时间" clearable />
-        </el-form-item>
-        <el-form-item label="耗时(MS)" prop="costTime">
-          <el-input v-model.number="modalForm.costTime" placeholder="请输入耗时(MS)" clearable />
-        </el-form-item>
-      </el-form>
+      <el-descriptions v-if="modalVisible" :column="2" border v-loading="modalLoading">
+        <el-descriptions-item label="调度日志ID">{{ modalForm.id }}</el-descriptions-item>
+        <el-descriptions-item label="任务ID">{{ modalForm.taskId }}</el-descriptions-item>
+        <el-descriptions-item label="任务名" :span="2">{{ modalForm.taskName }}</el-descriptions-item>
+        <el-descriptions-item label="分组名" :span="2">{{ modalForm.groupName }}</el-descriptions-item>
+        <el-descriptions-item label="调用目标" :span="2">{{ modalForm.target }}</el-descriptions-item>
+        <el-descriptions-item label="运行状态" :span="2">
+          <el-tag v-if="modalForm.status === 0" type="success">正常</el-tag>
+          <el-tag v-else-if="modalForm.status === 1" type="danger">失败</el-tag>
+          <el-tag v-else-if="modalForm.status === 2" type="warning">超时</el-tag>
+          <el-tag v-else-if="modalForm.status === 3" type="info">已调度</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="运行开始时间">{{ modalForm.startTime }}</el-descriptions-item>
+        <el-descriptions-item label="运行结束时间">{{ modalForm.endTime }}</el-descriptions-item>
+        <el-descriptions-item label="耗时(MS)" :span="2">{{ modalForm.costTime }}</el-descriptions-item>
+        <el-descriptions-item label="调用目标参数" :span="2">
+          <el-input v-model="modalForm.targetParam" type="textarea" :rows="4" readonly placeholder="无" />
+        </el-descriptions-item>
+        <el-descriptions-item label="调用目标返回内容" :span="2">
+          <el-input v-model="modalForm.targetResult" type="textarea" :rows="6" readonly placeholder="无" />
+        </el-descriptions-item>
+      </el-descriptions>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
+          <el-button type="primary" @click="modalVisible = false">关闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -159,28 +116,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
-import type { FormInstance } from "element-plus";
-import QtTaskRcdService from "@/views/qtTaskRcd/service/QtTaskRcdService.ts";
+import { markRaw } from "vue";
+import { View, Delete } from "@element-plus/icons-vue";
+import QtTaskRcdService from "@/views/qt-task-rcd/service/QtTaskRcdService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
-import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
-const EditIcon = markRaw(Edit);
+const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskRcdService.useQtTaskRcdList();
 
-// 模态框表单引用
-const modalFormRef = ref<FormInstance>();
-
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  QtTaskRcdService.useQtTaskRcdModal(modalFormRef, loadList);
+const { modalVisible, modalLoading, modalMode, modalForm, openModal, resetModal } = QtTaskRcdService.useQtTaskRcdModal();
 </script>
 
 <style scoped></style>

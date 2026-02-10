@@ -1,20 +1,14 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type {
-  GetQtTaskRcdListDto,
-  GetQtTaskRcdListVo,
-  GetQtTaskRcdDetailsVo,
-  AddQtTaskRcdDto,
-  EditQtTaskRcdDto,
-} from "@/views/qtTaskRcd/api/QtTaskRcdApi.ts";
-import QtTaskRcdApi from "@/views/qtTaskRcd/api/QtTaskRcdApi.ts";
+import type { GetQtTaskRcdListDto, GetQtTaskRcdListVo, GetQtTaskRcdDetailsVo } from "@/views/qt-task-rcd/api/QtTaskRcdApi.ts";
+import QtTaskRcdApi from "@/views/qt-task-rcd/api/QtTaskRcdApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
  * 模态框模式类型
  */
-type ModalMode = "add" | "edit";
+type ModalMode = "view";
 
 export default {
   /**
@@ -24,6 +18,7 @@ export default {
     const listForm = ref<GetQtTaskRcdListDto>({
       pageNum: 1,
       pageSize: 20,
+      id: "",
       taskId: "",
       taskName: "",
       groupName: "",
@@ -34,6 +29,7 @@ export default {
       startTime: "",
       endTime: "",
       costTime: null,
+      createTime: "",
     });
 
     const listData = ref<GetQtTaskRcdListVo[]>([]);
@@ -65,6 +61,7 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
+      listForm.value.id = "";
       listForm.value.taskId = "";
       listForm.value.taskName = "";
       listForm.value.groupName = "";
@@ -75,6 +72,7 @@ export default {
       listForm.value.startTime = "";
       listForm.value.endTime = "";
       listForm.value.costTime = null;
+      listForm.value.createTime = "";
       loadList();
     };
 
@@ -117,12 +115,12 @@ export default {
   },
 
   /**
-   * 模态框管理（统一处理新增和编辑）
+   * 模态框管理（仅支持查看）
    */
-  useQtTaskRcdModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useQtTaskRcdModal() {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
-    const modalMode = ref<ModalMode>("add");
+    const modalMode = ref<ModalMode>("view");
     const modalForm = reactive<GetQtTaskRcdDetailsVo>({
       id: "",
       taskId: "",
@@ -135,69 +133,39 @@ export default {
       startTime: "",
       endTime: "",
       costTime: 0,
-      createTime: "",
     });
 
     /**
-     * 表单验证规则
+     * 打开模态框（查看模式）
+     * @param row 要查看的行数据
      */
-    const modalRules: FormRules = {
-      taskId: [{ required: true, message: "请输入任务ID", trigger: "blur" }],
-      taskName: [{ required: true, message: "请输入任务名", trigger: "blur" }],
-      target: [{ required: true, message: "请输入调用目标", trigger: "blur" }],
-      status: [{ required: true, message: "请输入运行状态 0:正常 1:失败 2:超时 3:已调度", trigger: "blur" }],
-      startTime: [{ required: true, message: "请输入运行开始时间", trigger: "blur" }],
-    };
+    const openModal = async (row: GetQtTaskRcdListVo) => {
+      modalMode.value = "view";
 
-    /**
-     * 打开模态框
-     * @param mode 模式: 'add' | 'edit'
-     * @param row 编辑时传入的行数据
-     */
-    const openModal = async (mode: ModalMode, row: GetQtTaskRcdListVo | null) => {
-      modalMode.value = mode;
-
-      if (mode === "add") {
-        modalForm.id = "";
-        modalForm.taskId = "";
-        modalForm.taskName = "";
-        modalForm.groupName = "";
-        modalForm.target = "";
-        modalForm.targetParam = "";
-        modalForm.targetResult = "";
-        modalForm.status = 0;
-        modalForm.startTime = "";
-        modalForm.endTime = "";
-        modalForm.costTime = 0;
-        modalForm.createTime = "";
-        modalVisible.value = true;
+      if (!row) {
+        ElMessage.error("未选择要查看的数据");
         return;
       }
 
-      if (mode === "edit") {
-        if (!row) {
-          ElMessage.error("未选择要编辑的数据");
-          return;
-        }
-
-        try {
-          const details = await QtTaskRcdApi.getQtTaskRcdDetails({ id: row.id });
-          modalForm.id = details.id;
-          modalForm.taskId = details.taskId;
-          modalForm.taskName = details.taskName;
-          modalForm.groupName = details.groupName;
-          modalForm.target = details.target;
-          modalForm.targetParam = details.targetParam;
-          modalForm.targetResult = details.targetResult;
-          modalForm.status = details.status;
-          modalForm.startTime = details.startTime;
-          modalForm.endTime = details.endTime;
-          modalForm.costTime = details.costTime;
-          modalForm.createTime = details.createTime;
-          modalVisible.value = true;
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
+      try {
+        modalLoading.value = true;
+        const details = await QtTaskRcdApi.getQtTaskRcdDetails({ id: row.id });
+        modalForm.id = details.id;
+        modalForm.taskId = details.taskId;
+        modalForm.taskName = details.taskName;
+        modalForm.groupName = details.groupName;
+        modalForm.target = details.target;
+        modalForm.targetParam = details.targetParam;
+        modalForm.targetResult = details.targetResult;
+        modalForm.status = details.status;
+        modalForm.startTime = details.startTime;
+        modalForm.endTime = details.endTime;
+        modalForm.costTime = details.costTime;
+        modalVisible.value = true;
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        modalLoading.value = false;
       }
     };
 
@@ -205,10 +173,6 @@ export default {
      * 重置模态框
      */
     const resetModal = () => {
-      if (!modalFormRef.value) {
-        return;
-      }
-      modalFormRef.value.resetFields();
       modalForm.id = "";
       modalForm.taskId = "";
       modalForm.taskName = "";
@@ -220,82 +184,6 @@ export default {
       modalForm.startTime = "";
       modalForm.endTime = "";
       modalForm.costTime = 0;
-      modalForm.createTime = "";
-    };
-
-    /**
-     * 提交模态框
-     */
-    const submitModal = async () => {
-      if (!modalFormRef.value) {
-        return;
-      }
-
-      try {
-        await modalFormRef.value.validate();
-      } catch (error) {
-        return;
-      }
-
-      modalLoading.value = true;
-
-      if (modalMode.value === "add") {
-        try {
-          const addDto: AddQtTaskRcdDto = {
-            taskId: modalForm.taskId,
-            taskName: modalForm.taskName,
-            groupName: modalForm.groupName,
-            target: modalForm.target,
-            targetParam: modalForm.targetParam,
-            targetResult: modalForm.targetResult,
-            status: modalForm.status,
-            startTime: modalForm.startTime,
-            endTime: modalForm.endTime,
-            costTime: modalForm.costTime,
-          };
-          await QtTaskRcdApi.addQtTaskRcd(addDto);
-          ElMessage.success("新增成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
-        modalLoading.value = false;
-        return;
-      }
-
-      if (modalMode.value === "edit") {
-        if (!modalForm.id) {
-          ElMessage.error("缺少ID参数");
-          modalLoading.value = false;
-          return;
-        }
-
-        try {
-          const editDto: EditQtTaskRcdDto = {
-            id: modalForm.id,
-            taskId: modalForm.taskId,
-            taskName: modalForm.taskName,
-            groupName: modalForm.groupName,
-            target: modalForm.target,
-            targetParam: modalForm.targetParam,
-            targetResult: modalForm.targetResult,
-            status: modalForm.status,
-            startTime: modalForm.startTime,
-            endTime: modalForm.endTime,
-            costTime: modalForm.costTime,
-          };
-          await QtTaskRcdApi.editQtTaskRcd(editDto);
-          ElMessage.success("编辑成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
-        modalLoading.value = false;
-      }
     };
 
     return {
@@ -303,10 +191,8 @@ export default {
       modalLoading,
       modalMode,
       modalForm,
-      modalRules,
       openModal,
       resetModal,
-      submitModal,
     };
   },
 };
