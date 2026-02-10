@@ -26,6 +26,13 @@ export default class QtRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/qt/QtTask.vue"),
         breadcrumb: "任务调度管理",
       },
+      {
+        biz: "qt",
+        path: "taskRcd",
+        name: "QtTaskRcd",
+        component: () => import("@/views/qt/QtTaskRcd.vue"),
+        breadcrumb: "任务调度日志",
+      },
     ];
   }
 }
