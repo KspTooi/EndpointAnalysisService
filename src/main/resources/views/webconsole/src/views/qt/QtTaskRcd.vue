@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { markRaw } from "vue";
 import { View, Delete } from "@element-plus/icons-vue";
-import QtTaskRcdService from "@/views/qt-task-rcd/service/QtTaskRcdService.ts";
+import QtTaskRcdService from "@/views/qt/service/QtTaskRcdService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";

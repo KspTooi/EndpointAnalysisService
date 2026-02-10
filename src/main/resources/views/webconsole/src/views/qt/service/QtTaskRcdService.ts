@@ -1,8 +1,8 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type { GetQtTaskRcdListDto, GetQtTaskRcdListVo, GetQtTaskRcdDetailsVo } from "@/views/qt-task-rcd/api/QtTaskRcdApi.ts";
-import QtTaskRcdApi from "@/views/qt-task-rcd/api/QtTaskRcdApi.ts";
-import { Result } from "@/commons/entity/Result";
+import type { GetQtTaskRcdListDto, GetQtTaskRcdListVo, GetQtTaskRcdDetailsVo } from "@/views/qt/api/QtTaskRcdApi.ts";
+import QtTaskRcdApi from "@/views/qt/api/QtTaskRcdApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
