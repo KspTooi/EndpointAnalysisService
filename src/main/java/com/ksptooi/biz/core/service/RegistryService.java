@@ -20,10 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -183,15 +180,26 @@ public class RegistryService {
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         //校验数值真实性
-        if (updatePo.getKind() != dto.getKind()) {
+        if (!Objects.equals(updatePo.getKind(), dto.getKind())) {
             throw new BizException("无法处理编辑请求,输入类型与实际类型不一致. 输入类型:" + dto.getKind() + ",实际类型:" + updatePo.getKind());
         }
 
-        if (updatePo.getNvalueKind() != dto.getNvalueKind()) {
+        if (!Objects.equals(updatePo.getNvalueKind(), dto.getNvalueKind())) {
             throw new BizException("无法处理编辑请求,输入数据类型与实际数据类型不一致. 输入数据类型:" + dto.getNvalueKind() + ",实际数据类型:" + updatePo.getNvalueKind());
         }
 
-        assign(dto, updatePo);
+        //如果修改的是节点 则不能直接assign(因为这样会把条目的字段也赋值给节点)
+        if(updatePo.getKind() == 0){
+            updatePo.setLabel(dto.getLabel());
+            updatePo.setRemark(dto.getRemark());
+            updatePo.setSeq(dto.getSeq());
+        }
+
+        //如果修改的是条目 则可以直接assign
+        if(updatePo.getKind() == 1){
+            assign(dto, updatePo);
+        }
+        
         repository.save(updatePo);
     }
 
