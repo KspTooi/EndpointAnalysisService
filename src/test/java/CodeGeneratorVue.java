@@ -16,7 +16,7 @@ public class CodeGeneratorVue {
         var databaseName = "endpoint_analysis_service_test";
 
         //需要生成的
-        var tableNames = List.of("qt_task");
+        var tableNames = List.of("qt_task_rcd");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
