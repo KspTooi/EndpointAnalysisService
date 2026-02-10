@@ -6,9 +6,9 @@ import type {
   GetQtTaskDetailsVo,
   AddQtTaskDto,
   EditQtTaskDto,
-} from "@/views/qtTask/api/QtTaskApi.ts";
-import QtTaskApi from "@/views/qtTask/api/QtTaskApi.ts";
-import { Result } from "@/commons/entity/Result";
+} from "@/views/qt/api/QtTaskApi.ts";
+import QtTaskApi from "@/views/qt/api/QtTaskApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
