@@ -30,7 +30,7 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增任务调度表</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -96,7 +96,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑任务调度表' : '新增任务调度表'"
+      :title="modalMode === 'edit' ? '编辑任务调度' : '新增任务调度'"
       width="850px"
       :close-on-click-modal="false"
       @close="
