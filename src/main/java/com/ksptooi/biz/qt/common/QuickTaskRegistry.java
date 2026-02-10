@@ -23,8 +23,16 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
         Map<String, QuickTask> beans = event.getApplicationContext().getBeansOfType(QuickTask.class);
 
         beans.forEach((name, bean) -> {
-            QT_BEAN_MAP.put(name, bean);
-            log.info("QuickTask 加载本地任务: {}", name);
+
+            var simpleName = bean.getClass().getSimpleName();
+
+            //如果出现冲突则抛出异常
+            if(QT_BEAN_MAP.containsKey(simpleName)){
+                throw new RuntimeException("QuickTask初始化时产生了一个冲突: " + simpleName + "请检查是否存在重复的本地任务Bean");
+            }
+
+            QT_BEAN_MAP.put(simpleName, bean);
+            log.info("QuickTask 加载本地任务: {}", simpleName);
         });
     }
 

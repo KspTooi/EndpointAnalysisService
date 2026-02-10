@@ -16,14 +16,8 @@ import com.ksptooi.biz.qt.repository.QtTaskRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.TriggerBuilder;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -34,7 +28,6 @@ import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import lombok.extern.slf4j.Slf4j;
 
 
 @Service
@@ -84,7 +77,6 @@ public class QtTaskService {
             throw new BizException("任务名称已存在:[" + dto.getName() + "]");
         }
 
-
         //如果配置了分组 需要处理分组信息
         if (dto.getGroupId() != null) {
             QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
@@ -95,7 +87,7 @@ public class QtTaskService {
         //验证任务信息
         String validateResult = insertPo.validate();
 
-        if(validateResult != null){
+        if (validateResult != null) {
             throw new BizException(validateResult);
         }
 
@@ -134,10 +126,10 @@ public class QtTaskService {
         //验证任务信息
         String validateResult = updatePo.validate();
 
-        if(validateResult != null){
+        if (validateResult != null) {
             throw new BizException(validateResult);
         }
-        
+
         //保存任务信息
         repository.save(updatePo);
 
@@ -173,10 +165,11 @@ public class QtTaskService {
 
     /**
      * 获取本地任务Bean列表
+     *
      * @return 本地任务Bean列表
      */
     public List<GetLocalBeanListVo> getLocalBeanList() {
-    
+
         List<GetLocalBeanListVo> vos = new ArrayList<>();
         for (QuickTask<?> bean : QuickTaskRegistry.getBeans()) {
             GetLocalBeanListVo vo = new GetLocalBeanListVo();
@@ -190,17 +183,18 @@ public class QtTaskService {
 
     /**
      * 更新Quartz Job
+     *
      * @param po 任务信息
      */
     public void updateQuartzJob(QtTaskPo po) throws BizException {
 
         //构建JobDetail
         JobDetail jobDetail = JobBuilder.newJob(LocalExecutionJob.class)
-            .withIdentity(po.getIdentity())
-            .usingJobData("taskId", po.getId())
-            .usingJobData("target", po.getTarget()) // Bean Name
-            .usingJobData("params", po.getTargetParam()) // JSON
-            .build();
+                .withIdentity(po.getIdentity())
+                .usingJobData("taskId", po.getId())
+                .usingJobData("target", po.getTarget()) // Bean Name
+                .usingJobData("params", po.getTargetParam()) // JSON
+                .build();
 
         //构建Trigger
         var cronSchedule = CronScheduleBuilder.cronSchedule(po.getCron());
@@ -209,39 +203,39 @@ public class QtTaskService {
         if (po.getMisfirePolicy() == 0) {
             cronSchedule.withMisfireHandlingInstructionDoNothing();
         }
-        
+
         //1:立即执行(仅一次)
-        if(po.getMisfirePolicy() == 1){
+        if (po.getMisfirePolicy() == 1) {
             cronSchedule.withMisfireHandlingInstructionFireAndProceed();
         }
 
         //2:全部执行(补跑所有)
-        if(po.getMisfirePolicy() == 2){
+        if (po.getMisfirePolicy() == 2) {
             cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
         }
 
         var trigger = TriggerBuilder.newTrigger()
-            .withIdentity(po.getIdentity())
-            .withSchedule(cronSchedule)
-            .build();
+                .withIdentity(po.getIdentity())
+                .withSchedule(cronSchedule)
+                .build();
 
         try {
 
             //如果任务存在则覆盖
-            if(scheduler.checkExists(jobDetail.getKey())){
+            if (scheduler.checkExists(jobDetail.getKey())) {
                 scheduler.deleteJob(jobDetail.getKey());
             }
 
             //只有状态为“正常”才调度，暂停的不调度
-            if(po.getStatus() == 0){
+            if (po.getStatus() == 0) {
                 scheduler.scheduleJob(jobDetail, trigger);
             }
 
         } catch (SchedulerException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new BizException("处理QuartZ任务时发生了一个错误,请联系管理员.");
         }
-        
+
 
     }
 
