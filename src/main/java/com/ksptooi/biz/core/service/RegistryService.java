@@ -188,7 +188,7 @@ public class RegistryService {
             throw new BizException("无法处理编辑请求,输入数据类型与实际数据类型不一致. 输入数据类型:" + dto.getNvalueKind() + ",实际数据类型:" + updatePo.getNvalueKind());
         }
 
-        //如果修改的是节点 则不能直接assign(因为这样会把条目的字段也赋值给节点)
+        //fix: 如果修改的是节点 则不能直接assign(因为这样会把条目的字段也赋值给节点)
         if(updatePo.getKind() == 0){
             updatePo.setLabel(dto.getLabel());
             updatePo.setRemark(dto.getRemark());
@@ -199,7 +199,7 @@ public class RegistryService {
         if(updatePo.getKind() == 1){
             assign(dto, updatePo);
         }
-        
+
         repository.save(updatePo);
     }
 
