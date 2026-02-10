@@ -7,6 +7,7 @@ import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.service.QtTaskService;
+import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@PrintLog
 @RestController
 @RequestMapping("/qtTask")
 @Tag(name = "qtTask", description = "任务调度表")
