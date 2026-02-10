@@ -39,8 +39,8 @@
         <el-table-column prop="name" label="任务名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip>
           <template #default="scope">
-            <span class="text-gray-400 text-sm" v-if="!scope.row.groupId"> 未配置 </span>
-            <span v-else>({{ scope.row.groupId }}) </span>
+            <span class="text-gray-400 text-sm" v-if="!scope.row.groupName"> 未配置 </span>
+            <span v-else>{{ scope.row.groupName }} </span>
           </template>
         </el-table-column>
         <el-table-column prop="kind" label="任务类型" min-width="100" show-overflow-tooltip>
@@ -51,6 +51,14 @@
         <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip />
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
         <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态" min-width="90" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'info'">
+              {{ scope.row.status === 0 ? "正常" : "暂停" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">

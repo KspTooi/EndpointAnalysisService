@@ -31,6 +31,12 @@ public class GetQtTaskListVo {
     @Schema(description = "任务有效期截止")
     private LocalDateTime expireTime;
 
+    @Schema(description = "0:正常 1:暂停")
+    private Integer status;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
 
 }
 
