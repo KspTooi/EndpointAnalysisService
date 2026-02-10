@@ -100,10 +100,10 @@
           <el-input v-model="modalForm.groupId" placeholder="请输入任务分组ID" clearable />
         </el-form-item>
         <el-form-item label="任务分组名" prop="groupName">
-          <el-input v-model="modalForm.groupName" placeholder="请输入任务分组名" clearable />
+          <el-input v-model="modalForm.groupName" placeholder="请输入任务分组名" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="任务名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="任务类型" prop="kind">
           <el-select v-model="modalForm.kind" placeholder="请选择任务类型" clearable>
@@ -112,10 +112,18 @@
           </el-select>
         </el-form-item>
         <el-form-item label="CRON表达式" prop="cron">
-          <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable />
+          <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
         </el-form-item>
         <el-form-item label="调用目标" prop="target">
-          <el-input v-model="modalForm.target" placeholder="请输入BEAN代码或HTTP地址" clearable type="textarea" :rows="2" />
+          <el-input
+            v-model="modalForm.target"
+            placeholder="请输入BEAN代码或HTTP地址"
+            clearable
+            type="textarea"
+            :rows="2"
+            maxlength="1000"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="调用参数JSON" prop="targetParam">
           <el-input v-model="modalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
