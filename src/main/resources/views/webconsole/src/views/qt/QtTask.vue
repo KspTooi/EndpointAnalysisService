@@ -16,6 +16,7 @@
             <el-select v-model="listForm.status" placeholder="请选择状态" clearable class="!w-[180px]">
               <el-option label="正常" :value="0" />
               <el-option label="暂停" :value="1" />
+              <el-option label="暂停(异常)" :value="2" />
             </el-select>
           </el-form-item>
         </div>
@@ -51,10 +52,10 @@
         <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip />
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
         <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="status" label="状态" min-width="90" show-overflow-tooltip>
+        <el-table-column prop="status" label="状态" min-width="110" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : 'info'">
-              {{ scope.row.status === 0 ? "正常" : "暂停" }}
+            <el-tag :type="scope.row.status === 0 ? 'success' : scope.row.status === 1 ? 'info' : 'danger'">
+              {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "暂停" : "暂停(异常)" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -189,8 +190,8 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="过期策略" prop="misfirePolicy">
-              <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable style="width: 100%">
+            <el-form-item label="过期策略" prop="policyMisfire">
+              <el-select v-model="modalForm.policyMisfire" placeholder="请选择过期策略" clearable style="width: 100%">
                 <el-option label="放弃执行" :value="0" />
                 <el-option label="立即执行" :value="1" />
                 <el-option label="全部执行" :value="2" />
@@ -207,6 +208,26 @@
                 value-format="YYYY-MM-DD HH:mm:ss"
                 style="width: 100%"
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="失败策略" prop="policyError">
+              <el-select v-model="modalForm.policyError" placeholder="请选择失败策略" clearable style="width: 100%">
+                <el-option label="默认" value="0" />
+                <el-option label="自动暂停" value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="日志策略" prop="policyRcd">
+              <el-select v-model="modalForm.policyRcd" placeholder="请选择日志策略" clearable style="width: 100%">
+                <el-option label="全部" value="0" />
+                <el-option label="仅异常" value="1" />
+                <el-option label="不记录" value="2" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>

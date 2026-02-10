@@ -121,8 +121,13 @@ export default {
       targetParam: "",
       reqMethod: "",
       concurrent: 0,
-      misfirePolicy: 0,
+      policyMisfire: 0,
+      policyError: "",
+      policyRcd: "",
       expireTime: "",
+      lastExecStatus: 0,
+      lastStartTime: "",
+      lastEndTime: "",
       status: 0,
       createTime: "",
     });
@@ -136,7 +141,7 @@ export default {
       target: [{ required: true, message: "请输入调用目标", trigger: "blur" }],
       cron: [{ required: true, message: "请输入CRON表达式", trigger: "blur" }],
       concurrent: [{ required: true, message: "请选择并发执行", trigger: "blur" }],
-      misfirePolicy: [{ required: true, message: "请选择过期策略", trigger: "blur" }],
+      policyMisfire: [{ required: true, message: "请选择过期策略", trigger: "blur" }],
       status: [{ required: true, message: "请选择状态", trigger: "blur" }],
     };
 
@@ -159,8 +164,13 @@ export default {
         modalForm.targetParam = "";
         modalForm.reqMethod = "";
         modalForm.concurrent = 0;
-        modalForm.misfirePolicy = 0;
+        modalForm.policyMisfire = 0;
+        modalForm.policyError = "";
+        modalForm.policyRcd = "";
         modalForm.expireTime = "";
+        modalForm.lastExecStatus = 0;
+        modalForm.lastStartTime = "";
+        modalForm.lastEndTime = "";
         modalForm.status = 0;
         modalForm.createTime = "";
         modalVisible.value = true;
@@ -185,8 +195,13 @@ export default {
           modalForm.targetParam = details.targetParam;
           modalForm.reqMethod = details.reqMethod;
           modalForm.concurrent = details.concurrent;
-          modalForm.misfirePolicy = details.misfirePolicy;
+          modalForm.policyMisfire = details.policyMisfire;
+          modalForm.policyError = details.policyError;
+          modalForm.policyRcd = details.policyRcd;
           modalForm.expireTime = details.expireTime;
+          modalForm.lastExecStatus = details.lastExecStatus;
+          modalForm.lastStartTime = details.lastStartTime;
+          modalForm.lastEndTime = details.lastEndTime;
           modalForm.status = details.status;
           modalForm.createTime = details.createTime;
           modalVisible.value = true;
@@ -214,8 +229,13 @@ export default {
       modalForm.targetParam = "";
       modalForm.reqMethod = "";
       modalForm.concurrent = 0;
-      modalForm.misfirePolicy = 0;
+      modalForm.policyMisfire = 0;
+      modalForm.policyError = "";
+      modalForm.policyRcd = "";
       modalForm.expireTime = "";
+      modalForm.lastExecStatus = 0;
+      modalForm.lastStartTime = "";
+      modalForm.lastEndTime = "";
       modalForm.status = 0;
       modalForm.createTime = "";
     };
@@ -247,7 +267,9 @@ export default {
             targetParam: modalForm.targetParam,
             reqMethod: modalForm.reqMethod,
             concurrent: modalForm.concurrent,
-            misfirePolicy: modalForm.misfirePolicy,
+            policyMisfire: modalForm.policyMisfire,
+            policyError: modalForm.policyError,
+            policyRcd: modalForm.policyRcd,
             expireTime: modalForm.expireTime,
             status: modalForm.status,
           };
@@ -282,7 +304,9 @@ export default {
             targetParam: modalForm.targetParam,
             reqMethod: modalForm.reqMethod,
             concurrent: modalForm.concurrent,
-            misfirePolicy: modalForm.misfirePolicy,
+            policyMisfire: modalForm.policyMisfire,
+            policyError: modalForm.policyError,
+            policyRcd: modalForm.policyRcd,
             expireTime: modalForm.expireTime,
             status: modalForm.status,
           };

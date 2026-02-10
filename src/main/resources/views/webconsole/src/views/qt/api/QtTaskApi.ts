@@ -10,7 +10,7 @@ import type Result from "@/commons/entity/Result.ts";
 export interface GetQtTaskListDto extends PageQuery {
   groupId?: string; // 任务分组ID
   name?: string; // 任务名
-  status?: number; // 0:正常 1:暂停
+  status?: number; // 0:正常 1:暂停 2:暂停(异常)
 }
 
 /**
@@ -24,7 +24,10 @@ export interface GetQtTaskListVo {
   cron: string; // CRON表达式
   target: string; // 调用目标(BEAN代码或HTTP地址)
   expireTime: string; // 任务有效期截止
-  status: number; // 0:正常 1:暂停
+  lastExecStatus: number; // 上次状态 0:成功 1:异常
+  lastStartTime: string; // 上次开始时间
+  lastEndTime: string; // 上次结束时间
+  status: number; // 0:正常 1:暂停 2:暂停(异常)
   createTime: string; // 创建时间
 }
 
@@ -42,9 +45,14 @@ export interface GetQtTaskDetailsVo {
   targetParam: string; // 调用参数JSON
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
-  misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyError: string; // 失败策略 0:默认 1:自动暂停
+  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
-  status: number; // 0:正常 1:暂停
+  lastExecStatus: number; // 上次状态 0:成功 1:异常
+  lastStartTime: string; // 上次开始时间
+  lastEndTime: string; // 上次结束时间
+  status: number; // 0:正常 1:暂停 2:暂停(异常)
   createTime: string; // 创建时间
 }
 
@@ -60,9 +68,11 @@ export interface AddQtTaskDto {
   targetParam: string; // 调用参数JSON
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
-  misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyError: string; // 失败策略 0:默认 1:自动暂停
+  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
-  status: number; // 0:正常 1:暂停
+  status: number; // 0:正常 1:暂停 2:暂停(异常)
 }
 
 /**
@@ -79,9 +89,11 @@ export interface EditQtTaskDto {
   targetParam: string; // 调用参数JSON
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
-  misfirePolicy: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
+  policyError: string; // 失败策略 0:默认 1:自动暂停
+  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
-  status: number; // 0:正常 1:暂停
+  status: number; // 0:正常 1:暂停 2:暂停(异常)
 }
 
 /**
