@@ -32,6 +32,7 @@ public class AddQtTaskDto {
     @Size(max = 64, message = "CRON表达式长度不能超过64")
     private String cron;
 
+    @NotBlank(message = "调用目标不能为空")
     @Schema(description = "调用目标(BEAN代码或HTTP地址)")
     @Size(max = 1000, message = "调用目标长度不能超过1000")
     private String target;

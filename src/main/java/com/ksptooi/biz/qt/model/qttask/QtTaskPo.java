@@ -39,7 +39,7 @@ public class QtTaskPo {
     @Column(name = "cron", nullable = false, length = 64, comment = "CRON表达式")
     private String cron;
 
-    @Column(name = "target", length = 1000, comment = "调用目标(BEAN代码或HTTP地址)")
+    @Column(name = "target", nullable = false, length = 1000, comment = "调用目标(BEAN代码或HTTP地址)")
     private String target;
 
     @Column(name = "target_param", columnDefinition = "json", comment = "调用参数JSON")
