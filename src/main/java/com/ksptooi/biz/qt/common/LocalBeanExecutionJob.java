@@ -68,7 +68,7 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
 
                         //复用Spring Boot 默认配置好的 ObjectMapper
                         if (!String.class.isAssignableFrom(paramType)) {
-                            JavaType javaType = objectMapper.getTypeFactory().constructType(resolvableType.getType());
+                            JavaType javaType = objectMapper.getTypeFactory().constructType(paramType);
                             paramObj = objectMapper.readValue(jsonParams, javaType);
                         }
 
