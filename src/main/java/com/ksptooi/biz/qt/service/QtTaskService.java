@@ -81,6 +81,13 @@ public class QtTaskService {
             insertPo.setGroupName(groupPo.getName());
         }
 
+        //验证任务信息
+        String validateResult = insertPo.validate();
+
+        if(validateResult != null){
+            throw new BizException(validateResult);
+        }
+
         //保存任务信息
         repository.save(insertPo);
 
@@ -105,6 +112,13 @@ public class QtTaskService {
             QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
                     .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
             updatePo.setGroupName(groupPo.getName());
+        }
+
+        //验证任务信息
+        String validateResult = updatePo.validate();
+        
+        if(validateResult != null){
+            throw new BizException(validateResult);
         }
         
         //保存任务信息
@@ -139,7 +153,6 @@ public class QtTaskService {
         }
         repository.deleteById(dto.getId());
     }
-
 
     /**
      * 更新Quartz Job
@@ -177,7 +190,6 @@ public class QtTaskService {
             .withIdentity(po.getIdentity())
             .withSchedule(cronSchedule)
             .build();
-
 
         try {
 

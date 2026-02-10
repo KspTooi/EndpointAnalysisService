@@ -1,5 +1,6 @@
 package com.ksptooi.biz.qt.model.qttask;
 
+import com.ksptooi.biz.qt.common.QuickTaskRegistry;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.quartz.CronExpression;
 
 import java.time.LocalDateTime;
 
@@ -115,6 +117,23 @@ public class QtTaskPo {
      */
     public String getIdentity() {
         return "TASK_" + this.getId();
+    }
+
+    public String validate(){
+
+        //检查调用目标(本地BEAN时)
+        if(this.kind == 0){
+            if(!QuickTaskRegistry.contains(this.target)){
+                return "本地BEAN不存在: " + this.target;
+            }
+        }
+
+        //检查Cron合法性
+        if(!CronExpression.isValidExpression(this.cron)){
+            return "CRON表达式不合法: " + this.cron;
+        }
+
+        return null;
     }
 
 }
