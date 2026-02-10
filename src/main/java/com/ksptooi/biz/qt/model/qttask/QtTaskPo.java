@@ -85,7 +85,6 @@ public class QtTaskPo {
             this.id = IdWorker.nextId();
         }
 
-
         LocalDateTime now = LocalDateTime.now();
 
         if (this.createTime == null) {
