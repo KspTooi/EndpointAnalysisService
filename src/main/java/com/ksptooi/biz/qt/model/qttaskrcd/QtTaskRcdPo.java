@@ -1,4 +1,4 @@
-package com.ksptooi.biz.qttaskrcd.model;
+package com.ksptooi.biz.qt.model.qttaskrcd;
 
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;

@@ -1,24 +1,24 @@
-package com.ksptooi.biz.qttaskrcd.service;
+package com.ksptooi.biz.qt.service;
 
-import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptooi.biz.qt.model.qttaskrcd.QtTaskRcdPo;
+import com.ksptooi.biz.qt.model.qttaskrcd.dto.AddQtTaskRcdDto;
+import com.ksptooi.biz.qt.model.qttaskrcd.dto.EditQtTaskRcdDto;
+import com.ksptooi.biz.qt.model.qttaskrcd.dto.GetQtTaskRcdListDto;
+import com.ksptooi.biz.qt.model.qttaskrcd.vo.GetQtTaskRcdDetailsVo;
+import com.ksptooi.biz.qt.model.qttaskrcd.vo.GetQtTaskRcdListVo;
+import com.ksptooi.biz.qt.repository.QtTaskRcdRepository;
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
-import java.util.Optional;
-import com.ksptooi.biz.qttaskrcd.repository.QtTaskRcdRepository;
-import com.ksptooi.biz.qttaskrcd.model.QtTaskRcdPo;
-import com.ksptooi.biz.qttaskrcd.model.vo.GetQtTaskRcdListVo;
-import com.ksptooi.biz.qttaskrcd.model.dto.GetQtTaskRcdListDto;
-import com.ksptooi.biz.qttaskrcd.model.vo.GetQtTaskRcdDetailsVo;
-import com.ksptooi.biz.qttaskrcd.model.dto.EditQtTaskRcdDto;
-import com.ksptooi.biz.qttaskrcd.model.dto.AddQtTaskRcdDto;
 
 
 @Service
@@ -27,9 +27,9 @@ public class QtTaskRcdService {
     @Autowired
     private QtTaskRcdRepository repository;
 
-    public PageResult<GetQtTaskRcdListVo> getQtTaskRcdList(GetQtTaskRcdListDto dto){
+    public PageResult<GetQtTaskRcdListVo> getQtTaskRcdList(GetQtTaskRcdListDto dto) {
         QtTaskRcdPo query = new QtTaskRcdPo();
-        assign(dto,query);
+        assign(dto, query);
 
         Page<QtTaskRcdPo> page = repository.getQtTaskRcdList(query, dto.pageRequest());
         if (page.isEmpty()) {
@@ -41,24 +41,24 @@ public class QtTaskRcdService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addQtTaskRcd(AddQtTaskRcdDto dto){
-        QtTaskRcdPo insertPo = as(dto,QtTaskRcdPo.class);
+    public void addQtTaskRcd(AddQtTaskRcdDto dto) {
+        QtTaskRcdPo insertPo = as(dto, QtTaskRcdPo.class);
         repository.save(insertPo);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void editQtTaskRcd(EditQtTaskRcdDto dto) throws BizException {
         QtTaskRcdPo updatePo = repository.findById(dto.getId())
-            .orElseThrow(()-> new BizException("更新失败,数据不存在或无权限访问."));
+                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
-        assign(dto,updatePo);
+        assign(dto, updatePo);
         repository.save(updatePo);
     }
 
     public GetQtTaskRcdDetailsVo getQtTaskRcdDetails(CommonIdDto dto) throws BizException {
         QtTaskRcdPo po = repository.findById(dto.getId())
-            .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po,GetQtTaskRcdDetailsVo.class);
+                .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
+        return as(po, GetQtTaskRcdDetailsVo.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
