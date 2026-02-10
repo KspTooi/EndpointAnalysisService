@@ -216,17 +216,17 @@
           <el-col :span="12">
             <el-form-item label="失败策略" prop="policyError">
               <el-select v-model="modalForm.policyError" placeholder="请选择失败策略" clearable style="width: 100%">
-                <el-option label="默认" value="0" />
-                <el-option label="自动暂停" value="1" />
+                <el-option label="默认" :value="0" />
+                <el-option label="自动暂停" :value="1" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="日志策略" prop="policyRcd">
               <el-select v-model="modalForm.policyRcd" placeholder="请选择日志策略" clearable style="width: 100%">
-                <el-option label="全部" value="0" />
-                <el-option label="仅异常" value="1" />
-                <el-option label="不记录" value="2" />
+                <el-option label="全部" :value="0" />
+                <el-option label="仅异常" :value="1" />
+                <el-option label="不记录" :value="2" />
               </el-select>
             </el-form-item>
           </el-col>

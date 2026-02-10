@@ -122,8 +122,8 @@ export default {
       reqMethod: "",
       concurrent: 0,
       policyMisfire: 0,
-      policyError: "",
-      policyRcd: "",
+      policyError: 0,
+      policyRcd: 0,
       expireTime: "",
       lastExecStatus: 0,
       lastStartTime: "",
@@ -142,6 +142,8 @@ export default {
       cron: [{ required: true, message: "请输入CRON表达式", trigger: "blur" }],
       concurrent: [{ required: true, message: "请选择并发执行", trigger: "blur" }],
       policyMisfire: [{ required: true, message: "请选择过期策略", trigger: "blur" }],
+      policyError: [{ required: true, message: "请选择失败策略", trigger: "blur" }],
+      policyRcd: [{ required: true, message: "请选择日志策略", trigger: "blur" }],
       status: [{ required: true, message: "请选择状态", trigger: "blur" }],
     };
 
@@ -165,8 +167,8 @@ export default {
         modalForm.reqMethod = "";
         modalForm.concurrent = 0;
         modalForm.policyMisfire = 0;
-        modalForm.policyError = "";
-        modalForm.policyRcd = "";
+        modalForm.policyError = 0;
+        modalForm.policyRcd = 0;
         modalForm.expireTime = "";
         modalForm.lastExecStatus = 0;
         modalForm.lastStartTime = "";
@@ -230,8 +232,8 @@ export default {
       modalForm.reqMethod = "";
       modalForm.concurrent = 0;
       modalForm.policyMisfire = 0;
-      modalForm.policyError = "";
-      modalForm.policyRcd = "";
+      modalForm.policyError = 0;
+      modalForm.policyRcd = 0;
       modalForm.expireTime = "";
       modalForm.lastExecStatus = 0;
       modalForm.lastStartTime = "";

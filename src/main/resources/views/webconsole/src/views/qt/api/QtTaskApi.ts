@@ -46,8 +46,8 @@ export interface GetQtTaskDetailsVo {
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
   policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
-  policyError: string; // 失败策略 0:默认 1:自动暂停
-  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
+  policyError: number; // 失败策略 0:默认 1:自动暂停
+  policyRcd: number; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
   lastExecStatus: number; // 上次状态 0:成功 1:异常
   lastStartTime: string; // 上次开始时间
@@ -69,8 +69,8 @@ export interface AddQtTaskDto {
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
   policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
-  policyError: string; // 失败策略 0:默认 1:自动暂停
-  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
+  policyError: number; // 失败策略 0:默认 1:自动暂停
+  policyRcd: number; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
   status: number; // 0:正常 1:暂停 2:暂停(异常)
 }
@@ -90,8 +90,8 @@ export interface EditQtTaskDto {
   reqMethod: string; // 请求方法
   concurrent: number; // 并发执行 0:允许 1:禁止
   policyMisfire: number; // 过期策略 0:放弃执行 1:立即执行 2:全部执行
-  policyError: string; // 失败策略 0:默认 1:自动暂停
-  policyRcd: string; // 日志策略 0:全部 1:仅异常 2:不记录
+  policyError: number; // 失败策略 0:默认 1:自动暂停
+  policyRcd: number; // 日志策略 0:全部 1:仅异常 2:不记录
   expireTime: string; // 任务有效期截止
   status: number; // 0:正常 1:暂停 2:暂停(异常)
 }

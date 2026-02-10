@@ -55,12 +55,14 @@ public class AddQtTaskDto {
     private Integer policyMisfire;
 
     @Schema(description = "失败策略 0:默认 1:自动暂停")
-    @Size(max = 255, message = "失败策略长度不能超过255")
-    private String policyError;
+    @NotNull(message = "失败策略不能为空")
+    @Range(min = 0, max = 1, message = "失败策略只能为0或1")
+    private Integer policyError;
 
     @Schema(description = "日志策略 0:全部 1:仅异常 2:不记录")
-    @Size(max = 255, message = "日志策略长度不能超过255")
-    private String policyRcd;
+    @NotNull(message = "日志策略不能为空")
+    @Range(min = 0, max = 2, message = "日志策略只能为0-2")
+    private Integer policyRcd;
 
     @Schema(description = "任务有效期截止")
     private LocalDateTime expireTime;

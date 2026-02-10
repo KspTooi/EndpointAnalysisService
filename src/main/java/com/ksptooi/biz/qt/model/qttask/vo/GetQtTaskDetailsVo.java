@@ -44,10 +44,10 @@ public class GetQtTaskDetailsVo {
     private Integer policyMisfire;
 
     @Schema(description = "失败策略 0:默认 1:自动暂停")
-    private String policyError;
+    private Integer policyError;
 
     @Schema(description = "日志策略 0:全部 1:仅异常 2:不记录")
-    private String policyRcd;
+    private Integer policyRcd;
 
     @Schema(description = "任务有效期截止")
     private LocalDateTime expireTime;

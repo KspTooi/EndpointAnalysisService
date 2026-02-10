@@ -56,11 +56,11 @@ public class QtTaskPo {
     @Column(name = "policy_misfire", nullable = false, columnDefinition = "TINYINT", comment = "过期策略 0:放弃执行 1:立即执行 2:全部执行")
     private Integer policyMisfire;
 
-    @Column(name = "policy_error", length = 255, comment = "失败策略 0:默认 1:自动暂停")
-    private String policyError;
+    @Column(name = "policy_error", nullable = false, columnDefinition = "TINYINT", comment = "失败策略 0:默认 1:自动暂停")
+    private Integer policyError;
 
-    @Column(name = "policy_rcd", length = 255, comment = "日志策略 0:全部 1:仅异常 2:不记录")
-    private String policyRcd;
+    @Column(name = "policy_rcd", nullable = false, columnDefinition = "TINYINT", comment = "日志策略 0:全部 1:仅异常 2:不记录")
+    private Integer policyRcd;
 
     @Column(name = "expire_time", comment = "任务有效期截止")
     private LocalDateTime expireTime;
