@@ -6,6 +6,7 @@ import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.service.QtTaskService;
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -38,6 +39,15 @@ public class QtTaskController {
     @Operation(summary = "新增任务")
     @PostMapping("/addQtTask")
     public Result<String> addQtTask(@RequestBody @Valid AddQtTaskDto dto) throws Exception {
+
+
+        //验证参数
+        String validate = dto.validate();
+        if (Str.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
+
         qtTaskService.addQtTask(dto);
         return Result.success("新增成功");
     }
@@ -45,6 +55,13 @@ public class QtTaskController {
     @Operation(summary = "编辑任务")
     @PostMapping("/editQtTask")
     public Result<String> editQtTask(@RequestBody @Valid EditQtTaskDto dto) throws Exception {
+
+        //验证参数
+        String validate = dto.validate();
+        if (Str.isNotBlank(validate)) {
+            return Result.error(validate);
+        }
+
         qtTaskService.editQtTask(dto);
         return Result.success("修改成功");
     }

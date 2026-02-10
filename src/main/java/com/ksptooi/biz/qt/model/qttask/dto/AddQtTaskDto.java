@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
+import com.ksptooi.commons.dataprocess.Str;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -58,6 +60,25 @@ public class AddQtTaskDto {
     @NotNull(message = "状态不能为空")
     @Range(min = 0, max = 1, message = "状态只能为0或1")
     private Integer status;
+
+
+    /**
+     * 验证表单数据
+     * @return 验证结果
+     */
+    public String validate() {
+
+        //使用本地BEAN时不允许填写HTTP相关字段
+        if (kind == 0) {
+
+            if (Str.isNotBlank(reqMethod)) {
+                return "使用本地BEAN时不允许填写请求方法";
+            }
+
+        }
+
+        return null;
+    }
 
 }
 
