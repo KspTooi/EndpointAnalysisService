@@ -38,6 +38,28 @@ public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
     Page<QtTaskPo> getQtTaskList(@Param("po") QtTaskPo po, Pageable pageable);
 
 
+    /**
+     * 根据名称统计任务数量
+     * @param name 任务名称
+     * @return 任务数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM QtTaskPo t WHERE t.name = :name
+            """)
+    Long countByName(@Param("name") String name);
+
+    /**
+     * 根据名称统计任务数量 排除指定ID
+     * @param name 任务名称
+     * @param id 任务ID
+     * @return 任务数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM QtTaskPo t WHERE t.name = :name AND t.id != :id
+            """)
+    Long countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
+
+
 
     /**
      * 根据分组ID统计任务数量

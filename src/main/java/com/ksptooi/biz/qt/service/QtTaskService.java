@@ -78,6 +78,13 @@ public class QtTaskService {
     public void addQtTask(AddQtTaskDto dto) throws BizException {
         QtTaskPo insertPo = as(dto, QtTaskPo.class);
 
+        //验证任务名称是否被占用
+        Long count = repository.countByName(dto.getName());
+        if (count > 0) {
+            throw new BizException("任务名称已存在:[" + dto.getName() + "]");
+        }
+
+
         //如果配置了分组 需要处理分组信息
         if (dto.getGroupId() != null) {
             QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
@@ -108,8 +115,14 @@ public class QtTaskService {
     public void editQtTask(EditQtTaskDto dto) throws BizException {
         QtTaskPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
-        
+
         assign(dto, updatePo);
+
+        //验证任务名称是否被占用
+        Long count = repository.countByNameExcludeId(dto.getName(), updatePo.getId());
+        if (count > 0) {
+            throw new BizException("任务名称已存在:[" + dto.getName() + "]");
+        }
 
         //如果配置了分组 需要处理分组信息
         if (dto.getGroupId() != null) {
