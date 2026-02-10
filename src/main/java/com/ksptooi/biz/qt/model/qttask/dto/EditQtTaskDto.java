@@ -30,7 +30,7 @@ public class EditQtTaskDto {
 
     @Schema(description = "0:本地BEAN 1:远程HTTP")
     @NotNull(message = "任务类型不能为空")
-    @Range(min = 0, max = 255, message = "任务类型只能在0-255之间")
+    @Range(min = 0, max = 1, message = "任务类型只能为0或1")
     private Integer kind;
 
     @Schema(description = "CRON表达式")
@@ -51,12 +51,12 @@ public class EditQtTaskDto {
 
     @Schema(description = "并发执行 0:允许 1:禁止")
     @NotNull(message = "并发执行设置不能为空")
-    @Range(min = 0, max = 255, message = "并发执行只能在0-255之间")
+    @Range(min = 0, max = 1, message = "并发执行只能为0或1")
     private Integer concurrent;
 
     @Schema(description = "过期策略 0:放弃执行 1:立即执行 2:全部执行")
     @NotNull(message = "过期策略不能为空")
-    @Range(min = 0, max = 255, message = "过期策略只能在0-255之间")
+    @Range(min = 0, max = 2, message = "过期策略只能为0-2")
     private Integer misfirePolicy;
 
     @Schema(description = "任务有效期截止")
@@ -64,7 +64,7 @@ public class EditQtTaskDto {
 
     @Schema(description = "0:正常 1:暂停")
     @NotNull(message = "状态不能为空")
-    @Range(min = 0, max = 255, message = "状态只能在0-255之间")
+    @Range(min = 0, max = 1, message = "状态只能为0或1")
     private Integer status;
 
 }
