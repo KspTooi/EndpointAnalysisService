@@ -3,6 +3,7 @@ package com.ksptooi.biz.qt.controller;
 import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.service.QtTaskService;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,6 +83,12 @@ public class QtTaskController {
     public Result<String> removeQtTask(@RequestBody @Valid CommonIdDto dto) throws Exception {
         qtTaskService.removeQtTask(dto);
         return Result.success("操作成功");
+    }
+
+    @Operation(summary = "获取本地任务Bean列表")
+    @PostMapping("/getLocalBeanList")
+    public Result<List<GetLocalBeanListVo>> getLocalBeanList() throws Exception {
+        return Result.success(qtTaskService.getLocalBeanList());
     }
 
 }

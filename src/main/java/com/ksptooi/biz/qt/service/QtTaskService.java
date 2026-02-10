@@ -1,10 +1,13 @@
 package com.ksptooi.biz.qt.service;
 
 import com.ksptooi.biz.qt.common.LocalExecutionJob;
+import com.ksptooi.biz.qt.common.QuickTask;
+import com.ksptooi.biz.qt.common.QuickTaskRegistry;
 import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
 import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.model.qttaskgroup.QtTaskGroupPo;
@@ -26,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -116,7 +120,7 @@ public class QtTaskService {
 
         //验证任务信息
         String validateResult = updatePo.validate();
-        
+
         if(validateResult != null){
             throw new BizException(validateResult);
         }
@@ -153,6 +157,23 @@ public class QtTaskService {
         }
         repository.deleteById(dto.getId());
     }
+
+    /**
+     * 获取本地任务Bean列表
+     * @return 本地任务Bean列表
+     */
+    public List<GetLocalBeanListVo> getLocalBeanList() {
+    
+        List<GetLocalBeanListVo> vos = new ArrayList<>();
+        for (QuickTask<?> bean : QuickTaskRegistry.getBeans()) {
+            GetLocalBeanListVo vo = new GetLocalBeanListVo();
+            vo.setName(bean.getClass().getSimpleName());
+            vo.setFullClassName(bean.getClass().getName());
+            vos.add(vo);
+        }
+        return vos;
+    }
+
 
     /**
      * 更新Quartz Job
@@ -208,8 +229,6 @@ public class QtTaskService {
             throw new BizException("处理QuartZ任务时发生了一个错误,请联系管理员.");
         }
         
-
-    
 
     }
 

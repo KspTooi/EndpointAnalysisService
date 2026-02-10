@@ -5,6 +5,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +35,20 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
         return QT_BEAN_MAP.get(name);
     }
 
+    /**
+     * 判断是否包含本地任务Bean
+     * @param name Bean名称
+     * @return 是否包含
+     */
     public static boolean contains(String name) {
         return QT_BEAN_MAP.containsKey(name);
+    }
+
+    /**
+     * 获取所有本地任务Bean
+     * @return 本地任务Bean列表
+     */
+    public static List<QuickTask<?>> getBeans() {
+        return new ArrayList<>(QT_BEAN_MAP.values());
     }
 }
