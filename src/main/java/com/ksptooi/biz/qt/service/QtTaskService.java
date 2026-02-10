@@ -6,6 +6,8 @@ import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
+import com.ksptooi.biz.qt.model.qttaskgroup.QtTaskGroupPo;
+import com.ksptooi.biz.qt.repository.QtTaskGroupRepository;
 import com.ksptooi.biz.qt.repository.QtTaskRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -26,6 +28,9 @@ public class QtTaskService {
 
     @Autowired
     private QtTaskRepository repository;
+
+    @Autowired
+    private QtTaskGroupRepository groupRepository;
 
     /**
      * 获取任务列表
@@ -50,8 +55,16 @@ public class QtTaskService {
      * @param dto 新增任务信息
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addQtTask(AddQtTaskDto dto) {
+    public void addQtTask(AddQtTaskDto dto) throws BizException {
         QtTaskPo insertPo = as(dto, QtTaskPo.class);
+
+        //如果配置了分组 需要处理分组信息
+        if (dto.getGroupId() != null) {
+            QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
+                .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
+            insertPo.setGroupName(groupPo.getName());
+        }
+
         repository.save(insertPo);
     }
 
@@ -63,6 +76,13 @@ public class QtTaskService {
     public void editQtTask(EditQtTaskDto dto) throws BizException {
         QtTaskPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        //如果配置了分组 需要处理分组信息
+        if (dto.getGroupId() != null) {
+            QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
+                .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
+            updatePo.setGroupName(groupPo.getName());
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);

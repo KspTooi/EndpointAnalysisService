@@ -40,13 +40,11 @@ public class QtTaskController {
     @PostMapping("/addQtTask")
     public Result<String> addQtTask(@RequestBody @Valid AddQtTaskDto dto) throws Exception {
 
-
         //验证参数
         String validate = dto.validate();
         if (Str.isNotBlank(validate)) {
             return Result.error(validate);
         }
-
 
         qtTaskService.addQtTask(dto);
         return Result.success("新增成功");
