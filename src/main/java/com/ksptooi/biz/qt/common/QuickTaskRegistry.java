@@ -1,7 +1,6 @@
 package com.ksptooi.biz.qt.common;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
         Map<String, QuickTask> beans = event.getApplicationContext().getBeansOfType(QuickTask.class);
 
-        for(Map.Entry<String, QuickTask> entry : beans.entrySet()){
+        for (Map.Entry<String, QuickTask> entry : beans.entrySet()) {
 
             var bean = entry.getValue();
             var simpleName = bean.getClass().getSimpleName();
@@ -41,13 +40,13 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
             QT_BEAN_MAP.put(simpleName, bean);
             log.info("QuickTask 加载本地任务: {}", simpleName);
-            
+
         }
 
         //确认 Map 准备好后，手动启动 Quartz
         try {
             log.info("QuickTask 注册完成,共有 {} 个本地任务Bean", QT_BEAN_MAP.size());
-            scheduler.start(); 
+            scheduler.start();
             log.info("QuickTask 已启动 QuartZ 调度器。");
         } catch (SchedulerException e) {
             log.error(e.getMessage(), e);
