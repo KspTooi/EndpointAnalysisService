@@ -4,6 +4,7 @@ import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,28 @@ public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<QtTaskPo> getQtTaskList(@Param("po") QtTaskPo po, Pageable pageable);
+
+
+
+    /**
+     * 根据分组ID统计任务数量
+     * @param groupId 分组ID
+     * @return 任务数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM QtTaskPo t WHERE t.groupId = :groupId
+            """)
+    Long countByGroupId(@Param("groupId") Long groupId);
+
+
+    /**
+     * 根据分组ID更新任务分组名
+     * @param groupId 分组ID
+     * @param groupName 分组名
+     */
+    @Modifying
+    @Query("""
+            UPDATE QtTaskPo t SET t.groupName = :groupName WHERE t.groupId = :groupId
+            """)
+    void updateGroupNameByGroupId(@Param("groupId") Long groupId, @Param("groupName") String groupName);
 }

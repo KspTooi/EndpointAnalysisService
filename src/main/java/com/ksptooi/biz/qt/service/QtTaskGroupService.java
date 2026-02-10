@@ -7,6 +7,7 @@ import com.ksptooi.biz.qt.model.qttaskgroup.dto.GetQtTaskGroupListDto;
 import com.ksptooi.biz.qt.model.qttaskgroup.vo.GetQtTaskGroupDetailsVo;
 import com.ksptooi.biz.qt.model.qttaskgroup.vo.GetQtTaskGroupListVo;
 import com.ksptooi.biz.qt.repository.QtTaskGroupRepository;
+import com.ksptooi.biz.qt.repository.QtTaskRepository;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -26,6 +28,9 @@ public class QtTaskGroupService {
 
     @Autowired
     private QtTaskGroupRepository repository;
+
+    @Autowired
+    private QtTaskRepository taskRepository;
 
     /**
      * 查询任务分组列表
@@ -77,8 +82,14 @@ public class QtTaskGroupService {
         if (existPo > 0) {
             throw new BizException("任务分组名称已存在:[" + dto.getName() + "]");
         }
-
+    
         assign(dto, updatePo);
+
+        //如果分组改名 需要同步修改任务分组名
+        if (!updatePo.getName().equals(dto.getName())) {
+            taskRepository.updateGroupNameByGroupId(updatePo.getId(), dto.getName());
+        }
+
         repository.save(updatePo);
     }
 
@@ -99,11 +110,24 @@ public class QtTaskGroupService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeQtTaskGroup(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+
+        var ids = dto.toIds();
+        var safeRemoveIds = new ArrayList<Long>();
+
+        for (Long id : ids) {
+
+            if (taskRepository.countByGroupId(id) > 0) {
+                continue;
+            }
+
+            safeRemoveIds.add(id);
         }
-        repository.deleteById(dto.getId());
+
+        if (safeRemoveIds.isEmpty()) {
+            throw new BizException("删除失败,所选任务分组下有任务,请先移除任务后再删除.");
+        }
+
+        repository.deleteAllById(safeRemoveIds);
     }
 
 }
