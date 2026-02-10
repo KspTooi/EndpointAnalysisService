@@ -193,8 +193,10 @@
             <el-form-item label="过期策略" prop="policyMisfire">
               <el-select v-model="modalForm.policyMisfire" placeholder="请选择过期策略" clearable style="width: 100%">
                 <el-option label="放弃执行" :value="0" />
-                <el-option label="立即执行" :value="1" />
-                <el-option label="全部执行" :value="2" />
+                <el-option label="立即执行(补跑一次)" :value="1" />
+                <el-option label="全部执行(补跑全部)" :value="2">
+                  <span><span class="text-red-500 font-bold">! </span>全部执行(补跑全部)</span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -215,10 +217,10 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="失败策略" prop="policyError">
-              <el-select v-model="modalForm.policyError" placeholder="请选择失败策略" clearable style="width: 100%">
-                <el-option label="默认" :value="0" />
-                <el-option label="自动暂停" :value="1" />
-              </el-select>
+              <el-radio-group v-model="modalForm.policyError" placeholder="请选择失败策略" clearable style="width: 100%">
+                <el-radio label="默认" :value="0" />
+                <el-radio label="自动暂停" :value="1" />
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
