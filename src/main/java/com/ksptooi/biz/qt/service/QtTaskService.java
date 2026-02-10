@@ -200,17 +200,17 @@ public class QtTaskService {
         var cronSchedule = CronScheduleBuilder.cronSchedule(po.getCron());
 
         //处理过期策略 0:放弃执行等待下一次(不补跑)
-        if (po.getMisfirePolicy() == 0) {
+        if (po.getPolicyMisfire() == 0) {
             cronSchedule.withMisfireHandlingInstructionDoNothing();
         }
 
         //1:立即执行(仅一次)
-        if (po.getMisfirePolicy() == 1) {
+        if (po.getPolicyMisfire() == 1) {
             cronSchedule.withMisfireHandlingInstructionFireAndProceed();
         }
 
         //2:全部执行(补跑所有)
-        if (po.getMisfirePolicy() == 2) {
+        if (po.getPolicyMisfire() == 2) {
             cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
         }
 
