@@ -106,10 +106,10 @@
           <el-input v-model="modalForm.name" placeholder="请输入任务名" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="任务类型" prop="kind">
-          <el-select v-model="modalForm.kind" placeholder="请选择任务类型" clearable>
-            <el-option label="本地BEAN" :value="0" />
-            <el-option label="远程HTTP" :value="1" />
-          </el-select>
+          <el-radio-group v-model="modalForm.kind" placeholder="请选择任务类型" clearable>
+            <el-radio label="本地BEAN" :value="0" />
+            <el-radio label="远程HTTP" :value="1" />
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="CRON表达式" prop="cron">
           <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
@@ -137,10 +137,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="并发执行" prop="concurrent">
-          <el-select v-model="modalForm.concurrent" placeholder="请选择并发执行" clearable>
-            <el-option label="允许" :value="0" />
-            <el-option label="禁止" :value="1" />
-          </el-select>
+          <el-radio-group v-model="modalForm.concurrent" placeholder="请选择并发执行" clearable>
+            <el-radio label="允许" :value="0" />
+            <el-radio label="禁止" :value="1" />
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="过期策略" prop="misfirePolicy">
           <el-select v-model="modalForm.misfirePolicy" placeholder="请选择过期策略" clearable>
@@ -159,10 +159,10 @@
           />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-select v-model="modalForm.status" placeholder="请选择状态" clearable>
-            <el-option label="正常" :value="0" />
-            <el-option label="暂停" :value="1" />
-          </el-select>
+          <el-radio-group v-model="modalForm.status" placeholder="请选择状态" clearable>
+            <el-radio label="正常" :value="0" />
+            <el-radio label="暂停" :value="1" />
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
