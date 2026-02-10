@@ -4,6 +4,7 @@ import com.ksptooi.biz.audit.modal.auditlogin.dto.GetAuditLoginListDto;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginDetailsVo;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginListVo;
 import com.ksptooi.biz.audit.service.AuditLoginService;
+import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@PrintLog
 @RestController
 @RequestMapping("/auditLogin")
 @Tag(name = "auditLogin", description = "登录审计日志")

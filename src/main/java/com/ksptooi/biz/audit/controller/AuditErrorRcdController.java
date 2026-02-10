@@ -6,6 +6,7 @@ import com.ksptooi.biz.audit.modal.auditerrorrcd.dto.GetAuditErrorRcdListDto;
 import com.ksptooi.biz.audit.modal.auditerrorrcd.vo.GetAuditErrorRcdDetailsVo;
 import com.ksptooi.biz.audit.modal.auditerrorrcd.vo.GetAuditErrorRcdListVo;
 import com.ksptooi.biz.audit.service.AuditErrorRcdService;
+import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@PrintLog
 @RestController
 @RequestMapping("/auditErrorRcd")
 @Tag(name = "auditErrorRcd", description = "系统错误记录")
