@@ -34,9 +34,10 @@ public class QtTaskService {
 
     /**
      * 获取任务列表
+     *
      * @param dto 查询条件
      * @return 任务列表
-     */     
+     */
     public PageResult<GetQtTaskListVo> getQtTaskList(GetQtTaskListDto dto) {
         QtTaskPo query = new QtTaskPo();
         assign(dto, query);
@@ -52,6 +53,7 @@ public class QtTaskService {
 
     /**
      * 新增任务
+     *
      * @param dto 新增任务信息
      */
     @Transactional(rollbackFor = Exception.class)
@@ -61,7 +63,7 @@ public class QtTaskService {
         //如果配置了分组 需要处理分组信息
         if (dto.getGroupId() != null) {
             QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
-                .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
+                    .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
             insertPo.setGroupName(groupPo.getName());
         }
 
@@ -70,26 +72,29 @@ public class QtTaskService {
 
     /**
      * 编辑任务
+     *
      * @param dto 编辑任务信息
      */
     @Transactional(rollbackFor = Exception.class)
     public void editQtTask(EditQtTaskDto dto) throws BizException {
         QtTaskPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+        
+        assign(dto, updatePo);
 
         //如果配置了分组 需要处理分组信息
         if (dto.getGroupId() != null) {
             QtTaskGroupPo groupPo = groupRepository.findById(dto.getGroupId())
-                .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
+                    .orElseThrow(() -> new BizException("任务分组不存在:[" + dto.getGroupId() + "]"));
             updatePo.setGroupName(groupPo.getName());
         }
 
-        assign(dto, updatePo);
         repository.save(updatePo);
     }
 
     /**
      * 获取任务详情
+     *
      * @param dto 获取任务详情条件
      * @return 任务详情
      */
@@ -101,6 +106,7 @@ public class QtTaskService {
 
     /**
      * 删除任务
+     *
      * @param dto 删除任务条件
      */
     @Transactional(rollbackFor = Exception.class)
