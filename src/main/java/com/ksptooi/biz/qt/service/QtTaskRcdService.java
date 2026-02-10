@@ -27,6 +27,11 @@ public class QtTaskRcdService {
     @Autowired
     private QtTaskRcdRepository repository;
 
+    /**
+     * 查询调度日志列表
+     * @param dto
+     * @return
+     */
     public PageResult<GetQtTaskRcdListVo> getQtTaskRcdList(GetQtTaskRcdListDto dto) {
         QtTaskRcdPo query = new QtTaskRcdPo();
         assign(dto, query);
@@ -40,27 +45,24 @@ public class QtTaskRcdService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void addQtTaskRcd(AddQtTaskRcdDto dto) {
-        QtTaskRcdPo insertPo = as(dto, QtTaskRcdPo.class);
-        repository.save(insertPo);
-    }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void editQtTaskRcd(EditQtTaskRcdDto dto) throws BizException {
-        QtTaskRcdPo updatePo = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
-
-        assign(dto, updatePo);
-        repository.save(updatePo);
-    }
-
+    /**
+     * 查询调度日志详情
+     * @param dto
+     * @return
+     * @throws BizException
+     */
     public GetQtTaskRcdDetailsVo getQtTaskRcdDetails(CommonIdDto dto) throws BizException {
         QtTaskRcdPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetQtTaskRcdDetailsVo.class);
     }
 
+    /**
+     * 删除调度日志
+     * @param dto
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeQtTaskRcd(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

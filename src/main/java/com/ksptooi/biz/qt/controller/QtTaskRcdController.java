@@ -30,23 +30,9 @@ public class QtTaskRcdController {
     private QtTaskRcdService qtTaskRcdService;
 
     @PostMapping("/getQtTaskRcdList")
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询调度日志列表")
     public PageResult<GetQtTaskRcdListVo> getQtTaskRcdList(@RequestBody @Valid GetQtTaskRcdListDto dto) throws Exception {
         return qtTaskRcdService.getQtTaskRcdList(dto);
-    }
-
-    @Operation(summary = "新增")
-    @PostMapping("/addQtTaskRcd")
-    public Result<String> addQtTaskRcd(@RequestBody @Valid AddQtTaskRcdDto dto) throws Exception {
-        qtTaskRcdService.addQtTaskRcd(dto);
-        return Result.success("新增成功");
-    }
-
-    @Operation(summary = "编辑")
-    @PostMapping("/editQtTaskRcd")
-    public Result<String> editQtTaskRcd(@RequestBody @Valid EditQtTaskRcdDto dto) throws Exception {
-        qtTaskRcdService.editQtTaskRcd(dto);
-        return Result.success("修改成功");
     }
 
     @Operation(summary = "查询详情")
