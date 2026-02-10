@@ -166,7 +166,7 @@ export default {
         modalForm.targetParam = "";
         modalForm.reqMethod = "";
         modalForm.concurrent = 0;
-        modalForm.policyMisfire = 0;
+        modalForm.policyMisfire = 1;
         modalForm.policyError = 0;
         modalForm.policyRcd = 0;
         modalForm.expireTime = "";
@@ -231,7 +231,7 @@ export default {
       modalForm.targetParam = "";
       modalForm.reqMethod = "";
       modalForm.concurrent = 0;
-      modalForm.policyMisfire = 0;
+      modalForm.policyMisfire = 1;
       modalForm.policyError = 0;
       modalForm.policyRcd = 0;
       modalForm.expireTime = "";
