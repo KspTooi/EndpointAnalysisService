@@ -23,7 +23,7 @@ CREATE TABLE qt_task(
                         `name` VARCHAR(80) NOT NULL  COMMENT '任务名' ,
                         `kind` TINYINT NOT NULL  COMMENT '0:本地BEAN 1:远程HTTP' ,
                         `cron` VARCHAR(64) NOT NULL  COMMENT 'CRON表达式' ,
-                        `target` VARCHAR(1000)   COMMENT '调用目标(BEAN代码或HTTP地址)' ,
+                        `target` VARCHAR(1000) NOT NULL  COMMENT '调用目标(BEAN代码或HTTP地址)' ,
                         `target_param` JSON   COMMENT '调用参数JSON' ,
                         `req_method` VARCHAR(32)   COMMENT '请求方法' ,
                         `concurrent` TINYINT NOT NULL  COMMENT '并发执行 0:允许 1:禁止' ,

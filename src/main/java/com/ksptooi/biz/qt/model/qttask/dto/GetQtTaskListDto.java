@@ -15,7 +15,7 @@ public class GetQtTaskListDto extends PageQuery {
     @Schema(description = "任务名")
     private String name;
 
-    @Schema(description = "0:正常 1:暂停")
+    @Schema(description = "0:正常 1:暂停 2:暂停(异常)")
     private Integer status;
 
 }

@@ -53,13 +53,28 @@ public class QtTaskPo {
     @Column(name = "concurrent", nullable = false, columnDefinition = "TINYINT", comment = "并发执行 0:允许 1:禁止")
     private Integer concurrent;
 
-    @Column(name = "misfire_policy", nullable = false, columnDefinition = "TINYINT", comment = "过期策略 0:放弃执行 1:立即执行 2:全部执行")
-    private Integer misfirePolicy;
+    @Column(name = "policy_misfire", nullable = false, columnDefinition = "TINYINT", comment = "过期策略 0:放弃执行 1:立即执行 2:全部执行")
+    private Integer policyMisfire;
+
+    @Column(name = "policy_error", length = 255, comment = "失败策略 0:默认 1:自动暂停")
+    private String policyError;
+
+    @Column(name = "policy_rcd", length = 255, comment = "日志策略 0:全部 1:仅异常 2:不记录")
+    private String policyRcd;
 
     @Column(name = "expire_time", comment = "任务有效期截止")
     private LocalDateTime expireTime;
 
-    @Column(name = "status", nullable = false, columnDefinition = "TINYINT", comment = "0:正常 1:暂停")
+    @Column(name = "last_exec_status", columnDefinition = "TINYINT", comment = "上次状态 0:成功 1:异常")
+    private Integer lastExecStatus;
+
+    @Column(name = "last_start_time", comment = "上次开始时间")
+    private LocalDateTime lastStartTime;
+
+    @Column(name = "last_end_time", comment = "上次结束时间")
+    private LocalDateTime lastEndTime;
+
+    @Column(name = "status", nullable = false, columnDefinition = "TINYINT", comment = "0:正常 1:暂停 2:暂停(异常)")
     private Integer status;
 
     @Column(name = "create_time", nullable = false, comment = "创建时间")
@@ -71,8 +86,8 @@ public class QtTaskPo {
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updator_id", nullable = false, comment = "更新人ID")
-    private Long updatorId;
+    @Column(name = "updater_id", nullable = false, comment = "更新人ID")
+    private Long updaterId;
 
     @Column(name = "delete_time", comment = "删除时间 NULL未删")
     private LocalDateTime deleteTime;
@@ -99,8 +114,8 @@ public class QtTaskPo {
             this.updateTime = this.createTime;
         }
 
-        if (this.updatorId == null) {
-            this.updatorId = session().getUserId();
+        if (this.updaterId == null) {
+            this.updaterId = session().getUserId();
         }
 
     }
