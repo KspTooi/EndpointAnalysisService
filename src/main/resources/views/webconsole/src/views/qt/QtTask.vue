@@ -192,10 +192,19 @@
           <el-col :span="12">
             <el-form-item label="过期策略" prop="policyMisfire">
               <el-select v-model="modalForm.policyMisfire" placeholder="请选择过期策略" clearable style="width: 100%">
-                <el-option label="放弃执行" :value="0" />
-                <el-option label="立即执行(补跑一次)" :value="1" />
+                <el-option label="放弃执行" :value="0">
+                  <span>放弃执行</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">不补跑,等待下次调度</span>
+                </el-option>
+                <el-option label="立即执行" :value="1">
+                  <span>立即执行</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">补跑一次</span>
+                </el-option>
                 <el-option label="全部执行(补跑全部)" :value="2">
-                  <span><span class="text-red-500 font-bold">! </span>全部执行(补跑全部)</span>
+                  <span>全部执行</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">
+                    <span class="text-red-500 font-bold">! </span>补跑全部;不建议使用</span
+                  >
                 </el-option>
               </el-select>
             </el-form-item>
@@ -226,9 +235,18 @@
           <el-col :span="12">
             <el-form-item label="日志策略" prop="policyRcd">
               <el-select v-model="modalForm.policyRcd" placeholder="请选择日志策略" clearable style="width: 100%">
-                <el-option label="全部" :value="0" />
-                <el-option label="仅异常" :value="1" />
-                <el-option label="不记录" :value="2" />
+                <el-option label="全部" :value="0">
+                  <span>全部</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">性能最差,适合低频任务</span>
+                </el-option>
+                <el-option label="仅异常" :value="1">
+                  <span>仅异常</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">性能较好,适合中频任务</span>
+                </el-option>
+                <el-option label="不记录" :value="2">
+                  <span>不记录</span>
+                  <span class="text-gray-400 text-sm ml-2 text-xs">性能最佳,适合高频任务</span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
