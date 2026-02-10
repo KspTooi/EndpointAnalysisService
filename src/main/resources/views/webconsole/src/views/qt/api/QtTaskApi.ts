@@ -84,6 +84,14 @@ export interface EditQtTaskDto {
   status: number; // 0:正常 1:暂停
 }
 
+/**
+ * 获取本地任务Bean列表VO
+ */
+export interface GetLocalBeanListVo {
+  name: string; // Bean名称
+  fullClassName: string; // 全类名
+}
+
 export default {
   /**
    * 获取任务调度表列表
@@ -134,5 +142,12 @@ export default {
       return result.message;
     }
     throw new Error(result.message);
+  },
+
+  /**
+   * 获取本地任务Bean列表
+   */
+  getLocalBeanList: async (): Promise<Result<GetLocalBeanListVo[]>> => {
+    return await Http.postEntity<Result<GetLocalBeanListVo[]>>("/qtTask/getLocalBeanList", {});
   },
 };

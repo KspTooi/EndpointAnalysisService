@@ -6,6 +6,7 @@ import type {
   GetQtTaskDetailsVo,
   AddQtTaskDto,
   EditQtTaskDto,
+  GetLocalBeanListVo,
 } from "@/views/qt/api/QtTaskApi.ts";
 import QtTaskApi from "@/views/qt/api/QtTaskApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
@@ -306,6 +307,41 @@ export default {
       openModal,
       resetModal,
       submitModal,
+    };
+  },
+
+  /**
+   * 本地任务Bean列表管理
+   */
+  useLocalBeanList() {
+    const listData = ref<GetLocalBeanListVo[]>([]);
+    const listLoading = ref(false);
+
+    const loadList = async () => {
+      try {
+        listLoading.value = true;
+        const result = await QtTaskApi.getLocalBeanList();
+        if (Result.isSuccess(result)) {
+          listData.value = result.data;
+        }
+        if (Result.isError(result)) {
+          ElMessage.error(result.message);
+        }
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        listLoading.value = false;
+      }
+    };
+
+    /*  onMounted(async () => {
+      await loadList();
+    }); */
+
+    return {
+      listData,
+      listLoading,
+      loadList,
     };
   },
 };

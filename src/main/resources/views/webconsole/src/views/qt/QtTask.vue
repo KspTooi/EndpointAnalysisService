@@ -152,14 +152,29 @@
           <el-col :span="24">
             <el-form-item label="调用目标" prop="target">
               <el-input
+                v-if="modalForm.kind === 1"
                 v-model="modalForm.target"
-                placeholder="请输入BEAN代码或HTTP地址"
+                placeholder="请输入HTTP地址"
                 clearable
                 type="text"
                 :rows="2"
                 maxlength="1000"
                 show-word-limit
               />
+              <el-select
+                v-if="modalForm.kind === 0"
+                v-model="modalForm.target"
+                placeholder="请选择本地任务Bean"
+                clearable
+                style="width: 100%"
+                filterable
+                v-loading="localBeanListLoading"
+              >
+                <el-option v-for="item in localBeanListData" :key="item.name" :label="item.name" :value="item.name">
+                  <span>{{ item.name }}</span>
+                  <span class="text-gray-400 text-sm ml-2">{{ item.fullClassName }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -236,7 +251,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
+import { ref, markRaw, watch } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import QtTaskService from "@/views/qt/service/QtTaskService.ts";
@@ -263,6 +278,24 @@ const modalFormRef = ref<FormInstance>();
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   QtTaskService.useQtTaskModal(modalFormRef, loadList);
+
+// 本地任务Bean列表管理打包
+const {
+  listData: localBeanListData,
+  listLoading: localBeanListLoading,
+  loadList: loadLocalBeanList,
+} = QtTaskService.useLocalBeanList();
+
+//模态框打开时加载本地任务Bean列表
+watch(
+  modalVisible,
+  async (newVal) => {
+    if (newVal) {
+      await loadLocalBeanList();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped></style>

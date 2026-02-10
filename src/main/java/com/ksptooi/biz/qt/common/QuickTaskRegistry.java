@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +37,7 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
     /**
      * 判断是否包含本地任务Bean
+     *
      * @param name Bean名称
      * @return 是否包含
      */
@@ -46,9 +47,11 @@ public class QuickTaskRegistry implements ApplicationListener<ApplicationReadyEv
 
     /**
      * 获取所有本地任务Bean
+     *
      * @return 本地任务Bean列表
      */
-    public static List<QuickTask<?>> getBeans() {
-        return new ArrayList<>(QT_BEAN_MAP.values());
+    public static ArrayList<QuickTask> getBeans() {
+        Collection<QuickTask> values = QT_BEAN_MAP.values();
+        return new ArrayList<>(values);
     }
 }
