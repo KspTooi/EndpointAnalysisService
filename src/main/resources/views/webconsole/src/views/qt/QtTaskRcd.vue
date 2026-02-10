@@ -35,9 +35,8 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="40" />
-        <el-table-column prop="id" label="调度日志ID" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="taskName" label="任务名" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="groupName" label="分组名" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="taskName" label="任务名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
         <el-table-column prop="status" label="运行状态" min-width="100">
           <template #default="scope">
@@ -91,10 +90,8 @@
       @close="resetModal()"
     >
       <el-descriptions v-if="modalVisible" :column="2" border v-loading="modalLoading">
-        <el-descriptions-item label="调度日志ID">{{ modalForm.id }}</el-descriptions-item>
-        <el-descriptions-item label="任务ID">{{ modalForm.taskId }}</el-descriptions-item>
-        <el-descriptions-item label="任务名" :span="2">{{ modalForm.taskName }}</el-descriptions-item>
-        <el-descriptions-item label="分组名" :span="2">{{ modalForm.groupName }}</el-descriptions-item>
+        <el-descriptions-item label="任务名称" :span="2">{{ modalForm.taskName }}</el-descriptions-item>
+        <el-descriptions-item label="任务分组" :span="2">{{ modalForm.groupName }}</el-descriptions-item>
         <el-descriptions-item label="调用目标" :span="2">{{ modalForm.target }}</el-descriptions-item>
         <el-descriptions-item label="运行状态" :span="2">
           <el-tag v-if="modalForm.status === 0" type="success">正常</el-tag>
