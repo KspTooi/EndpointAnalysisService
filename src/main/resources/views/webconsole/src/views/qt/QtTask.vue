@@ -32,7 +32,6 @@
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
-      <el-button type="primary" plain @click="cronCalculatorRef?.openModal(modalForm.cron)"> Cron 计算器演示 </el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -52,7 +51,12 @@
         </el-table-column>
         <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip />
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.expireTime">{{ scope.row.expireTime }}</span>
+            <span v-else class="text-gray-400 text-sm">长期有效</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" min-width="110" show-overflow-tooltip>
           <template #default="scope">
             <el-tag :type="scope.row.status === 0 ? 'success' : scope.row.status === 1 ? 'info' : 'danger'">
