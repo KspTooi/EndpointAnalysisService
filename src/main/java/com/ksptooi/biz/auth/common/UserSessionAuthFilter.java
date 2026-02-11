@@ -1,7 +1,7 @@
 package com.ksptooi.biz.auth.common;
 
 import com.ksptooi.biz.auth.model.session.UserSessionVo;
-import com.ksptooi.biz.core.repository.UserSessionRepository;
+import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.commons.WebUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

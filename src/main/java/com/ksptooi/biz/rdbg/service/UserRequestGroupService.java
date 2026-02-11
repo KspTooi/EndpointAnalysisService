@@ -1,7 +1,7 @@
 package com.ksptooi.biz.rdbg.service;
 
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterPo;
 import com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterListVo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.EditUserRequestGroupDto;

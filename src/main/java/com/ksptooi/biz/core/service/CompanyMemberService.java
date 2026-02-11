@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.core.model.companymember.dto.*;
@@ -27,7 +28,7 @@ import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Service
 public class CompanyMemberService {

@@ -9,7 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 
 @Getter

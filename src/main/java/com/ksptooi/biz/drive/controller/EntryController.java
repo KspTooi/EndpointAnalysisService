@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @PrintLog
 @RestController

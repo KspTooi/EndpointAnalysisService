@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ksptooi.biz.core.service.SessionService.getSession;
+import static com.ksptooi.biz.auth.service.SessionService.getSession;
 
 @Slf4j
 @RestControllerAdvice

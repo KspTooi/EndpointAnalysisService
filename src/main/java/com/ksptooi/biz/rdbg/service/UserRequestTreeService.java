@@ -1,6 +1,6 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.rdbg.model.userrequest.RemoveUserRequestTreeDto;
 import com.ksptooi.biz.rdbg.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.UserRequestGroupPo;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 
 @Service

@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Service
 public class UserRequestEnvStorageService {

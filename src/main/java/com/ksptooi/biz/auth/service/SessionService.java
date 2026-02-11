@@ -1,9 +1,9 @@
-package com.ksptooi.biz.core.service;
+package com.ksptooi.biz.auth.service;
 
 import com.ksptooi.biz.auth.model.session.*;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
-import com.ksptooi.biz.core.repository.UserSessionRepository;
+import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.commons.WebUtils;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;

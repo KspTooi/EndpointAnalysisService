@@ -3,7 +3,7 @@ package com.ksptooi.biz.rdbg.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.relay.repository.RequestRepository;
 import com.ksptooi.biz.rdbg.model.userrequest.EditUserRequestDto;
@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.ksptool.entities.Entities.as;
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Slf4j
 @Service

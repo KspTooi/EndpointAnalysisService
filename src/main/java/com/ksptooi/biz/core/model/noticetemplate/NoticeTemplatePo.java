@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.model.noticetemplate;
 
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;

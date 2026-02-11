@@ -2,7 +2,7 @@ package com.ksptooi.biz;
 
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.PanelInstallWizardService;
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

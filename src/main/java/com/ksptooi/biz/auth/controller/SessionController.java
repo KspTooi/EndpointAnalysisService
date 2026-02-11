@@ -1,9 +1,9 @@
-package com.ksptooi.biz.core.controller;
+package com.ksptooi.biz.auth.controller;
 
 import com.ksptooi.biz.auth.model.session.GetSessionDetailsVo;
 import com.ksptooi.biz.auth.model.session.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.GetSessionListVo;
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

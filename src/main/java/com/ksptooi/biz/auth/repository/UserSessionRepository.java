@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.repository;
+package com.ksptooi.biz.auth.repository;
 
 import com.ksptooi.biz.auth.model.session.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.GetSessionListVo;

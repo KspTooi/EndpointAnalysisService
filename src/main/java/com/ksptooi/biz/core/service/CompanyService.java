@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.company.dto.AddCompanyDto;
 import com.ksptooi.biz.core.model.company.dto.EditCompanyDto;
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import static com.ksptooi.biz.core.service.SessionService.session;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Service
 public class CompanyService {

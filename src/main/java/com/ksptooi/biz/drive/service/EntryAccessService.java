@@ -2,7 +2,7 @@ package com.ksptooi.biz.drive.service;
 
 import com.google.gson.Gson;
 import com.ksptooi.biz.core.service.AttachService;
-import com.ksptooi.biz.core.service.SessionService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
 import com.ksptooi.biz.drive.repository.EntryRepository;
