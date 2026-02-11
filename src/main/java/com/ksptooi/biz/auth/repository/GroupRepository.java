@@ -13,8 +13,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecificationExecutor<GroupPo> {
+
+    /**
+     * 根据用户ID获取用户拥有的全部用户组
+     *
+     * @param userId 用户ID
+     * @return 用户拥有的全部用户组
+     */
+    @Query("""
+            SELECT g FROM GroupPo g
+            LEFT JOIN FETCH g.users u
+            WHERE u.id = :userId
+            """)
+    List<GroupPo> getGroupsByUserId(@Param("userId") Long userId);
 
     /**
      * 检查用户组标识是否存在

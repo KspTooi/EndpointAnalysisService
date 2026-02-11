@@ -67,12 +67,12 @@ public class AuthUserDetails implements UserDetails {
     //用户角色码
     private List<String> roles;
 
-    //用户权限码
-    private Set<GrantedAuthority> permissionCodes;
+    //用户权限码和角色码(角色码通过ROLE_前缀区分)
+    private Set<GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return permissionCodes;
+        return authorities;
     }
 
     @Override
