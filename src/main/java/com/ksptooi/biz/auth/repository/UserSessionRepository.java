@@ -1,8 +1,8 @@
 package com.ksptooi.biz.auth.repository;
 
+import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionListVo;
-import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +25,7 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
      * @return 会话列表
      */
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.session.GetSessionListVo(
+            SELECT new com.ksptooi.biz.auth.model.session.vo.GetSessionListVo(
               us.id,
               u.username,
               us.createTime,
