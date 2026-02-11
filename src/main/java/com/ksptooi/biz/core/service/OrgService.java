@@ -125,6 +125,12 @@ public class OrgService {
 
         //处理企业新增 0:部门 1:企业
         if (dto.getKind() == 1) {
+
+            //校验企业名称是否唯一
+            if (repository.countRootByName(dto.getName()) > 0) {
+                throw new BizException("无法处理新增请求,企业名称 [" + dto.getName() + "] 已存在.");
+            }
+
             var id = IdWorker.nextId();
             OrgPo addPo = as(dto, OrgPo.class);
             addPo.setId(id);
@@ -135,9 +141,19 @@ public class OrgService {
         }
 
         //处理部门新增
+        if(parentPo == null){
+            throw new BizException("无法处理新增请求,部门必须有上级组织.");
+        }
+
+        //校验部门名称是否唯一
+        if (repository.countDeptByNameAndParentId(dto.getName(), parentPo.getId()) > 0) {
+            throw new BizException("无法处理新增请求,上级组织 [" + parentPo.getName() + "] 下已有同名部门 [" + dto.getName() + "].");
+        }
+
         var addPo = as(dto, OrgPo.class);
         addPo.setRootId(parentPo.getRootId());
         addPo.setParentId(parentPo.getId());
+
 
         //如果有主管则需要处理主管(查询该公司下的主管)
         if (dto.getPrincipalId() != null) {
@@ -152,7 +168,6 @@ public class OrgService {
             addPo.setPrincipalId(userPo.getId());
             addPo.setPrincipalName(userPo.getUsername());
         }
-
 
         var _parent = parentPo;
         var pathIds = new ArrayList<String>();
@@ -206,6 +221,12 @@ public class OrgService {
 
         //0:部门 1:企业
         if (updatePo.getKind() == 1) {
+
+            //校验企业名称是否唯一
+            if (repository.countRootByNameExcludeId(dto.getName(), updatePo.getId()) > 0) {
+                throw new BizException("无法处理编辑请求,企业名称 [" + dto.getName() + "] 已存在.");
+            }
+
             if (dto.getPrincipalId() != null) {
                 throw new BizException("无法处理编辑请求,企业不允许填主管ID.");
             }
@@ -218,8 +239,14 @@ public class OrgService {
 
         //处理部门
         if (updatePo.getKind() == 0) {
+
             if (parentPo == null) {
                 throw new BizException("无法处理编辑请求,部门必须有父级组织.");
+            }
+
+            //校验部门名称是否唯一
+            if (repository.countDeptByNameAndParentIdExcludeId(dto.getName(), parentPo.getId(), updatePo.getId()) > 0) {
+                throw new BizException("无法处理编辑请求,上级组织 [" + parentPo.getName() + "] 下已有同名部门 [" + dto.getName() + "].");
             }
 
             //部门无法跨组织移动

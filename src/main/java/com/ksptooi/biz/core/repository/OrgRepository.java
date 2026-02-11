@@ -22,6 +22,8 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 1")
     OrgPo getRootByName(@Param("name") String name);
 
+
+
     /**
      * 根据id查询企业
      *
@@ -87,7 +89,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             """)
     Integer countByParentId(@Param("parentId") Long parentId);
 
-    
+
     /**
      * 根据id列表和公司id查询部门列表
      *
@@ -113,4 +115,55 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             WHERE u.deptId IN :ids
             """)
     Integer countUserByDeptIds(@Param("ids") List<Long> ids);
+
+    /**
+     * 根据名称查询企业数量
+     *
+     * @param name 企业名称
+     * @return 企业数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 1
+            """)
+    Long countRootByName(@Param("name") String name);
+
+    /**
+     * 根据名称查询企业数量 排除指定ID
+     *
+     * @param name 企业名称
+     * @param id   需排除的ID
+     * @return 企业数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 1 AND u.id != :id
+            """)
+    Long countRootByNameExcludeId(@Param("name") String name, @Param("id") Long id);
+
+    /**
+     * 根据名称和上级部门ID查询部门数量
+     *
+     * @param name 部门名称
+     * @param parentId 上级部门ID
+     * @return 部门数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0 AND u.parentId = :parentId
+            """)
+    Long countDeptByNameAndParentId(@Param("name") String name, @Param("parentId") Long parentId);
+
+    
+    /**
+     * 根据名称和上级部门ID查询部门数量 排除指定ID
+     *
+     * @param name 部门名称
+     * @param parentId 上级部门ID
+     * @param id 需排除的ID
+     * @return 部门数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0 AND u.parentId = :parentId AND u.id != :id
+            """)
+    Long countDeptByNameAndParentIdExcludeId(@Param("name") String name, @Param("parentId") Long parentId, @Param("id") Long id);
+
+
 }
