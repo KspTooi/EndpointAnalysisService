@@ -2,11 +2,11 @@ package com.ksptooi.biz.core.controller;
 
 
 import com.ksptooi.EASRunner;
+import com.ksptooi.biz.auth.model.permission.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.auth.service.GroupService;
-import com.ksptooi.biz.core.model.permission.ValidateSystemPermissionsVo;
+import com.ksptooi.biz.auth.service.PermissionService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.PanelInstallWizardService;
-import com.ksptooi.biz.core.service.PermissionService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptool.assembly.entity.web.Result;

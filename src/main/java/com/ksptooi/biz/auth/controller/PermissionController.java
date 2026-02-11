@@ -1,12 +1,7 @@
-package com.ksptooi.biz.core.controller;
+package com.ksptooi.biz.auth.controller;
 
-import com.ksptooi.biz.core.model.permission.AddPermissionDto;
-import com.ksptooi.biz.core.model.permission.EditPermissionDto;
-import com.ksptooi.biz.core.model.permission.GetPermissionDefinitionVo;
-import com.ksptooi.biz.core.model.permission.GetPermissionDetailsVo;
-import com.ksptooi.biz.core.model.permission.GetPermissionListDto;
-import com.ksptooi.biz.core.model.permission.GetPermissionListVo;
-import com.ksptooi.biz.core.service.PermissionService;
+import com.ksptooi.biz.auth.model.permission.*;
+import com.ksptooi.biz.auth.service.PermissionService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;

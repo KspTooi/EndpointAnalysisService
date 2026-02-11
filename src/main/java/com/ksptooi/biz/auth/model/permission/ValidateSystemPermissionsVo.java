@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.permission;
+package com.ksptooi.biz.auth.model.permission;
 
 import java.util.List;
 

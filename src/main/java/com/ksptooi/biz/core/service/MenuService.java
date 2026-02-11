@@ -1,12 +1,12 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.biz.core.model.menu.dto.AddMenuDto;
 import com.ksptooi.biz.core.model.menu.dto.EditMenuDto;
 import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuDetailsVo;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuTreeVo;
 import com.ksptooi.biz.core.model.resource.po.ResourcePo;
-import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
@@ -71,7 +71,7 @@ public class MenuService {
             GetMenuTreeVo parent = map.get(vo.getParentId());
             if (parent != null) {
                 parent.getChildren().add(vo);
-            }else{
+            } else {
                 treeVos.add(vo);
             }
         }

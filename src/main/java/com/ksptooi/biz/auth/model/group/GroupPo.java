@@ -1,6 +1,6 @@
 package com.ksptooi.biz.auth.model.group;
 
-import com.ksptooi.biz.core.model.permission.PermissionPo;
+import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import jakarta.persistence.*;
 import lombok.Getter;

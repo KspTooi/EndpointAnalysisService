@@ -1,8 +1,8 @@
-package com.ksptooi.biz.core.service;
+package com.ksptooi.biz.auth.service;
 
 
-import com.ksptooi.biz.core.model.permission.*;
-import com.ksptooi.biz.core.repository.PermissionRepository;
+import com.ksptooi.biz.auth.model.permission.*;
+import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.commons.enums.PermissionEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -145,7 +145,7 @@ public class PermissionService {
 
         //获取有多少用户组在使用该权限
         int groupCount = permission.getGroups().size();
-        
+
         if (groupCount > 0) {
             throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupCount));
         }
