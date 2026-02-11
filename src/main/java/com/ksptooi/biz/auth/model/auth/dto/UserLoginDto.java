@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.auth;
+package com.ksptooi.biz.auth.model.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

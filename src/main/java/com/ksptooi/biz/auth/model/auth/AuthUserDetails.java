@@ -2,6 +2,7 @@ package com.ksptooi.biz.auth.model.auth;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,6 +59,9 @@ public class AuthUserDetails implements UserDetails {
     //所属部门名称
     private String deptName;
 
+    //用户头像附件ID
+    private Long avatarAttachId;
+
     //是否为系统内置用户
     private Integer isSystem;
 
@@ -70,6 +74,7 @@ public class AuthUserDetails implements UserDetails {
     //用户权限码和角色码(角色码通过ROLE_前缀区分)
     private Set<GrantedAuthority> authorities;
 
+    @NullMarked
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -80,21 +85,25 @@ public class AuthUserDetails implements UserDetails {
         return password;
     }
 
+    @NullMarked
     @Override
     public String getUsername() {
         return username;
     }
 
+    @NullMarked
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @NullMarked
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @NullMarked
     @Override
     public boolean isCredentialsNonExpired() {
         return true;

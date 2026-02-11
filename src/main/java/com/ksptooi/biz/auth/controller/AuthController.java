@@ -1,7 +1,9 @@
 package com.ksptooi.biz.auth.controller;
 
 
-import com.ksptooi.biz.auth.model.auth.UserLoginDto;
+import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
+import com.ksptooi.biz.auth.model.auth.dto.UserLoginDto;
+import com.ksptooi.biz.auth.model.auth.vo.UserLoginVo;
 import com.ksptooi.biz.auth.model.session.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
@@ -20,7 +22,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Set;
+
+import static com.ksptool.entities.Entities.as;
 
 @PrintLog
 @Controller
@@ -65,12 +68,17 @@ public class AuthController {
     @PostMapping(value = "/userLogin")
     public String userLogin(@RequestBody UserLoginDto dto, HttpServletRequest hsr) {
 
+        //使用Spring Security进行用户名密码认证
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
         );
 
-        HttpSession hs = hsr.getSession();
-        hs.setAttribute("AAAA", "AABC");
+        //获取认证用户
+        var aud = (AuthUserDetails) auth.getPrincipal();
+
+        //组装Vo
+        var vo = as(aud, UserLoginVo.class);
+
 
         return null;
     }
