@@ -32,9 +32,7 @@
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
-      <el-button type="primary" plain @click="cronCalculatorRef?.openModal(modalForm.cron)">
-        Cron 计算器演示
-      </el-button>
+      <el-button type="primary" plain @click="cronCalculatorRef?.openModal(modalForm.cron)"> Cron 计算器演示 </el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -186,14 +184,41 @@
         <el-row :gutter="20">
           <el-col>
             <el-form-item label="CRON表达式" prop="cron">
-              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit>
+              <el-input
+                v-model="modalForm.cron"
+                placeholder="请输入CRON表达式"
+                clearable
+                maxlength="64"
+                show-word-limit
+                @focus="cronInputFocused = true"
+                @blur="cronInputFocused = false"
+              >
                 <template #append>
                   <el-button @click="cronCalculatorRef?.openModal(modalForm.cron)">
                     <el-icon><Calendar /></el-icon>
-                    计算器
+                    使用Cron计算器
                   </el-button>
                 </template>
               </el-input>
+              <!-- Cron 预览区域 -->
+              <div v-if="modalForm.cron && cronInputFocused" class="cron-preview-container mt-2 w-full">
+                <div class="flex items-start bg-blue-50 p-2 rounded border border-blue-100 mb-2">
+                  <el-icon class="mt-1 mr-2 text-blue-500"><InfoFilled /></el-icon>
+                  <div>
+                    <div class="text-blue-600 font-medium text-xs">语义描述：</div>
+                    <div class="text-gray-600 text-xs mt-0.5">{{ cronDescription }}</div>
+                  </div>
+                </div>
+                <div v-if="nextRunTimes.length > 0" class="next-runs bg-gray-50 p-2 rounded border border-gray-100">
+                  <div class="text-[10px] text-gray-400 mb-1 font-bold uppercase tracking-wider">未来 5 次执行预览：</div>
+                  <div class="grid grid-cols-1 gap-0.5">
+                    <div v-for="(run, index) in nextRunTimes" :key="index" class="text-xs flex items-center text-gray-500">
+                      <span class="w-4 text-gray-300">{{ index + 1 }}.</span>
+                      <span>{{ run }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -300,14 +325,16 @@
     </el-dialog>
 
     <!-- Cron 计算器 -->
-    <CronCalculatorModal ref="cronCalculatorRef" @onConfirm="(cron) => modalForm.cron = cron || ''" />
+    <CronCalculatorModal ref="cronCalculatorRef" @onConfirm="(cron) => (modalForm.cron = cron || '')" />
   </StdListContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, watch } from "vue";
-import { Edit, Delete, Calendar } from "@element-plus/icons-vue";
+import { ref, markRaw, watch, computed } from "vue";
+import { Edit, Delete, Calendar, InfoFilled } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
+import cronstrue from "cronstrue/i18n";
+import { CronExpressionParser } from "cron-parser";
 import QtTaskService from "@/views/qt/service/QtTaskService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
@@ -322,6 +349,9 @@ const DeleteIcon = markRaw(Delete);
 
 // Cron 计算器引用
 const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
+
+// Cron 输入框焦点状态
+const cronInputFocused = ref(false);
 
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskService.useQtTaskList();
@@ -344,6 +374,42 @@ const {
   loadList: loadLocalBeanList,
 } = QtTaskService.useLocalBeanList();
 
+// --- Cron 预览逻辑 ---
+const cronDescription = computed(() => {
+  const cron = modalForm.cron;
+  if (!cron) return "未输入表达式";
+  try {
+    return cronstrue.toString(cron, { locale: "zh_CN" });
+  } catch (e) {
+    return "无效的表达式";
+  }
+});
+
+const nextRunTimes = computed(() => {
+  const cron = modalForm.cron;
+  if (!cron) return [];
+  try {
+    const interval = CronExpressionParser.parse(cron, { tz: "Asia/Shanghai" });
+    const times = [];
+    for (let i = 0; i < 5; i++) {
+      const nextDate = interval.next();
+      const date = nextDate instanceof Date ? nextDate : (nextDate as any).toDate();
+      times.push(formatDateTime(date));
+    }
+    return times;
+  } catch (e) {
+    return [];
+  }
+});
+
+const formatDateTime = (date: Date) => {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
+// --------------------
+
 //模态框打开时加载本地任务Bean列表
 watch(
   modalVisible,
@@ -356,4 +422,20 @@ watch(
 );
 </script>
 
-<style scoped></style>
+<style scoped>
+.cron-preview-container {
+  line-height: 1.4;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  border-radius: 4px;
+}
+.next-runs {
+  max-height: 120px;
+  overflow-y: auto;
+}
+</style>
