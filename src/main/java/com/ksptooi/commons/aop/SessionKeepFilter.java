@@ -9,8 +9,6 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -33,8 +31,8 @@ import java.util.Map;
  * - 通用权限校验：调用 AuthService 根据当前请求的 URI 校验用户是否拥有访问权限。
  * 5. 响应处理：针对 AJAX 请求返回标准化 JSON 结果 (Result)，针对普通请求执行页面重定向。
  */
-@Component
-@Order(1)
+//@Component
+//@Order(1)
 public class SessionKeepFilter implements Filter {
 
     private static final List<String> WHITE_LIST = Arrays.asList(

@@ -22,7 +22,7 @@ public class SecurityConfig {
      * 白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
      */
     private final List<String> whiteList = Arrays.asList(
-            "/maintain", //维护中心
+            "/maintain/**", //维护中心
             "/userLogin" //用户登录(新)
     );
 

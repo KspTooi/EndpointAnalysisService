@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,9 @@ public class UserService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     /**
@@ -314,16 +318,11 @@ public class UserService {
             throw new BizException("用户名已存在");
         }
 
-        // 使用用户名作为盐，加密密码：password + username
-        String salted = password + username;
-        String hashedPassword = hashSHA256(salted);
-
         UserPo newUser = new UserPo();
         newUser.setUsername(username);
-        newUser.setPassword(hashedPassword);
+        newUser.setPassword(passwordEncoder.encode(password));
         newUser.setGender(2);
         newUser.setIsSystem(1);
-        // 根据需要，可设置其它字段（如邮箱、昵称等）
 
         return userRepository.save(newUser);
     }
