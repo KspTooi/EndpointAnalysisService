@@ -46,18 +46,6 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""), // 移除 /api 前缀
         ws: true, // 支持 WebSocket
         secure: false, // 如果是 https 接口，需要配置这个参数
-        // 日志配置
-        configure: (proxy, _options) => {
-          proxy.on("error", (err, _req, _res) => {
-            console.log("代理错误", err);
-          });
-          proxy.on("proxyReq", (proxyReq, req, _res) => {
-            console.log("发送请求到目标", req.method, req.url);
-          });
-          proxy.on("proxyRes", (proxyRes, req, _res) => {
-            console.log("收到响应", proxyRes.statusCode, req.url);
-          });
-        },
       },
     },
   },
