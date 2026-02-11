@@ -31,6 +31,7 @@ export default {
     const listData = ref<GetQtTaskGroupListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
+    const listSelected = ref<GetQtTaskGroupListVo[]>([]);
 
     /**
      * 加载列表
@@ -85,6 +86,42 @@ export default {
       }
     };
 
+    /**
+     * 批量删除选中项
+     */
+    const removeListBatch = async () => {
+      if (listSelected.value.length === 0) {
+        ElMessage.warning("请先选择要删除的记录");
+        return;
+      }
+
+      try {
+        await ElMessageBox.confirm(`确定要删除选中的 ${listSelected.value.length} 项吗？`, "提示", {
+          type: "warning",
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        const ids = listSelected.value.map((item) => item.id);
+        await QtTaskGroupApi.removeQtTaskGroup({ ids });
+        ElMessage.success("删除成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message || "删除失败");
+      }
+    };
+
+    /**
+     * 表格选中项变化事件
+     */
+    const onSelectionChange = (rows: GetQtTaskGroupListVo[]) => {
+      listSelected.value = rows;
+    };
+
     onMounted(async () => {
       await loadList();
     });
@@ -94,9 +131,12 @@ export default {
       listData,
       listTotal,
       listLoading,
+      listSelected,
       loadList,
       resetList,
       removeList,
+      removeListBatch,
+      onSelectionChange,
     };
   },
 

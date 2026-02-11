@@ -30,11 +30,13 @@
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModal('add', null)">新增任务分组</el-button>
+      <el-button type="danger" :disabled="listSelected?.length === 0" @click="removeListBatch">删除选中项</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
+        <el-table-column type="selection" width="45" />
         <el-table-column prop="name" label="分组名" min-width="150" show-overflow-tooltip />
         <el-table-column prop="remark" label="分组备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
@@ -133,7 +135,18 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskGroupService.useQtTaskGroupList();
+const {
+  listForm,
+  listData,
+  listSelected,
+  listTotal,
+  listLoading,
+  loadList,
+  resetList,
+  removeList,
+  removeListBatch,
+  onSelectionChange,
+} = QtTaskGroupService.useQtTaskGroupList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
