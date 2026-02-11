@@ -23,7 +23,6 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     OrgPo getRootByName(@Param("name") String name);
 
 
-
     /**
      * 根据id查询企业
      *
@@ -80,7 +79,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     /**
      * 根据一级组织ID查询组织机构数量
      *
-     * @param rootId 一级组织ID
+     * @param parentId 一级组织ID
      * @return 组织机构数量
      */
     @Query("""
@@ -93,8 +92,8 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     /**
      * 根据id列表和公司id查询部门列表
      *
-     * @param ids       部门id列表
-     * @param companyId 公司id
+     * @param ids   部门id列表
+     * @param orgId 公司id
      * @return 部门列表
      */
     @Query("""
@@ -142,7 +141,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     /**
      * 根据名称和上级部门ID查询部门数量
      *
-     * @param name 部门名称
+     * @param name     部门名称
      * @param parentId 上级部门ID
      * @return 部门数量
      */
@@ -151,13 +150,13 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             """)
     Long countDeptByNameAndParentId(@Param("name") String name, @Param("parentId") Long parentId);
 
-    
+
     /**
      * 根据名称和上级部门ID查询部门数量 排除指定ID
      *
-     * @param name 部门名称
+     * @param name     部门名称
      * @param parentId 上级部门ID
-     * @param id 需排除的ID
+     * @param id       需排除的ID
      * @return 部门数量
      */
     @Query("""
