@@ -50,9 +50,6 @@ public class UserService {
     private GroupRepository groupRepository;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private OrgRepository orgRepository;
 
     @Autowired
@@ -126,6 +123,7 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addUser(AddUserDto dto) throws BizException {
+
         if (StringUtils.isBlank(dto.getUsername())) {
             throw new BizException("用户名不能为空");
         }
@@ -140,7 +138,7 @@ public class UserService {
 
         UserPo user = new UserPo();
         assign(dto, user);
-        user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setGroups(getGroupSet(dto.getGroupIds()));
         user.setIsSystem(0);
 
@@ -190,7 +188,7 @@ public class UserService {
         UserPo user = userRepository.findById(dto.getId()).orElseThrow(() -> new BizException("用户不存在"));
 
         if (StringUtils.isNotBlank(dto.getPassword())) {
-            dto.setPassword(encryptPassword(dto.getPassword(), user.getUsername()));
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         if (StringUtils.isBlank(dto.getPassword())) {
             dto.setPassword(user.getPassword());
@@ -259,31 +257,6 @@ public class UserService {
         return new HashSet<>(groupRepository.findAllById(groupIds));
     }
 
-    /**
-     * 密码加密
-     *
-     * @param password 密码
-     * @param username 用户名（用作盐值）
-     * @throws BizException 加密失败时抛出异常
-     */
-    private String encryptPassword(String password, String username) throws BizException {
-        try {
-            // 使用用户名作为盐，加密密码：password + username
-            String salted = password + username;
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(salted.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new BizException("密码加密失败", e);
-        }
-    }
-
 
     public UserPo getUser(String username) throws BizException {
         UserPo user = userRepository.findByUsername(username);
@@ -299,16 +272,11 @@ public class UserService {
             throw new BizException("用户名已存在");
         }
 
-        // 使用用户名作为盐，加密密码：password + username
-        String salted = password + username;
-        String hashedPassword = hashSHA256(salted);
-
         UserPo newUser = new UserPo();
         newUser.setUsername(username);
-        newUser.setPassword(hashedPassword);
+        newUser.setPassword(passwordEncoder.encode(password));
         newUser.setGender(2);
         newUser.setIsSystem(0);
-        // 根据需要，可设置其它字段（如邮箱、昵称等）
 
         return userRepository.save(newUser);
     }
@@ -328,23 +296,6 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    private String hashSHA256(String input) throws BizException {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new BizException("密码加密失败", e);
-        }
-    }
 
     /**
      * 校验系统内置用户
@@ -450,7 +401,7 @@ public class UserService {
 
             UserPo user = new UserPo();
             user.setUsername(dto.getUsername());
-            user.setPassword(encryptPassword(dto.getPassword(), dto.getUsername()));
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
             user.setNickname(dto.getNickname());
 
             //处理性别 0:男 1:女 2:不愿透露
@@ -569,7 +520,9 @@ public class UserService {
             userRepository.deleteAll(userPos);
 
             //销毁被删除用户的session(如果有) 强行踢他们下线
-
+            for (UserPo user : userPos) {
+                sessionService.closeSession(user.getId());
+            }
 
             return userPos.size();
         }

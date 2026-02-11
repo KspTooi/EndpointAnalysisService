@@ -160,7 +160,7 @@ public class SessionService {
         newSession.setSessionId(hashedSessionId);
         newSession.setPermissionCodes(toJson(permCodes));
         newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
-        newSession = userSessionRepository.save(newSession);
+        userSessionRepository.save(newSession);
         return sessionId;
     }
 
