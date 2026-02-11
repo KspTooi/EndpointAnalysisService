@@ -123,6 +123,11 @@ public class QtTaskService {
             updatePo.setGroupName(groupPo.getName());
         }
 
+        //处理清除分组信息
+        if (dto.getGroupId() == null) {
+            updatePo.setGroupName(null);
+        }
+
         //验证任务信息
         String validateResult = updatePo.validate();
 
@@ -156,11 +161,14 @@ public class QtTaskService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeQtTask(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+
+        var ids = dto.toIds();
+        repository.deleteAllById(ids);
+
+        for (Long id : ids) {
+            abortTask(id);
         }
-        repository.deleteById(dto.getId());
+
     }
 
     /**
