@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.permission;
+package com.ksptooi.biz.auth.model.permission.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

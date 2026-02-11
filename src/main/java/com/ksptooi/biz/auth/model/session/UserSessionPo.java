@@ -1,5 +1,6 @@
 package com.ksptooi.biz.auth.model.session;
 
+import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;

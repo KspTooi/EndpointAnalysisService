@@ -1,6 +1,6 @@
 package com.ksptooi.biz.auth.repository;
 
-import com.ksptooi.biz.auth.model.permission.GetPermissionListDto;
+import com.ksptooi.biz.auth.model.permission.dto.GetPermissionListDto;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

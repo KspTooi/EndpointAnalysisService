@@ -1,9 +1,11 @@
-package com.ksptooi.biz.auth.model.permission;
+package com.ksptooi.biz.auth.model.permission.vo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class GetPermissionListVo {
+@Getter
+@Setter
+public class GetPermissionDetailsVo {
     /**
      * 权限ID
      */
@@ -25,8 +27,19 @@ public class GetPermissionListVo {
     private String description;
 
     /**
+     * 排序顺序
+     */
+    private Integer sortOrder;
+
+    /**
      * 是否为系统权限（1-是，0-否）
      */
     private Integer isSystem;
+
+    //创建时间
+    private String createTime;
+
+    //修改时间
+    private String updateTime;
 
 }

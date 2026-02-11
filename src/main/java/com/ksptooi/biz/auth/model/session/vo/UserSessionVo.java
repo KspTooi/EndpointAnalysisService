@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.session;
+package com.ksptooi.biz.auth.model.session.vo;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

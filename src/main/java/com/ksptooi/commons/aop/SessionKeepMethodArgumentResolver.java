@@ -1,6 +1,6 @@
 package com.ksptooi.commons.aop;
 
-import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptool.assembly.entity.exception.AuthException;
 import org.jspecify.annotations.NonNull;

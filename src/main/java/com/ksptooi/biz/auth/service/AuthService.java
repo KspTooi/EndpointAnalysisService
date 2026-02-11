@@ -4,7 +4,7 @@ import com.ksptooi.biz.audit.service.AuditLoginService;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
-import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfilePermissionVo;

@@ -4,7 +4,7 @@ package com.ksptooi.biz.auth.controller;
 import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
 import com.ksptooi.biz.auth.model.auth.dto.UserLoginDto;
 import com.ksptooi.biz.auth.model.auth.vo.UserLoginVo;
-import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;

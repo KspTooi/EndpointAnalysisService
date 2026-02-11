@@ -1,8 +1,8 @@
 package com.ksptooi.biz.auth.controller;
 
-import com.ksptooi.biz.auth.model.session.GetSessionDetailsVo;
-import com.ksptooi.biz.auth.model.session.GetSessionListDto;
-import com.ksptooi.biz.auth.model.session.GetSessionListVo;
+import com.ksptooi.biz.auth.model.session.vo.GetSessionDetailsVo;
+import com.ksptooi.biz.auth.model.session.dto.GetSessionListDto;
+import com.ksptooi.biz.auth.model.session.vo.GetSessionListVo;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;

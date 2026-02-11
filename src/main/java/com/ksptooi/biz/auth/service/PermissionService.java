@@ -2,6 +2,13 @@ package com.ksptooi.biz.auth.service;
 
 
 import com.ksptooi.biz.auth.model.permission.*;
+import com.ksptooi.biz.auth.model.permission.dto.AddPermissionDto;
+import com.ksptooi.biz.auth.model.permission.dto.EditPermissionDto;
+import com.ksptooi.biz.auth.model.permission.dto.GetPermissionListDto;
+import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDefinitionVo;
+import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDetailsVo;
+import com.ksptooi.biz.auth.model.permission.vo.GetPermissionListVo;
+import com.ksptooi.biz.auth.model.permission.vo.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.commons.enums.PermissionEnum;
 import com.ksptool.assembly.entity.exception.BizException;

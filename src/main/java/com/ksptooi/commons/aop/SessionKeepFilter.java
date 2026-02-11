@@ -1,7 +1,7 @@
 package com.ksptooi.commons.aop;
 
 import com.google.gson.Gson;
-import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptool.assembly.entity.web.Result;

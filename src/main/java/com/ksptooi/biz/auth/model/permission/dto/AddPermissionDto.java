@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.permission;
+package com.ksptooi.biz.auth.model.permission.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -7,12 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SavePermissionDto {
-    /**
-     * 权限ID，创建时为空
-     */
-    private Long id;
-
+public class AddPermissionDto {
     /**
      * 权限代码
      */

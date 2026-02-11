@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.permission;
+package com.ksptooi.biz.auth.model.permission.dto;
 
 import com.ksptool.assembly.entity.web.PageQuery;
 import lombok.Getter;

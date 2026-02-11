@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.auth.model.permission.ValidateSystemPermissionsVo;
+import com.ksptooi.biz.auth.model.permission.vo.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.biz.auth.service.PermissionService;
 import com.ksptooi.biz.core.repository.ResourceRepository;
