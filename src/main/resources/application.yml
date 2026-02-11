@@ -17,6 +17,7 @@ spring:
       max-request-size: 100MB
       enabled: true
 
+
   datasource:
     #driver-class-name: com.mysql.cj.jdbc.Driver
     #url: jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
@@ -121,6 +122,9 @@ module-drive:
 audit:
   #是否记录系统错误记录
   record-error-rcd: true
+
+mybatis:
+  mapper-locations: classpath:mappers/**/*.xml
 
 
 #logging:

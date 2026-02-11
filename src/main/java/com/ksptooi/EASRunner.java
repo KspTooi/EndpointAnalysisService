@@ -7,6 +7,8 @@ import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Mapper;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -18,6 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
+@MapperScan(basePackages = "com.ksptooi.biz", annotationClass = Mapper.class)
 @EnableTransactionManagement
 @SpringBootApplication
 @EnableScheduling
