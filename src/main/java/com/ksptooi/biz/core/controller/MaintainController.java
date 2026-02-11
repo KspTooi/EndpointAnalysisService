@@ -57,7 +57,6 @@ public class MaintainController {
      */
     @PostMapping("/validSystemPermission")
     @ResponseBody
-    @RequirePermissionRest("admin:maintain:permission")
     public Result<ValidateSystemPermissionsVo> validateSystemPermissions() {
         try {
             ValidateSystemPermissionsVo result = adminPermissionService.validateSystemPermissions();
@@ -82,7 +81,6 @@ public class MaintainController {
      */
     @PostMapping("/validSystemGroup")
     @ResponseBody
-    @RequirePermissionRest("admin:maintain:group")
     public Result<String> validateSystemGroups() {
         try {
             String result = adminGroupService.validateSystemGroups();
@@ -98,7 +96,6 @@ public class MaintainController {
      */
     @PostMapping("/validSystemUsers")
     @ResponseBody
-    @RequirePermissionRest("admin:maintain:user")
     public Result<String> validateSystemUsers() {
         try {
             String result = userService.validateSystemUsers();
@@ -114,7 +111,6 @@ public class MaintainController {
      */
     @PostMapping("/validSystemConfigs")
     @ResponseBody
-    @RequirePermissionRest("admin:maintain:config")
     public Result<String> validateSystemConfigs() {
         try {
             String result = globalConfigService.validateSystemConfigs();
@@ -132,7 +128,6 @@ public class MaintainController {
     @PostMapping("/resetMenus")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @RequirePermissionRest("admin:maintain:menu")
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
         ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_4Z.sql");
