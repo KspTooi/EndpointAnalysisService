@@ -80,6 +80,9 @@ public class AuthController {
         var vo = as(aud, UserLoginVo.class);
 
 
+
+        
+
         return null;
     }
 
@@ -128,25 +131,6 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "注册页面")
-    @GetMapping("/register")
-    public ModelAndView register(HttpServletRequest hsr, RedirectAttributes ra) {
-        if (authService.verifyUser(hsr) != null) {
-            return new ModelAndView("redirect:/");
-        }
-
-        String allowRegister = globalConfigService.getValue(GlobalConfigEnum.ALLOW_USER_REGISTER.getKey());
-        if (StringUtils.isBlank(allowRegister) || allowRegister.equals("false")) {
-            ra.addFlashAttribute("error", "管理员已禁用注册!");
-            return new ModelAndView("redirect:/login");
-        }
-
-        String loginBrand = "EAS - 端点分析服务";
-        ModelAndView mav = new ModelAndView("register");
-        mav.addObject("loginBrand", StringUtils.isBlank(loginBrand) ? "" : loginBrand);
-        return mav;
-    }
-
     @Operation(summary = "注销")
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
@@ -165,37 +149,7 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "用户注册")
-    @PrintLog(sensitiveFields = "password")
-    @PostMapping("/userRegister")
-    public ModelAndView userRegister(@Valid RegisterDto dto, BindingResult bindingResult, RedirectAttributes ra) {
-
-        String allowRegister = globalConfigService.getValue(GlobalConfigEnum.ALLOW_USER_REGISTER.getKey());
-
-        if (StringUtils.isBlank(allowRegister) || allowRegister.equals("false")) {
-            ra.addFlashAttribute("error", "管理员已禁用注册!");
-            return new ModelAndView("redirect:/login");
-        }
-
-        ModelAndView mav = new ModelAndView();
-
-        if (bindingResult.hasErrors()) {
-            mav.setViewName("redirect:/register");
-            ra.addFlashAttribute("error", bindingResult.getAllErrors().getFirst().getDefaultMessage());
-            return mav;
-        }
-
-        try {
-            userService.register(dto.getUsername(), dto.getPassword());
-            mav.setViewName("redirect:/login");
-            return mav;
-        } catch (BizException e) {
-            mav.setViewName("redirect:/register");
-            ra.addFlashAttribute("error", e.getMessage());
-            return mav;
-        }
-    }
-
+    
     @Operation(summary = "获取权限")
     @PostMapping("/getPermissions")
     @ResponseBody
