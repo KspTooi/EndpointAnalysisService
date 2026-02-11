@@ -1,19 +1,18 @@
-package com.ksptooi.biz.core.model.group;
+package com.ksptooi.biz.auth.model.group.vo;
 
+import com.ksptooi.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.ksptooi.commons.dataprocess.Str;
-
-@Getter@Setter
+@Getter
+@Setter
 public class GetGroupPermissionMenuViewVo {
 
     @Schema(description = "菜单ID")
@@ -54,6 +53,7 @@ public class GetGroupPermissionMenuViewVo {
 
     /**
      * 获取权限列表
+     *
      * @return 权限列表
      */
     public Set<String> getPermissions() {

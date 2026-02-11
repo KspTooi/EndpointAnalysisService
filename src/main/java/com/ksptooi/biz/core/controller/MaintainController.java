@@ -1,13 +1,12 @@
 package com.ksptooi.biz.core.controller;
 
+import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.biz.core.model.permission.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
-import com.ksptooi.biz.core.service.GroupService;
 import com.ksptooi.biz.core.service.PermissionService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.annotation.RequirePermissionRest;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;

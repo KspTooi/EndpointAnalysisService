@@ -1,11 +1,11 @@
 package com.ksptooi.biz.auth.service;
 
 import com.ksptooi.biz.audit.service.AuditLoginService;
+import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.model.session.UserSessionVo;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfilePermissionVo;
-import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;

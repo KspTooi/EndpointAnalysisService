@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.group;
+package com.ksptooi.biz.auth.model.group.dto;
 
 
 import com.ksptool.assembly.entity.web.PageQuery;

@@ -1,15 +1,18 @@
-package com.ksptooi.biz.core.service;
+package com.ksptooi.biz.auth.service;
 
 
+import com.ksptooi.biz.auth.model.group.GroupPo;
+import com.ksptooi.biz.auth.model.group.dto.*;
+import com.ksptooi.biz.auth.model.group.vo.*;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
-import com.ksptooi.biz.core.model.group.*;
+import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.resource.po.ResourcePo;
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.PermissionRepository;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
+import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
 import com.ksptool.assembly.entity.exception.BizException;

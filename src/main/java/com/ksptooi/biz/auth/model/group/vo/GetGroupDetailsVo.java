@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.group;
+package com.ksptooi.biz.auth.model.group.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

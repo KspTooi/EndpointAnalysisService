@@ -1,9 +1,9 @@
 package com.ksptooi.biz.core.model.user;
 
+import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
-import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -101,7 +101,7 @@ public class UserPo {
             inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
     private Set<GroupPo> groups = new HashSet<>();
-    
+
     @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
     private Set<CompanyPo> createdCompanies = new HashSet<>();
 

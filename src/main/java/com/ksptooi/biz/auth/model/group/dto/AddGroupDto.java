@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.group;
+package com.ksptooi.biz.auth.model.group.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -10,10 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SaveGroupDto {
-
-    @Schema(description = "组ID")
-    private Long id;
+public class AddGroupDto {
 
     @Schema(description = "组标识")
     @NotBlank(message = "组标识不能为空")

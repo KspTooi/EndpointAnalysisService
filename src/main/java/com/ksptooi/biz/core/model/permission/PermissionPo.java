@@ -1,9 +1,10 @@
 package com.ksptooi.biz.core.model.permission;
 
-import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.auth.model.group.GroupPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -65,8 +66,9 @@ public class PermissionPo {
 
     /**
      * 判断两个权限是否相等 只要id相等就认为相等
+     *
      * @param obj 要比较的权限
-     * @return 是否相等 
+     * @return 是否相等
      */
     @Override
     public boolean equals(Object obj) {

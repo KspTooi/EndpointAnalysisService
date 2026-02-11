@@ -1,9 +1,9 @@
-package com.ksptooi.biz.core.repository;
+package com.ksptooi.biz.auth.repository;
 
 
-import com.ksptooi.biz.core.model.group.GetGroupListDto;
-import com.ksptooi.biz.core.model.group.GetGroupListVo;
-import com.ksptooi.biz.core.model.group.GroupPo;
+import com.ksptooi.biz.auth.model.group.GroupPo;
+import com.ksptooi.biz.auth.model.group.dto.GetGroupListDto;
+import com.ksptooi.biz.auth.model.group.vo.GetGroupListVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

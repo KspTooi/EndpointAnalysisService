@@ -1,6 +1,4 @@
-package com.ksptooi.biz.core.model.group;
-
-import java.util.Set;
+package com.ksptooi.biz.auth.model.group.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -9,7 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter@Setter
+import java.util.Set;
+
+@Getter
+@Setter
 public class GrantAndRevokeDto {
 
     @Schema(description = "组ID")
@@ -24,7 +25,7 @@ public class GrantAndRevokeDto {
     @NotNull(message = "类型不能为空")
     @Min(value = 0, message = "类型值不正确")
     @Max(value = 1, message = "类型值不正确")
-    private Integer type; 
+    private Integer type;
 
 
 }

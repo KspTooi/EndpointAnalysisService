@@ -17,6 +17,18 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<UserPo, Long> {
 
+    /**
+     * 根据用户名获取用户
+     *
+     * @param username 用户名
+     * @return 用户
+     */
+    @Query("""
+            SELECT p FROM UserPo p
+            WHERE p.username = :username
+            """)
+    UserPo getUserByUsername(@Param("username") String username);
+
 
     @Query("""
             SELECT new com.ksptooi.biz.core.model.user.vo.GetUserListVo(

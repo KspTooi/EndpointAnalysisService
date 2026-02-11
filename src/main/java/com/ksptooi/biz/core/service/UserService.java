@@ -1,7 +1,8 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.model.group.GroupPo;
+import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.service.AuthService;
-import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
@@ -10,7 +11,6 @@ import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import com.ksptooi.biz.core.model.user.vo.UserGroupVo;
 import com.ksptooi.biz.core.model.user.vo.UserPermissionVo;
-import com.ksptooi.biz.core.repository.GroupRepository;
 import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.dataprocess.Str;

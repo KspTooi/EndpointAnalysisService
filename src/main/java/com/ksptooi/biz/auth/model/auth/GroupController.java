@@ -1,18 +1,9 @@
-package com.ksptooi.biz.core.controller;
+package com.ksptooi.biz.auth.model.auth;
 
 
-import com.ksptooi.biz.core.model.group.AddGroupDto;
-import com.ksptooi.biz.core.model.group.EditGroupDto;
-import com.ksptooi.biz.core.model.group.GetGroupDefinitionsVo;
-import com.ksptooi.biz.core.model.group.GetGroupDetailsVo;
-import com.ksptooi.biz.core.model.group.GetGroupListDto;
-import com.ksptooi.biz.core.model.group.GetGroupListVo;
-import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewDto;
-import com.ksptooi.biz.core.model.group.GetGroupPermissionMenuViewVo;
-import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeDto;
-import com.ksptooi.biz.core.model.group.GetGroupPermissionNodeVo;
-import com.ksptooi.biz.core.model.group.GrantAndRevokeDto;
-import com.ksptooi.biz.core.service.GroupService;
+import com.ksptooi.biz.auth.model.group.dto.*;
+import com.ksptooi.biz.auth.model.group.vo.*;
+import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -75,7 +66,7 @@ public class GroupController {
     public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) throws Exception {
         return Result.success(service.getGroupPermissionMenuView(dto));
     }
-    
+
     @Operation(summary = "获取组权限节点视图")
     @PostMapping("getGroupPermissionNodeView")
     public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) throws Exception {
