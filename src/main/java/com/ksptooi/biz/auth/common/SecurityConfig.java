@@ -23,7 +23,7 @@ public class SecurityConfig {
      */
     private final List<String> whiteList = Arrays.asList(
             "/maintain/**", //维护中心
-            "/userLogin" //用户登录(新)
+            "/auth/userLogin" //用户登录(新)
     );
 
 

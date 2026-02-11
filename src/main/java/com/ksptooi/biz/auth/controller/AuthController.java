@@ -42,6 +42,7 @@ import java.util.Set;
 @PrintLog
 @Controller
 @Tag(name = "Auth", description = "认证管理")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
