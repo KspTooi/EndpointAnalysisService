@@ -1,6 +1,7 @@
 package com.ksptooi.biz.auth.controller;
 
 
+import com.ksptooi.biz.auth.model.auth.UserLoginDto;
 import com.ksptooi.biz.auth.model.session.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
@@ -19,11 +20,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,9 +56,32 @@ public class AuthController {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private HttpSession hs;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Operation(summary = "登录(新)")
+    @PrintLog(sensitiveFields = "password")
+    @PostMapping(value = "/userLogin")
+    public String userLogin(@RequestBody UserLoginDto dto) {
+
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
+
+
+        return null;
+    }
+
+
     @Operation(summary = "登录")
     @PrintLog(sensitiveFields = "password")
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/loginOld")
     public String login(@Valid LoginDto dto, HttpServletResponse response, HttpServletRequest hsr, RedirectAttributes ra) {
         try {
             var token = authService.loginByPassword(dto.getUsername(), dto.getPassword(), hsr);
