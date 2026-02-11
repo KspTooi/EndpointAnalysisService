@@ -11,11 +11,11 @@ import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.CompanyMemberRepository;
 import com.ksptooi.biz.core.repository.CompanyRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
-import com.ksptool.assembly.entity.exception.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -26,9 +26,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Service
 public class CompanyMemberService {

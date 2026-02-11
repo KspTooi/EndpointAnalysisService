@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.ksptool.entities.Entities.as;
 import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.entities.Entities.as;
 
 @Slf4j
 @Service
@@ -591,8 +591,6 @@ public class EntryService {
             }
         }
     }
-
-
 
 
 }

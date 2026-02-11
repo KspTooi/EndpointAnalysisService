@@ -5,6 +5,7 @@ import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 import static com.ksptooi.biz.auth.service.SessionService.session;
@@ -38,7 +39,7 @@ public class ResourcePo {
     @Column(name = "kind", nullable = false, comment = "资源类型 0:菜单 1:接口")
     private Integer kind;
 
-    @Column(name = "menu_kind",columnDefinition = "tinyint", comment = "菜单类型 0:目录 1:菜单 2:按钮(kind = 0时生效)")
+    @Column(name = "menu_kind", columnDefinition = "tinyint", comment = "菜单类型 0:目录 1:菜单 2:按钮(kind = 0时生效)")
     private Integer menuKind;
 
     @Column(name = "menu_path", length = 256, comment = "菜单路径(menuKind = 1时生效)")
@@ -50,7 +51,7 @@ public class ResourcePo {
     @Column(name = "menu_icon", length = 64, comment = "菜单图标(menuKind = 1时生效)")
     private String menuIcon;
 
-    @Column(name = "menu_hidden",columnDefinition = "tinyint", comment = "是否隐藏 0:否 1:是(menuKind = 1/2时生效)")
+    @Column(name = "menu_hidden", columnDefinition = "tinyint", comment = "是否隐藏 0:否 1:是(menuKind = 1/2时生效)")
     private Integer menuHidden;
 
     @Column(name = "menu_btn_id", length = 64, comment = "按钮ID(menuKind = 2时必填)")

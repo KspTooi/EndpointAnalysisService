@@ -127,23 +127,24 @@ public class QtTaskPo {
 
     /**
      * 获取任务唯一标识
+     *
      * @return 任务唯一标识
      */
     public String getIdentity() {
         return "TASK_" + this.getId();
     }
 
-    public String validate(){
+    public String validate() {
 
         //检查调用目标(本地BEAN时)
-        if(this.kind == 0){
-            if(!QuickTaskRegistry.contains(this.target)){
+        if (this.kind == 0) {
+            if (!QuickTaskRegistry.contains(this.target)) {
                 return "本地BEAN不存在: " + this.target;
             }
         }
 
         //检查Cron合法性
-        if(!CronExpression.isValidExpression(this.cron)){
+        if (!CronExpression.isValidExpression(this.cron)) {
             return "CRON表达式不合法: " + this.cron;
         }
 

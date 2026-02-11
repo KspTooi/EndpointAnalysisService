@@ -7,6 +7,7 @@ import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionDetailsVo;
 import com.ksptooi.biz.rdbg.model.collection.vo.GetCollectionTreeVo;
 import com.ksptooi.biz.rdbg.service.CollectionService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ksptooi.biz.auth.service.SessionService.session;
-import com.ksptool.assembly.entity.exception.AuthException;
 
 @PrintLog
 @RestController

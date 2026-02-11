@@ -21,7 +21,7 @@ import static com.ksptooi.biz.auth.service.SessionService.session;
 @Setter
 @Entity
 @Table(name = "ep_std_word", comment = "标准词管理", indexes = {
-    @Index(name = "uk_source_name_delete", unique = true, columnList = "source_name,delete_time")
+        @Index(name = "uk_source_name_delete", unique = true, columnList = "source_name,delete_time")
 })
 @SQLDelete(sql = "UPDATE ep_std_word SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
