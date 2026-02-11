@@ -1,14 +1,11 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.model.group.GroupPo;
 import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.permission.PermissionPo;
 import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.model.user.dto.AddUserDto;
-import com.ksptooi.biz.core.model.user.dto.BatchEditUserDto;
-import com.ksptooi.biz.core.model.user.dto.EditUserDto;
-import com.ksptooi.biz.core.model.user.dto.GetUserListDto;
-import com.ksptooi.biz.core.model.user.dto.ImportUserDto;
+import com.ksptooi.biz.core.model.user.dto.*;
 import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
 import com.ksptooi.biz.core.model.user.vo.UserGroupVo;
@@ -55,7 +52,7 @@ public class UserService {
 
     @Autowired
     private OrgRepository orgRepository;
-    
+
     @Autowired
     private SessionService sessionService;
 
@@ -524,7 +521,7 @@ public class UserService {
 
     /**
      * 批量编辑用户
-     * 
+     *
      * @param dto 批量编辑用户DTO
      * @throws BizException 批量编辑用户失败
      */
@@ -532,7 +529,7 @@ public class UserService {
 
         var userIds = dto.getIds();
         var userPos = userRepository.findAllById(userIds);
-        
+
         if (userPos.size() != userIds.size()) {
             throw new BizException("部分用户不存在");
         }
@@ -572,7 +569,7 @@ public class UserService {
             userRepository.deleteAll(userPos);
 
             //销毁被删除用户的session(如果有) 强行踢他们下线
-            
+
 
             return userPos.size();
         }

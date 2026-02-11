@@ -2,7 +2,7 @@ package com.ksptooi.biz.relay.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.relay.model.replayrequest.*;
 import com.ksptooi.biz.relay.model.request.RequestPo;

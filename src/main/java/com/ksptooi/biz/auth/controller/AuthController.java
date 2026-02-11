@@ -1,11 +1,11 @@
-package com.ksptooi.biz.core.controller;
+package com.ksptooi.biz.auth.controller;
 
 
+import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
-import com.ksptooi.biz.core.model.session.UserSessionVo;
 import com.ksptooi.biz.core.model.user.dto.LoginDto;
 import com.ksptooi.biz.core.model.user.dto.RegisterDto;
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.core.service.UserService;

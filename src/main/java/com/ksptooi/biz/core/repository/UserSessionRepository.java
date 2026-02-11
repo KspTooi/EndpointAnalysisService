@@ -1,8 +1,8 @@
 package com.ksptooi.biz.core.repository;
 
-import com.ksptooi.biz.core.model.session.GetSessionListDto;
-import com.ksptooi.biz.core.model.session.GetSessionListVo;
-import com.ksptooi.biz.core.model.session.UserSessionPo;
+import com.ksptooi.biz.auth.model.session.GetSessionListDto;
+import com.ksptooi.biz.auth.model.session.GetSessionListVo;
+import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

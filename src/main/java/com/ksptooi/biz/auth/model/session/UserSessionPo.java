@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.session;
+package com.ksptooi.biz.auth.model.session;
 
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.commons.utils.IdWorker;

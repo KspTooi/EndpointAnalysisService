@@ -1,18 +1,14 @@
 package com.ksptooi.biz.${ptalcn}.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
-#foreach ($import in $imports)
+    #foreach ($import in $imports)
 import ${import};
 #end
-
-import java.util.Date;
 
 @Getter
 @Setter

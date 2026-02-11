@@ -1,10 +1,11 @@
-package com.ksptooi.biz.core.model.session;
+package com.ksptooi.biz.auth.model.session;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.Set;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 public class UserSessionVo {
@@ -29,7 +30,7 @@ public class UserSessionVo {
 
     @Schema(description = "公司ID")
     private Long companyId;
-    
+
     @Schema(description = "用户权限代码集合")
     private Set<String> permissionCodes;
 

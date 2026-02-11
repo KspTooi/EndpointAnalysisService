@@ -1,6 +1,6 @@
 package com.ksptooi;
 
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.relay.service.RelayServerService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;

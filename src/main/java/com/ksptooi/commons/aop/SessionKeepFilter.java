@@ -1,8 +1,8 @@
 package com.ksptooi.commons.aop;
 
 import com.google.gson.Gson;
-import com.ksptooi.biz.core.model.session.UserSessionVo;
-import com.ksptooi.biz.core.service.AuthService;
+import com.ksptooi.biz.auth.model.session.UserSessionVo;
+import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.core.service.SessionService;
 import com.ksptool.assembly.entity.web.Result;
 import jakarta.servlet.*;
@@ -37,15 +37,6 @@ import java.util.Map;
 @Order(1)
 public class SessionKeepFilter implements Filter {
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private SessionService sessionService;
-
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
-    private final Gson gson = new Gson();
-
     private static final List<String> WHITE_LIST = Arrays.asList(
             "/login",
             "/css/**",
@@ -68,11 +59,16 @@ public class SessionKeepFilter implements Filter {
             "/noPermission",
             "/endpoint/**"
     );
-
     private static final Map<String, String> BLACK_LIST = Map.of(
             "/actuator/**", "admin:maintain:actuator",
             "/actuator", "admin:maintain:actuator"
     );
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final Gson gson = new Gson();
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private SessionService sessionService;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

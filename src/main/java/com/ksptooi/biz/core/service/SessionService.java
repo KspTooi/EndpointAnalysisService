@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.service;
 
-import com.ksptooi.biz.core.model.session.*;
+import com.ksptooi.biz.auth.model.session.*;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.repository.UserSessionRepository;
@@ -49,6 +49,32 @@ public class SessionService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * 获取当前用户会话
+     *
+     * @return 当前用户会话
+     * @throws AuthException 如果用户会话不存在，或用户未登录。
+     */
+    public static UserSessionVo session() throws AuthException {
+
+        var session = getSession();
+
+        if (session == null || session.getUserId() == null) {
+            throw new AuthException("Require User Login");
+        }
+
+        return session;
+    }
+
+    /**
+     * 获取当前用户会话
+     *
+     * @return 当前用户会话 如果用户未登录，则返回null。
+     */
+    public static UserSessionVo getSession() {
+        return (UserSessionVo) RequestContextHolder.currentRequestAttributes()
+                .getAttribute(SESSION_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    }
 
     public PageResult<GetSessionListVo> getSessionList(GetSessionListDto dto) {
         Page<GetSessionListVo> pPos = userSessionRepository.getSessionList(dto, dto.pageRequest());
@@ -85,36 +111,8 @@ public class SessionService {
      *
      * @param uids 用户ID列表
      */
-    public void closeSession(List<Long> uids){
+    public void closeSession(List<Long> uids) {
         userSessionRepository.removeUserSessionByUserIds(uids);
-    }
-
-
-    /**
-     * 获取当前用户会话
-     *
-     * @return 当前用户会话
-     * @throws AuthException 如果用户会话不存在，或用户未登录。
-     */
-    public static UserSessionVo session() throws AuthException {
-
-        var session = getSession();
-
-        if (session == null || session.getUserId() == null) {
-            throw new AuthException("Require User Login");
-        }
-
-        return session;
-    }
-
-    /**
-     * 获取当前用户会话
-     *
-     * @return 当前用户会话 如果用户未登录，则返回null。
-     */
-    public static UserSessionVo getSession() {
-        return (UserSessionVo) RequestContextHolder.currentRequestAttributes()
-                .getAttribute(SESSION_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
     }
 
     /**

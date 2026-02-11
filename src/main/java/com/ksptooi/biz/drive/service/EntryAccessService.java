@@ -2,7 +2,6 @@ package com.ksptooi.biz.drive.service;
 
 import com.google.gson.Gson;
 import com.ksptooi.biz.core.service.AttachService;
-import com.ksptooi.biz.core.service.AuthService;
 import com.ksptooi.biz.core.service.SessionService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
@@ -12,8 +11,6 @@ import com.ksptooi.commons.config.DriveConfig;
 import com.ksptooi.commons.utils.Base64;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
-
-import org.h2.engine.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,16 +32,13 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class EntryAccessService {
 
+    private static final Gson gson = new Gson();
     @Autowired
     private AttachService attachService;
-
     @Autowired
     private EntryRepository entryRepository;
-
     @Autowired
     private DriveConfig driveConfig;
-
-    private static final Gson gson = new Gson();
 
     /**
      * 获取条目对象签名 支持单个和多个
@@ -217,23 +210,23 @@ public class EntryAccessService {
             throw new BizException("要获取的条目不存在或无权限访问");
         }
 
-        if(entryIds.size() != entryPos.size()){
+        if (entryIds.size() != entryPos.size()) {
             throw new BizException("至少有一个条目不存在或无权限访问");
         }
 
         var files = new HashMap<Long, File>();
         for (var entryPo : entryPos) {
 
-            if(entryPo.getKind() != 0){
+            if (entryPo.getKind() != 0) {
                 throw new BizException("至少有一个条目类型不正确,期望:文件,实际:文件夹");
             }
 
-            if(entryPo.getAttach() == null){
+            if (entryPo.getAttach() == null) {
                 throw new BizException("至少有一个条目附件不存在");
             }
 
-            if(entryPo.getAttachStatus() != 3){
-                throw new BizException("至少有一个条目附件状态不正确,期望:3,实际:"+entryPo.getAttachStatus());
+            if (entryPo.getAttachStatus() != 3) {
+                throw new BizException("至少有一个条目附件状态不正确,期望:3,实际:" + entryPo.getAttachStatus());
             }
 
             //查找文件
