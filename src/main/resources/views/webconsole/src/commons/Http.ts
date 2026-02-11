@@ -5,6 +5,7 @@ import router from "@/router/admin";
 
 // 创建axios实例
 const axiosInstance = axios.create({
+  baseURL: "/api", // 统一为所有请求添加 /api 前缀，配合 Vite 代理
   // 为所有请求添加自定义请求头
   headers: {
     "AE-Request-With": "XHR",
