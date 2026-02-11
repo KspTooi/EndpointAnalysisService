@@ -14,7 +14,6 @@ import com.ksptooi.biz.core.service.AttachService;
 import com.ksptooi.biz.core.service.EndpointService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.commons.WebUtils;
-import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -88,44 +87,6 @@ public class AuthService {
         //}
         //log.warn("权限校验未通过 uid:{} permission:{}", uid, permission);
         //return false;
-    }
-
-    /**
-     * 用户使用用户名与密码登录系统
-     *
-     * @param username 用户名
-     * @param password 密码
-     */
-    public String loginByPassword(String username, String password, HttpServletRequest hsr) throws BizException {
-
-
-        // 根据用户名查询用户
-        var user = userRepository.findByUsername(username);
-        var ipAddr = getIpAddr(hsr);
-        var uaString = hsr.getHeader("User-Agent");
-
-        if (user == null) {
-            auditLoginService.recordLoginAudit(null, username, 1, "用户不存在", ipAddr, uaString);
-            throw new BizException("用户名或密码错误");
-        }
-
-        // 使用用户名作为盐，对密码进行加密：password + username
-        String salted = password + username;
-        String hashedPassword = SHA256.hex(salted);
-        if (!hashedPassword.equals(user.getPassword())) {
-            auditLoginService.recordLoginAudit(null, username, 1, "密码错误", ipAddr, uaString);
-            throw new BizException("用户名或密码错误");
-        }
-
-        // 更新登录次数和最后登录时间
-        user.setLoginCount(user.getLoginCount() + 1);
-        user.setLastLoginTime(LocalDateTime.now());
-        userRepository.save(user);
-
-        // 登录成功，创建或返回 token
-        UserSessionVo session = sessionService.createSession(user.getId());
-        auditLoginService.recordLoginAudit(user.getId(), username, 0, "登录成功", ipAddr, uaString);
-        return session.getSessionId();
     }
 
 

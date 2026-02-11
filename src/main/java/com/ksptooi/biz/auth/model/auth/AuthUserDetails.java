@@ -58,6 +58,9 @@ public class AuthUserDetails implements UserDetails {
 
     //所属部门名称
     private String deptName;
+    
+    //公司ID(旧字段，用于兼容旧数据)
+    private Long companyId;
 
     //用户头像附件ID
     private Long avatarAttachId;

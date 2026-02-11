@@ -8,7 +8,6 @@ import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
-import com.ksptooi.biz.core.model.user.dto.LoginDto;
 import com.ksptooi.biz.core.model.user.dto.RegisterDto;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
@@ -31,11 +30,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Set;
 
@@ -66,7 +62,7 @@ public class AuthController {
     @Operation(summary = "登录(新)")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/userLogin")
-    public String userLogin(@RequestBody UserLoginDto dto, HttpServletRequest hsr) {
+    public UserLoginVo userLogin(@RequestBody UserLoginDto dto, HttpServletResponse hsrp) throws BizException {
 
         //使用Spring Security进行用户名密码认证
         Authentication auth = authenticationManager.authenticate(
@@ -76,39 +72,22 @@ public class AuthController {
         //获取认证用户
         var aud = (AuthUserDetails) auth.getPrincipal();
 
+        //创建用户会话
+        var sessionId = sessionService.createSession(aud);
+
+        // 设置 cookie
+        var cookie = new Cookie("bio-session-id", sessionId);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);  // 防止 XSS 攻击
+        cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
+        hsrp.addCookie(cookie);
+
         //组装Vo
         var vo = as(aud, UserLoginVo.class);
-
-
-
-        
-
-        return null;
+        vo.setSessionId(sessionId);
+        return vo;
     }
 
-
-    @Operation(summary = "登录")
-    @PrintLog(sensitiveFields = "password")
-    @PostMapping(value = "/loginOld")
-    public String login(@Valid LoginDto dto, HttpServletResponse response, HttpServletRequest hsr, RedirectAttributes ra) {
-        try {
-            var token = authService.loginByPassword(dto.getUsername(), dto.getPassword(), hsr);
-
-            // 设置 cookie
-            var cookie = new Cookie("eas-session-id", token);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);  // 防止 XSS 攻击
-            cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
-            response.addCookie(cookie);
-
-            // 登录成功，重定向到客户端UI
-            return "redirect:/";
-        } catch (BizException e) {
-            // 登录失败，添加错误消息并重定向回登录页
-            ra.addFlashAttribute("error", e.getMessage());
-            return "redirect:/login";
-        }
-    }
 
     @Operation(summary = "注册")
     @PrintLog(sensitiveFields = "password")
@@ -149,7 +128,7 @@ public class AuthController {
         }
     }
 
-    
+
     @Operation(summary = "获取权限")
     @PostMapping("/getPermissions")
     @ResponseBody

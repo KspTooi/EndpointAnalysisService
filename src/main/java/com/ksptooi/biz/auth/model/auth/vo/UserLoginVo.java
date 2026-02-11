@@ -55,4 +55,7 @@ public class UserLoginVo {
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "用户会话ID")
+    private String sessionId;
+
 }

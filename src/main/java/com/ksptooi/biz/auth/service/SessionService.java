@@ -1,6 +1,7 @@
 package com.ksptooi.biz.auth.service;
 
-import com.ksptooi.biz.auth.model.session.*;
+import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
+import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionListVo;
@@ -9,6 +10,7 @@ import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.WebUtils;
+import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -22,11 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import static com.ksptool.entities.Entities.fromJsonArray;
+import static com.ksptool.entities.Entities.*;
 
 @Slf4j
 @Service
@@ -52,6 +56,7 @@ public class SessionService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     /**
      * 获取当前用户会话
@@ -128,41 +133,37 @@ public class SessionService {
         return userRepository.findById(session().getUserId()).orElseThrow(() -> new AuthException("user not found"));
     }
 
+
     /**
      * 创建用户会话
      *
-     * @param uid 用户ID
-     * @return 用户会话
+     * @param aud 认证用户详情
+     * @return 用户会话ID
      */
-    public UserSessionVo createSession(Long uid) {
+    public String createSession(AuthUserDetails aud) throws BizException {
 
-        var userPo = userRepository.findById(uid).orElseThrow(() -> new RuntimeException("用户不存在"));
+        var sessionId = UUID.randomUUID().toString();
+        var hashedSessionId = SHA256.hex(sessionId);
 
-        //查询当前用户是否已有会话
-        var existingSession = userSessionRepository.getSessionByUserId(uid);
+        var newSession = new UserSessionPo();
+        assign(aud, newSession);
 
-        if (existingSession != null) {
+        //搜集权限码
+        var permCodes = new HashSet<String>();
 
-            //Session未过期 直接返回VO
-            if (!existingSession.isExpired()) {
-                return existingSession.toVo();
-            }
-
-            //Session已过期 删除过期记录
-            if (existingSession.isExpired()) {
-                userSessionRepository.delete(existingSession);
-            }
-
+        for (var authority : aud.getAuthorities()) {
+            permCodes.add(authority.getAuthority());
         }
 
-        //获取用户拥有的全部权限代码
-        var userPermissionCodes = userRepository.getUserPermissionCodes(userPo.getId());
-
-        //创建新会话
-        var newSession = UserSessionPo.create(userPo, userPermissionCodes, expiresInSeconds);
+        //存入数据库
+        newSession.setUserId(aud.getId());
+        newSession.setSessionId(hashedSessionId);
+        newSession.setPermissionCodes(toJson(permCodes));
+        newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         newSession = userSessionRepository.save(newSession);
-        return newSession.toVo();
+        return sessionId;
     }
+
 
     /**
      * 更新用户会话
