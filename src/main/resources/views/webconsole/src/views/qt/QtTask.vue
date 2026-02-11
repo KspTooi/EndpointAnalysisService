@@ -32,6 +32,9 @@
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
+      <el-button type="primary" plain @click="cronCalculatorRef?.openModal(modalForm.cron)">
+        Cron 计算器演示
+      </el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -183,7 +186,14 @@
         <el-row :gutter="20">
           <el-col>
             <el-form-item label="CRON表达式" prop="cron">
-              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit />
+              <el-input v-model="modalForm.cron" placeholder="请输入CRON表达式" clearable maxlength="64" show-word-limit>
+                <template #append>
+                  <el-button @click="cronCalculatorRef?.openModal(modalForm.cron)">
+                    <el-icon><Calendar /></el-icon>
+                    计算器
+                  </el-button>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -288,12 +298,15 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- Cron 计算器 -->
+    <CronCalculatorModal ref="cronCalculatorRef" @onConfirm="(cron) => modalForm.cron = cron || ''" />
   </StdListContainer>
 </template>
 
 <script setup lang="ts">
 import { ref, markRaw, watch } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, Calendar } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import QtTaskService from "@/views/qt/service/QtTaskService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -301,10 +314,14 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import QtTaskGroupService from "./service/QtTaskGroupService";
+import CronCalculatorModal from "./components/public/CronCalculatorModal.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+
+// Cron 计算器引用
+const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
 
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskService.useQtTaskList();
