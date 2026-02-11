@@ -29,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -60,21 +59,18 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private HttpSession hs;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Operation(summary = "登录(新)")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/userLogin")
-    public String userLogin(@RequestBody UserLoginDto dto) {
+    public String userLogin(@RequestBody UserLoginDto dto, HttpServletRequest hsr) {
 
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
         );
 
+        HttpSession hs = hsr.getSession();
+        hs.setAttribute("AAAA", "AABC");
 
         return null;
     }
