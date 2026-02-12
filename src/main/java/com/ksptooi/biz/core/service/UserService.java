@@ -5,7 +5,6 @@ import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.UserGroupRepository;
-import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.org.OrgPo;
 import com.ksptooi.biz.core.model.user.UserPo;
@@ -18,7 +17,6 @@ import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.UserEnum;
-import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,7 +55,7 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Autowired
     private UserGroupRepository ugRepository;
 
@@ -139,7 +138,6 @@ public class UserService {
 
         UserPo user = new UserPo();
         assign(dto, user);
-        user.setId(IdWorker.nextId());//预先生成ID 因为用户组关联表需要用户ID
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setIsSystem(0);
 
@@ -173,34 +171,33 @@ public class UserService {
             user.setDeptName(null);
         }
 
+        //保存用户
+        UserPo save = userRepository.save(user);
+
         //处理用户组
         var userGroupPos = new ArrayList<UserGroupPo>();
 
-        if(!dto.getGroupIds().isEmpty()){
+        if (!dto.getGroupIds().isEmpty()) {
 
             //查询启用的用户组IDS
-            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(),1);
-            
-            //至少有一个用户组是启用且有效的，将它们分配给用户
-            if(!enabledGroupIds.isEmpty()){
+            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(), 1);
 
-                for(var gId : enabledGroupIds){
+            //至少有一个用户组是启用且有效的，将它们分配给用户
+            if (!enabledGroupIds.isEmpty()) {
+
+                for (var gId : enabledGroupIds) {
                     var userGroupPo = new UserGroupPo();
-                    userGroupPo.setUserId(user.getId());
+                    userGroupPo.setUserId(save.getId());
                     userGroupPo.setGroupId(gId);
                     userGroupPos.add(userGroupPo);
                 }
-                
+
             }
 
         }
 
-
-        //保存用户
-        userRepository.save(user);
-
         //保存用户组关联
-        if(!userGroupPos.isEmpty()){
+        if (!userGroupPos.isEmpty()) {
             ugRepository.saveAll(userGroupPos);
         }
 
@@ -258,15 +255,15 @@ public class UserService {
 
         //处理用户组 先清除该用户的全部用户组关联
         ugRepository.clearGroupGrantedByUserId(user.getId());
-        
+
         var userGroupPos = new ArrayList<UserGroupPo>();
-        if(!dto.getGroupIds().isEmpty()){
+        if (!dto.getGroupIds().isEmpty()) {
 
             //查询启用的用户组IDS
-            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(),1);
+            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(), 1);
 
-            if(!enabledGroupIds.isEmpty()){
-                for(var gId : enabledGroupIds){
+            if (!enabledGroupIds.isEmpty()) {
+                for (var gId : enabledGroupIds) {
                     var userGroupPo = new UserGroupPo();
                     userGroupPo.setUserId(user.getId());
                     userGroupPo.setGroupId(gId);
@@ -280,7 +277,7 @@ public class UserService {
         userRepository.save(user);
 
         //保存用户组关联
-        if(!userGroupPos.isEmpty()){
+        if (!userGroupPos.isEmpty()) {
             ugRepository.saveAll(userGroupPos);
         }
 
@@ -418,7 +415,7 @@ public class UserService {
         ugRepository.clearGroupGrantedByUserId(adminUser.getId());
 
         var userGroupPos = new ArrayList<UserGroupPo>();
-        for(var gId : allGroups){
+        for (var gId : allGroups) {
             var userGroupPo = new UserGroupPo();
             userGroupPo.setUserId(adminUser.getId());
             userGroupPo.setGroupId(gId.getId());
@@ -426,7 +423,7 @@ public class UserService {
         }
 
         //保存用户组关联
-        if(!userGroupPos.isEmpty()){
+        if (!userGroupPos.isEmpty()) {
             ugRepository.saveAll(userGroupPos);
         }
 

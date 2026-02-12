@@ -12,7 +12,6 @@ import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
-import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -126,12 +125,14 @@ public class GroupService {
         }
 
         GroupPo group = new GroupPo();
-        group.setId(IdWorker.nextId()); //用户组在新增时需要手动设置ID 因为用户组关联表需要用户组ID
         group.setCode(dto.getCode());
         group.setName(dto.getName());
         group.setDescription(dto.getDescription());
         group.setStatus(dto.getStatus());
         group.setSortOrder(dto.getSortOrder());
+
+        //保存用户组
+        GroupPo save = repository.save(group);
 
         //处理权限关系
         var permissionPos = permissionRepository.findAllById(dto.getPermissionIds());
@@ -139,13 +140,11 @@ public class GroupService {
 
         for (var permission : permissionPos) {
             var gpPo = new GroupPermissionPo();
-            gpPo.setGroupId(group.getId());
+            gpPo.setGroupId(save.getId());
             gpPo.setPermissionId(permission.getId());
             gpPos.add(gpPo);
         }
 
-        //保存用户组
-        repository.save(group);
 
         //保存用户组关联权限码关系
         if (!gpPos.isEmpty()) {
@@ -572,13 +571,15 @@ public class GroupService {
 
             // 创建新的组
             GroupPo group = new GroupPo();
-            group.setId(IdWorker.nextId()); //用户组在新增时需要手动设置ID 因为用户组关联表需要用户组ID
             group.setCode(code);
             group.setName(groupEnum.getName());
             group.setDescription(groupEnum.getName());
             group.setIsSystem(true);
             group.setSortOrder(repository.findMaxSortOrder() + 1);
             group.setStatus(1); // 启用状态
+
+            // 保存组
+            GroupPo save = repository.save(group);
 
             // 如果是管理员组，赋予所有权限
             if (groupEnum == GroupEnum.ADMIN) {
@@ -590,7 +591,7 @@ public class GroupService {
                 var gpPos = new ArrayList<GroupPermissionPo>();
                 for (var permissionId : allPermissionIds) {
                     var gpPo = new GroupPermissionPo();
-                    gpPo.setGroupId(group.getId());
+                    gpPo.setGroupId(save.getId());
                     gpPo.setPermissionId(permissionId);
                     gpPos.add(gpPo);
                 }
@@ -599,8 +600,6 @@ public class GroupService {
                 gpRepository.saveAll(gpPos);
             }
 
-            // 保存组
-            repository.save(group);
 
             addedCount++;
             addedGroups.add(code);
