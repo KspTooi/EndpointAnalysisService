@@ -118,7 +118,6 @@ public class UserSessionPo {
             this.id = IdWorker.nextId();
         }
 
-
         createTime = LocalDateTime.now();
         updateTime = LocalDateTime.now();
     }

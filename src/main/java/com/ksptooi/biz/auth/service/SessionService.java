@@ -9,6 +9,7 @@ import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -59,17 +61,16 @@ public class SessionService {
 
     /**
      * 获取当前用户会话
+     *
      * @return 当前用户会话，如果用户未登录，则返回null
      */
-    public static AuthUserDetails getSession(){
-        try{
+    public static AuthUserDetails getSession() {
+        try {
             return session();
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
-
-
 
 
     public PageResult<GetSessionListVo> getSessionList(GetSessionListDto dto) {
@@ -143,6 +144,7 @@ public class SessionService {
         }
 
         //存入数据库
+        newSession.setId(IdWorker.nextId());
         newSession.setUserId(aud.getId());
         newSession.setSessionId(hashedSessionId);
         newSession.setPermissionCodes(toJson(permCodes));
@@ -184,9 +186,10 @@ public class SessionService {
         return existingSession.toVo();
     }
 
-    
+
     /**
      * 根据SessionId获取会话
+     *
      * @param sessionId 会话SessionId
      * @return 会话
      * @throws BizException 如果会话不存在，或会话已过期。
@@ -198,7 +201,7 @@ public class SessionService {
         if (session == null) {
             throw new BizException("会话不存在");
         }
-        
+
         return session;
     }
 
