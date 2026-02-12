@@ -17,6 +17,7 @@ import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -188,12 +189,13 @@ public class SessionService {
 
 
     /**
-     * 根据SessionId获取会话
+     * 根据SessionId获取会话 这是一个带有缓存的查询方法 缓存配置位于com.ksptooi.commons.config.CacheConfig
      *
      * @param sessionId 会话SessionId
      * @return 会话
      * @throws BizException 如果会话不存在，或会话已过期。
      */
+    @Cacheable(cacheNames = "userSession", key = "#sessionId")
     public UserSessionPo getSessionBySessionId(String sessionId) throws BizException {
 
         var session = userSessionRepository.getSessionBySessionId(SHA256.hex(sessionId));
