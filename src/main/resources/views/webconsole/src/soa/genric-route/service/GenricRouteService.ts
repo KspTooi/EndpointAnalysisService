@@ -64,19 +64,6 @@ export default {
    */
   useGenricRoute() {
     /**
-     * 构建路由路径
-     * @param entry 路由条目
-     * @returns 路由路径
-     */
-    const buildPath = (entry: RouteEntryPo): string => {
-      if (entry.biz == null) {
-        return "/" + entry.path;
-      }
-
-      return "/" + entry.biz + "/" + entry.path;
-    };
-
-    /**
      * 初始化路由服务
      * @param app 应用实例
      */
@@ -133,7 +120,7 @@ export default {
 
         //添加Vue路由
         vueRouter.addRoute({
-          path: buildPath(entry),
+          path: entry.buildPath(),
           name: entry.name,
           component: entry.component,
           meta: {
@@ -147,7 +134,7 @@ export default {
       //路由有名称冲突 只更新Vue路由,不更新内置路由表
       if (hasConflict) {
         vueRouter.addRoute({
-          path: buildPath(entry),
+          path: entry.buildPath(),
           name: entry.name,
           component: entry.component,
           meta: {
@@ -203,7 +190,6 @@ export default {
       addRoutes,
       removeRoute,
       getRoutes,
-      buildPath,
     };
   },
 };
