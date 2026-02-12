@@ -18,50 +18,26 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.log("----------------- ERROR -----------------", error.response);
 
-    // 检查是否为 401 Unauthorized 状态码
+    //处理Http403状态码
+    if (error.response?.status === 403) {
+      //跳转到无权限页面
+      router.push({
+        name: "no-permission",
+        query: {
+          message: "权限不足",
+        },
+      });
+      const data = error.response.data as Result<unknown>;
+      return Promise.reject(new Error(data.message || "权限不足"));
+    }
+
+    //处理Http401状态码
     if (error.response?.status === 401) {
-      const data = error.response.data as Result<unknown>; // 类型断言
-
-      // 检查是否为权限不足 (code = 2)
-      if (data && data.code === 2 && data.message && data.message.includes("权限不足")) {
-        console.log("捕获到 401 Unauthorized 且 code=2 (权限不足)，准备重定向到无权限页面");
-        // 提取权限代码
-        const permissionMatch = data.message.match(/权限不足：([\w:]+)/);
-        const permissionCode = permissionMatch ? permissionMatch[1] : "";
-
-        // 重定向到权限不足页面
-        router.push({
-          name: "no-permission",
-          query: {
-            message: data.message,
-            permissionCode: permissionCode,
-          },
-        });
-        // 返回一个被拒绝的Promise，中断后续处理
-        return Promise.reject(new Error(data.message));
-      }
-
-      // 如果不是权限不足的 401，则执行原来的重定向到登录页逻辑
-      console.log("捕获到 401 Unauthorized 错误（非权限不足），准备重定向到登录页面");
-      if (typeof window !== "undefined") {
-        const location = error.response.headers.location || error.response.headers.Location;
-        if (location) {
-          window.location.href = location;
-        } else {
-          window.location.href = "/login";
-        }
-      }
-      // 返回一个被拒绝的Promise，中断后续处理
-      return Promise.reject(error);
-    } else if (error.response?.status === 302 || error.response?.status === 301) {
-      // 保留对 301/302 的处理
-      const location = error.response.headers.location || error.response.headers.Location;
-      if (location?.includes("/login")) {
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-        }
-      }
-      return Promise.reject(error); // 301/302也应中断
+      //跳转到登录页面
+      router.push({
+        name: "login",
+      });
+      return Promise.reject(new Error("登录已过期或未登录"));
     }
 
     // 处理HTTP 400 (参数校验失败)
