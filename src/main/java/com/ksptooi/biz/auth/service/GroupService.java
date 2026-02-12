@@ -488,10 +488,10 @@ public class GroupService {
             }
 
             //用户组下面还有用户也不能删除
-            var userGroupIds = ugRepository.getGroupIdsByGrantedUserId(group.getId());
+            var userCount = ugRepository.countUserByGroupId(group.getId());
 
-            if (!userGroupIds.isEmpty()) {
-                errorMessage = String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userGroupIds.size());
+            if (userCount > 0) {
+                errorMessage = String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userCount);
                 continue;
             }
 
@@ -508,12 +508,12 @@ public class GroupService {
             throw new BizException("没有可以安全删除的用户组,请检查用户组状态或关联关系");
         }
 
+        //删除该组下挂载的权限关系
+        gpRepository.clearPermissionByGroupIds(safeRemoveIds);
+
+
         //执行静默删除
         repository.deleteAllById(safeRemoveIds);
-
-        //还需要删除该组下挂载的权限关系
-
-
     }
 
 
@@ -534,9 +534,6 @@ public class GroupService {
         int addedCount = 0;
         List<String> addedGroups = new ArrayList<>();
 
-        // 获取所有权限（用于管理员组）
-        List<PermissionPo> allPermissions = permissionRepository.findAll();
-
         // 遍历所有系统内置组
         for (GroupEnum groupEnum : groupEnums) {
             String code = groupEnum.getCode();
@@ -550,7 +547,7 @@ public class GroupService {
 
                     //查询管理员组
                     var adminGroup = repository.getGroupByCode(GroupEnum.ADMIN.getCode());
-                    
+
                     //先清空管理员的全部GP关系
                     gpRepository.clearPermissionByGroupId(adminGroup.getId());
 

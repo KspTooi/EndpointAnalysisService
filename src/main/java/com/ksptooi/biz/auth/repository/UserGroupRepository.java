@@ -13,6 +13,19 @@ import java.util.List;
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroupPo, UserGroupPo.Pk>, JpaSpecificationExecutor<UserGroupPo> {
 
+
+    /**
+     * 根据用户组ID统计用户数量
+     *
+     * @param groupId 用户组ID
+     * @return 用户数量
+     */
+    @Query("""
+            SELECT COUNT(ug) FROM UserGroupPo ug WHERE ug.groupId = :groupId
+            """)
+    Long countUserByGroupId(@Param("groupId") Long groupId);
+
+
     /**
      * 根据用户ID获取用户拥有的全部用户组ID
      *
