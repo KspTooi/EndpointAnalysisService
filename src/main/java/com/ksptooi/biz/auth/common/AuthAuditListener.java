@@ -1,0 +1,101 @@
+package com.ksptooi.biz.auth.common;
+
+import com.ksptooi.biz.audit.service.AuditLoginService;
+import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
+import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptooi.commons.WebUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+@Slf4j
+@Component
+public class AuthAuditListener {
+
+    @Autowired
+    private AuditLoginService auditLoginService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * 用户登录成功事件 用于记录登录审计日志
+     *
+     * @param event 事件
+     */
+    @EventListener
+    public void onSuccess(AuthenticationSuccessEvent event) {
+
+        Authentication auth = event.getAuthentication();
+
+        //获取登录成功的AUD
+        AuthUserDetails aud = (AuthUserDetails) auth.getPrincipal();
+
+        if (aud == null) {
+            log.error("监听到登录成功事件 获取登录成功的AUD失败: authentication={}", auth);
+            return;
+        }
+
+        //准备审计所需的参数
+        var requestAttributes = RequestContextHolder.getRequestAttributes();
+
+        var ip = "Unknown";
+        var uaStr = "Unknown";
+
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+            ip = WebUtils.getIpAddr(request);
+            uaStr = request.getHeader("User-Agent");
+        }
+
+        var userId = aud.getId();
+        var username = aud.getUsername();
+        var loginKind = 0; // 0:用户名密码
+        var message = "登录成功";
+
+        //记录登录审计日志
+        auditLoginService.recordLoginAudit(userId, username, loginKind, message, ip, uaStr);
+    }
+
+
+    /**
+     * 用户登录失败事件 用于记录登录审计日志
+     *
+     * @param event 事件
+     */
+    @EventListener
+    public void onFailure(AbstractAuthenticationFailureEvent event) {
+
+        Authentication auth = event.getAuthentication();
+
+        //准备审计所需的参数
+        var requestAttributes = RequestContextHolder.getRequestAttributes();
+        var ip = "Unknown";
+        var uaStr = "Unknown";
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+            ip = WebUtils.getIpAddr(request);
+            uaStr = request.getHeader("User-Agent");
+        }
+        var userId = 0L;
+        var username = String.valueOf(auth.getPrincipal()); // 通常是用户名字符串
+        var loginKind = 0; // 0:用户名密码
+        var message = "用户密码错误";
+
+
+        //查找一次用户
+        if(userRepository.countByUsername(username) < 1){
+            message = "用户不存在";
+        }
+
+        //记录登录审计日志
+        auditLoginService.recordLoginAudit(userId, username, loginKind, message, ip, uaStr);
+    }
+}

@@ -10,7 +10,6 @@ import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,27 +261,6 @@ public class AuthService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename)
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
-    }
-
-
-    /*
-     * 获取IP地址
-     * @param request 请求
-     * @return IP地址
-     */
-    private String getIpAddr(HttpServletRequest request) {
-
-        if (request == null) {
-            return "unknown";
-        }
-
-        String ip = request.getHeader("X-REAL-IP");
-
-        if (StringUtils.isNotBlank(ip)) {
-            return ip;
-        }
-
-        return request.getRemoteAddr();
     }
 
 

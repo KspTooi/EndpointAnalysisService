@@ -56,7 +56,7 @@ public class WebUtils {
      * @param request 请求
      * @return IP地址
      */
-    private String getIpAddr(HttpServletRequest request) {
+    public static String getIpAddr(HttpServletRequest request) {
 
         if (request == null) {
             return "unknown";
