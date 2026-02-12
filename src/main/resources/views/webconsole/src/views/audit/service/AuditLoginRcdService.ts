@@ -76,6 +76,35 @@ export default {
       }
     };
 
+    /**
+     * 批量删除日志
+     */
+    const removeListBatch = async (selectedItems: GetAuditLoginListVo[]) => {
+      if (selectedItems.length === 0) {
+        ElMessage.warning("请选择要删除的审计日志");
+        return;
+      }
+
+      try {
+        await ElMessageBox.confirm(`确定删除选中的${selectedItems.length}条审计日志吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        const ids = selectedItems.map((item) => item.id);
+        await AuditLoginApi.removeAuditLogin({ ids });
+        ElMessage.success("删除成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     onMounted(async () => {
       QueryPersistService.loadQuery("audit-login-rcd", listForm.value);
       await loadList();
@@ -89,6 +118,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      removeListBatch,
     };
   },
 };

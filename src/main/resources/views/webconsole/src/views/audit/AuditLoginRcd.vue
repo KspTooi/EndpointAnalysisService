@@ -21,11 +21,26 @@
     </template>
 
     <template #actions>
-      <!-- 操作按钮区域为空 -->
+      <el-button
+        type="danger"
+        @click="() => removeListBatch(listSelected)"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中项
+      </el-button>
     </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetAuditLoginListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="40" />
         <el-table-column prop="username" label="用户名" min-width="120" />
         <el-table-column label="登录方式" min-width="120">
           <template #default="scope">
@@ -79,14 +94,18 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw } from "vue";
+import { markRaw, ref } from "vue";
 import { Delete } from "@element-plus/icons-vue";
+import type { GetAuditLoginListVo } from "@/views/audit/api/AuditLoginApi.ts";
 import AuditLoginRcdService from "@/views/audit/service/AuditLoginRcdService.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const DeleteIcon = markRaw(Delete);
 
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+// 选中的列表项
+const listSelected = ref<GetAuditLoginListVo[]>([]);
+
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   AuditLoginRcdService.useAuditLoginList();
 </script>
 
