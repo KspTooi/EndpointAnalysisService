@@ -1,6 +1,5 @@
 package com.ksptooi.biz.core.model.user;
 
-import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
@@ -93,14 +92,6 @@ public class UserPo {
     @Column(name = "delete_time", comment = "删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "core_user_group",
-            joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
-            inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    )
-    private Set<GroupPo> groups = new HashSet<>();
 
     @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
     private Set<CompanyPo> createdCompanies = new HashSet<>();

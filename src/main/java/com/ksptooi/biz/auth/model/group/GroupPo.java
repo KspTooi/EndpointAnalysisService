@@ -1,7 +1,6 @@
 package com.ksptooi.biz.auth.model.group;
 
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
-import com.ksptooi.biz.core.model.user.UserPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,10 +63,6 @@ public class GroupPo {
     )
     //用户组拥有的权限
     private Set<PermissionPo> permissions = new HashSet<>();
-
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
-    //用户组中的用户
-    private Set<UserPo> users = new HashSet<>();
 
     @PrePersist
     public void prePersist() {

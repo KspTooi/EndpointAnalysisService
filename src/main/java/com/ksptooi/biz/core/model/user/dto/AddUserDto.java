@@ -51,6 +51,7 @@ public class AddUserDto {
     @Schema(description = "所属组织架构ID 只能为部门")
     private Long deptId;
 
+    @NotNull(message = "用户组ID列表不能为空")
     @Schema(description = "用户组ID列表")
     private List<Long> groupIds;
 }

@@ -1,8 +1,10 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.model.UserGroupPo;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.repository.GroupRepository;
+import com.ksptooi.biz.auth.repository.UserGroupRepository;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.org.OrgPo;
@@ -16,6 +18,7 @@ import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.UserEnum;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +56,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    
+    @Autowired
+    private UserGroupRepository ugRepository;
 
     /**
      * 获取用户列表
@@ -91,15 +96,15 @@ public class UserService {
         // 获取用户组信息
         List<UserGroupVo> groupVos = new ArrayList<>();
         List<GroupPo> allGroups = groupRepository.findAll(Sort.by(Sort.Direction.ASC, "sortOrder"));
-        HashSet<Long> userGroupIds = new HashSet<>();
-        for (GroupPo group : user.getGroups()) {
-            userGroupIds.add(group.getId());
-        }
 
+        //获取该用户拥有的组IDS
+        var userGroupIds = ugRepository.getGroupIdsByGrantedUserId(id);
+
+        //处理用户组信息
         for (GroupPo group : allGroups) {
             UserGroupVo groupVo = new UserGroupVo();
             assign(group, groupVo);
-            groupVo.setHasGroup(userGroupIds.contains(group.getId()));
+            groupVo.setHasGroup(userGroupIds.contains(group.getId()));//是否属于该组
             groupVos.add(groupVo);
         }
         vo.setGroups(groupVos);
@@ -134,8 +139,8 @@ public class UserService {
 
         UserPo user = new UserPo();
         assign(dto, user);
+        user.setId(IdWorker.nextId());//预先生成ID 因为用户组关联表需要用户ID
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setGroups(getGroupSet(dto.getGroupIds()));
         user.setIsSystem(0);
 
         //处理组织架构
@@ -168,8 +173,37 @@ public class UserService {
             user.setDeptName(null);
         }
 
+        //处理用户组
+        var userGroupPos = new ArrayList<UserGroupPo>();
 
+        if(!dto.getGroupIds().isEmpty()){
+
+            //查询启用的用户组IDS
+            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(),1);
+            
+            //至少有一个用户组是启用且有效的，将它们分配给用户
+            if(!enabledGroupIds.isEmpty()){
+
+                for(var gId : enabledGroupIds){
+                    var userGroupPo = new UserGroupPo();
+                    userGroupPo.setUserId(user.getId());
+                    userGroupPo.setGroupId(gId);
+                    userGroupPos.add(userGroupPo);
+                }
+                
+            }
+
+        }
+
+
+        //保存用户
         userRepository.save(user);
+
+        //保存用户组关联
+        if(!userGroupPos.isEmpty()){
+            ugRepository.saveAll(userGroupPos);
+        }
+
     }
 
     /**
@@ -191,7 +225,6 @@ public class UserService {
         }
 
         assign(dto, user);
-        user.setGroups(getGroupSet(dto.getGroupIds()));
 
         //处理组织架构
         if (dto.getDeptId() != null) {
@@ -223,7 +256,35 @@ public class UserService {
             user.setDeptName(null);
         }
 
+        //处理用户组 先清除该用户的全部用户组关联
+        ugRepository.clearGroupGrantedByUserId(user.getId());
+        
+        var userGroupPos = new ArrayList<UserGroupPo>();
+        if(!dto.getGroupIds().isEmpty()){
+
+            //查询启用的用户组IDS
+            var enabledGroupIds = groupRepository.getUserGroupByIds(dto.getGroupIds(),1);
+
+            if(!enabledGroupIds.isEmpty()){
+                for(var gId : enabledGroupIds){
+                    var userGroupPo = new UserGroupPo();
+                    userGroupPo.setUserId(user.getId());
+                    userGroupPo.setGroupId(gId);
+                    userGroupPos.add(userGroupPo);
+                }
+            }
+
+        }
+
+        //保存用户
         userRepository.save(user);
+
+        //保存用户组关联
+        if(!userGroupPos.isEmpty()){
+            ugRepository.saveAll(userGroupPos);
+        }
+
+        //更新用户会话
         sessionService.updateSession(user.getId());
     }
 
@@ -244,13 +305,6 @@ public class UserService {
         }
 
         userRepository.delete(userPo);
-    }
-
-    private HashSet<GroupPo> getGroupSet(List<Long> groupIds) {
-        if (groupIds == null || groupIds.isEmpty()) {
-            return new HashSet<>();
-        }
-        return new HashSet<>(groupRepository.findAllById(groupIds));
     }
 
 
@@ -360,12 +414,22 @@ public class UserService {
         // 获取所有用户组
         List<GroupPo> allGroups = groupRepository.findAll();
 
-        // 更新admin的用户组
-        adminUser.getGroups().clear();
-        adminUser.getGroups().addAll(allGroups);
+        // 更新admin的用户组 先清除该用户的全部用户组关联
+        ugRepository.clearGroupGrantedByUserId(adminUser.getId());
 
-        // 保存更改
-        userRepository.save(adminUser);
+        var userGroupPos = new ArrayList<UserGroupPo>();
+        for(var gId : allGroups){
+            var userGroupPo = new UserGroupPo();
+            userGroupPo.setUserId(adminUser.getId());
+            userGroupPo.setGroupId(gId.getId());
+            userGroupPos.add(userGroupPo);
+        }
+
+        //保存用户组关联
+        if(!userGroupPos.isEmpty()){
+            ugRepository.saveAll(userGroupPos);
+        }
+
     }
 
 

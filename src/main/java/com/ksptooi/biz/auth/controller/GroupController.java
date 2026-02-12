@@ -83,7 +83,7 @@ public class GroupController {
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        service.removeGroup(dto.getId());
+        service.removeGroup(dto);
         return Result.success("删除成功");
     }
 }

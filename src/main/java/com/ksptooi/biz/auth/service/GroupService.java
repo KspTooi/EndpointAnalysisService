@@ -15,6 +15,7 @@ import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -378,7 +379,36 @@ public class GroupService {
 
 
     @Transactional
-    public void removeGroup(long id) throws BizException {
+    public void removeGroup(CommonIdDto dto) throws BizException {
+
+        var ids = dto.toIds();
+
+        if (ids == null || ids.isEmpty()) {
+            throw new BizException("用户组ID不能为空");
+        }
+
+        //查询存在的用户组记录
+        var groups = repository.getGroupsWithUsersAndPermissions(ids);
+
+        if (groups == null || groups.isEmpty()) {
+            throw new BizException("一个或多个用户组不存在");
+        }
+
+        var safeRemoveIds = new ArrayList<Long>();
+
+        for (GroupPo group : groups) {
+
+            //系统用户组无法删除
+            if (group.getIsSystem()) {
+                continue;
+            }
+            
+            //用户组下面还有用户也不能删除
+            
+
+
+        }
+
 
         GroupPo group = repository.getGroupWithUserAndPermission(id);
 

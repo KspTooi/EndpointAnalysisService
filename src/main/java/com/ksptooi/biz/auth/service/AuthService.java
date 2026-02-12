@@ -1,6 +1,5 @@
 package com.ksptooi.biz.auth.service;
 
-import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
@@ -154,15 +153,15 @@ public class AuthService {
         vo.setAvatarAttachId(null);
 
         //处理用户组、权限
-        var groups = user.getGroups();
+        //var groups = user.getGroups();
 
         List<String> groupNames = new ArrayList<>();
         Set<PermissionPo> permissionSet = new HashSet<>();
 
-        for (GroupPo group : groups) {
-            groupNames.add(group.getName());
-            permissionSet.addAll(group.getPermissions());
-        }
+        //for (GroupPo group : groups) {
+        //    groupNames.add(group.getName());
+        //    permissionSet.addAll(group.getPermissions());
+        //}
 
         vo.setGroups(groupNames);
 
