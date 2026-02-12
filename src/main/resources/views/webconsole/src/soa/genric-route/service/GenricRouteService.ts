@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, useRoute, useRouter } from "vue-router";
+import { createRouter, createWebHashHistory, useRoute, useRouter, type Router } from "vue-router";
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
@@ -51,6 +51,14 @@ vueRouter.beforeEach((to, from, next) => {
 });
 
 export default {
+  /**
+   * 获取Vue路由
+   * @returns Vue路由
+   */
+  getVueRouter(): Router {
+    return vueRouter;
+  },
+
   /**
    * 使用全局路由服务
    */

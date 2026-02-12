@@ -1,7 +1,8 @@
 import type Result from "@/commons/entity/Result.ts";
 import axios from "axios";
-import { useRouter } from "vue-router";
-const router = useRouter();
+import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
+
+var vueRouter = GenricRouteService.getVueRouter();
 
 // 创建axios实例
 const axiosInstance = axios.create({
@@ -21,7 +22,7 @@ axiosInstance.interceptors.response.use(
     //处理Http403状态码
     if (error.response?.status === 403) {
       //跳转到无权限页面
-      router.push({
+      vueRouter.push({
         name: "no-permission",
         query: {
           message: "权限不足",
@@ -34,7 +35,7 @@ axiosInstance.interceptors.response.use(
     //处理Http401状态码
     if (error.response?.status === 401) {
       //跳转到登录页面
-      router.push({
+      vueRouter.push({
         path: "/auth/login",
       });
       return Promise.reject(new Error("登录已过期或未登录"));
