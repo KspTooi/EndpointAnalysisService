@@ -191,8 +191,6 @@ export default {
         route.name = item.name;
         route.component = item.component;
         route.meta = item.meta;
-        route.beforeEach = item.beforeEach;
-        route.afterEach = item.afterEach;
         routes.push(route);
       }
 

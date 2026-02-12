@@ -1,5 +1,4 @@
 import type { Component } from "vue";
-import type { _Awaitable, NavigationGuardWithThis, NavigationHookAfter } from "vue-router";
 
 /**
  * 路由条目类
@@ -16,10 +15,6 @@ export class RouteEntryPo {
     layout?: string | null; //布局 为null时直接使用默认布局 blank:全局布局(不带控制台框架)
   };
 
-  //路由守卫
-  beforeEach?: NavigationGuardWithThis<undefined>;
-  afterEach?: NavigationHookAfter;
-
   /**
    * 构造函数
    * @param props 属性
@@ -34,16 +29,12 @@ export class RouteEntryPo {
       breadcrumb?: string | null;
       layout?: string | null;
     };
-    beforeEach?: NavigationGuardWithThis<undefined>;
-    afterEach?: NavigationHookAfter;
   }) {
     this.biz = props.biz;
     this.path = props.path;
     this.name = props.name;
     this.component = props.component;
     this.meta = props.meta;
-    this.beforeEach = props.beforeEach;
-    this.afterEach = props.afterEach;
   }
 
   /**
@@ -110,8 +101,6 @@ export class RouteEntryPo {
       breadcrumb?: string | null;
       layout?: string | null;
     };
-    beforeEach?: NavigationGuardWithThis<undefined>;
-    afterEach?: NavigationHookAfter;
   }): RouteEntryPo {
     return new RouteEntryPo(props);
   }
