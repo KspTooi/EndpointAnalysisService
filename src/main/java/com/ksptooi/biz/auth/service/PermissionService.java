@@ -1,7 +1,7 @@
 package com.ksptooi.biz.auth.service;
 
 
-import com.ksptooi.biz.auth.model.permission.*;
+import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.permission.dto.AddPermissionDto;
 import com.ksptooi.biz.auth.model.permission.dto.EditPermissionDto;
 import com.ksptooi.biz.auth.model.permission.dto.GetPermissionListDto;
@@ -9,6 +9,7 @@ import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDefinitionVo;
 import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDetailsVo;
 import com.ksptooi.biz.auth.model.permission.vo.GetPermissionListVo;
 import com.ksptooi.biz.auth.model.permission.vo.ValidateSystemPermissionsVo;
+import com.ksptooi.biz.auth.repository.GroupPermissionRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.commons.enums.PermissionEnum;
 import com.ksptool.assembly.entity.exception.BizException;
@@ -34,6 +35,9 @@ public class PermissionService {
 
     @Autowired
     private PermissionRepository repository;
+
+    @Autowired
+    private GroupPermissionRepository gpRepository;
 
     public List<GetPermissionDefinitionVo> getPermissionDefinition() {
         List<PermissionPo> pos = repository.findAll(Sort.by(Sort.Direction.DESC, "createTime"));
@@ -150,14 +154,18 @@ public class PermissionService {
             throw new BizException("系统权限不允许删除");
         }
 
-        //获取有多少用户组在使用该权限
-        int groupCount = permission.getGroups().size();
+        //获取有多少用户组在使用该权限码
+        var groupIds = gpRepository.getPermissionIdsByGroupId(id);
 
-        if (groupCount > 0) {
-            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupCount));
+        if (!groupIds.isEmpty()) {
+            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupIds.size()));
         }
 
+        //执行静默删除
         repository.deleteById(id);
+
+        //还需要删除该权限下挂载的组权限关系
+
     }
 
     /**

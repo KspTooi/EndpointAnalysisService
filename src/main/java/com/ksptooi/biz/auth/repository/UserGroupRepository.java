@@ -37,4 +37,17 @@ public interface UserGroupRepository extends JpaRepository<UserGroupPo, UserGrou
             """)
     void clearGroupGrantedByUserId(@Param("userId") Long userId);
 
+
+    /**
+     * 根据用户组ID获取拥有该组的用户ID列表
+     *
+     * @param groupId 用户组ID
+     * @return 用户ID列表
+     */
+    @Query("""
+            SELECT ug.userId FROM UserGroupPo ug
+            WHERE ug.groupId = :groupId
+            """)
+    List<Long> getUserIdsByGroupId(@Param("groupId") Long groupId);
+
 }

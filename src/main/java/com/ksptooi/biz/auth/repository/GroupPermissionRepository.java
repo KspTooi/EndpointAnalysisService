@@ -26,6 +26,18 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
     List<Long> getPermissionIdsByGroupId(@Param("groupId") Long groupId);
 
     /**
+     * 根据用户组ID获取拥有的全部权限
+     *
+     * @param groupId 用户组ID
+     * @return 权限列表
+     */
+    @Query("""
+            SELECT gp FROM GroupPermissionPo gp
+            WHERE gp.groupId = :groupId
+            """)
+    List<GroupPermissionPo> getGroupPermissionsByGroupId(@Param("groupId") Long groupId);
+
+    /**
      * 清除用户组拥有的全部权限关联
      *
      * @param groupId 用户组ID

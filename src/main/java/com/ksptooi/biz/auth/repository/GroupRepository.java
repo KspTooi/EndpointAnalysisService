@@ -20,18 +20,6 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
 
 
     /**
-     * 统计用户组下的所属用户数量
-     *
-     * @param groupId 用户组ID
-     * @return 用户组下的所属用户数量
-     */
-    @Query("""
-            SELECT COUNT(u) FROM GroupPo u
-            WHERE u.groups.id = :groupId
-            """)
-    Long countUsersByGroupId(@Param("groupId") Long groupId);
-
-    /**
      * 根据用户ID获取用户拥有的全部用户组
      *
      * @param userId 用户ID
@@ -39,8 +27,8 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
      */
     @Query("""
             SELECT g FROM GroupPo g
-            LEFT JOIN FETCH g.users u
-            WHERE u.id = :userId
+            LEFT JOIN UserGroupPo ug ON g.id = ug.groupId
+            WHERE ug.userId = :userId
             """)
     List<GroupPo> getGroupsByUserId(@Param("userId") Long userId);
 
@@ -60,11 +48,9 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
      */
     @Query("""
             SELECT g FROM GroupPo g
-            LEFT JOIN FETCH g.permissions
-            LEFT JOIN FETCH g.users
             WHERE g.id IN :ids
             """)
-    List<GroupPo> getGroupsWithUsersAndPermissions(@Param("ids") List<Long> ids);
+    List<GroupPo> getGroupsByIds(@Param("ids") List<Long> ids);
 
     /**
      * 获取最大排序号
@@ -82,8 +68,8 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
                 g.id,
                 g.code,
                 g.name,
-                SIZE(g.users),
-                SIZE(g.permissions),
+                CAST((SELECT COUNT(ug) FROM UserGroupPo ug WHERE ug.groupId = g.id) AS integer),
+                CAST((SELECT COUNT(gp) FROM GroupPermissionPo gp WHERE gp.groupId = g.id) AS integer),
                 g.isSystem,
                 g.status,
                 g.createTime
@@ -97,13 +83,23 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
             """)
     Page<GetGroupListVo> getGroupList(@Param("dto") GetGroupListDto dto, Pageable pageable);
 
-    GroupPo findByCode(String code);
+
+    /**
+     * 根据组码获取用户组
+     *
+     * @param code 组码
+     * @return 用户组
+     */
+    @Query("""
+            SELECT g FROM GroupPo g WHERE g.code = :code
+            """)
+    GroupPo getGroupByCode(@Param("code") String code);
 
 
     /**
      * 根据ID列表获取用户组
      *
-     * @param ids 用户组ID列表
+     * @param ids    用户组ID列表
      * @param status 用户组状态 0:禁用 1:启用
      * @return 用户组
      */
@@ -111,5 +107,5 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
             SELECT g.id FROM GroupPo g
             WHERE g.id IN :ids AND g.status = :status
             """)
-    List<Long> getUserGroupByIds(@Param("ids") List<Long> ids,Integer status);
+    List<Long> getUserGroupByIds(@Param("ids") List<Long> ids, Integer status);
 }

@@ -1,20 +1,18 @@
 package com.ksptooi.biz.auth.service;
 
 
+import com.ksptooi.biz.auth.model.GroupPermissionPo;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.group.dto.*;
 import com.ksptooi.biz.auth.model.group.vo.*;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
-import com.ksptooi.biz.auth.repository.GroupRepository;
-import com.ksptooi.biz.auth.repository.PermissionRepository;
-import com.ksptooi.biz.auth.repository.UserGroupRepository;
-import com.ksptooi.biz.auth.repository.UserSessionRepository;
+import com.ksptooi.biz.auth.repository.*;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
-import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.enums.GroupEnum;
+import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -53,23 +51,47 @@ public class GroupService {
     @Autowired
     private UserGroupRepository ugRepository;
 
+    @Autowired
+    private GroupPermissionRepository gpRepository;
 
+
+    /**
+     * 获取用户组定义列表
+     *
+     * @return 用户组定义列表
+     */
     public List<GetGroupDefinitionsVo> getGroupDefinitions() {
         List<GroupPo> pos = repository.findAll(Sort.by(Sort.Direction.DESC, "createTime"));
         return as(pos, GetGroupDefinitionsVo.class);
     }
 
+    /**
+     * 获取用户组列表
+     *
+     * @param dto 获取用户组列表参数
+     * @return 用户组列表
+     */
     public PageResult<GetGroupListVo> getGroupList(GetGroupListDto dto) {
         Page<GetGroupListVo> pagePos = repository.getGroupList(dto, dto.pageRequest());
         return PageResult.success(pagePos.getContent(), pagePos.getTotalElements());
     }
 
+    /**
+     * 获取用户组详情
+     *
+     * @param id 用户组ID
+     * @return 用户组详情
+     * @throws BizException 用户组不存在
+     */
     public GetGroupDetailsVo getGroupDetails(long id) throws BizException {
 
         GroupPo po = repository.findById(id).orElseThrow(() -> new BizException("用户组不存在"));
 
+        //获取系统中的全部权限列表
         List<PermissionPo> allPermPos = permissionRepository.findAll();
-        Set<PermissionPo> hasPermPos = po.getPermissions();
+
+        //获取该用户组拥有的权限IDS
+        var groupPermIds = gpRepository.getPermissionIdsByGroupId(id);
 
         GetGroupDetailsVo vo = as(po, GetGroupDetailsVo.class);
         List<GroupPermissionDefinitionVo> defVos = new ArrayList<>();
@@ -79,10 +101,9 @@ public class GroupService {
             var defVo = as(permission, GroupPermissionDefinitionVo.class);
             defVo.setHas(1);
 
-            for (var hasPermPo : hasPermPos) {
-                if (permission.getId().equals(hasPermPo.getId())) {
-                    defVo.setHas(0);
-                }
+            //如果该用户组拥有该权限 则设置为0
+            if (groupPermIds.contains(permission.getId())) {
+                defVo.setHas(0);
             }
 
             defVos.add(defVo);
@@ -92,30 +113,53 @@ public class GroupService {
         return vo;
     }
 
-    @Transactional
+    /**
+     * 添加用户组
+     *
+     * @param dto 添加用户组参数
+     * @throws BizException 用户组标识已存在
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void addGroup(AddGroupDto dto) throws BizException {
         if (repository.existsByCode(dto.getCode())) {
             throw new BizException("用户组标识已存在");
         }
 
         GroupPo group = new GroupPo();
+        group.setId(IdWorker.nextId()); //用户组在新增时需要手动设置ID 因为用户组关联表需要用户组ID
         group.setCode(dto.getCode());
         group.setName(dto.getName());
         group.setDescription(dto.getDescription());
         group.setStatus(dto.getStatus());
         group.setSortOrder(dto.getSortOrder());
 
-        if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
-            Set<PermissionPo> newPermissions = new HashSet<>(
-                    permissionRepository.findAllById(dto.getPermissionIds())
-            );
-            group.getPermissions().addAll(newPermissions);
+        //处理权限关系
+        var permissionPos = permissionRepository.findAllById(dto.getPermissionIds());
+        var gpPos = new ArrayList<GroupPermissionPo>();
+
+        for (var permission : permissionPos) {
+            var gpPo = new GroupPermissionPo();
+            gpPo.setGroupId(group.getId());
+            gpPo.setPermissionId(permission.getId());
+            gpPos.add(gpPo);
         }
 
+        //保存用户组
         repository.save(group);
+
+        //保存用户组关联权限码关系
+        if (!gpPos.isEmpty()) {
+            gpRepository.saveAll(gpPos);
+        }
     }
 
-    @Transactional
+    /**
+     * 编辑用户组
+     *
+     * @param dto 编辑用户组参数
+     * @throws BizException 用户组不存在
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void editGroup(EditGroupDto dto) throws BizException {
         GroupPo group = repository.findById(dto.getId()).orElseThrow(() -> new BizException("用户组不存在"));
 
@@ -131,20 +175,34 @@ public class GroupService {
         group.setStatus(dto.getStatus());
         group.setSortOrder(dto.getSortOrder());
 
-        group.getPermissions().clear();
+        //处理权限关系 先清除该用户组下挂载的权限关系
+        gpRepository.clearPermissionByGroupId(group.getId());
+        var permissionPos = permissionRepository.findAllById(dto.getPermissionIds());
+        var gpPos = new ArrayList<GroupPermissionPo>();
 
-        if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
-            Set<PermissionPo> newPermissions = new HashSet<>(
-                    permissionRepository.findAllById(dto.getPermissionIds())
-            );
-            group.getPermissions().addAll(newPermissions);
+        for (var permission : permissionPos) {
+            var gpPo = new GroupPermissionPo();
+            gpPo.setGroupId(group.getId());
+            gpPo.setPermissionId(permission.getId());
+            gpPos.add(gpPo);
         }
 
+        //保存用户组
         repository.save(group);
 
-        List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
+        //保存用户组关联权限码关系
+        if (!gpPos.isEmpty()) {
+            gpRepository.saveAll(gpPos);
+        }
 
-        for (UserSessionPo session : activeSessions) {
+        //处理受影响的在线用户会话 先查询拥有该组的用户ID列表
+        var userIds = ugRepository.getUserIdsByGroupId(group.getId());
+
+        //获取当前在线的用户会话
+        var onlineSessions = userSessionRepository.getSessionByUserIds(userIds);
+
+        //更新在线用户会话
+        for (UserSessionPo session : onlineSessions) {
             try {
                 sessionService.updateSession(session.getUserId());
             } catch (Exception e) {
@@ -155,6 +213,13 @@ public class GroupService {
     }
 
 
+    /**
+     * 获取用户组权限菜单视图
+     *
+     * @param dto 获取用户组权限菜单视图参数
+     * @return 用户组权限菜单视图列表
+     * @throws BizException 用户组不存在
+     */
     public List<GetGroupPermissionMenuViewVo> getGroupPermissionMenuView(GetGroupPermissionMenuViewDto dto) throws BizException {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
@@ -249,7 +314,7 @@ public class GroupService {
         }
 
         //获取该组拥有的权限
-        var groupPerms = group.getPermissions();
+        var groupPerms = permissionRepository.getPermissionsByGroupId(group.getId());
 
         //设置菜单当前用户是否有权限
         for (var vo : flatVos) {
@@ -338,7 +403,7 @@ public class GroupService {
         var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(), dto.getHasPermission(), dto.pageRequest());
         List<GetGroupPermissionNodeVo> vos = as(pPos.getContent(), GetGroupPermissionNodeVo.class);
 
-        var groupPerms = group.getPermissions();
+        var groupPerms = permissionRepository.getPermissionsByGroupId(group.getId());
 
         for (var vo : vos) {
             vo.setHasPermission(0);
@@ -353,7 +418,13 @@ public class GroupService {
         return PageResult.success(vos, pPos.getTotalElements());
     }
 
-    @Transactional
+    /**
+     * 授权和取消授权
+     *
+     * @param dto 授权和取消授权参数
+     * @throws BizException 用户组不存在
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void grantAndRevoke(GrantAndRevokeDto dto) throws BizException {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
@@ -366,7 +437,7 @@ public class GroupService {
         var allPermPos = permissionRepository.getPermissionsByCodes(dto.getPermissionCodes());
 
         //获取当前组拥有的权限
-        var groupPerms = group.getPermissions();
+        var groupPerms = permissionRepository.getPermissionsByGroupId(group.getId());
 
         //模式授权 0:授权 1:取消授权
         if (dto.getType() == 0) {
@@ -383,7 +454,13 @@ public class GroupService {
     }
 
 
-    @Transactional
+    /**
+     * 移除用户组
+     *
+     * @param dto 移除用户组参数
+     * @throws BizException 用户组不存在
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void removeGroup(CommonIdDto dto) throws BizException {
 
         var ids = dto.toIds();
@@ -393,7 +470,7 @@ public class GroupService {
         }
 
         //查询存在的用户组记录
-        var groups = repository.getGroupsWithUsersAndPermissions(ids);
+        var groups = repository.getGroupsByIds(ids);
 
         if (groups == null || groups.isEmpty()) {
             throw new BizException("一个或多个用户组不存在");
@@ -409,11 +486,11 @@ public class GroupService {
                 errorMessage = "系统用户组无法删除";
                 continue;
             }
-            
+
             //用户组下面还有用户也不能删除
             var userGroupIds = ugRepository.getGroupIdsByGrantedUserId(group.getId());
 
-            if(!userGroupIds.isEmpty()){
+            if (!userGroupIds.isEmpty()) {
                 errorMessage = String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userGroupIds.size());
                 continue;
             }
@@ -433,9 +510,9 @@ public class GroupService {
 
         //执行静默删除
         repository.deleteAllById(safeRemoveIds);
-    
+
         //还需要删除该组下挂载的权限关系
-        
+
 
     }
 
@@ -470,9 +547,27 @@ public class GroupService {
 
                 //管理员组重新赋予所有权限
                 if (code.equals(GroupEnum.ADMIN.getCode())) {
-                    GroupPo byCode = repository.findByCode(code);
-                    byCode.getPermissions().addAll(allPermissions);
-                    repository.save(byCode);
+
+                    //查询管理员组
+                    var adminGroup = repository.getGroupByCode(GroupEnum.ADMIN.getCode());
+                    
+                    //先清空管理员的全部GP关系
+                    gpRepository.clearPermissionByGroupId(adminGroup.getId());
+
+                    //查找全部权限IDS
+                    var allPermissionIds = permissionRepository.getAllPermissionIds();
+
+                    //创建GP关系列表
+                    var gpPos = new ArrayList<GroupPermissionPo>();
+                    for (var permissionId : allPermissionIds) {
+                        var gpPo = new GroupPermissionPo();
+                        gpPo.setGroupId(adminGroup.getId());
+                        gpPo.setPermissionId(permissionId);
+                        gpPos.add(gpPo);
+                    }
+
+                    //保存GP关系
+                    gpRepository.saveAll(gpPos);
                 }
 
                 continue;
@@ -480,6 +575,7 @@ public class GroupService {
 
             // 创建新的组
             GroupPo group = new GroupPo();
+            group.setId(IdWorker.nextId()); //用户组在新增时需要手动设置ID 因为用户组关联表需要用户组ID
             group.setCode(code);
             group.setName(groupEnum.getName());
             group.setDescription(groupEnum.getName());
@@ -489,7 +585,21 @@ public class GroupService {
 
             // 如果是管理员组，赋予所有权限
             if (groupEnum == GroupEnum.ADMIN) {
-                group.getPermissions().addAll(allPermissions);
+
+                //直接查询所有权限IDS
+                var allPermissionIds = permissionRepository.getAllPermissionIds();
+
+                //创建GP关系列表
+                var gpPos = new ArrayList<GroupPermissionPo>();
+                for (var permissionId : allPermissionIds) {
+                    var gpPo = new GroupPermissionPo();
+                    gpPo.setGroupId(group.getId());
+                    gpPo.setPermissionId(permissionId);
+                    gpPos.add(gpPo);
+                }
+
+                //保存GP关系
+                gpRepository.saveAll(gpPos);
             }
 
             // 保存组

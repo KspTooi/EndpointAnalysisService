@@ -63,6 +63,24 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             """)
     UserSessionPo getSessionByUserId(@Param("userId") Long userId);
 
+    /**
+     * 根据用户IDS获取未过期的会话
+     * 在线用户的判断标准是会话未过期（expiresAt > 当前时间）
+     * @param userIds 用户IDS
+     * @return 会话
+     */
+    @Query("""
+                SELECT us FROM UserSessionPo us
+                WHERE us.userId IN :userIds AND us.expiresAt > CURRENT_TIMESTAMP
+            """)
+    List<UserSessionPo> getSessionByUserIds(@Param("userIds") List<Long> userIds);
+
+    /**
+     * 根据用户ID列表删除会话
+     *
+     * @param userIds 用户ID列表
+     * @return 删除的会话数量
+     */
     @Modifying
     @Query("""
             DELETE FROM UserSessionPo us
@@ -79,23 +97,5 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             WHERE us.sessionId = :sessionId
             """)
     void removeUserSessionBySessionId(@Param("sessionId") String sessionId);
-
-    /**
-     * 根据用户组ID查询该组下所有在线用户的会话信息
-     * 在线用户的判断标准是会话未过期（expiresAt > 当前时间）
-     *
-     * @param groupId 用户组ID
-     * @return 在线用户的会话信息列表
-     */
-    @Query("""
-            SELECT DISTINCT us FROM UserSessionPo us
-            LEFT JOIN UserPo u ON us.userId = u.id
-            LEFT JOIN u.groups ug
-            WHERE (ug.id = :groupId)
-            AND us.expiresAt > CURRENT_TIMESTAMP
-            ORDER BY us.userId
-            """)
-    List<UserSessionPo> getUserSessionByGroupId(@Param("groupId") Long groupId);
-
 
 }
