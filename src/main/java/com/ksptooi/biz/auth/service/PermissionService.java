@@ -1,6 +1,5 @@
 package com.ksptooi.biz.auth.service;
 
-
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.permission.dto.AddPermissionDto;
 import com.ksptooi.biz.auth.model.permission.dto.EditPermissionDto;
@@ -145,24 +144,55 @@ public class PermissionService {
      * 删除权限
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removePermission(long id) throws BizException {
-        PermissionPo permission = repository.findById(id)
-                .orElseThrow(() -> new BizException("权限不存在"));
+    public void removePermission(com.ksptool.assembly.entity.web.CommonIdDto dto) throws BizException {
 
-        // 检查是否为系统权限
-        if (permission.getIsSystem() != null && permission.getIsSystem() == 1) {
-            throw new BizException("系统权限不允许删除");
+        var ids = dto.toIds();
+
+        if (ids == null || ids.isEmpty()) {
+            throw new BizException("权限ID不能为空");
         }
 
-        //获取有多少用户组在使用该权限码
-        var groupCount = gpRepository.countGroupPermissionByPermissionId(id);
+        // 查询存在的权限记录
+        var permissions = repository.findAllById(ids);
 
-        if (groupCount > 0) {
-            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupCount));
+        if (permissions.isEmpty()) {
+            throw new BizException("一个或多个权限记录不存在");
         }
 
-        //执行静默删除
-        repository.deleteById(id);
+        var safeRemoveIds = new ArrayList<Long>();
+        String errorMessage = null;
+
+        for (PermissionPo permission : permissions) {
+
+            // 系统权限不允许删除
+            if (permission.getIsSystem() != null && permission.getIsSystem() == 1) {
+                errorMessage = "系统权限不允许删除";
+                continue;
+            }
+
+            // 获取有多少用户组在使用该权限码
+            var groupCount = gpRepository.countGroupPermissionByPermissionId(permission.getId());
+
+            if (groupCount > 0) {
+                errorMessage = String.format("权限 %s 已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", permission.getName(), groupCount);
+                continue;
+            }
+
+            safeRemoveIds.add(permission.getId());
+        }
+
+        // 如果当前是单个删除模式且有错误 直接抛出异常
+        if (!dto.isBatch() && errorMessage != null) {
+            throw new BizException(errorMessage);
+        }
+
+        // 当前是批量删除模式且没有任何一个权限可以删除 则抛出异常
+        if (dto.isBatch() && safeRemoveIds.isEmpty()) {
+            throw new BizException("没有可以安全删除的权限,请检查系统权限标记或关联关系");
+        }
+
+        // 执行删除
+        repository.deleteAllById(safeRemoveIds);
     }
 
     /**
