@@ -195,7 +195,7 @@ import AdminPermissionApi, {
   type GetPermissionListVo,
   type AddPermissionDto,
   type EditPermissionDto,
-} from "@/views/core/api/PermissionApi.ts";
+} from "@/views/auth/api/PermissionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 

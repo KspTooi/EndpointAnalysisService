@@ -248,15 +248,15 @@ import type {
   GetGroupPermissionNodeDto,
   GetGroupPermissionNodeVo,
   GroupPermissionDefinitionVo,
-} from "@/views/core/api/GroupApi.ts";
+} from "@/views/auth/api/GroupApi.ts";
 import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import MenuApi from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type TableInstance } from "element-plus";
 import { nextTick, onMounted, ref, watch, reactive, computed } from "vue";
 import { Icon } from "@iconify/vue";
-import GroupApi from "@/views/core/api/GroupApi.ts";
-import PermissionApi, { type GetPermissionListVo, type GetPermissionListDto } from "@/views/core/api/PermissionApi.ts";
+import GroupApi from "@/views/auth/api/GroupApi.ts";
+import PermissionApi, { type GetPermissionListVo, type GetPermissionListDto } from "@/views/auth/api/PermissionApi.ts";
 
 const props = defineProps<{
   visible: boolean;

@@ -17,7 +17,7 @@ const router = createRouter({
     {
       path: "/group-manager",
       name: "group-manager",
-      component: () => import("@/views/core/UserGroupManager.vue"),
+      component: () => import("@/views/auth/UserGroupManager.vue"),
       meta: {
         breadcrumb: {
           title: "用户组",
@@ -27,7 +27,7 @@ const router = createRouter({
     {
       path: "/permission-manager",
       name: "permission-manager",
-      component: () => import("@/views/core/PermissionManager.vue"),
+      component: () => import("@/views/auth/PermissionManager.vue"),
       meta: {
         breadcrumb: {
           title: "权限管理",
@@ -37,7 +37,7 @@ const router = createRouter({
     {
       path: "/session-manager",
       name: "session-manager",
-      component: () => import("@/views/core/SessionManager.vue"),
+      component: () => import("@/views/auth/SessionManager.vue"),
       meta: {
         breadcrumb: {
           title: "会话管理",

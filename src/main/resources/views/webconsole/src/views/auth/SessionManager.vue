@@ -95,7 +95,7 @@
 import { reactive, ref, onMounted, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
-import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/views/core/api/SessionApi.ts";
+import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/views/auth/api/SessionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 

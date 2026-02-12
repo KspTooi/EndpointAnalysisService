@@ -12,7 +12,7 @@ import AdminUserApi from "@/views/core/api/UserApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import QueryPersistService from "@/service/QueryPersistService";
-import GroupApi from "@/views/core/api/GroupApi.ts";
+import GroupApi from "@/views/auth/api/GroupApi.ts";
 import OrgApi, { type GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 
 export default {
