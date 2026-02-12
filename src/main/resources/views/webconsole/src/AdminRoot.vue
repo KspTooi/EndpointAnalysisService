@@ -1,6 +1,5 @@
 <template>
   <router-view v-if="isBlankLayout" />
-  {{ isBlankLayout }}
   <console-framework v-if="!isBlankLayout" />
 </template>
 
