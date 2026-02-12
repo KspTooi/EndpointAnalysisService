@@ -155,17 +155,14 @@ public class PermissionService {
         }
 
         //获取有多少用户组在使用该权限码
-        var groupIds = gpRepository.getPermissionIdsByGroupId(id);
+        var groupCount = gpRepository.countGroupPermissionByPermissionId(id);
 
-        if (!groupIds.isEmpty()) {
-            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupIds.size()));
+        if (groupCount > 0) {
+            throw new BizException(String.format("该权限已被 %d 个用户组使用，请先取消所有关联关系后再尝试移除", groupCount));
         }
 
         //执行静默删除
         repository.deleteById(id);
-
-        //还需要删除该权限下挂载的组权限关系
-
     }
 
     /**

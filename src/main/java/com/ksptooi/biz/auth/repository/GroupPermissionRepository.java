@@ -13,6 +13,11 @@ import java.util.List;
 @Repository
 public interface GroupPermissionRepository extends JpaRepository<GroupPermissionPo, GroupPermissionPo.Pk>, JpaSpecificationExecutor<GroupPermissionPo> {
 
+
+
+
+
+
     /**
      * 根据用户组ID获取拥有的全部权限ID
      *
@@ -24,6 +29,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             WHERE gp.groupId = :groupId
             """)
     List<Long> getPermissionIdsByGroupId(@Param("groupId") Long groupId);
+    
 
     /**
      * 根据用户组ID获取拥有的全部权限
@@ -48,6 +54,8 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             """)
     void clearPermissionByGroupId(@Param("groupId") Long groupId);
 
+    
+
 
     /**
      * 根据用户组ID列表清除权限关联
@@ -59,5 +67,17 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             DELETE FROM GroupPermissionPo gp WHERE gp.groupId IN :groupIds
             """)
     void clearPermissionByGroupIds(@Param("groupIds") List<Long> groupIds);
+
+    
+    /**
+     * 根据权限ID统计有多少用户组在使用该权限
+     *
+     * @param permissionId 权限ID
+     * @return 用户组数量
+     */
+    @Query("""
+            SELECT COUNT(gp) FROM GroupPermissionPo gp WHERE gp.permissionId = :permissionId
+            """)
+    Long countGroupPermissionByPermissionId(@Param("permissionId") Long permissionId);
 
 }
