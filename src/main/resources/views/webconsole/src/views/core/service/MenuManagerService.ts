@@ -40,7 +40,6 @@ export default {
       }
 
       listLoading.value = false;
-      await loadFullMenuTree();
     };
 
     /**
@@ -120,7 +119,6 @@ export default {
       //加载查询条件
       QueryPersistService.loadQuery("menu-manager", listForm.value);
       await loadList();
-      await loadFullMenuTree();
     });
 
     return {
@@ -141,9 +139,15 @@ export default {
    * 菜单模态框打包
    * @param modalFormRef 模态框表单引用
    * @param loadList 列表加载函数
-   * @param fullMenuTree 完整菜单树
+   * @param fullMenuTree 完整菜单树数据
+   * @param loadFullMenuTree 加载完整菜单树函数
    */
-  useMenuModal(modalFormRef: Ref<FormInstance>, loadList: () => void, fullMenuTree: Ref<GetMenuTreeVo[]>) {
+  useMenuModal(
+    modalFormRef: Ref<FormInstance>,
+    loadList: () => void,
+    fullMenuTree: Ref<GetMenuTreeVo[]>,
+    loadFullMenuTree: () => Promise<void>
+  ) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit" | "add-item">("add"); //add:添加,edit:编辑,add-item:新增子项
@@ -207,6 +211,9 @@ export default {
      * @param currentRow 当前行
      */
     const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetMenuTreeVo | null) => {
+      // 打开模态框时加载完整菜单树用于选择父级
+      await loadFullMenuTree();
+
       modalMode.value = mode;
       modalCurrentRow.value = currentRow;
       resetModal();

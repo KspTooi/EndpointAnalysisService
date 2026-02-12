@@ -115,6 +115,13 @@
             />
           </template>
         </el-table-column>
+        <el-table-column label="状态" prop="menuHidden" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.menuHidden === 1 ? 'danger' : 'success'">
+              {{ scope.row.menuHidden === 1 ? "隐藏" : "正常" }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" width="230">
           <template #default="scope">
             <div class="inline-flex justify-end items-center gap-2 w-full">
@@ -216,9 +223,9 @@
       <el-form-item label="查询参数" prop="menuQueryParam" v-if="modalForm.menuKind == 1">
         <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
       </el-form-item>
-      <el-form-item label="是否隐藏" prop="menuHidden">
+      <el-form-item label="状态" prop="menuHidden">
         <el-radio-group v-model="modalForm.menuHidden">
-          <el-radio :value="0">不隐藏</el-radio>
+          <el-radio :value="0">正常</el-radio>
           <el-radio :value="1">隐藏</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -272,8 +279,18 @@ const modalFormRef = ref<FormInstance>();
 /**
  * 菜单列表打包
  */
-const { listForm, listExpand, listData, listLoading, fullMenuTree, loadList, resetList, removeList, listExpandToggle } =
-  MenuManagerService.useMenuList(listTableRef);
+const {
+  listForm,
+  listExpand,
+  listData,
+  listLoading,
+  fullMenuTree,
+  loadList,
+  resetList,
+  removeList,
+  loadFullMenuTree,
+  listExpandToggle,
+} = MenuManagerService.useMenuList(listTableRef);
 
 /**
  * 菜单模态框打包
@@ -290,7 +307,7 @@ const {
   openModal,
   resetModal,
   submitModal,
-} = MenuManagerService.useMenuModal(modalFormRef, loadList, fullMenuTree);
+} = MenuManagerService.useMenuModal(modalFormRef, loadList, fullMenuTree, loadFullMenuTree);
 
 const getMenuDetail = async (id: string) => {
   const result = await MenuApi.getMenuDetails({ id });
