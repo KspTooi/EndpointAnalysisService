@@ -37,6 +37,9 @@ public class SecurityConfig {
     @Autowired
     private JsonAuthEntryPoint jsonAuthEntryPoint;
 
+    @Autowired
+    private DynamicAuthorizationManager dam;
+
     /**
      * 配置Spring Security
      *
@@ -70,15 +73,19 @@ public class SecurityConfig {
 
                 //配置接口权限规则
                 .authorizeHttpRequests(auth -> auth
-                        //白名单
-                        .requestMatchers(whiteList.toArray(new String[0])).permitAll()
+                                //白名单
+                                .requestMatchers(whiteList.toArray(new String[0])).permitAll()
 
-                        //兜底规则 其余所有请求都必须登录
-                        .anyRequest().authenticated()
+                                //兜底规则 其余所有请求都必须登录
+                                .anyRequest().authenticated()
+                        //.anyRequest().access(dam.asAuthorizationManager())
                 )
+
+
+                //配置认证失败和权限不足的处理(统一返回JSON格式)
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(jsonAuthEntryPoint)
-                        .accessDeniedHandler(jsonAuthEntryPoint)
+                        .authenticationEntryPoint(jsonAuthEntryPoint) //认证失败
+                        .accessDeniedHandler(jsonAuthEntryPoint) //权限不足
                 );
 
         //添加自定义过滤器
