@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+ * 用户登录审计监听器 用于记录登录审计日志
+ * 
+ * 这个类主要用于记录用户登录审计日志，包括登录成功和登录失败的情况。
+ * 它会监听SpringSecurity的登录成功和登录失败事件，并记录相应的审计日志。
+ */
 @Slf4j
 @Component
 public class AuthAuditListener {

@@ -37,9 +37,6 @@ public class SecurityConfig {
     @Autowired
     private JsonAuthEntryPoint jsonAuthEntryPoint;
 
-    @Autowired
-    private JsonAccessDeniedHandler jsonAccessDeniedHandler;
-
     /**
      * 配置Spring Security
      *

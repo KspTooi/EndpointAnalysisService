@@ -28,19 +28,15 @@ import static com.ksptool.entities.Entities.fromJsonArray;
 
 /**
  * 基于 core_user_session 的无状态认证过滤器模板。
- *
- * <p>
- * 设计目标：
- * - core_user_session 是唯一权威
- * - 每次请求从 Cookie/Header 取 sessionId，然后查表重建 Authentication
- * - 不依赖 HttpSession / Spring Session
- * </p>
- *
- * <p>
- * 注意：
- * - 如果你们需要 ROLE_ 角色码，请确保 core_user_session.permissions 内也包含 ROLE_xxx，或在此处额外补齐
- * - 如果你们要做“秒更”，可以对 sessionId 做 Caffeine 短 TTL 缓存，并在权限变更时主动失效
- * </p>
+ * 
+ * 这个类主要用于基于 core_user_session 的无状态认证过滤器，确保每次请求都能获取到有效的用户会话。
+ * 它会从请求头或Cookie中获取sessionId，然后从数据库查询会话信息，并重建认证上下文。
+ * 
+ * 认证流程
+ * 1.用户登录，通过/auth/userLogin接口，返回sessionId 服务端会设置一个名为bio-session-id的Cookie (前端也可以手动发送Authorization: Bearer <sessionId>请求头)
+ * 2.用户每次请求，会自动携带bio-session-id Cookie或Authorization: Bearer <sessionId>请求头
+ * 3.后端收到请求，通过这个过滤器，获取sessionId，并从数据库查询(此处已有缓存机制,不会每次都查询数据库)会话信息，如果会话存在且未过期，则重建安全上下文
+ * 4.重建安全上下文后，SpringSecurity会自动将安全上下文设置到SecurityContextHolder中，后续的接口调用会自动使用这个安全上下文
  */
 @Component
 public class UserSessionAuthFilter extends OncePerRequestFilter {
