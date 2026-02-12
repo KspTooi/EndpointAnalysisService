@@ -1,22 +1,23 @@
 package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.auth.repository.PermissionRepository;
+import com.ksptooi.biz.core.model.endpoint.DynamicEndpointAuthorizationRule;
 import com.ksptooi.biz.core.model.endpoint.dto.AddEndpointDto;
 import com.ksptooi.biz.core.model.endpoint.dto.EditEndpointDto;
 import com.ksptooi.biz.core.model.endpoint.dto.GetEndpointTreeDto;
 import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointDetailsVo;
 import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointTreeVo;
-import com.ksptooi.biz.core.model.resource.po.ResourcePo;
+import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,8 +33,6 @@ public class EndpointService {
 
     @Autowired
     private PermissionRepository permissionRepository;
-
-    private List<ResourcePo> endpointCache = null;
 
 
     /**
@@ -218,13 +217,6 @@ public class EndpointService {
         // 转换为VO
         List<GetEndpointTreeVo> allVos = as(allEndpoints, GetEndpointTreeVo.class);
 
-        // 设置缓存状态
-        if (this.endpointCache != null) {
-            Set<Long> cachedIds = this.endpointCache.stream().map(ResourcePo::getId).collect(Collectors.toSet());
-            allVos.forEach(vo -> vo.setCached(cachedIds.contains(vo.getId()) ? 1 : 0));
-        } else {
-            allVos.forEach(vo -> vo.setCached(0));
-        }
 
         // 设置parentId
         for (int i = 0; i < allEndpoints.size(); i++) {
@@ -326,85 +318,37 @@ public class EndpointService {
         }
     }
 
-
     /**
-     * 获取端点所需权限
+     * 获取全量端点权限配置数据 这是一个带有缓存的查询方法 缓存配置位于com.ksptooi.commons.config.CacheConfig
      *
-     * @param urlPath 请求路径
-     * @return 所需权限列表
+     * @return 端点权限配置数据
      */
-    public List<String> getEndpointRequiredPermission(String urlPath) {
+    @Cacheable(cacheNames = "endpoint", key = "'all_endpoints'")
+    public List<DynamicEndpointAuthorizationRule> getEndpointPermissionConfig() {
 
-        if (StringUtils.isBlank(urlPath)) {
-            return null;
+        //直接全量查询接口PO
+        var pos = resourceRepository.findByKind(1);
+        
+        //构建VO
+        var rules = new ArrayList<DynamicEndpointAuthorizationRule>();
+
+        for (ResourcePo po : pos) {
+            var rule = new DynamicEndpointAuthorizationRule();
+            rule.setPathPattern(po.getPath());
+            rule.setPermissionCodes(po.getPermission());
+            rules.add(rule);
         }
 
-        if (this.endpointCache == null) {
-            this.endpointCache = resourceRepository.findByKind(1);
-        }
-
-        List<ResourcePo> endpoints = this.endpointCache;
-
-        if (endpoints.isEmpty()) {
-            return null;
-        }
-
-        PathMatcher pathMatcher = new AntPathMatcher();
-
-        List<ResourcePo> matchedEndpoints = new ArrayList<>();
-
-        for (ResourcePo endpoint : endpoints) {
-            if (StringUtils.isNotBlank(endpoint.getPath()) && pathMatcher.match(endpoint.getPath(), urlPath)) {
-                matchedEndpoints.add(endpoint);
-            }
-        }
-
-        if (matchedEndpoints.isEmpty()) {
-            return null;
-        }
-
-        ResourcePo bestMatch;
-
-        if (matchedEndpoints.size() == 1) {
-            bestMatch = matchedEndpoints.get(0);
-        } else {
-            Comparator<ResourcePo> comparator = (e1, e2) -> pathMatcher.getPatternComparator(urlPath).compare(e1.getPath(), e2.getPath());
-            Optional<ResourcePo> bestMatchOpt = matchedEndpoints.stream().min(comparator);
-            if (!bestMatchOpt.isPresent()) {
-                return null;
-            }
-            bestMatch = bestMatchOpt.get();
-        }
-
-        String permission = bestMatch.getPermission();
-        if (StringUtils.isBlank(permission)) {
-            return null;
-        }
-
-        if (permission.contains(";")) {
-            String[] permissions = permission.split(";");
-            List<String> result = new ArrayList<>();
-            for (String p : permissions) {
-                if (StringUtils.isNotBlank(p)) {
-                    result.add(p.trim());
-                }
-            }
-            return result.isEmpty() ? null : result;
-        }
-
-        List<String> result = new ArrayList<>();
-        result.add(permission);
-        return result;
+        return rules;
     }
-
 
     /**
      * 清空端点缓存
      */
+    @CacheEvict(cacheNames = "endpoint", key = "'all_endpoints'")
     public void clearEndpointCache() {
-        this.endpointCache = null;
-    }
 
+    }
 
 }
 

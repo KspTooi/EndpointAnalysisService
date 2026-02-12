@@ -1,7 +1,7 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
-import com.ksptooi.biz.core.model.resource.po.ResourcePo;
+import com.ksptooi.biz.core.model.resource.ResourcePo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,7 +67,6 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
     List<ResourcePo> getMenuTree(@Param("po") GetMenuTreeDto po);
 
 
-
     /**
      * 根据关键字获取菜单与按钮树
      *
@@ -89,7 +88,6 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
             """)
     List<ResourcePo> getMenuTreeByKeyword(@Param("keyword") String keyword);
 
-    
 
     /**
      * 获取菜单子级数量
@@ -102,7 +100,7 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
             WHERE t.parent.id = :id AND t.kind = 0
             """)
     int getMenuChildrenCount(@Param("id") Long id);
-    
+
     /**
      * 根据资源类型获取资源列表
      *

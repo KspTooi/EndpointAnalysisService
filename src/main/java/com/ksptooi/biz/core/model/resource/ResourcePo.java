@@ -1,4 +1,4 @@
-package com.ksptooi.biz.core.model.resource.po;
+package com.ksptooi.biz.core.model.resource;
 
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;

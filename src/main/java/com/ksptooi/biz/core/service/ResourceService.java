@@ -4,7 +4,7 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.resource.dto.AddResourceDto;
 import com.ksptooi.biz.core.model.resource.dto.EditResourceDto;
 import com.ksptooi.biz.core.model.resource.dto.GetResourceListDto;
-import com.ksptooi.biz.core.model.resource.po.ResourcePo;
+import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.model.resource.vo.GetResourceDetailsVo;
 import com.ksptooi.biz.core.model.resource.vo.GetResourceListVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
