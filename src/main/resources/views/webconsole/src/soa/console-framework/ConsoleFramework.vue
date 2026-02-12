@@ -276,13 +276,24 @@ const autoBreadcrumbs = computed(() => {
 
   const revisedBreadcrumbs: Array<{ text: string; to?: string | object }> = [];
 
-  // 尝试添加首页/根路径面包屑
+  // 尝试添加首页/根路径面板屑
+  let homeTitle = "控制台";
   const homeRouteConfig = router.options.routes.find((r) => r.path === "/");
-  // Use optional chaining and type checking for safer access
-  const homeBreadcrumbMeta = homeRouteConfig?.meta?.breadcrumb as { title?: string; hidden?: boolean } | undefined;
-  if (homeBreadcrumbMeta?.title && route.path !== "/") {
+  const homeBreadcrumbMeta = homeRouteConfig?.meta?.breadcrumb as any;
+
+  if (homeBreadcrumbMeta) {
+    if (typeof homeBreadcrumbMeta === "string") {
+      homeTitle = homeBreadcrumbMeta;
+    }
+    if (typeof homeBreadcrumbMeta === "object" && homeBreadcrumbMeta.title) {
+      homeTitle = homeBreadcrumbMeta.title;
+    }
+  }
+
+  // 如果当前不是根路径，则添加控制台首页
+  if (route.path !== "/") {
     revisedBreadcrumbs.push({
-      text: homeBreadcrumbMeta.title,
+      text: homeTitle,
       to: "/",
     });
   }
@@ -297,10 +308,14 @@ const autoBreadcrumbs = computed(() => {
     let hidden = false;
     const path = record.path; // 使用匹配路由的路径
 
-    // 检查 meta.breadcrumb 配置
-    // Use type assertion for breadcrumb meta structure
-    const breadcrumbMeta = meta?.breadcrumb as { title?: string; hidden?: boolean } | undefined;
-    if (breadcrumbMeta) {
+    // 处理 meta.breadcrumb (支持字符串和对象)
+    const breadcrumbMeta = meta?.breadcrumb as any;
+
+    if (typeof breadcrumbMeta === "string") {
+      title = breadcrumbMeta;
+    }
+
+    if (breadcrumbMeta && typeof breadcrumbMeta === "object") {
       if (breadcrumbMeta.title) {
         title = breadcrumbMeta.title;
       }
@@ -308,7 +323,6 @@ const autoBreadcrumbs = computed(() => {
     }
 
     // 如果 breadcrumb 中没有 title，尝试使用 meta.title
-    // Check if meta.title exists and is a string
     if (!title && meta?.title && typeof meta.title === "string") {
       title = meta.title;
     }

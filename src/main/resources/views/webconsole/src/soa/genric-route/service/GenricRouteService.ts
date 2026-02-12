@@ -168,20 +168,20 @@ export default {
      * @returns 路由表的副本 对副本操作不会改变原始路由表
      */
     const getRoutes = (): RouteEntryPo[] => {
-      const routes: RouteEntryPo[] = [];
+      const result: RouteEntryPo[] = [];
 
       //遍历路由表
-      for (const item of routes) {
-        const route = new RouteEntryPo();
-        route.biz = item.biz;
-        route.path = item.path;
-        route.name = item.name;
-        route.component = item.component;
-        route.meta = item.meta;
-        routes.push(route);
+      for (const item of routes.value) {
+        const po = new RouteEntryPo();
+        po.biz = item.biz;
+        po.path = item.path;
+        po.name = item.name;
+        po.component = item.component;
+        po.meta = item.meta;
+        result.push(po);
       }
 
-      return routes;
+      return result;
     };
 
     return {
