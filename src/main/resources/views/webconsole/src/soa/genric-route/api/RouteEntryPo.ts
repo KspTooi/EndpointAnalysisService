@@ -30,6 +30,9 @@ export class RouteEntryPo {
       layout?: string | null;
     };
   }) {
+    if (!props) {
+      return;
+    }
     this.biz = props.biz;
     this.path = props.path;
     this.name = props.name;
