@@ -21,11 +21,8 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -39,6 +36,7 @@ public class RegistryController {
     @Autowired
     private RegistryService registryService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/getRegistryNodeTree")
     @Operation(summary = "查询注册表节点树")
     public Result<List<GetRegistryNodeTreeVo>> getRegistryNodeTree() throws Exception {
@@ -98,13 +96,13 @@ public class RegistryController {
 
     @Operation(summary = "导入注册表条目")
     @PostMapping("/importRegistry")
-    public Result<String> importRegistry(@RequestParam("file") MultipartFile file,@RequestParam("keyPath") String keyPath) throws Exception {
-        
+    public Result<String> importRegistry(@RequestParam("file") MultipartFile file, @RequestParam("keyPath") String keyPath) throws Exception {
+
         //必填KeyPath
-        if(StringUtils.isBlank(keyPath)){
+        if (StringUtils.isBlank(keyPath)) {
             return Result.error("KeyPath不能为空");
         }
-        
+
         //准备向导
         ImportWizard<ImportRegistryDto> iw = new ImportWizard<>(file, ImportRegistryDto.class);
 
@@ -122,7 +120,7 @@ public class RegistryController {
         var count = registryService.importRegistry(keyPath, data);
         return Result.success("导入成功,已导入数据:" + count + "条", null);
     }
-    
+
     @Operation(summary = "导出注册表条目")
     @RequestMapping("/exportRegistry")
     public void exportRegistry(@RequestBody @Valid GetRegistryListDto dto, HttpServletResponse response) throws Exception {
