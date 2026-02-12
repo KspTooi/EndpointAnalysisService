@@ -74,44 +74,18 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
     )
     Integer countByUsername(@Param("username") String username);
 
-    /**
-     * 根据用户名统计用户数量 排除指定ID(!!这会绕过软删除直接查询到被删除过的用户)
-     *
-     * @param username 用户名
-     * @param id       排除的ID
-     * @return 用户数量
-     */
-    @Query(
-            value = """
-                    SELECT COUNT(1)
-                    FROM core_user
-                    WHERE username = :username
-                      AND id != :id
-                    """,
-            nativeQuery = true
-    )
-    Integer countByUsernameExcludeId(@Param("username") String username, @Param("id") Long id);
-
 
     // 根据用户名查找用户
     UserPo findByUsername(String username);
 
-    // 获取用户编辑视图，包含用户组信息
-    @Query("""
-            SELECT u
-            FROM UserPo u
-            LEFT JOIN FETCH u.groups
-            WHERE u.id = :id
-            """)
-    UserPo getEditView(@Param("id") Long id);
 
     // 获取用户的所有权限（通过用户组）
     @Query("""
             SELECT DISTINCT p
-            FROM UserPo u
-            JOIN u.groups g
-            JOIN g.permissions p
-            WHERE u.id = :userId
+            FROM UserGroupPo ug
+            JOIN GroupPermissionPo gp ON ug.groupId = gp.groupId
+            JOIN PermissionPo p ON gp.permissionId = p.id
+            WHERE ug.userId = :userId
             """)
     List<PermissionPo> getUserPermissions(@Param("userId") Long userId);
 
@@ -124,10 +98,10 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
      */
     @Query("""
             SELECT DISTINCT p.code
-            FROM UserPo u
-            JOIN u.groups g
-            JOIN g.permissions p
-            WHERE u.id = :userId
+            FROM UserGroupPo ug
+            JOIN GroupPermissionPo gp ON ug.groupId = gp.groupId
+            JOIN PermissionPo p ON gp.permissionId = p.id
+            WHERE ug.userId = :userId
             """)
     Set<String> getUserPermissionCodes(@Param("userId") Long userId);
 
