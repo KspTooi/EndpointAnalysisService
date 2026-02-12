@@ -1,0 +1,281 @@
+import { ref, reactive, onMounted, type Ref } from "vue";
+import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import AdminPermissionApi, {
+    type GetPermissionDetailsVo,
+    type GetPermissionListDto,
+    type GetPermissionListVo,
+    type AddPermissionDto,
+    type EditPermissionDto,
+} from "@/views/auth/api/PermissionApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
+
+export default {
+    /**
+     * 权限列表打包
+     */
+    usePermissionList() {
+        const listForm = reactive<GetPermissionListDto>({
+            code: null,
+            name: null,
+            pageNum: 1,
+            pageSize: 20,
+        });
+        const listData = ref<GetPermissionListVo[]>([]);
+        const listTotal = ref(0);
+        const listLoading = ref(false);
+
+        /**
+         * 加载列表
+         */
+        const loadList = async () => {
+            listLoading.value = true;
+            const result = await AdminPermissionApi.getPermissionList(listForm);
+
+            if (Result.isSuccess(result)) {
+                listData.value = result.data;
+                listTotal.value = result.total;
+            }
+
+            if (Result.isError(result)) {
+                ElMessage.error(result.message);
+            }
+
+            listLoading.value = false;
+        };
+
+        /**
+         * 重置查询
+         */
+        const resetList = () => {
+            listForm.pageNum = 1;
+            listForm.pageSize = 20;
+            listForm.code = null;
+            listForm.name = null;
+            loadList();
+        };
+
+        /**
+         * 删除项
+         */
+        const removeList = async (id: string) => {
+            try {
+                await ElMessageBox.confirm("确定删除该权限吗？", "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning",
+                });
+            } catch (error) {
+                return;
+            }
+
+            try {
+                await AdminPermissionApi.removePermission({ id });
+                ElMessage.success("删除成功");
+                await loadList();
+            } catch (error: any) {
+                ElMessage.error(error.message);
+            }
+        };
+
+        /**
+         * 批量删除
+         */
+        const removeListBatch = async (selectedItems: GetPermissionListVo[]) => {
+            if (selectedItems.length === 0) {
+                ElMessage.warning("请选择要删除的权限节点");
+                return;
+            }
+
+            // 过滤掉系统内置权限
+            const deletableItems = selectedItems.filter((item) => item.isSystem !== 1);
+
+            if (deletableItems.length === 0) {
+                ElMessage.warning("选中的项均为系统内置权限，不可删除");
+                return;
+            }
+
+            try {
+                await ElMessageBox.confirm(`确定删除选中的${deletableItems.length}个权限节点吗？（系统权限将被自动跳过）`, "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning",
+                });
+            } catch (error) {
+                return;
+            }
+
+            try {
+                const ids = deletableItems.map((item) => item.id);
+                await AdminPermissionApi.removePermission({ ids });
+                ElMessage.success("删除成功");
+                await loadList();
+            } catch (error: any) {
+                ElMessage.error(error.message);
+            }
+        };
+
+        onMounted(() => {
+            loadList();
+        });
+
+        return {
+            listForm,
+            listData,
+            listTotal,
+            listLoading,
+            loadList,
+            resetList,
+            removeList,
+            removeListBatch,
+        };
+    },
+
+    /**
+     * 权限模态框打包
+     */
+    usePermissionModal(modalFormRef: Ref<FormInstance | undefined>, loadList: () => void) {
+        const modalVisible = ref(false);
+        const modalLoading = ref(false);
+        const modalMode = ref<"add" | "edit">("add");
+        const modalForm = reactive<GetPermissionDetailsVo>({
+            code: "",
+            createTime: "",
+            description: "",
+            id: "",
+            isSystem: 0,
+            name: "",
+            sortOrder: 0,
+            updateTime: "",
+        });
+
+        const modalRules = {
+            code: [
+                { required: true, message: "请输入权限代码", trigger: "blur" },
+                {
+                    pattern: /^[a-z]([a-z0-9\-]*[a-z0-9])*(:[a-z]([a-z0-9\-]*[a-z0-9])*)*$/,
+                    message: "权限标识格式错误，只允许小写字母、数字、连字符，以及冒号作为分隔符",
+                    trigger: "blur",
+                },
+            ],
+            name: [
+                { required: true, message: "请输入权限名称", trigger: "blur" },
+                { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" },
+            ],
+            description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
+        };
+
+        /**
+         * 重置模态框
+         */
+        const resetModal = () => {
+            modalForm.id = "";
+            modalForm.code = "";
+            modalForm.name = "";
+            modalForm.description = "";
+            modalForm.sortOrder = 0;
+            modalForm.isSystem = 0;
+            modalForm.createTime = "";
+            modalForm.updateTime = "";
+
+            if (modalFormRef.value) {
+                modalFormRef.value.resetFields();
+            }
+        };
+
+        /**
+         * 打开模态框
+         */
+        const openModal = async (mode: "add" | "edit", row: GetPermissionListVo | null) => {
+            modalMode.value = mode;
+            resetModal();
+
+            if (mode === "edit" && row) {
+                try {
+                    const ret = await AdminPermissionApi.getPermissionDetails({ id: row.id });
+                    modalForm.id = ret.id;
+                    modalForm.code = ret.code;
+                    modalForm.name = ret.name;
+                    modalForm.description = ret.description;
+                    modalForm.sortOrder = ret.sortOrder;
+                    modalForm.isSystem = ret.isSystem;
+                    modalForm.createTime = ret.createTime;
+                    modalForm.updateTime = ret.updateTime;
+                } catch (error: any) {
+                    ElMessage.error(error.message || "获取权限详情失败");
+                    return;
+                }
+            }
+
+            modalVisible.value = true;
+        };
+
+        /**
+         * 提交模态框
+         */
+        const submitModal = async () => {
+            try {
+                await modalFormRef?.value?.validate();
+            } catch (error) {
+                return;
+            }
+
+            modalLoading.value = true;
+
+            try {
+                if (modalMode.value === "add") {
+                    const addDto: AddPermissionDto = {
+                        code: modalForm.code,
+                        name: modalForm.name,
+                        description: modalForm.description,
+                        sortOrder: modalForm.sortOrder,
+                    };
+                    const result = await AdminPermissionApi.addPermission(addDto);
+                    if (Result.isSuccess(result)) {
+                        ElMessage.success("操作成功");
+                        resetModal();
+                    }
+                    if (Result.isError(result)) {
+                        ElMessage.error(result.message);
+                        return;
+                    }
+                }
+
+                if (modalMode.value === "edit") {
+                    const editDto: EditPermissionDto = {
+                        id: modalForm.id,
+                        code: modalForm.code,
+                        name: modalForm.name,
+                        description: modalForm.description,
+                        sortOrder: modalForm.sortOrder,
+                    };
+                    const result = await AdminPermissionApi.editPermission(editDto);
+                    if (Result.isSuccess(result)) {
+                        ElMessage.success("操作成功");
+                    }
+                    if (Result.isError(result)) {
+                        ElMessage.error(result.message);
+                        return;
+                    }
+                }
+            } catch (error: any) {
+                ElMessage.error(error.message);
+                return;
+            } finally {
+                modalLoading.value = false;
+            }
+
+            await loadList();
+        };
+
+        return {
+            modalVisible,
+            modalLoading,
+            modalMode,
+            modalForm,
+            modalRules,
+            openModal,
+            resetModal,
+            submitModal,
+        };
+    },
+};

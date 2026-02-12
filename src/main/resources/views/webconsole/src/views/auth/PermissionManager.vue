@@ -28,10 +28,26 @@
 
     <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建权限节点</el-button>
+      <el-button
+        type="danger"
+        @click="removeListBatch(listSelected)"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中项
+      </el-button>
     </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetPermissionListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="40" />
         <el-table-column
           prop="code"
           label="权限代码"
@@ -184,211 +200,30 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
-import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
-import AdminPermissionApi, {
-  type GetPermissionDetailsVo,
-  type GetPermissionListDto,
-  type GetPermissionListVo,
-  type AddPermissionDto,
-  type EditPermissionDto,
-} from "@/views/auth/api/PermissionApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import type { GetPermissionListVo } from "@/views/auth/api/PermissionApi.ts";
+import PermissionService from "@/views/auth/service/PermissionService.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
-
-const listForm = reactive<GetPermissionListDto>({
-  code: null,
-  name: null,
-  pageNum: 1,
-  pageSize: 20,
-});
-const listData = ref<GetPermissionListVo[]>([]);
-const listTotal = ref(0);
-const listLoading = ref(false);
 
 // 使用markRaw包装图标组件
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-// 模态框相关
-const modalVisible = ref(false);
+// 列表部分
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
+  PermissionService.usePermissionList();
+
+// 模态框部分
 const modalFormRef = ref<FormInstance>();
-const modalLoading = ref(false);
-const modalMode = ref<"add" | "edit">("add");
-const modalForm = reactive<GetPermissionDetailsVo>({
-  code: "",
-  createTime: "",
-  description: "",
-  id: "",
-  isSystem: 0,
-  name: "",
-  sortOrder: 0,
-  updateTime: "",
-});
-const modalRules = {
-  code: [
-    { required: true, message: "请输入权限代码", trigger: "blur" },
-    {
-      pattern: /^[a-z]([a-z0-9\-]*[a-z0-9])*(:[a-z]([a-z0-9\-]*[a-z0-9])*)*$/,
-      message: "权限标识格式错误，只允许小写字母、数字、连字符，以及冒号作为分隔符",
-      trigger: "blur",
-    },
-  ],
-  name: [
-    { required: true, message: "请输入权限名称", trigger: "blur" },
-    { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" },
-  ],
-  description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
-};
+const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
+  PermissionService.usePermissionModal(modalFormRef, loadList);
 
-const loadList = async () => {
-  listLoading.value = true;
-  const result = await AdminPermissionApi.getPermissionList(listForm);
-
-  if (Result.isSuccess(result)) {
-    listData.value = result.data;
-    listTotal.value = result.total;
-  }
-
-  if (Result.isError(result)) {
-    ElMessage.error(result.message);
-  }
-
-  listLoading.value = false;
-};
-
-const resetList = () => {
-  listForm.pageNum = 1;
-  listForm.pageSize = 20;
-  listForm.code = null;
-  listForm.name = null;
-  loadList();
-};
-
-// 重置表单
-const resetModal = () => {
-  modalForm.id = "";
-  modalForm.code = "";
-  modalForm.name = "";
-  modalForm.description = "";
-  modalForm.sortOrder = 0;
-  modalForm.isSystem = 0;
-  modalForm.createTime = "";
-  modalForm.updateTime = "";
-
-  if (modalFormRef.value) {
-    modalFormRef.value.resetFields();
-  }
-};
-
-loadList();
-
-//打开模态框
-const openModal = async (mode: "add" | "edit", row: GetPermissionListVo | null) => {
-  modalMode.value = mode;
-  resetModal();
-
-  //如果是编辑模式则需要加载详情数据
-  if (mode === "edit" && row) {
-    try {
-      const ret = await AdminPermissionApi.getPermissionDetails({ id: row.id });
-      modalForm.id = ret.id;
-      modalForm.code = ret.code;
-      modalForm.name = ret.name;
-      modalForm.description = ret.description;
-      modalForm.sortOrder = ret.sortOrder;
-      modalForm.isSystem = ret.isSystem;
-      modalForm.createTime = ret.createTime;
-      modalForm.updateTime = ret.updateTime;
-    } catch (error: any) {
-      ElMessage.error(error.message || "获取权限详情失败");
-      return;
-    }
-  }
-
-  modalVisible.value = true;
-};
-
-//提交表单
-const submitModal = async () => {
-  //先校验表单
-  try {
-    await modalFormRef?.value?.validate();
-  } catch (error) {
-    return;
-  }
-
-  modalLoading.value = true;
-
-  //提交表单
-  try {
-    if (modalMode.value === "add") {
-      const addDto: AddPermissionDto = {
-        code: modalForm.code,
-        name: modalForm.name,
-        description: modalForm.description,
-        sortOrder: modalForm.sortOrder,
-      };
-      const result = await AdminPermissionApi.addPermission(addDto);
-      if (Result.isSuccess(result)) {
-        ElMessage.success("操作成功");
-        resetModal();
-      }
-      if (Result.isError(result)) {
-        ElMessage.error(result.message);
-        return;
-      }
-    }
-
-    if (modalMode.value === "edit") {
-      const editDto: EditPermissionDto = {
-        id: modalForm.id,
-        code: modalForm.code,
-        name: modalForm.name,
-        description: modalForm.description,
-        sortOrder: modalForm.sortOrder,
-      };
-      const result = await AdminPermissionApi.editPermission(editDto);
-      if (Result.isSuccess(result)) {
-        ElMessage.success("操作成功");
-      }
-      if (Result.isError(result)) {
-        ElMessage.error(result.message);
-        return;
-      }
-    }
-  } catch (error: any) {
-    ElMessage.error(error.message);
-    return;
-  } finally {
-    modalLoading.value = false;
-  }
-
-  loadList();
-};
-
-const removeList = async (id: string) => {
-  try {
-    await ElMessageBox.confirm("确定删除该权限吗？", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    });
-  } catch (error) {
-    return;
-  }
-
-  try {
-    await AdminPermissionApi.removePermission({ id });
-    ElMessage.success("删除成功");
-    await loadList();
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
+/**
+ * 选中的列表项
+ */
+const listSelected = ref<GetPermissionListVo[]>([]);
 </script>
 
 <style scoped></style>
