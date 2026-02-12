@@ -6,6 +6,7 @@ import com.ksptooi.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionListVo;
 import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
+import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
@@ -41,6 +42,9 @@ public class SessionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
 
 
     /**
@@ -161,30 +165,51 @@ public class SessionService {
      * @param uid 用户ID
      * @return 用户会话
      */
-    public UserSessionVo updateSession(Long uid) throws AuthException {
+    public void updateSession(Long uid){
 
-        //查询用户会话
-        var existingSession = userSessionRepository.getSessionByUserId(uid);
+        //查询用户会话(用户现在可能有多个会话,因为用户可能同时登录了多个设备)
+        var existingSessions = userSessionRepository.getSessionsByUserId(uid);
 
-        if (existingSession == null) {
-            throw new AuthException("用户会话不存在");
-        }
-
-        if (existingSession.isExpired()) {
-            userSessionRepository.delete(existingSession);
-            throw new AuthException("用户会话已过期");
+        if(existingSessions.isEmpty()){
+            return;
         }
 
         //查询用户
-        var userPo = userRepository.findById(uid).orElseThrow(() -> new AuthException("用户不存在"));
+        var userPo = userRepository.findById(uid).orElse(null);
 
-        //获取用户拥有的全部权限代码
-        var userPermissionCodes = userRepository.getUserPermissionCodes(userPo.getId());
+        if(userPo == null){
+            return;
+        }
 
-        //更新会话
-        existingSession.update(userPo, userPermissionCodes, expiresInSeconds);
-        existingSession = userSessionRepository.save(existingSession);
-        return existingSession.toVo();
+        //获取用户拥有的全部权限码
+        var permissionCodes = userRepository.getUserPermissionCodes(userPo.getId());
+
+        //获取用户拥有的全部用户组
+        var groups = groupRepository.getGroupsByUserId(userPo.getId());
+        
+        var grantedAuthoritiesStr = new HashSet<String>();
+
+        //处理权限码
+        for (var permission : permissionCodes) {
+            grantedAuthoritiesStr.add(permission);
+        }
+
+        //处理用户组
+        for (var group : groups) {
+            grantedAuthoritiesStr.add("ROLE_" + group.getCode());
+        }
+
+
+        //处理用户的每个会话
+        for (var session : existingSessions) {
+            if (session.isExpired()) {
+                userSessionRepository.delete(session);
+                continue;
+            }
+            session.update(userPo, permissionCodes, expiresInSeconds);
+            userSessionRepository.save(session);
+        }
+
     }
 
 

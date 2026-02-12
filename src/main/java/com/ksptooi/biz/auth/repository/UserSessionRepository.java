@@ -55,19 +55,19 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
      * 根据用户ID获取会话
      *
      * @param userId 用户ID
-     * @return 会话
+     * @return 会话列表
      */
     @Query("""
                 SELECT us FROM UserSessionPo us
                 WHERE us.userId = :userId
             """)
-    UserSessionPo getSessionByUserId(@Param("userId") Long userId);
+    List<UserSessionPo> getSessionsByUserId(@Param("userId") Long userId);
 
     /**
      * 根据用户IDS获取未过期的会话
      * 在线用户的判断标准是会话未过期（expiresAt > 当前时间）
      * @param userIds 用户IDS
-     * @return 会话
+     * @return 会话列表
      */
     @Query("""
                 SELECT us FROM UserSessionPo us
