@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401) {
       //跳转到登录页面
       router.push({
-        name: "login",
+        path: "/auth/login",
       });
       return Promise.reject(new Error("登录已过期或未登录"));
     }

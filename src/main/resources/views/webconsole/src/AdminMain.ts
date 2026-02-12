@@ -15,6 +15,7 @@ import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 // 导入并设置 Iconify
 import { setupIconify } from "./commons/Iconify.ts";
 import GenricRouteService from "./soa/genric-route/service/GenricRouteService.ts";
+import AuthRouteRegister from "./views/auth/route/AuthRouteRegister";
 import CoreRouteRegister from "./views/core/route/CoreRouteRegister";
 import DriveRouteRegister from "./views/drive/route/DriveRouteRegister";
 import RelayRouteRegister from "./views/relay/route/RelayRouteRegister";
@@ -37,6 +38,7 @@ app.use(createPinia());
 const { initialize, addRoute } = GenricRouteService.useGenricRoute();
 
 //注册业务路由
+addRoute(new AuthRouteRegister());
 addRoute(new CoreRouteRegister());
 addRoute(new DriveRouteRegister());
 addRoute(new RelayRouteRegister());
