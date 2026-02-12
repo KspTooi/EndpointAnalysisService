@@ -1,7 +1,78 @@
+<template>
+  <div class="login-page">
+    <!-- 亮色系数字化蓝图背景 -->
+    <div class="bg-grid"></div>
+    <div class="bg-dots"></div>
+
+    <div class="login-wrapper">
+      <!-- 动态扫描线 (青色光束) -->
+      <div class="scan-line"></div>
+
+      <div class="login-panel">
+        <header class="panel-header">
+          <div class="brand-box">
+            <div class="brand-square"></div>
+          </div>
+          <h1 class="system-title">ENDPOINT ANALYSIS</h1>
+          <p class="system-desc">EAS 系统登录</p>
+        </header>
+
+        <main class="panel-body">
+          <div class="form-item">
+            <div class="item-header">ACCOUNT ID</div>
+            <el-input
+              v-model="loginForm.username"
+              placeholder="输入您的账户 ID"
+              :prefix-icon="User"
+              clearable
+              @keyup.enter="handleLogin"
+            />
+          </div>
+
+          <div class="form-item">
+            <div class="item-header">密钥</div>
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              placeholder="输入您的安全密钥"
+              :prefix-icon="Lock"
+              show-password
+              @keyup.enter="handleLogin"
+            />
+          </div>
+
+          <transition name="slide-up">
+            <div v-if="errorMessage" class="error-notification">
+              <span class="err-tag">ERR_CODE_01:</span>
+              {{ errorMessage }}
+            </div>
+          </transition>
+
+          <div class="button-container">
+            <el-button type="primary" class="auth-button" :loading="isLoading" @click="handleLogin">
+              {{ isLoading ? "正在处理" : "登录" }}
+            </el-button>
+          </div>
+        </main>
+
+        <footer class="panel-footer">
+          <span class="version-tag">CORE v2.5.0-LITE</span>
+          <a class="nav-link" @click="handleRegister">申请系统访问权限</a>
+        </footer>
+      </div>
+    </div>
+
+    <!-- 装饰性脚注 -->
+    <aside class="side-info left">127.0.0.1 / SECURED</aside>
+    <aside class="side-info right">UTC+8:00 / ACTIVE</aside>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { User, Lock } from "@element-plus/icons-vue";
 import AuthApi from "./api/AuthApi";
 import type { UserLoginDto } from "./api/AuthApi";
 
@@ -20,423 +91,344 @@ const errorMessage = ref<string>("");
 const isLoading = ref<boolean>(false);
 
 /**
- * 处理登录
+ * 处理登录逻辑
  */
 const handleLogin = async () => {
-  // 清空错误信息
   errorMessage.value = "";
 
-  // 表单验证
   if (!loginForm.value.username) {
-    errorMessage.value = "请输入用户名";
+    errorMessage.value = "请提供账户标识";
     return;
   }
 
   if (!loginForm.value.password) {
-    errorMessage.value = "请输入密码";
+    errorMessage.value = "请提供安全密钥";
     return;
   }
 
-  // 开始加载
   isLoading.value = true;
 
   try {
     const result = await AuthApi.userLogin(loginForm.value);
 
-    // 检查响应
     if (result.code === 0 && result.data) {
-      // 保存sessionId到localStorage
       if (result.data.sessionId) {
         localStorage.setItem("sessionId", result.data.sessionId);
       }
-
-      // 保存用户信息
       localStorage.setItem("userInfo", JSON.stringify(result.data));
-
-      ElMessage.success("登录成功");
-
-      // 跳转到首页
+      ElMessage.success("安全令牌验证通过");
       await router.push({ path: "/" });
       return;
     }
 
-    // 登录失败
-    if (result.message) {
-      errorMessage.value = result.message;
-      return;
-    }
-
-    errorMessage.value = "登录失败，请重试";
+    errorMessage.value = result.message || "凭据验证失败，访问被拒绝";
   } catch (error) {
-    if (error instanceof Error) {
-      errorMessage.value = error.message;
-      return;
-    }
-    errorMessage.value = "登录失败，请检查网络连接";
+    errorMessage.value = error instanceof Error ? error.message : "网络同步异常，同步失败";
   } finally {
     isLoading.value = false;
   }
 };
 
 /**
- * 处理注册跳转
+ * 跳转注册
  */
 const handleRegister = () => {
   router.push({ name: "register" });
 };
 </script>
 
-<template>
-  <div class="login-container">
-    <!-- 动态背景 -->
-    <div class="login-background"></div>
-
-    <!-- 登录卡片 -->
-    <div class="login-wrapper">
-      <div class="login-card">
-        <!-- 品牌标题 -->
-        <div class="brand-header">
-          <h1 class="brand-title">端点分析服务</h1>
-          <div class="brand-subtitle">安全接入网关</div>
-        </div>
-
-        <!-- 登录表单 -->
-        <form @submit.prevent="handleLogin">
-          <!-- 用户名输入 -->
-          <div class="form-group">
-            <label class="form-label" for="username">账户 ID</label>
-            <div class="form-input-wrapper">
-              <input
-                id="username"
-                v-model="loginForm.username"
-                autocomplete="username"
-                class="form-input"
-                placeholder="请输入您的账户"
-                required
-                type="text"
-              />
-            </div>
-          </div>
-
-          <!-- 密码输入 -->
-          <div class="form-group">
-            <label class="form-label" for="password">密钥</label>
-            <div class="form-input-wrapper">
-              <input
-                id="password"
-                v-model="loginForm.password"
-                autocomplete="current-password"
-                class="form-input"
-                placeholder="请输入您的密码"
-                required
-                type="password"
-              />
-            </div>
-          </div>
-
-          <!-- 错误提示 -->
-          <div v-if="errorMessage" class="error-alert">
-            <span>{{ errorMessage }}</span>
-          </div>
-
-          <!-- 登录按钮 -->
-          <button :disabled="isLoading" class="btn-submit" type="submit">
-            {{ isLoading ? "登录中..." : "立即登录" }}
-          </button>
-
-          <!-- 注册链接 -->
-          <div class="register-link">还没有账号？ <a @click.prevent="handleRegister">立即注册</a></div>
-        </form>
-      </div>
-    </div>
-
-    <!-- 页脚 -->
-    <div class="footer-copy">&copy; 2026 KspTool. All Rights Reserved.</div>
-  </div>
-</template>
-
 <style scoped>
-:root {
-  /* 设计系统变量 */
-  --primary-color: #00d2ff;
-  --primary-hover: #3a7bd5;
-  --bg-dark: #0f172a;
-  --bg-light: #1e293b;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --error-color: #ef4444;
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --input-bg: rgba(15, 23, 42, 0.6);
-  --transition-speed: 0.3s;
+.login-page {
+  /* 定义亮色设计变量 */
+  --p-main: #009688;
+  --p-bg: #f8fafc;
+  --p-panel: #ffffff;
+  --p-border: #e2e8f0;
+  --p-text: #1e293b;
+  --p-text-light: #64748b;
+  --p-input: #fcfcfc;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.login-container {
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  height: 100vh;
+.login-page {
   width: 100vw;
-  overflow: hidden;
+  height: 100vh;
+  background-color: var(--p-bg);
+  color: var(--p-text);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-/* 动态背景效果 */
-.login-background::before,
-.login-background::after {
-  content: "";
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.4;
-  z-index: -1;
-  animation: float 10s infinite alternate ease-in-out;
-}
-
-.login-background::before {
-  background: radial-gradient(circle, var(--primary-color), transparent);
-  top: -10%;
-  left: -10%;
-}
-
-.login-background::after {
-  background: radial-gradient(circle, #7928ca, transparent);
-  bottom: -10%;
-  right: -10%;
-  animation-delay: -5s;
-}
-
-@keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(30px, 50px) scale(1.1);
-  }
-}
-
-/* 主容器 */
-.login-wrapper {
-  width: 100%;
-  max-width: 420px;
-  padding: 20px;
-  perspective: 1000px;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 磨砂卡片 */
-.login-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  padding: 3rem 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  position: relative;
   overflow: hidden;
+  position: relative;
+  font-family: "PingFang SC", "Segoe UI", "Consolas", sans-serif;
 }
 
-/* 顶部装饰条 */
-.login-card::before {
-  content: "";
+/* 数字化蓝图背景 */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 150, 136, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 150, 136, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 1;
+}
+
+.bg-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 150, 136, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 2;
+}
+
+/* 扫描线效果 */
+.scan-line {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-color), #7928ca);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 150, 136, 0.4), transparent);
+  box-shadow: 0 0 10px rgba(0, 150, 136, 0.2);
+  animation: scan 5s infinite ease-in-out;
+  z-index: 11;
+  opacity: 0.8;
 }
 
-/* 品牌标题 */
-.brand-header {
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400px);
+    opacity: 0;
+  }
+}
+
+/* 核心面板 (硬朗直角风格) */
+.login-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.login-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--p-border);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.1);
+  padding: 48px;
+  position: relative;
+  z-index: 12;
+}
+
+/* 顶部品牌设计 */
+.panel-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 40px;
 }
 
-.brand-title {
-  font-family: "Chakra Petch", sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
+.brand-box {
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--p-main);
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-square {
+  width: 18px;
+  height: 18px;
+  background: var(--p-main);
+}
+
+.system-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  margin: 0;
+  color: var(--p-text);
+}
+
+.system-desc {
+  font-size: 0.7rem;
+  color: var(--p-text-light);
+  margin-top: 10px;
   letter-spacing: 1px;
-  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
   text-transform: uppercase;
+  font-weight: 500;
 }
 
-.brand-subtitle {
-  font-size: 0.875rem;
-  color: var(--text-muted);
+/* 状态栏 */
+.auth-infobar {
+  border-top: 1px solid var(--p-border);
+  border-bottom: 1px solid var(--p-border);
+  padding: 10px 0;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.info-label {
+  color: var(--p-text-light);
+}
+
+.info-value {
+  color: var(--p-main);
+}
+
+.blink {
+  animation: blink-anim 0.8s infinite;
+}
+
+@keyframes blink-anim {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* 表单逻辑 */
+.form-item {
+  margin-bottom: 24px;
+}
+
+.item-header {
+  font-size: 0.7rem;
+  color: var(--p-text-light);
+  margin-bottom: 10px;
+  font-weight: bold;
   letter-spacing: 0.5px;
 }
 
-/* 表单样式 */
-.form-group {
-  margin-bottom: 1.5rem;
-  position: relative;
+/* Element Plus 重写为硬核直角 */
+:deep(.el-input__wrapper) {
+  background-color: var(--p-input) !important;
+  box-shadow: none !important;
+  border: 1px solid var(--p-border) !important;
+  border-radius: 0 !important; /* 强制直角 */
+  padding: 6px 14px !important;
+  transition: all 0.3s;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+:deep(.el-input__wrapper.is-focus) {
+  border-color: var(--p-main) !important;
+  background-color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 150, 136, 0.1) !important;
+}
+
+:deep(.el-input__inner) {
+  color: var(--p-text) !important;
   font-weight: 500;
-  color: var(--text-muted);
-  transition: var(--transition-speed);
 }
 
-.form-input-wrapper {
-  position: relative;
+/* 错误通知栏 */
+.error-notification {
+  margin-bottom: 20px;
+  font-size: 0.75rem;
+  color: #ef4444;
+  background: #fef2f2;
+  padding: 10px 15px;
+  border-left: 3px solid #ef4444;
 }
 
-.form-input {
+.err-tag {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* 极简直角按钮 */
+.auth-button {
   width: 100%;
-  padding: 0.875rem 1rem;
-  background: var(--input-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 4px;
-  color: var(--text-main);
-  font-size: 1rem;
-  font-family: "Inter", sans-serif;
-  transition: all var(--transition-speed);
-  outline: none;
-}
-
-.form-input:focus {
-  border-color: var(--primary-color);
-  background: rgba(15, 23, 42, 0.8);
-  box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.15);
-}
-
-.form-input::placeholder {
-  color: rgba(148, 163, 184, 0.4);
-}
-
-/* 聚焦时标签高亮 */
-.form-group:focus-within .form-label {
-  color: var(--primary-color);
-}
-
-/* 错误提示 */
-.error-alert {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  animation: shake 0.4s ease-in-out;
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
-}
-
-/* 登录按钮 */
-.btn-submit {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #3a7bd5 100%);
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  font-family: "Chakra Petch", sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
+  height: 52px;
+  border-radius: 0 !important; /* 彻底直角 */
+  background-color: var(--p-main) !important;
+  border: none !important;
+  font-size: 0.85rem;
+  font-weight: bold;
   letter-spacing: 1px;
-  cursor: pointer;
-  transition: all var(--transition-speed);
-  position: relative;
-  overflow: hidden;
   text-transform: uppercase;
+  transition: all 0.3s;
+  box-shadow: 0 8px 16px -4px rgba(0, 150, 136, 0.3);
 }
 
-.btn-submit:hover {
-  box-shadow: 0 10px 20px -5px rgba(0, 210, 255, 0.4);
+.auth-button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 12px 24px -6px rgba(0, 150, 136, 0.4);
+  transform: translateY(-1px);
 }
 
-.btn-submit:active {
-  transform: translateY(0);
+.auth-button:active {
+  transform: translateY(1px);
 }
 
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* 底部操作 */
+.panel-footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
 }
 
-/* 注册链接 */
-.register-link {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+.version-tag {
+  color: var(--p-text-light);
+  font-family: "Consolas", monospace;
+  letter-spacing: 1px;
 }
 
-.register-link a {
-  color: var(--primary-color);
+.nav-link {
+  color: var(--p-main);
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.2s;
   cursor: pointer;
 }
 
-.register-link a:hover {
-  color: #60a5fa;
+.nav-link:hover {
   text-decoration: underline;
 }
 
-/* 页脚 */
-.footer-copy {
+/* 侧边装饰文本 */
+.side-info {
   position: absolute;
-  bottom: 20px;
-  text-align: center;
-  width: 100%;
-  font-size: 0.75rem;
-  color: rgba(148, 163, 184, 0.4);
-  font-family: "Chakra Petch", sans-serif;
+  bottom: 24px;
+  font-family: "Consolas", monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--p-text-light);
+  letter-spacing: 2px;
+  opacity: 0.5;
+}
+
+.side-info.left {
+  left: 40px;
+}
+.side-info.right {
+  right: 40px;
+}
+
+/* 动画效果 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
 </style>

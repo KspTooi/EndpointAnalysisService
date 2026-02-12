@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, useRoute, useRouter } from "vue-router";
-import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
+import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
@@ -50,19 +50,24 @@ vueRouter.beforeEach((to, from, next) => {
   next();
 });
 
-function buildPath(entry: RouteEntryPo): string {
-  if (entry.biz == null) {
-    return "/" + entry.path;
-  }
-
-  return "/" + entry.biz + "/" + entry.path;
-}
-
 export default {
   /**
    * 使用全局路由服务
    */
   useGenricRoute() {
+    /**
+     * 构建路由路径
+     * @param entry 路由条目
+     * @returns 路由路径
+     */
+    const buildPath = (entry: RouteEntryPo): string => {
+      if (entry.biz == null) {
+        return "/" + entry.path;
+      }
+
+      return "/" + entry.biz + "/" + entry.path;
+    };
+
     /**
      * 初始化路由服务
      * @param app 应用实例
@@ -89,28 +94,8 @@ export default {
         return;
       }
 
-      //如果是路由条目 处理路由条目
-      if (entry.path == null || entry.component == null) {
-        throw new Error("path和component不能为空");
-      }
-
-      //path不允许包含/
-      if (entry.path.includes("/")) {
-        throw new Error("path不允许包含/");
-      }
-
-      //Name为空时使用path
-      if (entry.name == null) {
-        entry.name = entry.path;
-      }
-
-      //meta.breadcrumb为空时使用path
-      if (entry.meta == null) {
-        entry.meta = {};
-      }
-      if (entry.meta.breadcrumb == null) {
-        entry.meta.breadcrumb = entry.path;
-      }
+      //校验路由条目
+      entry.validate();
 
       let hasConflict = false;
 
@@ -131,7 +116,7 @@ export default {
         }
       }
 
-      const breadcrumbTitle = entry.meta.breadcrumb ?? entry.path;
+      const breadcrumbTitle = entry.meta.breadcrumb;
 
       //如果无冲突 同时更新路由表+Vue路由
       if (!hasConflict) {
@@ -151,7 +136,7 @@ export default {
         });
       }
 
-      //有冲突 只更新Vue路由
+      //路由有名称冲突 只更新Vue路由,不更新内置路由表
       if (hasConflict) {
         vueRouter.addRoute({
           path: buildPath(entry),
@@ -174,6 +159,10 @@ export default {
       entries.forEach((entry) => addRoute(entry));
     };
 
+    /**
+     * 删除路由
+     * @param name 路由名称
+     */
     const removeRoute = (name: string) => {
       vueRouter.removeRoute(name);
       routes.value = routes.value.filter((route) => route.name !== name);
@@ -184,17 +173,22 @@ export default {
      * @returns 路由表的副本 对副本操作不会改变原始路由表
      */
     const getRoutes = (): RouteEntryPo[] => {
-      return routes.value.map((route) => ({
-        biz: route.biz,
-        path: route.path,
-        name: route.name,
-        component: route.component,
-        meta: {
-          keepAlive: route.meta.keepAlive,
-          breadcrumb: route.meta.breadcrumb,
-          layout: route.meta.layout,
-        },
-      }));
+      const routes: RouteEntryPo[] = [];
+
+      //遍历路由表
+      for (const item of routes) {
+        const route = new RouteEntryPo();
+        route.biz = item.biz;
+        route.path = item.path;
+        route.name = item.name;
+        route.component = item.component;
+        route.meta = item.meta;
+        route.beforeEach = item.beforeEach;
+        route.afterEach = item.afterEach;
+        routes.push(route);
+      }
+
+      return routes;
     };
 
     return {
