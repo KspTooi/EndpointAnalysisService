@@ -26,10 +26,26 @@
 
     <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
+      <el-button
+        type="danger"
+        @click="removeListBatch(listSelected)"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中项
+      </el-button>
     </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetGroupListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="40" />
         <el-table-column prop="code" label="组标识" min-width="120" />
         <el-table-column prop="name" label="组名称" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
@@ -481,6 +497,48 @@ const removeList = async (id: string) => {
 
   try {
     await AdminGroupApi.removeGroup({ id });
+    ElMessage.success("删除成功");
+    await loadList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+};
+
+/**
+ * 选中的列表项
+ */
+const listSelected = ref<GetGroupListVo[]>([]);
+
+/**
+ * 批量删除访问组
+ */
+const removeListBatch = async (selectedItems: GetGroupListVo[]) => {
+  if (selectedItems.length === 0) {
+    ElMessage.warning("请选择要删除的访问组");
+    return;
+  }
+
+  // 过滤掉系统内置组
+  const deletableItems = selectedItems.filter((item) => !item.isSystem);
+
+  if (deletableItems.length === 0) {
+    ElMessage.warning("选中的项均为系统组，不可删除");
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(`确定删除选中的${deletableItems.length}个访问组吗？（系统组将被自动跳过）`, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (error) {
+    return;
+  }
+
+  try {
+    const ids = deletableItems.map((item) => item.id);
+    await AdminGroupApi.removeGroup({ ids });
     ElMessage.success("删除成功");
     await loadList();
   } catch (error: any) {
