@@ -428,28 +428,57 @@ public class GroupService {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
 
-        if (group == null) {
-            throw new BizException("用户组不存在");
-        }
-
-        //加载全部权限列表
-        var allPermPos = permissionRepository.getPermissionsByCodes(dto.getPermissionCodes());
-
         //获取当前组拥有的权限
         var groupPerms = permissionRepository.getPermissionsByGroupId(group.getId());
 
+        //获取要操作的权限
+        var permPos = permissionRepository.getPermissionsByCodes(dto.getPermissionCodes());
+
+        //清空该组下挂载的权限关系
+        gpRepository.clearPermissionByGroupId(group.getId());
+
+        //最终的GP权限关系
+        var gpPos = new ArrayList<GroupPermissionPo>();
+
         //模式授权 0:授权 1:取消授权
         if (dto.getType() == 0) {
-            groupPerms.addAll(allPermPos);
+
+            //授权 = 当前组拥有的权限 + 要操作的权限
+            var mergePerms = new HashSet<>(groupPerms);
+            mergePerms.addAll(permPos);
+
+            for (var perm : mergePerms) {
+                var gpPo = new GroupPermissionPo();
+                gpPo.setGroupId(group.getId());
+                gpPo.setPermissionId(perm.getId());
+                gpPos.add(gpPo);
+            }
+
         }
 
         //取消授权
         if (dto.getType() == 1) {
-            groupPerms.removeAll(allPermPos);
+
+            //取消授权 = 当前组拥有的权限 - 要操作的权限
+            var mergePerms = new HashSet<PermissionPo>(groupPerms);
+
+            for (var perm : permPos) {
+                mergePerms.remove(perm);
+            }
+
+            for (var perm : mergePerms) {
+                var gpPo = new GroupPermissionPo();
+                gpPo.setGroupId(group.getId());
+                gpPo.setPermissionId(perm.getId());
+                gpPos.add(gpPo);
+            }
+
         }
 
         //保存更改
-        repository.save(group);
+        if (!gpPos.isEmpty()) {
+            gpRepository.saveAll(gpPos);
+        }
     }
 
 
