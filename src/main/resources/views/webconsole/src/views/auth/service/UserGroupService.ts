@@ -93,16 +93,8 @@ export default {
                 return;
             }
 
-            // 过滤掉系统内置组
-            const deletableItems = selectedItems.filter((item) => !item.isSystem);
-
-            if (deletableItems.length === 0) {
-                ElMessage.warning("选中的项均为系统组，不可删除");
-                return;
-            }
-
             try {
-                await ElMessageBox.confirm(`确定删除选中的${deletableItems.length}个访问组吗？（系统组将被自动跳过）`, "提示", {
+                await ElMessageBox.confirm(`确定删除选中的 ${selectedItems.length} 个访问组吗？`, "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning",
@@ -112,7 +104,7 @@ export default {
             }
 
             try {
-                const ids = deletableItems.map((item) => item.id);
+                const ids = selectedItems.map((item) => item.id);
                 await AdminGroupApi.removeGroup({ ids });
                 ElMessage.success("删除成功");
                 await loadList();

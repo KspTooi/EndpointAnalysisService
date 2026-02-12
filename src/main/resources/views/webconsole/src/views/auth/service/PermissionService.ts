@@ -78,24 +78,16 @@ export default {
         };
 
         /**
-         * 批量删除
-         */
+     * 批量删除
+     */
         const removeListBatch = async (selectedItems: GetPermissionListVo[]) => {
             if (selectedItems.length === 0) {
                 ElMessage.warning("请选择要删除的权限节点");
                 return;
             }
 
-            // 过滤掉系统内置权限
-            const deletableItems = selectedItems.filter((item) => item.isSystem !== 1);
-
-            if (deletableItems.length === 0) {
-                ElMessage.warning("选中的项均为系统内置权限，不可删除");
-                return;
-            }
-
             try {
-                await ElMessageBox.confirm(`确定删除选中的${deletableItems.length}个权限节点吗？（系统权限将被自动跳过）`, "提示", {
+                await ElMessageBox.confirm(`确定删除选中的 ${selectedItems.length} 个权限节点吗？`, "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning",
@@ -105,7 +97,7 @@ export default {
             }
 
             try {
-                const ids = deletableItems.map((item) => item.id);
+                const ids = selectedItems.map((item) => item.id);
                 await AdminPermissionApi.removePermission({ ids });
                 ElMessage.success("删除成功");
                 await loadList();
