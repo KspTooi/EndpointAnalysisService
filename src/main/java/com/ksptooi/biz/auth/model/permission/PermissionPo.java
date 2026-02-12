@@ -1,13 +1,11 @@
 package com.ksptooi.biz.auth.model.permission;
 
-import com.ksptooi.biz.auth.model.group.GroupPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * 权限实体类
@@ -46,9 +44,6 @@ public class PermissionPo {
 
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
-
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    private Set<GroupPo> groups;
 
     @PrePersist
     public void prePersist() {

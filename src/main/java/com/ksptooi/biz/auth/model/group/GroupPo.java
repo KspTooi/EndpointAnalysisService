@@ -1,13 +1,10 @@
 package com.ksptooi.biz.auth.model.group;
 
-import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * 用户组实体类
@@ -55,14 +52,6 @@ public class GroupPo {
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "core_group_permission",
-            joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
-            inverseJoinColumns = @JoinColumn(name = "permission_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    )
-    //用户组拥有的权限
-    private Set<PermissionPo> permissions = new HashSet<>();
 
     @PrePersist
     public void prePersist() {

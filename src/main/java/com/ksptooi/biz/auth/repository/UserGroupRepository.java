@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserGroupRepository extends JpaRepository<UserGroupPo, Long>, JpaSpecificationExecutor<UserGroupPo> {
+public interface UserGroupRepository extends JpaRepository<UserGroupPo, UserGroupPo.Pk>, JpaSpecificationExecutor<UserGroupPo> {
 
     /**
      * 根据用户ID获取用户拥有的全部用户组ID
