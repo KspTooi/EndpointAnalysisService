@@ -8,6 +8,7 @@ import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
+import com.ksptooi.biz.auth.repository.UserGroupRepository;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.model.user.UserPo;
@@ -45,8 +46,12 @@ public class GroupService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private UserGroupRepository ugRepository;
 
 
     public List<GetGroupDefinitionsVo> getGroupDefinitions() {
@@ -395,69 +400,43 @@ public class GroupService {
         }
 
         var safeRemoveIds = new ArrayList<Long>();
+        String errorMessage = null;
 
         for (GroupPo group : groups) {
 
             //系统用户组无法删除
             if (group.getIsSystem()) {
+                errorMessage = "系统用户组无法删除";
                 continue;
             }
             
             //用户组下面还有用户也不能删除
-            
+            var userGroupIds = ugRepository.getGroupIdsByGrantedUserId(group.getId());
 
-
-        }
-
-
-        GroupPo group = repository.getGroupWithUserAndPermission(id);
-
-        if (group == null) {
-            throw new BizException("用户组不存在");
-        }
-
-        if (group.getIsSystem()) {
-            throw new BizException("系统用户组不能删除");
-        }
-
-        //获取有多少用户在该组下
-        int userCount = group.getUsers().size();
-
-        if (userCount > 0) {
-            throw new BizException(String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userCount));
-        }
-
-
-        // 获取该用户组下所有在线用户的会话
-        List<UserSessionPo> activeSessions = userSessionRepository.getUserSessionByGroupId(group.getId());
-
-        // 清空用户组与用户的关联关系
-        if (!group.getUsers().isEmpty()) {
-            for (UserPo user : new HashSet<>(group.getUsers())) {
-                user.getGroups().remove(group);
+            if(!userGroupIds.isEmpty()){
+                errorMessage = String.format("该用户组下有 %d 个用户，请先取消所有关联关系后再尝试移除", userGroupIds.size());
+                continue;
             }
-            group.getUsers().clear();
+
+            safeRemoveIds.add(group.getId());
         }
 
-
-        // 清空用户组与权限的关联关系
-        if (group.getPermissions() != null) {
-            group.getPermissions().clear();
+        //如果当前是单个删除模式且有错误 直接抛出异常
+        if (!dto.isBatch() && errorMessage != null) {
+            throw new BizException(errorMessage);
         }
 
-        // 保存更改并刷新
-        repository.save(group);
-        repository.flush();
-        repository.delete(group);
-
-        // 刷新每个用户的会话
-        for (UserSessionPo session : activeSessions) {
-            try {
-                sessionService.updateSession(session.getUserId());
-            } catch (Exception e) {
-                log.error("刷新用户会话失败:{}", e.getMessage());
-            }
+        //当前是批量删除模式且没有任何一个用户组可以删除 则抛出异常
+        if (dto.isBatch() && safeRemoveIds.isEmpty()) {
+            throw new BizException("没有可以安全删除的用户组,请检查用户组状态或关联关系");
         }
+
+        //执行静默删除
+        repository.deleteAllById(safeRemoveIds);
+    
+        //还需要删除该组下挂载的权限关系
+        
+
     }
 
 
