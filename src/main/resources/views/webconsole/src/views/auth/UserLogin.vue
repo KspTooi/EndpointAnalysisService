@@ -73,10 +73,11 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
-import AuthApi from "./api/AuthApi";
+import UserAuthService from "./service/UserAuthService";
 import type { UserLoginDto } from "./api/AuthApi";
 
 const router = useRouter();
+const { login } = UserAuthService.useUserAuth();
 
 // 表单数据
 const loginForm = ref<UserLoginDto>({
@@ -109,19 +110,9 @@ const handleLogin = async () => {
   isLoading.value = true;
 
   try {
-    const result = await AuthApi.userLogin(loginForm.value);
-
-    if (result.code === 0 && result.data) {
-      if (result.data.sessionId) {
-        localStorage.setItem("sessionId", result.data.sessionId);
-      }
-      localStorage.setItem("userInfo", JSON.stringify(result.data));
-      ElMessage.success("安全令牌验证通过");
-      await router.push({ path: "/" });
-      return;
-    }
-
-    errorMessage.value = result.message || "凭据验证失败，访问被拒绝";
+    const data = await login(loginForm.value.username, loginForm.value.password);
+    ElMessage.success("用户验证通过");
+    await router.push({ path: "/" });
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : "网络同步异常，同步失败";
   } finally {

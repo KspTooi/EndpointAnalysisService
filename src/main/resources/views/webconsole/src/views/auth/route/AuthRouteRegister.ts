@@ -21,6 +21,11 @@ export default class AuthRouteRegister extends GenricRouteRegister {
 
   public override doBeforeEach(): NavigationGuardWithThis<undefined> {
     return (to, from, next) => {
+      //如果访问了login
+      if (to.name === "login") {
+        console.log("访问了login");
+      }
+
       console.log("doBeforeEach", to, from, next);
       next();
     };
