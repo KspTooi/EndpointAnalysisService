@@ -9,25 +9,19 @@ import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
-import com.ksptooi.commons.WebUtils;
 import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.ksptool.entities.Entities.*;
@@ -36,20 +30,8 @@ import static com.ksptool.entities.Entities.*;
 @Service
 public class SessionService {
 
-    //线程上下文 用于放置UserSession
-    public static final String SESSION_ATTRIBUTE = "CURRENT_USER_SESSION";
-
-    /**
-     * 会话ID字段 前端请求头或Cookie中会话ID的字段
-     */
-    private final Set<String> sessionIdFields = new HashSet<String>() {{
-        add("eas-token");
-        add("eas-session-id");
-    }};
-
     @Value("${session.expires}")
     private long expiresInSeconds;
-
 
     @Autowired
     private UserSessionRepository userSessionRepository;
@@ -64,26 +46,31 @@ public class SessionService {
      * @return 当前用户会话
      * @throws AuthException 如果用户会话不存在，或用户未登录。
      */
-    public static UserSessionVo session() throws AuthException {
+    public static AuthUserDetails session() throws AuthException {
 
-        var session = getSession();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (session == null || session.getUserId() == null) {
-            throw new AuthException("Require User Login");
+        if (authentication == null) {
+            throw new AuthException("用户未登录");
         }
 
-        return session;
+        return (AuthUserDetails) authentication.getPrincipal();
     }
 
     /**
      * 获取当前用户会话
-     *
-     * @return 当前用户会话 如果用户未登录，则返回null。
+     * @return 当前用户会话，如果用户未登录，则返回null
      */
-    public static UserSessionVo getSession() {
-        return (UserSessionVo) RequestContextHolder.currentRequestAttributes()
-                .getAttribute(SESSION_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    public static AuthUserDetails getSession(){
+        try{
+            return session();
+        }catch(Exception e){
+            return null;
+        }
     }
+
+
+
 
     public PageResult<GetSessionListVo> getSessionList(GetSessionListDto dto) {
         Page<GetSessionListVo> pPos = userSessionRepository.getSessionList(dto, dto.pageRequest());
@@ -197,48 +184,22 @@ public class SessionService {
         return existingSession.toVo();
     }
 
+    
     /**
-     * 从HTTP请求中获取用户会话信息
-     *
-     * @param hsr HTTP请求
-     * @return 会话信息，如果未登录或会话无效则返回null
+     * 根据SessionId获取会话
+     * @param sessionId 会话SessionId
+     * @return 会话
+     * @throws BizException 如果会话不存在，或会话已过期。
      */
-    public UserSessionVo getUserSessionByHSR(HttpServletRequest hsr) {
+    public UserSessionPo getSessionBySessionId(String sessionId) throws BizException {
 
-        //尝试获取Token字段
-        String sessionId = null;
+        var session = userSessionRepository.getSessionBySessionId(SHA256.hex(sessionId));
 
-        //优先从Cookie中获取会话ID
-        for (String field : sessionIdFields) {
-            sessionId = WebUtils.getCookieValue(hsr, field);
-            if (StringUtils.isNotBlank(sessionId)) {
-                break;
-            }
+        if (session == null) {
+            throw new BizException("会话不存在");
         }
-
-        //如果Cookie中未获取到会话ID，则从请求头中获取
-        if (StringUtils.isBlank(sessionId)) {
-            for (String field : sessionIdFields) {
-                sessionId = hsr.getHeader(field);
-                if (StringUtils.isNotBlank(sessionId)) {
-                    break;
-                }
-            }
-        }
-
-        //Cookie与请求头中均未获取到会话ID，则返回null
-        if (StringUtils.isBlank(sessionId)) {
-            return null;
-        }
-
-        //查询会话
-        var existingSession = userSessionRepository.getSessionBySessionId(sessionId);
-
-        if (existingSession == null || existingSession.isExpired()) {
-            return null;
-        }
-
-        return existingSession.toVo();
+        
+        return session;
     }
 
 }

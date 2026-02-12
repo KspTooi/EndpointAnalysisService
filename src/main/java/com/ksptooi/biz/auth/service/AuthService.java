@@ -1,19 +1,13 @@
 package com.ksptooi.biz.auth.service;
 
-import com.ksptooi.biz.audit.service.AuditLoginService;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
-import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfilePermissionVo;
-import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.service.AttachService;
-import com.ksptooi.biz.core.service.EndpointService;
-import com.ksptooi.biz.core.service.GlobalConfigService;
-import com.ksptooi.commons.WebUtils;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,19 +41,10 @@ public class AuthService {
     private UserSessionRepository userSessionRepository;
 
     @Autowired
-    private EndpointService endpointService;
-
-    @Autowired
-    private GlobalConfigService globalConfigService;
-
-    @Autowired
     private AttachService attachService;
 
     @Autowired
     private SessionService sessionService;
-
-    @Autowired
-    private AuditLoginService auditLoginService;
 
 
     /**
@@ -146,37 +130,6 @@ public class AuthService {
         userSessionRepository.deleteAll();
     }
 
-    public UserPo verifyUser(HttpServletRequest hsr) {
-
-        String token = WebUtils.getCookieValue(hsr, "token");
-
-        if (token == null) {
-            return null; // Cookie中没有token
-        }
-
-        Long userId = verifyToken(token);
-
-        if (userId == null) {
-            return null; // Token无效
-        }
-
-        UserPo user = userRepository.findById(userId).orElse(null);
-
-        // 用户不存在
-
-        return user; // Token有效，返回用户实例
-    }
-
-
-    public Long verifyToken(String token) {
-        UserSessionPo userSession = userSessionRepository.getSessionBySessionId(token);
-        if (userSession == null || userSession.getExpiresAt().isBefore(LocalDateTime.now())) {
-            return null; // Token无效
-        } else {
-            return userSession.getUserId();
-        }
-    }
-
 
     /**
      * 获取当前用户信息
@@ -209,9 +162,7 @@ public class AuthService {
 
         for (GroupPo group : groups) {
             groupNames.add(group.getName());
-            group.getPermissions().forEach(permission -> {
-                permissionSet.add(permission);
-            });
+            permissionSet.addAll(group.getPermissions());
         }
 
         vo.setGroups(groupNames);

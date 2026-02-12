@@ -1,8 +1,10 @@
 package com.ksptooi.biz.auth.common;
 
-import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
-import com.ksptooi.biz.auth.repository.UserSessionRepository;
+import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
+import com.ksptooi.biz.auth.model.session.UserSessionPo;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.commons.WebUtils;
+import com.ksptool.assembly.entity.exception.BizException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +22,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.HashSet;
+
+import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.fromJsonArray;
 
 /**
  * 基于 core_user_session 的无状态认证过滤器模板。
@@ -40,63 +45,74 @@ import java.util.HashSet;
 @Component
 public class UserSessionAuthFilter extends OncePerRequestFilter {
 
-    private static final String COOKIE_SESSION_ID = "eas-session-id";
-    private static final String HEADER_SESSION_ID = "eas-token";
-
     @Autowired
-    private UserSessionRepository userSessionRepository;
-
+    private SessionService sessionService;
 
     @NullMarked
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        //如果已经认证，则直接放行
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String sessionId = WebUtils.getCookieValue(request, COOKIE_SESSION_ID);
+        //优先从Authentication头中获取sessionId
+        var sessionId = WebUtils.getAuthenticationBearerSessionId(request);
+
         if (StringUtils.isBlank(sessionId)) {
-            sessionId = request.getHeader(HEADER_SESSION_ID);
+            sessionId = WebUtils.getCookieValue(request, "bio-session-id");
         }
 
+        //如果sessionId为空，则直接放行(无请求上下文)
         if (StringUtils.isBlank(sessionId)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        var sessionPo = userSessionRepository.getSessionBySessionId(sessionId);
+        //从数据库查询会话信息
+        UserSessionPo sessionPo = null;
+
+        try {
+            sessionPo = sessionService.getSessionBySessionId(sessionId);
+        } catch (BizException e) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        //如果会话不存在，则直接放行(无请求上下文)
         if (sessionPo == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        //如果会话已过期，则直接放行(无请求上下文)
         if (sessionPo.isExpired()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        UserSessionVo sessionVo = sessionPo.toVo();
-        if (sessionVo == null || sessionVo.getUserId() == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+        //会话正常，配置安全上下文
         var authorities = new HashSet<GrantedAuthority>();
-        if (sessionVo.getPermissionCodes() != null) {
-            for (String permissionCode : sessionVo.getPermissionCodes()) {
-                if (StringUtils.isBlank(permissionCode)) {
-                    continue;
-                }
-                authorities.add(new SimpleGrantedAuthority(permissionCode));
+
+        //解析会话中的权限码(存储在数据库中的权限码是JSON数组且角色已有ROLE_前缀)
+        var permissionCodes = fromJsonArray(sessionPo.getPermissionCodes(), String.class);
+
+        for (var permissionCode : permissionCodes) {
+            if (StringUtils.isBlank(permissionCode)) {
+                continue;
             }
+            authorities.add(new SimpleGrantedAuthority(permissionCode));
         }
 
-        var authentication = new UsernamePasswordAuthenticationToken(sessionVo, null, authorities);
+        //UserSessionPo 转换为 AuthUserDetails
+        var aud = as(sessionPo, AuthUserDetails.class);
+        var authentication = new UsernamePasswordAuthenticationToken(aud, null, authorities);
+
+        //设置认证详情
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         filterChain.doFilter(request, response);
     }
 }

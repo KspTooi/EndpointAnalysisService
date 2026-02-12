@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,7 +57,7 @@ public class AuthUserDetails implements UserDetails {
 
     //所属部门名称
     private String deptName;
-    
+
     //公司ID(旧字段，用于兼容旧数据)
     private Long companyId;
 
@@ -70,9 +69,6 @@ public class AuthUserDetails implements UserDetails {
 
     //创建时间
     private LocalDateTime createTime;
-
-    //用户角色码
-    private List<String> roles;
 
     //用户权限码和角色码(角色码通过ROLE_前缀区分)
     private Set<GrantedAuthority> authorities;
@@ -115,5 +111,9 @@ public class AuthUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return status == 0; // 0:正常 1:封禁
+    }
+    
+    public Long getUserId() {
+        return this.id;
     }
 }
