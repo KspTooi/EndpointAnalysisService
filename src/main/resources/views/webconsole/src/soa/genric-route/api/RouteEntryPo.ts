@@ -21,6 +21,32 @@ export class RouteEntryPo {
   afterEach?: NavigationHookAfter;
 
   /**
+   * 构造函数
+   * @param props 属性
+   */
+  public constructor(props?: {
+    biz: string;
+    path: string;
+    name: string;
+    component: () => Promise<Component>;
+    meta: {
+      keepAlive?: boolean;
+      breadcrumb?: string | null;
+      layout?: string | null;
+    };
+    beforeEach?: NavigationGuardWithThis<undefined>;
+    afterEach?: NavigationHookAfter;
+  }) {
+    this.biz = props.biz;
+    this.path = props.path;
+    this.name = props.name;
+    this.component = props.component;
+    this.meta = props.meta;
+    this.beforeEach = props.beforeEach;
+    this.afterEach = props.afterEach;
+  }
+
+  /**
    * 验证路由条目
    */
   public validate(): void {
@@ -72,5 +98,21 @@ export class RouteEntryPo {
       return "/" + this.path;
     }
     return "/" + this.biz + "/" + this.path;
+  }
+
+  public static build(props: {
+    biz: string;
+    path: string;
+    name: string;
+    component: () => Promise<Component>;
+    meta: {
+      keepAlive?: boolean;
+      breadcrumb?: string | null;
+      layout?: string | null;
+    };
+    beforeEach?: NavigationGuardWithThis<undefined>;
+    afterEach?: NavigationHookAfter;
+  }): RouteEntryPo {
+    return new RouteEntryPo(props);
   }
 }

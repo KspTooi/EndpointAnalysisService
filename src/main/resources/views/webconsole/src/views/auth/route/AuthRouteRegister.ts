@@ -1,4 +1,4 @@
-import type { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
+import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 
 export default class AuthRouteRegister extends GenricRouteRegister {
@@ -8,13 +8,13 @@ export default class AuthRouteRegister extends GenricRouteRegister {
    */
   public doRegister(): RouteEntryPo[] {
     return [
-      {
+      RouteEntryPo.build({
         biz: "auth",
         path: "login",
         name: "login",
         component: () => import("@/views/auth/UserLogin.vue"),
         meta: { breadcrumb: "用户登录", layout: "blank" },
-      },
+      }),
     ];
   }
 }
