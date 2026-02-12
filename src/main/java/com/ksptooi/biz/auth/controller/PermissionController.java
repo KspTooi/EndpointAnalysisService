@@ -67,7 +67,7 @@ public class PermissionController {
     @Operation(summary = "删除权限")
     @PostMapping("removePermission")
     public Result<String> removePermission(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        service.removePermission(dto.getId());
+        service.removePermission(dto);
         return Result.success("success");
     }
 }
