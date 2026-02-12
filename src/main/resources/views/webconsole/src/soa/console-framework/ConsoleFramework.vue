@@ -70,11 +70,11 @@
             <!-- 路由视图 -->
             <router-view v-slot="{ Component, route }">
               <transition name="fade" mode="out-in">
-                <div :key="viewKey">
+                <div :key="route.name || route.path">
                   <keep-alive v-if="route.meta.keepAlive">
-                    <component :is="Component" />
+                    <component :is="Component" :key="route.name || route.path" />
                   </keep-alive>
-                  <component :is="Component" v-if="!route.meta.keepAlive" />
+                  <component :is="Component" v-if="!route.meta.keepAlive" :key="viewKey" />
                 </div>
               </transition>
             </router-view>
