@@ -11,6 +11,7 @@ export interface UserGroupVo {
   sortOrder: number; // 排序顺序
   isSystem: boolean; // 是否为系统内置组
   hasGroup: boolean; // 用户是否属于此组
+  status: number; // 组状态 0:禁用，1:启用
 }
 
 export interface UserPermissionVo {

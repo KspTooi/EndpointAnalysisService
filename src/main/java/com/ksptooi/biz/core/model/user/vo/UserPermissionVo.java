@@ -31,4 +31,6 @@ public class UserPermissionVo {
      * 是否为系统内置权限
      */
     private Boolean isSystem;
+    
+    
 } 

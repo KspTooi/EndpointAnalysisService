@@ -1,5 +1,6 @@
 package com.ksptooi.biz.core.model.user.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,30 +11,25 @@ public class UserGroupVo {
     /**
      * 用户组ID
      */
+    @Schema(description = "用户组ID")
     private Long id;
 
-    /**
-     * 用户组名称
-     */
+    @Schema(description = "用户组名称")
     private String name;
 
-    /**
-     * 用户组描述
-     */
+    @Schema(description = "用户组描述")
     private String description;
 
-    /**
-     * 排序顺序
-     */
+    @Schema(description = "排序顺序")
     private Integer sortOrder;
 
-    /**
-     * 是否为系统内置组
-     */
+    @Schema(description = "是否为系统内置组")
     private Boolean isSystem;
 
-    /**
-     * 用户是否属于此组
-     */
+    @Schema(description = "用户是否属于此组")
     private Boolean hasGroup;
+
+    @Schema(description = "组状态 0:禁用，1:启用")
+    private Integer status;
+    
 } 

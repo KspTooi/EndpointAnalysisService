@@ -218,17 +218,37 @@ export default {
 
           groupOptions.value = ret.groups || [];
           selectedGroupIds.value = ret.groups ? ret.groups.filter((group) => group.hasGroup).map((group) => group.id) : [];
+
+          //编辑时滤除当前用户不拥有 且被禁用的组
+          groupOptions.value = ret.groups.filter((group) => {
+            //当前用户拥有该组
+            if (group.hasGroup) {
+              return true;
+            }
+
+            //组被禁用且未拥有该组
+            if (group.status === 0 && !group.hasGroup) {
+              return false;
+            }
+
+            return true;
+          });
         } catch (error: any) {
           ElMessage.error(error.message);
           return;
         }
       }
 
-      if (mode !== "edit" || !currentRow) {
+      if (mode == "add") {
         // 新增模式，获取用户组列表
         const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
         groupOptions.value = [];
         groups.data.forEach((group) => {
+          //禁用组不显示
+          if (group.status === 0) {
+            return;
+          }
+
           groupOptions.value.push({
             id: group.id,
             name: group.name,
@@ -236,6 +256,7 @@ export default {
             sortOrder: 0,
             isSystem: group.isSystem,
             hasGroup: false,
+            status: group.status,
           });
         });
       }
