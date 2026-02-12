@@ -18,4 +18,11 @@ export default class AuthRouteRegister extends GenricRouteRegister {
       }),
     ];
   }
+
+  public override doBeforeEach(): NavigationGuardWithThis<undefined> {
+    return (to, from, next) => {
+      console.log("doBeforeEach", to, from, next);
+      next();
+    };
+  }
 }

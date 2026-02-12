@@ -15,7 +15,7 @@ export default abstract class GenricRouteRegister {
    * 通过重写该方法来注册前置守卫 如果不需要前置守卫 则返回null
    * @returns 前置守卫
    */
-  protected doBeforeEach(): NavigationGuardWithThis<undefined> {
+  public doBeforeEach(): NavigationGuardWithThis<undefined> {
     return null;
   }
 
@@ -23,7 +23,7 @@ export default abstract class GenricRouteRegister {
    * 通过重写该方法来注册后置守卫 如果不需要后置守卫 则返回null
    * @returns 后置守卫
    */
-  protected doAfterEach(): NavigationHookAfter {
+  public doAfterEach(): NavigationHookAfter {
     return null;
   }
 }

@@ -74,9 +74,20 @@ export default {
       hasInitialized = true;
 
       //注册路由注册器
-      routeRegistries.value.forEach((register) => {
+      routeRegistries.value.forEach((register: GenricRouteRegister) => {
         //注册路由
         addRoutes(register.doRegister());
+
+        //注册前置守卫
+        if (register.doBeforeEach()) {
+          vueRouter.beforeEach(register.doBeforeEach());
+        }
+
+        //注册后置守卫
+        if (register.doAfterEach()) {
+          console.log("注册后置守卫", register.doAfterEach());
+          vueRouter.afterEach(register.doAfterEach);
+        }
       });
 
       app.use(vueRouter);
