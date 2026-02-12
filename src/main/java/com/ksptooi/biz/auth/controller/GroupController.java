@@ -1,4 +1,4 @@
-package com.ksptooi.biz.auth.model.auth;
+package com.ksptooi.biz.auth.controller;
 
 
 import com.ksptooi.biz.auth.model.group.dto.*;
