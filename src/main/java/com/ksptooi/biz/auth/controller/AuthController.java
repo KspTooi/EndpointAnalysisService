@@ -111,20 +111,12 @@ public class AuthController {
 
     @Operation(summary = "注销")
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            // 获取当前用户
-            var user = authService.verifyUser(request);
-            // 清除数据库中的 session
-            sessionService.closeSession(user.getId());
-            // 清除 HTTP session
-            request.getSession().invalidate();
-            // 重定向到登录页
-            return "redirect:/login";
-        } catch (Exception e) {
-            // 如果发生异常（比如用户已经注销），也重定向到登录页
-            return "redirect:/login";
-        }
+    public Result<String> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        // 清除数据库中的 session
+        //sessionService.closeSession(user.getId());
+        
+        return Result.success("注销成功");
     }
 
 
