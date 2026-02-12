@@ -26,14 +26,22 @@
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="会话ID" min-width="100" />
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="createTime" label="登入时间" min-width="180" />
         <el-table-column prop="expiresAt" label="过期时间" min-width="180" />
+        <el-table-column prop="isExpired" label="是否过期" min-width="180">
+          <template #default="scope">
+            <el-tag :type="scope.row.isExpired ? 'danger' : 'success'">
+              {{ scope.row.isExpired ? "是" : "否" }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
-            <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon"> 关闭会话 </el-button>
+            <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon">
+              关闭会话
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,41 +69,50 @@
     </template>
   </StdListLayout>
 
-    <!-- 会话详情模态框 -->
-    <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
-      <el-descriptions :column="1" border v-if="currentSessionDetails">
-        <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
-        <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
-        <el-descriptions-item label="登入时间">{{ currentSessionDetails.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
-        <el-descriptions-item label="权限节点">
-          <div v-if="currentSessionDetails.permissions && currentSessionDetails.permissions.length > 0">
-            <el-input v-model="permissionSearchKeyword" placeholder="搜索权限节点" clearable style="margin-bottom: 10px; width: 100%" />
-            <el-table :data="filteredPermissions" stripe max-height="300px" style="width: 100%">
-              <el-table-column label="权限代码" min-width="500">
-                <template #default="scope">
-                  {{ scope.row }}
-                </template>
-              </el-table-column>
-            </el-table>
-            <div style="margin-top: 10px; text-align: right">总权限数：{{ currentSessionDetails.permissions.length }}</div>
-          </div>
-          <el-tag v-else type="info">无权限</el-tag>
-        </el-descriptions-item>
-      </el-descriptions>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="modalVisible = false">关闭</el-button>
-        </span>
-      </template>
-    </el-dialog>
+  <!-- 会话详情模态框 -->
+  <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
+    <el-descriptions :column="1" border v-if="currentSessionDetails">
+      <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
+      <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
+      <el-descriptions-item label="登入时间">{{ currentSessionDetails.createTime }}</el-descriptions-item>
+      <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
+      <el-descriptions-item label="权限节点">
+        <div v-if="currentSessionDetails.permissions && currentSessionDetails.permissions.length > 0">
+          <el-input
+            v-model="permissionSearchKeyword"
+            placeholder="搜索权限节点"
+            clearable
+            style="margin-bottom: 10px; width: 100%"
+          />
+          <el-table :data="filteredPermissions" stripe max-height="300px" style="width: 100%">
+            <el-table-column label="权限代码" min-width="500">
+              <template #default="scope">
+                {{ scope.row }}
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top: 10px; text-align: right">总权限数：{{ currentSessionDetails.permissions.length }}</div>
+        </div>
+        <el-tag v-else type="info">无权限</el-tag>
+      </el-descriptions-item>
+    </el-descriptions>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="modalVisible = false">关闭</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
-import AdminSessionApi, { type GetSessionDetailsVo, type GetSessionListDto, type GetSessionListVo } from "@/views/auth/api/SessionApi.ts";
+import AdminSessionApi, {
+  type GetSessionDetailsVo,
+  type GetSessionListDto,
+  type GetSessionListVo,
+} from "@/views/auth/api/SessionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
@@ -118,7 +135,9 @@ const permissionSearchKeyword = ref("");
 const filteredPermissions = computed(() => {
   if (!currentSessionDetails.value?.permissions) return [];
 
-  return currentSessionDetails.value.permissions.filter((permission) => permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase()));
+  return currentSessionDetails.value.permissions.filter((permission) =>
+    permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase())
+  );
 });
 
 const loadList = async () => {
