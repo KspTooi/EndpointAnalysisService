@@ -13,28 +13,28 @@ export default class RdbgRouteRegister extends GenricRouteRegister {
         path: "user-request-manager",
         name: "user-request-manager",
         component: () => import("@/views/rdbg/UserRequestView.vue"),
-        breadcrumb: "端点调试工作台",
+        meta: { breadcrumb: "端点调试工作台" },
       },
       {
         biz: "rdbg",
         path: "user-request-env-manager",
         name: "user-request-env-manager",
         component: () => import("@/views/rdbg/UserRequestEnvManager.vue"),
-        breadcrumb: "用户请求环境管理",
+        meta: { breadcrumb: "用户请求环境管理" },
       },
       {
         biz: "rdbg",
         path: "simple-filter-manager",
         name: "simple-filter-manager",
         component: () => import("@/views/rdbg/SimpleFilterManager.vue"),
-        breadcrumb: "基本过滤器",
+        meta: { breadcrumb: "基本过滤器" },
       },
       {
         biz: "rdbg",
         path: "workspace",
         name: "rdbg-workspace",
         component: () => import("@/views/rdbg/RdbgWorkSpace.vue"),
-        breadcrumb: "请求调试器",
+        meta: { breadcrumb: "请求调试器" },
       },
     ];
   }

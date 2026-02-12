@@ -32,7 +32,7 @@ export default {
       return routeList.value.filter((route) => {
         const fullPath = buildPath(route).toLowerCase();
         const name = (route.name || "").toLowerCase();
-        const breadcrumb = (route.breadcrumb || "").toLowerCase();
+        const breadcrumb = (route.meta?.breadcrumb || "").toLowerCase();
         return fullPath.includes(keyword) || name.includes(keyword) || breadcrumb.includes(keyword);
       });
     });
@@ -51,7 +51,7 @@ export default {
           path: route.path,
           name: route.name,
           component: route.component,
-          breadcrumb: route.meta?.breadcrumb?.title || route.name || "",
+          meta: route.meta,
         }));
 
         modalVisible.value = true;

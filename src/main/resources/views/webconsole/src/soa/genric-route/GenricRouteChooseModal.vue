@@ -31,7 +31,9 @@
               <span v-if="!scope.row.biz" style="color: #999">不可用</span>
             </template>
           </el-table-column>
-          <el-table-column label="面包屑" prop="breadcrumb" min-width="120" show-overflow-tooltip />
+          <el-table-column label="面包屑" min-width="120" show-overflow-tooltip>
+            <template #default="scope">{{ scope.row.meta?.breadcrumb ?? "" }}</template>
+          </el-table-column>
           <el-table-column label="路由路径" min-width="200">
             <template #default="scope">
               <span>{{ buildPath(scope.row) }}</span>

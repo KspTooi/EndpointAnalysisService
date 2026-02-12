@@ -13,14 +13,14 @@ export default class DocumentRouteRegister extends GenricRouteRegister {
         path: "ep-std-word-manager",
         name: "ep-std-word-manager",
         component: () => import("@/views/document/EpStdWordManager.vue"),
-        breadcrumb: "标准词管理",
+        meta: { breadcrumb: "标准词管理" },
       },
       {
         biz: "document",
         path: "ep-site-manager",
         name: "ep-site-manager",
         component: () => import("@/views/document/EpSiteManager.vue"),
-        breadcrumb: "站点管理",
+        meta: { breadcrumb: "站点管理" },
       },
     ];
   }

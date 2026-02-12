@@ -59,7 +59,6 @@ function buildPath(entry: RouteEntryPo): string {
 }
 
 export default {
-
   /**
    * 使用全局路由服务
    */
@@ -105,9 +104,12 @@ export default {
         entry.name = entry.path;
       }
 
-      //Breadcrumb为空时使用path
-      if (entry.breadcrumb == null) {
-        entry.breadcrumb = entry.path;
+      //meta.breadcrumb为空时使用path
+      if (entry.meta == null) {
+        entry.meta = {};
+      }
+      if (entry.meta.breadcrumb == null) {
+        entry.meta.breadcrumb = entry.path;
       }
 
       let hasConflict = false;
@@ -123,11 +125,13 @@ export default {
           route.path = entry.path;
           route.name = entry.name;
           route.component = entry.component;
-          route.breadcrumb = entry.breadcrumb;
+          route.meta = entry.meta;
           hasConflict = true;
           break;
         }
       }
+
+      const breadcrumbTitle = entry.meta.breadcrumb ?? entry.path;
 
       //如果无冲突 同时更新路由表+Vue路由
       if (!hasConflict) {
@@ -140,9 +144,9 @@ export default {
           name: entry.name,
           component: entry.component,
           meta: {
-            breadcrumb: {
-              title: entry.breadcrumb,
-            },
+            keepAlive: entry.meta.keepAlive,
+            breadcrumb: breadcrumbTitle,
+            layout: entry.meta.layout,
           },
         });
       }
@@ -154,9 +158,9 @@ export default {
           name: entry.name,
           component: entry.component,
           meta: {
-            breadcrumb: {
-              title: entry.breadcrumb,
-            },
+            keepAlive: entry.meta.keepAlive,
+            breadcrumb: breadcrumbTitle,
+            layout: entry.meta.layout,
           },
         });
       }
@@ -179,16 +183,16 @@ export default {
      * 获取路由表
      * @returns 路由表的副本 对副本操作不会改变原始路由表
      */
-    const getRoutes = () => {
+    const getRoutes = (): RouteEntryPo[] => {
       return routes.value.map((route) => ({
         biz: route.biz,
         path: route.path,
         name: route.name,
         component: route.component,
         meta: {
-          breadcrumb: {
-            title: route.breadcrumb,
-          },
+          keepAlive: route.meta.keepAlive,
+          breadcrumb: route.meta.breadcrumb,
+          layout: route.meta.layout,
         },
       }));
     };
