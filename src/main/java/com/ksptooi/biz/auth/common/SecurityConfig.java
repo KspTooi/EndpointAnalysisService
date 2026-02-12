@@ -34,6 +34,11 @@ public class SecurityConfig {
     @Autowired
     private UserSessionAuthFilter userSessionAuthFilter;
 
+    @Autowired
+    private JsonAuthEntryPoint jsonAuthEntryPoint;
+
+    @Autowired
+    private JsonAccessDeniedHandler jsonAccessDeniedHandler;
 
     /**
      * 配置Spring Security
@@ -73,6 +78,10 @@ public class SecurityConfig {
 
                         //兜底规则 其余所有请求都必须登录
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jsonAuthEntryPoint)
+                        .accessDeniedHandler(jsonAccessDeniedHandler)
                 );
 
         //添加自定义过滤器
