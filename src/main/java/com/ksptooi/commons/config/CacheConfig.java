@@ -27,7 +27,14 @@ public class CacheConfig {
                         .expireAfterWrite(5, TimeUnit.MINUTES)
                         .maximumSize(1000)
                         .build()));
-        
+
+        //策略 端点接口动态权限配置 最多2000条 30分钟过期
+        caches.add(new CaffeineCache("endpoint",
+                Caffeine.newBuilder()
+                        .expireAfterWrite(30, TimeUnit.MINUTES)
+                        .maximumSize(2000)
+                        .build()));
+
         cacheManager.setCaches(caches);
         return cacheManager;
     }

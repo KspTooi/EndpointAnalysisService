@@ -81,7 +81,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jsonAuthEntryPoint)
-                        .accessDeniedHandler(jsonAccessDeniedHandler)
+                        .accessDeniedHandler(jsonAuthEntryPoint)
                 );
 
         //添加自定义过滤器
