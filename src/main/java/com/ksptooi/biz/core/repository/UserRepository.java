@@ -54,6 +54,7 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
               AND (:#{#dto.phone} IS NULL OR p.phone LIKE CONCAT('%', :#{#dto.phone}, '%'))
               AND (:#{#dto.status} IS NULL OR p.status = :#{#dto.status})
               AND (:#{#dto.orgId} IS NULL OR o.id = :#{#dto.orgId} OR o.orgPathIds LIKE CONCAT('%', :#{#dto.orgId}, '%')) OR o.rootId = :#{#dto.orgId}
+            ORDER BY p.createTime
             """)
     Page<GetUserListVo> getUserList(@Param("dto") GetUserListDto dto, Pageable pageable);
 
