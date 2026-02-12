@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,12 +62,18 @@ public class AuthController {
     @Operation(summary = "登录(新)")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/userLogin")
-    public UserLoginVo userLogin(@RequestBody UserLoginDto dto, HttpServletResponse hsrp) throws BizException {
+    public Result<UserLoginVo> userLogin(@RequestBody UserLoginDto dto, HttpServletResponse hsrp) throws BizException {
 
-        //使用Spring Security进行用户名密码认证
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
-        );
+        Authentication auth = null;
+
+        try {
+            //使用Spring Security进行用户名密码认证
+            auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+            );
+        } catch (AuthenticationException e) {
+            return Result.error("用户名或密码错误");
+        }
 
         //获取认证用户
         var aud = (AuthUserDetails) auth.getPrincipal();
@@ -84,7 +91,7 @@ public class AuthController {
         //组装Vo
         var vo = as(aud, UserLoginVo.class);
         vo.setSessionId(sessionId);
-        return vo;
+        return Result.success(vo);
     }
 
 
@@ -115,7 +122,7 @@ public class AuthController {
 
         // 清除数据库中的 session
         //sessionService.closeSession(user.getId());
-        
+
         return Result.success("注销成功");
     }
 
