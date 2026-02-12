@@ -17,7 +17,7 @@
           :data="filteredRouteList"
           border
           highlight-current-row
-          :row-key="(row: RouteEntryPo) => buildPath(row)"
+          :row-key="(row: RouteEntryPo) => row.buildPath()"
           @selection-change="handleSelectionChange"
           @select-all="handleSelectAll"
           @row-click="handleRowClick"
@@ -36,7 +36,7 @@
           </el-table-column>
           <el-table-column label="路由路径" min-width="200">
             <template #default="scope">
-              <span>{{ buildPath(scope.row) }}</span>
+              <span>{{ scope.row.buildPath() }}</span>
             </template>
           </el-table-column>
           <el-table-column label="路由名称" prop="name" min-width="80" show-overflow-tooltip />
@@ -70,7 +70,6 @@ const {
   selectedRoute,
   searchKeyword,
   filteredRouteList,
-  buildPath,
   openModal,
   confirmSelect: serviceConfirmSelect,
   cancelSelect: serviceCancelSelect,
@@ -108,7 +107,7 @@ watch(modalVisible, (visible) => {
   }
 
   nextTick(() => {
-    const route = filteredRouteList.value.find((r) => buildPath(r) === modelValue.value);
+    const route = filteredRouteList.value.find((r) => r.buildPath() === modelValue.value);
     if (route) {
       applySingleSelection(route);
     }
@@ -190,7 +189,7 @@ const handleRowClick = (row: RouteEntryPo) => {
     return;
   }
 
-  if (selectedRoute.value && buildPath(selectedRoute.value) === buildPath(row)) {
+  if (selectedRoute.value && selectedRoute.value.buildPath() === row.buildPath()) {
     applySingleSelection(null);
     return;
   }
@@ -205,7 +204,7 @@ const confirmSelect = () => {
   if (!selectedRoute.value) {
     return;
   }
-  modelValue.value = buildPath(selectedRoute.value);
+  modelValue.value = selectedRoute.value.buildPath();
   serviceConfirmSelect();
 };
 
