@@ -3,10 +3,15 @@ import type { UserLoginDto, UserLoginVo } from "../api/AuthApi";
 import AuthApi from "../api/AuthApi";
 
 const AuthStore = defineStore("AuthStore", {
-  state: () => ({
-    userInfo: null as UserLoginVo | null,
-    sessionId: null as string | null,
-  }),
+  state: () => {
+    const userInfo = localStorage.getItem("userInfo");
+    const sessionId = localStorage.getItem("sessionId");
+
+    return {
+      userInfo: userInfo ? (JSON.parse(userInfo) as UserLoginVo) : null,
+      sessionId: sessionId,
+    };
+  },
   getters: {
     getUserInfo: (state) => {
       return state.userInfo;
@@ -16,11 +21,25 @@ const AuthStore = defineStore("AuthStore", {
     },
   },
   actions: {
-    setUserInfo(userInfo: UserLoginVo) {
+    setUserInfo(userInfo: UserLoginVo | null) {
       this.userInfo = userInfo;
+
+      if (!userInfo) {
+        localStorage.removeItem("userInfo");
+        return;
+      }
+
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
     },
-    setSessionId(sessionId: string) {
+    setSessionId(sessionId: string | null) {
       this.sessionId = sessionId;
+
+      if (!sessionId) {
+        localStorage.removeItem("sessionId");
+        return;
+      }
+
+      localStorage.setItem("sessionId", sessionId);
     },
   },
 });
