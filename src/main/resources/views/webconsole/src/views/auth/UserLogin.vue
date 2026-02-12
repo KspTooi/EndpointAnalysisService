@@ -56,7 +56,7 @@ const handleLogin = async () => {
       ElMessage.success("登录成功");
 
       // 跳转到首页
-      await router.push({ name: "home" });
+      await router.push({ path: "/" });
       return;
     }
 
@@ -145,9 +145,7 @@ const handleRegister = () => {
           </button>
 
           <!-- 注册链接 -->
-          <div class="register-link">
-            还没有账号？ <a @click.prevent="handleRegister">立即注册</a>
-          </div>
+          <div class="register-link">还没有账号？ <a @click.prevent="handleRegister">立即注册</a></div>
         </form>
       </div>
     </div>
@@ -180,8 +178,15 @@ const handleRegister = () => {
 }
 
 .login-container {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
   height: 100vh;

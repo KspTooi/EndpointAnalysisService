@@ -376,23 +376,6 @@ watch(
   height: 100%;
 }
 
-.logo-wrapper {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
-.logo-image {
-  height: 32px;
-  margin-right: 10px;
-}
-
-.logo-text {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--el-text-color-primary);
-}
-
 .menu-toggle {
   font-size: 18px;
   cursor: pointer;
@@ -440,17 +423,6 @@ watch(
   color: var(--el-text-color-primary);
 }
 
-.admin-sidebar {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-right: 1px solid #e4e7ed;
-  height: 100%;
-  overflow: hidden;
-  /* box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08); */
-  position: relative;
-  z-index: 10;
-  user-select: none;
-}
-
 .admin-breadcrumb {
   font-size: 13px;
   line-height: 1;
@@ -493,7 +465,7 @@ watch(
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
