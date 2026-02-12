@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -57,5 +58,8 @@ public class UserLoginVo {
 
     @Schema(description = "用户会话ID")
     private String sessionId;
+
+    @Schema(description = "权限码")
+    private Set<String> authorities;
 
 }
