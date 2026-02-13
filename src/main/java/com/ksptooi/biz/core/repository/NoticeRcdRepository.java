@@ -1,7 +1,8 @@
 package com.ksptooi.biz.core.repository;
 
-import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
 import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
+import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
+import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +15,6 @@ import java.util.List;
 
 @Repository
 public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
-
 
     /**
      * 获取当前用户未读通知数量
@@ -49,6 +49,8 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
      * 分页查询消息接收记录列表
      * 直接返回列表VO投影
      *
+     * @param userId   用户ID
+     * @param dto      查询条件DTO
      * @param pageable 分页信息
      * @return 消息接收记录列表
      */
@@ -68,9 +70,12 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
             INNER JOIN NoticePo n ON r.noticeId = n.id
             WHERE
             r.userId = :userId
+            AND (:#{#dto.title} IS NULL OR n.title LIKE %:#{#dto.title}%)
+            AND (:#{#dto.kind} IS NULL OR n.kind = :#{#dto.kind})
+            AND (:#{#dto.content} IS NULL OR n.content LIKE %:#{#dto.content}%)
             ORDER BY r.createTime DESC, r.id DESC
             """)
-    Page<GetUserNoticeRcdListVo> getNoticeRcdsByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<GetUserNoticeRcdListVo> getNoticeRcdsByUserId(@Param("userId") Long userId, @Param("dto") GetUserNoticeRcdListDto dto, Pageable pageable);
 
     /**
      * 将所有未读消息设为已读

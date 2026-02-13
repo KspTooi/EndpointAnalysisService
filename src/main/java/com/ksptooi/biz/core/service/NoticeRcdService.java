@@ -1,6 +1,5 @@
 package com.ksptooi.biz.core.service;
 
-
 import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
 import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdDetailsVo;
 import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 
 import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
-
 
 @Service
 public class NoticeRcdService {
@@ -48,7 +46,6 @@ public class NoticeRcdService {
         repository.readAllUserNoticeRcd(userId);
     }
 
-
     /**
      * 查询消息接收记录列表
      *
@@ -57,33 +54,38 @@ public class NoticeRcdService {
      */
     public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(GetUserNoticeRcdListDto dto) throws Exception {
 
-        //分页查询当前用户消息列表（VO投影）
-        var voPage = repository.getNoticeRcdsByUserId(session().getUserId(), dto.pageRequest());
+        // 分页查询当前用户消息列表（VO投影）
+        var voPage = repository.getNoticeRcdsByUserId(session().getUserId(), dto, dto.pageRequest());
 
         if (voPage.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        //从分页结果中提取RCD ID
-        var rcdIds = voPage.getContent().stream().map(GetUserNoticeRcdListVo::getId).toList();
+        //是否要在查询时设置已读 0:是 1:否
+        if (dto.getSetRead() == 1) {
 
-        if (rcdIds.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
+            // 从分页结果中提取RCD ID
+            var rcdIds = voPage.getContent().stream().map(GetUserNoticeRcdListVo::getId).toList();
 
-        //把这些已经查询出来的RcdPo设为已读
-        var rcdPos = repository.getNotifyRcdByIdsAndUserId(rcdIds, session().getUserId());
-        var needUpdate = false;
-
-        for (var rcdPo : rcdPos) {
-            if (rcdPo.getReadTime() == null) {
-                needUpdate = true;
-                rcdPo.setReadTime(LocalDateTime.now());
+            if (rcdIds.isEmpty()) {
+                return PageResult.successWithEmpty();
             }
-        }
 
-        if (needUpdate) {
-            repository.saveAll(rcdPos);
+            // 把这些已经查询出来的RcdPo设为已读
+            var rcdPos = repository.getNotifyRcdByIdsAndUserId(rcdIds, session().getUserId());
+            var needUpdate = false;
+
+            for (var rcdPo : rcdPos) {
+                if (rcdPo.getReadTime() == null) {
+                    needUpdate = true;
+                    rcdPo.setReadTime(LocalDateTime.now());
+                }
+            }
+
+            if (needUpdate) {
+                repository.saveAll(rcdPos);
+            }
+
         }
 
         return PageResult.success(voPage.getContent(), voPage.getTotalElements());
@@ -122,14 +124,14 @@ public class NoticeRcdService {
             throw new BizException("删除失败,参数错误");
         }
 
-        //根据RCDID + UID查询RCD
+        // 根据RCDID + UID查询RCD
         var noticeRcdPos = repository.getNotifyRcdByIdsAndUserId(ids, session().getUserId());
 
         if (noticeRcdPos.isEmpty()) {
             throw new BizException("删除失败,数据不存在或无权限访问.");
         }
 
-        //删除RCD
+        // 删除RCD
         repository.deleteAll(noticeRcdPos);
     }
 

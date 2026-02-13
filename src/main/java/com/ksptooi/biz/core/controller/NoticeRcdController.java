@@ -27,6 +27,12 @@ public class NoticeRcdController {
     @Autowired
     private NoticeRcdService noticeRcdService;
 
+    @PostMapping("/getNoticeRcdList")
+    @Operation(summary = "查询当前用户通知记录列表")
+    public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(@RequestBody @Valid GetUserNoticeRcdListDto dto) throws Exception {
+        return noticeRcdService.getUserNoticeRcdList(dto);
+    }
+
     @PostMapping("/getUserNoticeCount")
     @Operation(summary = "获取当前用户未读通知数量")
     public Result<Integer> getUserNoticeCount() throws Exception {
@@ -38,12 +44,6 @@ public class NoticeRcdController {
     public Result<String> readAllUserNoticeRcd() throws Exception {
         noticeRcdService.readAllUserNoticeRcd();
         return Result.success("操作成功");
-    }
-
-    @PostMapping("/getNoticeRcdList")
-    @Operation(summary = "查询用户通知记录列表")
-    public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(@RequestBody @Valid GetUserNoticeRcdListDto dto) throws Exception {
-        return noticeRcdService.getUserNoticeRcdList(dto);
     }
 
     @Operation(summary = "查询用户通知记录详情")
