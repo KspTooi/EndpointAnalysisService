@@ -53,6 +53,7 @@ export default {
     const listData = ref<GetUserNoticeRcdListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
+    const listSelected = ref<GetUserNoticeRcdListVo[]>([]);
 
     const loadList = async () => {
       listLoading.value = true;
@@ -71,6 +72,19 @@ export default {
       }
     };
 
+    /**
+     * 重置查询表单
+     */
+    const resetList = () => {
+      listForm.value.pageNum = 1;
+      listForm.value.pageSize = 20;
+      listForm.value.title = undefined;
+      listForm.value.kind = undefined;
+      listForm.value.content = undefined;
+      listSelected.value = [];
+      loadList();
+    };
+
     onMounted(() => {
       loadList();
     });
@@ -80,7 +94,9 @@ export default {
       listData,
       listTotal,
       listLoading,
+      listSelected,
       loadList,
+      resetList,
     };
   },
 
@@ -199,6 +215,7 @@ export default {
    */
   useNoticeRcdCrud(callbacks?: {
     onRemoved?: (id: string) => void;
+    onBatchRemoved?: () => void;
     onReadAll?: () => void;
   }) {
     /**
@@ -228,6 +245,37 @@ export default {
     };
 
     /**
+     * 批量删除通知记录
+     */
+    const removeBatch = async (ids: string[]) => {
+      if (!ids || ids.length === 0) {
+        ElMessage.warning("请选择要删除的消息");
+        return;
+      }
+
+      try {
+        await ElMessageBox.confirm(`确定要删除选中的 ${ids.length} 条消息吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+
+        await NoticeRcdApi.removeNoticeRcd({ ids });
+        ElMessage.success("批量删除成功");
+
+        // 触发回调，让调用方决定如何处理
+        if (callbacks?.onBatchRemoved) {
+          callbacks.onBatchRemoved();
+        }
+      } catch (error: any) {
+        // 用户取消删除时，error 为 'cancel'，不需要显示错误消息
+        if (error !== "cancel") {
+          ElMessage.error(error.message || "批量删除失败");
+        }
+      }
+    };
+
+    /**
      * 全部已读
      */
     const readAll = async () => {
@@ -246,6 +294,7 @@ export default {
 
     return {
       remove,
+      removeBatch,
       readAll,
     };
   },

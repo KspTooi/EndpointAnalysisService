@@ -25,17 +25,34 @@
           <el-col :span="5" :offset="1">
             <el-form-item>
               <el-button type="primary" @click="loadList()" :disabled="listLoading">查询</el-button>
-              <el-button @click="onReset" :disabled="listLoading">重置</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
     </template>
 
-    <template #actions> </template>
+    <template #actions>
+      <el-button
+        type="danger"
+        @click="removeBatch(listSelected.map((i) => i.id))"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中消息
+      </el-button>
+    </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetUserNoticeRcdListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="45" align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="种类" width="100">
           <template #default="scope">
@@ -151,9 +168,10 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw } from "vue";
+import { ref, markRaw } from "vue";
 import { View, Delete } from "@element-plus/icons-vue";
 import NoticeRcdService from "@/views/core/service/NoticeRcdService.ts";
+import type { GetUserNoticeRcdListVo } from "@/views/core/api/NoticeRcdApi.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import { ElMessage } from "element-plus";
 
@@ -162,28 +180,25 @@ const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList } = NoticeRcdService.useNoticeRcdList();
+const { listForm, listData, listTotal, listLoading, listSelected, loadList, resetList } =
+  NoticeRcdService.useNoticeRcdList();
 
 // 模态框打包
 const { modalVisible, modalLoading, detailsData, openModal, closeModal } = NoticeRcdService.useNoticeRcdModal();
 
 // CRUD打包
-const { remove } = NoticeRcdService.useNoticeRcdCrud({
+const { remove, removeBatch } = NoticeRcdService.useNoticeRcdCrud({
   onRemoved: () => {
     // 删除后重新加载当前页
     loadList();
   },
+  onBatchRemoved: () => {
+    // 批量删除后重新加载列表
+    loadList();
+  },
 });
 
-/**
- * 重置查询表单
- */
-const onReset = () => {
-  listForm.value.title = undefined;
-  listForm.value.kind = undefined;
-  listForm.value.content = undefined;
-  loadList();
-};
+
 
 /**
  * 跳转到关联页面
