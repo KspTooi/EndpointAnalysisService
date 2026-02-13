@@ -12,7 +12,6 @@
         class="panel-menu-short"
         :collapse="true"
         :unique-opened="false"
-        @select="handleSelect"
       >
         <template v-for="item in filteredItems" :key="item.id">
           <!-- 目录类型 -->
@@ -30,7 +29,7 @@
             </template>
 
             <template v-for="child in filterChildren(item.children)" :key="child.id">
-              <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="handleMenuItemClick(child)">
+              <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="onMenuItemClick(child)">
                 <el-icon>
                   <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
                 </el-icon>
@@ -40,7 +39,7 @@
           </el-sub-menu>
 
           <!-- 菜单类型 -->
-          <el-menu-item v-else-if="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
+          <el-menu-item v-if="item.menuKind === 1" :index="item.id" @click="onMenuItemClick(item)">
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
@@ -62,10 +61,10 @@ import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
+const tabStore = useTabStore();
+
 // 使用 markRaw 包装所有图标组件
 const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
-
-const tabStore = useTabStore();
 
 // 定义组件props
 const props = defineProps<{
@@ -90,13 +89,22 @@ const filterChildren = (children: GetUserMenuTreeVo[] | undefined) => {
   return children.filter((child) => child.menuKind !== 2);
 };
 
+// 缓存动态生成的图标组件，避免重复创建导致重渲染
+const iconCache = new Map<string, Component>();
+
 // 获取图标组件
 const getIconComponent = (iconName: string | Component | undefined) => {
   if (!iconName) return null;
 
   if (typeof iconName === "string") {
     if (iconName.includes(":")) {
-      return markRaw(() => h(Icon, { icon: iconName, width: 18, height: 18 }));
+      if (iconCache.has(iconName)) {
+        return iconCache.get(iconName);
+      }
+      
+      const component = markRaw(() => h(Icon, { icon: iconName, width: 18, height: 18 }));
+      iconCache.set(iconName, component);
+      return component;
     }
 
     if (iconName in icons) {
@@ -108,8 +116,14 @@ const getIconComponent = (iconName: string | Component | undefined) => {
 };
 
 // 处理菜单项点击
-const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
-  if (item.menuKind !== 1 || !item.menuPath) return;
+const onMenuItemClick = (item: GetUserMenuTreeVo) => {
+  if (item.menuKind !== 1) {
+    return;
+  }
+  
+  if (!item.menuPath) {
+    return;
+  }
 
   tabStore.addTab({
     id: item.id as any,
@@ -119,11 +133,6 @@ const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
 
   emit("item-click", item.id as any);
   emit("update:activeItemId", item.id as any);
-};
-
-// 处理菜单选择
-const handleSelect = (index: string) => {
-  // 保持与原组件逻辑一致，目前仅用于占位
 };
 </script>
 
@@ -149,17 +158,20 @@ const handleSelect = (index: string) => {
 .logo-image {
   width: 32px;
   height: auto;
-  transition: transform 0.3s;
-}
-
-.logo-image:hover {
-  transform: scale(1.1);
 }
 
 .panel-menu-short {
   flex: 1;
   border-right: none !important;
   background: transparent !important;
+  overflow-y: auto;
+  /* 隐藏滚动条 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-menu-short::-webkit-scrollbar {
+  display: none;
 }
 
 /* 直角风格与样式覆盖 */
@@ -176,8 +188,8 @@ const handleSelect = (index: string) => {
   align-items: center !important;
   justify-content: center !important;
   margin: 0 !important;
-  border-radius: 0 !important; /* 直角 */
-  transition: all 0.2s ease-in-out;
+  border-radius: 0 !important;
+  transition: background 0.2s, color 0.2s;
 }
 
 :deep(.el-menu-item .el-icon),
@@ -185,6 +197,7 @@ const handleSelect = (index: string) => {
   margin: 0 !important;
   font-size: 20px;
   color: #515a6e;
+  transition: color 0.2s;
 }
 
 /* 激活状态 */
