@@ -1,6 +1,8 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,17 +45,17 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
     List<NoticeRcdPo> getNotifyRcdByIdsAndUserId(@Param("ids") List<Long> ids, @Param("userId") Long userId);
 
     /**
-     * 分页查询消息通知ID列表
+     * 分页查询消息接收记录列表
      *
      * @param pageable 分页信息
-     * @return 消息接收记录ID列表
+     * @return 消息接收记录列表
      */
     @Query("""
-            SELECT u.noticeId FROM NoticeRcdPo u
+            SELECT u FROM NoticeRcdPo u
             WHERE
             u.userId = :userId
             ORDER BY u.createTime DESC
             """)
-    List<Long> getNoticeIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<NoticeRcdPo> getNoticeRcdsByUserId(@Param("userId") Long userId, Pageable pageable);
 
 }
