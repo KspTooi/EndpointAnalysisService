@@ -268,11 +268,6 @@ const handleMenuAction = (action: string, menuId: string) => {
   emit("menu-action", action, menuId);
 };
 
-// 处理退出登录
-const handleLogout = () => {
-  emit("logout");
-};
-
 // 自动生成面包屑导航
 const autoBreadcrumbs = computed(() => {
   // 如果 props 中提供了 breadcrumbs，则优先使用
