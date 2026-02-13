@@ -28,10 +28,10 @@ import static com.ksptool.entities.Entities.fromJsonArray;
 
 /**
  * 基于 core_user_session 的无状态认证过滤器模板。
- * 
+ * <p>
  * 这个类主要用于基于 core_user_session 的无状态认证过滤器，确保每次请求都能获取到有效的用户会话。
  * 它会从请求头或Cookie中获取sessionId，然后从数据库查询会话信息，并重建认证上下文。
- * 
+ * <p>
  * 认证流程
  * 1.用户登录，通过/auth/userLogin接口，返回sessionId 服务端会设置一个名为bio-session-id的Cookie (前端也可以手动发送Authorization: Bearer <sessionId>请求头)
  * 2.用户每次请求，会自动携带bio-session-id Cookie或Authorization: Bearer <sessionId>请求头
@@ -104,6 +104,7 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
 
         //UserSessionPo 转换为 AuthUserDetails
         var aud = as(sessionPo, AuthUserDetails.class);
+        aud.setId(sessionPo.getUserId());
         var authentication = new UsernamePasswordAuthenticationToken(aud, null, authorities);
 
         //设置认证详情
