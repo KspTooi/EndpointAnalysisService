@@ -5,7 +5,6 @@ import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptooi.biz.auth.model.session.vo.GetSessionListVo;
-import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
@@ -123,7 +122,8 @@ public class SessionService {
      * @return 当前用户
      */
     public UserPo requireUser() throws AuthException {
-        return userRepository.findById(session().getUserId()).orElseThrow(() -> new AuthException("user not found"));
+        var userId = session().getUserId();
+        return userRepository.findById(userId).orElseThrow(() -> new AuthException("user not found"));
     }
 
 
@@ -165,19 +165,19 @@ public class SessionService {
      * @param uid 用户ID
      * @return 用户会话
      */
-    public void updateSession(Long uid){
+    public void updateSession(Long uid) {
 
         //查询用户会话(用户现在可能有多个会话,因为用户可能同时登录了多个设备)
         var existingSessions = userSessionRepository.getSessionsByUserId(uid);
 
-        if(existingSessions.isEmpty()){
+        if (existingSessions.isEmpty()) {
             return;
         }
 
         //查询用户
         var userPo = userRepository.findById(uid).orElse(null);
 
-        if(userPo == null){
+        if (userPo == null) {
             return;
         }
 
@@ -186,7 +186,7 @@ public class SessionService {
 
         //获取用户拥有的全部用户组
         var groups = groupRepository.getGroupsByUserId(userPo.getId());
-        
+
         var grantedAuthoritiesStr = new HashSet<String>();
 
         //处理权限码

@@ -27,7 +27,7 @@ export default {
    * 获取当前用户信息
    */
   getCurrentUserProfile: async (): Promise<GetCurrentUserProfile> => {
-    var result = await Http.postEntity<Result<GetCurrentUserProfile>>("/getCurrentUserProfile", {});
+    var result = await Http.postEntity<Result<GetCurrentUserProfile>>("/profile/getCurrentUserProfile", {});
     if (result.code == 0) {
       return result.data;
     }

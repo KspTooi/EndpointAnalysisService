@@ -35,6 +35,13 @@ public class CacheConfig {
                         .maximumSize(2000)
                         .build()));
 
+        //策略 用户个人信息缓存 最多1000条 5分钟过期
+        caches.add(new CaffeineCache("userProfile",
+                Caffeine.newBuilder()
+                        .expireAfterWrite(5, TimeUnit.MINUTES)
+                        .maximumSize(1000)
+                        .build()));
+
         cacheManager.setCaches(caches);
         return cacheManager;
     }

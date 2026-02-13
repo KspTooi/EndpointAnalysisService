@@ -34,7 +34,9 @@
                   <div class="user-info">
                     <el-avatar
                       :size="24"
-                      :src="userProfile?.avatarAttachId ? `/getAttach?id=${userProfile.avatarAttachId}` : '/getUserAvatar'"
+                      :src="
+                        userProfile?.avatarAttachId ? `/getAttach?id=${userProfile.avatarAttachId}` : '/profile/getUserAvatar'
+                      "
                       style="margin-right: 8px"
                       shape="square"
                     />

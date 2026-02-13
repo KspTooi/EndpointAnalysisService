@@ -7,13 +7,11 @@ import com.ksptooi.biz.auth.model.auth.vo.UserLoginVo;
 import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptooi.biz.core.model.user.dto.RegisterDto;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,14 +22,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -133,7 +128,6 @@ public class AuthController {
     public Result<Set<String>> getPermissions(UserSessionVo session) {
         return Result.success(session.getPermissionCodes());
     }
-
 
 
 }

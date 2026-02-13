@@ -19,6 +19,25 @@ import java.util.Set;
 public interface PermissionRepository extends JpaRepository<PermissionPo, Long> {
 
     /**
+     * 根据用户ID获取用户拥有的全部权限
+     *
+     * @param userId 用户ID
+     * @return 权限列表
+     */
+    @Query("""
+            SELECT DISTINCT p
+            FROM UserGroupPo ug
+            JOIN GroupPermissionPo gp ON ug.groupId = gp.groupId
+            JOIN PermissionPo p ON gp.permissionId = p.id
+            WHERE ug.userId = :userId
+            """)
+    List<PermissionPo> getPermissionsByUserId(@Param("userId") Long userId);
+
+
+
+
+
+    /**
      * 从给定的权限列表中查找数据库中存在的权限
      *
      * @param codes 给定的权限代码列表
