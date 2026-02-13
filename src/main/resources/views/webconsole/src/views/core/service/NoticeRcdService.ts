@@ -154,18 +154,9 @@ export default {
       listTotal.value = 0;
     };
 
-    /**
-     * 删除通知记录
-     */
-    const removeNotice = async (id: string) => {
-      try {
-        await ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        });
-
-        await NoticeRcdApi.removeNoticeRcd({ ids: [id] });
+    // 使用CRUD打包
+    const { remove, readAll } = this.useNoticeRcdCrud({
+      onRemoved: (id) => {
         // 从本地列表中移除
         listData.value = listData.value.filter((item) => item.id !== id);
         listTotal.value--;
@@ -175,11 +166,55 @@ export default {
           onCountChange();
         }
 
-        ElMessage.success("删除成功");
-
         // 如果删除后列表数据不足且还有更多数据，自动加载下一页补充
         if (listData.value.length < pageSize.value && !noMore.value) {
           loadMore();
+        }
+      },
+      onReadAll: () => {
+        // 重置并加载第一页
+        resetList();
+        loadMore();
+      },
+    });
+
+    return {
+      listData,
+      listLoading,
+      listTotal,
+      noMore,
+      disabled,
+      loadMore,
+      resetList,
+      remove,
+      readAll,
+    };
+  },
+
+  /**
+   * 用户通知记录CRUD打包
+   */
+  useNoticeRcdCrud(callbacks?: {
+    onRemoved?: (id: string) => void;
+    onReadAll?: () => void;
+  }) {
+    /**
+     * 删除通知记录
+     */
+    const remove = async (id: string) => {
+      try {
+        await ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+
+        await NoticeRcdApi.removeNoticeRcd({ ids: [id] });
+        ElMessage.success("删除成功");
+
+        // 触发回调，让调用方决定如何处理
+        if (callbacks?.onRemoved) {
+          callbacks.onRemoved(id);
         }
       } catch (error: any) {
         // 用户取消删除时，error 为 'cancel'，不需要显示错误消息
@@ -190,35 +225,27 @@ export default {
     };
 
     /**
-     * 阅读全部通知记录
+     * 全部已读
      */
-    const readAllNotice = async () => {
+    const readAll = async () => {
       try {
         await NoticeRcdApi.readAllUserNoticeRcd();
-        // 重置并加载第一页
-        resetList();
-        loadMore();
+        ElMessage.success("已全部标记为已读");
+
+        // 触发回调，让调用方决定如何处理
+        if (callbacks?.onReadAll) {
+          callbacks.onReadAll();
+        }
       } catch (error: any) {
-        ElMessage.error(error.message || "阅读失败");
-      } finally {
-        listLoading.value = false;
+        ElMessage.error(error.message || "操作失败");
       }
     };
 
     return {
-      listData,
-      listLoading,
-      listTotal,
-      noMore,
-      disabled,
-      loadMore,
-      resetList,
-      removeNotice,
-      readAllNotice,
+      remove,
+      readAll,
     };
   },
-
-  
 
 
   /**

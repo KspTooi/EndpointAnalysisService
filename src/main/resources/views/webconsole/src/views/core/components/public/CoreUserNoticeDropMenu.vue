@@ -11,7 +11,7 @@
       <div class="w-80 rounded overflow-hidden bg-white">
         <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 font-bold text-sm">
           <span>通知中心 (未读数:{{ count }})</span>
-          <el-button v-if="listData.length > 0" link type="primary" @click="readAllNotice">全部已读</el-button>
+          <el-button v-if="listData.length > 0" link type="primary" @click="readAll">全部已读</el-button>
         </div>
 
         <el-scrollbar height="300px">
@@ -35,7 +35,7 @@
                 <div class="text-xs text-gray-500">{{ item.createTime }}</div>
               </div>
               <div class="hidden group-hover:flex items-center ml-2">
-                <el-button link type="danger" :icon="Delete" class="!p-1" @click.stop="removeNotice(item.id)"></el-button>
+                <el-button link type="danger" :icon="Delete" class="!p-1" @click.stop="remove(item.id)"></el-button>
               </div>
             </li>
             <li v-if="loading" class="text-center py-2.5 text-xs text-gray-500">加载中...</li>
@@ -109,8 +109,8 @@ const {
   disabled,
   loadMore,
   resetList,
-  removeNotice,
-  readAllNotice,
+  remove,
+  readAll,
 } = UserNoticeService.useNoticeRcdRollingList(loadCount);
 const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserNoticeService.useNoticeRcdModal();
 
