@@ -17,7 +17,7 @@
           :data="filteredRouteList"
           border
           highlight-current-row
-          :row-key="(row: RouteEntryPo) => row.buildPath()"
+          :row-key="buildRowKey"
           @selection-change="handleSelectionChange"
           @select-all="handleSelectAll"
           @row-click="handleRowClick"
@@ -78,6 +78,16 @@ const {
 const tableRef = ref<TableInstance>();
 const syncingSelection = ref(false);
 const selectingAll = ref(false);
+
+type RouteEntryRow = RouteEntryPo & { __rowKey?: string };
+
+const buildRowKey = (row: RouteEntryPo): string => {
+  const rowKey = (row as RouteEntryRow).__rowKey;
+  if (rowKey) {
+    return rowKey;
+  }
+  return `${row.buildPath()}::${row.name || ""}`;
+};
 
 watch(
   searchKeywordModel,

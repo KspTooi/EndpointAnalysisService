@@ -22,8 +22,9 @@ export default {
       return routeList.value.filter((route) => {
         const fullPath = route.buildPath().toLowerCase();
         const name = (route.name || "").toLowerCase();
+        const biz = (route.biz || "").toLowerCase();
         const breadcrumb = (route.meta?.breadcrumb || "").toLowerCase();
-        return fullPath.includes(keyword) || name.includes(keyword) || breadcrumb.includes(keyword);
+        return fullPath.includes(keyword) || name.includes(keyword) || biz.includes(keyword) || breadcrumb.includes(keyword);
       });
     });
 
@@ -35,14 +36,18 @@ export default {
       return new Promise((resolve) => {
         const genricRouteService = GenricRouteService.useGenricRoute();
         const routes = genricRouteService.getRoutes();
+        routeList.value = [];
+        selectedRoute.value = null;
 
-        for (const item of routes) {
+        for (let index = 0; index < routes.length; index++) {
+          const item = routes[index];
           const route = new RouteEntryPo();
           route.biz = item.biz;
           route.path = item.path;
           route.name = item.name;
           route.component = item.component;
           route.meta = item.meta;
+          (route as RouteEntryPo & { __rowKey?: string }).__rowKey = `${route.buildPath()}::${route.name || ""}::${index}`;
           routeList.value.push(route);
         }
 
