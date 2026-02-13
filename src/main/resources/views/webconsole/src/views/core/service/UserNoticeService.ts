@@ -150,6 +150,32 @@ export default {
       listTotal.value = 0;
     };
 
+    /**
+     * 删除通知记录
+     */
+    const removeNotice = async (id: string) => {
+      try {
+        await NoticeRcdApi.removeNoticeRcd({ ids: [id] });
+        // 从本地列表中移除
+        listData.value = listData.value.filter((item) => item.id !== id);
+        listTotal.value--;
+        
+        // 刷新未读数量
+        if (onCountChange) {
+          onCountChange();
+        }
+        
+        ElMessage.success("删除成功");
+        
+        // 如果删除后列表数据不足且还有更多数据，自动加载下一页补充
+        if (listData.value.length < pageSize.value && !noMore.value) {
+          loadMore();
+        }
+      } catch (error: any) {
+        ElMessage.error(error.message || "删除失败");
+      }
+    };
+
     return {
       listData,
       listLoading,
@@ -158,6 +184,7 @@ export default {
       disabled,
       loadMore,
       resetList,
+      removeNotice,
     };
   },
 

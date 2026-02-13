@@ -4,6 +4,8 @@ import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "core_notice_rcd")
+@SQLDelete(sql = "UPDATE core_notice_rcd SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class NoticeRcdPo {
 
     @Column(name = "id", nullable = false, comment = "主键ID")

@@ -21,12 +21,7 @@
             :infinite-scroll-disabled="disabled"
             class="notice-list"
           >
-            <li
-              v-for="item in listData"
-              :key="item.id"
-              class="notice-item"
-              @click="handleRead(item)"
-            >
+            <li v-for="item in listData" :key="item.id" class="notice-item" @click="handleRead(item)">
               <div class="item-icon">
                 <el-avatar :size="32" :icon="getIcon(item.kind)" :class="getIconClass(item.kind)" />
               </div>
@@ -34,19 +29,27 @@
                 <div class="item-title" :title="item.title">{{ item.title }}</div>
                 <div class="item-time">{{ item.createTime }}</div>
               </div>
+              <div class="item-actions">
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  @click.stop="handleDelete(item)"
+                ></el-button>
+              </div>
             </li>
             <li v-if="loading" class="loading-text">加载中...</li>
             <li v-if="noMore && listData.length > 0" class="no-more-text">没有更多了</li>
           </ul>
-          
+
           <div v-if="listData.length === 0 && !loading" class="notice-empty">
             <el-empty description="暂无新通知" :image-size="60" />
           </div>
         </div>
 
-        <div class="notice-footer">
+        <!-- <div class="notice-footer">
           <el-button link @click="handleViewMore">查看更多</el-button>
-        </div>
+        </div> -->
       </div>
     </template>
   </el-dropdown>
@@ -54,15 +57,22 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { Bell, Message, Warning, Promotion } from "@element-plus/icons-vue";
+import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
 import UserNoticeService from "../../service/UserNoticeService";
 import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // 使用 Service 中的逻辑
 const { count, processedCount, loadCount } = UserNoticeService.useUserNoticeCount();
-const { listData, listLoading: loading, noMore, disabled, loadMore, resetList } = 
-  UserNoticeService.useUserNoticeDropList(loadCount);
+const {
+  listData,
+  listLoading: loading,
+  noMore,
+  disabled,
+  loadMore,
+  resetList,
+  removeNotice,
+} = UserNoticeService.useUserNoticeDropList(loadCount);
 
 /**
  * 下拉框显示状态变化
@@ -117,6 +127,19 @@ const handleRead = (item: GetUserNoticeRcdListVo) => {
     // 如果有跳转地址，可以在这里处理跳转逻辑
     // router.push(item.forward);
   }
+};
+
+/**
+ * 删除通知
+ */
+const handleDelete = (item: GetUserNoticeRcdListVo) => {
+  ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    removeNotice(item.id);
+  });
 };
 
 /**
@@ -176,7 +199,7 @@ onMounted(() => {
   .notice-list-container {
     height: 300px;
     overflow-y: auto;
-    
+
     /* 自定义滚动条 */
     &::-webkit-scrollbar {
       width: 6px;
@@ -247,9 +270,28 @@ onMounted(() => {
           color: var(--el-text-color-secondary);
         }
       }
+
+      .item-actions {
+        display: none;
+        align-items: center;
+        margin-left: 8px;
+
+        .el-button {
+          padding: 4px;
+        }
+      }
+
+      &:hover {
+        background-color: var(--el-fill-color-light);
+
+        .item-actions {
+          display: flex;
+        }
+      }
     }
 
-    .loading-text, .no-more-text {
+    .loading-text,
+    .no-more-text {
       text-align: center;
       padding: 10px;
       color: var(--el-text-color-secondary);
@@ -261,7 +303,7 @@ onMounted(() => {
     padding: 8px;
     text-align: center;
     border-top: 1px solid var(--el-border-color-lighter);
-    
+
     .el-button {
       width: 100%;
     }
