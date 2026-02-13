@@ -42,6 +42,13 @@ public class CacheConfig {
                         .maximumSize(1000)
                         .build()));
 
+        //策略 菜单与按钮树缓存 最多100条 30分钟过期
+        caches.add(new CaffeineCache("menuTree",
+                Caffeine.newBuilder()
+                        .expireAfterWrite(30, TimeUnit.MINUTES)
+                        .maximumSize(100)
+                        .build()));
+
         cacheManager.setCaches(caches);
         return cacheManager;
     }

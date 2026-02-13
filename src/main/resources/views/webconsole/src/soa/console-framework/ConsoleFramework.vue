@@ -197,7 +197,7 @@ GenricHotkeyService.useHotkeyFunction(
 
 const loadMenuTree = async () => {
   try {
-    const result = await MenuApi.getMenuTree({});
+    const result = await MenuApi.getUserMenuTree();
 
     if (!Result.isSuccess(result)) {
       ElMessage.error(result.message);

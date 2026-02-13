@@ -74,6 +74,13 @@ export interface GetMenuTreeVo {
 
 export default {
   /**
+   * 获取用户菜单树
+   */
+  getUserMenuTree: async (): Promise<Result<GetMenuTreeVo[]>> => {
+    return await Http.postEntity<Result<GetMenuTreeVo[]>>("/menu/getUserMenuTree", {});
+  },
+
+  /**
    * 获取菜单树
    */
   getMenuTree: async (dto: GetMenuTreeDto): Promise<Result<GetMenuTreeVo[]>> => {

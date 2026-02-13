@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,17 @@ public class MenuController {
     @Autowired
     private MenuService menuService;
 
+
+    @PostMapping("/getUserMenuTree")
+    @Operation(summary = "获取用户菜单与按钮树(用于前端菜单展示,这个接口带有缓存)")
+    @Cacheable(cacheNames = "menuTree", key = "'userMenuTree'")
+    public Result<List<GetMenuTreeVo>> getUserMenuTree() throws Exception {
+        return Result.success(menuService.getMenuTree(new GetMenuTreeDto()));
+    }
+
+
     @PostMapping("/getMenuTree")
-    @Operation(summary = "获取菜单与按钮树")
+    @Operation(summary = "获取菜单与按钮树(用于菜单管理)")
     public Result<List<GetMenuTreeVo>> getMenuTree(@RequestBody @Valid GetMenuTreeDto dto) throws Exception {
         return Result.success(menuService.getMenuTree(dto));
     }
