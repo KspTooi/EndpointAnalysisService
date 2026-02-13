@@ -41,7 +41,7 @@ public class SessionController {
     @Operation(summary = "关闭会话")
     @PostMapping("closeSession")
     public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        service.closeSession(dto.getId());
+        service.closeSessionByPrimaryKey(dto.getId());
         return Result.success("关闭成功");
     }
 }
