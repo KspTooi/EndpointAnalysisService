@@ -1,8 +1,6 @@
 package com.ksptooi.biz.core.service;
 
-import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
-import com.ksptooi.biz.core.model.noticercd.dto.AddNoticeRcdDto;
-import com.ksptooi.biz.core.model.noticercd.dto.EditNoticeRcdDto;
+
 import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
 import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdDetailsVo;
 import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
@@ -13,16 +11,12 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
 
 
 @Service
@@ -123,12 +117,23 @@ public class NoticeRcdService {
      * @throws BizException
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeNoticeRcd(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+    public void removeNoticeRcd(CommonIdDto dto) throws Exception {
+
+        var ids = dto.getIds();
+
+        if (ids.isEmpty()) {
+            throw new BizException("删除失败,参数错误");
         }
-        repository.deleteById(dto.getId());
+
+        //根据RCDID + UID查询RCD
+        var noticeRcdPos = repository.getNotifyRcdByIdsAndUserId(ids, session().getUserId());
+
+        if (noticeRcdPos.isEmpty()) {
+            throw new BizException("删除失败,数据不存在或无权限访问.");
+        }
+        
+        //删除RCD
+        repository.deleteAll(noticeRcdPos);
     }
 
 }
