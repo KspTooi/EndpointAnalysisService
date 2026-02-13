@@ -1,7 +1,7 @@
 <template>
   <div class="manager-container">
     <div class="sidebar">
-      <SimpleFilterSideList @selectItem="handleSelectItem" />
+      <SimpleFilterSideList @selectItem="onSelectItem" />
     </div>
 
     <div class="content-area">
@@ -38,7 +38,7 @@ watch(selectedFilterId, (newId) => {
   // 如果需要根据ID获取完整的过滤器信息，可以在这里调用API
 });
 
-const handleSelectItem = (item: GetSimpleFilterListVo) => {
+const onSelectItem = (item: GetSimpleFilterListVo) => {
   selectedItem.value = item;
 };
 </script>

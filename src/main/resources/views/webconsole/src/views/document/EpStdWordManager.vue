@@ -24,7 +24,7 @@
                 查询
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item :icon="DownloadIcon" @click="handleExport">导出查询结果</el-dropdown-item>
+                    <el-dropdown-item :icon="DownloadIcon" @click="onExport">导出查询结果</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -183,7 +183,7 @@ const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   EpStdWordService.useEpStdWordList();
 
-const handleExport = async () => {
+const onExport = async () => {
   try {
     await EpStdWordApi.exportEpStdWord(listForm.value);
   } catch (e: any) {

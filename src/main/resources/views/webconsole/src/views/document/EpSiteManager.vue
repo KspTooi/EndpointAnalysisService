@@ -32,7 +32,7 @@
                 查询
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item :icon="DownloadIcon" @click="handleExport">导出查询结果</el-dropdown-item>
+                    <el-dropdown-item :icon="DownloadIcon" @click="onExport">导出查询结果</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -289,7 +289,7 @@ const {
 const copyToClipboard = EpSiteService.copyToClipboard;
 
 // 导出站点
-const handleExport = async () => {
+const onExport = async () => {
   try {
     await EpSiteApi.exportEpSite(listForm.value);
   } catch (e: any) {

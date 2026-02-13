@@ -19,7 +19,7 @@ const imgSrc = computed(() => {
 const { x, y, isDragging, onMouseDown, resetPosition } = DriveRendererService.useRendererDrag();
 
 // 注入缩放服务
-const { scale, showIndicator, handleWheel, resetScale } = DriveRendererService.useRendererScale(
+const { scale, showIndicator, onWheel, resetScale } = DriveRendererService.useRendererScale(
   {
     maxScale: 20.0, // 图片可以放得更大一点
     minScale: 0.1,
@@ -69,7 +69,7 @@ const onImgLoad = () => {
 /**
  * 手动复位按钮
  */
-const handleReset = () => {
+const onReset = () => {
   resetScale();
   moveToCenter();
 };
@@ -79,7 +79,7 @@ const handleReset = () => {
 </script>
 
 <template>
-  <div class="preview-container" @wheel="handleWheel" ref="containerRef">
+  <div class="preview-container" @wheel="onWheel" ref="containerRef">
     <div class="image-wrapper" v-if="imgSrc">
       <img
         ref="imgRef"
@@ -103,7 +103,7 @@ const handleReset = () => {
     <div v-show="showIndicator" class="zoom-indicator">{{ Math.round(scale * 100) }}%</div>
 
     <div class="control-bar">
-      <div class="control-btn" @click="handleReset" title="复位">
+      <div class="control-btn" @click="onReset" title="复位">
         <el-icon><RefreshLeft /></el-icon>
       </div>
     </div>

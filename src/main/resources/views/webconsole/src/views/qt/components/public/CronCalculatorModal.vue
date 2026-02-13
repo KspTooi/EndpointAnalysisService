@@ -120,7 +120,7 @@
     </div>
     <template #footer>
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="handleConfirm">应用表达式</el-button>
+      <el-button type="primary" @click="onConfirm">应用表达式</el-button>
     </template>
   </el-dialog>
 </template>
@@ -299,7 +299,7 @@ const openModal = (cron?: string) => {
   }
 };
 
-const handleConfirm = () => {
+const onConfirm = () => {
   emit("onConfirm", finalCron.value);
   visible.value = false;
 };

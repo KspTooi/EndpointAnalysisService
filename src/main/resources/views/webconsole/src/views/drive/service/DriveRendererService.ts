@@ -30,7 +30,7 @@ export default {
      * 处理鼠标滚轮事件
      * @param e 滚轮事件
      */
-    const handleWheel = (e: WheelEvent) => {
+    const onWheel = (e: WheelEvent) => {
       // 只有按住 Ctrl 时才触发缩放
       if (e.ctrlKey) {
         e.preventDefault();
@@ -88,7 +88,7 @@ export default {
     return {
       scale,
       showIndicator,
-      handleWheel,
+      onWheel,
       resetScale,
     };
   },

@@ -1,11 +1,11 @@
 <template>
   <Teleport to="body">
-    <div v-if="isVisible" class="confirm-overlay" @click.self="handleCancel" @contextmenu.prevent>
+    <div v-if="isVisible" class="confirm-overlay" @click.self="onCancel" @contextmenu.prevent>
       <div class="confirm-dialog">
         <!-- 标题栏 -->
         <div class="dialog-header">
           <span class="dialog-title">删除确认</span>
-          <button class="dialog-close" @click="handleCancel" :disabled="loading">
+          <button class="dialog-close" @click="onCancel" :disabled="loading">
             <el-icon><Close /></el-icon>
           </button>
         </div>
@@ -51,8 +51,8 @@
 
         <!-- 按钮区域 -->
         <div class="dialog-footer">
-          <el-button @click="handleCancel" :disabled="loading">取消</el-button>
-          <el-button type="danger" @click="handleConfirm" :loading="loading" :disabled="loading">确定删除</el-button>
+          <el-button @click="onCancel" :disabled="loading">取消</el-button>
+          <el-button type="danger" @click="onConfirm" :loading="loading" :disabled="loading">确定删除</el-button>
         </div>
       </div>
     </div>
@@ -89,7 +89,7 @@ const openConfirm = (pos: EntryPo[]): Promise<boolean> => {
   });
 };
 
-const handleConfirm = async () => {
+const onConfirm = async () => {
   if (loading.value) {
     return;
   }
@@ -125,7 +125,7 @@ const handleConfirm = async () => {
   loading.value = false;
 };
 
-const handleCancel = () => {
+const onCancel = () => {
   if (loading.value) {
     return;
   }
@@ -170,8 +170,8 @@ defineExpose({
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
   {
-    enter: handleConfirm,
-    esc: handleCancel,
+    enter: onConfirm,
+    esc: onCancel,
   },
   isVisible,
   true

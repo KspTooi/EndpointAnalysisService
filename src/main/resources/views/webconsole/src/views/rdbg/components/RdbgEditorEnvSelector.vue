@@ -4,8 +4,8 @@
     placeholder="选择环境"
     filterable
     :loading="loading"
-    @change="handleChange"
-    @clear="handleClear"
+    @change="onEnvChange"
+    @clear="onEnvClear"
     class="user-request-env-selector"
     size="small"
   >
@@ -60,7 +60,7 @@ const loadEnvList = async () => {
   }
 };
 
-const handleChange = async (envId: string | null) => {
+const onEnvChange = async (envId: string | null) => {
   if (!envId) {
     selectedEnvId.value = null;
     return;
@@ -94,7 +94,7 @@ const handleChange = async (envId: string | null) => {
   }
 };
 
-const handleClear = () => {
+const onEnvClear = () => {
   selectedEnvId.value = null;
 };
 

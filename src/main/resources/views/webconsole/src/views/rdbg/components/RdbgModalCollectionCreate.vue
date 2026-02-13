@@ -5,7 +5,7 @@
     width="500px"
     :close-on-click-modal="false"
     @contextmenu.prevent
-    @opened="handleDialogOpened"
+    @opened="onDialogOpened"
   >
     <div class="modal-content">
       <el-form :model="modalForm" ref="modalFormRef" label-width="100px">
@@ -30,7 +30,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="closeModal">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="modalLoading">确定</el-button>
+        <el-button type="primary" @click="onSubmit" :loading="modalLoading">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -83,14 +83,14 @@ const closeModal = () => {
   modalVisible.value = false;
 };
 
-const handleDialogOpened = () => {
+const onDialogOpened = () => {
   modalRef.value?.focus();
   nextTick(() => {
     modalRef.value?.select();
   });
 };
 
-const handleSubmit = async () => {
+const onSubmit = async () => {
   const result = await CollectionApi.addCollection(modalForm);
   if (Result.isSuccess(result)) {
     ElMessage.success("已创建:" + modalForm.name);
@@ -107,7 +107,7 @@ defineExpose({
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
   {
-    enter: handleSubmit,
+    enter: onSubmit,
   },
   modalVisible,
   true

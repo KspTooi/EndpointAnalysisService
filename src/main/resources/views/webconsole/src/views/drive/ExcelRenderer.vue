@@ -3,7 +3,7 @@
     <vue-office-excel v-if="isXlsx" :src="fileUrl" :options="excelOptions" @rendered="onRendered" @error="onError" />
 
     <div
-      @wheel.capture="handleWheel"
+      @wheel.capture="onWheel"
       v-else-if="xlsHtml"
       class="xls-container"
       v-html="xlsHtml"
@@ -113,7 +113,7 @@ const loadXlsFile = async () => {
 };
 
 //注入缩放打包
-const { scale, handleWheel } = DriveRendererService.useRendererScale({
+const { scale, onWheel } = DriveRendererService.useRendererScale({
   maxScale: 5.0,
   minScale: 0.1,
   step: 0.05,

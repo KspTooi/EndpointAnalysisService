@@ -3,14 +3,14 @@
     ref="dropZoneRef"
     class="file-selector-dropzone"
     :class="{ 'drag-over': isDragOver }"
-    @dragenter.prevent="handleDragEnter"
-    @dragover.prevent="handleDragOver"
-    @dragleave.prevent="handleDragLeave"
-    @drop.prevent="handleDrop"
+    @dragenter.prevent="onDragEnter"
+    @dragover.prevent="onDragOver"
+    @dragleave.prevent="onDragLeave"
+    @drop.prevent="onDrop"
   >
     <slot></slot>
   </div>
-  <input ref="fileInputRef" type="file" :multiple="props.maxSelect > 1" style="display: none" @change="handleFileInputChange" />
+  <input ref="fileInputRef" type="file" :multiple="props.maxSelect > 1" style="display: none" @change="onFileInputChange" />
 </template>
 
 <script setup lang="ts">
@@ -41,7 +41,7 @@ const openSelector = () => {
   fileInputRef.value?.click();
 };
 
-const handleFileInputChange = (event: Event) => {
+const onFileInputChange = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files);
@@ -53,27 +53,27 @@ const handleFileInputChange = (event: Event) => {
   input.value = "";
 };
 
-const handleDragEnter = (event: DragEvent) => {
+const onDragEnter = (event: DragEvent) => {
   dragCounter++;
   if (event.dataTransfer?.types.includes("Files")) {
     isDragOver.value = true;
   }
 };
 
-const handleDragOver = (event: DragEvent) => {
+const onDragOver = (event: DragEvent) => {
   if (event.dataTransfer?.types.includes("Files")) {
     event.dataTransfer.dropEffect = "copy";
   }
 };
 
-const handleDragLeave = (event: DragEvent) => {
+const onDragLeave = (event: DragEvent) => {
   dragCounter--;
   if (dragCounter === 0) {
     isDragOver.value = false;
   }
 };
 
-const handleDrop = (event: DragEvent) => {
+const onDrop = (event: DragEvent) => {
   dragCounter = 0;
   isDragOver.value = false;
 

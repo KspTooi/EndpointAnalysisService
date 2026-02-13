@@ -3,7 +3,7 @@
     <div class="upload-content">
       <div class="queue-header">
         <span class="queue-info">队列中共 {{ uploadQueue.length }} 个文件</span>
-        <el-button v-if="uploading" type="danger" size="small" @click="handleCancelAll">取消全部</el-button>
+        <el-button v-if="uploading" type="danger" size="small" @click="onCancelAll">取消全部</el-button>
       </div>
 
       <div class="queue-list">
@@ -91,7 +91,7 @@ const toUploadQueue = (files: File | File[], parentId?: string | null) => {
   }
 };
 
-const handleCancelAll = () => {
+const onCancelAll = () => {
   isCancelled.value = true;
   uploading.value = false;
   uploadQueue.value.forEach((item) => {

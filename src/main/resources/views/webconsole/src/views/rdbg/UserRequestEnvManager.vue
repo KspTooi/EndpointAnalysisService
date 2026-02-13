@@ -4,7 +4,7 @@
       ref="requestEnvSideListRef"
       @onAdd="openModal('add', null)"
       @onEdit="openModal('edit', $event)"
-      @onSelect="handleEnvSelect"
+      @onSelect="onEnvSelect"
     />
 
     <div class="env-storage-container">
@@ -68,7 +68,7 @@ const loadList = () => {
 
 const selectedRequestEnvId = ref<string | null>(null);
 
-const handleEnvSelect = (item: GetUserRequestEnvListVo) => {
+const onEnvSelect = (item: GetUserRequestEnvListVo) => {
   selectedRequestEnvId.value = item.id;
 };
 

@@ -5,7 +5,7 @@
     width="500px"
     :close-on-click-modal="false"
     @contextmenu.prevent
-    @opened="handleDialogOpened"
+    @opened="onDialogOpened"
   >
     <div class="modal-content">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
@@ -17,7 +17,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="closeModal">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">确定</el-button>
+        <el-button type="primary" @click="onSubmit" :loading="submitLoading">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -65,7 +65,7 @@ const openModal = (entry: GetEntryListItemVo) => {
   modalVisible.value = true;
 };
 
-const handleDialogOpened = () => {
+const onDialogOpened = () => {
   nameInputRef.value?.focus();
   nextTick(() => {
     nameInputRef.value?.select();
@@ -83,7 +83,7 @@ const closeModal = () => {
   modalVisible.value = false;
 };
 
-const handleSubmit = async () => {
+const onSubmit = async () => {
   if (!formRef.value) {
     return;
   }
@@ -149,7 +149,7 @@ watch(modalVisible, (val) => {
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
   {
-    enter: handleSubmit,
+    enter: onSubmit,
   },
   modalVisible,
   true
