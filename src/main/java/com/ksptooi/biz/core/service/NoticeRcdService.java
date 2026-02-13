@@ -42,6 +42,7 @@ public class NoticeRcdService {
     /**
      * 阅读全部用户通知记录
      */
+    @Transactional(rollbackFor = Exception.class)
     public void readAllUserNoticeRcd() throws Exception {
         var userId = session().getUserId();
         repository.readAllUserNoticeRcd(userId);
