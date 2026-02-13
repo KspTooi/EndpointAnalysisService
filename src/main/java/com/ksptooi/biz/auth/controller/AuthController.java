@@ -134,23 +134,6 @@ public class AuthController {
         return Result.success(session.getPermissionCodes());
     }
 
-    @Operation(summary = "获取当前用户信息")
-    @PostMapping("/getCurrentUserProfile")
-    @ResponseBody
-    public Result<GetCurrentUserProfile> getCurrentUserProfile() throws AuthException {
-        return Result.success(authService.getCurrentUserProfile());
-    }
 
-    @Operation(summary = "获取当前用户头像")
-    @GetMapping("/getUserAvatar")
-    public ResponseEntity<Resource> getUserAvatar() throws AuthException {
-        return authService.getUserAvatar();
-    }
-
-    @Operation(summary = "更新当前用户头像")
-    @PostMapping("/updateUserAvatar")
-    public ResponseEntity<Resource> updateUserAvatar(@RequestParam("file") MultipartFile file) throws AuthException {
-        return authService.updateUserAvatar(file);
-    }
 
 }
