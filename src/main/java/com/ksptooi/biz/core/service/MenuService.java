@@ -360,5 +360,25 @@ public class MenuService {
     }
 
 
+    /**
+     * 清除用户菜单缓存
+     *
+     * @param uid 用户ID 用于缓存键
+     */
+    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree:' + #uid")
+    public void clearUserMenuTreeCacheByUserId(Long uid) {
+
+    }
+
+    /**
+     * 清除全部用户菜单缓存
+     *
+     */
+    @CacheEvict(cacheNames = "menuTree", allEntries = true)
+    public void clearUserMenuTreeCache() {
+
+    }
+
+
 }
 

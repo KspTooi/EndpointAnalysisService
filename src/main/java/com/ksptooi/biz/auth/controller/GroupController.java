@@ -4,6 +4,7 @@ package com.ksptooi.biz.auth.controller;
 import com.ksptooi.biz.auth.model.group.dto.*;
 import com.ksptooi.biz.auth.model.group.vo.*;
 import com.ksptooi.biz.auth.service.GroupService;
+import com.ksptooi.biz.core.service.MenuService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -27,6 +28,9 @@ public class GroupController {
 
     @Autowired
     private GroupService service;
+
+    @Autowired
+    private MenuService menuService;
 
     @Operation(summary = "获取组定义列表")
     @PostMapping("getGroupDefinitions")
@@ -57,6 +61,7 @@ public class GroupController {
     @PostMapping("editGroup")
     public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) throws Exception {
         service.editGroup(dto);
+        menuService.clearUserMenuTreeCache();
         return Result.success("修改成功");
     }
 
@@ -77,6 +82,7 @@ public class GroupController {
     @PostMapping("grantAndRevoke")
     public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) throws Exception {
         service.grantAndRevoke(dto);
+        menuService.clearUserMenuTreeCache();
         return Result.success("授权或取消授权成功");
     }
 
@@ -84,6 +90,7 @@ public class GroupController {
     @PostMapping("removeGroup")
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeGroup(dto);
+        menuService.clearUserMenuTreeCache();
         return Result.success("删除成功");
     }
 }

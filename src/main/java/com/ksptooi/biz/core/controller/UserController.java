@@ -3,6 +3,7 @@ package com.ksptooi.biz.core.controller;
 import com.ksptooi.biz.core.model.user.dto.*;
 import com.ksptooi.biz.core.model.user.vo.GetUserDetailsVo;
 import com.ksptooi.biz.core.model.user.vo.GetUserListVo;
+import com.ksptooi.biz.core.service.MenuService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.dataprocess.ImportWizard;
@@ -16,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-    
+
 
 @PrintLog
 @RestController
@@ -26,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    private MenuService menuService;
 
     @Operation(summary = "获取用户列表")
     @PostMapping("getUserList")
@@ -52,6 +56,7 @@ public class UserController {
     @PostMapping("editUser")
     public Result<String> editUser(@RequestBody @Valid EditUserDto dto) throws Exception {
         service.editUser(dto);
+        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("修改成功");
     }
 
@@ -59,6 +64,7 @@ public class UserController {
     @PostMapping("removeUser")
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeUser(dto.getId());
+        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("success");
     }
 
@@ -91,6 +97,12 @@ public class UserController {
         }
 
         var count = service.batchEditUser(dto);
+
+        //清除用户菜单缓存
+        for (Long uid : dto.getIds()) {
+            menuService.clearUserMenuTreeCacheByUserId(uid);
+        }
+
         return Result.success("批量操作成功,已操作数据:" + count + "条");
     }
 
