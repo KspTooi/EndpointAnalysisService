@@ -11,7 +11,6 @@
       class="draggable-tabs"
       animation="200"
       ghost-class="ghost-tab"
-      @end="onDragEnd"
       ref="draggableRef"
     >
       <template #item="{ element: tab }">
@@ -55,11 +54,7 @@ const draggableRef = ref<any>(null);
 const tabStore = useTabStore();
 const { activeTabId, tabs } = storeToRefs(tabStore);
 
-// Use a computed property with a setter for v-model with Pinia state
-const computedTabs = computed({
-  get: () => tabs.value,
-  set: (value) => tabStore.setTabs(value),
-});
+
 
 const handleTabClick = (tabId: string) => {
   tabStore.setActiveTab(tabId);
@@ -81,9 +76,7 @@ const handleCloseCurrentTab = () => {
   }
 };
 
-const onDragEnd = () => {
-  // The setter on the `computedTabs` computed property handles the update
-};
+
 
 // Context Menu Logic
 const contextMenu = ref({

@@ -94,9 +94,6 @@ import {
   ElBreadcrumb,
   ElBreadcrumbItem,
   ElContainer,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
   ElHeader,
   ElMain,
   ElMessage,
@@ -104,7 +101,6 @@ import {
   ElPopover,
   ElIcon,
 } from "element-plus";
-import { Expand, Fold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
@@ -118,8 +114,7 @@ import ConsoleTab from "@/soa/console-framework/components/ConsoleTab.vue";
 import SidePanelMenu from "@/soa/console-framework/components/SidePanelMenu.vue";
 import ProfileDropMenu from "@/soa/console-framework/components/ProfileDropMenu.vue";
 import SidePanelMenuShort from "@/soa/console-framework/components/SidePanelMenuShort.vue";
-import { Splitpanes, Pane } from "splitpanes";
-import "splitpanes/dist/splitpanes.css";
+
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
 
 const router = useRouter();
@@ -130,28 +125,7 @@ const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 const menuTree = ref<GetUserMenuTreeVo[]>([]);
 const userProfile = ref<GetCurrentUserProfile | null>(null);
 
-// 定义组件props
-const props = defineProps<{
-  title?: string;
-  logo?: string;
-  user?: {
-    name: string;
-    avatar?: string;
-    [key: string]: any;
-  };
-  defaultActiveMenuId?: string;
-  breadcrumbs?: Array<{
-    text: string;
-    to?: string | object;
-  }>;
-}>();
 
-// 定义事件
-const emit = defineEmits<{
-  (e: "menu-click", menuId: string): void;
-  (e: "menu-action", action: string, menuId: string): void;
-  (e: "logout"): void;
-}>();
 
 const hotKeyActive = ref(true);
 const { activeOf } = useTabStore();
@@ -243,15 +217,11 @@ const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
 
 // 当前活动菜单
 const activeMenuId = computed(() => {
-  if (props.defaultActiveMenuId) return props.defaultActiveMenuId;
   return findMenuIdByPath(menuTree.value, route.path);
 });
 
 // 自动生成面包屑导航
 const autoBreadcrumbs = computed(() => {
-  // 如果 props 中提供了 breadcrumbs，则优先使用
-  if (props.breadcrumbs?.length) return props.breadcrumbs;
-
   const revisedBreadcrumbs: Array<{ text: string; to?: string | object }> = [];
 
   // 尝试添加首页/根路径面板屑
