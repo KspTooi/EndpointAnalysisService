@@ -17,13 +17,12 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -43,7 +42,7 @@ public class MenuService {
      * @return 用户菜单与按钮树
      * @throws BizException 业务异常
      */
-    //@Cacheable(cacheNames = "menuTree", key = "'userMenuTree:' + #uid")
+    @Cacheable(cacheNames = "menuTree", key = "'userMenuTree:' + #uid")
     public List<GetUserMenuTreeVo> getUserMenuTree(Long uid) throws BizException, AuthException {
 
         var allMenuPos = resourceRepository.getUserMenuTree();
@@ -193,12 +192,12 @@ public class MenuService {
     }
 
     /**
-     * 新增菜单与按钮
+     * 新增菜单与按钮(这个接口会全量清除所有用户菜单缓存)
      *
      * @param dto 新增菜单与按钮参数
      * @throws BizException 业务异常
      */
-    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @CacheEvict(cacheNames = "menuTree", allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public void addMenu(AddMenuDto dto) throws BizException {
 
@@ -249,12 +248,12 @@ public class MenuService {
     }
 
     /**
-     * 编辑菜单与按钮
+     * 编辑菜单与按钮(这个接口会全量清除所有用户菜单缓存)
      *
      * @param dto 编辑菜单与按钮参数
      * @throws BizException 业务异常
      */
-    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @CacheEvict(cacheNames = "menuTree", allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public void editMenu(EditMenuDto dto) throws BizException {
 
@@ -326,12 +325,12 @@ public class MenuService {
     }
 
     /**
-     * 删除菜单与按钮
+     * 删除菜单与按钮(这个接口会全量清除所有用户菜单缓存)
      *
      * @param dto 删除菜单与按钮参数
      * @throws BizException 业务异常
      */
-    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @CacheEvict(cacheNames = "menuTree", allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public void removeMenu(CommonIdDto dto) throws BizException {
 

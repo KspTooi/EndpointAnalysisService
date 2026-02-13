@@ -122,13 +122,13 @@ public class MaintainController {
 
 
     /**
-     * 重置菜单
+     * 重置菜单(这个接口会全量清除所有用户菜单缓存)
      * 删除所有菜单并执行SQL脚本恢复默认菜单
      */
     @PostMapping("/resetMenus")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @CacheEvict(cacheNames = "menuTree", allEntries = true)
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
         ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_5W109.sql");
