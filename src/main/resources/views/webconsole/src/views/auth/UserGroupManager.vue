@@ -4,8 +4,8 @@
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
-            <el-form-item label="组名称" label-for="query-keyword">
-              <el-input v-model="listForm.keyword" placeholder="输入组名称查询" clearable id="query-keyword" />
+            <el-form-item label="用户组名称" label-for="query-keyword">
+              <el-input v-model="listForm.keyword" placeholder="输入用户组名称查询" clearable id="query-keyword" />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
@@ -46,17 +46,17 @@
         @selection-change="(val: GetGroupListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
-        <el-table-column prop="code" label="组标识" min-width="120" />
-        <el-table-column prop="name" label="组名称" min-width="120" />
+        <el-table-column prop="name" label="用户组名称" min-width="120" />
+        <el-table-column prop="code" label="用户组标识" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
         <el-table-column prop="permissionCount" label="权限数量" min-width="100" />
-        <el-table-column label="系统组" min-width="80">
+        <!-- <el-table-column label="系统用户组" min-width="80">
           <template #default="scope">
             <el-tag :type="scope.row.isSystem ? 'info' : 'success'">
               {{ scope.row.isSystem ? "是" : "否" }}
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="状态" min-width="80">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
@@ -141,26 +141,26 @@
     >
       <div class="form-two-columns">
         <div class="form-left-column">
-          <el-form-item label="组标识" prop="code" label-for="group-code">
+          <el-form-item label="用户组标识" prop="code" label-for="group-code">
             <el-input
               v-model="modalForm.code"
               :disabled="modalMode === 'edit' && isSystemGroup"
-              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改标识' : '请输入组标识'"
+              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改标识' : '请输入组标识'"
               id="group-code"
             />
           </el-form-item>
-          <el-form-item label="组名称" prop="name" label-for="group-name">
+          <el-form-item label="用户组名称" prop="name" label-for="group-name">
             <el-input
               v-model="modalForm.name"
               :disabled="modalMode === 'edit' && isSystemGroup"
-              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统组不可修改名称' : '请输入组名称'"
+              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改名称' : '请输入组名称'"
               id="group-name"
             />
           </el-form-item>
-          <el-form-item label="描述" prop="description" label-for="group-description">
+          <el-form-item label="用户组描述" prop="description" label-for="group-description">
             <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
           </el-form-item>
-          <el-form-item label="状态" prop="status" label-for="group-status">
+          <el-form-item label="用户组状态" prop="status" label-for="group-status">
             <el-radio-group v-model="modalForm.status" id="group-status">
               <el-radio :value="1">启用</el-radio>
               <el-radio :value="0">禁用</el-radio>
@@ -169,10 +169,10 @@
         </div>
 
         <div class="form-right-column">
-          <el-form-item label="权限节点" prop="permissionIds" label-for="permission-search" class="permission-form-item">
+          <el-form-item label="权限码" prop="permissionIds" label-for="permission-search" class="permission-form-item">
             <div class="permission-container">
               <div class="permission-search">
-                <el-input v-model="permissionSearch" placeholder="搜索权限节点" clearable id="permission-search">
+                <el-input v-model="permissionSearch" placeholder="搜索权限码" clearable id="permission-search">
                   <template #prefix>
                     <el-icon><Search /></el-icon>
                   </template>
@@ -196,7 +196,7 @@
                   </div>
                 </el-checkbox-group>
                 <div v-if="filteredPermissions.length === 0" class="no-permission">
-                  <el-empty description="未找到匹配的权限节点" />
+                  <el-empty description="未找到匹配的权限码" />
                 </div>
               </div>
             </div>
