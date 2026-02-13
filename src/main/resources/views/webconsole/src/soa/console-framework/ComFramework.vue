@@ -3,7 +3,7 @@
     <el-container>
       <!-- 桌面版侧边栏 -->
       <component
-        :is="isMenuCollapse ? SidePanelMenuShort : ComLeftMenu"
+        :is="isMenuCollapse ? ComLeftMenuShort : ComLeftMenu"
         :items="menuTree"
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
@@ -113,7 +113,7 @@ import { EventHolder } from "@/store/EventHolder.ts";
 import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
 import ComLeftMenu from "@/soa/console-framework/components/ComLeftMenu.vue";
 import ComUserProfile from "@/soa/console-framework/components/ComUserProfile.vue";
-import SidePanelMenuShort from "@/soa/console-framework/components/SidePanelMenuShort.vue";
+import ComLeftMenuShort from "@/soa/console-framework/components/ComLeftMenuShort.vue";
 
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
 
