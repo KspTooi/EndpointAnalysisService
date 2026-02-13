@@ -25,7 +25,7 @@
     </template>
 
     <template #actions>
-      <el-button type="success" @click="openModal('add', null)">创建访问组</el-button>
+      <el-button type="success" @click="openModal('add', null)">创建用户组</el-button>
       <el-button
         type="danger"
         @click="removeListBatch(listSelected)"
@@ -121,7 +121,7 @@
   <!-- 用户组编辑/新增模态框 -->
   <el-dialog
     v-model="modalVisible"
-    :title="modalMode === 'edit' ? '编辑访问组' : '添加访问组'"
+    :title="modalMode === 'edit' ? '编辑用户组' : '添加用户组'"
     width="800px"
     :close-on-click-modal="false"
     @close="
