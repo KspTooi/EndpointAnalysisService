@@ -10,7 +10,7 @@
     <template #dropdown>
       <div class="notice-dropdown">
         <div class="notice-header">
-          <span>通知中心</span>
+          <span>通知中心 (未读数:{{ count }})</span>
           <el-button v-if="listData.length > 0" link type="primary" @click="handleReadAll">全部已读</el-button>
         </div>
 
@@ -30,12 +30,7 @@
                 <div class="item-time">{{ item.createTime }}</div>
               </div>
               <div class="item-actions">
-                <el-button
-                  link
-                  type="danger"
-                  :icon="Delete"
-                  @click.stop="handleDelete(item)"
-                ></el-button>
+                <el-button link type="danger" :icon="Delete" @click.stop="handleDelete(item)"></el-button>
               </div>
             </li>
             <li v-if="loading" class="loading-text">加载中...</li>
