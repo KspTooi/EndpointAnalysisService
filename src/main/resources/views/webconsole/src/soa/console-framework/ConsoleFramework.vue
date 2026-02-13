@@ -8,8 +8,6 @@
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
         version="版本:1.5S CP18"
-        @item-click="handleMenuClick"
-        @action="handleMenuAction"
       />
 
       <el-container>
@@ -226,18 +224,6 @@ onMounted(() => {
   loadUserProfile();
 });
 
-// 导航到指定URL
-const navigateToUrl = (url: string) => {
-  window.location.href = url;
-};
-
-// 菜单项点击事件
-const handleMenuItemClick = (menuId: string) => {
-  emit("menu-click", menuId);
-};
-
-// 无移动端兼容逻辑
-
 // 根据路由路径计算当前活动菜单ID
 const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
   for (const item of items) {
@@ -257,16 +243,6 @@ const activeMenuId = computed(() => {
   if (props.defaultActiveMenuId) return props.defaultActiveMenuId;
   return findMenuIdByPath(menuTree.value, route.path);
 });
-
-// 处理菜单点击
-const handleMenuClick = (menuId: string) => {
-  handleMenuItemClick(menuId);
-};
-
-// 处理菜单动作
-const handleMenuAction = (action: string, menuId: string) => {
-  emit("menu-action", action, menuId);
-};
 
 // 自动生成面包屑导航
 const autoBreadcrumbs = computed(() => {
