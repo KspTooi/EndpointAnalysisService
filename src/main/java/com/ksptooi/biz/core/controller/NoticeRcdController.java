@@ -33,10 +33,10 @@ public class NoticeRcdController {
         return Result.success(noticeRcdService.getUserNoticeCount());
     }
 
-    @PostMapping("/readNoticeRcd")
-    @Operation(summary = "阅读用户通知记录")
-    public Result<String> readUserNoticeRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        noticeRcdService.readUserNoticeRcd(dto);
+    @PostMapping("/readAllNoticeRcd")
+    @Operation(summary = "阅读全部用户通知记录")
+    public Result<String> readAllUserNoticeRcd() throws Exception {
+        noticeRcdService.readAllUserNoticeRcd();
         return Result.success("操作成功");
     }
 

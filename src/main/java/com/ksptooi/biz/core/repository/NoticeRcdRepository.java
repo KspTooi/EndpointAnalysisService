@@ -5,6 +5,7 @@ import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -70,5 +71,17 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
             ORDER BY r.createTime DESC, r.id DESC
             """)
     Page<GetUserNoticeRcdListVo> getNoticeRcdsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    /**
+     * 将所有未读消息设为已读
+     *
+     * @param userId 用户ID
+     * @return 已读消息数量
+     */
+    @Modifying
+    @Query("""
+            UPDATE NoticeRcdPo r SET r.readTime = NOW() WHERE r.userId = :userId AND r.readTime IS NULL
+            """)
+    Long readAllUserNoticeRcd(@Param("userId") Long userId);
 
 }

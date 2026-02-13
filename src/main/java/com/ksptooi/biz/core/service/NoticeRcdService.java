@@ -40,29 +40,11 @@ public class NoticeRcdService {
     }
 
     /**
-     * 阅读用户通知记录
-     *
-     * @param dto
+     * 阅读全部用户通知记录
      */
-    public void readUserNoticeRcd(CommonIdDto dto) throws Exception {
-
+    public void readAllUserNoticeRcd() throws Exception {
         var userId = session().getUserId();
-
-        //搜集需要阅读的消息接收记录ID列表
-        var ids = dto.getIds();
-
-        //根据ID列表和用户ID查询消息接收记录列表
-        var noticeRcdPos = repository.getNotifyRcdByIdsAndUserId(ids, userId);
-
-        if (noticeRcdPos.isEmpty()) {
-            throw new BizException("阅读失败,数据不存在或无权限访问.");
-        }
-
-        for (var noticeRcdPo : noticeRcdPos) {
-            noticeRcdPo.setReadTime(LocalDateTime.now());
-            repository.save(noticeRcdPo);
-        }
-
+        repository.readAllUserNoticeRcd(userId);
     }
 
 
