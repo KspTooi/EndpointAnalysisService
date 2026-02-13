@@ -68,7 +68,7 @@ const avatarUrl = computed(() => {
   if (props.profile?.avatarAttachId) {
     return `/getAttach?id=${props.profile.avatarAttachId}`;
   }
-  return "/getUserAvatar";
+  return "/api/profile/getUserAvatar";
 });
 
 const genderText = computed(() => {

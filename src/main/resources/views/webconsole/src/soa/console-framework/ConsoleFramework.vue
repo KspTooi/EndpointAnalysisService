@@ -35,7 +35,9 @@
                     <el-avatar
                       :size="24"
                       :src="
-                        userProfile?.avatarAttachId ? `/getAttach?id=${userProfile.avatarAttachId}` : '/profile/getUserAvatar'
+                        userProfile?.avatarAttachId
+                          ? `/getAttach?id=${userProfile.avatarAttachId}`
+                          : '/api/profile/getUserAvatar'
                       "
                       style="margin-right: 8px"
                       shape="square"
