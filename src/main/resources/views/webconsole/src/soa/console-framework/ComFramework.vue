@@ -1,6 +1,6 @@
 <template>
-  <div class="common-layout">
-    <el-container>
+  <div class="flex h-full w-full overflow-hidden min-h-0">
+    <el-container class="h-full w-full overflow-hidden min-h-0">
       <!-- 桌面版侧边栏 -->
       <component
         :is="isMenuCollapse ? ComLeftMenuShort : ComLeftMenu"
@@ -10,13 +10,13 @@
         version="版本:1.5S CP18"
       />
 
-      <el-container>
+      <el-container class="h-full w-full overflow-hidden min-h-0">
         <!-- 多标签页区域 -->
         <com-multi-tab>
           <template #controls>
-            <div class="header-right">
+            <div class="flex items-center gap-4 mr-[15px]">
               <!-- 系统导航按钮区域 -->
-              <div class="nav-buttons"></div>
+              <div class="flex gap-2"></div>
 
               <!-- 用户自定义操作区域 -->
               <slot name="header-actions">
@@ -31,7 +31,7 @@
 
         <!-- 头部区域 -->
         <el-header class="admin-header" height="35px">
-          <div class="header-left">
+          <div class="flex items-center h-full">
             <div class="menu-toggle" @click="toggleMenu">
               <ILineMdMenuUnfoldRight />
             </div>
@@ -101,20 +101,6 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
 </script>
 
 <style scoped>
-.common-layout {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  min-height: 0;
-}
-
-.el-container {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  min-height: 0;
-}
 
 .admin-header {
   background-color: #fff;
@@ -123,16 +109,10 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
   height: 35px;
   flex-shrink: 0;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
 
 .menu-toggle {
   font-size: 18px;
@@ -150,17 +130,6 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
   color: #764ba2;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-right: 15px;
-}
-
-.nav-buttons {
-  display: flex;
-  gap: 8px;
-}
 
 .admin-breadcrumb {
   font-size: 13px;
@@ -184,9 +153,8 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
 
 .content-wrapper {
   background-color: #fff;
-  border-radius: 0; /* 修改为直角 */
-  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
-  box-shadow: none; /* 移除内容区域投影 */
+  border-radius: 0;
+  box-shadow: none;
   padding: 0;
   flex: 1;
   display: flex;
