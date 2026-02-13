@@ -46,6 +46,9 @@ public class AuthUserDetailsService implements UserDetailsService {
         var authUserDetails = new AuthUserDetails();
         assign(user, authUserDetails);
 
+        //兼容旧式Company
+        authUserDetails.setCompanyId(user.getActiveCompanyId());
+
         //GrantedAuthority包括角色码和权限码 SpringSecurity通过ROLE_前缀区分角色和权限
         var grantedAuthorities = new HashSet<GrantedAuthority>();
 
