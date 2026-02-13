@@ -99,9 +99,8 @@ const menuTree = ref<GetUserMenuTreeVo[]>([]);
 
 
 
-const { initHotkeys } = ComFrameworkService.useComTabHotkey();
+ComFrameworkService.useComTabHotkey();
 const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useComFramework();
-initHotkeys();
 
 const loadMenuTree = async () => {
   try {
