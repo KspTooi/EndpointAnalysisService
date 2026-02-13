@@ -9,8 +9,8 @@
           :is-collapse="false"
           title="EAS服务管理控制台"
           version="版本:1.4L CP10"
-          @item-click="handleMenuClick"
-          @action="handleMenuAction"
+          @item-click="onMenuClick"
+          @action="onMenuAction"
         />
       </el-aside>
 
@@ -196,7 +196,7 @@ const navigateToUrl = (url: string) => {
 };
 
 // 菜单项点击事件
-const handleMenuItemClick = (menuId: string) => {
+const onMenuItemClick = (menuId: string) => {
   emit("menu-click", menuId);
 };
 
@@ -223,17 +223,17 @@ const activeMenuId = computed(() => {
 });
 
 // 处理菜单点击
-const handleMenuClick = (menuId: string) => {
-  handleMenuItemClick(menuId);
+const onMenuClick = (menuId: string) => {
+  onMenuItemClick(menuId);
 };
 
 // 处理菜单动作
-const handleMenuAction = (action: string, menuId: string) => {
+const onMenuAction = (action: string, menuId: string) => {
   emit("menu-action", action, menuId);
 };
 
 // 处理退出登录
-const handleLogout = () => {
+const onLogout = () => {
   emit("logout");
 };
 

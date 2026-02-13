@@ -13,9 +13,9 @@
 
         <div class="tag-tree-body">
             <div class="tag-tree-group" v-for="item in listData" :key="item.tag">
-                <div class="tag-tree-item" :class="{ 'tag-item-active': activeTags.includes(item.tag) }" @click="handleSelectTag(item.tag)">
+                <div class="tag-tree-item" :class="{ 'tag-item-active': activeTags.includes(item.tag) }" @click="onSelectTag(item.tag)">
                     <div class="tag-tree-item-tag">
-                        <el-icon class="expand-icon" @click.stop="handleSelectTag(item.tag)">
+                        <el-icon class="expand-icon" @click.stop="onSelectTag(item.tag)">
                             <ArrowRight v-if="!activeTags.includes(item.tag)" />
                             <ArrowDown v-else />
                         </el-icon>
@@ -30,7 +30,7 @@
                 </div>
                 
                 <div class="operation-list" v-if="activeTags.includes(item.tag) && item.operationDefineList && item.operationDefineList.length > 0">
-                    <div class="operation-item" v-for="operation in item.operationDefineList" :key="operation.id" @click="handleOperationClick(operation.id)" :class="{ 'operation-item-active': activeOperationId == operation.id }">
+                    <div class="operation-item" v-for="operation in item.operationDefineList" :key="operation.id" @click="onOperationClick(operation.id)" :class="{ 'operation-item-active': activeOperationId == operation.id }">
                         <div class="operation-method" :class="`method-${operation.method.toLowerCase()}`">
                             {{ operation.method }}
                         </div>
@@ -95,7 +95,7 @@ const loadTagTree = async () => {
     listData.value = res
 }
 
-const handleSelectTag = (tag: string) => {
+const onSelectTag = (tag: string) => {
     //已存在则删除
     if (activeTags.value.includes(tag)) {
         activeTags.value = activeTags.value.filter(t => t !== tag)
@@ -106,7 +106,7 @@ const handleSelectTag = (tag: string) => {
 }
 
 
-const handleOperationClick = (operationId: string) => {
+const onOperationClick = (operationId: string) => {
     activeOperationId.value = operationId
     emit('select-operation', operationId)
 }

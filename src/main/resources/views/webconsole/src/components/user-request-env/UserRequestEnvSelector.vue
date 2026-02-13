@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selectedEnvId" placeholder="选择环境" filterable :loading="loading" @change="handleChange" @clear="handleClear" class="user-request-env-selector">
+  <el-select v-model="selectedEnvId" placeholder="选择环境" filterable :loading="loading" @change="onEnvChange" @clear="onClear" class="user-request-env-selector">
     <el-option v-for="env in envList" :key="env.id" :label="env.name" :value="env.id">
       <div class="env-option-item">
         <span class="env-name">{{ env.name }}</span>
@@ -51,7 +51,7 @@ const loadEnvList = async () => {
   }
 };
 
-const handleChange = async (envId: string | null) => {
+const onEnvChange = async (envId: string | null) => {
   if (!envId) {
     selectedEnvId.value = null;
     return;
@@ -85,7 +85,7 @@ const handleChange = async (envId: string | null) => {
   }
 };
 
-const handleClear = () => {
+const onClear = () => {
   selectedEnvId.value = null;
 };
 

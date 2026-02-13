@@ -15,11 +15,11 @@ export default {
     const isFocused = ref(false);
 
     //内部事件处理函数
-    const handleFocus = () => {
+    const onFocus = () => {
       isFocused.value = true;
     };
 
-    const handleBlur = () => {
+    const onBlur = () => {
       isFocused.value = false;
     };
 
@@ -40,8 +40,8 @@ export default {
         return;
       }
 
-      el.addEventListener("focus", handleFocus);
-      el.addEventListener("blur", handleBlur);
+      el.addEventListener("focus", onFocus);
+      el.addEventListener("blur", onBlur);
 
       if (autoTabIndex) {
         el.setAttribute("tabindex", "-1");
@@ -51,8 +51,8 @@ export default {
     onBeforeUnmount(() => {
       const el = elementRef.value;
       if (el) {
-        el.removeEventListener("focus", handleFocus);
-        el.removeEventListener("blur", handleBlur);
+        el.removeEventListener("focus", onFocus);
+        el.removeEventListener("blur", onBlur);
       }
     });
 

@@ -9,13 +9,13 @@
 
     <el-scrollbar class="side-list-body" v-loading="loading">
       <div v-if="paginatedList.length > 0">
-        <div v-for="item in paginatedList" :key="item.id" class="side-list-item" :class="{ active: selectedId === item.id }" @click="handleSelect(item)">
+        <div v-for="item in paginatedList" :key="item.id" class="side-list-item" :class="{ active: selectedId === item.id }" @click="onSelect(item)">
           <span class="item-name">{{ item.name }}</span>
           <div class="item-actions">
             <div class="item-actions-button-active" v-if="item.active === 1">
               <IIcRoundCheckCircle />
             </div>
-            <div class="item-actions-button item-action-edit" @click.stop="handleActivate(item.id)">
+            <div class="item-actions-button item-action-edit" @click.stop="onActivate(item.id)">
               <IIcRoundCheckCircle />
             </div>
             <div class="item-actions-button item-action-edit" @click.stop="emit('onEdit', item)">
@@ -31,7 +31,7 @@
     </el-scrollbar>
 
     <div class="side-list-footer">
-      <el-pagination small background layout="prev, pager, next" :total="total" :page-size="query.pageSize" :current-page="query.pageNum" @current-change="handlePageChange" />
+      <el-pagination small background layout="prev, pager, next" :total="total" :page-size="query.pageSize" :current-page="query.pageNum" @current-change="onPageChange" />
     </div>
   </div>
 </template>
@@ -88,7 +88,7 @@ watch(
 watch(filteredList, (newList) => {
   const currentSelectionStillExists = newList.some((item) => item.id === selectedId.value);
   if (!currentSelectionStillExists && newList.length > 0) {
-    handleSelect(newList[0]);
+    onSelect(newList[0]);
   } else if (newList.length === 0) {
     selectedId.value = null;
     holder.setSelectedId(null);
@@ -161,17 +161,17 @@ const removeList = async (id: string) => {
   loadList();
 };
 
-const handleSelect = (item: GetUserRequestEnvListVo) => {
+const onSelect = (item: GetUserRequestEnvListVo) => {
   selectedId.value = item.id;
   holder.setSelectedId(item.id);
   emit("onSelect", item);
 };
 
-const handlePageChange = (page: number) => {
+const onPageChange = (page: number) => {
   query.pageNum = page;
 };
 
-const handleActivate = async (id: string) => {
+const onActivate = async (id: string) => {
   try {
     const result = await UserRequestEnvApi.activateUserRequestEnv({ id });
     if (Result.isSuccess(result)) {

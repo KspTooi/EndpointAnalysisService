@@ -246,18 +246,18 @@ const onDelete = async () => {
 };
 
 // 监听点击外部关闭菜单
-const handleClickOutside = (event: MouseEvent) => {
+const onClickOutside = (event: MouseEvent) => {
   if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
     emit("close");
   }
 };
 
 onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener("click", onClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("click", onClickOutside);
 });
 
 // 聚焦编辑对话框

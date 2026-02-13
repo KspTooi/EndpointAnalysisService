@@ -16,9 +16,9 @@
       :default-active="activeItemId"
       :default-openeds="openedMenus"
       class="panel-menu"
-      @select="handleSelect"
-      @open="handleMenuOpen"
-      @close="handleMenuClose"
+      @select="onSelect"
+      @open="onMenuOpen"
+      @close="onMenuClose"
       :collapse="isCollapse"
       :unique-opened="false"
     >
@@ -40,7 +40,7 @@
             <span>{{ item.name }}</span>
           </template>
           <template v-for="child in filterChildren(item.children)" :key="child.id">
-            <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="handleMenuItemClick(child)">
+            <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="onMenuItemClick(child)">
               <el-icon>
                 <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
               </el-icon>
@@ -50,7 +50,7 @@
         </el-sub-menu>
 
         <!-- 菜单类型 -->
-        <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="handleMenuItemClick(item)">
+        <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="onMenuItemClick(item)">
           <el-icon>
             <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
           </el-icon>
@@ -137,7 +137,7 @@ const saveOpenedMenus = () => {
 };
 
 // 处理菜单打开
-const handleMenuOpen = (index: string) => {
+const onMenuOpen = (index: string) => {
   if (!openedMenus.value.includes(index)) {
     openedMenus.value.push(index);
     saveOpenedMenus();
@@ -145,7 +145,7 @@ const handleMenuOpen = (index: string) => {
 };
 
 // 处理菜单关闭
-const handleMenuClose = (index: string) => {
+const onMenuClose = (index: string) => {
   const idx = openedMenus.value.indexOf(index);
   if (idx > -1) {
     openedMenus.value.splice(idx, 1);
@@ -189,7 +189,7 @@ const emit = defineEmits<{
 }>();
 
 // 处理菜单项点击
-const handleMenuItemClick = (item: GetMenuTreeVo) => {
+const onMenuItemClick = (item: GetMenuTreeVo) => {
   if (item.menuKind !== 1) {
     return;
   }
@@ -211,7 +211,7 @@ const handleMenuItemClick = (item: GetMenuTreeVo) => {
 };
 
 // 处理菜单选择
-const handleSelect = (index: string) => {
+const onSelect = (index: string) => {
   const findItem = (items: GetMenuTreeVo[], index: string): GetMenuTreeVo | null => {
     for (const item of items) {
       if (item.id === index) {
