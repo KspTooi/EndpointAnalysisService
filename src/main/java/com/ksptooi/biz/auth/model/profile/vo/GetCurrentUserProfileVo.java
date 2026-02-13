@@ -1,14 +1,15 @@
-package com.ksptooi.biz.core.model.auth.vo;
+package com.ksptooi.biz.auth.model.profile.vo;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
-public class GetCurrentUserProfile {
+public class GetCurrentUserProfileVo {
 
     @Schema(description = "用户ID")
     private Long id;

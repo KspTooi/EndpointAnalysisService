@@ -1,9 +1,10 @@
 package com.ksptooi.biz.auth.service;
 
+import com.ksptooi.biz.auth.model.profile.dto.ChangePasswordDto;
+import com.ksptooi.biz.auth.model.profile.vo.GetCurrentUserProfilePermissionVo;
+import com.ksptooi.biz.auth.model.profile.vo.GetCurrentUserProfileVo;
 import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
-import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
-import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfilePermissionVo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.biz.core.service.AttachService;
 import com.ksptool.assembly.entity.exception.AuthException;
@@ -17,7 +18,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
@@ -42,6 +45,9 @@ public class UserProfileService {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     /**
      * 获取当前用户信息
@@ -49,12 +55,12 @@ public class UserProfileService {
      * @return 当前用户信息
      */
     @Cacheable(cacheNames = "userProfile", key = "#uid")
-    public GetCurrentUserProfile getUserProfile(Long uid) throws AuthException {
+    public GetCurrentUserProfileVo getUserProfile(Long uid) throws AuthException {
 
         var userPo = userRepository.findById(uid).orElseThrow(() -> new AuthException("查询用户信息时出现错误，用户不存在[uid:" + uid + "]"));
 
         //组装vo
-        var vo = new GetCurrentUserProfile();
+        var vo = new GetCurrentUserProfileVo();
         vo.setId(userPo.getId());
         vo.setUsername(userPo.getUsername());
         vo.setNickname(userPo.getNickname());
@@ -177,5 +183,34 @@ public class UserProfileService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename)
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
+    }
+
+    /**
+     * 用户更改密码
+     *
+     * @param dto 更改密码DTO
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void changePassword(ChangePasswordDto dto) throws AuthException {
+
+        if (dto.getOldPassword().equals(dto.getNewPassword())) {
+            throw new AuthException("新密码不能与旧密码相同");
+        }
+
+        var userPo = sessionService.requireUser();
+
+        if (StringUtils.isBlank(userPo.getPassword())) {
+            throw new AuthException("当前账号未设置密码，无法修改密码");
+        }
+
+        if (!passwordEncoder.matches(dto.getOldPassword(), userPo.getPassword())) {
+            throw new AuthException("旧密码不正确");
+        }
+
+        userPo.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(userPo);
+
+        // 修改密码后立即失效该用户所有会话，避免旧会话继续使用。
+        sessionService.closeSession(userPo.getId());
     }
 }

@@ -157,12 +157,12 @@ public class SessionService {
     /**
      * 根据SessionId关闭用户会话
      *
-     * @param sessionId 会话SessionId
+     * @param sessionPrimaryKey 会话PK
      */
     public void closeSessionByPrimaryKey(Long sessionPrimaryKey) throws BizException {
 
         var session = userSessionRepository.findById(sessionPrimaryKey).orElseThrow(() -> new BizException("会话 [" + sessionPrimaryKey + "] 不存在"));
-        
+
         //先失效缓存
         Cache cache = cacheManager.getCache("userSession");
 

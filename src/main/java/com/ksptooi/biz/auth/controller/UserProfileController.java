@@ -1,11 +1,14 @@
 package com.ksptooi.biz.auth.controller;
 
+import com.ksptooi.biz.auth.model.profile.dto.ChangePasswordDto;
+import com.ksptooi.biz.auth.model.profile.vo.GetCurrentUserProfileVo;
 import com.ksptooi.biz.auth.service.UserProfileService;
-import com.ksptooi.biz.core.model.auth.vo.GetCurrentUserProfile;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -20,26 +23,33 @@ import static com.ksptooi.biz.auth.service.SessionService.session;
 public class UserProfileController {
 
     @Autowired
-    private UserProfileService authService;
+    private UserProfileService profileService;
 
     @Operation(summary = "获取当前用户信息")
     @PostMapping("/getCurrentUserProfile")
     @ResponseBody
-    public Result<GetCurrentUserProfile> getCurrentUserProfile() throws AuthException {
-        return Result.success(authService.getUserProfile(session().getUserId()));
+    public Result<GetCurrentUserProfileVo> getCurrentUserProfile() throws AuthException {
+        return Result.success(profileService.getUserProfile(session().getUserId()));
     }
 
     @Operation(summary = "获取当前用户头像")
     @GetMapping("/getUserAvatar")
     public ResponseEntity<Resource> getUserAvatar() throws AuthException {
-        return authService.getUserAvatar();
+        return profileService.getUserAvatar();
     }
-
 
     @Operation(summary = "更新当前用户头像")
     @PostMapping("/updateUserAvatar")
     public ResponseEntity<Resource> updateUserAvatar(@RequestParam("file") MultipartFile file) throws AuthException {
-        return authService.updateUserAvatar(file);
+        return profileService.updateUserAvatar(file);
     }
+
+    @Operation(summary = "用户更改密码")
+    @PostMapping("/changePassword")
+    public Result<String> changePassword(@RequestBody @Valid ChangePasswordDto dto) throws AuthException {
+        profileService.changePassword(dto);
+        return Result.success("密码修改成功");
+    }
+
 
 }
