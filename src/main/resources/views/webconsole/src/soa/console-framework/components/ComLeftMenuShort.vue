@@ -25,7 +25,7 @@
               <el-icon>
                 <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
               </el-icon>
-              <span>{{ item.name }}</span>
+              <span class="menu-name">{{ item.name }}</span>
             </template>
 
             <template v-for="child in filterChildren(item.children)" :key="child.id">
@@ -43,6 +43,7 @@
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
+            <span class="menu-name">{{ item.name }}</span>
             <template #title>{{ item.name }}</template>
           </el-menu-item>
         </template>
@@ -179,12 +180,14 @@ const onMenuItemClick = (item: GetUserMenuTreeVo) => {
   width: 64px;
 }
 
-:deep(.el-menu-item),
-:deep(.el-sub-menu__title) {
-  height: 50px !important;
-  line-height: 50px !important;
-  padding: 0 !important;
+:deep(.panel-menu-short.el-menu--collapse .el-menu-item),
+:deep(.panel-menu-short.el-menu--collapse .el-sub-menu__title) {
+  height: auto !important;
+  min-height: 68px !important;
+  line-height: normal !important;
+  padding: 10px 0 !important;
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   margin: 0 !important;
@@ -192,17 +195,45 @@ const onMenuItemClick = (item: GetUserMenuTreeVo) => {
   transition: background 0.2s, color 0.2s;
 }
 
-:deep(.el-menu-item .el-icon),
-:deep(.el-sub-menu__title .el-icon) {
-  margin: 0 !important;
-  font-size: 20px;
+:deep(.panel-menu-short.el-menu--collapse .el-menu-item .el-icon),
+:deep(.panel-menu-short.el-menu--collapse .el-sub-menu__title .el-icon) {
+  margin: 0 0 4px 0 !important;
+  font-size: 22px !important;
   color: #515a6e;
   transition: color 0.2s;
+}
+
+/* 菜单名称样式 - 居中且允许换行 */
+:deep(.panel-menu-short.el-menu--collapse .menu-name) {
+  width: 100% !important;
+  height: auto !important;
+  visibility: visible !important;
+  display: block !important;
+  text-align: center !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  word-break: break-all !important;
+  padding: 0 4px !important;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+/* 覆盖 Element Plus 默认隐藏 span 的样式 */
+:deep(.panel-menu-short.el-menu--collapse .el-sub-menu__title span) {
+  display: block !important;
+  height: auto !important;
+  width: auto !important;
+  visibility: visible !important;
 }
 
 /* 激活状态 */
 :deep(.el-menu-item.is-active) {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+}
+
+:deep(.el-menu-item.is-active .menu-name) {
   color: #ffffff !important;
 }
 
