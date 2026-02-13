@@ -41,6 +41,13 @@ const AuthStore = defineStore("AuthStore", {
 
       localStorage.setItem("sessionId", sessionId);
     },
+
+    clearAuth() {
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("sessionId");
+      this.userInfo = null;
+      this.sessionId = null;
+    },
   },
 });
 

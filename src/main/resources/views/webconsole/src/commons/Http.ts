@@ -1,6 +1,7 @@
 import type Result from "@/commons/entity/Result.ts";
 import axios from "axios";
 import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
+import UserAuthService from "@/views/auth/service/UserAuthService";
 
 var vueRouter = GenricRouteService.getVueRouter();
 
@@ -38,6 +39,7 @@ axiosInstance.interceptors.response.use(
       vueRouter.push({
         path: "/auth/login",
       });
+      UserAuthService.AuthStore().clearAuth();
       return Promise.reject(new Error("登录已过期或未登录"));
     }
 

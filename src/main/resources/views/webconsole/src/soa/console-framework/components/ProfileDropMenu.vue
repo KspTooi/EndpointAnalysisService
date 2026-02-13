@@ -51,18 +51,44 @@
         <span class="value">{{ profile?.lastLoginTime }}</span>
       </div>
     </div>
+
+    <div class="profile-actions">
+      <el-button class="logout-btn" type="danger" plain @click="handleLogout">
+        <el-icon><SwitchButton /></el-icon>
+        退出登录
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { ElAvatar, ElTag, ElIcon } from "element-plus";
-import { Message, Phone, User, Operation, Key, Calendar, Clock } from "@element-plus/icons-vue";
+import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox } from "element-plus";
+import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
+import AuthApi from "@/soa/console-framework/api/AuthApi";
 
 const props = defineProps<{
   profile: GetCurrentUserProfile | null;
 }>();
+
+const handleLogout = async () => {
+  try {
+    await ElMessageBox.confirm("确定要注销登录吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+
+    await AuthApi.logout();
+    ElMessage.success("注销成功");
+    // 刷新页面或跳转到登录页
+    window.location.href = "/login";
+  } catch (error) {
+    if (error === "cancel") return;
+    ElMessage.error("注销失败: " + (error as Error).message);
+  }
+};
 
 const avatarUrl = computed(() => {
   if (props.profile?.avatarAttachId) {
@@ -158,6 +184,20 @@ const genderText = computed(() => {
 .count-badge {
   font-weight: 600;
   color: #009688;
+}
+
+.profile-actions {
+  padding: 12px 20px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.logout-btn {
+  width: 100%;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .group-tags {
