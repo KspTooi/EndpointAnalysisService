@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
-import UserNoticeService from "../../service/UserNoticeService";
+import UserNoticeService from "../../service/NoticeRcdService.ts";
 import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
 
