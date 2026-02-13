@@ -72,7 +72,7 @@
         <el-table-column label="端点描述" prop="description" show-overflow-tooltip />
         <el-table-column label="排序" prop="seq" width="100">
           <template #default="scope">
-            <SeqQuickPopover
+            <ComSeqFixer
               :id="scope.row.id"
               :seqField="'seq'"
               :getDetailApi="getEndpointDetail"
@@ -406,7 +406,7 @@ import {
 } from "@element-plus/icons-vue";
 import QueryPersistService from "@/service/QueryPersistService";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
-import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetEndpointTreeDto>({

@@ -130,7 +130,7 @@
         <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" width="80">
           <template #default="scope">
-            <SeqQuickPopover
+            <ComSeqFixer
               :id="scope.row.id"
               :seqField="'seq'"
               :getDetailApi="getEpSiteDetail"
@@ -256,7 +256,7 @@ import type { FormInstance } from "element-plus";
 import EpSiteService from "@/views/document/service/EpSiteService.ts";
 import EpSiteApi, { type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
 import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
-import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import { Result } from "@/commons/entity/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 

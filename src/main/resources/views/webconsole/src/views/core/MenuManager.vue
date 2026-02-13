@@ -105,7 +105,7 @@
         </el-table-column>
         <el-table-column label="排序" prop="seq" width="100">
           <template #default="scope">
-            <SeqQuickPopover
+            <ComSeqFixer
               :id="scope.row.id"
               :seqField="'seq'"
               :getDetailApi="getMenuDetail"
@@ -259,7 +259,7 @@ import { Icon } from "@iconify/vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
-import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import MenuApi from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/entity/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";

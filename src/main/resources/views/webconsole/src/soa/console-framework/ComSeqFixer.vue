@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { Edit, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
-import SeqQuickPopoverService from "@/soa/console-framework/service/SeqQuickPopoverService";
+import SeqQuickPopoverService from "@/soa/console-framework/service/ComSeqFixerService.ts";
 
 const props = defineProps<{
   id: string; //数据ID

@@ -49,7 +49,7 @@
         </el-table-column>
         <el-table-column prop="seq" label="排序" min-width="100">
           <template #default="scope">
-            <SeqQuickPopover
+            <ComSeqFixer
               :id="scope.row.id"
               :seqField="'seq'"
               :getDetailApi="getOrgDetail"
@@ -147,7 +147,7 @@ import { Edit, Delete, Plus } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import type { FormInstance, TableInstance } from "element-plus";
 import OrgManagerService from "@/views/core/service/OrgManagerService.ts";
-import SeqQuickPopover from "@/soa/console-framework/SeqQuickPopover.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import OrgApi from "@/views/core/api/OrgApi.ts";
 import { Result } from "@/commons/entity/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";

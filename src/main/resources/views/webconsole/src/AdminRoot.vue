@@ -1,12 +1,12 @@
 <template>
   <router-view v-if="isBlankLayout" />
-  <console-framework v-if="!isBlankLayout" />
+  <com-framework v-if="!isBlankLayout" />
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import ConsoleFramework from "@/soa/console-framework/ConsoleFramework.vue";
+import ComFramework from "@/soa/console-framework/ComFramework.vue";
 
 const route = useRoute();
 
