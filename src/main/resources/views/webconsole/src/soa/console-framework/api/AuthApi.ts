@@ -43,5 +43,19 @@ export default {
       return;
     }
     throw new Error(result.message);
+  },
+
+  /**
+   * 用户更改密码
+   */
+  changePassword: async (oldPassword: string, newPassword: string): Promise<void> => {
+    var result = await Http.postEntity<Result<string>>("/profile/changePassword", {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    });
+    if (result.code == 0) {
+      return;
+    }
+    throw new Error(result.message);
   }
 };

@@ -53,24 +53,34 @@
     </div>
 
     <div class="profile-actions">
-      <el-button class="logout-btn" type="danger" plain @click="handleLogout">
+      <el-button class="action-btn" type="primary" plain @click="handleChangePassword">
+        <el-icon><Key /></el-icon>
+        修改密码
+      </el-button>
+      <el-button class="action-btn" type="danger" plain @click="handleLogout">
         <el-icon><SwitchButton /></el-icon>
         退出登录
       </el-button>
     </div>
+
+    <!-- 修改密码弹窗 -->
+    <user-change-password-modal ref="changePasswordModalRef" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox } from "element-plus";
 import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 import AuthApi from "@/soa/console-framework/api/AuthApi";
+import UserChangePasswordModal from "./UserChangePasswordModal.vue";
 
 const props = defineProps<{
   profile: GetCurrentUserProfile | null;
 }>();
+
+const changePasswordModalRef = ref();
 
 const handleLogout = async () => {
   try {
@@ -87,6 +97,12 @@ const handleLogout = async () => {
   } catch (error) {
     if (error === "cancel") return;
     ElMessage.error("注销失败: " + (error as Error).message);
+  }
+};
+
+const handleChangePassword = () => {
+  if (changePasswordModalRef.value) {
+    changePasswordModalRef.value.openModal();
   }
 };
 
@@ -189,15 +205,19 @@ const genderText = computed(() => {
 .profile-actions {
   padding: 12px 20px 20px;
   border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.logout-btn {
+.action-btn {
   width: 100%;
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin-left: 0 !important; /* 覆盖 el-button 的默认左间距 */
 }
 
 .group-tags {

@@ -191,20 +191,20 @@ public class UserProfileService {
      * @param dto 更改密码DTO
      */
     @Transactional(rollbackFor = Exception.class)
-    public void changePassword(ChangePasswordDto dto) throws AuthException {
+    public void changePassword(ChangePasswordDto dto) throws BizException, AuthException {
 
         if (dto.getOldPassword().equals(dto.getNewPassword())) {
-            throw new AuthException("新密码不能与旧密码相同");
+            throw new BizException("新密码不能与旧密码相同");
         }
 
         var userPo = sessionService.requireUser();
 
         if (StringUtils.isBlank(userPo.getPassword())) {
-            throw new AuthException("当前账号未设置密码，无法修改密码");
+            throw new BizException("当前账号未设置密码，无法修改密码");
         }
 
         if (!passwordEncoder.matches(dto.getOldPassword(), userPo.getPassword())) {
-            throw new AuthException("旧密码不正确");
+            throw new BizException("旧密码不正确");
         }
 
         userPo.setPassword(passwordEncoder.encode(dto.getNewPassword()));

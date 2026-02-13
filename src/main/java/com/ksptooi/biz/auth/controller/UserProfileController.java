@@ -4,11 +4,11 @@ import com.ksptooi.biz.auth.model.profile.dto.ChangePasswordDto;
 import com.ksptooi.biz.auth.model.profile.vo.GetCurrentUserProfileVo;
 import com.ksptooi.biz.auth.service.UserProfileService;
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +46,9 @@ public class UserProfileController {
 
     @Operation(summary = "用户更改密码")
     @PostMapping("/changePassword")
-    public Result<String> changePassword(@RequestBody @Valid ChangePasswordDto dto) throws AuthException {
+    public Result<String> changePassword(@RequestBody @Valid ChangePasswordDto dto) throws BizException, AuthException {
         profileService.changePassword(dto);
         return Result.success("密码修改成功");
     }
-
 
 }
