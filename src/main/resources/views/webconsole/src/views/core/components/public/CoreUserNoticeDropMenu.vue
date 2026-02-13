@@ -14,7 +14,7 @@
           <el-button v-if="listData.length > 0" link type="primary" @click="readAllNotice">全部已读</el-button>
         </div>
 
-        <div class="notice-scroll-container">
+        <el-scrollbar height="300px">
           <ul
             v-if="listData.length > 0 || loading"
             v-infinite-scroll="loadMore"
@@ -45,7 +45,7 @@
           <div v-if="listData.length === 0 && !loading" class="py-5">
             <el-empty description="暂无新通知" :image-size="60" />
           </div>
-        </div>
+        </el-scrollbar>
       </div>
     </template>
   </el-dropdown>
@@ -197,25 +197,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 自定义滚动条样式 */
-.notice-scroll-container {
-  height: 300px;
-  overflow-y: auto;
-}
-
-.notice-scroll-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.notice-scroll-container::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
-}
-
-.notice-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 /* Element Plus Avatar 颜色类 */
 .kind-notice {
   background-color: var(--el-color-primary-light-8);
