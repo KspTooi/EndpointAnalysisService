@@ -92,7 +92,9 @@ import DriveService from "@/views/drive/service/DriveService";
 import ElementFocusService from "@/service/ElmentFocusService";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
 import type Result from "@/commons/entity/Result";
-import router from "@/router/admin";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
 const fileUploadRef = ref<InstanceType<typeof DriveModalFileUpload> | null>(null);
@@ -281,7 +283,9 @@ const refreshDriveInfo = (result: Result<GetDriveInfoVo>) => {
  * 前往团队设置
  */
 const goToCompanySetup = () => {
-  router.push("/company-manager");
+  router.push({
+    name: "company-manager",
+  });
 };
 
 /**
