@@ -1,7 +1,6 @@
 package com.ksptooi.biz.core.service;
 
 
-import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
 import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
 import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdDetailsVo;
 import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
@@ -77,17 +74,25 @@ public class NoticeRcdService {
      */
     public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(GetUserNoticeRcdListDto dto) throws Exception {
 
-        //先分页当前用户查消息Rcd的Ids
-        var rcdPpos = repository.getNoticeRcdsByUserId(session().getUserId(), dto.pageRequest());
+        //分页查询当前用户消息列表（VO投影）
+        var voPage = repository.getNoticeRcdsByUserId(session().getUserId(), dto.pageRequest());
 
-        if (rcdPpos.isEmpty()) {
+        if (voPage.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        var needUpdate = false;
+        //从分页结果中提取RCD ID
+        var rcdIds = voPage.getContent().stream().map(GetUserNoticeRcdListVo::getId).toList();
+
+        if (rcdIds.isEmpty()) {
+            return PageResult.successWithEmpty();
+        }
 
         //把这些已经查询出来的RcdPo设为已读
-        for (var rcdPo : rcdPpos.getContent()) {
+        var rcdPos = repository.getNotifyRcdByIdsAndUserId(rcdIds, session().getUserId());
+        var needUpdate = false;
+
+        for (var rcdPo : rcdPos) {
             if (rcdPo.getReadTime() == null) {
                 needUpdate = true;
                 rcdPo.setReadTime(LocalDateTime.now());
@@ -95,25 +100,10 @@ public class NoticeRcdService {
         }
 
         if (needUpdate) {
-            repository.saveAll(rcdPpos.getContent());
+            repository.saveAll(rcdPos);
         }
 
-        var rcdIds = rcdPpos.getContent().stream().map(NoticeRcdPo::getNoticeId).collect(Collectors.toList());
-
-        if (rcdIds.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
-        //根据RcdId查询对应的消息记录
-        var noticeRcdPos = noticeRepository.findAllById(rcdIds);
-
-        if (noticeRcdPos.isEmpty()) {
-            return PageResult.successWithEmpty();
-        }
-
-        //消息记录Po转Vo
-        List<GetUserNoticeRcdListVo> vos = as(noticeRcdPos, GetUserNoticeRcdListVo.class);
-        return PageResult.success(vos, rcdPpos.getTotalElements());
+        return PageResult.success(voPage.getContent(), voPage.getTotalElements());
     }
 
     /**
