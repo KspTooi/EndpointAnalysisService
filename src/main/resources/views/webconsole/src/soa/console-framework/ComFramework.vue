@@ -80,7 +80,7 @@ import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
 import MenuApi, { type GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
+import ComFrameworkService from "@/soa/console-framework/service/ComFrameworkService.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
 import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
@@ -99,50 +99,9 @@ const menuTree = ref<GetUserMenuTreeVo[]>([]);
 
 
 
-const hotKeyActive = ref(true);
-const { activeOf } = useTabStore();
-
-// 菜单折叠状态
-const isMenuCollapse = ref(localStorage.getItem("isMenuCollapse") !== "false");
-
-const toggleMenu = () => {
-  isMenuCollapse.value = !isMenuCollapse.value;
-  localStorage.setItem("isMenuCollapse", isMenuCollapse.value.toString());
-};
-
-//快捷键服务打包
-GenricHotkeyService.useHotkeyFunction(
-  {
-    ctrl_1: () => {
-      activeOf(1);
-    },
-    ctrl_2: () => {
-      activeOf(2);
-    },
-    ctrl_3: () => {
-      activeOf(3);
-    },
-    ctrl_4: () => {
-      activeOf(4);
-    },
-    ctrl_5: () => {
-      activeOf(5);
-    },
-    ctrl_6: () => {
-      activeOf(6);
-    },
-    ctrl_7: () => {
-      activeOf(7);
-    },
-    ctrl_8: () => {
-      activeOf(8);
-    },
-    ctrl_9: () => {
-      activeOf(9);
-    },
-  },
-  hotKeyActive
-);
+const { initHotkeys } = ComFrameworkService.useComTabHotkey();
+const { isMenuCollapse, toggleMenu } = ComFrameworkService.useComFramework();
+initHotkeys();
 
 const loadMenuTree = async () => {
   try {
