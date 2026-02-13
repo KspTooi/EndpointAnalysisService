@@ -18,91 +18,59 @@
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
-            <el-form-item label="优先级">
-              <el-select v-model="listForm.priority" placeholder="请选择优先级" clearable style="width: 100%">
-                <el-option label="低" :value="0" />
-                <el-option label="中" :value="1" />
-                <el-option label="高" :value="2" />
-              </el-select>
+            <el-form-item label="消息内容">
+              <el-input v-model="listForm.content" placeholder="请输入消息内容" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
+              <el-button type="primary" @click="loadList()" :disabled="listLoading">查询</el-button>
+              <el-button @click="handleReset" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
-        <template v-if="uiState.isAdvancedSearch">
-          <el-row>
-            <el-col :span="5" :offset="1">
-              <el-form-item label="通知内容">
-                <el-input v-model="listForm.content" placeholder="请输入通知内容" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :span="5" :offset="1">
-              <el-form-item label="业务类型">
-                <el-input v-model="listForm.category" placeholder="请输入业务类型" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :span="5" :offset="1">
-              <el-form-item label="发送人姓名">
-                <el-input v-model="listForm.senderName" placeholder="请输入发送人姓名" clearable />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </template>
       </el-form>
     </template>
 
     <template #actions>
-      <el-button type="success" @click="openModal('add', null)">新增消息</el-button>
+      <el-button type="primary" @click="readAll">全部已读</el-button>
     </template>
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="title" label="标题" min-width="128" show-overflow-tooltip />
+        <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="种类" width="100">
           <template #default="scope">
-            <el-tag v-if="scope.row.kind === 0" type="info">公告</el-tag>
+            <el-tag v-if="scope.row.kind === 0" type="primary">公告</el-tag>
             <el-tag v-if="scope.row.kind === 1" type="warning">业务提醒</el-tag>
             <el-tag v-if="scope.row.kind === 2" type="success">私信</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="75">
+        <el-table-column prop="priority" label="优先级" width="80">
           <template #default="scope">
             <el-tag v-if="scope.row.priority === 0" type="info">低</el-tag>
             <el-tag v-if="scope.row.priority === 1" type="warning">中</el-tag>
             <el-tag v-if="scope.row.priority === 2" type="danger">高</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="category" label="业务类型" width="90" show-overflow-tooltip>
+        <el-table-column prop="category" label="业务类型" width="120" show-overflow-tooltip>
           <template #default="scope">
             <span v-if="scope.row.category">{{ scope.row.category }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="senderName" label="发送人" width="100" show-overflow-tooltip>
+        <el-table-column prop="senderName" label="发送人" width="120" show-overflow-tooltip>
           <template #default="scope">
             <span>{{ scope.row.senderName || "系统" }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="targetKind" label="接收对象类型" width="120" align="center">
-          <template #default="scope">
-            <span v-if="scope.row.targetKind === 0"> 全员 </span>
-            <span v-if="scope.row.targetKind === 1"> 指定部门 </span>
-            <span v-if="scope.row.targetKind === 2"> 指定用户 </span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="targetCount" label="接收人数" width="90" />
-        <el-table-column prop="createTime" label="创建时间" width="200" />
+        <el-table-column prop="createTime" label="接收时间" width="180" />
         <el-table-column label="操作" fixed="right" width="150" align="center">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
-              编辑
+            <el-button link type="primary" size="small" @click="openModal(scope.row.id)" :icon="ViewIcon">
+              查看
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="remove(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -132,95 +100,51 @@
     </template>
 
     <template #modal>
-      <!-- 部门选择器 -->
-      <CoreOrgDeptSelectModal
-        v-model="deptSelectVisible"
-        :default-selected="modalForm.targetIds"
-          
-        title="选择接收部门"
-        multiple
-        @confirm="onDeptSelect"
-      />
-
-      <!-- 用户选择器 -->
-      <CoreUserSelectModal
-        v-model="userSelectVisible"
-        :default-selected="modalForm.targetIds"
-        title="选择接收用户"
-        multiple
-        @confirm="onUserSelect"
-      />
-
-      <!-- 新增/编辑模态框 -->
-      <el-dialog
-        v-model="modalVisible"
-        :title="modalMode === 'edit' ? '编辑消息' : '新增消息'"
-        width="600px"
-        :close-on-click-modal="false"
-        @close="
-          resetModal();
-          loadList();
-        "
-      >
-        <el-form
-          v-if="modalVisible"
-          ref="modalFormRef"
-          :model="modalForm"
-          :rules="modalRules"
-          label-width="110px"
-          :validate-on-rule-change="false"
-        >
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="modalForm.title" placeholder="请输入标题" maxlength="32" show-word-limit clearable />
-          </el-form-item>
-          <el-form-item label="种类" prop="kind">
-            <el-select v-model="modalForm.kind" placeholder="请选择种类" style="width: 100%">
-              <el-option label="公告" :value="0" />
-              <el-option label="业务提醒" :value="1" />
-              <el-option label="私信" :value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="通知内容" prop="content">
-            <el-input v-model="modalForm.content" type="textarea" :rows="4" placeholder="请输入通知内容" clearable />
-          </el-form-item>
-          <el-form-item label="优先级" prop="priority">
-            <el-select v-model="modalForm.priority" placeholder="请选择优先级" style="width: 100%">
-              <el-option label="低" :value="0" />
-              <el-option label="中" :value="1" />
-              <el-option label="高" :value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="业务类型" prop="category">
-            <el-input v-model="modalForm.category" placeholder="请输入业务类型" maxlength="32" show-word-limit clearable />
-          </el-form-item>
-          <el-form-item label="接收对象类型" prop="targetKind">
-            <el-radio-group v-model="modalForm.targetKind" style="width: 100%" :disabled="modalMode === 'edit'">
-              <el-radio label="全员" :value="0" />
-              <el-radio label="指定部门" :value="1" />
-              <el-radio label="指定用户" :value="2" />
-            </el-radio-group>
-          </el-form-item>
-
-          <el-form-item v-if="modalForm.targetKind === 1 && modalMode === 'add'" label="选择接收部门" prop="targetIds">
-            <div class="flex items-center gap-4 text-cyan-600 ml-4">
-              <el-button type="primary" @click="deptSelectVisible = true" size="small">选择接收部门</el-button>
-              <span>已选择 {{ modalForm.targetIds.length }} 个部门</span>
+      <!-- 消息详情模态框 -->
+      <el-dialog v-model="modalVisible" title="消息详情" width="600px" @close="closeModal" :close-on-click-modal="false">
+        <div v-loading="modalLoading" class="min-h-[200px] select-text">
+          <template v-if="detailsData">
+            <!-- 标题和标签 -->
+            <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-200">
+              <h3 class="flex-1 m-0 text-lg font-bold text-gray-900">{{ detailsData.title }}</h3>
+              <el-tag v-if="detailsData.kind === 0" type="primary">公告</el-tag>
+              <el-tag v-if="detailsData.kind === 1" type="warning">业务提醒</el-tag>
+              <el-tag v-if="detailsData.kind === 2" type="success">私信</el-tag>
             </div>
-          </el-form-item>
-          <el-form-item v-if="modalForm.targetKind === 2 && modalMode === 'add'" label="选择接收用户" prop="targetIds">
-            <div class="flex items-center gap-4 text-cyan-600 ml-4">
-              <el-button type="primary" @click="userSelectVisible = true" size="small">选择接收用户</el-button>
-              <span>已选择 {{ modalForm.targetIds.length }} 位用户</span>
+
+            <!-- 元信息 -->
+            <div class="flex flex-col gap-2 mb-5">
+              <div class="flex text-sm">
+                <span class="text-gray-500 min-w-[80px]">发送人：</span>
+                <span class="text-gray-900">{{ detailsData.senderName || "系统" }}</span>
+              </div>
+              <div class="flex text-sm">
+                <span class="text-gray-500 min-w-[80px]">发送时间：</span>
+                <span class="text-gray-900">{{ detailsData.createTime }}</span>
+              </div>
+              <div v-if="detailsData.category" class="flex text-sm">
+                <span class="text-gray-500 min-w-[80px]">分类：</span>
+                <span class="text-gray-900">{{ detailsData.category }}</span>
+              </div>
+              <div class="flex text-sm">
+                <span class="text-gray-500 min-w-[80px]">优先级：</span>
+                <el-tag v-if="detailsData.priority === 0" type="info" size="small">低</el-tag>
+                <el-tag v-if="detailsData.priority === 1" type="warning" size="small">中</el-tag>
+                <el-tag v-if="detailsData.priority === 2" type="danger" size="small">高</el-tag>
+              </div>
             </div>
-          </el-form-item>
-        </el-form>
+
+            <!-- 通知内容 -->
+            <div>
+              <div class="text-sm font-bold text-gray-900 mb-3">消息内容：</div>
+              <div class="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap break-words" v-html="detailsData.content"></div>
+            </div>
+          </template>
+        </div>
+
         <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="modalVisible = false">取消</el-button>
-            <el-button type="primary" @click="submitModal" :loading="modalLoading">
-              {{ modalMode === "add" ? "创建" : "保存" }}
-            </el-button>
-          </div>
+          <el-button @click="closeModal">关闭</el-button>
+          <el-button v-if="detailsData?.forward" type="primary" @click="handleForward"> 前往查看 </el-button>
         </template>
       </el-dialog>
     </template>
@@ -228,49 +152,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, reactive } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
-import type { FormInstance } from "element-plus";
-import NoticeService from "@/views/core/service/NoticeService.ts";
-import ExpandButton from "@/components/common/ExpandButton.vue";
-import CoreUserSelectModal from "@/views/core/components/public/CoreUserSelectModal.vue";
+import { markRaw } from "vue";
+import { View, Delete } from "@element-plus/icons-vue";
+import NoticeRcdService from "@/views/core/service/NoticeRcdService.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
-import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
-
-// 部门选择器引用
-const deptSelectVisible = ref(false);
-
-// 用户选择器引用
-const userSelectVisible = ref(false);
+import { ElMessage } from "element-plus";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
-const EditIcon = markRaw(Edit);
+const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 
-// UI状态
-const uiState = reactive({
-  isAdvancedSearch: false,
-});
-
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = NoticeService.useNoticeList();
-
-// 模态框表单引用
-const modalFormRef = ref<FormInstance>();
+const { listForm, listData, listTotal, listLoading, loadList } = NoticeRcdService.useNoticeRcdList();
 
 // 模态框打包
-const {
-  modalVisible,
-  modalLoading,
-  modalMode,
-  modalForm,
-  modalRules,
-  openModal,
-  resetModal,
-  submitModal,
-  onDeptSelect,
-  onUserSelect,
-} = NoticeService.useNoticeModal(modalFormRef, loadList);
+const { modalVisible, modalLoading, detailsData, openModal, closeModal } = NoticeRcdService.useNoticeRcdModal();
+
+// CRUD打包
+const { remove, readAll } = NoticeRcdService.useNoticeRcdCrud({
+  onRemoved: () => {
+    // 删除后重新加载当前页
+    loadList();
+  },
+  onReadAll: () => {
+    // 全部已读后重新加载列表
+    loadList();
+  },
+});
+
+/**
+ * 重置查询表单
+ */
+const handleReset = () => {
+  listForm.value.title = undefined;
+  listForm.value.kind = undefined;
+  listForm.value.content = undefined;
+  loadList();
+};
+
+/**
+ * 跳转到关联页面
+ */
+const handleForward = () => {
+  if (!detailsData.value?.forward) {
+    return;
+  }
+  // router.push(detailsData.value.forward);
+  closeModal();
+  ElMessage.info("功能开发中");
+};
 </script>
 
 <style scoped></style>

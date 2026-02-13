@@ -113,6 +113,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/core/RegistryManager.vue"),
         meta: { breadcrumb: "注册表管理" },
       }),
+      RouteEntryPo.build({
+        biz: "core",
+        path: "notice-rcd",
+        name: "notice-rcd",
+        component: () => import("@/views/core/NoticeRcdManager.vue"),
+        meta: { breadcrumb: "消息中心" },
+      }),
     ];
   }
 }
