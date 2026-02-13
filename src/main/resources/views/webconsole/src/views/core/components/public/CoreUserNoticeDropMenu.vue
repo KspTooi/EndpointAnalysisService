@@ -105,8 +105,10 @@ import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-v
 import UserNoticeService from "../../service/NoticeRcdService.ts";
 import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
+import { useTabStore } from "@/store/TabHolder.ts";
 
 const router = useRouter();
+const tabStore = useTabStore();
 
 // 使用 Service 中的逻辑
 const { count, processedCount, loadCount } = UserNoticeService.useNoticeRcdCount();
@@ -190,7 +192,11 @@ const onForward = () => {
  * 查看全部消息
  */
 const onViewAll = () => {
-  router.push("/core/notice-rcd");
+  tabStore.addTab({
+    id: "notice-rcd",
+    title: "个人消息中心",
+    path: "/core/notice-rcd",
+  });
 };
 
 onMounted(() => {
