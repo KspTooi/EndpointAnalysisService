@@ -1,6 +1,6 @@
 <template>
-  <el-dropdown trigger="click" @visible-change="onVisibleChange">
-    <div class="flex items-center justify-center px-3 h-full cursor-pointer transition-colors hover:bg-black/5">
+  <el-dropdown trigger="click" @visible-change="onVisibleChange" class="notice-dropdown">
+    <div class="flex items-center justify-center px-3 h-full w-full cursor-pointer transition-colors hover:bg-black/5">
       <el-badge :value="processedCount" :hidden="count === 0" :max="99">
         <el-icon :size="20" class="text-gray-600">
           <Bell />
@@ -21,10 +21,10 @@
             :infinite-scroll-disabled="disabled"
             class="list-none p-0 m-0"
           >
-            <li 
-              v-for="item in listData" 
-              :key="item.id" 
-              class="group flex px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 hover:bg-gray-50" 
+            <li
+              v-for="item in listData"
+              :key="item.id"
+              class="group flex px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 hover:bg-gray-50"
               @click="onRead(item)"
             >
               <div class="mr-3 flex items-center">
@@ -205,6 +205,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 让 dropdown 占满容器高度 */
+.notice-dropdown {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
 /* Element Plus Avatar 颜色类 */
 .kind-notice {
   background-color: var(--el-color-primary-light-8);

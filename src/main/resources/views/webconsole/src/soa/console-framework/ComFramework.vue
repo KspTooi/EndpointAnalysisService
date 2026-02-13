@@ -14,15 +14,9 @@
         <!-- 多标签页区域 -->
         <com-multi-tab>
           <template #controls>
-            <div class="flex items-center gap-4 mr-[15px]">
-              <!-- 系统导航按钮区域 -->
-              <div class="flex gap-2"></div>
-
-              <!-- 用户自定义操作区域 -->
-              <slot name="header-actions">
-                <core-user-notice-drop-menu />
-              </slot>
-
+            <div class="flex h-full w-full items-center mr-[15px]">
+              <!-- 用户通知下拉菜单 -->
+              <core-user-notice-drop-menu />
               <!-- 用户信息和下拉菜单-->
               <com-user-profile />
             </div>
@@ -66,15 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ElBreadcrumb,
-  ElBreadcrumbItem,
-  ElContainer,
-  ElHeader,
-  ElMain,
-  ElMessage,
-  ElIcon,
-} from "element-plus";
+import { ElBreadcrumb, ElBreadcrumbItem, ElContainer, ElHeader, ElMain, ElMessage, ElIcon } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
@@ -93,15 +79,11 @@ const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 
-
-
 ComFrameworkService.useComTabHotkey();
 const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = ComFrameworkService.useComFramework();
-
 </script>
 
 <style scoped>
-
 .admin-header {
   background-color: #fff;
   border-bottom: 1px solid var(--el-border-color-light);
@@ -112,7 +94,6 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
   height: 35px;
   flex-shrink: 0;
 }
-
 
 .menu-toggle {
   font-size: 18px;
@@ -129,7 +110,6 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = 
 .menu-toggle:hover {
   color: #764ba2;
 }
-
 
 .admin-breadcrumb {
   font-size: 13px;
