@@ -53,6 +53,20 @@ public interface ResourceRepository extends JpaRepository<ResourcePo, Long> {
     @Query("""
             SELECT t FROM ResourcePo t
             LEFT JOIN FETCH t.parent
+            WHERE t.kind = 0
+            ORDER BY t.seq ASC,t.updateTime DESC
+            """)
+    List<ResourcePo> getUserMenuTree();
+
+    /**
+     * 获取菜单与按钮树
+     *
+     * @param po 获取菜单与按钮树参数
+     * @return 菜单与按钮树
+     */
+    @Query("""
+            SELECT t FROM ResourcePo t
+            LEFT JOIN FETCH t.parent
             WHERE (:#{#po.menuKind} IS NULL OR t.menuKind = :#{#po.menuKind})
             AND t.kind = 0
             AND (

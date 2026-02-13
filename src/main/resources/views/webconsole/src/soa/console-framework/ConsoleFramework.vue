@@ -109,7 +109,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
-import MenuApi, { type GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
+import MenuApi, { type GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import AuthApi, { type GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
 import { Result } from "@/commons/entity/Result.ts";
@@ -126,7 +126,7 @@ const route = useRoute();
 const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
-const menuTree = ref<GetMenuTreeVo[]>([]);
+const menuTree = ref<GetUserMenuTreeVo[]>([]);
 const userProfile = ref<GetCurrentUserProfile | null>(null);
 
 // 定义组件props
@@ -239,7 +239,7 @@ const handleMenuItemClick = (menuId: string) => {
 // 无移动端兼容逻辑
 
 // 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: GetMenuTreeVo[], path: string): any => {
+const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
   for (const item of items) {
     if (item.menuPath === path) {
       return item.id;

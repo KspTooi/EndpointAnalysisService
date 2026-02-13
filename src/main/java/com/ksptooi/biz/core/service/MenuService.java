@@ -6,19 +6,23 @@ import com.ksptooi.biz.core.model.menu.dto.EditMenuDto;
 import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuDetailsVo;
 import com.ksptooi.biz.core.model.menu.vo.GetMenuTreeVo;
+import com.ksptooi.biz.core.model.menu.vo.GetUserMenuTreeVo;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -30,6 +34,64 @@ public class MenuService {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    /**
+     * 获取用户菜单与按钮树(该函数带有缓存)
+     *
+     * @param uid 用户ID 用于缓存键
+     * @return 用户菜单与按钮树
+     * @throws BizException 业务异常
+     */
+    //@Cacheable(cacheNames = "menuTree", key = "'userMenuTree:' + #uid")
+    public List<GetUserMenuTreeVo> getUserMenuTree(Long uid) throws BizException, AuthException {
+
+        var allMenuPos = resourceRepository.getUserMenuTree();
+        var flatVos = new ArrayList<GetUserMenuTreeVo>();
+
+        var authorities = session().getAuthorities();
+
+        //将list转换为平面vo
+        for (ResourcePo po : allMenuPos) {
+
+            //在此过滤当前用户无权限访问的菜单
+            if (!po.hasPermission((List<GrantedAuthority>) authorities)) {
+                continue;
+            }
+
+            var vo = as(po, GetUserMenuTreeVo.class);
+            vo.setChildren(new ArrayList<>());
+            vo.setParentId(null);
+            if (po.getParent() != null) {
+                vo.setParentId(po.getParent().getId());
+            }
+            flatVos.add(vo);
+        }
+
+        //将平面vo转换为tree
+        List<GetUserMenuTreeVo> treeVos = new ArrayList<>();
+        Map<Long, GetUserMenuTreeVo> map = new HashMap<>();
+
+        for (GetUserMenuTreeVo vo : flatVos) {
+            map.put(vo.getId(), vo);
+        }
+
+        for (GetUserMenuTreeVo vo : flatVos) {
+            if (vo.getParentId() == null) {
+                treeVos.add(vo);
+                continue;
+            }
+
+            GetUserMenuTreeVo parent = map.get(vo.getParentId());
+            if (parent != null) {
+                parent.getChildren().add(vo);
+                continue;
+            }
+            treeVos.add(vo);
+        }
+
+        return treeVos;
+    }
+
 
     /**
      * 获取菜单与按钮树

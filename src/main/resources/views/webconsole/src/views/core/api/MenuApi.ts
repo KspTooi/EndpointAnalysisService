@@ -72,12 +72,26 @@ export interface GetMenuTreeVo {
   children: GetMenuTreeVo[]; // 子菜单
 }
 
+export interface GetUserMenuTreeVo {
+  id?: string | null; // 菜单ID
+  parentId?: string | null; // 父级ID null:根节点
+  name?: string | null; // 菜单名称
+  menuIcon?: string | null; // 菜单图标
+  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  menuPath?: string | null; // 菜单路径
+  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
+  menuBtnId?: string | null; // 按钮ID
+  permission?: string | null; // 所需权限
+  seq?: number | null; // 排序
+  children: GetUserMenuTreeVo[]; // 子菜单
+}
+
 export default {
   /**
    * 获取用户菜单树
    */
-  getUserMenuTree: async (): Promise<Result<GetMenuTreeVo[]>> => {
-    return await Http.postEntity<Result<GetMenuTreeVo[]>>("/menu/getUserMenuTree", {});
+  getUserMenuTree: async (): Promise<Result<GetUserMenuTreeVo[]>> => {
+    return await Http.postEntity<Result<GetUserMenuTreeVo[]>>("/menu/getUserMenuTree", {});
   },
 
   /**

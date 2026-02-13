@@ -58,7 +58,7 @@ import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElAside } from "element-plus";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { Component } from "vue";
-import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
+import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
@@ -69,7 +69,7 @@ const tabStore = useTabStore();
 
 // 定义组件props
 const props = defineProps<{
-  items: GetMenuTreeVo[];
+  items: GetUserMenuTreeVo[];
   activeItemId?: string;
 }>();
 
@@ -85,7 +85,7 @@ const filteredItems = computed(() => {
 });
 
 // 过滤子菜单中的按钮
-const filterChildren = (children: GetMenuTreeVo[] | undefined) => {
+const filterChildren = (children: GetUserMenuTreeVo[] | undefined) => {
   if (!children) return [];
   return children.filter((child) => child.menuKind !== 2);
 };
@@ -108,7 +108,7 @@ const getIconComponent = (iconName: string | Component | undefined) => {
 };
 
 // 处理菜单项点击
-const handleMenuItemClick = (item: GetMenuTreeVo) => {
+const handleMenuItemClick = (item: GetUserMenuTreeVo) => {
   if (item.menuKind !== 1 || !item.menuPath) return;
 
   tabStore.addTab({

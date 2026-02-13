@@ -1,12 +1,17 @@
 package com.ksptooi.biz.core.model.resource;
 
+import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ksptooi.biz.auth.service.SessionService.session;
 
@@ -78,6 +83,7 @@ public class ResourcePo {
     @Column(name = "updater_id", comment = "更新人ID")
     private Long updaterId;
 
+
     @PrePersist
     private void onCreate() throws AuthException {
 
@@ -108,4 +114,65 @@ public class ResourcePo {
             this.updaterId = session().getUserId();
         }
     }
+
+
+    /**
+     * 检查当前资源是否拥有指定权限集合中的任意一个权限
+     *
+     * @param permissions 权限集合
+     * @return 如果资源拥有任意一个权限返回true，否则返回false
+     */
+    public boolean hasPermission(List<GrantedAuthority> permissions) {
+
+        if (permissions == null || permissions.isEmpty()) {
+            return false;
+        }
+
+        for (var permission : permissions) {
+            if (this.hasPermission(permission.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * 检查当前资源是否拥有指定权限
+     * <p>
+     * * 为通配符权限，表示所有用户均可访问
+     * 资源中的permission字段是多个权限以;分隔，所以需要检查多个权限是否都拥有
+     *
+     * @param permission 权限码，如：system:user:view
+     * @return 如果资源拥有该权限返回true，否则返回false
+     */
+    public boolean hasPermission(String permission) {
+
+        //如果权限为空或*，则表示所有用户均可访问
+        if (StringUtils.isBlank(this.permission) || this.permission.equals("*")) {
+            return true;
+        }
+
+        //资源所需的权限列表
+        var requireCodes = new ArrayList<String>();
+
+        //解析资源权限
+        if (this.permission.contains(";")) {
+            requireCodes.addAll(Str.safeSplit(this.permission, ";"));
+        }
+        if (!this.permission.contains(";")) {
+            requireCodes.add(this.permission);
+        }
+
+        //检查给定的权限是否在资源所需的权限列表中
+        for (var requireCode : requireCodes) {
+            if (requireCode.equals(permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }
