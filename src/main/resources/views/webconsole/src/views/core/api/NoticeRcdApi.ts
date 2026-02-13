@@ -53,10 +53,10 @@ export default {
   },
 
   /**
-   * 阅读用户通知记录
+   * 阅读全部用户通知记录
    */
-  readUserNoticeRcd: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/noticeRcd/readNoticeRcd", dto);
+  readAllUserNoticeRcd: async (): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/noticeRcd/readAllNoticeRcd", {});
     if (result.code === 0) {
       return result.message;
     }

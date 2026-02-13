@@ -11,7 +11,7 @@
       <div class="notice-dropdown">
         <div class="notice-header">
           <span>通知中心 (未读数:{{ count }})</span>
-          <el-button v-if="listData.length > 0" link type="primary" @click="handleReadAll">全部已读</el-button>
+          <el-button v-if="listData.length > 0" link type="primary" @click="readAllNotice">全部已读</el-button>
         </div>
 
         <div class="notice-list-container">
@@ -67,6 +67,7 @@ const {
   loadMore,
   resetList,
   removeNotice,
+  readAllNotice,
 } = UserNoticeService.useUserNoticeDropList(loadCount);
 
 /**
@@ -135,20 +136,6 @@ const handleDelete = (item: GetUserNoticeRcdListVo) => {
   }).then(() => {
     removeNotice(item.id);
   });
-};
-
-/**
- * 全部已读
- */
-const handleReadAll = () => {
-  ElMessage.info("功能开发中");
-};
-
-/**
- * 查看更多
- */
-const handleViewMore = () => {
-  ElMessage.info("功能开发中");
 };
 
 onMounted(() => {
