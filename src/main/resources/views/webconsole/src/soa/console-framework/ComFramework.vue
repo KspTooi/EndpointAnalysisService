@@ -24,31 +24,7 @@
               </slot>
 
               <!-- 用户信息和下拉菜单-->
-              <el-popover
-                placement="bottom-end"
-                :width="340"
-                trigger="click"
-                popper-style="padding: 0; border-radius: 0; overflow: hidden; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); border: 1px solid #ebeef5;"
-              >
-                <template #reference>
-                  <div class="user-info">
-                    <el-avatar
-                      :size="24"
-                      :src="
-                        userProfile?.avatarAttachId
-                          ? `/getAttach?id=${userProfile.avatarAttachId}`
-                          : '/api/profile/getUserAvatar'
-                      "
-                      style="margin-right: 8px"
-                      shape="square"
-                    />
-                    <div class="username">
-                      {{ userProfile?.nickname || userProfile?.username || "Operator" }}
-                    </div>
-                  </div>
-                </template>
-                <com-user-profile :profile="userProfile" />
-              </el-popover>
+              <com-user-profile />
             </div>
           </template>
         </com-multi-tab>
@@ -97,16 +73,13 @@ import {
   ElHeader,
   ElMain,
   ElMessage,
-  ElAvatar,
-  ElPopover,
   ElIcon,
 } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import MenuApi, { type GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import AuthApi, { type GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
@@ -123,7 +96,6 @@ const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 const menuTree = ref<GetUserMenuTreeVo[]>([]);
-const userProfile = ref<GetCurrentUserProfile | null>(null);
 
 
 
@@ -189,17 +161,6 @@ const loadMenuTree = async () => {
 
 loadMenuTree();
 
-const loadUserProfile = async () => {
-  try {
-    userProfile.value = await AuthApi.getCurrentUserProfile();
-  } catch (error: any) {
-    console.error("加载用户信息失败:", error);
-  }
-};
-
-onMounted(() => {
-  loadUserProfile();
-});
 
 // 根据路由路径计算当前活动菜单ID
 const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
@@ -364,25 +325,6 @@ watch(
 .nav-buttons {
   display: flex;
   gap: 8px;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 0;
-  transition: background-color 0.2s;
-}
-
-.user-info:hover {
-  background-color: #f1f3f4;
-}
-
-.username {
-  margin-left: 8px;
-  font-size: 14px;
-  color: var(--el-text-color-primary);
 }
 
 .admin-breadcrumb {

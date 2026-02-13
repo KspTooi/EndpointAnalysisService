@@ -1,86 +1,112 @@
 <template>
-  <div class="profile-drop-menu">
-    <div class="modal-gradient-bar"></div>
-    <div class="profile-header">
-      <el-avatar :size="64" :src="avatarUrl" shape="square" />
-      <div class="header-info">
-        <div class="nickname">{{ profile?.nickname || "未设置昵称" }}</div>
-        <div class="username">@{{ profile?.username }}</div>
-      </div>
-    </div>
-
-    <div class="profile-details">
-      <div class="info-item">
-        <el-icon class="item-icon"><Message /></el-icon>
-        <span class="label">电子邮箱:</span>
-        <span class="value">{{ profile?.email || "未绑定" }}</span>
-      </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><Phone /></el-icon>
-        <span class="label">手机号码:</span>
-        <span class="value">{{ profile?.phone || "未绑定" }}</span>
-      </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><User /></el-icon>
-        <span class="label">用户性别:</span>
-        <span class="value">{{ genderText }}</span>
-      </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><Operation /></el-icon>
-        <span class="label">所属角色:</span>
-        <div class="group-tags">
-          <el-tag v-for="group in profile?.groups" :key="group" size="small" effect="plain" type="info">
-            {{ group }}
-          </el-tag>
-          <span v-if="!profile?.groups?.length" class="value">无</span>
+  <el-popover
+    placement="bottom-end"
+    :width="340"
+    trigger="click"
+    popper-style="padding: 0; border-radius: 0; overflow: hidden; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); border: 1px solid #ebeef5;"
+  >
+    <template #reference>
+      <div class="user-info">
+        <el-avatar
+          :size="24"
+          :src="avatarUrl"
+          style="margin-right: 8px"
+          shape="square"
+        />
+        <div class="username-display">
+          {{ profile?.nickname || profile?.username || "Operator" }}
         </div>
       </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><Key /></el-icon>
-        <span class="label">权限节点:</span>
-        <span class="value count-badge">{{ profile?.permissions?.length || 0 }} 个节点</span>
-      </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><Calendar /></el-icon>
-        <span class="label">注册时间:</span>
-        <span class="value">{{ profile?.createTime }}</span>
-      </div>
-      <div class="info-item">
-        <el-icon class="item-icon"><Clock /></el-icon>
-        <span class="label">最后登录:</span>
-        <span class="value">{{ profile?.lastLoginTime }}</span>
-      </div>
-    </div>
+    </template>
 
-    <div class="profile-actions">
-      <el-button class="action-btn" type="primary" plain @click="handleChangePassword">
-        <el-icon><Key /></el-icon>
-        修改密码
-      </el-button>
-      <el-button class="action-btn" type="danger" plain @click="handleLogout">
-        <el-icon><SwitchButton /></el-icon>
-        退出登录
-      </el-button>
-    </div>
+    <div class="profile-drop-menu">
+      <div class="modal-gradient-bar"></div>
+      <div class="profile-header">
+        <el-avatar :size="64" :src="avatarUrl" shape="square" />
+        <div class="header-info">
+          <div class="nickname">{{ profile?.nickname || "未设置昵称" }}</div>
+          <div class="username">@{{ profile?.username }}</div>
+        </div>
+      </div>
 
-    <!-- 修改密码弹窗 -->
-    <com-password-reset ref="changePasswordModalRef" />
-  </div>
+      <div class="profile-details">
+        <div class="info-item">
+          <el-icon class="item-icon"><Message /></el-icon>
+          <span class="label">电子邮箱:</span>
+          <span class="value">{{ profile?.email || "未绑定" }}</span>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><Phone /></el-icon>
+          <span class="label">手机号码:</span>
+          <span class="value">{{ profile?.phone || "未绑定" }}</span>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><User /></el-icon>
+          <span class="label">用户性别:</span>
+          <span class="value">{{ genderText }}</span>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><Operation /></el-icon>
+          <span class="label">所属角色:</span>
+          <div class="group-tags">
+            <el-tag v-for="group in profile?.groups" :key="group" size="small" effect="plain" type="info">
+              {{ group }}
+            </el-tag>
+            <span v-if="!profile?.groups?.length" class="value">无</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><Key /></el-icon>
+          <span class="label">权限节点:</span>
+          <span class="value count-badge">{{ profile?.permissions?.length || 0 }} 个节点</span>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><Calendar /></el-icon>
+          <span class="label">注册时间:</span>
+          <span class="value">{{ profile?.createTime }}</span>
+        </div>
+        <div class="info-item">
+          <el-icon class="item-icon"><Clock /></el-icon>
+          <span class="label">最后登录:</span>
+          <span class="value">{{ profile?.lastLoginTime }}</span>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <el-button class="action-btn" type="primary" plain @click="handleChangePassword">
+          <el-icon><Key /></el-icon>
+          修改密码
+        </el-button>
+        <el-button class="action-btn" type="danger" plain @click="handleLogout">
+          <el-icon><SwitchButton /></el-icon>
+          退出登录
+        </el-button>
+      </div>
+
+      <!-- 修改密码弹窗 -->
+      <com-password-reset ref="changePasswordModalRef" />
+    </div>
+  </el-popover>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox } from "element-plus";
+import { computed, onMounted, ref } from "vue";
+import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox, ElPopover } from "element-plus";
 import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 import AuthApi from "@/soa/console-framework/api/AuthApi";
 import ComPasswordReset from "./ComPasswordReset.vue";
 
-const props = defineProps<{
-  profile: GetCurrentUserProfile | null;
-}>();
-
+const profile = ref<GetCurrentUserProfile | null>(null);
 const changePasswordModalRef = ref();
+
+const loadUserProfile = async () => {
+  try {
+    profile.value = await AuthApi.getCurrentUserProfile();
+  } catch (error: any) {
+    console.error("加载用户信息失败:", error);
+  }
+};
 
 const handleLogout = async () => {
   try {
@@ -107,20 +133,45 @@ const handleChangePassword = () => {
 };
 
 const avatarUrl = computed(() => {
-  if (props.profile?.avatarAttachId) {
-    return `/getAttach?id=${props.profile.avatarAttachId}`;
+  if (profile.value?.avatarAttachId) {
+    return `/getAttach?id=${profile.value.avatarAttachId}`;
   }
   return "/api/profile/getUserAvatar";
 });
 
 const genderText = computed(() => {
-  if (props.profile?.gender === 0) return "男";
-  if (props.profile?.gender === 1) return "女";
+  if (profile.value?.gender === 0) return "男";
+  if (profile.value?.gender === 1) return "女";
   return "保密";
+});
+
+onMounted(() => {
+  loadUserProfile();
 });
 </script>
 
 <style scoped>
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 0;
+  transition: background-color 0.2s;
+  height: 100%;
+}
+
+.user-info:hover {
+  background-color: #f1f3f4;
+}
+
+.username-display {
+  margin-left: 8px;
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+}
+
 .profile-drop-menu {
   width: 320px;
   background-color: #fff;
