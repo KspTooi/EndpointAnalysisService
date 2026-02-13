@@ -64,7 +64,7 @@
     </div>
 
     <!-- 修改密码弹窗 -->
-    <user-change-password-modal ref="changePasswordModalRef" />
+    <com-password-reset ref="changePasswordModalRef" />
   </div>
 </template>
 
@@ -74,7 +74,7 @@ import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox } from "elem
 import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 import AuthApi from "@/soa/console-framework/api/AuthApi";
-import UserChangePasswordModal from "./UserChangePasswordModal.vue";
+import ComPasswordReset from "./ComPasswordReset.vue";
 
 const props = defineProps<{
   profile: GetCurrentUserProfile | null;
