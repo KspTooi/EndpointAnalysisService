@@ -19,7 +19,9 @@
               <div class="nav-buttons"></div>
 
               <!-- 用户自定义操作区域 -->
-              <slot name="header-actions"></slot>
+              <slot name="header-actions">
+                <core-user-notice-drop-menu />
+              </slot>
 
               <!-- 用户信息和下拉菜单-->
               <el-popover
@@ -118,6 +120,7 @@ import ProfileDropMenu from "@/soa/console-framework/components/ProfileDropMenu.
 import SidePanelMenuShort from "@/soa/console-framework/components/SidePanelMenuShort.vue";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
+import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
 
 const router = useRouter();
 const route = useRoute();
