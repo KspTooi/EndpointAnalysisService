@@ -28,4 +28,19 @@ public interface NoticeRepository extends JpaRepository<NoticePo, Long> {
             ORDER BY u.createTime DESC
             """)
     Page<NoticePo> getNoticeList(@Param("po") NoticePo po, Pageable pageable);
+
+
+    /**
+     * 根据ID列表查询消息记录
+     * @param ids 消息ID列表
+     * @return 消息记录列表
+     */
+    @Query("""
+            SELECT u FROM NoticePo u
+            LEFT JOIN NoticeRcdPo r ON u.id = r.noticeId
+            WHERE
+            r.id = :rcdId
+            AND r.userId = :userId
+            """)
+    NoticePo getNoticeByRcdIdAndUserId(@Param("rcdId") Long rcdId, @Param("userId") Long userId);
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetNoticeRcdDetailsVo {
+public class GetUserNoticeRcdListVo {
 
     @Schema(description = "RCD主键ID")
     private Long id;
@@ -18,9 +18,6 @@ public class GetNoticeRcdDetailsVo {
 
     @Schema(description = "种类: 0公告, 1业务提醒, 2私信")
     private Integer kind;
-
-    @Schema(description = "通知内容")
-    private String content;
 
     @Schema(description = "优先级: 0:低 1:中 2:高")
     private Integer priority;
@@ -36,9 +33,8 @@ public class GetNoticeRcdDetailsVo {
 
     @Schema(description = "动态参数 (JSON格式)")
     private String params;
-
-    @Schema(description = "创建时间")
+    
+    @Schema(description = "下发时间")
     private LocalDateTime createTime;
-
 }
 

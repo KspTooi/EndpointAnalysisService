@@ -1,6 +1,9 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,16 +14,48 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
 
+
+    
+
+
+    /**
+     * 获取当前用户未读通知数量
+     * @param userId
+     * @return
+     */
+    @Query("""
+            SELECT COUNT(u) FROM NoticeRcdPo u
+            WHERE
+            u.userId = :userId
+            AND u.readTime IS NULL
+            """)
+    Integer getUserNoticeCount(@Param("userId") Long userId);
+
+    /**
+     * 根据ID列表和用户ID查询通知记录
+     * @param ids 消息接收记录ID列表
+     * @param userId 用户ID
+     * @return 消息接收记录列表
+     */
     @Query("""
             SELECT u FROM NoticeRcdPo u
             WHERE
-            (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
-            AND (:#{#po.noticeId} IS NULL OR u.noticeId  = :#{#po.noticeId} )
-            AND (:#{#po.userId} IS NULL OR u.userId  = :#{#po.userId} )
-            AND (:#{#po.readTime} IS NULL OR u.readTime  = :#{#po.readTime} )
-            AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
-            AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
+            u.id IN :ids
+            AND u.userId = :userId
+            """)
+    List<NoticeRcdPo> getNotifyRcdByIdsAndUserId(@Param("ids") List<Long> ids, @Param("userId") Long userId);
+
+    /**
+     * 分页查询消息接收记录ID列表
+     * @param pageable 分页信息
+     * @return 消息接收记录ID列表
+     */
+    @Query("""
+            SELECT u.id FROM NoticeRcdPo u
+            WHERE
+            u.userId = :userId
             ORDER BY u.createTime DESC
             """)
-    Page<NoticeRcdPo> getNoticeRcdList(@Param("po") NoticeRcdPo po, Pageable pageable);
+    List<Long> getNoticeRcdIds(@Param("userId") Long userId, Pageable pageable);
+
 }

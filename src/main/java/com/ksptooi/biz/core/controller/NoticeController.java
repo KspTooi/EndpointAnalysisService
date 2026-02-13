@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +30,7 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+
     @PostMapping("/getNoticeList")
     @Operation(summary = "查询消息通知列表")
     public PageResult<GetNoticeListVo> getNoticeList(@RequestBody @Valid GetNoticeListDto dto) throws Exception {
@@ -43,7 +43,7 @@ public class NoticeController {
 
         //验证参数
         String validate = dto.validate();
-        
+
         if (StringUtils.isNotBlank(validate)) {
             return Result.error(validate);
         }

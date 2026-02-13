@@ -1,10 +1,8 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.core.model.noticercd.dto.AddNoticeRcdDto;
-import com.ksptooi.biz.core.model.noticercd.dto.EditNoticeRcdDto;
-import com.ksptooi.biz.core.model.noticercd.dto.GetNoticeRcdListDto;
+import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
 import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdDetailsVo;
-import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdListVo;
+import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
 import com.ksptooi.biz.core.service.NoticeRcdService;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -29,30 +27,29 @@ public class NoticeRcdController {
     @Autowired
     private NoticeRcdService noticeRcdService;
 
+    @PostMapping("/getUserNoticeCount")
+    @Operation(summary = "获取当前用户未读通知数量")
+    public Result<Integer> getUserNoticeCount() throws Exception {
+        return Result.success(noticeRcdService.getUserNoticeCount());
+    }
+
+    @PostMapping("/readNoticeRcd")
+    @Operation(summary = "阅读用户通知记录")
+    public Result<String> readUserNoticeRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        noticeRcdService.readUserNoticeRcd(dto);
+        return Result.success("操作成功");
+    }
+
     @PostMapping("/getNoticeRcdList")
     @Operation(summary = "查询用户通知记录列表")
-    public PageResult<GetNoticeRcdListVo> getNoticeRcdList(@RequestBody @Valid GetNoticeRcdListDto dto) throws Exception {
-        return noticeRcdService.getNoticeRcdList(dto);
-    }
-
-    @Operation(summary = "新增用户通知记录")
-    @PostMapping("/addNoticeRcd")
-    public Result<String> addNoticeRcd(@RequestBody @Valid AddNoticeRcdDto dto) throws Exception {
-        noticeRcdService.addNoticeRcd(dto);
-        return Result.success("新增成功");
-    }
-
-    @Operation(summary = "编辑用户通知记录")
-    @PostMapping("/editNoticeRcd")
-    public Result<String> editNoticeRcd(@RequestBody @Valid EditNoticeRcdDto dto) throws Exception {
-        noticeRcdService.editNoticeRcd(dto);
-        return Result.success("修改成功");
+    public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(@RequestBody @Valid GetUserNoticeRcdListDto dto) throws Exception {
+        return noticeRcdService.getUserNoticeRcdList(dto);
     }
 
     @Operation(summary = "查询用户通知记录详情")
-    @PostMapping("/getNoticeRcdDetails")
-    public Result<GetNoticeRcdDetailsVo> getNoticeRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetNoticeRcdDetailsVo details = noticeRcdService.getNoticeRcdDetails(dto);
+    @PostMapping("/getUserNoticeRcdDetails")
+    public Result<GetNoticeRcdDetailsVo> getUserNoticeRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        GetNoticeRcdDetailsVo details = noticeRcdService.getUserNoticeRcdDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
