@@ -79,10 +79,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
-import MenuApi, { type GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import ComFrameworkService from "@/soa/console-framework/service/ComFrameworkService.ts";
-import { Result } from "@/commons/entity/Result.ts";
-import { EventHolder } from "@/store/EventHolder.ts";
 import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
 import ComLeftMenu from "@/soa/console-framework/components/ComLeftMenu.vue";
 import ComUserProfile from "@/soa/console-framework/components/ComUserProfile.vue";
@@ -95,61 +92,12 @@ const route = useRoute();
 const tabStore = useTabStore();
 const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
-const menuTree = ref<GetUserMenuTreeVo[]>([]);
 
 
 
 ComFrameworkService.useComTabHotkey();
-const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useComFramework();
+const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = ComFrameworkService.useComFramework();
 
-const loadMenuTree = async () => {
-  try {
-    const result = await MenuApi.getUserMenuTree();
-
-    if (!Result.isSuccess(result)) {
-      ElMessage.error(result.message);
-      return;
-    }
-
-    menuTree.value = result.data;
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-loadMenuTree();
-
-
-// 根据路由路径计算当前活动菜单ID
-const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
-  for (const item of items) {
-    if (item.menuPath === path) {
-      return item.id;
-    }
-    if (item.children?.length) {
-      const foundId = findMenuIdByPath(item.children, path);
-      if (foundId) return foundId;
-    }
-  }
-  return "";
-};
-
-// 当前活动菜单
-const activeMenuId = computed(() => {
-  return findMenuIdByPath(menuTree.value, route.path);
-});
-
-
-//监听左侧菜单重新加载事件
-watch(
-  () => EventHolder().isNeedReloadLeftMenu,
-  (newVal) => {
-    if (newVal) {
-      loadMenuTree();
-    }
-  },
-  { immediate: true }
-);
 </script>
 
 <style scoped>
