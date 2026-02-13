@@ -101,7 +101,7 @@ import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
 
 // 使用 Service 中的逻辑
-const { count, processedCount, loadCount } = UserNoticeService.useUserNoticeCount();
+const { count, processedCount, loadCount } = UserNoticeService.useNoticeRcdCount();
 const {
   listData,
   listLoading: loading,
@@ -111,8 +111,8 @@ const {
   resetList,
   removeNotice,
   readAllNotice,
-} = UserNoticeService.useUserNoticeDropList(loadCount);
-const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserNoticeService.useUserNoticeModal();
+} = UserNoticeService.useNoticeRcdRollingList(loadCount);
+const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserNoticeService.useNoticeRcdModal();
 
 /**
  * 下拉框显示状态变化

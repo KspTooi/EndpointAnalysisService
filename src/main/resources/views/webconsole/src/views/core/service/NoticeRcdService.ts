@@ -8,7 +8,7 @@ export default {
   /**
    * 用户通知记录数量打包
    */
-  useUserNoticeCount() {
+  useNoticeRcdCount() {
     const count = ref(0);
     const countLoading = ref(false);
 
@@ -40,10 +40,13 @@ export default {
   /**
    * 用户通知记录列表打包
    */
-  useUserNoticeList() {
+  useNoticeRcdList() {
     const listForm = ref<GetUserNoticeRcdListDto>({
       pageNum: 1,
       pageSize: 20,
+      title: undefined,
+      kind: undefined,
+      content: undefined,
     });
 
     const listData = ref<GetUserNoticeRcdListVo[]>([]);
@@ -81,7 +84,7 @@ export default {
   /**
    * 用户通知记录下拉列表打包（支持懒加载）
    */
-  useUserNoticeDropList(onCountChange?: () => void) {
+  useNoticeRcdRollingList(onCountChange?: () => void) {
     const listData = ref<GetUserNoticeRcdListVo[]>([]);
     const listLoading = ref(false);
     const pageNum = ref(1);
@@ -111,6 +114,7 @@ export default {
         const params: GetUserNoticeRcdListDto = {
           pageNum: pageNum.value,
           pageSize: pageSize.value,
+          setRead: 1,
         };
 
         const result = await NoticeRcdApi.getUserNoticeRcdList(params);
@@ -214,10 +218,13 @@ export default {
     };
   },
 
+  
+
+
   /**
    * 用户通知记录模态框打包
    */
-  useUserNoticeModal() {
+  useNoticeRcdModal() {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const detailsData = ref<GetNoticeRcdDetailsVo | null>(null);

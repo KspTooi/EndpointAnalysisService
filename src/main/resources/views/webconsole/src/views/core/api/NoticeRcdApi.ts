@@ -7,7 +7,12 @@ import type PageQuery from "@/commons/entity/PageQuery.ts";
 /**
  * 查询用户通知记录列表DTO
  */
-export interface GetUserNoticeRcdListDto extends PageQuery {}
+export interface GetUserNoticeRcdListDto extends PageQuery {
+  setRead?: number; // 是否设置为已读: 0:否 1:是
+  title?: string; // 消息标题（模糊查询）
+  kind?: number; // 消息种类: 0:公告 1:业务提醒 2:私信
+  content?: string; // 消息正文（模糊查询）
+}
 
 /**
  * 用户通知记录列表VO
