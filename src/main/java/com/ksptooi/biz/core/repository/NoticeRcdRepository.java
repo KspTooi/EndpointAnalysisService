@@ -1,7 +1,6 @@
 package com.ksptooi.biz.core.repository;
 
 import com.ksptooi.biz.core.model.noticercd.NoticeRcdPo;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,6 +45,7 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
 
     /**
      * 分页查询消息接收记录列表
+     * 优先返回未读消息(readTime为null)，然后返回已读消息
      *
      * @param pageable 分页信息
      * @return 消息接收记录列表
@@ -54,7 +54,7 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
             SELECT u FROM NoticeRcdPo u
             WHERE
             u.userId = :userId
-            ORDER BY u.createTime DESC
+            ORDER BY u.createTime DESC,u.id
             """)
     Page<NoticeRcdPo> getNoticeRcdsByUserId(@Param("userId") Long userId, Pageable pageable);
 
