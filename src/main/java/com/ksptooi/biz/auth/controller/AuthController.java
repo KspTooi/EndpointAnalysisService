@@ -40,9 +40,6 @@ import static com.ksptool.entities.Entities.as;
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired

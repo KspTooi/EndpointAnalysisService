@@ -213,6 +213,14 @@ public class SessionService {
         newSession.setPermissionCodes(toJson(permCodes));
         newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         userSessionRepository.save(newSession);
+
+        //处理用户登录次数与最后登录时间
+        var userPo = userRepository.findById(aud.getId()).orElseThrow(() -> new BizException("用户不存在"));
+        userPo.setLoginCount(userPo.getLoginCount() + 1);
+        userPo.setLastLoginTime(LocalDateTime.now());
+        
+        //更新用户
+        userRepository.save(userPo);
         return sessionId;
     }
 
