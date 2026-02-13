@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo, GetNoticeRcdDetailsVo } from "../api/NoticeRcdApi";
 import NoticeRcdApi from "../api/NoticeRcdApi";
 import { Result } from "@/commons/entity/Result";
@@ -54,9 +54,7 @@ export default {
     const listTotal = ref(0);
     const listLoading = ref(false);
 
-    const loadList = async (pn?: number, ps?: number) => {
-      listForm.value.pageNum = pn ?? 1;
-      listForm.value.pageSize = ps ?? 20;
+    const loadList = async () => {
       listLoading.value = true;
 
       try {
@@ -72,6 +70,10 @@ export default {
         listLoading.value = false;
       }
     };
+
+    onMounted(() => {
+      loadList();
+    });
 
     return {
       listForm,
