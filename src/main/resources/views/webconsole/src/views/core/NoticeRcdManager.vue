@@ -32,9 +32,7 @@
       </el-form>
     </template>
 
-    <template #actions>
-      <el-button type="primary" @click="readAll">全部已读</el-button>
-    </template>
+    <template #actions> </template>
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
@@ -67,9 +65,7 @@
         <el-table-column prop="createTime" label="接收时间" width="180" />
         <el-table-column label="操作" fixed="right" width="150" align="center">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal(scope.row.id)" :icon="ViewIcon">
-              查看
-            </el-button>
+            <el-button link type="primary" size="small" @click="openModal(scope.row.id)" :icon="ViewIcon"> 查看 </el-button>
             <el-button link type="danger" size="small" @click="remove(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -137,7 +133,10 @@
             <!-- 通知内容 -->
             <div>
               <div class="text-sm font-bold text-gray-900 mb-3">消息内容：</div>
-              <div class="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap break-words" v-html="detailsData.content"></div>
+              <div
+                class="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap break-words"
+                v-html="detailsData.content"
+              ></div>
             </div>
           </template>
         </div>
@@ -169,13 +168,9 @@ const { listForm, listData, listTotal, listLoading, loadList } = NoticeRcdServic
 const { modalVisible, modalLoading, detailsData, openModal, closeModal } = NoticeRcdService.useNoticeRcdModal();
 
 // CRUD打包
-const { remove, readAll } = NoticeRcdService.useNoticeRcdCrud({
+const { remove } = NoticeRcdService.useNoticeRcdCrud({
   onRemoved: () => {
     // 删除后重新加载当前页
-    loadList();
-  },
-  onReadAll: () => {
-    // 全部已读后重新加载列表
     loadList();
   },
 });
