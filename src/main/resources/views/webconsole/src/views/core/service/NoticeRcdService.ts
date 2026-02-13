@@ -1,6 +1,6 @@
 import { computed, ref, onMounted } from "vue";
-import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo, GetNoticeRcdDetailsVo } from "../api/NoticeRcdApi";
-import NoticeRcdApi from "../api/NoticeRcdApi";
+import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo, GetNoticeRcdDetailsVo } from "@/views/core/api/NoticeRcdApi";
+import NoticeRcdApi from "@/views/core/api/NoticeRcdApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

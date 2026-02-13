@@ -1,6 +1,6 @@
 import { createApp, markRaw } from "vue";
 import { createPinia } from "pinia";
-import AdminRoot from "./AdminRoot.vue";
+import AdminRoot from "@/AdminRoot.vue";
 // 导入 Element Plus
 import ElementPlus from "element-plus";
 import "@/styles/element-theme.scss";
@@ -12,16 +12,16 @@ import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 // 导入Element Plus图标并进行全局注册
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 // 导入并设置 Iconify
-import { setupIconify } from "./commons/Iconify.ts";
-import GenricRouteService from "./soa/genric-route/service/GenricRouteService.ts";
-import AuthRouteRegister from "./views/auth/route/AuthRouteRegister";
-import CoreRouteRegister from "./views/core/route/CoreRouteRegister";
-import DriveRouteRegister from "./views/drive/route/DriveRouteRegister";
-import RelayRouteRegister from "./views/relay/route/RelayRouteRegister";
+import { setupIconify } from "@/commons/Iconify.ts";
+import GenricRouteService from "@/soa/genric-route/service/GenricRouteService.ts";
+import AuthRouteRegister from "@/views/auth/route/AuthRouteRegister";
+import CoreRouteRegister from "@/views/core/route/CoreRouteRegister";
+import DriveRouteRegister from "@/views/drive/route/DriveRouteRegister";
+import RelayRouteRegister from "@/views/relay/route/RelayRouteRegister";
 import RdbgRouteRegister from "@/views/rdbg/route/RdbgRouteRegister";
 import DocumentRouteRegister from "@/views/document/route/DocumentRouteRegister";
 import AuditRouteRegister from "@/views/audit/route/AuditRouteRegister";
-import QtRouteRegister from "./views/qt/route/QtRouteRegister.ts";
+import QtRouteRegister from "@/views/qt/route/QtRouteRegister.ts";
 
 setupIconify();
 

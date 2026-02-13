@@ -73,7 +73,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
-import UserAuthService from "./service/UserAuthService";
+import UserAuthService from "@/views/auth/service/UserAuthService";
 import type { UserLoginDto } from "./api/AuthApi";
 
 const router = useRouter();

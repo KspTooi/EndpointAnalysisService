@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import StdIndicatorQueryPersist from "./StdIndicatorQueryPersist.vue";
+import StdIndicatorQueryPersist from "@/soa/std-series/StdIndicatorQueryPersist.vue";
 import StdIndicatorTutorial from "@/soa/std-series/StdIndicatorTutorial.vue";
 
 defineProps<{

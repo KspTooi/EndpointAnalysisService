@@ -11,8 +11,8 @@ import NoticeApi from "@/views/core/api/NoticeApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import QueryPersistService from "@/service/QueryPersistService.ts";
-import type { GetOrgTreeVo } from "../api/OrgApi";
-import type { GetUserListVo } from "../api/UserApi";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
+import type { GetUserListVo } from "@/views/core/api/UserApi";
 
 /**
  * 模态框模式类型

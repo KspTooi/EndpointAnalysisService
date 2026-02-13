@@ -3,7 +3,7 @@ import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
-import GenricRouteRegister from "./GenricRouteRegister";
+import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 
 //是否已初始化
 let hasInitialized = false;

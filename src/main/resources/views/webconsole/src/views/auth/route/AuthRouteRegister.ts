@@ -1,7 +1,7 @@
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 import type { NavigationGuardWithThis, NavigationHookAfter } from "vue-router";
-import UserAuthService from "../service/UserAuthService";
+import UserAuthService from "@/views/auth/service/UserAuthService";
 
 export default class AuthRouteRegister extends GenricRouteRegister {
   /**
