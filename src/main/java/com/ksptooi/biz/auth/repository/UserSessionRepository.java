@@ -75,6 +75,11 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             """)
     List<UserSessionPo> getSessionByUserIds(@Param("userIds") List<Long> userIds);
 
+
+
+
+
+
     /**
      * 根据用户ID列表删除会话
      *

@@ -12,6 +12,7 @@ import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -111,13 +112,10 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "注销")
-    @GetMapping("/logout")
-    public Result<String> logout(HttpServletRequest request, HttpServletResponse response) {
-
-        // 清除数据库中的 session
-        //sessionService.closeSession(user.getId());
-
+    @Operation(summary = "用户注销")
+    @PostMapping("/logout")
+    public Result<String> logout() throws AuthException {
+        sessionService.closeSession(SessionService.session().getUserId());
         return Result.success("注销成功");
     }
 

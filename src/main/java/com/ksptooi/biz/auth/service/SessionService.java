@@ -17,11 +17,14 @@ import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +49,9 @@ public class SessionService {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private CacheManager cacheManager;
 
 
     /**
@@ -119,6 +125,7 @@ public class SessionService {
      *
      * @param uid 用户ID
      */
+    @Transactional(rollbackFor = Exception.class)
     public void closeSession(Long uid) {
         closeSession(List.of(uid));
     }
@@ -128,7 +135,22 @@ public class SessionService {
      *
      * @param uids 用户ID列表
      */
+    @Transactional(rollbackFor = Exception.class)
     public void closeSession(List<Long> uids) {
+        
+        //获取该用户所有的会话
+        var sessions = userSessionRepository.getSessionByUserIds(uids);
+
+        Cache cache = cacheManager.getCache("userSession");
+
+        if (cache != null) {
+            //失效所有缓存
+            for (var session : sessions) {
+                cache.evict(session.getSessionId());
+            }
+        }
+
+        //删除该用户所有的会话
         userSessionRepository.removeUserSessionByUserIds(uids);
     }
 
