@@ -33,4 +33,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 用户注销
+   */
+  logout: async (): Promise<void> => {
+    var result = await Http.postEntity<Result<string>>("/auth/logout", {});
+    if (result.code == 0) {
+      return;
+    }
+    throw new Error(result.message);
+  }
 };
