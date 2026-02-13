@@ -25,7 +25,7 @@
           <el-col :span="5" :offset="1">
             <el-form-item>
               <el-button type="primary" @click="loadList()" :disabled="listLoading">查询</el-button>
-              <el-button @click="handleReset" :disabled="listLoading">重置</el-button>
+              <el-button @click="onReset" :disabled="listLoading">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -144,7 +144,7 @@
 
         <template #footer>
           <el-button @click="closeModal">关闭</el-button>
-          <el-button v-if="detailsData?.forward" type="primary" @click="handleForward"> 前往查看 </el-button>
+          <el-button v-if="detailsData?.forward" type="primary" @click="onForward"> 前往查看 </el-button>
         </template>
       </el-dialog>
     </template>
@@ -183,7 +183,7 @@ const { remove, readAll } = NoticeRcdService.useNoticeRcdCrud({
 /**
  * 重置查询表单
  */
-const handleReset = () => {
+const onReset = () => {
   listForm.value.title = undefined;
   listForm.value.kind = undefined;
   listForm.value.content = undefined;
@@ -193,7 +193,7 @@ const handleReset = () => {
 /**
  * 跳转到关联页面
  */
-const handleForward = () => {
+const onForward = () => {
   if (!detailsData.value?.forward) {
     return;
   }

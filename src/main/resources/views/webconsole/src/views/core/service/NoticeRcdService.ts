@@ -47,6 +47,7 @@ export default {
       title: undefined,
       kind: undefined,
       content: undefined,
+      setRead: 0,
     });
 
     const listData = ref<GetUserNoticeRcdListVo[]>([]);

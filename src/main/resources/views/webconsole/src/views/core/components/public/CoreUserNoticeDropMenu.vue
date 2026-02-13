@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown trigger="click" @visible-change="handleVisibleChange">
+  <el-dropdown trigger="click" @visible-change="onVisibleChange">
     <div class="flex items-center justify-center px-3 h-full cursor-pointer transition-colors hover:bg-black/5">
       <el-badge :value="processedCount" :hidden="count === 0" :max="99">
         <el-icon :size="20" class="text-gray-600">
@@ -25,7 +25,7 @@
               v-for="item in listData" 
               :key="item.id" 
               class="group flex px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 hover:bg-gray-50" 
-              @click="handleRead(item)"
+              @click="onRead(item)"
             >
               <div class="mr-3 flex items-center">
                 <el-avatar :size="32" :icon="getIcon(item.kind)" :class="getIconClass(item.kind)" />
@@ -46,6 +46,11 @@
             <el-empty description="暂无新通知" :image-size="60" />
           </div>
         </el-scrollbar>
+
+        <!-- 底部查看全部按钮 -->
+        <div class="border-t border-gray-200 px-4 py-3 text-center">
+          <el-button link type="primary" @click="onViewAll" class="w-full">查看全部消息</el-button>
+        </div>
       </div>
     </template>
   </el-dropdown>
@@ -88,17 +93,20 @@
 
     <template #footer>
       <el-button @click="closeModal">关闭</el-button>
-      <el-button v-if="detailsData?.forward" type="primary" @click="handleForward"> 前往查看 </el-button>
+      <el-button v-if="detailsData?.forward" type="primary" @click="onForward"> 前往查看 </el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
 import UserNoticeService from "../../service/NoticeRcdService.ts";
 import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
+
+const router = useRouter();
 
 // 使用 Service 中的逻辑
 const { count, processedCount, loadCount } = UserNoticeService.useNoticeRcdCount();
@@ -117,7 +125,7 @@ const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserN
 /**
  * 下拉框显示状态变化
  */
-const handleVisibleChange = (visible: boolean) => {
+const onVisibleChange = (visible: boolean) => {
   if (!visible) {
     return;
   }
@@ -161,7 +169,7 @@ const getIconClass = (kind: number) => {
 /**
  * 点击通知项
  */
-const handleRead = (item: GetUserNoticeRcdListVo) => {
+const onRead = (item: GetUserNoticeRcdListVo) => {
   // 打开详情模态框
   openModal(item.id);
 };
@@ -169,13 +177,20 @@ const handleRead = (item: GetUserNoticeRcdListVo) => {
 /**
  * 跳转到关联页面
  */
-const handleForward = () => {
+const onForward = () => {
   if (!detailsData.value?.forward) {
     return;
   }
   // router.push(detailsData.value.forward);
   closeModal();
   ElMessage.info("功能开发中");
+};
+
+/**
+ * 查看全部消息
+ */
+const onViewAll = () => {
+  router.push("/core/notice-rcd");
 };
 
 onMounted(() => {
