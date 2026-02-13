@@ -4,8 +4,8 @@ package com.ksptooi.biz.core.service;
 import com.ksptooi.biz.core.model.noticercd.dto.GetUserNoticeRcdListDto;
 import com.ksptooi.biz.core.model.noticercd.vo.GetNoticeRcdDetailsVo;
 import com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo;
-import com.ksptooi.biz.core.repository.NoticeRepository;
 import com.ksptooi.biz.core.repository.NoticeRcdRepository;
+import com.ksptooi.biz.core.repository.NoticeRepository;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -13,8 +13,10 @@ import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 import static com.ksptooi.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 
@@ -71,17 +73,17 @@ public class NoticeRcdService {
      * @param dto
      * @return
      */
-    public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(GetUserNoticeRcdListDto dto) throws Exception{
+    public PageResult<GetUserNoticeRcdListVo> getUserNoticeRcdList(GetUserNoticeRcdListDto dto) throws Exception {
 
         //先分页当前用户查消息Rcd的Ids
-        var rcdIds = repository.getNoticeRcdIds(session().getUserId(), dto.pageRequest());
+        var rcdIds = repository.getNoticeIdsByUserId(session().getUserId(), dto.pageRequest());
 
         if (rcdIds.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
         //根据RcdId查询对应的消息记录
-        var noticeRcdPos = repository.findAllById(rcdIds);
+        var noticeRcdPos = noticeRepository.findAllById(rcdIds);
 
         if (noticeRcdPos.isEmpty()) {
             return PageResult.successWithEmpty();
@@ -131,7 +133,7 @@ public class NoticeRcdService {
         if (noticeRcdPos.isEmpty()) {
             throw new BizException("删除失败,数据不存在或无权限访问.");
         }
-        
+
         //删除RCD
         repository.deleteAll(noticeRcdPos);
     }
