@@ -1,7 +1,7 @@
 <template>
-  <div class="filter-item" :class="{ disabled: item.status === 1, selected: isSelected }" @click="handleClick">
+  <div class="filter-item" :class="{ disabled: item.status === 1, selected: isSelected }" @click="onClick">
     <div class="item-actions">
-      <el-button type="danger" size="small" circle @click.stop="handleDelete" icon="Close" />
+      <el-button type="danger" size="small" circle @click.stop="onDelete" icon="Close" />
     </div>
     <div class="item-header">
       <div class="item-title">
@@ -53,11 +53,11 @@ const isSelected = computed(() => {
   return filterStore.getSelectedFilterId === props.item.id;
 });
 
-const handleClick = () => {
+const onClick = () => {
   emit("click");
 };
 
-const handleDelete = () => {
+const onDelete = () => {
   emit("delete");
 };
 

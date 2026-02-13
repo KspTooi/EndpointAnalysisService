@@ -18,9 +18,9 @@
           border
           highlight-current-row
           :row-key="buildRowKey"
-          @selection-change="handleSelectionChange"
-          @select-all="handleSelectAll"
-          @row-click="handleRowClick"
+          @selection-change="onSelectionChange"
+          @select-all="onSelectAll"
+          @row-click="onRowClick"
           height="400"
           :row-style="{ cursor: 'pointer' }"
         >
@@ -146,7 +146,7 @@ const applySingleSelection = (row: RouteEntryPo | null) => {
   syncingSelection.value = false;
 };
 
-const handleSelectionChange = (rows: RouteEntryPo[]) => {
+const onSelectionChange = (rows: RouteEntryPo[]) => {
   if (syncingSelection.value) {
     return;
   }
@@ -169,7 +169,7 @@ const handleSelectionChange = (rows: RouteEntryPo[]) => {
   applySingleSelection(lastRow);
 };
 
-const handleSelectAll = (rows: RouteEntryPo[]) => {
+const onSelectAll = (rows: RouteEntryPo[]) => {
   if (syncingSelection.value) {
     return;
   }
@@ -190,7 +190,7 @@ const handleSelectAll = (rows: RouteEntryPo[]) => {
   });
 };
 
-const handleRowClick = (row: RouteEntryPo) => {
+const onRowClick = (row: RouteEntryPo) => {
   if (syncingSelection.value) {
     return;
   }

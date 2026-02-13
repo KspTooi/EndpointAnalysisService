@@ -7,7 +7,7 @@
       </div>
       <el-input v-model="searchForm.name" placeholder="输入任意字符查询" size="small" clearable @keyup.enter="loadData" />
       <el-button type="primary" @click="loadData(true)" size="small" :loading="loading">加载</el-button>
-      <el-button type="primary" @click="handleAddFilter" size="small">新过滤器</el-button>
+      <el-button type="primary" @click="onAddFilter" size="small">新过滤器</el-button>
     </div>
 
     <div class="filter-list">
@@ -22,8 +22,8 @@
         </el-select>
       </div>
 
-      <div class="list-content" v-loading="loading" @scroll="handleScroll" ref="listContentRef">
-        <SimpleFilterSideItem v-for="item in filterList" :key="item.id" :item="item" @click="handleItemClick(item)" @delete="handleDelete(item)" />
+      <div class="list-content" v-loading="loading" @scroll="onScroll" ref="listContentRef">
+        <SimpleFilterSideItem v-for="item in filterList" :key="item.id" :item="item" @click="onItemClick(item)" @delete="onDelete(item)" />
 
         <div class="empty-state" v-if="!loading && filterList.length === 0">
           <el-empty description="暂无数据" />
@@ -124,18 +124,18 @@ const loadData = async (isReset = true) => {
   }
 };
 
-const handleItemClick = (item: GetSimpleFilterListVo) => {
+const onItemClick = (item: GetSimpleFilterListVo) => {
   filterStore.setSelectedFilterId(item.id);
   emit("selectItem", item);
 };
 
-const handleAddFilter = () => {
+const onAddFilter = () => {
   emit("addFilter");
   filterStore.setIsCreating(true);
   ElMessage.primary("开始创建新基本过滤器,请在编辑器中进行编辑");
 };
 
-const handleDelete = async (item: GetSimpleFilterListVo) => {
+const onDelete = async (item: GetSimpleFilterListVo) => {
   try {
     await ElMessageBox.confirm(`确定要删除过滤器 "${item.name}" 吗？`, "提示", {
       confirmButtonText: "确定",
@@ -163,7 +163,7 @@ const handleDelete = async (item: GetSimpleFilterListVo) => {
   }
 };
 
-const handleScroll = (event: Event) => {
+const onScroll = (event: Event) => {
   if (!hasMore.value || isLoadingMore.value) {
     return;
   }
@@ -187,13 +187,13 @@ onMounted(async () => {
   await nextTick();
 
   if (listContentRef.value) {
-    listContentRef.value.addEventListener("scroll", handleScroll);
+    listContentRef.value.addEventListener("scroll", onScroll);
   }
 });
 
 onUnmounted(() => {
   if (listContentRef.value) {
-    listContentRef.value.removeEventListener("scroll", handleScroll);
+    listContentRef.value.removeEventListener("scroll", onScroll);
   }
 });
 
