@@ -10,6 +10,7 @@ import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
@@ -127,6 +128,7 @@ public class MaintainController {
     @PostMapping("/resetMenus")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
         ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_5W109.sql");
