@@ -137,7 +137,7 @@ public class SessionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void closeSession(List<Long> uids) {
-        
+
         //获取该用户所有的会话
         var sessions = userSessionRepository.getSessionByUserIds(uids);
 
@@ -258,7 +258,7 @@ public class SessionService {
      * @return 会话
      * @throws BizException 如果会话不存在，或会话已过期。
      */
-    @Cacheable(cacheNames = "userSession", key = "#sessionId")
+    @Cacheable(cacheNames = "userSession", key = "T(com.ksptooi.commons.utils.SHA256).hex(#sessionId)")
     public UserSessionPo getSessionBySessionId(String sessionId) throws BizException {
 
         var session = userSessionRepository.getSessionBySessionId(SHA256.hex(sessionId));
