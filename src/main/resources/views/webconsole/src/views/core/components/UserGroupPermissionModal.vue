@@ -42,7 +42,7 @@
               height="500"
               :row-class-name="getMenuRowClassName"
               @selection-change="(val: GetGroupPermissionMenuViewVo[]) => (listSelected = val)"
-              @row-click="handleRowClick"
+              @row-click="onRowClick"
             >
               <el-table-column type="selection" width="40" :selectable="isMenuRowSelectable" />
               <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
@@ -150,7 +150,7 @@
               max-height="450"
               height="450"
               @selection-change="(val: GetGroupPermissionNodeVo[]) => (listNodeSelected = val)"
-              @row-click="handleNodeRowClick"
+              @row-click="onNodeRowClick"
             >
               <el-table-column type="selection" width="40" />
               <el-table-column
@@ -397,7 +397,7 @@ const resetModal = () => {
 /**
  * 处理行点击事件
  */
-const handleRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event) => {
+const onRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event) => {
   const target = event.target as HTMLElement;
   if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
     return;
@@ -415,7 +415,7 @@ const handleRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: E
 /**
  * 处理节点行点击事件
  */
-const handleNodeRowClick = (row: GetPermissionListVo, column: any, event: Event) => {
+const onNodeRowClick = (row: GetPermissionListVo, column: any, event: Event) => {
   const target = event.target as HTMLElement;
   if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
     return;

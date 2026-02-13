@@ -25,7 +25,7 @@
               placeholder="输入您的账户 ID"
               :prefix-icon="User"
               clearable
-              @keyup.enter="handleLogin"
+              @keyup.enter="onLogin"
             />
           </div>
 
@@ -37,7 +37,7 @@
               placeholder="输入您的安全密钥"
               :prefix-icon="Lock"
               show-password
-              @keyup.enter="handleLogin"
+              @keyup.enter="onLogin"
             />
           </div>
 
@@ -49,7 +49,7 @@
           </transition>
 
           <div class="button-container">
-            <el-button type="primary" class="auth-button" :loading="isLoading" @click="handleLogin">
+            <el-button type="primary" class="auth-button" :loading="isLoading" @click="onLogin">
               {{ isLoading ? "正在处理" : "登录" }}
             </el-button>
           </div>
@@ -57,7 +57,7 @@
 
         <footer class="panel-footer">
           <span class="version-tag">CORE v2.5.0-LITE</span>
-          <a class="nav-link" @click="handleRegister">申请系统访问权限</a>
+          <a class="nav-link" @click="onRegister">申请系统访问权限</a>
         </footer>
       </div>
     </div>
@@ -94,7 +94,7 @@ const isLoading = ref<boolean>(false);
 /**
  * 处理登录逻辑
  */
-const handleLogin = async () => {
+const onLogin = async () => {
   errorMessage.value = "";
 
   if (!loginForm.value.username) {
@@ -123,7 +123,7 @@ const handleLogin = async () => {
 /**
  * 跳转注册
  */
-const handleRegister = () => {
+const onRegister = () => {
   router.push({ name: "register" });
 };
 </script>

@@ -12,7 +12,7 @@
     </div>
 
     <div class="tree-wrapper">
-      <div v-if="showHeader && !multiple" class="all-org-node" :class="{ 'is-active': isAllSelected }" @click="handleSelectAll">
+      <div v-if="showHeader && !multiple" class="all-org-node" :class="{ 'is-active': isAllSelected }" @click="onSelectAll">
         <el-icon class="node-icon"><OfficeBuildingIcon /></el-icon>
         <span class="node-label">全部公司</span>
       </div>
@@ -26,8 +26,8 @@
         node-key="id"
         highlight-current
         default-expand-all
-        @node-click="handleNodeClick"
-        @check="handleCheckChange"
+        @node-click="onNodeClick"
+        @check="onCheckChange"
         class="custom-tree"
       >
         <template #default="{ node, data }">
@@ -84,7 +84,7 @@ const defaultProps = {
   label: "name",
 };
 
-const handleSelectAll = () => {
+const onSelectAll = () => {
   isAllSelected.value = true;
   currentSelectedKey.value = null;
   treeRef.value?.setCurrentKey(null);
@@ -108,7 +108,7 @@ const isNodeDisabled = (data: GetOrgTreeVo) => {
   return false;
 };
 
-const handleNodeClick = (data: GetOrgTreeVo) => {
+const onNodeClick = (data: GetOrgTreeVo) => {
   if (props.multiple) return;
   if (isNodeDisabled(data)) {
     treeRef.value?.setCurrentKey(currentSelectedKey.value);
@@ -120,14 +120,14 @@ const handleNodeClick = (data: GetOrgTreeVo) => {
   onSelectOrg(data);
 };
 
-const handleCheckChange = () => {
+const onCheckChange = () => {
   if (!treeRef.value) return;
   const checkedNodes = treeRef.value.getCheckedNodes() as GetOrgTreeVo[];
   emit("on-check", checkedNodes);
 };
 
 const reset = () => {
-  handleSelectAll();
+  onSelectAll();
   if (props.multiple && treeRef.value) {
     treeRef.value.setCheckedKeys([]);
   }

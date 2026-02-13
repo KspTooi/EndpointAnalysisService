@@ -21,7 +21,7 @@
           v-if="showHeader"
           class="all-registry-node group flex items-center justify-between h-[28px] pl-[27.5px] pr-2 cursor-pointer mb-[1px] transition-colors duration-200 text-[13px]"
           :class="{ 'is-active': isAllSelected }"
-          @click="handleSelectAll"
+          @click="onSelectAll"
         >
           <div class="flex items-center">
             <el-icon class="mr-1.5 text-[14px]"><ListIcon /></el-icon>
@@ -44,7 +44,7 @@
           node-key="id"
           highlight-current
           default-expand-all
-          @node-click="handleNodeClick"
+          @node-click="onNodeClick"
           class="custom-tree"
         >
           <template #default="{ node, data }">
@@ -186,7 +186,7 @@ const defaultProps = {
  * 处理“全部注册表节点”点击事件
  * 清空树选中状态，通知父组件加载全部数据
  */
-const handleSelectAll = () => {
+const onSelectAll = () => {
   isAllSelected.value = true;
   currentSelectedKey.value = null;
   treeRef.value?.setCurrentKey(null);
@@ -213,7 +213,7 @@ const filterNode = (value: string, data: GetRegistryNodeTreeVo) => {
 /**
  * 处理常规树节点点击事件
  */
-const handleNodeClick = (data: GetRegistryNodeTreeVo) => {
+const onNodeClick = (data: GetRegistryNodeTreeVo) => {
   isAllSelected.value = false;
   currentSelectedKey.value = data.id;
   emit("on-select", data);

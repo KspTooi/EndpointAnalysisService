@@ -4,7 +4,7 @@
     title="公司成员列表"
     width="800px"
     :close-on-click-modal="false"
-    @close="handleClose"
+    @close="onClose"
     class="modal-centered"
   >
     <!-- 查询表单 -->
@@ -41,7 +41,7 @@
         v-loading="listLoading"
         border
         row-key="id"
-        @row-click="handleRowClick"
+        @row-click="onRowClick"
         :row-class-name="allowSelect ? 'selectable-row' : ''"
         highlight-current-row
       >
@@ -55,7 +55,7 @@
         <el-table-column label="加入时间" prop="joinedTime" width="180" />
         <el-table-column v-if="allowSelect" label="操作" width="100" align="center" fixed="right">
           <template #default="scope">
-            <el-button type="primary" size="small" @click.stop="handleSelect(scope.row)">选择</el-button>
+            <el-button type="primary" size="small" @click.stop="onSelect(scope.row)">选择</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +76,7 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">关闭</el-button>
+        <el-button @click="onClose">关闭</el-button>
       </div>
     </template>
   </el-dialog>
@@ -200,15 +200,15 @@ const resetQuery = () => {
   loadList();
 };
 
-const handleRowClick = (row: GetCompanyMemberListVo) => {
+const onRowClick = (row: GetCompanyMemberListVo) => {
   if (props.allowSelect) {
-    handleSelect(row);
+    onSelect(row);
   }
 };
 
 const selecting = ref(false);
 
-const handleSelect = (member: GetCompanyMemberListVo) => {
+const onSelect = (member: GetCompanyMemberListVo) => {
   if (!props.allowSelect) {
     return;
   }
@@ -217,10 +217,10 @@ const handleSelect = (member: GetCompanyMemberListVo) => {
   }
   selecting.value = true;
   emit("onMemberSelected", member);
-  handleClose();
+  onClose();
 };
 
-const handleClose = () => {
+const onClose = () => {
   visible.value = false;
   selecting.value = false;
   resetQuery();

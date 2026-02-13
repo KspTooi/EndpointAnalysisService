@@ -136,7 +136,7 @@
     :company-id="currentResignCompanyId"
     :allow-select="true"
     :role="1"
-    @on-member-selected="handleMemberSelected"
+    @on-member-selected="onMemberSelected"
   />
 </template>
 
@@ -387,7 +387,7 @@ const openResignCeoModal = async (row: GetCurrentUserCompanyListVo) => {
   memberModalVisible.value = true;
 };
 
-const handleMemberSelected = async (member: GetCompanyMemberListVo) => {
+const onMemberSelected = async (member: GetCompanyMemberListVo) => {
   if (!currentResignCompanyId.value || !member.userId) {
     ElMessage.error("缺少必要参数");
     return;

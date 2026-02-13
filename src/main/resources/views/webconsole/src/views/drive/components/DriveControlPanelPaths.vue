@@ -1,7 +1,7 @@
 <template>
   <div class="path-container">
     <div v-for="(path, index) in paths" :key="path.id" class="path-item-wrapper">
-      <div class="path-item" :class="{ 'is-last': index === paths.length - 1 }" @click="handlePathClick(path, index)">
+      <div class="path-item" :class="{ 'is-last': index === paths.length - 1 }" @click="onPathClick(path, index)">
         <el-icon v-if="index === 0" class="root-icon"><FolderOpened /></el-icon>
         <span class="path-name">{{ path.name }}</span>
       </div>
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   (e: "on-path-change", path: GetEntryListPathVo): void;
 }>();
 
-const handlePathClick = (path: GetEntryListPathVo, index: number) => {
+const onPathClick = (path: GetEntryListPathVo, index: number) => {
   if (index === props.paths.length - 1) return;
   emit("on-path-change", path);
 };

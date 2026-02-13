@@ -7,7 +7,7 @@
     append-to-body
     destroy-on-close
     class="core-user-select-modal"
-    @opened="handleOpened"
+    @opened="onOpened"
   >
     <div class="modal-body" v-loading="listLoading">
       <splitpanes class="custom-theme">
@@ -54,9 +54,9 @@
                 v-loading="listLoading"
                 border
                 :highlight-current-row="!multiple"
-                @current-change="handleCurrentChange"
-                @selection-change="handleSelectionChange"
-                @row-click="handleRowClick"
+                @current-change="onCurrentChange"
+                @selection-change="onSelectionChange"
+                @row-click="onRowClick"
                 :row-style="getRowStyle"
                 style="cursor: pointer"
                 ref="tableRef"
@@ -97,8 +97,8 @@
                   :page-sizes="[10, 20, 50, 100]"
                   layout="total, sizes, prev, pager, next, jumper"
                   :total="listTotal"
-                  @size-change="handleSizeChange"
-                  @current-change="handlePageChange"
+                  @size-change="onSizeChange"
+                  @current-change="onPageChange"
                   background
                 />
               </template>
@@ -110,8 +110,8 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleConfirm" :disabled="multiple ? selectedUsers.length === 0 : !selectedUser">
+        <el-button @click="onCancel">取消</el-button>
+        <el-button type="primary" @click="onConfirm" :disabled="multiple ? selectedUsers.length === 0 : !selectedUser">
           确定{{ multiple && selectedUsers.length > 0 ? `(${selectedUsers.length})` : "" }}
         </el-button>
       </div>
@@ -185,7 +185,7 @@ watch(
 /**
  * 弹窗打开后加载数据
  */
-const handleOpened = async () => {
+const onOpened = async () => {
   await loadList(selectedOrgId.value);
   initSelection();
 };
@@ -258,19 +258,19 @@ const onSelectOrg = (org: GetOrgTreeVo | null) => {
   });
 };
 
-const handleCurrentChange = (row: GetUserListVo | null) => {
+const onCurrentChange = (row: GetUserListVo | null) => {
   if (!props.multiple) {
     selectedUser.value = row;
   }
 };
 
-const handleSelectionChange = (rows: GetUserListVo[]) => {
+const onSelectionChange = (rows: GetUserListVo[]) => {
   if (props.multiple) {
     selectedUsers.value = rows;
   }
 };
 
-const handleRowClick = (row: GetUserListVo) => {
+const onRowClick = (row: GetUserListVo) => {
   if (!props.multiple) {
     return;
   }
@@ -289,7 +289,7 @@ const getRowStyle = ({ row }: { row: GetUserListVo }) => {
   return { cursor: "pointer" };
 };
 
-const handleSizeChange = (val: number) => {
+const onSizeChange = (val: number) => {
   listForm.value.pageSize = val;
   loadList(selectedOrgId.value).then(() => {
     if (props.multiple) {
@@ -300,7 +300,7 @@ const handleSizeChange = (val: number) => {
   });
 };
 
-const handlePageChange = (val: number) => {
+const onPageChange = (val: number) => {
   listForm.value.pageNum = val;
   loadList(selectedOrgId.value).then(() => {
     if (props.multiple) {
@@ -311,7 +311,7 @@ const handlePageChange = (val: number) => {
   });
 };
 
-const handleConfirm = () => {
+const onConfirm = () => {
   let result: GetUserListVo | GetUserListVo[] | null = null;
 
   if (props.multiple) {
@@ -332,7 +332,7 @@ const handleConfirm = () => {
   visible.value = false;
 };
 
-const handleCancel = () => {
+const onCancel = () => {
   visible.value = false;
   if (promiseReject) {
     promiseReject("cancel");

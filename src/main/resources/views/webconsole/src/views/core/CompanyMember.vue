@@ -67,7 +67,7 @@
               link
               type="danger"
               size="small"
-              @click="handleFireMember(scope.row)"
+              @click="onFireMember(scope.row)"
               :icon="DeleteIcon"
             >
               开除
@@ -102,7 +102,7 @@
   </StdListLayout>
 
   <!-- 用户选择模态框 -->
-  <UserModal v-if="!noActiveCompany" v-model="userModalVisible" :allow-select="true" @on-user-selected="handleUserSelected" />
+  <UserModal v-if="!noActiveCompany" v-model="userModalVisible" :allow-select="true" @on-user-selected="onUserSelected" />
 </template>
 
 <script setup lang="ts">
@@ -185,7 +185,7 @@ const openInviteModal = () => {
   userModalVisible.value = true;
 };
 
-const handleUserSelected = async (user: GetUserListVo) => {
+const onUserSelected = async (user: GetUserListVo) => {
   if (!companyId.value || !user.id) {
     ElMessage.error("缺少必要参数");
     return;
@@ -212,7 +212,7 @@ const handleUserSelected = async (user: GetUserListVo) => {
   }
 };
 
-const handleFireMember = async (member: GetCompanyMemberListVo) => {
+const onFireMember = async (member: GetCompanyMemberListVo) => {
   if (member.role === 0) {
     await ElMessageBox.confirm(
       `CEO作为公司的最高管理者，无法被开除。<br/><br/>如需调整职务，请先进行CEO权限职务交接。`,

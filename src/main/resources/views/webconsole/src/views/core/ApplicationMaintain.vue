@@ -50,7 +50,7 @@ const executeMaintainOperation = async (operationKey: keyof typeof operationLoad
   }
 };
 
-const handleOperationClick = (operation: MaintainOperation) => {
+const onOperationClick = (operation: MaintainOperation) => {
   const performAction = async () => {
     await operation.action();
     if (operation.onComplete) {
@@ -175,7 +175,7 @@ const maintainOperations: MaintainOperation[] = [
         <div class="card-content">
           <h3 class="card-title">{{ operation.title }}</h3>
           <p class="card-description">{{ operation.description }}</p>
-          <el-button type="primary" :loading="operationLoading[operation.key]" @click="handleOperationClick(operation)" class="card-button">
+          <el-button type="primary" :loading="operationLoading[operation.key]" @click="onOperationClick(operation)" class="card-button">
             <el-icon class="button-icon"><component :is="operation.icon" /></el-icon>
             {{ operation.buttonText }}
           </el-button>

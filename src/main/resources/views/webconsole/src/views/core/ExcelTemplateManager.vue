@@ -167,7 +167,7 @@
         <el-upload
           ref="uploadRef"
           :auto-upload="false"
-          :on-change="handleFileChange"
+          :on-change="onFileChange"
           :file-list="fileList"
           :disabled="uploadLoading"
           accept=".xlsx"
@@ -337,7 +337,7 @@ const resetUploadDialog = () => {
   uploadRef.value?.clearFiles();
 };
 
-const handleFileChange = (file: UploadFile, fileListParam: UploadFile[]) => {
+const onFileChange = (file: UploadFile, fileListParam: UploadFile[]) => {
   if (!file.name.endsWith(".xlsx")) {
     ElMessage.error(`文件 ${file.name} 格式错误：只能上传.xlsx格式的文件`);
     uploadRef.value?.handleRemove(file);

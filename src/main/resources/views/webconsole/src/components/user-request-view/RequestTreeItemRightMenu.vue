@@ -1,21 +1,21 @@
 <template>
   <div v-show="visible" ref="menuRef" class="context-menu" :style="{ left: x + 'px', top: y + 'px' }" @click.stop>
-    <div v-if="node?.type === 0" class="menu-item" @click="handleAddSubGroup">
+    <div v-if="node?.type === 0" class="menu-item" @click="onAddSubGroup">
       <el-icon><Plus /></el-icon>
       <span>新建子组</span>
     </div>
 
-    <div class="menu-item" @click="handleEdit">
+    <div class="menu-item" @click="onEdit">
       <el-icon><Edit /></el-icon>
       <span>编辑{{ node?.type === 0 ? "分组" : "请求" }}</span>
     </div>
 
-    <div class="menu-item" @click="handleCopy">
+    <div class="menu-item" @click="onCopy">
       <el-icon><CopyDocument /></el-icon>
       <span>复制{{ node?.type === 0 ? "分组" : "请求" }}</span>
     </div>
 
-    <div class="menu-item" @click="handleDelete">
+    <div class="menu-item" @click="onDelete">
       <el-icon><Delete /></el-icon>
       <span>删除{{ node?.type === 0 ? "分组" : "请求" }}</span>
     </div>
@@ -27,7 +27,7 @@
     :title="`编辑${node?.type === 0 ? '分组' : '请求'}`"
     width="400px"
     class="modal-centered"
-    @keyup.enter="handleConfirmEdit"
+    @keyup.enter="onConfirmEdit"
     @opened="focusModalEdit"
   >
     <el-form ref="editFormRef" :model="editForm" :rules="editRules" label-width="80px">
@@ -38,7 +38,7 @@
     <template #footer>
       <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
         <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmEdit" :loading="editLoading">保存</el-button>
+        <el-button type="primary" @click="onConfirmEdit" :loading="editLoading">保存</el-button>
       </span>
     </template>
   </el-dialog>
@@ -49,7 +49,7 @@
     :title="`为 [${node?.name}] 新建子组`"
     width="400px"
     class="modal-centered"
-    @keyup.enter="handleConfirmAddSubGroup"
+    @keyup.enter="onConfirmAddSubGroup"
     @opened="focusModalAddSubGroup"
   >
     <el-form ref="addSubGroupFormRef" :model="addSubGroupForm" :rules="addSubGroupRules" label-width="80px">
@@ -60,7 +60,7 @@
     <template #footer>
       <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
         <el-button @click="addSubGroupDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmAddSubGroup" :loading="addSubGroupLoading">创建</el-button>
+        <el-button type="primary" @click="onConfirmAddSubGroup" :loading="addSubGroupLoading">创建</el-button>
       </span>
     </template>
   </el-dialog>
@@ -124,7 +124,7 @@ const addSubGroupRules = {
 };
 
 // 处理编辑
-const handleEdit = () => {
+const onEdit = () => {
   if (!props.node) return;
 
   editForm.value.name = props.node.name;
@@ -133,7 +133,7 @@ const handleEdit = () => {
 };
 
 // 确认编辑
-const handleConfirmEdit = async () => {
+const onConfirmEdit = async () => {
   if (!editFormRef.value || !props.node) return;
 
   try {
@@ -165,7 +165,7 @@ const handleConfirmEdit = async () => {
 };
 
 // 处理复制
-const handleCopy = async () => {
+const onCopy = async () => {
   if (!props.node) return;
 
   try {
@@ -179,7 +179,7 @@ const handleCopy = async () => {
 };
 
 // 处理新建子组
-const handleAddSubGroup = () => {
+const onAddSubGroup = () => {
   if (!props.node || props.node.type !== 0) return;
 
   addSubGroupForm.value.name = "";
@@ -188,7 +188,7 @@ const handleAddSubGroup = () => {
 };
 
 // 确认新建子组
-const handleConfirmAddSubGroup = async () => {
+const onConfirmAddSubGroup = async () => {
   if (!addSubGroupFormRef.value || !props.node) return;
 
   try {
@@ -216,7 +216,7 @@ const handleConfirmAddSubGroup = async () => {
 };
 
 // 处理删除
-const handleDelete = async () => {
+const onDelete = async () => {
   if (!props.node) return;
 
   const nodeType = props.node.type === 0 ? "分组" : "请求";

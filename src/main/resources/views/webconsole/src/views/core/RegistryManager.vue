@@ -15,18 +15,18 @@
             <el-form :model="listForm" inline class="flex justify-between">
               <div>
                 <el-form-item label="条目Key">
-                  <el-input v-model="listForm.nkey" placeholder="输入条目Key" clearable @keyup.enter="handleSearch" />
+                  <el-input v-model="listForm.nkey" placeholder="输入条目Key" clearable @keyup.enter="onSearch" />
                 </el-form-item>
                 <el-form-item label="标签">
-                  <el-input v-model="listForm.label" placeholder="输入标签" clearable @keyup.enter="handleSearch" />
+                  <el-input v-model="listForm.label" placeholder="输入标签" clearable @keyup.enter="onSearch" />
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-dropdown split-button type="primary" @click="handleSearch" :disabled="listLoading || !currentKeyPath">
+                <el-dropdown split-button type="primary" @click="onSearch" :disabled="listLoading || !currentKeyPath">
                   查询
                   <template #dropdown>
                     <el-dropdown-menu>
-                      <el-dropdown-item :icon="DownloadIcon" @click="handleExport">导出查询结果</el-dropdown-item>
+                      <el-dropdown-item :icon="DownloadIcon" @click="onExport">导出查询结果</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -245,7 +245,7 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
 /**
  * 触发查询动作
  */
-const handleSearch = () => {
+const onSearch = () => {
   listForm.value.pageNum = 1; // 重置为第一页
   loadList(currentKeyPath.value);
 };
@@ -253,7 +253,7 @@ const handleSearch = () => {
 /**
  * 导出查询结果
  */
-const handleExport = async () => {
+const onExport = async () => {
   if (!currentKeyPath.value) {
     ElMessage.warning("请先选择节点");
     return;

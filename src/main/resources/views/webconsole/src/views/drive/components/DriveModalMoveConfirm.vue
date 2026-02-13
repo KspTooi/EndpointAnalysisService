@@ -14,9 +14,9 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleCancel">取消</el-button>
-        <el-button @click="handleSkip">跳过</el-button>
-        <el-button type="primary" @click="handleOverwrite">覆盖</el-button>
+        <el-button @click="onCancel">取消</el-button>
+        <el-button @click="onSkip">跳过</el-button>
+        <el-button type="primary" @click="onOverwrite">覆盖</el-button>
       </div>
     </template>
   </el-dialog>
@@ -44,7 +44,7 @@ const openModal = (names: string[]): Promise<number> => {
   });
 };
 
-const handleOverwrite = () => {
+const onOverwrite = () => {
   const action = 0;
   modalVisible.value = false;
   if (resolvePromise) {
@@ -53,7 +53,7 @@ const handleOverwrite = () => {
   }
 };
 
-const handleSkip = () => {
+const onSkip = () => {
   const action = 1;
   modalVisible.value = false;
   if (resolvePromise) {
@@ -62,7 +62,7 @@ const handleSkip = () => {
   }
 };
 
-const handleCancel = () => {
+const onCancel = () => {
   const action = -1;
   modalVisible.value = false;
   if (resolvePromise) {
@@ -99,7 +99,7 @@ watch(modalVisible, (val) => {
 //快捷键功能打包
 GenricHotkeyService.useHotkeyFunction(
   {
-    enter: handleOverwrite,
+    enter: onOverwrite,
   },
   modalVisible,
   true

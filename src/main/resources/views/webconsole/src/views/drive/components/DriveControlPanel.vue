@@ -7,9 +7,9 @@
           v-model="keyword"
           placeholder="在团队云盘中搜索..."
           clearable
-          @clear="handleSearch"
-          @keyup.enter="handleSearch"
-          @input="handleSearchInput"
+          @clear="onSearch"
+          @keyup.enter="onSearch"
+          @input="onSearchInput"
           class="search-input"
         >
           <template #prefix>
@@ -20,7 +20,7 @@
       </div>
 
       <div class="info-action-group">
-        <div class="drive-info-section" @click="handleRefreshDriveInfo">
+        <div class="drive-info-section" @click="onRefreshDriveInfo">
           <el-tooltip effect="dark" placement="bottom">
             <template #content>
               <div class="drive-info-tooltip">
@@ -47,7 +47,7 @@
         </div>
 
         <div class="action-section">
-          <el-button type="success" @click="handleUploadQueue" class="action-btn">
+          <el-button type="success" @click="onViewUploadQueue" class="action-btn">
             <el-icon><Upload /></el-icon>
             <span
               >查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span
@@ -60,7 +60,7 @@
     <!-- 下层：目录路径 -->
     <div v-show="reversedPaths.length > 0">
       <div class="path-section">
-        <DriveControlPanelPaths :paths="reversedPaths" @on-path-change="handlePathClick" />
+        <DriveControlPanelPaths :paths="reversedPaths" @on-path-change="onPathClick" />
       </div>
     </div>
   </div>
@@ -155,7 +155,7 @@ const loadDriveInfo = async () => {
   }
 };
 
-const handleRefreshDriveInfo = async () => {
+const onRefreshDriveInfo = async () => {
   const result = await DriveApi.getDriveInfo();
   emit("refresh-drive-info", result);
   if (result.code === 0) {
@@ -166,11 +166,11 @@ const handleRefreshDriveInfo = async () => {
   ElMessage.error("刷新云盘信息失败");
 };
 
-const handleSearch = () => {
+const onSearch = () => {
   emit("on-search", keyword.value);
 };
 
-const handleSearchInput = () => {
+const onSearchInput = () => {
   if (searchTimer) {
     clearTimeout(searchTimer);
   }
@@ -180,11 +180,11 @@ const handleSearchInput = () => {
   }, 500);
 };
 
-const handleUploadQueue = () => {
+const onViewUploadQueue = () => {
   emit("open-upload-queue");
 };
 
-const handlePathClick = (path: GetEntryListPathVo | null) => {
+const onPathClick = (path: GetEntryListPathVo | null) => {
   emit("on-path-change", path as any);
 };
 

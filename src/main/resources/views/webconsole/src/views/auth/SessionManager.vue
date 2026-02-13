@@ -39,7 +39,7 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
-            <el-button link type="danger" size="small" @click="handleCloseSession(scope.row)" :icon="CloseIcon">
+            <el-button link type="danger" size="small" @click="onCloseSession(scope.row)" :icon="CloseIcon">
               关闭会话
             </el-button>
           </template>
@@ -177,7 +177,7 @@ const openModal = async (row: GetSessionListVo) => {
   }
 };
 
-const handleCloseSession = async (row: GetSessionListVo) => {
+const onCloseSession = async (row: GetSessionListVo) => {
   try {
     await ElMessageBox.confirm(`确定要关闭用户 ${row.username} 的会话吗？`, "警告", {
       confirmButtonText: "确定",

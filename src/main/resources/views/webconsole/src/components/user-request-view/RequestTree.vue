@@ -7,7 +7,7 @@
     </div>
 
     <div class="tag-tree-search">
-      <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="handleSearch" clearable />
+      <el-input v-model="searchValue" placeholder="输入任意字符查询" size="small" @input="onSearch" clearable />
       <el-button type="primary" @click="loadUserRequestTree" size="small">加载数据</el-button>
       <el-button type="primary" @click="showCreateGroupDialog" size="small">新建组</el-button>
       <div v-if="isRootDragOver" class="root-drop-hint">拖拽到此处以移动到根级别</div>
@@ -16,10 +16,10 @@
     <div
       class="tag-tree-body"
       ref="tagTreeBodyRef"
-      @dragenter="handleRootDragEnter"
-      @dragover.prevent="handleRootDragOver"
-      @drop.prevent="handleRootDrop"
-      @dragleave="handleRootDragLeave"
+      @dragenter="onRootDragEnter"
+      @dragover.prevent="onRootDragOver"
+      @drop.prevent="onRootDrop"
+      @dragleave="onRootDragLeave"
     >
       <div v-if="treeData.length === 0" class="empty-tree">
         <el-empty description="没有任何对象" />
@@ -32,9 +32,9 @@
         :active-nodes="RequestTreeHolder().getExpandedNodeIds"
         :active-request-id="RequestTreeHolder().getActiveNodeId"
         :child-index="index"
-        @toggle-node="handleToggleNode"
+        @toggle-node="onToggleNode"
         @select-request="RequestTreeHolder().setActiveNodeId"
-        @right-click="handleRightClick"
+        @right-click="onRightClick"
         @apply-tree="onTreeApplied"
       />
     </div>
@@ -45,7 +45,7 @@
       :x="rightMenuX"
       :y="rightMenuY"
       :node="rightMenuNode"
-      @close="handleRightMenuClose"
+      @close="onRightMenuClose"
       @refresh="EventHolder().requestReloadTree"
     />
 
@@ -55,8 +55,8 @@
       title="创建请求组"
       width="400px"
       destroy-on-close
-      @opened="handleGroupDialogOpened"
-      @keyup.enter="handleCreateGroup"
+      @opened="onGroupDialogOpened"
+      @keyup.enter="onCreateGroup"
     >
       <el-form ref="createGroupFormRef" :model="createGroupForm" :rules="createGroupRules" label-width="80px">
         <el-form-item label="组名称" prop="name">
@@ -66,7 +66,7 @@
       <template #footer>
         <span class="dialog-footer" style="gap: 10px; display: flex; justify-content: right">
           <el-button @click="createGroupDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleCreateGroup" :loading="createGroupLoading">创建</el-button>
+          <el-button type="primary" @click="onCreateGroup" :loading="createGroupLoading">创建</el-button>
         </span>
       </template>
     </el-dialog>
@@ -200,7 +200,7 @@ const cleanupActiveNodes = () => {
   }
 };
 
-const handleSearch = () => {
+const onSearch = () => {
   if (searchTimer) {
     clearTimeout(searchTimer);
   }
@@ -210,14 +210,14 @@ const handleSearch = () => {
 };
 
 // 右键菜单处理
-const handleRightClick = (event: { node: GetUserRequestTreeVo; x: number; y: number }) => {
+const onRightClick = (event: { node: GetUserRequestTreeVo; x: number; y: number }) => {
   rightMenuNode.value = event.node;
   rightMenuX.value = event.x;
   rightMenuY.value = event.y;
   rightMenuVisible.value = true;
 };
 
-const handleRightMenuClose = () => {
+const onRightMenuClose = () => {
   rightMenuVisible.value = false;
 };
 
@@ -231,12 +231,12 @@ const showCreateGroupDialog = () => {
 };
 
 //聚焦到输入框
-const handleGroupDialogOpened = () => {
+const onGroupDialogOpened = () => {
   createGroupInputRef.value?.focus();
 };
 
 // 根级拖拽处理
-const handleRootDragEnter = (event: DragEvent) => {
+const onRootDragEnter = (event: DragEvent) => {
   if (!event.dataTransfer) return;
   event.preventDefault();
   event.stopPropagation();
@@ -246,14 +246,14 @@ const handleRootDragEnter = (event: DragEvent) => {
   }
 };
 
-const handleRootDragOver = (event: DragEvent) => {
+const onRootDragOver = (event: DragEvent) => {
   if (!event.dataTransfer) return;
   event.preventDefault();
   event.stopPropagation();
   event.dataTransfer.dropEffect = "move";
 };
 
-const handleRootDragLeave = () => {
+const onRootDragLeave = () => {
   rootDragCounter--;
   if (rootDragCounter <= 0) {
     isRootDragOver.value = false;
@@ -265,7 +265,7 @@ const handleRootDragLeave = () => {
  * 根级拖拽处理
  * @param event 拖拽事件
  */
-const handleRootDrop = async (event: DragEvent) => {
+const onRootDrop = async (event: DragEvent) => {
   if (!event.dataTransfer) return;
   event.preventDefault();
   event.stopPropagation();
@@ -347,7 +347,7 @@ const onDocumentDrop = async (event: DragEvent) => {
   }
 };
 
-const handleCreateGroup = async () => {
+const onCreateGroup = async () => {
   if (!createGroupFormRef.value) return;
 
   try {
@@ -407,7 +407,7 @@ watch(
  * 处理节点展开/折叠
  * @param nodeId 节点ID
  */
-const handleToggleNode = (nodeId: string) => {
+const onToggleNode = (nodeId: string) => {
   //如果节点已展开，则折叠
   if (RequestTreeHolder().getExpandedNodeIds.includes(nodeId)) {
     RequestTreeHolder().setExpandedNodeIds(RequestTreeHolder().getExpandedNodeIds.filter((id) => id !== nodeId));

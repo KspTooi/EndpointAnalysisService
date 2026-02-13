@@ -7,7 +7,7 @@
     append-to-body
     destroy-on-close
     class="core-org-dept-select-modal"
-    @opened="handleOpened"
+    @opened="onOpened"
   >
     <div class="modal-body" v-loading="loading">
       <div class="tree-container">
@@ -23,10 +23,10 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleCancel">取消</el-button>
+        <el-button @click="onCancel">取消</el-button>
         <el-button
           type="primary"
-          @click="handleConfirm"
+          @click="onConfirm"
           :disabled="multiple ? validDeptCount === 0 : !selectedNode"
         >
           确定{{ multiple && validDeptCount > 0 ? `(${validDeptCount})` : "" }}
@@ -90,7 +90,7 @@ watch(
 /**
  * 弹窗打开后处理逻辑
  */
-const handleOpened = async () => {
+const onOpened = async () => {
   loading.value = true;
   try {
     // 等待树数据加载完成后再初始化选中状态
@@ -160,7 +160,7 @@ const initSelection = () => {
   }
 };
 
-const handleConfirm = () => {
+const onConfirm = () => {
   let result: GetOrgTreeVo | GetOrgTreeVo[] | null = null;
   
   if (props.multiple) {
@@ -182,7 +182,7 @@ const handleConfirm = () => {
   visible.value = false;
 };
 
-const handleCancel = () => {
+const onCancel = () => {
   visible.value = false;
   if (promiseReject) promiseReject("cancel");
   emit("cancel");

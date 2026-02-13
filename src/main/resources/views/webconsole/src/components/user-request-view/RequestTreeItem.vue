@@ -12,17 +12,17 @@
         'drag-over-top': dragHoverZone === 'top',
         'drag-over-bottom': dragHoverZone === 'bottom',
       }"
-      @click="handleNodeClick(node)"
-      @contextmenu.prevent="handleRightClick"
+      @click="onNodeClick(node)"
+      @contextmenu.prevent="onRightClick"
       draggable="true"
-      @dragstart="handleDragStart"
-      @dragover.prevent="handleDragOver"
-      @dragleave="handleDragLeave"
-      @drop.prevent="handleDrop"
+      @dragstart="onDragStart"
+      @dragover.prevent="onDragOver"
+      @dragleave="onDragLeave"
+      @drop.prevent="onDrop"
     >
       <!-- 请求组的显示 -->
       <div v-if="isGroup(node)" class="tag-tree-item-tag">
-        <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="handleToggleNode(node.id)">
+        <el-icon v-if="hasChildren(node)" class="expand-icon" @click.stop="onToggleNode(node.id)">
           <ArrowRight v-if="!isExpanded(node.id)" />
           <ArrowDown v-if="isExpanded(node.id)" />
         </el-icon>
@@ -122,20 +122,20 @@ const getMethodClass = (method: string | undefined) => {
   return knownMethods.includes(lowerMethod) ? `method-${lowerMethod}` : "method-unknown";
 };
 
-const handleToggleNode = (nodeId: string) => {
+const onToggleNode = (nodeId: string) => {
   emit("toggle-node", nodeId);
 };
 
-const handleSelectRequest = (requestId: string) => {
+const onSelectRequest = (requestId: string) => {
   emit("select-request", requestId);
 };
 
 //处理Tree节点 点击
-const handleNodeClick = (node: GetUserRequestTreeVo) => {
+const onNodeClick = (node: GetUserRequestTreeVo) => {
   //处理Group
   if (isGroup(node)) {
     if (hasChildren(node)) {
-      handleToggleNode(node.id);
+      onToggleNode(node.id);
     }
     //更新RequstTree状态
     RequestTreeHolder().setActiveNodeId(node.id);
@@ -146,7 +146,7 @@ const handleNodeClick = (node: GetUserRequestTreeVo) => {
 
   //处理Request
   if (!isGroup(node)) {
-    handleSelectRequest(node.requestId);
+    onSelectRequest(node.requestId);
     RequestTreeHolder().setActiveNodeId(node.id);
     RequestTreeHolder().setActiveNodeType("request");
     RequestTreeHolder().setActiveRequestId(node.requestId);
@@ -154,7 +154,7 @@ const handleNodeClick = (node: GetUserRequestTreeVo) => {
   }
 };
 
-const handleRightClick = (event: MouseEvent) => {
+const onRightClick = (event: MouseEvent) => {
   emit("right-click", {
     node: props.node,
     x: event.clientX,
@@ -176,14 +176,14 @@ const serializeDragData = (n: GetUserRequestTreeVo) =>
   });
 
 // 事件: 开始拖拽
-const handleDragStart = (event: DragEvent) => {
+const onDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return;
   event.dataTransfer.setData("application/json", serializeDragData(props.node));
   event.dataTransfer.effectAllowed = "move";
 };
 
 // 事件: 悬停
-const handleDragOver = (event: DragEvent) => {
+const onDragOver = (event: DragEvent) => {
   const target = event.currentTarget as HTMLElement;
   const rect = target.getBoundingClientRect();
   const y = event.clientY - rect.top;
@@ -200,12 +200,12 @@ const handleDragOver = (event: DragEvent) => {
 };
 
 // 事件: 离开
-const handleDragLeave = () => {
+const onDragLeave = () => {
   dragHoverZone.value = null;
 };
 
 // 事件: 放置
-const handleDrop = async (event: DragEvent) => {
+const onDrop = async (event: DragEvent) => {
   const zone = dragHoverZone.value;
   dragHoverZone.value = null;
   try {

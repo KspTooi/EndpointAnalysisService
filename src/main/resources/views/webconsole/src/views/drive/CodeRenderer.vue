@@ -122,7 +122,7 @@ const generateLineNumbers = (html: string) => {
 /**
  * 复制代码到剪贴板
  */
-const handleCopy = async () => {
+const onCopy = async () => {
   if (!codeContent.value) return;
   try {
     await navigator.clipboard.writeText(codeContent.value);
@@ -152,7 +152,7 @@ watch(
         <span class="file-lang" v-if="detectedLanguage">({{ detectedLanguage }})</span>
       </div>
       <div class="actions">
-        <el-button link type="primary" @click="handleCopy">
+        <el-button link type="primary" @click="onCopy">
           <el-icon><DocumentCopy /></el-icon> 复制
         </el-button>
       </div>
