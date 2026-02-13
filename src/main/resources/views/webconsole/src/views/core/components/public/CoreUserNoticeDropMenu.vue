@@ -1,50 +1,51 @@
 <template>
   <el-dropdown trigger="click" @visible-change="handleVisibleChange">
-    <div class="notice-bell">
+    <div class="flex items-center justify-center px-3 h-full cursor-pointer transition-colors hover:bg-black/5">
       <el-badge :value="processedCount" :hidden="count === 0" :max="99">
-        <el-icon :size="20">
+        <el-icon :size="20" class="text-gray-600">
           <Bell />
         </el-icon>
       </el-badge>
     </div>
     <template #dropdown>
-      <div class="notice-dropdown">
-        <div class="notice-header">
+      <div class="w-80 rounded overflow-hidden bg-white">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 font-bold text-sm">
           <span>通知中心 (未读数:{{ count }})</span>
           <el-button v-if="listData.length > 0" link type="primary" @click="readAllNotice">全部已读</el-button>
         </div>
 
-        <div class="notice-list-container">
+        <div class="notice-scroll-container">
           <ul
             v-if="listData.length > 0 || loading"
             v-infinite-scroll="loadMore"
             :infinite-scroll-disabled="disabled"
-            class="notice-list"
+            class="list-none p-0 m-0"
           >
-            <li v-for="item in listData" :key="item.id" class="notice-item" @click="handleRead(item)">
-              <div class="item-icon">
+            <li 
+              v-for="item in listData" 
+              :key="item.id" 
+              class="group flex px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 hover:bg-gray-50" 
+              @click="handleRead(item)"
+            >
+              <div class="mr-3 flex items-center">
                 <el-avatar :size="32" :icon="getIcon(item.kind)" :class="getIconClass(item.kind)" />
               </div>
-              <div class="item-content">
-                <div class="item-title" :title="item.title">{{ item.title }}</div>
-                <div class="item-time">{{ item.createTime }}</div>
+              <div class="flex-1 overflow-hidden">
+                <div class="text-sm text-gray-900 mb-1 truncate" :title="item.title">{{ item.title }}</div>
+                <div class="text-xs text-gray-500">{{ item.createTime }}</div>
               </div>
-              <div class="item-actions">
-                <el-button link type="danger" :icon="Delete" @click.stop="handleDelete(item)"></el-button>
+              <div class="hidden group-hover:flex items-center ml-2">
+                <el-button link type="danger" :icon="Delete" class="!p-1" @click.stop="handleDelete(item)"></el-button>
               </div>
             </li>
-            <li v-if="loading" class="loading-text">加载中...</li>
-            <li v-if="noMore && listData.length > 0" class="no-more-text">没有更多了</li>
+            <li v-if="loading" class="text-center py-2.5 text-xs text-gray-500">加载中...</li>
+            <li v-if="noMore && listData.length > 0" class="text-center py-2.5 text-xs text-gray-500">没有更多了</li>
           </ul>
 
-          <div v-if="listData.length === 0 && !loading" class="notice-empty">
+          <div v-if="listData.length === 0 && !loading" class="py-5">
             <el-empty description="暂无新通知" :image-size="60" />
           </div>
         </div>
-
-        <!-- <div class="notice-footer">
-          <el-button link @click="handleViewMore">查看更多</el-button>
-        </div> -->
       </div>
     </template>
   </el-dropdown>
@@ -195,152 +196,39 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
-.notice-bell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-  height: 100%;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .el-icon {
-    color: var(--el-text-color-regular);
-  }
+<style scoped>
+/* 自定义滚动条样式 */
+.notice-scroll-container {
+  height: 300px;
+  overflow-y: auto;
 }
 
-.notice-dropdown {
-  width: 320px;
-  background-color: var(--el-bg-color-overlay);
-  border-radius: 4px;
-  overflow: hidden;
+.notice-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
 
-  .notice-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--el-border-color-lighter);
-    font-weight: bold;
-    font-size: 14px;
-  }
+.notice-scroll-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
 
-  .notice-list-container {
-    height: 300px;
-    overflow-y: auto;
+.notice-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-    /* 自定义滚动条 */
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: var(--el-border-color);
-      border-radius: 3px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-  }
+/* Element Plus Avatar 颜色类 */
+.kind-notice {
+  background-color: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+}
 
-  .notice-empty {
-    padding: 20px 0;
-  }
+.kind-alert {
+  background-color: var(--el-color-warning-light-8);
+  color: var(--el-color-warning);
+}
 
-  .notice-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    .notice-item {
-      display: flex;
-      padding: 12px 16px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      border-bottom: 1px solid var(--el-border-color-extra-light);
-
-      &:hover {
-        background-color: var(--el-fill-color-light);
-      }
-
-      .item-icon {
-        margin-right: 12px;
-        display: flex;
-        align-items: center;
-
-        .kind-notice {
-          background-color: var(--el-color-primary-light-8);
-          color: var(--el-color-primary);
-        }
-        .kind-alert {
-          background-color: var(--el-color-warning-light-8);
-          color: var(--el-color-warning);
-        }
-        .kind-message {
-          background-color: var(--el-color-success-light-8);
-          color: var(--el-color-success);
-        }
-      }
-
-      .item-content {
-        flex: 1;
-        overflow: hidden;
-
-        .item-title {
-          font-size: 14px;
-          color: var(--el-text-color-primary);
-          margin-bottom: 4px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .item-time {
-          font-size: 12px;
-          color: var(--el-text-color-secondary);
-        }
-      }
-
-      .item-actions {
-        display: none;
-        align-items: center;
-        margin-left: 8px;
-
-        .el-button {
-          padding: 4px;
-        }
-      }
-
-      &:hover {
-        background-color: var(--el-fill-color-light);
-
-        .item-actions {
-          display: flex;
-        }
-      }
-    }
-
-    .loading-text,
-    .no-more-text {
-      text-align: center;
-      padding: 10px;
-      color: var(--el-text-color-secondary);
-      font-size: 12px;
-    }
-  }
-
-  .notice-footer {
-    padding: 8px;
-    text-align: center;
-    border-top: 1px solid var(--el-border-color-lighter);
-
-    .el-button {
-      width: 100%;
-    }
-  }
+.kind-message {
+  background-color: var(--el-color-success-light-8);
+  color: var(--el-color-success);
 }
 </style>
