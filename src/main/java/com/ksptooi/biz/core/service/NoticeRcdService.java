@@ -88,13 +88,13 @@ public class NoticeRcdService {
 
         //把这些已经查询出来的RcdPo设为已读
         for (var rcdPo : rcdPpos.getContent()) {
-            if(rcdPo.getReadTime() == null){
+            if (rcdPo.getReadTime() == null) {
                 needUpdate = true;
                 rcdPo.setReadTime(LocalDateTime.now());
             }
         }
-        
-        if(needUpdate){ 
+
+        if (needUpdate) {
             repository.saveAll(rcdPpos.getContent());
         }
 
@@ -113,7 +113,7 @@ public class NoticeRcdService {
 
         //消息记录Po转Vo
         List<GetUserNoticeRcdListVo> vos = as(noticeRcdPos, GetUserNoticeRcdListVo.class);
-        return PageResult.success(vos,rcdPpos.getTotalElements());
+        return PageResult.success(vos, rcdPpos.getTotalElements());
     }
 
     /**
