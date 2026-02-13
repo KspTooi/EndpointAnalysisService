@@ -24,30 +24,40 @@ const vueRouter = createRouter({
       path: "/:pathMatch(.*)*",
       name: "NotFound",
       component: RouteNotFound,
+      meta: {
+        layout: "blank",
+      },
     },
   ],
 });
 
 // 路由守卫
 vueRouter.beforeEach((to, from, next) => {
-  // 当访问根路径 '/' 时进行检测
-  if (to.path === "/") {
-    const tabStore = useTabStore();
-
-    //如果有激活的标签页
-    if (tabStore.activeTabId) {
-      // 在标签列表中查找该标签的具体信息
-      const activeTab = tabStore.tabs.find((t) => t.id === tabStore.activeTabId);
-
-      // 如果找到了激活的标签且其路径不是当前根路径，则跳转
-      if (activeTab && activeTab.path !== "/") {
-        return next(activeTab.path);
-      }
-    }
+  // 仅在访问根路径时尝试恢复标签页，其他路径直接放行
+  if (to.path !== "/") {
+    return next();
   }
 
-  // 其他情况或没有激活标签时，继续正常访问
-  next();
+  const tabStore = useTabStore();
+  const activeTab = tabStore.tabs.find((t) => t.id === tabStore.activeTabId);
+
+  // 优先恢复当前激活标签，但排除根路径和登录页，避免自跳转/无意义跳转
+  if (activeTab && activeTab.path !== "/" && activeTab.path !== "/auth/login" && activeTab.path !== to.path) {
+    return next(activeTab.path);
+  }
+
+  // 激活标签不可用时，回退到最近访问的业务标签（同样排除根路径和登录页）
+  const fallbackTab = [...tabStore.tabs]
+    .reverse()
+    .find((t) => t.path !== "/" && t.path !== "/auth/login");
+
+  // 防止重定向到当前目标，避免产生循环跳转
+  if (fallbackTab && fallbackTab.path !== to.path) {
+    return next(fallbackTab.path);
+  }
+
+  // 无可恢复标签时停留在根路径
+  return next();
 });
 
 export default {

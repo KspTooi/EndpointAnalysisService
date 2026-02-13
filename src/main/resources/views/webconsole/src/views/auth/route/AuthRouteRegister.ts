@@ -1,6 +1,7 @@
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 import type { NavigationGuardWithThis, NavigationHookAfter } from "vue-router";
+import UserAuthService from "../service/UserAuthService";
 
 export default class AuthRouteRegister extends GenricRouteRegister {
   /**
@@ -20,13 +21,15 @@ export default class AuthRouteRegister extends GenricRouteRegister {
   }
 
   public override doBeforeEach(): NavigationGuardWithThis<undefined> {
+    const authStore = UserAuthService.AuthStore();
+
     return (to, from, next) => {
-      //如果访问了login
-      if (to.name === "login") {
-        console.log("访问了login");
+      //如果访问了login 且用户已登录 则跳转到首页
+      if (to.name === "login" && authStore.getSessionId) {
+        console.log(authStore.getSessionId);
+        return next("/");
       }
 
-      console.log("doBeforeEach", to, from, next);
       next();
     };
   }
