@@ -114,8 +114,8 @@ const avatarUrl = computed(() => {
 });
 
 const genderText = computed(() => {
-  if (props.profile?.gender === 1) return "男";
-  if (props.profile?.gender === 2) return "女";
+  if (props.profile?.gender === 0) return "男";
+  if (props.profile?.gender === 1) return "女";
   return "保密";
 });
 </script>
