@@ -48,6 +48,48 @@
       </div>
     </template>
   </el-dropdown>
+
+  <!-- 通知详情模态框 -->
+  <el-dialog v-model="modalVisible" title="通知详情" width="600px" @close="closeModal" :close-on-click-modal="false">
+    <div v-loading="modalLoading" class="min-h-[200px] select-text">
+      <template v-if="detailsData">
+        <!-- 标题和标签 -->
+        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-200">
+          <h3 class="flex-1 m-0 text-lg font-bold text-gray-900">{{ detailsData.title }}</h3>
+          <el-tag v-if="detailsData.kind === 0" type="primary">公告</el-tag>
+          <el-tag v-if="detailsData.kind === 1" type="warning">业务提醒</el-tag>
+          <el-tag v-if="detailsData.kind === 2" type="success">私信</el-tag>
+        </div>
+
+        <!-- 元信息 -->
+        <div class="flex flex-col gap-2 mb-5">
+          <div class="flex text-sm">
+            <span class="text-gray-500 min-w-[80px]">发送人：</span>
+            <span class="text-gray-900">{{ detailsData.senderName || "系统" }}</span>
+          </div>
+          <div class="flex text-sm">
+            <span class="text-gray-500 min-w-[80px]">发送时间：</span>
+            <span class="text-gray-900">{{ detailsData.createTime }}</span>
+          </div>
+          <div v-if="detailsData.category" class="flex text-sm">
+            <span class="text-gray-500 min-w-[80px]">分类：</span>
+            <span class="text-gray-900">{{ detailsData.category }}</span>
+          </div>
+        </div>
+
+        <!-- 通知内容 -->
+        <div>
+          <div class="text-sm font-bold text-gray-900 mb-3">通知内容：</div>
+          <div class="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap break-words" v-html="detailsData.content"></div>
+        </div>
+      </template>
+    </div>
+
+    <template #footer>
+      <el-button @click="closeModal">关闭</el-button>
+      <el-button v-if="detailsData?.forward" type="primary" @click="handleForward"> 前往查看 </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -69,6 +111,7 @@ const {
   removeNotice,
   readAllNotice,
 } = UserNoticeService.useUserNoticeDropList(loadCount);
+const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserNoticeService.useUserNoticeModal();
 
 /**
  * 下拉框显示状态变化
@@ -118,11 +161,8 @@ const getIconClass = (kind: number) => {
  * 点击通知项
  */
 const handleRead = (item: GetUserNoticeRcdListVo) => {
-  // 后端查询时已自动标记为已读，无需手动调用接口
-  if (item.forward) {
-    // 如果有跳转地址，可以在这里处理跳转逻辑
-    // router.push(item.forward);
-  }
+  // 打开详情模态框
+  openModal(item.id);
 };
 
 /**
@@ -136,6 +176,18 @@ const handleDelete = (item: GetUserNoticeRcdListVo) => {
   }).then(() => {
     removeNotice(item.id);
   });
+};
+
+/**
+ * 跳转到关联页面
+ */
+const handleForward = () => {
+  if (!detailsData.value?.forward) {
+    return;
+  }
+  // router.push(detailsData.value.forward);
+  closeModal();
+  ElMessage.info("功能开发中");
 };
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo } from "../api/NoticeRcdApi";
+import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo, GetNoticeRcdDetailsVo } from "../api/NoticeRcdApi";
 import NoticeRcdApi from "../api/NoticeRcdApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage } from "element-plus";
@@ -208,5 +208,44 @@ export default {
   /**
    * 用户通知记录模态框打包
    */
-  useUserNoticeModal() {},
+  useUserNoticeModal() {
+    const modalVisible = ref(false);
+    const modalLoading = ref(false);
+    const detailsData = ref<GetNoticeRcdDetailsVo | null>(null);
+
+    /**
+     * 打开详情模态框
+     */
+    const openModal = async (id: string) => {
+      modalVisible.value = true;
+      modalLoading.value = true;
+      detailsData.value = null;
+
+      try {
+        const result = await NoticeRcdApi.getUserNoticeRcdDetails({ id });
+        detailsData.value = result;
+      } catch (error: any) {
+        ElMessage.error(error.message || "加载详情失败");
+        modalVisible.value = false;
+      } finally {
+        modalLoading.value = false;
+      }
+    };
+
+    /**
+     * 关闭详情模态框
+     */
+    const closeModal = () => {
+      modalVisible.value = false;
+      detailsData.value = null;
+    };
+
+    return {
+      modalVisible,
+      modalLoading,
+      detailsData,
+      openModal,
+      closeModal,
+    };
+  },
 };
