@@ -129,10 +129,10 @@ public class MaintainController {
     @Transactional(rollbackFor = Exception.class)
     public Result<String> resetMenus() throws FileNotFoundException, BizException {
 
-        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_4Z.sql");
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_5W109.sql");
 
         if (!sqlScript.exists()) {
-            throw new BizException("SQL脚本文件 'sql/default_menus_1_4Z.sql' 不存在。请检查文件是否已正确放置。");
+            throw new BizException("SQL脚本文件 'sql/default_menus_1_5W109.sql' 不存在。请检查文件是否已正确放置。");
         }
 
         try {
