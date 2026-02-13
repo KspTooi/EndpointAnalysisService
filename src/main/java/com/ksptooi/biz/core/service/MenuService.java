@@ -1,6 +1,7 @@
 package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.auth.repository.PermissionRepository;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.model.menu.dto.AddMenuDto;
 import com.ksptooi.biz.core.model.menu.dto.EditMenuDto;
 import com.ksptooi.biz.core.model.menu.dto.GetMenuTreeDto;
@@ -48,13 +49,13 @@ public class MenuService {
         var allMenuPos = resourceRepository.getUserMenuTree();
         var flatVos = new ArrayList<GetUserMenuTreeVo>();
 
-        var authorities = session().getAuthorities();
+        var authorities = SessionService.authorities();
 
         //将list转换为平面vo
         for (ResourcePo po : allMenuPos) {
 
             //在此过滤当前用户无权限访问的菜单
-            if (!po.hasPermission((List<GrantedAuthority>) authorities)) {
+            if (!po.hasPermission(authorities)) {
                 continue;
             }
 
