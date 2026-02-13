@@ -35,7 +35,7 @@
                 <div class="text-xs text-gray-500">{{ item.createTime }}</div>
               </div>
               <div class="hidden group-hover:flex items-center ml-2">
-                <el-button link type="danger" :icon="Delete" class="!p-1" @click.stop="handleDelete(item)"></el-button>
+                <el-button link type="danger" :icon="Delete" class="!p-1" @click.stop="removeNotice(item.id)"></el-button>
               </div>
             </li>
             <li v-if="loading" class="text-center py-2.5 text-xs text-gray-500">加载中...</li>
@@ -98,7 +98,7 @@ import { onMounted } from "vue";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
 import UserNoticeService from "../../service/UserNoticeService";
 import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 
 // 使用 Service 中的逻辑
 const { count, processedCount, loadCount } = UserNoticeService.useUserNoticeCount();
@@ -164,19 +164,6 @@ const getIconClass = (kind: number) => {
 const handleRead = (item: GetUserNoticeRcdListVo) => {
   // 打开详情模态框
   openModal(item.id);
-};
-
-/**
- * 删除通知
- */
-const handleDelete = (item: GetUserNoticeRcdListVo) => {
-  ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  }).then(() => {
-    removeNotice(item.id);
-  });
 };
 
 /**

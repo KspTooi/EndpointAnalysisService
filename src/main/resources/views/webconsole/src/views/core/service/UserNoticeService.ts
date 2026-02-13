@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import type { GetUserNoticeRcdListDto, GetUserNoticeRcdListVo, GetNoticeRcdDetailsVo } from "../api/NoticeRcdApi";
 import NoticeRcdApi from "../api/NoticeRcdApi";
 import { Result } from "@/commons/entity/Result";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
   /**
@@ -155,6 +155,12 @@ export default {
      */
     const removeNotice = async (id: string) => {
       try {
+        await ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+
         await NoticeRcdApi.removeNoticeRcd({ ids: [id] });
         // 从本地列表中移除
         listData.value = listData.value.filter((item) => item.id !== id);
@@ -172,7 +178,10 @@ export default {
           loadMore();
         }
       } catch (error: any) {
-        ElMessage.error(error.message || "删除失败");
+        // 用户取消删除时，error 为 'cancel'，不需要显示错误消息
+        if (error !== "cancel") {
+          ElMessage.error(error.message || "删除失败");
+        }
       }
     };
 
