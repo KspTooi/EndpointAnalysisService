@@ -3,7 +3,7 @@
     <el-container>
       <!-- 桌面版侧边栏 -->
       <component
-        :is="isMenuCollapse ? SidePanelMenuShort : SidePanelMenu"
+        :is="isMenuCollapse ? SidePanelMenuShort : ComLeftMenu"
         :items="menuTree"
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
@@ -12,7 +12,7 @@
 
       <el-container>
         <!-- 多标签页区域 -->
-        <console-tab>
+        <com-multi-tab>
           <template #controls>
             <div class="header-right">
               <!-- 系统导航按钮区域 -->
@@ -47,11 +47,11 @@
                     </div>
                   </div>
                 </template>
-                <profile-drop-menu :profile="userProfile" />
+                <com-user-profile :profile="userProfile" />
               </el-popover>
             </div>
           </template>
-        </console-tab>
+        </com-multi-tab>
 
         <!-- 头部区域 -->
         <el-header class="admin-header" height="35px">
@@ -110,9 +110,9 @@ import AuthApi, { type GetCurrentUserProfile } from "@/soa/console-framework/api
 import GenricHotkeyService from "@/service/GenricHotkeyService.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { EventHolder } from "@/store/EventHolder.ts";
-import ConsoleTab from "@/soa/console-framework/components/ConsoleTab.vue";
-import SidePanelMenu from "@/soa/console-framework/components/SidePanelMenu.vue";
-import ProfileDropMenu from "@/soa/console-framework/components/ProfileDropMenu.vue";
+import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
+import ComLeftMenu from "@/soa/console-framework/components/ComLeftMenu.vue";
+import ComUserProfile from "@/soa/console-framework/components/ComUserProfile.vue";
 import SidePanelMenuShort from "@/soa/console-framework/components/SidePanelMenuShort.vue";
 
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
