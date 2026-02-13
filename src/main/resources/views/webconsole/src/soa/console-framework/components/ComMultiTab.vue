@@ -1,7 +1,7 @@
 <template>
   <div class="tab-panel-container">
     <div class="tab-prefix-controls">
-      <el-icon class="control-btn close-btn" @click="handleCloseCurrentTab" title="关闭标签页">
+      <el-icon class="control-btn close-btn" @click="onCloseCurrentTab" title="关闭标签页">
         <Close />
       </el-icon>
     </div>
@@ -17,11 +17,11 @@
         <div
           class="tab-item"
           :class="{ active: activeTabId === tab.id }"
-          @click="handleTabClick(tab.id)"
+          @click="onTabClick(tab.id)"
           @contextmenu.prevent="openContextMenu($event, tab)"
         >
           <span class="tab-title">{{ tab.title }}</span>
-          <el-icon v-if="tab.closable !== false && tabs.length > 1" class="close-icon" @click.stop="handleTabClose(tab.id)">
+          <el-icon v-if="tab.closable !== false && tabs.length > 1" class="close-icon" @click.stop="onTabClose(tab.id)">
             <Close />
           </el-icon>
         </div>
@@ -29,7 +29,7 @@
     </draggable>
 
     <div class="tab-controls">
-      <el-icon class="control-btn" @click="handleRefresh" title="刷新">
+      <el-icon class="control-btn" @click="onRefresh" title="刷新">
         <Refresh />
       </el-icon>
       <slot name="controls"></slot>
@@ -56,21 +56,21 @@ const { activeTabId, tabs } = storeToRefs(tabStore);
 
 
 
-const handleTabClick = (tabId: string) => {
+const onTabClick = (tabId: string) => {
   tabStore.setActiveTab(tabId);
 };
 
-const handleTabClose = (tabId: string) => {
+const onTabClose = (tabId: string) => {
   if (tabs.value.length > 1) {
     tabStore.removeTab(tabId);
   }
 };
 
-const handleRefresh = () => {
+const onRefresh = () => {
   tabStore.refreshActiveView();
 };
 
-const handleCloseCurrentTab = () => {
+const onCloseCurrentTab = () => {
   if (activeTabId.value && tabs.value.length > 1) {
     tabStore.removeTab(activeTabId.value);
   }
@@ -100,7 +100,7 @@ const closeContextMenu = () => {
 
 const closeCurrentTab = () => {
   if (contextMenu.value.targetTab) {
-    handleTabClose(contextMenu.value.targetTab.id);
+    onTabClose(contextMenu.value.targetTab.id);
   }
   closeContextMenu();
 };
@@ -112,7 +112,7 @@ const closeOtherTabs = () => {
   closeContextMenu();
 };
 
-const handleWheel = (event: WheelEvent) => {
+const onWheel = (event: WheelEvent) => {
   const el = draggableRef.value?.$el as HTMLElement | undefined;
   if (el) {
     event.preventDefault();
@@ -124,7 +124,7 @@ onMounted(() => {
   document.addEventListener("click", closeContextMenu);
   const el = draggableRef.value?.$el;
   if (el) {
-    el.addEventListener("wheel", handleWheel, { passive: false });
+    el.addEventListener("wheel", onWheel, { passive: false });
   }
 });
 
@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", closeContextMenu);
   const el = draggableRef.value?.$el;
   if (el) {
-    el.removeEventListener("wheel", handleWheel);
+    el.removeEventListener("wheel", onWheel);
   }
 });
 </script>

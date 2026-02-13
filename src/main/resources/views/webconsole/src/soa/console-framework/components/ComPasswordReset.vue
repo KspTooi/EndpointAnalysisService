@@ -46,7 +46,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="loading">
+        <el-button type="primary" @click="onSubmit" :loading="loading">
           确认修改
         </el-button>
       </div>
@@ -102,7 +102,7 @@ const openModal = () => {
   }
 };
 
-const handleSubmit = async () => {
+const onSubmit = async () => {
   if (!formRef.value) {
     return;
   }

@@ -151,13 +151,13 @@ export default {
         /**
          * 根据路由路径计算当前活动菜单ID
          */
-        const findMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
+        const getMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
             for (const item of items) {
                 if (item.menuPath === path) {
                     return item.id;
                 }
                 if (item.children?.length) {
-                    const foundId = findMenuIdByPath(item.children, path);
+                    const foundId = getMenuIdByPath(item.children, path);
                     if (foundId) return foundId;
                 }
             }
@@ -168,7 +168,7 @@ export default {
          * 当前活动菜单ID
          */
         const activeMenuId = computed(() => {
-            return findMenuIdByPath(menuTree.value, route.path);
+            return getMenuIdByPath(menuTree.value, route.path);
         });
 
         /**

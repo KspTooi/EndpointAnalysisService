@@ -73,11 +73,11 @@
       </div>
 
       <div class="profile-actions">
-        <el-button class="action-btn" type="primary" plain @click="handleChangePassword">
+        <el-button class="action-btn" type="primary" plain @click="onChangePassword">
           <el-icon><Key /></el-icon>
           修改密码
         </el-button>
-        <el-button class="action-btn" type="danger" plain @click="handleLogout">
+        <el-button class="action-btn" type="danger" plain @click="onLogout">
           <el-icon><SwitchButton /></el-icon>
           退出登录
         </el-button>
@@ -95,7 +95,7 @@ import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox, ElPopover }
 import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 import AuthApi from "@/soa/console-framework/api/AuthApi";
-import ComPasswordReset from "./ComPasswordReset.vue";
+import ComPasswordReset from "@/soa/console-framework/components/ComPasswordReset.vue";
 
 const profile = ref<GetCurrentUserProfile | null>(null);
 const changePasswordModalRef = ref();
@@ -108,7 +108,7 @@ const loadUserProfile = async () => {
   }
 };
 
-const handleLogout = async () => {
+const onLogout = async () => {
   try {
     await ElMessageBox.confirm("确定要注销登录吗？", "提示", {
       confirmButtonText: "确定",
@@ -126,7 +126,7 @@ const handleLogout = async () => {
   }
 };
 
-const handleChangePassword = () => {
+const onChangePassword = () => {
   if (changePasswordModalRef.value) {
     changePasswordModalRef.value.openModal();
   }

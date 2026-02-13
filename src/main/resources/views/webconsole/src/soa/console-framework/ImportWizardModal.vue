@@ -34,7 +34,7 @@
           <span>第一步：下载空白模板</span>
         </div>
         <div class="section-content">
-          <div class="download-card" @click="handleDownload">
+          <div class="download-card" @click="onDownload">
             <div class="card-info">
               <span class="filename">数据导入模板 (点击下载).xlsx</span>
               <span class="filesize">下载后请在表格中填写需要导入的信息</span>
@@ -56,10 +56,10 @@
             ref="uploadRef"
             drag
             :auto-upload="false"
-            :on-change="handleFileChange"
-            :on-remove="handleFileRemove"
+            :on-change="onFileChange"
+            :on-remove="onFileRemove"
             :limit="1"
-            :on-exceed="handleExceed"
+            :on-exceed="onExceed"
             accept=".xlsx"
             :file-list="fileList"
             class="compact-upload"
@@ -84,7 +84,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false" :disabled="importing">取消导入</el-button>
-        <el-button type="primary" @click="handleImport" :loading="importing" :disabled="!selectedFile" class="submit-btn">
+        <el-button type="primary" @click="onImport" :loading="importing" :disabled="!selectedFile" class="submit-btn">
           {{ importing ? "正在导入数据，请耐心等待..." : "确认无误,开始导入" }}
         </el-button>
       </div>
@@ -150,7 +150,7 @@ const openModal = (_params?: any) => {
   params.value = _params;
 };
 
-const handleDownload = async () => {
+const onDownload = async () => {
   if (!props.templateCode) {
     ElMessage.warning("未配置模板编码");
     return;
@@ -163,7 +163,7 @@ const handleDownload = async () => {
   }
 };
 
-const handleFileChange = (file: any) => {
+const onFileChange = (file: any) => {
   if (!file || !file.raw) {
     clearSelectedFile();
     ElMessage.warning("文件已失效，请重新选择");
@@ -173,17 +173,17 @@ const handleFileChange = (file: any) => {
   fileList.value = [file];
 };
 
-const handleFileRemove = () => {
+const onFileRemove = () => {
   clearSelectedFile();
 };
 
-const handleExceed = (files: any) => {
+const onExceed = (files: any) => {
   uploadRef.value!.clearFiles();
   const file = files[0];
   uploadRef.value!.handleStart(file);
 };
 
-const handleImport = async () => {
+const onImport = async () => {
   const raw = selectedFile.value?.raw as File | undefined;
 
   if (!raw) {

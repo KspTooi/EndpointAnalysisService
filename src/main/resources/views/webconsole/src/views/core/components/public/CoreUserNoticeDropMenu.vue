@@ -102,8 +102,8 @@
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
-import UserNoticeService from "../../service/NoticeRcdService.ts";
-import type { GetUserNoticeRcdListVo } from "../../api/NoticeRcdApi";
+import UserNoticeService from "@/views/core/service/NoticeRcdService.ts";
+import type { GetUserNoticeRcdListVo } from "@/views/core/api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
 import { useTabStore } from "@/store/TabHolder.ts";
 

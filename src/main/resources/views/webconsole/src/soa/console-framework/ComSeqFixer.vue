@@ -5,7 +5,7 @@
     trigger="hover"
     :width="180"
     :hide-after="50"
-    @before-enter="handleBeforeShow"
+    @before-enter="onBeforeShow"
   >
     <template #reference>
       <el-button link type="success" :icon="Edit">{{ displayValue ?? "修改排序" }}</el-button>
@@ -28,7 +28,7 @@
             :disabled="queryForm.seq <= 0"
             @click="
               queryForm.seq--;
-              handleConfirm();
+              onConfirm();
             "
           />
           <el-button
@@ -36,14 +36,14 @@
             :icon="ArrowDown"
             @click="
               queryForm.seq++;
-              handleConfirm();
+              onConfirm();
             "
           />
         </el-button-group>
       </div>
       <div class="popover-footer">
-        <el-button type="primary" size="small" @click="handleConfirm">修改</el-button>
-        <el-button size="small" @click="handleCancel">关闭</el-button>
+        <el-button type="primary" size="small" @click="onConfirm">修改</el-button>
+        <el-button size="small" @click="onCancel">关闭</el-button>
       </div>
     </div>
   </el-popover>
@@ -62,7 +62,7 @@ const props = defineProps<{
   onSuccess?: () => void; //成功回调
 }>();
 
-const { queryForm, loading, popoverVisible, handleBeforeShow, handleConfirm, handleCancel } =
+const { queryForm, loading, popoverVisible, onBeforeShow, onConfirm, onCancel } =
   SeqQuickPopoverService.useSeqQuickPopover(props.id, props.getDetailApi, props.editApi, props.seqField, props.onSuccess);
 </script>
 
