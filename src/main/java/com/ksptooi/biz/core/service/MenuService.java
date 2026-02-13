@@ -13,7 +13,9 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -133,6 +135,8 @@ public class MenuService {
      * @param dto 新增菜单与按钮参数
      * @throws BizException 业务异常
      */
+    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @Transactional(rollbackFor = Exception.class)
     public void addMenu(AddMenuDto dto) throws BizException {
 
         //构建资源PO
@@ -187,6 +191,8 @@ public class MenuService {
      * @param dto 编辑菜单与按钮参数
      * @throws BizException 业务异常
      */
+    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @Transactional(rollbackFor = Exception.class)
     public void editMenu(EditMenuDto dto) throws BizException {
 
         ResourcePo resourcePo = resourceRepository.findById(dto.getId()).orElseThrow(() -> new BizException("编辑失败,数据不存在或无权限访问."));
@@ -262,6 +268,8 @@ public class MenuService {
      * @param dto 删除菜单与按钮参数
      * @throws BizException 业务异常
      */
+    @CacheEvict(cacheNames = "menuTree", key = "'userMenuTree'")
+    @Transactional(rollbackFor = Exception.class)
     public void removeMenu(CommonIdDto dto) throws BizException {
 
         //删除单个菜单与按钮

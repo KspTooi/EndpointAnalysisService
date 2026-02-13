@@ -33,14 +33,12 @@ public class MenuController {
     @Autowired
     private MenuService menuService;
 
-
     @PostMapping("/getUserMenuTree")
     @Operation(summary = "获取用户菜单与按钮树(用于前端菜单展示,这个接口带有缓存)")
     @Cacheable(cacheNames = "menuTree", key = "'userMenuTree'")
     public Result<List<GetMenuTreeVo>> getUserMenuTree() throws Exception {
         return Result.success(menuService.getMenuTree(new GetMenuTreeDto()));
     }
-
 
     @PostMapping("/getMenuTree")
     @Operation(summary = "获取菜单与按钮树(用于菜单管理)")
