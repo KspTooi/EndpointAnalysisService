@@ -444,9 +444,15 @@ export default {
       if (!modalFormRef.value) {
         return;
       }
-
-      await QtTaskApi.executeTask(modalForm);
-      ElMessage.success("任务已提交，请稍后查看执行结果!");
+      modalLoading.value = true;
+      try {
+        await QtTaskApi.executeTask(modalForm);
+        ElMessage.success("任务已提交，请稍后查看执行结果!");
+      } catch (error) {
+        ElMessage.error(error.message);
+      } finally {
+        modalLoading.value = false;
+      }
     };
 
     return {
