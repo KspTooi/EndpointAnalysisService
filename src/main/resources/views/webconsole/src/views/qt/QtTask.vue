@@ -58,13 +58,26 @@
             <span v-else class="text-gray-400 text-sm">长期有效</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" min-width="110" show-overflow-tooltip>
+        <el-table-column prop="status" label="状态" min-width="70" show-overflow-tooltip align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : scope.row.status === 1 ? 'info' : 'danger'">
-              {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "暂停" : "暂停(异常)" }}
-            </el-tag>
+            <div class="flex justify-center">
+              <el-tag :type="scope.row.status === 0 ? 'success' : scope.row.status === 1 ? 'info' : 'danger'">
+                {{ scope.row.status === 0 ? "正常" : scope.row.status === 1 ? "暂停" : "终止" }}
+              </el-tag>
+            </div>
           </template>
         </el-table-column>
+        <el-table-column prop="lastExecStatus" label="最近执行状态" min-width="110" show-overflow-tooltip>
+          <template #default="scope">
+            <div class="flex justify-center">
+              <el-tag :type="scope.row.lastExecStatus === 0 ? 'success' : 'danger'">
+                {{ scope.row.lastExecStatus === 0 ? "成功" : "异常" }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="lastStartTime" label="最近一次开始时间" min-width="170" show-overflow-tooltip />
+        <el-table-column prop="lastEndTime" label="最近一次结束时间" min-width="170" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
