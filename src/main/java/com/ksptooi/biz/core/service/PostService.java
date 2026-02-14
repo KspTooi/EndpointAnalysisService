@@ -48,9 +48,18 @@ public class PostService {
     /**
      * 新增岗位
      * @param dto 新增岗位信息
+     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addPost(AddPostDto dto) {
+    public void addPost(AddPostDto dto) throws BizException {
+
+        //查询编码是否被占用
+        var existPo = repository.countByCode(dto.getCode());
+        if (existPo > 0) {
+            throw new BizException("岗位编码已存在:[" + dto.getCode() + "]");
+        }
+
+
         PostPo insertPo = as(dto, PostPo.class);
         repository.save(insertPo);
     }
@@ -64,6 +73,13 @@ public class PostService {
     public void editPost(EditPostDto dto) throws BizException {
         PostPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+
+        //查询编码是否被占用
+        var existPo = repository.countByCodeExcludeId(dto.getCode(), updatePo.getId());
+        if (existPo > 0) {
+            throw new BizException("岗位编码已存在:[" + dto.getCode() + "]");
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);
