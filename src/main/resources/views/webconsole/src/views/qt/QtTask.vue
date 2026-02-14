@@ -89,7 +89,16 @@
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="execOpenModal(scope.row)" icon="Refresh"> 运行 </el-button>
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="execOpenModal(scope.row)"
+              icon="Refresh"
+              :disabled="scope.row.status !== 0"
+            >
+              运行
+            </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
           </template>
@@ -162,7 +171,9 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="execModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading" icon="CaretRight"> 立即执行 </el-button>
+          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading" icon="CaretRight">
+            立即执行
+          </el-button>
         </div>
       </template>
     </el-dialog>
