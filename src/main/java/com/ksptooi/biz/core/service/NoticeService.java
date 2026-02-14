@@ -16,8 +16,12 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageQuery;
 import com.ksptool.assembly.entity.web.PageResult;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,7 @@ import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
 
+@Slf4j
 @Service
 public class NoticeService {
 
@@ -203,6 +208,37 @@ public class NoticeService {
             return;
         }
         repository.deleteById(dto.getId());
+    }
+
+    /**
+     * 发送系统通知
+     *  
+     * @param uid 接收人ID
+     * @param title 标题
+     * @param category 业务类型/分类
+     * @param content 通知内容
+     */
+    @Async
+    @Transactional(rollbackFor = Exception.class)
+    public void sendSystemNotice(Long uid, String title,String category, String content) {
+
+        var userPo = userRepository.findById(uid).orElse(null);
+
+        if(userPo == null){
+            log.warn("发送系统通知失败,接收人不存在: uid={}", uid);
+            return;
+        }
+
+        var dto = new AddNoticeDto();
+        dto.setTitle(title);
+        dto.setKind(1);
+        dto.setContent(content);
+        dto.setPriority(2);
+        dto.setCategory(category);
+        dto.setTargetKind(2);
+        dto.setTargetIds(List.of(uid));
+        addNotice(dto);
+        log.info("发送系统通知成功: uid={} 通知标题:{}", uid,title);
     }
 
 }
