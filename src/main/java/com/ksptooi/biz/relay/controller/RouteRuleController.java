@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,12 +32,14 @@ public class RouteRuleController {
     @Autowired
     private RouteRuleService routeRuleService;
 
+    @PreAuthorize("@auth.hasCode('relay:rule:view')")
+    @Operation(summary = "查询路由规则列表")
     @PostMapping("/getRouteRuleList")
-    @Operation(summary = "列表查询路由规则列表")
     public PageResult<GetRouteRuleListVo> getRouteRuleList(@RequestBody @Valid GetRouteRuleListDto dto) throws Exception {
         return routeRuleService.getRouteRuleList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('relay:rule:add')")
     @Operation(summary = "新增路由规则")
     @PostMapping("/addRouteRule")
     public Result<String> addRouteRule(@RequestBody @Valid AddRouteRuleDto dto) throws Exception {
@@ -52,6 +55,7 @@ public class RouteRuleController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('relay:rule:edit')")
     @Operation(summary = "编辑路由规则")
     @PostMapping("/editRouteRule")
     public Result<String> editRouteRule(@RequestBody @Valid EditRouteRuleDto dto) throws Exception {
@@ -67,6 +71,7 @@ public class RouteRuleController {
         return Result.success("编辑成功");
     }
 
+    @PreAuthorize("@auth.hasCode('relay:rule:view')")
     @Operation(summary = "查询路由规则详情")
     @PostMapping("/getRouteRuleDetails")
     public Result<GetRouteRuleDetailsVo> getRouteRuleDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -77,6 +82,7 @@ public class RouteRuleController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('relay:rule:remove')")
     @Operation(summary = "删除路由规则")
     @PostMapping("/removeRouteRule")
     public Result<String> removeRouteRule(@RequestBody @Valid CommonIdDto dto) throws Exception {

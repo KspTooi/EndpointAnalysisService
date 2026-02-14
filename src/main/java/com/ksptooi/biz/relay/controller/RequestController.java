@@ -4,12 +4,14 @@ import com.ksptooi.biz.relay.model.request.GetRequestDetailsVo;
 import com.ksptooi.biz.relay.model.request.GetRequestListDto;
 import com.ksptooi.biz.relay.model.request.GetRequestListVo;
 import com.ksptooi.biz.relay.service.RequestService;
+import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
+@PrintLog
 @RestController
 @RequestMapping("/request")
 @Tag(name = "中继器请求", description = "中继器请求")
