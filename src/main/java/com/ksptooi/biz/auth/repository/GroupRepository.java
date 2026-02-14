@@ -95,6 +95,15 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
             """)
     GroupPo getGroupByCode(@Param("code") String code);
 
+    /**
+     * 统计系统内置组数量
+     *
+     * @return 系统内置组数量
+     */
+    @Query("""
+            SELECT COUNT(g) FROM GroupPo g WHERE g.isSystem = true
+            """)
+    Integer countBySystemGroup();
 
     /**
      * 根据ID列表获取用户组

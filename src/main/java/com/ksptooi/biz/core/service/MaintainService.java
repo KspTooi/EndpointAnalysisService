@@ -1,9 +1,15 @@
 package com.ksptooi.biz.core.service;
 
+import com.ksptooi.biz.auth.model.GroupPermissionPo;
+import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.repository.GroupPermissionRepository;
+import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
+import com.ksptooi.commons.enums.GroupEnum;
+import com.ksptool.assembly.entity.exception.BizException;
+
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +36,9 @@ public class MaintainService {
     @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping rmhm;
+
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Autowired
     private GroupPermissionRepository gpRepository;
@@ -106,6 +117,15 @@ public class MaintainService {
             scannedPermissions.add(po);
         }
 
+        //添加超级权限
+        var superCode = new PermissionPo();
+        superCode.setCode("*:*:*");
+        superCode.setName("超级权限");
+        superCode.setDescription("拥有此权限的用户组不受任何权限限制");
+        superCode.setSortOrder(0);
+        superCode.setIsSystem(1);
+        scannedPermissions.add(superCode);
+
         //扫描数据库中已定义的全部权限码(这不包含那些用户自己定义的权限码 只获取系统权限码)
         Set<PermissionPo> existingPermissions = permissionRepository.getAllSystemPermissions();
 
@@ -158,6 +178,71 @@ public class MaintainService {
         vo.setRemovedCount(removedPermissions.size());
         vo.setAddedList(addedPermissions.stream().map(PermissionPo::getCode).collect(Collectors.toList()));
         vo.setRemovedList(removedPermissions.stream().map(PermissionPo::getCode).collect(Collectors.toList()));
+        return vo;
+    }
+
+    /**
+     * 校验系统内置组
+     * 检查数据库中是否存在所有系统内置组，如果不存在则自动创建
+     * 对于管理员组，会赋予所有现有权限
+     *
+     * @return 校验结果消息
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public MaintainUpdateVo validateSystemGroups() throws BizException {
+
+        //获取超级权限
+        var superPermission = permissionRepository.getSuperPermission();
+
+        if (superPermission == null) {
+            throw new BizException("在校验系统内置组时出现问题，超级权限不存在,请检查系统内置权限码是否完整!");
+        }
+
+        // 获取所有系统内置组枚举
+        GroupEnum[] groupEnums = GroupEnum.values();
+
+        // 记录已存在和新增的组数量
+        int existCount = groupRepository.countBySystemGroup();
+        List<String> addedGroups = new ArrayList<>();
+
+        // 遍历所有系统内置组
+        for (GroupEnum groupEnum : groupEnums) {
+            String code = groupEnum.getCode();
+
+            //先查找数据库组
+            var group = groupRepository.getGroupByCode(code);
+
+            //数据库组不存在 直接创建
+            if(group == null){
+                group = new GroupPo();
+                group.setCode(code);
+                group.setName(groupEnum.getName());
+                group.setDescription(groupEnum.getName());
+                group.setIsSystem(true);
+                group.setSortOrder(groupRepository.findMaxSortOrder() + 1);
+                group.setStatus(1);
+                group = groupRepository.save(group);
+            }
+
+            //检查组是否是管理员组
+            if(group.getCode().equals(GroupEnum.ADMIN.getCode())){
+                //管理员组赋予超级权限
+                var gpPo = new GroupPermissionPo();
+                gpPo.setGroupId(group.getId());
+                gpPo.setPermissionId(superPermission.getId());
+                gpRepository.save(gpPo);
+            }
+
+            addedGroups.add(code);
+        }
+
+        // 返回结果消息
+        var vo = new MaintainUpdateVo();
+        vo.setExistCount(existCount);
+        vo.setAddedCount(addedGroups.size());
+        vo.setAddedList(addedGroups);
+        vo.setRemovedCount(0);
+        vo.setRemovedList(new ArrayList<>());
         return vo;
     }
 

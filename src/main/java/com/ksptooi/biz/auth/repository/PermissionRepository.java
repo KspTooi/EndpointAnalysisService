@@ -19,6 +19,16 @@ import java.util.Set;
 public interface PermissionRepository extends JpaRepository<PermissionPo, Long> {
 
     /**
+     * 获取超级权限
+     *
+     * @return 超级权限
+     */
+    @Query("""
+            SELECT p FROM PermissionPo p WHERE p.code = '*:*:*' AND p.isSystem = 1
+            """)
+    PermissionPo getSuperPermission();
+
+    /**
      * 根据用户ID获取用户拥有的全部权限
      *
      * @param userId 用户ID

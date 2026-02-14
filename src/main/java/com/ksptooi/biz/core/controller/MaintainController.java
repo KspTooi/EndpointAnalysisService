@@ -1,7 +1,6 @@
 package com.ksptooi.biz.core.controller;
 
 import com.ksptooi.biz.auth.service.GroupService;
-import com.ksptooi.biz.auth.service.PermissionService;
 import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
@@ -10,11 +9,15 @@ import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
+
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +38,6 @@ import java.sql.Connection;
 public class MaintainController {
 
     @Autowired
-    private GroupService adminGroupService;
-
-    @Autowired
-    private PermissionService adminPermissionService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -55,46 +52,11 @@ public class MaintainController {
     @Autowired
     private MaintainService maintainService;
 
-    /**
-     * 校验系统内置权限节点
-     * 检查数据库中是否存在所有系统内置权限，如果不存在则自动创建
-     */
-    @PostMapping("/validSystemPermission")
-    @ResponseBody
-    public Result<MaintainUpdateVo> validateSystemPermissions() {
-
+    @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
+    @Operation(summary = "校验系统内置权限节点")
+    @PostMapping("/validatePermissions")
+    public Result<MaintainUpdateVo> validatePermissions() {
         return Result.success(maintainService.validatePermissions());
-
-/*        try {
-            ValidateSystemPermissionsVo result = adminPermissionService.validateSystemPermissions();
-
-            String message;
-            if (result.getAddedCount() > 0) {
-                message = String.format("校验完成，已添加 %d 个缺失的权限节点，已存在 %d 个权限节点",
-                        result.getAddedCount(), result.getExistCount());
-            } else {
-                message = String.format("校验完成，所有 %d 个系统权限节点均已存在", result.getExistCount());
-            }
-
-            return Result.success(message, result);
-        } catch (Exception e) {
-            return Result.error("校验权限节点失败：" + e.getMessage());
-        }*/
-    }
-
-    /**
-     * 校验系统内置用户组
-     * 检查数据库中是否存在所有系统内置用户组，如果不存在则自动创建
-     */
-    @PostMapping("/validSystemGroup")
-    @ResponseBody
-    public Result<String> validateSystemGroups() {
-        try {
-            String result = adminGroupService.validateSystemGroups();
-            return Result.success(result, null);
-        } catch (Exception e) {
-            return Result.error("校验用户组失败：" + e.getMessage());
-        }
     }
 
     /**
@@ -111,6 +73,18 @@ public class MaintainController {
             return Result.error("校验用户失败：" + e.getMessage());
         }
     }
+
+    /**
+     * 校验系统内置用户组
+     * 检查数据库中是否存在所有系统内置用户组，如果不存在则自动创建
+     */
+    @PreAuthorize(value = "@auth.hasCode('maintain:validate:groups')")
+    @Operation(summary = "校验系统内置用户组")
+    @PostMapping("/validateGroups")
+    public Result<MaintainUpdateVo> validateSystemGroups() throws BizException {
+        return Result.success(maintainService.validateSystemGroups());
+    }
+
 
     /**
      * 校验系统全局配置项

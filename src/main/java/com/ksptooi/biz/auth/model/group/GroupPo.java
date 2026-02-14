@@ -56,7 +56,7 @@ public class GroupPo {
 
     @PrePersist
     public void prePersist() {
-        
+
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
@@ -64,12 +64,15 @@ public class GroupPo {
         if (status == null) {
             status = 1; // 默认启用
         }
+
         if (isSystem == null) {
             isSystem = false; // 默认非系统组
         }
+
         if (sortOrder == null) {
             sortOrder = 0; // 默认排序号
         }
+        
         createTime = LocalDateTime.now();
         updateTime = LocalDateTime.now();
     }

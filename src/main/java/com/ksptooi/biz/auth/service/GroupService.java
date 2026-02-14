@@ -11,7 +11,6 @@ import com.ksptooi.biz.auth.repository.*;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
-import com.ksptooi.commons.enums.GroupEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -544,103 +543,5 @@ public class GroupService {
         repository.deleteAllById(safeRemoveIds);
     }
 
-
-    /**
-     * 校验系统内置组
-     * 检查数据库中是否存在所有系统内置组，如果不存在则自动创建
-     * 对于管理员组，会赋予所有现有权限
-     *
-     * @return 校验结果消息
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public String validateSystemGroups() {
-        // 获取所有系统内置组枚举
-        GroupEnum[] groupEnums = GroupEnum.values();
-
-        // 记录已存在和新增的组数量
-        int existCount = 0;
-        int addedCount = 0;
-        List<String> addedGroups = new ArrayList<>();
-
-        // 遍历所有系统内置组
-        for (GroupEnum groupEnum : groupEnums) {
-            String code = groupEnum.getCode();
-
-            // 检查组是否已存在
-            if (repository.existsByCode(code)) {
-                existCount++;
-
-                //管理员组重新赋予所有权限
-                if (code.equals(GroupEnum.ADMIN.getCode())) {
-
-                    //查询管理员组
-                    var adminGroup = repository.getGroupByCode(GroupEnum.ADMIN.getCode());
-
-                    //先清空管理员的全部GP关系
-                    gpRepository.clearPermissionByGroupId(adminGroup.getId());
-
-                    //查找全部权限IDS
-                    var allPermissionIds = permissionRepository.getAllPermissionIds();
-
-                    //创建GP关系列表
-                    var gpPos = new ArrayList<GroupPermissionPo>();
-                    for (var permissionId : allPermissionIds) {
-                        var gpPo = new GroupPermissionPo();
-                        gpPo.setGroupId(adminGroup.getId());
-                        gpPo.setPermissionId(permissionId);
-                        gpPos.add(gpPo);
-                    }
-
-                    //保存GP关系
-                    gpRepository.saveAll(gpPos);
-                }
-
-                continue;
-            }
-
-            // 创建新的组
-            GroupPo group = new GroupPo();
-            group.setCode(code);
-            group.setName(groupEnum.getName());
-            group.setDescription(groupEnum.getName());
-            group.setIsSystem(true);
-            group.setSortOrder(repository.findMaxSortOrder() + 1);
-            group.setStatus(1); // 启用状态
-
-            // 保存组
-            GroupPo save = repository.save(group);
-
-            // 如果是管理员组，赋予所有权限
-            if (groupEnum == GroupEnum.ADMIN) {
-
-                //直接查询所有权限IDS
-                var allPermissionIds = permissionRepository.getAllPermissionIds();
-
-                //创建GP关系列表
-                var gpPos = new ArrayList<GroupPermissionPo>();
-                for (var permissionId : allPermissionIds) {
-                    var gpPo = new GroupPermissionPo();
-                    gpPo.setGroupId(save.getId());
-                    gpPo.setPermissionId(permissionId);
-                    gpPos.add(gpPo);
-                }
-
-                //保存GP关系
-                gpRepository.saveAll(gpPos);
-            }
-
-
-            addedCount++;
-            addedGroups.add(code);
-        }
-
-        // 返回结果消息
-        if (addedCount > 0) {
-            return String.format("校验完成，已添加 %d 个缺失的用户组（%s），已存在 %d 个用户组",
-                    addedCount, String.join("、", addedGroups), existCount);
-        }
-
-        return String.format("校验完成，所有 %d 个系统用户组均已存在", existCount);
-    }
 
 }
