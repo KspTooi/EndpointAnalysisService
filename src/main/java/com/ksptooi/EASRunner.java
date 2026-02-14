@@ -1,6 +1,6 @@
 package com.ksptooi;
 
-import com.ksptooi.biz.auth.service.AuthService;
+import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.relay.service.RelayServerService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
@@ -64,7 +64,7 @@ public class EASRunner {
      * 应用启动时检查全局配置
      */
     @Bean
-    public ApplicationRunner configInitializer(GlobalConfigService globalConfigService, AuthService authService) {
+    public ApplicationRunner configInitializer(GlobalConfigService globalConfigService, SessionService sessionService) {
         return args -> {
 
 
@@ -100,7 +100,7 @@ public class EASRunner {
                 System.out.println("初始化配置: " + GlobalConfigEnum.ALLOW_INSTALL_WIZARD.getKey() + " = true");
 
                 // 清除所有用户会话，确保安装向导启动时没有用户登录
-                authService.clearUserSession();
+                sessionService.clearUserSession();
                 System.out.println("已清除所有用户会话，准备启动安装向导");
             }
 

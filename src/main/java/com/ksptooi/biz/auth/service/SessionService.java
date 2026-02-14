@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
@@ -218,7 +219,7 @@ public class SessionService {
         var userPo = userRepository.findById(aud.getId()).orElseThrow(() -> new BizException("用户不存在"));
         userPo.setLoginCount(userPo.getLoginCount() + 1);
         userPo.setLastLoginTime(LocalDateTime.now());
-        
+
         //更新用户
         userRepository.save(userPo);
         return sessionId;
@@ -278,6 +279,14 @@ public class SessionService {
 
     }
 
+    /**
+     * 清除所有已登录用户的会话状态
+     */
+    @CacheEvict(cacheNames = "userSession", allEntries = true)
+    public void clearUserSession() {
+        // 删除所有用户会话记录
+        userSessionRepository.deleteAll();
+    }
 
     /**
      * 根据SessionId获取会话 这是一个带有缓存的查询方法 缓存配置位于com.ksptooi.commons.config.CacheConfig

@@ -9,12 +9,10 @@ import com.ksptooi.biz.document.repository.EndpointDocSyncLogRepository;
 import com.ksptooi.biz.document.repository.EndpointDocVersionRepository;
 import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.relay.repository.RelayServerRepository;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptooi.commons.utils.OpenApiUtils;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.OpenAPIV3Parser;
-import io.swagger.v3.parser.core.models.ParseOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,15 +62,16 @@ public class EpDocService {
 
         try {
 
-            ParseOptions options = new ParseOptions();
-            options.setResolve(true);
-            //options.setResolveFully(true);
-            //options.setResolveCombinators(true);
-            //options.setResolveRequestBody(true);
-            options.setResolveResponses(true);
+            //ParseOptions options = new ParseOptions();
+            //options.setResolve(true);
+            ////options.setResolveFully(true);
+            ////options.setResolveCombinators(true);
+            ////options.setResolveRequestBody(true);
+            //options.setResolveResponses(true);
 
             //从该地址拉取Swagger文档
-            OpenAPI openAPI = new OpenAPIV3Parser().read(pullUrl, null, options);
+            //OpenAPI openAPI = new OpenAPIV3Parser().read(pullUrl, null, options);
+            OpenAPI openAPI = null;
 
             //判断文档是否完整
             if (!OpenApiUtils.isComplete(openAPI)) {
