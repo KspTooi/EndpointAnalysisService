@@ -1,10 +1,11 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.auth.model.permission.vo.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.biz.auth.service.PermissionService;
+import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptooi.biz.core.service.MaintainService;
 import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.exception.BizException;
@@ -51,14 +52,20 @@ public class MaintainController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private MaintainService maintainService;
+
     /**
      * 校验系统内置权限节点
      * 检查数据库中是否存在所有系统内置权限，如果不存在则自动创建
      */
     @PostMapping("/validSystemPermission")
     @ResponseBody
-    public Result<ValidateSystemPermissionsVo> validateSystemPermissions() {
-        try {
+    public Result<MaintainUpdateVo> validateSystemPermissions() {
+
+        return Result.success(maintainService.validatePermissions());
+
+/*        try {
             ValidateSystemPermissionsVo result = adminPermissionService.validateSystemPermissions();
 
             String message;
@@ -72,7 +79,7 @@ public class MaintainController {
             return Result.success(message, result);
         } catch (Exception e) {
             return Result.error("校验权限节点失败：" + e.getMessage());
-        }
+        }*/
     }
 
     /**

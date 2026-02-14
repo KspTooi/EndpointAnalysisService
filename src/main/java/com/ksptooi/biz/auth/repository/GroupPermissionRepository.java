@@ -54,7 +54,16 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             """)
     void clearPermissionByGroupId(@Param("groupId") Long groupId);
 
-    
+    /**
+     * 根据权限码ID列表清除全部权限关联
+     * 
+     * @param permissionIds 权限码ID列表 列表不能为空
+     */
+    @Modifying
+    @Query("""
+            DELETE FROM GroupPermissionPo gp WHERE gp.permissionId IN :permissionIds
+            """)
+    void clearGpByPermissionIds(@Param("permissionIds") List<Long> permissionIds);
 
 
     /**

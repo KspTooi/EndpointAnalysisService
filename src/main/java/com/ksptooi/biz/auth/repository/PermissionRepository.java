@@ -34,7 +34,15 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
     List<PermissionPo> getPermissionsByUserId(@Param("userId") Long userId);
 
 
-
+    /**
+     * 获取全部系统权限码
+     *
+     * @return 系统权限码列表
+     */
+    @Query("""
+            SELECT DISTINCT p FROM PermissionPo p WHERE p.isSystem = 1
+            """)
+    Set<PermissionPo> getAllSystemPermissions();
 
 
     /**
@@ -138,7 +146,7 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
     @Query("""
             SELECT DISTINCT p.id FROM PermissionPo p
             """)
-    List<Long> getAllPermissionIds();   
+    List<Long> getAllPermissionIds();
 
 
 } 
