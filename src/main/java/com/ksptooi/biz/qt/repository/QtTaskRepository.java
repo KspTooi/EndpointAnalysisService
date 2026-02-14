@@ -33,7 +33,7 @@ public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
             AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<QtTaskPo> getQtTaskList(@Param("po") QtTaskPo po, Pageable pageable);
 
