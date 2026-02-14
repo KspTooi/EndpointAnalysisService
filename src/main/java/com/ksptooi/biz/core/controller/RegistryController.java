@@ -36,18 +36,21 @@ public class RegistryController {
     @Autowired
     private RegistryService registryService;
 
+    @PreAuthorize("@auth.hasCode('registry:view')")
     @PostMapping("/getRegistryNodeTree")
     @Operation(summary = "查询注册表节点树")
     public Result<List<GetRegistryNodeTreeVo>> getRegistryNodeTree() throws Exception {
         return Result.success(registryService.getRegistryNodeTree());
     }
 
+    @PreAuthorize("@auth.hasCode('registry:view')")
     @PostMapping("/getRegistryEntryList")
     @Operation(summary = "查询注册表条目列表")
     public PageResult<GetRegistryEntryListVo> getRegistryEntryList(@RequestBody @Valid GetRegistryListDto dto) throws Exception {
         return registryService.getRegistryEntryList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('registry:add')")
     @Operation(summary = "新增注册表条目")
     @PostMapping("/addRegistry")
     public Result<String> addRegistry(@RequestBody @Valid AddRegistryDto dto) throws Exception {
@@ -62,6 +65,7 @@ public class RegistryController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('registry:edit')")
     @Operation(summary = "编辑注册表条目")
     @PostMapping("/editRegistry")
     public Result<String> editRegistry(@RequestBody @Valid EditRegistryDto dto) throws Exception {
@@ -76,6 +80,7 @@ public class RegistryController {
         return Result.success("修改成功");
     }
 
+    @PreAuthorize("@auth.hasCode('registry:view')")
     @Operation(summary = "查询注册表条目详情")
     @PostMapping("/getRegistryDetails")
     public Result<GetRegistryDetailsVo> getRegistryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -86,6 +91,7 @@ public class RegistryController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('registry:remove')")
     @Operation(summary = "删除注册表条目")
     @PostMapping("/removeRegistry")
     public Result<String> removeRegistry(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -93,6 +99,7 @@ public class RegistryController {
         return Result.success("操作成功");
     }
 
+    @PreAuthorize("@auth.hasCode('registry:import')")
     @Operation(summary = "导入注册表条目")
     @PostMapping("/importRegistry")
     public Result<String> importRegistry(@RequestParam("file") MultipartFile file, @RequestParam("keyPath") String keyPath) throws Exception {
@@ -120,7 +127,7 @@ public class RegistryController {
         return Result.success("导入成功,已导入数据:" + count + "条", null);
     }
 
-    @PreAuthorize("auth.require('registry:export')")
+    @PreAuthorize("@auth.hasCode('registry:export')")
     @Operation(summary = "导出注册表条目", operationId = "registry:export")
     @RequestMapping("/exportRegistry")
     public void exportRegistry(@RequestBody @Valid GetRegistryListDto dto, HttpServletResponse response) throws Exception {
