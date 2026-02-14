@@ -52,10 +52,6 @@ spring:
         use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.MySQLDialect
 
-  thymeleaf:
-    cache: false # 开发环境禁用模板缓存
-    prefix: classpath:/views/
-    suffix: .html
 
   main:
     lazy-initialization: true
