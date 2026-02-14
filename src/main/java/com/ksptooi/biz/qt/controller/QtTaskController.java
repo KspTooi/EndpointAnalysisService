@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -40,7 +41,19 @@ public class QtTaskController {
     @PostMapping("/getQtTaskList")
     @Operation(summary = "获取任务列表")
     public PageResult<GetQtTaskListVo> getQtTaskList(@RequestBody @Valid GetQtTaskListDto dto) throws Exception {
-        return qtTaskService.getQtTaskList(dto);
+
+        var vos = qtTaskService.getQtTaskList(dto);
+        var now = LocalDateTime.now();
+
+        for (GetQtTaskListVo vo : vos.getData()) {
+            var expireTime = vo.getExpireTime();
+            vo.setIsExpired(0);
+            if (expireTime != null && expireTime.isBefore(now)) {
+                vo.setIsExpired(1);
+            }
+        }
+
+        return vos;
     }
 
     @PreAuthorize("@auth.hasCode('qt:task:add')")

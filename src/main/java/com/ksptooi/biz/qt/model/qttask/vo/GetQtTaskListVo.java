@@ -31,6 +31,9 @@ public class GetQtTaskListVo {
     @Schema(description = "任务有效期截止")
     private LocalDateTime expireTime;
 
+    @Schema(description = "是否已过有效期 0:未过 1:已过")
+    private Integer isExpired;
+
     @Schema(description = "上次状态 0:成功 1:异常")
     private Integer lastExecStatus;
 
