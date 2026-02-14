@@ -498,16 +498,8 @@ public class MaintainService {
     @Transactional(rollbackFor = Exception.class)
     public MaintainUpdateVo repairRegistry() throws BizException {
 
-        
 
-
-
-
-
-
-
-
-        return vo;
+        return null;
     }
 
 }

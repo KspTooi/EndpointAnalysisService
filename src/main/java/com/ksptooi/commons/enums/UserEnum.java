@@ -1,4 +1,5 @@
 package com.ksptooi.commons.enums;
+
 import lombok.Getter;
 
 /**
@@ -7,31 +8,24 @@ import lombok.Getter;
 @Getter
 public enum UserEnum {
 
-    /**
-     * 管理员
-     */
     ADMIN("admin", "系统管理员"),
-    
-    /**
-     * 访客用户
-     */
     GUEST("guest", "访客用户");
-    
+
     /**
      * 用户名
      */
     private final String username;
-    
+
     /**
      * 昵称
      */
     private final String nickname;
-    
+
     UserEnum(String username, String nickname) {
         this.username = username;
         this.nickname = nickname;
     }
-    
+
     /**
      * 根据用户名获取默认用户
      */
@@ -39,7 +33,7 @@ public enum UserEnum {
         if (username == null) {
             return null;
         }
-        
+
         for (UserEnum user : values()) {
             if (user.getUsername().equals(username)) {
                 return user;
