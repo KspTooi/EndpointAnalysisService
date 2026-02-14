@@ -54,7 +54,7 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         biz: "core",
         path: "application-maintain",
         name: "application-maintain",
-        component: () => import("@/views/core/ApplicationMaintain.vue"),
+        component: () => import("@/views/core/MaintainManager.vue"),
         meta: { breadcrumb: "维护中心" },
       }),
       RouteEntryPo.build({

@@ -1,51 +1,80 @@
 import Http from "@/commons/Http.ts";
+import type Result from "@/commons/entity/Result.ts";
+
+export interface MaintainUpdateVo {
+  existCount: number; // 已存在的数量
+  addedCount: number; // 新增的数量
+  removedCount: number; // 删除的数量
+  addedList: string[]; // 新增列表
+  removedList: string[]; // 删除列表
+}
+
+export interface MaintainOperation {
+  title: string; // 操作标题
+  description: string; // 操作描述
+  icon: any; // 操作图标
+  buttonText: string; // 操作按钮文本
+  bgColor: string; // 操作按钮背景颜色
+  iconColor: string; // 操作按钮图标颜色
+  key: string; // 操作键
+  warning?: string; // 操作警告
+  action: () => Promise<MaintainUpdateVo | string>; // 操作方法
+  onComplete?: () => void; // 操作完成回调
+}
 
 export default {
   /**
    * 校验系统内置权限节点
    */
-  validateSystemPermissions: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/validSystemPermission", {});
-    return result.message || "权限节点校验完成";
+  validatePermissions: async (): Promise<MaintainUpdateVo> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/validatePermissions", {});
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
   },
 
   /**
    * 校验系统内置用户组
    */
-  validateSystemGroups: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/validSystemGroup", {});
-    return result.message || "用户组校验完成";
+  validateGroups: async (): Promise<MaintainUpdateVo> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/validateGroups", {});
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
   },
 
   /**
    * 校验系统内置用户
    */
-  validateSystemUsers: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/validSystemUsers", {});
-    return result.message || "系统用户校验完成";
+  validateUsers: async (): Promise<MaintainUpdateVo> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/validateUsers", {});
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
   },
 
   /**
-   * 校验系统全局配置项
-   */
-  validateSystemConfigs: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/validSystemConfigs", {});
-    return result.message || "全局配置校验完成";
-  },
-
-  /**
-   * 重置菜单
+   * 维护中心:重置菜单
    */
   resetMenus: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/resetMenus", {});
-    return result.message || "菜单重置完成";
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/resetMenus", {});
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
   },
 
   /**
-   * 重置端点权限配置
+   * 维护中心:重置端点权限配置
    */
-  resetEndpointPermissionConfig: async (): Promise<string> => {
-    const result = await Http.postRaw<string>("/maintain/resetEndpointPermissionConfig", {});
-    return result.message || "端点权限配置重置完成";
+  resetEndpoints: async (): Promise<string> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/resetEndpoints", {});
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
   },
 };

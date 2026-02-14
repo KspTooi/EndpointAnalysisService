@@ -39,7 +39,7 @@ public class MaintainController {
     @Autowired
     private MaintainService maintainService;
 
-    @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
+    //@PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
     @Operation(summary = "校验系统内置权限节点")
     @PostMapping("/validatePermissions")
     public Result<MaintainUpdateVo> validatePermissions() {
