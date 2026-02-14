@@ -1,12 +1,13 @@
 package com.ksptooi.biz.qt;
 
 import com.ksptooi.biz.qt.common.QuickTask;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageQuery;
 import com.ksptool.assembly.entity.web.Result;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestJobBean implements QuickTask<PageQuery> {
+public class TestJobExceptionBean implements QuickTask<PageQuery> {
 
 
     @Override
@@ -14,6 +15,6 @@ public class TestJobBean implements QuickTask<PageQuery> {
 
         System.out.println("🔥🔥🔥 任务执行了！参数：" + pq);
 
-        return Result.success("一切正常");
+        throw new BizException("任务异常了！");
     }
 }
