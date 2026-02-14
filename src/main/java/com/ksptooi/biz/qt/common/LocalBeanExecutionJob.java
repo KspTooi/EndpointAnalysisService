@@ -71,6 +71,9 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
         QtTaskRcdPo taskRcdPo = null;
         String result = null; //执行结果 成功时为JSON字符串 异常时为异常堆栈
         var lastExecStatus = 0; //上次执行状态 0:成功 1:异常
+        
+        //是否存在参数转换错误
+        var hasParamError = false;
 
         //如果日志策略为 0:全部 则需要在任务开始时记录日志
         if (policyRcd == 0) {
@@ -119,9 +122,7 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
 
                     result = ExceptionUtils.getStackTrace(e);
                     lastExecStatus = 1; //设置上次执行状态为异常
-
-                    //在处理参数阶段失败不走失败策略 直接终止任务
-                    qtTaskService.abortTask(taskId);
+                    hasParamError = true; //设置存在参数转换错误
                     return;
                 }
 
@@ -162,16 +163,20 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
                     qtTaskRcdRepository.saveAndFlush(taskRcdPo);
                 }
 
-                //如果失败策略为自动暂停，则暂停任务
-                if (policyError == 1) {
+                //如果失败策略为自动暂停，则暂停任务(如果有参数转换错误,则不走此分支)
+                if (policyError == 1 && !hasParamError) {
                     qtTaskService.abortTask(taskId, true);
                     log.info("任务: {} 执行异常,触发失败策略,已暂停任务", taskId);
                 }
 
-                return;
+                //如果有参数转换错误 则不论失败策略如何 都直接终止任务
+                if (hasParamError) {
+                    qtTaskService.abortTask(taskId);
+                    log.info("任务: {} 执行异常,存在参数转换错误,已终止任务", taskId);
+                }
+
             }
 
-            //以下都为处理任务成功
 
             //如果日志策略为 0:全部 则需要在任务结束时更新日志
             if (policyRcd == 0) {
