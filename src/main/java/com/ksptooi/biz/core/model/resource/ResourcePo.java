@@ -148,6 +148,11 @@ public class ResourcePo {
      */
     public boolean hasPermission(String permission) {
 
+        //如果给定的权限是超级权限 直接放行
+        if (StringUtils.isNotBlank(permission) && permission.equals("*:*:*")) {
+            return true;
+        }
+
         //如果权限为空或*，则表示所有用户均可访问
         if (StringUtils.isBlank(this.permission) || this.permission.equals("*")) {
             return true;
