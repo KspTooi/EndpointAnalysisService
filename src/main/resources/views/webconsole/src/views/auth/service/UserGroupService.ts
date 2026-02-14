@@ -143,10 +143,10 @@ export default {
       id: "",
       code: "",
       name: "",
-      description: "",
-      isSystem: false,
+      remark: "",
+      isSystem: 0,
       status: 1,
-      sortOrder: 0,
+      seq: 0,
       permissions: [],
     });
 
@@ -165,8 +165,8 @@ export default {
         { required: true, message: "请输入组名称", trigger: "blur" },
         { min: 2, max: 50, message: "组名称长度必须在2-50个字符之间", trigger: "blur" },
       ],
-      description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
-      sortOrder: [
+      remark: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
+      seq: [
         { required: true, message: "请输入排序号", trigger: "blur" },
         { min: 0, message: "排序号必须大于等于0", trigger: "blur" },
       ],
@@ -194,9 +194,9 @@ export default {
       modalForm.id = "";
       modalForm.code = "";
       modalForm.name = "";
-      modalForm.description = "";
+      modalForm.remark = "";
       modalForm.status = 1;
-      modalForm.sortOrder = 0;
+      modalForm.seq = 0;
       modalForm.permissions = [];
 
       permissionSearch.value = "";
@@ -239,9 +239,9 @@ export default {
           modalForm.id = ret.id;
           modalForm.code = ret.code;
           modalForm.name = ret.name;
-          modalForm.description = ret.description;
+          modalForm.remark = ret.remark;
           modalForm.status = ret.status;
-          modalForm.sortOrder = ret.sortOrder;
+          modalForm.seq = ret.seq;
           modalForm.permissions = ret.permissions || [];
 
           permissionList.value = ret.permissions || [];
@@ -276,9 +276,9 @@ export default {
           const addDto: AddGroupDto = {
             code: modalForm.code,
             name: modalForm.name,
-            description: modalForm.description,
+            remark: modalForm.remark,
             status: modalForm.status,
-            sortOrder: modalForm.sortOrder,
+            seq: modalForm.seq,
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.addGroup(addDto);
@@ -297,9 +297,9 @@ export default {
             id: modalForm.id,
             code: modalForm.code,
             name: modalForm.name,
-            description: modalForm.description,
+            remark: modalForm.remark,
             status: modalForm.status,
-            sortOrder: modalForm.sortOrder,
+            seq: modalForm.seq,
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.editGroup(editDto);

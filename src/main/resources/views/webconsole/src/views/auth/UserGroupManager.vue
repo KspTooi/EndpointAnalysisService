@@ -157,8 +157,8 @@
               id="group-name"
             />
           </el-form-item>
-          <el-form-item label="用户组描述" prop="description" label-for="group-description">
-            <el-input v-model="modalForm.description" type="textarea" :rows="3" id="group-description" />
+          <el-form-item label="用户组描述" prop="remark" label-for="group-remark">
+            <el-input v-model="modalForm.remark" type="textarea" :rows="3" id="group-remark" />
           </el-form-item>
           <el-form-item label="用户组状态" prop="status" label-for="group-status">
             <el-radio-group v-model="modalForm.status" id="group-status">

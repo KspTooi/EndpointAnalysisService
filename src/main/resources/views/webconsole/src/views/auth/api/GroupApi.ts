@@ -27,7 +27,7 @@ export interface GetGroupListVo {
   name: string; // 组名称
   memberCount: number; // 成员数量
   permissionCount: number; // 权限节点数量
-  isSystem: boolean; // 系统内置组
+  isSystem: number; // 系统内置组 0:否 1:是
   status: number; // 组状态：0-禁用，1-启用
   createTime: string; // 创建时间
 }
@@ -36,19 +36,19 @@ export interface GetGroupDetailsVo {
   id: string; // 组ID
   code: string; // 组标识
   name: string; // 组名称
-  description: string; // 组描述
-  isSystem: boolean; // 是否系统内置组
+  remark: string; // 组描述
+  isSystem: number; // 系统内置组 0:否 1:是
   status: number; // 组状态：0-禁用，1-启用
-  sortOrder: number; // 排序号
+  seq: number; // 排序号
   permissions: GroupPermissionDefinitionVo[]; // 权限节点列表
 }
 
 export interface AddGroupDto {
   code: string; // 组标识
   name: string; // 组名称
-  description?: string; // 组描述
+  remark?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
-  sortOrder: number; // 排序号
+  seq: number; // 排序号
   permissionIds?: string[]; // 权限ID列表
 }
 
@@ -56,9 +56,9 @@ export interface EditGroupDto {
   id: string; // 组ID
   code: string; // 组标识
   name: string; // 组名称
-  description?: string; // 组描述
+  remark?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
-  sortOrder: number; // 排序号
+  seq: number; // 排序号
   permissionIds?: string[]; // 权限ID列表
 }
 
@@ -99,7 +99,7 @@ export interface GetGroupPermissionNodeVo {
   code: string; // 权限标识
   name: string; // 权限名称
   description: string; // 权限描述
-  sortOrder: number; // 排序号
+  seq: number; // 排序号
   hasPermission: number; // 是否已授权 0:否 1:是
 }
 
