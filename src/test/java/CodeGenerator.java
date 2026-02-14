@@ -17,13 +17,11 @@ public class CodeGenerator {
     public static void main(String[] args) {
 
         //数据库名称
-        var databaseName = "endpoint_analysis_service_test";
+        var databaseName = "endpoint_analysis_service";
 
         //需要生成的表名
-        var tableNames = List.of("qt_task");
+        var tableNames = List.of("core_post");
 
-
-        
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
         MysqlToJavaPolyConverter.TYPE_MAP.put("DATE", JavaTypeInfo.of(LocalDate.class));
@@ -31,7 +29,7 @@ public class CodeGenerator {
 
         //创建Mysql采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://192.168.10.202:3306/" + databaseName);
+        coll.setUrl("jdbc:mysql://127.0.0.1:3306/" + databaseName);
         coll.setUsername("root");
         coll.setPassword("root");
         coll.setDatabase(databaseName);
