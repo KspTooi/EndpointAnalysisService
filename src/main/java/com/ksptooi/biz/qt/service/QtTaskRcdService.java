@@ -80,24 +80,6 @@ public class QtTaskRcdService {
         repository.deleteAllById(ids);
     }
 
-    /**
-     * 异步记录任务调度日志
-     * @param dataMap 任务数据
-     * @param result 调用目标返回内容(错误时为异常堆栈)
-     * @param status 运行状态 0:正常 1:失败 2:超时 3:已调度
-     * @param taskPo 任务对象
-     */
-    @Async
-    @Transactional(rollbackFor = Exception.class)
-    public void addQtTaskRcdAsync(JobDataMap dataMap,String result,String status,QtTaskPo taskPo) {
-
-        var taskId = dataMap.getLong("taskId"); // 任务ID
-        var beanName = dataMap.getString("target");   // BEAN代码
-        var jsonParams = dataMap.getString("params"); // 调用参数JSON
-        var policyError = dataMap.getInt("policyError"); // 失败策略 0:默认 1:自动暂停
-        var policyRcd = dataMap.getInt("policyRcd"); // 日志策略 0:全部 1:仅异常 2:不记录
-
-    }
 
     
     /**
