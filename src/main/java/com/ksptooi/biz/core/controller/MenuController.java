@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,12 +43,14 @@ public class MenuController {
         return Result.success(menuService.getUserMenuTree(session().getUserId()));
     }
 
+    @PreAuthorize("@auth.hasCode('core:menu:view')")
     @PostMapping("/getMenuTree")
     @Operation(summary = "获取菜单与按钮树(用于菜单管理)")
     public Result<List<GetMenuTreeVo>> getMenuTree(@RequestBody @Valid GetMenuTreeDto dto) throws Exception {
         return Result.success(menuService.getMenuTree(dto));
     }
 
+    @PreAuthorize("@auth.hasCode('core:menu:add')")
     @PostMapping("/addMenu")
     @Operation(summary = "新增菜单与按钮")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
@@ -65,6 +68,7 @@ public class MenuController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:menu:edit')")
     @PostMapping("/editMenu")
     @Operation(summary = "编辑菜单与按钮")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
@@ -82,6 +86,7 @@ public class MenuController {
         return Result.success("编辑成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:menu:view')")
     @PostMapping("/getMenuDetails")
     @Operation(summary = "获取菜单与按钮详情")
     public Result<GetMenuDetailsVo> getMenuDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -89,6 +94,7 @@ public class MenuController {
     }
 
 
+    @PreAuthorize("@auth.hasCode('core:menu:remove')")
     @PostMapping("/removeMenu")
     @Operation(summary = "删除菜单与按钮")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)

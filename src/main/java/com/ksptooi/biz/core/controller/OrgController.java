@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ public class OrgController {
     @Autowired
     private OrgService orgService;
 
+    @PreAuthorize("@auth.hasCode('core:org:view')")
     @PostMapping("/getOrgTree")
     @Operation(summary = "查询组织机构树(不分页)")
     public Result<List<GetOrgTreeVo>> getOrgTree(@RequestBody @Valid GetOrgTreeDto dto) throws Exception {
@@ -37,6 +39,7 @@ public class OrgController {
         return Result.success(list);
     }
 
+    @PreAuthorize("@auth.hasCode('core:org:add')")
     @Operation(summary = "新增组织机构")
     @PostMapping("/addOrg")
     public Result<String> addOrg(@RequestBody @Valid AddOrgDto dto) throws Exception {
@@ -51,6 +54,7 @@ public class OrgController {
     }
 
 
+    @PreAuthorize("@auth.hasCode('core:org:edit')")
     @Operation(summary = "编辑组织机构")
     @PostMapping("/editOrg")
     public Result<String> editOrg(@RequestBody @Valid EditOrgDto dto) throws Exception {
@@ -58,6 +62,7 @@ public class OrgController {
         return Result.success("修改成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:org:view')")
     @Operation(summary = "查询组织机构详情")
     @PostMapping("/getOrgDetails")
     public Result<GetOrgDetailsVo> getOrgDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -68,6 +73,7 @@ public class OrgController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('core:org:remove')")
     @Operation(summary = "删除组织机构")
     @PostMapping("/removeOrg")
     public Result<String> removeOrg(@RequestBody @Valid CommonIdDto dto) throws Exception {

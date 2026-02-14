@@ -31,14 +31,14 @@ public class AuditErrorRcdController {
     @Autowired
     private AuditErrorRcdService auditErrorRcdService;
 
-    @PreAuthorize(value = "@auth.hasCode('audit:error:view')")
+    @PreAuthorize("@auth.hasCode('audit:error:view')")
     @PostMapping("/getAuditErrorRcdList")
     @Operation(summary = "查询系统错误记录列表")
     public PageResult<GetAuditErrorRcdListVo> getAuditErrorRcdList(@RequestBody @Valid GetAuditErrorRcdListDto dto) throws Exception {
         return auditErrorRcdService.getAuditErrorRcdList(dto);
     }
 
-    @PreAuthorize(value = "@auth.hasCode('audit:error:view')")
+    @PreAuthorize("@auth.hasCode('audit:error:view')")
     @Operation(summary = "查询系统错误记录详情")
     @PostMapping("/getAuditErrorRcdDetails")
     public Result<GetAuditErrorRcdDetailsVo> getAuditErrorRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -49,7 +49,7 @@ public class AuditErrorRcdController {
         return Result.success(details);
     }
 
-    @PreAuthorize(value = "@auth.hasCode('audit:error:remove')")
+    @PreAuthorize("@auth.hasCode('audit:error:remove')")
     @Operation(summary = "删除系统错误记录")
     @PostMapping("/removeAuditErrorRcd")
     public Result<String> removeAuditErrorRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {

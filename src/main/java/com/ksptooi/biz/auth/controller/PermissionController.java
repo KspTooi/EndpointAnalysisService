@@ -40,21 +40,21 @@ public class PermissionController {
         return Result.success(service.getPermissionDefinition());
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:permission:view')")
+    @PreAuthorize("@auth.hasCode('auth:permission:view')")
     @Operation(summary = "获取权限列表")
     @PostMapping("getPermissionList")
     public PageResult<GetPermissionListVo> getPermissionList(@RequestBody @Valid GetPermissionListDto dto) {
         return service.getPermissionList(dto);
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:permission:view')")
+    @PreAuthorize("@auth.hasCode('auth:permission:view')")
     @Operation(summary = "获取权限详情")
     @PostMapping("getPermissionDetails")
     public Result<GetPermissionDetailsVo> getPermissionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(service.getPermissionDetails(dto.getId()));
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:permission:add')")
+    @PreAuthorize("@auth.hasCode('auth:permission:add')")
     @Operation(summary = "新增权限")
     @PostMapping("addPermission")
     public Result<String> addPermission(@RequestBody @Valid AddPermissionDto dto) throws Exception {
@@ -62,7 +62,7 @@ public class PermissionController {
         return Result.success("新增成功");
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:permission:edit')")
+    @PreAuthorize("@auth.hasCode('auth:permission:edit')")
     @Operation(summary = "编辑权限")
     @PostMapping("editPermission")
     public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) throws Exception {
@@ -70,7 +70,7 @@ public class PermissionController {
         return Result.success("修改成功");
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:permission:remove')")
+    @PreAuthorize("@auth.hasCode('auth:permission:remove')")
     @Operation(summary = "删除权限")
     @PostMapping("removePermission")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)

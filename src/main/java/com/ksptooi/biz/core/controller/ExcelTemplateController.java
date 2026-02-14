@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,12 +32,14 @@ public class ExcelTemplateController {
     @Autowired
     private ExcelTemplateService excelTemplateService;
 
+    @PreAuthorize("@auth.hasCode('core:excel_template:view')")
     @PostMapping("/getExcelTemplateList")
     @Operation(summary = "查询Excel模板列表")
     public PageResult<GetExcelTemplateListVo> getExcelTemplateList(@RequestBody @Valid GetExcelTemplateListDto dto) throws Exception {
         return excelTemplateService.getExcelTemplateList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('core:excel_template:edit')")
     @Operation(summary = "编辑Excel模板")
     @PostMapping("/editExcelTemplate")
     public Result<String> editExcelTemplate(@RequestBody @Valid EditExcelTemplateDto dto) throws Exception {
@@ -45,6 +48,7 @@ public class ExcelTemplateController {
     }
 
 
+    @PreAuthorize("@auth.hasCode('core:excel_template:remove')")
     @Operation(summary = "删除Excel模板")
     @PostMapping("/removeExcelTemplate")
     public Result<String> removeExcelTemplate(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -53,6 +57,7 @@ public class ExcelTemplateController {
     }
 
 
+    @PreAuthorize("@auth.hasCode('core:excel_template:upload')")
     @Operation(summary = "上传Excel模板")
     @PostMapping("/uploadExcelTemplate")
     public Result<String> uploadExcelTemplate(@RequestParam("file") MultipartFile[] file) throws Exception {
@@ -103,6 +108,7 @@ public class ExcelTemplateController {
         return Result.success("上传成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:excel_template:download')")
     @Operation(summary = "下载Excel模板")
     @RequestMapping("/downloadExcelTemplate")
     public void downloadExcelTemplate(@RequestParam("code") String code, HttpServletResponse response) throws Exception {

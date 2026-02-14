@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public class EndpointController {
     @Autowired
     private EndpointService endpointService;
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:view')")
     @PostMapping("/getEndpointTree")
     @Operation(summary = "获取端点树")
     public Result<List<GetEndpointTreeVo>> getEndpointTree(@RequestBody GetEndpointTreeDto dto) {
         return Result.success(endpointService.getEndpointTree(dto));
     }
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:add')")
     @PostMapping("/addEndpoint")
     @Operation(summary = "添加端点")
     public Result<String> addEndpoint(@RequestBody @Valid AddEndpointDto dto) throws BizException {
@@ -41,6 +44,7 @@ public class EndpointController {
         return Result.success("添加成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:edit')")
     @PostMapping("/editEndpoint")
     @Operation(summary = "编辑端点")
     public Result<String> editEndpoint(@RequestBody @Valid EditEndpointDto dto) throws BizException {
@@ -48,12 +52,14 @@ public class EndpointController {
         return Result.success("编辑成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:view')")
     @PostMapping("/getEndpointDetails")
     @Operation(summary = "查询端点详情")
     public Result<GetEndpointDetailsVo> getEndpointDetails(@RequestBody @Valid CommonIdDto dto) throws BizException {
         return Result.success(endpointService.getEndpointDetails(dto.getId()));
     }
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:remove')")
     @PostMapping("/removeEndpoint")
     @Operation(summary = "删除端点")
     public Result<String> removeEndpoint(@RequestBody @Valid CommonIdDto dto) throws BizException {
@@ -61,6 +67,7 @@ public class EndpointController {
         return Result.success("删除成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:endpoint:clear')")
     @PostMapping("/clearEndpointCache")
     @Operation(summary = "清空端点缓存")
     public Result<String> clearEndpointCache() {

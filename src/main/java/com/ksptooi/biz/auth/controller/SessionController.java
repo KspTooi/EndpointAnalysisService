@@ -27,21 +27,21 @@ public class SessionController {
     @Autowired
     private SessionService service;
 
-    @PreAuthorize(value = "@auth.hasCode('auth:session:view')")
+    @PreAuthorize("@auth.hasCode('auth:session:view')")
     @Operation(summary = "获取在线用户列表")
     @PostMapping("getSessionList")
     public PageResult<GetSessionListVo> getSessionList(@RequestBody @Valid GetSessionListDto dto) {
         return service.getSessionList(dto);
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:session:view')")
+    @PreAuthorize("@auth.hasCode('auth:session:view')")
     @Operation(summary = "获取在线用户详情")
     @PostMapping("getSessionDetails")
     public Result<GetSessionDetailsVo> getSessionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(service.getSessionDetails(dto.getId()));
     }
 
-    @PreAuthorize(value = "@auth.hasCode('auth:session:remove')")
+    @PreAuthorize("@auth.hasCode('auth:session:remove')")
     @Operation(summary = "关闭在线用户会话", description = "强退用户时使用")
     @PostMapping("closeSession")
     public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) throws Exception {
