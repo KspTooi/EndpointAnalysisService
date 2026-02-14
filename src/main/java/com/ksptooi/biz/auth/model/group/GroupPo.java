@@ -13,72 +13,79 @@ import java.time.LocalDateTime;
  */
 
 @Entity
-@Table(name = "core_group", comment = "用户组")
+@Table(name = "auth_group")
 @Getter
 @Setter
 public class GroupPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", comment = "组ID")
-    private Long id;
+    @Column(name = "id", nullable = false, comment = "组ID")
+    private Integer id;
 
-    @Column(name = "code", nullable = false, unique = true, length = 50, comment = "组标识，如：admin、developer等")
+    @Column(name = "code", length = 32, nullable = false, comment = "组标识，如：admin、developer等")
     private String code;
 
-    @Column(name = "name", nullable = false, unique = true, length = 50, comment = "组名称，如：管理员组、开发者组等")
+    @Column(name = "name", length = 32, nullable = false, comment = "组名称，如：管理员组、开发者组等")
     private String name;
 
-    @Column(name = "description", length = 200, comment = "组描述")
-    private String description;
+    @Column(name = "remark", columnDefinition = "TEXT", comment = "组描述")
+    private String remark;
 
-    @Column(name = "is_system", nullable = false, comment = "是否系统内置组（内置组不可删除）")
-    private Boolean isSystem;
-
-    @Column(name = "status", nullable = false, comment = "组状态：0-禁用，1-启用")
+    @Column(name = "status", columnDefinition = "TINYINT", nullable = false, comment = "组状态:0:禁用，1:启用")
     private Integer status;
 
-    @Column(name = "sort_order", nullable = false, comment = "排序号")
-    private Integer sortOrder;
+    @Column(name = "seq", nullable = false, comment = "排序号")
+    private Integer seq;
 
-    @Column(name = "create_user_id", comment = "创建人ID")
-    private Long createUserId;
+    @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "系统内置组 0:否 1:是")
+    private Integer isSystem;
 
-    @Column(name = "update_user_id", comment = "修改人ID")
-    private Long updateUserId;
-
-    @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
+
+    @Column(name = "creator_id", nullable = false, comment = "创建人ID")
+    private Long creatorId;
 
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
+    @Column(name = "updater_id", nullable = false, comment = "修改人ID")
+    private Long updaterId;
+
 
     @PrePersist
-    public void prePersist() {
+    private void onCreate() {
 
         if (this.id == null) {
-            this.id = IdWorker.nextId();
+            this.id = IdWorker.nextId().intValue();
         }
 
-        if (status == null) {
-            status = 1; // 默认启用
+        if (this.status == null) {
+            this.status = 1; // 默认启用
         }
 
-        if (isSystem == null) {
-            isSystem = false; // 默认非系统组
+        if (this.isSystem == null) {
+            this.isSystem = 0; // 默认非系统组
         }
 
-        if (sortOrder == null) {
-            sortOrder = 0; // 默认排序号
+        if (this.seq == null) {
+            this.seq = 0; // 默认排序号
         }
-        
-        createTime = LocalDateTime.now();
-        updateTime = LocalDateTime.now();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (this.createTime == null) {
+            this.createTime = now;
+        }
+
+        if (this.updateTime == null) {
+            this.updateTime = now;
+        }
+
     }
 
     @PreUpdate
-    public void preUpdate() {
-        updateTime = LocalDateTime.now();
+    private void onUpdate() {
+        this.updateTime = LocalDateTime.now();
     }
 } 
