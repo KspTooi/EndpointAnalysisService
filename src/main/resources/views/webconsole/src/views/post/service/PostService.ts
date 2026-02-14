@@ -53,7 +53,6 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.code = "";
-      listForm.value.seq = null;
       loadList();
     };
 
@@ -107,19 +106,20 @@ export default {
       name: "",
       code: "",
       seq: 0,
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
-      deleteTime: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入岗位名称", trigger: "blur" }],
-      code: [{ required: true, message: "请输入岗位编码", trigger: "blur" }],
+      name: [
+        { required: true, message: "请输入岗位名称", trigger: "blur" },
+        { max: 32, message: "岗位名称长度不能超过32个字符", trigger: "blur" },
+      ],
+      code: [
+        { required: true, message: "请输入岗位编码", trigger: "blur" },
+        { max: 32, message: "岗位编码长度不能超过32个字符", trigger: "blur" },
+      ],
       seq: [{ required: true, message: "请输入岗位排序", trigger: "blur" }],
     };
 
@@ -136,11 +136,6 @@ export default {
         modalForm.name = "";
         modalForm.code = "";
         modalForm.seq = 0;
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
-        modalForm.deleteTime = "";
         modalVisible.value = true;
         return;
       }
@@ -157,11 +152,6 @@ export default {
           modalForm.name = details.name;
           modalForm.code = details.code;
           modalForm.seq = details.seq;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
-          modalForm.deleteTime = details.deleteTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -181,11 +171,6 @@ export default {
       modalForm.name = "";
       modalForm.code = "";
       modalForm.seq = 0;
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
-      modalForm.deleteTime = "";
     };
 
     /**
