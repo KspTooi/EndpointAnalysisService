@@ -23,8 +23,7 @@ public interface PostRepository extends JpaRepository<PostPo, Long> {
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.name} IS NULL OR u.name  LIKE CONCAT('%', :#{#po.name}, '%') )
             AND (:#{#po.code} IS NULL OR u.code  LIKE CONCAT('%', :#{#po.code}, '%') )
-            AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.seq ASC,u.updateTime DESC
             """)
     Page<PostPo> getPostList(@Param("po") PostPo po, Pageable pageable);
 
