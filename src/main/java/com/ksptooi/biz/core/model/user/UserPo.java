@@ -4,6 +4,7 @@ import com.ksptooi.biz.core.model.attach.AttachPo;
 import com.ksptooi.biz.core.model.company.CompanyPo;
 import com.ksptooi.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
+import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -102,11 +103,18 @@ public class UserPo {
 
     @PrePersist
     public void prePersist() {
+
+        if (this.id == null) {
+            this.id = IdWorker.nextId();
+        }
+
         createTime = LocalDateTime.now();
         updateTime = LocalDateTime.now();
+
         if (loginCount == null) {
             loginCount = 0;
         }
+        
         if (status == null) {
             status = 0;
         }
