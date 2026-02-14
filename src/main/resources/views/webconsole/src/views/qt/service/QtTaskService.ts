@@ -53,7 +53,7 @@ export default {
       }
 
       listLoading.value = false;
-      
+
       // 持久化查询条件
       QueryPersistService.persistQuery("qt-task", listForm.value);
     };
@@ -67,10 +67,10 @@ export default {
       listForm.value.groupId = "";
       listForm.value.name = "";
       listForm.value.status = null;
-      
+
       // 清除持久化的查询条件
       QueryPersistService.clearQuery("qt-task");
-      
+
       loadList();
     };
 
@@ -195,6 +195,23 @@ export default {
       policyError: [{ required: true, message: "请选择失败策略", trigger: "blur" }],
       policyRcd: [{ required: true, message: "请选择日志策略", trigger: "blur" }],
       status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+      targetParam: [
+        {
+          validator: (rule: any, value: string, callback: any) => {
+            if (!value) {
+              callback();
+              return;
+            }
+            try {
+              JSON.parse(value);
+              callback();
+            } catch (e) {
+              callback(new Error("JSON格式错误，请检查输入"));
+            }
+          },
+          trigger: "blur",
+        },
+      ],
     };
 
     /**
