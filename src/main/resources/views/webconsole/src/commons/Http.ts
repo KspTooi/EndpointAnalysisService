@@ -125,19 +125,19 @@ export default {
       return result as T;
     }
 
-    //处理Code为1的服务器内部错误
-    if (result.code === 1) {
-      //直接弹出CONFIRM对话框 不显示取消按钮
-      ElMessageBox.confirm(result.message || "服务器内部错误", "服务器内部错误", {
-        confirmButtonText: "我明白了",
-        showCancelButton: false,
-        type: "warning",
-        closeOnClickModal: false,
-      }).then(() => {
-        throw new Error(result.message || "服务器内部错误");
-      });
-      return Promise.reject(new Error(result.message || "服务器内部错误"));
-    }
+    //处理Code为1的服务器内部错误 由各SFC各自处理
+    //if (result.code === 1) {
+    //  //直接弹出CONFIRM对话框 不显示取消按钮
+    //  ElMessageBox.confirm(result.message || "服务器内部错误", "服务器内部错误", {
+    //    confirmButtonText: "我明白了",
+    //    showCancelButton: false,
+    //    type: "warning",
+    //    closeOnClickModal: false,
+    //  }).then(() => {
+    //    throw new Error(result.message || "服务器内部错误");
+    //  });
+    //  return Promise.reject(new Error(result.message || "服务器内部错误"));
+    //}
 
     //需要团队
     if (result.code === 101) {
