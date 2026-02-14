@@ -26,7 +26,6 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="岗位ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="岗位名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="岗位编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="岗位排序" min-width="120" show-overflow-tooltip />
