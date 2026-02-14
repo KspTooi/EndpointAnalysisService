@@ -60,7 +60,7 @@ public class PermissionPo {
     }
 
     /**
-     * 判断两个权限是否相等 只要id相等就认为相等
+     * 判断两个权限是否相等 只要权限码相等就认为相等
      *
      * @param obj 要比较的权限
      * @return 是否相等
@@ -74,11 +74,11 @@ public class PermissionPo {
             return false;
         }
         PermissionPo other = (PermissionPo) obj;
-        return Objects.equals(id, other.id);
+        return Objects.equals(this.code, other.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(code);
     }
 } 
