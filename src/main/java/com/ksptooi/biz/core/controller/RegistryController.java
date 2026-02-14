@@ -36,7 +36,6 @@ public class RegistryController {
     @Autowired
     private RegistryService registryService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/getRegistryNodeTree")
     @Operation(summary = "查询注册表节点树")
     public Result<List<GetRegistryNodeTreeVo>> getRegistryNodeTree() throws Exception {
@@ -121,7 +120,8 @@ public class RegistryController {
         return Result.success("导入成功,已导入数据:" + count + "条", null);
     }
 
-    @Operation(summary = "导出注册表条目")
+    @PreAuthorize("auth.require('registry:export')")
+    @Operation(summary = "导出注册表条目", operationId = "registry:export")
     @RequestMapping("/exportRegistry")
     public void exportRegistry(@RequestBody @Valid GetRegistryListDto dto, HttpServletResponse response) throws Exception {
 
