@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,12 +30,14 @@ public class AuditLoginController {
     @Autowired
     private AuditLoginService auditLoginService;
 
+    @PreAuthorize(value = "@auth.hasCode('audit:login:view')")
     @PostMapping("/getAuditLoginList")
     @Operation(summary = "获取登录日志列表")
     public PageResult<GetAuditLoginListVo> getAuditLoginList(@RequestBody @Valid GetAuditLoginListDto dto) throws Exception {
         return auditLoginService.getAuditLoginList(dto);
     }
     
+    @PreAuthorize(value = "@auth.hasCode('audit:login:view')")
     @Operation(summary = "获取登录日志详情")
     @PostMapping("/getAuditLoginDetails")
     public Result<GetAuditLoginDetailsVo> getAuditLoginDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -45,6 +48,7 @@ public class AuditLoginController {
         return Result.success(details);
     }
 
+    @PreAuthorize(value = "@auth.hasCode('audit:login:remove')")
     @Operation(summary = "删除登录日志")
     @PostMapping("/removeAuditLogin")
     public Result<String> removeAuditLogin(@RequestBody @Valid CommonIdDto dto) throws Exception {
