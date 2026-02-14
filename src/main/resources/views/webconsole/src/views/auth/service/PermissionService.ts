@@ -130,14 +130,16 @@ export default {
         const modalLoading = ref(false);
         const modalMode = ref<"add" | "edit">("add");
         const modalForm = reactive<GetPermissionDetailsVo>({
-            code: "",
-            createTime: "",
-            description: "",
             id: "",
-            isSystem: 0,
             name: "",
-            sortOrder: 0,
+            code: "",
+            remark: "",
+            seq: 0,
+            isSystem: 0,
+            createTime: "",
+            creatorId: "",
             updateTime: "",
+            updaterId: "",
         });
 
         const modalRules = {
@@ -151,9 +153,15 @@ export default {
             ],
             name: [
                 { required: true, message: "请输入权限名称", trigger: "blur" },
-                { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" },
+                { min: 1, max: 32, message: "长度在 1 到 32 个字符", trigger: "blur" },
             ],
-            description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
+            remark: [],
+            seq: [
+                { required: true, message: "请输入排序号", trigger: "blur" },
+            ],
+            isSystem: [
+                { required: true, message: "请选择是否为系统权限", trigger: "blur" },
+            ],
         };
 
         /**
@@ -161,13 +169,15 @@ export default {
          */
         const resetModal = () => {
             modalForm.id = "";
-            modalForm.code = "";
             modalForm.name = "";
-            modalForm.description = "";
-            modalForm.sortOrder = 0;
+            modalForm.code = "";
+            modalForm.remark = "";
+            modalForm.seq = 0;
             modalForm.isSystem = 0;
             modalForm.createTime = "";
+            modalForm.creatorId = "";
             modalForm.updateTime = "";
+            modalForm.updaterId = "";
 
             if (modalFormRef.value) {
                 modalFormRef.value.resetFields();
@@ -185,13 +195,15 @@ export default {
                 try {
                     const ret = await AdminPermissionApi.getPermissionDetails({ id: row.id });
                     modalForm.id = ret.id;
-                    modalForm.code = ret.code;
                     modalForm.name = ret.name;
-                    modalForm.description = ret.description;
-                    modalForm.sortOrder = ret.sortOrder;
+                    modalForm.code = ret.code;
+                    modalForm.remark = ret.remark;
+                    modalForm.seq = ret.seq;
                     modalForm.isSystem = ret.isSystem;
                     modalForm.createTime = ret.createTime;
+                    modalForm.creatorId = ret.creatorId;
                     modalForm.updateTime = ret.updateTime;
+                    modalForm.updaterId = ret.updaterId;
                 } catch (error: any) {
                     ElMessage.error(error.message || "获取权限详情失败");
                     return;
@@ -216,10 +228,11 @@ export default {
             try {
                 if (modalMode.value === "add") {
                     const addDto: AddPermissionDto = {
-                        code: modalForm.code,
                         name: modalForm.name,
-                        description: modalForm.description,
-                        sortOrder: modalForm.sortOrder,
+                        code: modalForm.code,
+                        remark: modalForm.remark,
+                        seq: modalForm.seq,
+                        isSystem: modalForm.isSystem,
                     };
                     const result = await AdminPermissionApi.addPermission(addDto);
                     if (Result.isSuccess(result)) {
@@ -235,10 +248,11 @@ export default {
                 if (modalMode.value === "edit") {
                     const editDto: EditPermissionDto = {
                         id: modalForm.id,
-                        code: modalForm.code,
                         name: modalForm.name,
-                        description: modalForm.description,
-                        sortOrder: modalForm.sortOrder,
+                        code: modalForm.code,
+                        remark: modalForm.remark,
+                        seq: modalForm.seq,
+                        isSystem: modalForm.isSystem,
                     };
                     const result = await AdminPermissionApi.editPermission(editDto);
                     if (Result.isSuccess(result)) {

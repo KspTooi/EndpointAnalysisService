@@ -96,9 +96,9 @@ export interface GetGroupPermissionNodeDto extends PageQuery {
 
 export interface GetGroupPermissionNodeVo {
   id: string; // 权限ID
-  code: string; // 权限标识
   name: string; // 权限名称
-  description: string; // 权限描述
+  code: string; // 权限标识
+  remark: string; // 权限描述
   seq: number; // 排序号
   hasPermission: number; // 是否已授权 0:否 1:是
 }

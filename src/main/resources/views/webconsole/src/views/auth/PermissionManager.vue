@@ -71,7 +71,7 @@
           }"
         />
         <el-table-column
-          prop="description"
+          prop="remark"
           label="权限描述"
           min-width="200"
           show-overflow-tooltip
@@ -181,11 +181,17 @@
             :placeholder="modalMode === 'edit' && modalForm.isSystem === 1 ? '系统权限不可修改名称' : '请输入权限名称'"
           />
         </el-form-item>
-        <el-form-item label="权限描述" prop="description">
-          <el-input v-model="modalForm.description" type="textarea" :rows="3" placeholder="请输入权限描述" />
+        <el-form-item label="权限描述" prop="remark">
+          <el-input v-model="modalForm.remark" type="textarea" :rows="3" placeholder="请输入权限描述" />
         </el-form-item>
-        <el-form-item label="排序顺序" prop="sortOrder">
-          <el-input-number v-model="modalForm.sortOrder" :min="0" :max="9999" />
+        <el-form-item label="排序号" prop="seq">
+          <el-input-number v-model="modalForm.seq" :min="0" :max="9999" />
+        </el-form-item>
+        <el-form-item label="系统权限" prop="isSystem" v-if="modalMode === 'add'">
+          <el-radio-group v-model="modalForm.isSystem">
+            <el-radio :value="0">否</el-radio>
+            <el-radio :value="1">是</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>

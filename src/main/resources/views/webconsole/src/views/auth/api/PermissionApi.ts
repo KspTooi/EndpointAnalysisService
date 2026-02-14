@@ -17,36 +17,41 @@ export interface GetPermissionListDto extends PageQuery {
 
 export interface GetPermissionListVo {
   id: string; // 权限ID
-  code: string; // 权限代码
   name: string; // 权限名称
-  description: string; // 权限描述
+  code: string; // 权限代码
+  remark: string; // 权限描述
+  seq: number; // 排序号
   isSystem: number; // 是否为系统权限 1:是 0:否
 }
 
 export interface GetPermissionDetailsVo {
   id: string; // 权限ID
-  code: string; // 权限代码
   name: string; // 权限名称
-  description: string; // 权限描述
-  sortOrder: number; // 排序顺序
+  code: string; // 权限代码
+  remark: string; // 权限描述
+  seq: number; // 排序号
   isSystem: number; // 是否为系统权限 1:是 0:否
   createTime: string; // 创建时间
+  creatorId: string; // 创建人
   updateTime: string; // 修改时间
+  updaterId: string; // 修改人
 }
 
 export interface AddPermissionDto {
-  code: string; // 权限代码
   name: string; // 权限名称
-  description?: string | null; // 权限描述
-  sortOrder?: number | null; // 排序顺序
+  code: string; // 权限代码
+  remark?: string | null; // 权限描述
+  seq: number; // 排序号
+  isSystem: number; // 系统内置权限 0:否 1:是
 }
 
 export interface EditPermissionDto {
   id: string; // 权限ID
-  code: string; // 权限代码
   name: string; // 权限名称
-  description?: string | null; // 权限描述
-  sortOrder?: number | null; // 排序顺序
+  code: string; // 权限代码
+  remark?: string | null; // 权限描述
+  seq: number; // 排序号
+  isSystem: number; // 系统内置权限 0:否 1:是
 }
 
 export default {
