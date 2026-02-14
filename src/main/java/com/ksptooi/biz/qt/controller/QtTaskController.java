@@ -2,6 +2,7 @@ package com.ksptooi.biz.qt.controller;
 
 import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
+import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
@@ -120,6 +121,14 @@ public class QtTaskController {
     @PostMapping("/getLocalBeanList")
     public Result<List<GetLocalBeanListVo>> getLocalBeanList() throws Exception {
         return Result.success(qtTaskService.getLocalBeanList());
+    }
+
+    @PreAuthorize("@auth.hasCode('qt:task:edit')")
+    @Operation(summary = "立即执行任务")
+    @PostMapping("/executeTask")
+    public Result<String> executeTask(@RequestBody @Valid ExecuteTaskDto dto) throws Exception {
+        qtTaskService.executeTask(dto);
+        return Result.success("操作成功");
     }
 
 }

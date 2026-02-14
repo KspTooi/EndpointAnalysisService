@@ -6,6 +6,7 @@ import com.ksptooi.biz.qt.common.QuickTaskRegistry;
 import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
 import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
+import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
@@ -188,6 +189,35 @@ public class QtTaskService {
             vos.add(vo);
         }
         return vos;
+    }
+
+    /**
+     * 立即执行任务
+     *
+     * @param dto 执行任务条件
+     */
+    public void executeTask(ExecuteTaskDto dto) throws BizException {
+        var taskPo = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("执行任务失败,数据不存在或无权限访问."));
+
+        var jobKey = new JobKey(taskPo.getIdentity());
+
+        //准备任务数据
+        var jobDataMap = new JobDataMap();
+        jobDataMap.put("taskId", taskPo.getId());
+        jobDataMap.put("target", taskPo.getTarget());
+        jobDataMap.put("params", taskPo.getTargetParam());
+        jobDataMap.put("policyError", taskPo.getPolicyError());
+        jobDataMap.put("policyRcd", taskPo.getPolicyRcd());
+
+        //立即执行任务
+        try {
+            scheduler.triggerJob(jobKey, jobDataMap);
+        } catch (SchedulerException e) {
+            log.error(e.getMessage(), e);
+            throw new BizException("处理QuartZ任务时发生了一个错误,请联系管理员.");
+        }
+
     }
 
 
