@@ -32,7 +32,9 @@ public class SecurityConfig {
             "/maintain/**", //维护中心
             "/auth/userLogin", //用户登录(新)
             "/v3/api-docs", //OpenApi端点
-            "/maintain/**" //OpenApi端点
+            "/maintain/**", //OpenApi端点
+            "/auth/genCaptcha", //验证码端点
+            "/auth/check"//验证码端点
     );
 
     @Autowired

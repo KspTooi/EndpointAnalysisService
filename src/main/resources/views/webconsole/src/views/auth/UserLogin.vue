@@ -48,6 +48,8 @@
             </div>
           </transition>
 
+          <div id="captcha-box"></div>
+
           <div class="button-container">
             <el-button type="primary" class="auth-button" :loading="isLoading" @click="onLogin">
               {{ isLoading ? "正在处理" : "登录" }}
@@ -75,6 +77,13 @@ import { ElMessage } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
 import UserAuthService from "@/views/auth/service/UserAuthService";
 import type { UserLoginDto } from "./api/AuthApi";
+import Http from "@/commons/Http";
+
+declare global {
+  interface Window {
+    initTAC?: (path: string | Record<string, unknown>, config: Record<string, unknown>, style?: Record<string, unknown>) => Promise<any>;
+  }
+}
 
 const router = useRouter();
 const { login } = UserAuthService.useUserAuth();
@@ -90,6 +99,93 @@ const errorMessage = ref<string>("");
 
 // 加载状态
 const isLoading = ref<boolean>(false);
+
+// 验证码实例
+const tacInstance = ref<any>(null);
+
+/**
+ * 执行登录
+ */
+const doLogin = async () => {
+  if (isLoading.value) {
+    return;
+  }
+
+  isLoading.value = true;
+
+  try {
+    await login(loginForm.value.username, loginForm.value.password);
+    ElMessage.success("用户验证通过");
+    await router.push({ path: "/" });
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : "网络同步异常，同步失败";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+/**
+ * 初始化并展示验证码
+ */
+const openCaptcha = async () => {
+  if (!window.initTAC) {
+    errorMessage.value = "验证码组件未加载，请刷新页面重试";
+    return;
+  }
+
+  if (tacInstance.value) {
+    tacInstance.value.init();
+    return;
+  }
+
+  const config = {
+    // 生成接口 (必选项,必须配置, 要符合tianai-captcha默认验证码生成接口规范)
+    requestCaptchaDataUrl: Http.resolve("/auth/genCaptcha"),
+    // 验证接口 (必选项,必须配置, 要符合tianai-captcha默认验证码校验接口规范)
+    validCaptchaUrl: Http.resolve("/auth/check"),
+    // 验证码绑定的div块 (必选项,必须配置)
+    bindEl: "#captcha-box",
+    // 验证成功回调函数(必选项,必须配置)
+    validSuccess: async (_res, _c, tac) => {
+      // 销毁验证码服务
+      tac.destroyWindow();
+      await doLogin();
+    },
+    // 验证失败的回调函数(可忽略，如果不自定义 validFail 方法时，会使用默认的)
+    validFail: (_res, _c, tac) => {
+      // 验证失败后重新拉取验证码
+      tac.reloadCaptcha();
+    },
+    // 刷新按钮回调事件
+    btnRefreshFun: (_el, tac) => {
+      tac.reloadCaptcha();
+    },
+    // 关闭按钮回调事件
+    btnCloseFun: (_el, tac) => {
+      tac.destroyWindow();
+    },
+  };
+  // 一些样式配置， 可不传
+  let style = {
+    logoUrl: null, // 去除logo
+  };
+  // 参数1 为 tac文件是目录地址， 目录里包含 tac的js和css等文件
+  // 参数2 为 tac验证码相关配置
+  // 参数3 为 tac窗口一些样式配置
+  try {
+    tacInstance.value = await window.initTAC(
+      {
+        scriptUrls: ["/js/tac.min.js"],
+        cssUrls: ["/css/tac.css"],
+      },
+      config,
+      style,
+    );
+    tacInstance.value.init(); // 调用init则显示验证码
+  } catch (_error) {
+    errorMessage.value = "初始化验证码失败，请稍后重试";
+  }
+};
 
 /**
  * 处理登录逻辑
@@ -107,17 +203,7 @@ const onLogin = async () => {
     return;
   }
 
-  isLoading.value = true;
-
-  try {
-    const data = await login(loginForm.value.username, loginForm.value.password);
-    ElMessage.success("用户验证通过");
-    await router.push({ path: "/" });
-  } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : "网络同步异常，同步失败";
-  } finally {
-    isLoading.value = false;
-  }
+  await openCaptcha();
 };
 
 /**
