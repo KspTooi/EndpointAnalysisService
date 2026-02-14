@@ -1,8 +1,8 @@
 package com.ksptooi.biz.auth.model.permission;
 
 import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,6 @@ import java.util.Objects;
 public class PermissionPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", comment = "权限ID")
     private Long id;
 
@@ -66,7 +65,7 @@ public class PermissionPo {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        
+
         if (this.createTime == null) {
             this.createTime = now;
         }
@@ -86,7 +85,7 @@ public class PermissionPo {
 
     @PreUpdate
     public void preUpdate() throws AuthException {
-        
+
         this.updateTime = LocalDateTime.now();
 
         if (this.updaterId == null) {
