@@ -138,12 +138,6 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
             //设置上次执行状态为异常
             lastExecStatus = 1;
 
-            //如果失败策略为自动暂停，则暂停任务
-            if (policyError == 1) {
-                qtTaskService.abortTask(taskId, true);
-                log.info("任务: {} 执行异常,触发失败策略,已暂停任务", taskId);
-            }
-
         } finally {
 
             endTime = LocalDateTime.now();
@@ -154,23 +148,37 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
             taskPo.setLastEndTime(endTime);
             qtTaskRepository.save(taskPo);
 
+            //处理任务已失败
+            if (lastExecStatus == 1) {
+
+                //如果日志策略为 1:仅异常 则需要在异常时创建新日志
+                if (policyRcd == 1) {
+                    taskRcdPo = qtTaskRcdService.buildNewTaskRcdWithException(taskPo);
+                    taskRcdPo.setTargetResult(result);
+                    taskRcdPo.setStatus(1);
+                    taskRcdPo.setStartTime(startTime);
+                    taskRcdPo.setEndTime(endTime);
+                    taskRcdPo.setCostTime((int) Duration.between(startTime, endTime).toMillis());
+                    qtTaskRcdRepository.saveAndFlush(taskRcdPo);
+                }
+
+                //如果失败策略为自动暂停，则暂停任务
+                if (policyError == 1) {
+                    qtTaskService.abortTask(taskId, true);
+                    log.info("任务: {} 执行异常,触发失败策略,已暂停任务", taskId);
+                }
+
+                return;
+            }
+
+            //以下都为处理任务成功
+
             //如果日志策略为 0:全部 则需要在任务结束时更新日志
             if (policyRcd == 0) {
                 taskRcdPo.setEndTime(endTime);
                 taskRcdPo.setCostTime((int) Duration.between(startTime, endTime).toMillis());
                 taskRcdPo.setTargetResult(result);
                 taskRcdPo.setStatus(lastExecStatus);
-                qtTaskRcdRepository.saveAndFlush(taskRcdPo);
-            }
-
-            //如果日志策略为 1:仅异常 则需要在异常时创建新日志
-            if (policyRcd == 1 && lastExecStatus == 1) {
-                taskRcdPo = qtTaskRcdService.buildNewTaskRcdWithException(taskPo);
-                taskRcdPo.setTargetResult(result);
-                taskRcdPo.setStatus(1);
-                taskRcdPo.setStartTime(startTime);
-                taskRcdPo.setEndTime(endTime);
-                taskRcdPo.setCostTime((int) Duration.between(startTime, endTime).toMillis());
                 qtTaskRcdRepository.saveAndFlush(taskRcdPo);
             }
 
