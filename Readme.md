@@ -4,6 +4,12 @@
 [![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Vue 3](https://img.shields.io/badge/Vue-3.5-green.svg)](https://vuejs.org/)
 
+当我第一次知道要开发一个低代码平台时，其实我是拒绝的，因为我一直认为低代码平台是鸡肋，但是当我真正开始开发时，我发现我错了，低代码平台真的很好用，它可以帮助我们快速开发项目，提高开发效率，减少重复劳动，让我们有更多的时间去思考和优化项目。
+
+## 种子项目介绍
+
+BioCode 是一套部分开源的快速开发平台，它非常适合用于作为脚手架或种子项目，除个别私有域模块外，其他域代码全部毫无保留开源给个人及企业免费使用。
+
 > 一个为**生产落地、快速部署、简化运维**而设计的快速开发平台
 
 ## 🎯 项目定位
@@ -19,28 +25,23 @@ EAS 是一个面向企业级应用的快速开发平台，但我们更关注：
 
 **后端框架**
 
-- Spring Boot 4.0.2 + Spring Data JPA
+- Spring Boot 4.0.2
+- Spring Data JPA ORM 框架
+- Mybatis 持久层框架
+- Spring Security 权限管理框架
+- Spring Cache 缓存框架(本地缓存使用 Caffeine,分布式缓存使用 Redis 灵活切换)
 - Java 21 + Lombok
-- Quartz 4.1（任务调度）
-- Caffeine（本地缓存）
+- Flyway 数据库迁移与版本管理
+- Quartz 任务调度框架
+- EasyExcel 数据导入导出
 
 **前端框架**
 
-- Vue 3.5 + TypeScript 5.8
-- Element Plus 2.11（UI 组件）
-- Vite 6.2（构建工具）
-- Pinia 3.0（状态管理）
-
-**数据库**
-
-- MySQL 8+（生产环境）
-- H2 2.2（开发环境，零配置启动）
-
-**开发工具**
-
-- Knife4j 4.5（API 文档）
-- EasyExcel 4.0（Excel 处理）
-- Maven 前端插件（自动构建前端）
+- Vue3 + TypeScript + Vite
+- Element Plus UI 组件
+- Pinia 状态管理
+- Iconify 图标库
+- TailwindCSS 样式框架
 
 ## 🗺️ 功能路线图
 
