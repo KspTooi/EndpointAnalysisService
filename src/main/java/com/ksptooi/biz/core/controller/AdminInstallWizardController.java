@@ -143,8 +143,8 @@ public class AdminInstallWizardController {
             //results.add(userResult);
 
             // 4. 校验系统全局配置项
-            String configResult = globalConfigService.validateSystemConfigs();
-            results.add(configResult);
+            //String configResult = globalConfigService.validateSystemConfigs();
+            //results.add(configResult);
 
             // 5. 校验系统内置模型变体
 

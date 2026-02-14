@@ -18,8 +18,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -202,7 +202,7 @@ public class MaintainService {
      * @return 校验结果消息
      */
     @Transactional(rollbackFor = Exception.class)
-    public MaintainUpdateVo validateSystemUsers() throws BizException {
+    public MaintainUpdateVo validateUsers() throws BizException {
 
         //先获取超级组
         var superGroup = groupRepository.getGroupByCode(GroupEnum.ADMIN.getCode());
@@ -272,7 +272,7 @@ public class MaintainService {
      * @return 校验结果消息
      */
     @Transactional(rollbackFor = Exception.class)
-    public MaintainUpdateVo validateSystemGroups() throws BizException {
+    public MaintainUpdateVo validateGroups() throws BizException {
 
         //获取超级权限
         var superPermission = permissionRepository.getSuperPermission();
@@ -334,5 +334,6 @@ public class MaintainService {
         vo.setRemovedList(new ArrayList<>());
         return vo;
     }
+
 
 }

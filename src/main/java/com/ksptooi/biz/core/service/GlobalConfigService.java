@@ -110,38 +110,5 @@ public class GlobalConfigService {
         return Boolean.parseBoolean(value);
     }
 
-    /**
-     * 校验系统全局配置项
-     * 检查数据库中是否存在所有系统内置的全局配置项，如果不存在则自动创建
-     */
-    @Transactional
-    public String validateSystemConfigs() {
-        List<ConfigPo> addedConfigs = new ArrayList<>();
-        int existCount = 0;
 
-        for (GlobalConfigEnum config : GlobalConfigEnum.values()) {
-            ConfigPo existingConfig = configRepository.getGlobalConfig(config.getKey());
-            
-            if (existingConfig == null) {
-                ConfigPo newConfig = new ConfigPo();
-                newConfig.setUser(null);
-                newConfig.setConfigKey(config.getKey());
-                newConfig.setConfigValue(config.getDefaultValue());
-                newConfig.setDescription(config.getDescription());
-                newConfig.setCreateTime(LocalDateTime.now());
-                newConfig.setUpdateTime(LocalDateTime.now());
-                addedConfigs.add(newConfig);
-            } else {
-                existCount++;
-            }
-        }
-
-        if (!addedConfigs.isEmpty()) {
-            configRepository.saveAll(addedConfigs);
-            return String.format("校验完成，已添加 %d 个缺失的配置项，已存在 %d 个配置项", 
-                addedConfigs.size(), existCount);
-        }
-
-        return String.format("校验完成，所有 %d 个系统配置项均已存在", existCount);
-    }
 } 
