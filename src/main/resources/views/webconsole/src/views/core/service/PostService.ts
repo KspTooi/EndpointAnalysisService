@@ -1,8 +1,8 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type { GetPostListDto, GetPostListVo, GetPostDetailsVo, AddPostDto, EditPostDto } from "@/views/post/api/PostApi.ts";
-import PostApi from "@/views/post/api/PostApi.ts";
-import { Result } from "@/commons/entity/Result";
+import type { GetPostListDto, GetPostListVo, GetPostDetailsVo, AddPostDto, EditPostDto } from "@/views/core/api/PostApi.ts";
+import PostApi from "@/views/core/api/PostApi.ts";
+import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
