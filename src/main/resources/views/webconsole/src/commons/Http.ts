@@ -59,6 +59,28 @@ axiosInstance.interceptors.response.use(
 
 export default {
   /**
+   * 解析URL 这会使用Axios中配置的baseURL和代理配置来解析URL
+   * @param url 请求URL
+   * @returns 解析后的URL
+   */
+  resolve(url: string): string {
+    //获取Axios实例的baseURL
+    const baseURL = axiosInstance.defaults.baseURL;
+    return baseURL + url;
+  },
+
+  /**
+   * 获取当前的后端接口地址, 这会使用Axios实例的baseURL和代理配置来获取当前的后端接口地址
+   * @returns 当前的后端接口地址
+   */
+  getApiUrl(): string {
+    //获取当前页面的协议、主机名和端口
+    const origin = window.location.origin;
+    const baseURL = axiosInstance.defaults.baseURL;
+    return origin + baseURL;
+  },
+
+  /**
    * 发送POST请求并返回Result包装的响应
    * @param url 请求URL
    * @param body 请求体
