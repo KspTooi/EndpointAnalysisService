@@ -98,6 +98,14 @@ export interface EditQtTaskDto {
 }
 
 /**
+ * 立即执行任务DTO
+ */
+export interface ExecuteTaskDto {
+  id: string; // 任务ID
+  targetParam: string; // 调用参数JSON
+}
+
+/**
  * 获取本地任务Bean列表VO
  */
 export interface GetLocalBeanListVo {
@@ -162,5 +170,16 @@ export default {
    */
   getLocalBeanList: async (): Promise<Result<GetLocalBeanListVo[]>> => {
     return await Http.postEntity<Result<GetLocalBeanListVo[]>>("/qtTask/getLocalBeanList", {});
+  },
+
+  /**
+   * 立即执行任务
+   */
+  executeTask: async (dto: ExecuteTaskDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qtTask/executeTask", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
   },
 };

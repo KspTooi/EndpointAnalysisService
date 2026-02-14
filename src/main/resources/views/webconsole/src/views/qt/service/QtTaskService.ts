@@ -7,6 +7,7 @@ import type {
   AddQtTaskDto,
   EditQtTaskDto,
   GetLocalBeanListVo,
+  ExecuteTaskDto,
 } from "@/views/qt/api/QtTaskApi.ts";
 import QtTaskApi from "@/views/qt/api/QtTaskApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
@@ -400,6 +401,60 @@ export default {
       openModal,
       resetModal,
       submitModal,
+    };
+  },
+
+  useExecuteTaskModal(modalFormRef: Ref<FormInstance | undefined>) {
+    const modalVisible = ref(false);
+    const modalLoading = ref(false);
+    const modalForm = reactive<ExecuteTaskDto>({
+      id: "",
+      targetParam: "",
+    });
+
+    const modalRules: FormRules = {
+      id: [{ required: true, message: "请选择任务", trigger: "blur" }],
+      targetParam: [
+        { required: true, message: "请输入调用参数", trigger: "blur" },
+        {
+          validator: (rule: any, value: string, callback: any) => {
+            if (!value) {
+              callback();
+              return;
+            }
+            try {
+              JSON.parse(value);
+              callback();
+            } catch (e) {
+              callback(new Error("JSON格式错误，请检查输入"));
+            }
+          },
+          trigger: "blur",
+        },
+      ],
+    };
+
+    const openModal = async (row: GetQtTaskListVo) => {
+      modalVisible.value = true;
+      modalForm.id = row.id;
+    };
+
+    const submitModal = async () => {
+      if (!modalFormRef.value) {
+        return;
+      }
+
+      await QtTaskApi.executeTask(modalForm);
+      ElMessage.success("任务已提交，请稍后查看执行结果!");
+    };
+
+    return {
+      modalVisible,
+      modalLoading,
+      modalForm,
+      modalRules,
+      submitModal,
+      openModal,
     };
   },
 
