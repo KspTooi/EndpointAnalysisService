@@ -20,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -39,7 +40,8 @@ public class EntryAccessContrller {
     @Autowired
     private DriveConfig driveConfig;
 
-    @Operation(summary = "获取条目对象签名")
+    @PreAuthorize("@auth.hasCode('drive:entry:access:sign')")
+    @Operation(summary = "获取条目对象签名",description = "允许用户在云盘内获取文件签名")
     @PostMapping("/getEntrySign")
     public Result<GetEntrySignVo> getEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
@@ -53,7 +55,8 @@ public class EntryAccessContrller {
         return Result.success(ret);
     }
 
-    @Operation(summary = "下载条目")
+    @PreAuthorize("@auth.hasCode('drive:entry:access:download')")
+    @Operation(summary = "下载条目",description = "允许用户在云盘内下载文件")
     @GetMapping("/downloadEntry")
     @PostMapping("/downloadEntry")
     public ResponseEntity<Resource> downloadEntry(@RequestParam("sign") String sign

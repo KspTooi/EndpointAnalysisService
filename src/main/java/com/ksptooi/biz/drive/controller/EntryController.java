@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ public class EntryController {
     @Autowired
     private EntryService entryService;
 
+    @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
@@ -42,6 +44,7 @@ public class EntryController {
         return Result.success(entryService.getDriveInfo());
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
     public Result<GetEntryListVo> getEntryList(@RequestBody @Valid GetEntryListDto dto) throws Exception {
@@ -54,6 +57,7 @@ public class EntryController {
         return Result.success(ret);
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:add')")
     @Operation(summary = "新增条目")
     @PostMapping("/addEntry")
     public Result<String> addEntry(@RequestBody @Valid AddEntryDto dto) throws Exception {
@@ -72,6 +76,7 @@ public class EntryController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:copy')")
     @Operation(summary = "复制条目")
     @PostMapping("/copyEntry")
     public Result<String> copyEntry(@RequestBody @Valid CopyEntryDto dto) throws Exception {
@@ -84,6 +89,7 @@ public class EntryController {
         return Result.success("复制成功");
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:rename')")
     @Operation(summary = "重命名条目")
     @PostMapping("/renameEntry")
     public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
@@ -96,7 +102,8 @@ public class EntryController {
         return Result.success("重命名成功");
     }
 
-    @Operation(summary = "移动检测")
+    @PreAuthorize("@auth.hasCode('drive:entry:move')")
+    @Operation(summary = "移动检测",description = "用于移动条目前的检测")
     @PostMapping("/checkEntryMove")
     public Result<CheckEntryMoveVo> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 
@@ -109,7 +116,8 @@ public class EntryController {
     }
 
 
-    @Operation(summary = "移动条目")
+    @PreAuthorize("@auth.hasCode('drive:entry:move')")
+    @Operation(summary = "移动条目",description = "允许用户在云盘内移动条目")
     @PostMapping("/moveEntry")
     public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 
@@ -121,6 +129,7 @@ public class EntryController {
         return Result.success("移动成功");
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @Operation(summary = "查询条目详情")
     @PostMapping("/getEntryDetails")
     public Result<GetEntryDetailsVo> getEntryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -136,6 +145,7 @@ public class EntryController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('drive:entry:remove')")
     @Operation(summary = "删除条目")
     @PostMapping("/removeEntry")
     public Result<String> removeEntry(@RequestBody @Valid CommonIdDto dto) throws Exception {
