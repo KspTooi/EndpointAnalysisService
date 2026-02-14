@@ -1,50 +1,54 @@
 package com.ksptooi.biz.post.model;
 
 import java.time.LocalDateTime;
-import com.ksptooi.biz.auth.service.AuthService;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "post")
+@Table(name = "core_post")
+@SQLRestriction("delete_time IS NULL")
+@SQLDelete(sql = "UPDATE core_post SET delete_time = NOW() WHERE id = ?")
 public class PostPo {
 
-    @Column(name = "id", comment = "岗位ID")
+    @Column(name = "id", nullable = false, comment = "岗位ID")
     @Id
     private Long id;
 
-    @Column(name = "name", comment = "岗位名称")
+    @Column(name = "name", length = 32, nullable = false, comment = "岗位名称")
     private String name;
 
-    @Column(name = "code", comment = "岗位编码")
+    @Column(name = "code", length = 32, nullable = false, comment = "岗位编码")
     private String code;
 
-    @Column(name = "seq", comment = "岗位排序")
+    @Column(name = "seq", nullable = false, comment = "岗位排序")
     private Integer seq;
 
-    @Column(name = "create_time", comment = "创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "creator_id", comment = "创建人ID")
+    @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
-    @Column(name = "update_time", comment = "更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updater_id", comment = "更新人ID")
+    @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
 
-    @Column(name = "delete_time", nullable = true, comment = "删除时间 NULL未删")
+    @Column(name = "delete_time", comment = "删除时间 NULL未删")
     private LocalDateTime deleteTime;
 
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws AuthException {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
@@ -62,21 +66,21 @@ public class PostPo {
         }
         
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = session().getUserId();
         }
         
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 
     @PreUpdate
-    private void onUpdate() {
+    private void onUpdate() throws AuthException {
         
         this.updateTime = LocalDateTime.now();
         
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = session().getUserId();
         }
     }
 }
