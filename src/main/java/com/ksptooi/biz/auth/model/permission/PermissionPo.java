@@ -1,5 +1,7 @@
 package com.ksptooi.biz.auth.model.permission;
 
+import com.ksptooi.biz.auth.service.SessionService;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -53,7 +55,7 @@ public class PermissionPo {
     private Long updaterId;
 
     @PrePersist
-    public void prePersist() {
+    public void prePersist() throws AuthException {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
@@ -62,13 +64,34 @@ public class PermissionPo {
         if (seq == null) {
             seq = 0;
         }
-        createTime = LocalDateTime.now();
-        updateTime = LocalDateTime.now();
+
+        LocalDateTime now = LocalDateTime.now();
+        
+        if (this.createTime == null) {
+            this.createTime = now;
+        }
+        if (this.updateTime == null) {
+            this.updateTime = now;
+        }
+
+        if (this.creatorId == null) {
+            this.creatorId = SessionService.session().getUserId();
+        }
+
+        if (this.updaterId == null) {
+            this.updaterId = SessionService.session().getUserId();
+        }
+
     }
 
     @PreUpdate
-    public void preUpdate() {
-        updateTime = LocalDateTime.now();
+    public void preUpdate() throws AuthException {
+        
+        this.updateTime = LocalDateTime.now();
+
+        if (this.updaterId == null) {
+            this.updaterId = SessionService.session().getUserId();
+        }
     }
 
     /**
