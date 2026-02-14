@@ -28,7 +28,7 @@
     </StdListAreaQuery>
 
     <!-- 操作按钮区域 -->
-    <StdListAreaAction class="flex gap-2">
+    <StdListAreaAction>
       <el-button type="success" @click="openModal('add', null)">新增任务分组</el-button>
       <el-button type="danger" :disabled="listSelected?.length === 0" @click="removeListBatch">删除选中项</el-button>
     </StdListAreaAction>
