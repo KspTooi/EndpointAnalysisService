@@ -2,6 +2,7 @@ import type Result from "@/commons/entity/Result.ts";
 import axios from "axios";
 import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
 import UserAuthService from "@/views/auth/service/UserAuthService";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 var vueRouter = GenricRouteService.getVueRouter();
 
@@ -122,6 +123,20 @@ export default {
       // code 为 0 但 data 为 null 或 undefined 也可能是一种业务失败，但暂时按成功处理
       // 如果需要严格检查 data，可以在这里添加判断
       return result as T;
+    }
+
+    //处理Code为1的服务器内部错误
+    if (result.code === 1) {
+      //直接弹出CONFIRM对话框 不显示取消按钮
+      ElMessageBox.confirm(result.message || "服务器内部错误", "服务器内部错误", {
+        confirmButtonText: "我明白了",
+        showCancelButton: false,
+        type: "warning",
+        closeOnClickModal: false,
+      }).then(() => {
+        throw new Error(result.message || "服务器内部错误");
+      });
+      return Promise.reject(new Error(result.message || "服务器内部错误"));
     }
 
     //需要团队
