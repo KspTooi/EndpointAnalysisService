@@ -39,7 +39,7 @@ public class MaintainController {
     @Autowired
     private MaintainService maintainService;
 
-    //@PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
+    @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
     @Operation(summary = "校验系统内置权限节点")
     @PostMapping("/validatePermissions")
     public Result<MaintainUpdateVo> validatePermissions() {
@@ -84,6 +84,13 @@ public class MaintainController {
         } catch (Exception e) {
             throw new RuntimeException("重置菜单失败: " + e.getMessage(), e);
         }
+    }
+
+    @PreAuthorize(value = "@auth.hasCode('maintain:upgrade:database')")
+    @Operation(summary = "维护中心:升级数据库")
+    @PostMapping("/upgradeDatabase")
+    public Result<MaintainUpdateVo> upgradeDatabase() throws BizException {
+        return Result.success(maintainService.upgradeDatabase());
     }
 
 

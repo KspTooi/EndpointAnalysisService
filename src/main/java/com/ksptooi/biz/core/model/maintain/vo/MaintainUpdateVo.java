@@ -12,7 +12,7 @@ import lombok.Setter;
 public class MaintainUpdateVo {
 
     @Schema(description = "已存在的数量")
-    private int existCount;
+    private Integer existCount;
 
     @Schema(description = "新增的数量")
     private int addedCount;
@@ -25,5 +25,8 @@ public class MaintainUpdateVo {
 
     @Schema(description = "删除列表")
     private List<String> removedList = new ArrayList<>();
+
+    @Schema(description = "结果消息")
+    private String message;
 
 }

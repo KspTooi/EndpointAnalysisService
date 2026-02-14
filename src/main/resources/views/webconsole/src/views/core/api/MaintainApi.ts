@@ -7,6 +7,7 @@ export interface MaintainUpdateVo {
   removedCount: number; // 删除的数量
   addedList: string[]; // 新增列表
   removedList: string[]; // 删除列表
+  message?: string; // 提示信息
 }
 
 export interface MaintainOperation {
@@ -74,6 +75,17 @@ export default {
     const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/resetEndpoints", {});
     if (result.code === 0) {
       return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 维护中心:升级数据库
+   */
+  upgradeDatabase: async (): Promise<MaintainUpdateVo> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/upgradeDatabase", {});
+    if (result.code === 0) {
+      return result.data;
     }
     throw new Error(result.message);
   },

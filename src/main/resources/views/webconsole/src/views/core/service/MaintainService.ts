@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { MaintainOperation } from "../api/MaintainApi";
 import MaintainApi from "../api/MaintainApi";
-import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu } from "@element-plus/icons-vue";
+import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu, Upload } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { EventHolder } from "@/store/EventHolder.ts";
 
@@ -68,6 +68,17 @@ export default {
         warning: "警告：此操作将把接口权限配置恢复为出厂默认设置，您自定义的接口权限都将丢失！是否确定要继续？",
         action: async () => await MaintainApi.resetEndpoints(),
       },
+      {
+        title: "升级数据库",
+        description: "执行数据库迁移脚本，将数据库表结构升级到最新版本。此操作会自动检测待执行的迁移脚本并依次执行。",
+        icon: Upload,
+        buttonText: "升级数据库",
+        bgColor: "rgba(255, 152, 0, 0.1)",
+        iconColor: "#ff9800",
+        key: "database",
+        warning: "危险操作警告：\n此操作将执行数据库迁移脚本，可能会产生以下影响：\n1. **修改数据库表结构**（新增/删除/修改表或字段）。\n2. **可能影响现有数据**（取决于具体迁移脚本内容）。\n3. 执行期间请**不要重启服务或中断操作**。\n\n**强烈建议：执行前先备份数据库！**\n\n是否确定要继续？",
+        action: async () => await MaintainApi.upgradeDatabase(),
+      },
     ];
 
     /**
@@ -89,9 +100,14 @@ export default {
         if (result && typeof result === "object" && "addedCount" in result) {
           const vo = result as any;
           const detailHtml = `
-            <div style="font-size: 14px; line-height: 1.6;">
-              <p>操作已完成，变动详情如下：</p>
-              <div style="margin-top: 10px; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #ebeef5;">
+            <div style="font-size: 14px; line-height: 1.6; max-width: 400px;">
+              ${vo.message ? `
+                <div style="margin-bottom: 12px; padding: 12px; background: #f4f4f5; border-left: 4px solid #909399; color: #606266; font-size: 13px; word-break: break-all;">
+                  ${vo.message}
+                </div>
+              ` : '<p style="margin-bottom: 10px;">操作已完成，变动详情如下：</p>'}
+              
+              <div style="padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #ebeef5;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                   <span style="color: #606266;">新增条目：</span>
                   <span style="color: #67C23A; font-weight: bold;">${vo.addedCount ?? 0}</span>
