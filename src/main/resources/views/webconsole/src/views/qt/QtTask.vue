@@ -30,13 +30,15 @@
     </StdListAreaQuery>
 
     <!-- 操作按钮区域 -->
-    <StdListAreaAction class="flex gap-2">
+    <StdListAreaAction>
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
+      <el-button type="danger" :disabled="listSelected.length === 0" @click="removeListBatch">删除选中项</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
+        <el-table-column type="selection" width="40" />
         <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip>
           <template #default="scope">
             <span class="text-gray-400 text-sm" v-if="!scope.row.groupName"> 未配置 </span>
@@ -372,7 +374,18 @@ const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
 const cronInputFocused = ref(false);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QtTaskService.useQtTaskList();
+const {
+  listForm,
+  listData,
+  listTotal,
+  listLoading,
+  listSelected,
+  loadList,
+  resetList,
+  removeList,
+  removeListBatch,
+  onSelectionChange,
+} = QtTaskService.useQtTaskList();
 
 // 任务分组列表管理打包
 const { listData: groupListData, listForm: groupListForm, loadList: loadGroupList } = QtTaskGroupService.useQtTaskGroupList();
