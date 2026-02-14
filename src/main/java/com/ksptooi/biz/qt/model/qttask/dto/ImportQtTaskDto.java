@@ -18,11 +18,11 @@ import java.time.LocalDateTime;
 public class ImportQtTaskDto extends AbstractImportDto {
 
     @ExcelProperty(value = "任务分组名", converter = StringRowConverter.class)
-    @StringRow(required = false, max = 80, message = "任务分组名长度不能超过80")
+    @StringRow(required = false, min = 1, max = 80, message = "任务分组名长度限制1-80")
     private String groupName;
 
     @ExcelProperty(value = "*任务名", converter = StringRowConverter.class)
-    @StringRow(required = true, max = 80, message = "任务名长度不能超过80")
+    @StringRow(required = true, min = 1, max = 80, message = "任务名必填 长度限制1-80")
     private String name;
 
     @ExcelProperty(value = "*任务类型", converter = IntegerRowConverter.class)
@@ -30,7 +30,7 @@ public class ImportQtTaskDto extends AbstractImportDto {
     private Integer kind;
 
     @ExcelProperty(value = "*CRON表达式", converter = StringRowConverter.class)
-    @StringRow(required = true, max = 64, message = "CRON表达式长度不能超过64")
+    @StringRow(required = true, min = 1, max = 64, message = "CRON表达式必填 长度限制1-64")
     private String cron;
 
     @ExcelProperty(value = "*调用目标", converter = StringRowConverter.class)
