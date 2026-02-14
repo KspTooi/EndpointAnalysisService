@@ -24,8 +24,8 @@ public class GetGroupListVo {
     // 权限节点数量
     private Integer permissionCount;
 
-    // 系统内置组
-    private Boolean isSystem;
+    // 系统内置组 0:否 1:是
+    private Integer isSystem;
 
     // 组状态：0-禁用，1-启用
     private Integer status;
@@ -35,7 +35,7 @@ public class GetGroupListVo {
 
 
     public GetGroupListVo(Long id, String code, String name, Integer memberCount, Integer permissionCount,
-                          Boolean isSystem, Integer status, LocalDateTime createTime) {
+                          Integer isSystem, Integer status, LocalDateTime createTime) {
         this.id = id;
         this.code = code;
         this.name = name;

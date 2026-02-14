@@ -58,7 +58,7 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
      * @return 最大排序号，如果没有记录则返回0
      */
     @Query("""
-            SELECT COALESCE(MAX(g.sortOrder), 0)
+            SELECT COALESCE(MAX(g.seq), 0)
             FROM GroupPo g
             """)
     Integer findMaxSortOrder();
@@ -77,9 +77,9 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
             FROM GroupPo g
             WHERE (:#{#dto.keyword} IS NULL OR g.code LIKE %:#{#dto.keyword}%
                 OR g.name LIKE %:#{#dto.keyword}%
-                OR g.description LIKE %:#{#dto.keyword}%)
+                OR g.remark LIKE %:#{#dto.keyword}%)
             AND (:#{#dto.status} IS NULL OR g.status = :#{#dto.status})
-            ORDER BY g.sortOrder ASC, g.id DESC
+            ORDER BY g.seq ASC, g.id DESC
             """)
     Page<GetGroupListVo> getGroupList(@Param("dto") GetGroupListDto dto, Pageable pageable);
 
@@ -101,7 +101,7 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
      * @return 系统内置组数量
      */
     @Query("""
-            SELECT COUNT(g) FROM GroupPo g WHERE g.isSystem = true
+            SELECT COUNT(g) FROM GroupPo g WHERE g.isSystem = 1
             """)
     Integer countBySystemGroup();
 

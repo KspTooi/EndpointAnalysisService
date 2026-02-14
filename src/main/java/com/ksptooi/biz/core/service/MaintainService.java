@@ -311,9 +311,9 @@ public class MaintainService {
                 group = new GroupPo();
                 group.setCode(code);
                 group.setName(groupEnum.getName());
-                group.setDescription(groupEnum.getName());
-                group.setIsSystem(true);
-                group.setSortOrder(groupRepository.findMaxSortOrder() + 1);
+                group.setRemark(groupEnum.getName());
+                group.setIsSystem(1);
+                group.setSeq(groupRepository.findMaxSortOrder() + 1);
                 group.setStatus(1);
                 group = groupRepository.save(group);
             }

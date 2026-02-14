@@ -126,9 +126,10 @@ public class GroupService {
         GroupPo group = new GroupPo();
         group.setCode(dto.getCode());
         group.setName(dto.getName());
-        group.setDescription(dto.getDescription());
+        group.setRemark(dto.getRemark());
         group.setStatus(dto.getStatus());
-        group.setSortOrder(dto.getSortOrder());
+        group.setSeq(dto.getSeq());
+        group.setIsSystem(0);
 
         //保存用户组
         GroupPo save = repository.save(group);
@@ -169,9 +170,10 @@ public class GroupService {
 
         group.setCode(dto.getCode());
         group.setName(dto.getName());
-        group.setDescription(dto.getDescription());
+        group.setRemark(dto.getRemark());
         group.setStatus(dto.getStatus());
-        group.setSortOrder(dto.getSortOrder());
+        group.setSeq(dto.getSeq());
+        group.setIsSystem(0);
 
         //处理权限关系 先清除该用户组下挂载的权限关系
         gpRepository.clearPermissionByGroupId(group.getId());
@@ -509,7 +511,7 @@ public class GroupService {
         for (GroupPo group : groups) {
 
             //系统用户组无法删除
-            if (group.getIsSystem()) {
+            if (group.getIsSystem() != null && group.getIsSystem() == 1) {
                 errorMessage = "系统用户组无法删除";
                 continue;
             }

@@ -29,7 +29,7 @@ public class EditGroupDto {
 
     @Schema(description = "组描述")
     @Length(max = 200, message = "组描述长度不能超过200个字符")
-    private String description;
+    private String remark;
 
     @Schema(description = "组状态：0-禁用，1-启用")
     @NotNull(message = "组状态不能为空")
@@ -40,7 +40,7 @@ public class EditGroupDto {
     @Schema(description = "排序号")
     @NotNull(message = "排序号不能为空")
     @Min(value = 0, message = "排序号必须大于等于0")
-    private Integer sortOrder;
+    private Integer seq;
 
     @Schema(description = "权限ID列表")
     private List<Long> permissionIds;
