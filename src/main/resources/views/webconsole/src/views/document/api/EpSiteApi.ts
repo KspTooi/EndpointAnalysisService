@@ -4,8 +4,6 @@ import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type Result from "@/commons/entity/Result.ts";
 
-import axios from "axios";
-
 export interface GetEpSiteListDto extends PageQuery {
   id?: string | null; //站点ID
   name?: string | null; //站点名称
@@ -112,7 +110,7 @@ export default {
    * 导出站点
    */
   exportEpSite: async (dto: GetEpSiteListDto): Promise<void> => {
-    const response = await axios.post(`/epSite/exportEpSite`, dto, {
+    const response = await Http.axios().post(`/epSite/exportEpSite`, dto, {
       responseType: "blob",
       headers: {
         "AE-Request-With": "XHR",

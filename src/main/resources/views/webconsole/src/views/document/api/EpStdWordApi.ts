@@ -4,8 +4,6 @@ import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type Result from "@/commons/entity/Result.ts";
 
-import axios from "axios";
-
 export interface GetEpStdWordListDto extends PageQuery {
   sourceName?: string | null; //中文简称
   sourceNameFull?: string | null; //中文全称
@@ -109,7 +107,7 @@ export default {
    * 导出标准词
    */
   exportEpStdWord: async (dto: GetEpStdWordListDto): Promise<void> => {
-    const response = await axios.post(`/epStdWord/exportEpStdWord`, dto, {
+    const response = await Http.axios().post(`/epStdWord/exportEpStdWord`, dto, {
       responseType: "blob",
       headers: {
         "AE-Request-With": "XHR",
