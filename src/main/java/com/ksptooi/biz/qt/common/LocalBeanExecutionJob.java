@@ -1,7 +1,19 @@
 package com.ksptooi.biz.qt.common;
 
+import com.ksptooi.biz.qt.model.qttaskrcd.QtTaskRcdPo;
+import com.ksptooi.biz.qt.repository.QtTaskRcdRepository;
+import com.ksptooi.biz.qt.repository.QtTaskRepository;
+import com.ksptooi.biz.qt.service.QtTaskRcdService;
 import com.ksptooi.biz.qt.service.QtTaskService;
+import com.ksptool.assembly.entity.web.Result;
+
 import lombok.extern.slf4j.Slf4j;
+
+import static com.ksptool.entities.Entities.toJson;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.quartz.JobDataMap;
@@ -25,18 +37,47 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
     @Autowired
     private QtTaskService qtTaskService;
 
+    @Autowired
+    private QtTaskRepository qtTaskRepository;
+
+    @Autowired
+    private QtTaskRcdService qtTaskRcdService;
+
+    @Autowired
+    private QtTaskRcdRepository qtTaskRcdRepository;
+
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
         //获取任务快照数据 (这些数据是调度时塞进去的)
-        JobDataMap dataMap = context.getMergedJobDataMap();
-        String beanName = dataMap.getString("target");
-        String jsonParams = dataMap.getString("params");
-        Long taskId = dataMap.getLong("taskId");
+        var dataMap = context.getMergedJobDataMap();
+        var taskId = dataMap.getLong("taskId"); // 任务ID
+        var beanName = dataMap.getString("target");   // BEAN代码
+        var jsonParams = dataMap.getString("params"); // 调用参数JSON
+        var policyError = dataMap.getInt("policyError"); // 失败策略 0:默认 1:自动暂停
+        var policyRcd = dataMap.getInt("policyRcd"); // 日志策略 0:全部 1:仅异常 2:不记录
 
-        long startTime = System.currentTimeMillis();
-        int status = 0; // 0成功 1失败
-        String result = "";
+        var taskPo = qtTaskRepository.getById(taskId);;
+
+        if (taskPo == null) {
+            log.error("任务不存在,这可能是因为任务被删除或从未被创建: {}", taskId);
+            qtTaskService.abortTask(taskId);
+            return;
+        }
+
+        //记录任务开始时间
+        var startTime = LocalDateTime.now();
+        var endTime = LocalDateTime.now();
+        QtTaskRcdPo taskRcdPo = null;
+        String errorMessage = null;
+        Result<?> result = null;
+
+        var lastExecStatus = 0; //上次执行状态 0:成功 1:异常
+
+        //如果日志策略为 0:全部 则需要在任务开始时记录日志
+        if (policyRcd == 0) {
+            taskRcdPo = qtTaskRcdService.createNewTaskRcd(taskPo);
+        }
 
         try {
             //查找 Bean (安全检查)
@@ -77,28 +118,71 @@ public class LocalBeanExecutionJob extends QuartzJobBean {
                 } catch (Exception e) {
                     //处理参数转换时出现异常,终止任务
                     log.error(e.getMessage(), e);
+
+                    errorMessage = ExceptionUtils.getStackTrace(e);
+                    lastExecStatus = 1; //设置上次执行状态为异常
+
+                    //在处理参数阶段失败不走失败策略 直接终止任务
                     qtTaskService.abortTask(taskId);
+                    return;
                 }
 
             }
 
-            //执行业务
+            //执行任务业务
             //这里的强转是安全的，因为我们已经处理了泛型
-            ((QuickTask<Object>) handler).execute(paramObj);
-
-            result = "执行成功";
+            result = ((QuickTask<Object>) handler).execute(paramObj);
 
         } catch (Exception e) {
-            status = 1; // 失败
-            //截取异常堆栈前2000字符存入数据库
-            result = ExceptionUtils.getStackTrace(e);
-            e.printStackTrace(); // 建议用 log.error
+            log.error(e.getMessage(), e);
+            //截取异常堆栈
+            errorMessage = ExceptionUtils.getStackTrace(e);
+            //设置上次执行状态为异常
+            lastExecStatus = 1;
+
+            //如果失败策略为自动暂停，则暂停任务
+            if (policyError == 1) {
+                qtTaskService.abortTask(taskId, true);
+                log.info("任务: {} 执行异常,触发失败策略,已暂停任务", taskId);
+            }
+
         } finally {
-            //记录日志 (写 qt_task_rcd 表)
-            long cost = System.currentTimeMillis() - startTime;
-            //logService.recordLog(taskId, status, result, cost);
+
+            endTime = LocalDateTime.now();
+
+            //更新任务快照 不论日志策略如何 都需要更新任务快照
+            taskPo.setLastExecStatus(lastExecStatus);
+            taskPo.setLastStartTime(startTime);
+            taskPo.setLastEndTime(endTime);
+            qtTaskRepository.save(taskPo);
+
+            //如果日志策略为 0:全部 则需要在任务结束时更新日志
+            if (policyRcd == 0) {
+                taskRcdPo.setEndTime(endTime);
+                taskRcdPo.setCostTime((int) Duration.between(startTime, endTime).toMillis());
+                taskRcdPo.setTargetResult(toJson(result));
+                taskRcdPo.setStatus(0);
+                qtTaskRcdRepository.saveAndFlush(taskRcdPo);
+            }
+
+            //如果日志策略为 1:仅异常 则需要在异常时创建新日志
+            if (policyRcd == 1 && lastExecStatus == 1) {
+                taskRcdPo = qtTaskRcdService.buildNewTaskRcdWithException(taskPo);
+                taskRcdPo.setTargetResult(errorMessage);
+                taskRcdPo.setStatus(1);
+                taskRcdPo.setStartTime(startTime);
+                taskRcdPo.setEndTime(endTime);
+                taskRcdPo.setCostTime((int) Duration.between(startTime, endTime).toMillis());
+                qtTaskRcdRepository.saveAndFlush(taskRcdPo);
+            }
+
         }
     }
+
+
+
+
+
 
 
 }

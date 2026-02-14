@@ -82,4 +82,15 @@ public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
             UPDATE QtTaskPo t SET t.groupName = :groupName WHERE t.groupId = :groupId
             """)
     void updateGroupNameByGroupId(@Param("groupId") Long groupId, @Param("groupName") String groupName);
+
+
+    /**
+     * 根据ID获取任务
+     * @param id 任务ID
+     * @return 任务
+     */
+    @Query("""
+            SELECT t FROM QtTaskPo t WHERE t.id = :id
+            """)
+    QtTaskPo getById(@Param("id") Long id);
 }

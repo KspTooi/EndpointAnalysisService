@@ -261,12 +261,28 @@ public class QtTaskService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void abortTask(Long id) {
+        abortTask(id, false);
+    }
+    
+    /**
+     * 终止任务
+     *
+     * @param id 任务ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void abortTask(Long id,boolean hasError) {
 
         var taskPo = repository.findById(id).orElse(null);
 
         //如果非空 将任务更改为暂停状态
         if (taskPo != null) {
             taskPo.setStatus(1);
+
+            //如果出现异常 则设置为异常状态
+            if (hasError) {
+                taskPo.setStatus(2);
+            }
+
             repository.save(taskPo);
         }
 

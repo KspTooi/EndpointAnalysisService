@@ -135,6 +135,10 @@ public class QtTaskPo {
     }
 
     public String validate() {
+        
+        if(this.kind == null){
+            return "任务类型不能为空";
+        }
 
         //检查调用目标(本地BEAN时)
         if (this.kind == 0) {
