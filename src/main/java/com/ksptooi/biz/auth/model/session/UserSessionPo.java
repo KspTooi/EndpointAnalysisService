@@ -28,19 +28,19 @@ public class UserSessionPo {
     @Column(name = "user_id", nullable = false, comment = "用户ID")
     private Long userId;
 
-    @Column(name = "root_id", nullable = false, comment = "所属企业ID")
+    @Column(name = "root_id", comment = "所属企业ID")
     private Long rootId;
 
-    @Column(name = "root_name", nullable = false, length = 32, comment = "所属企业名")
+    @Column(name = "root_name", length = 32, comment = "所属企业名")
     private String rootName;
 
-    @Column(name = "dept_id", nullable = false, comment = "所属部门ID")
+    @Column(name = "dept_id", comment = "所属部门ID")
     private Long deptId;
 
-    @Column(name = "dept_name", nullable = false, length = 255, comment = "所属部门名")
+    @Column(name = "dept_name", length = 32, comment = "所属部门名")
     private String deptName;
 
-    @Column(name = "company_id", nullable = true, comment = "公司ID")
+    @Column(name = "company_id", comment = "公司ID")
     private Long companyId;
 
     @Column(name = "permissions", nullable = false, columnDefinition = "JSON", comment = "用户权限代码JSON")
