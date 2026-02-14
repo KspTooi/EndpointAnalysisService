@@ -37,19 +37,21 @@ const visible = ref(false);
 const tacInstance = ref<any>(null);
 const captchaBindId = `com-tac-captcha-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const closeModal = () => {
+const destroyTac = () => {
   if (tacInstance.value?.destroyWindow) {
     tacInstance.value.destroyWindow();
   }
 
+  tacInstance.value = null;
+};
+
+const closeModal = () => {
+  destroyTac();
   visible.value = false;
 };
 
 const handleDialogClose = () => {
-  if (tacInstance.value?.destroyWindow) {
-    tacInstance.value.destroyWindow();
-  }
-
+  destroyTac();
   emit("on-close");
 };
 
@@ -97,10 +99,7 @@ const initCaptcha = async () => {
     return;
   }
 
-  if (tacInstance.value?.init) {
-    tacInstance.value.init();
-    return;
-  }
+  destroyTac();
 
   try {
     tacInstance.value = await window.initTAC(
@@ -126,11 +125,7 @@ const openModal = async () => {
 };
 
 onBeforeUnmount(() => {
-  if (!tacInstance.value?.destroyWindow) {
-    return;
-  }
-
-  tacInstance.value.destroyWindow();
+  destroyTac();
 });
 
 defineExpose({
