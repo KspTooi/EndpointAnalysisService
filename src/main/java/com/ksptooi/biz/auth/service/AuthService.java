@@ -1,60 +1,63 @@
 package com.ksptooi.biz.auth.service;
 
-import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
-import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.UserSessionRepository;
-import com.ksptooi.biz.core.repository.UserRepository;
-import com.ksptooi.biz.core.service.AttachService;
+import com.ksptool.assembly.entity.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-@Slf4j
-@Service
-public class AuthService {
+import java.util.Collection;
 
-    @Autowired
-    private UserRepository userRepository;
+/**
+ * Bio首创 自定义权限实现😄😄😄，auth取自Authorization前4个字母
+ *
+ * @author KspTooi
+ */
+@Slf4j
+@Service("auth")
+public class AuthService {
 
     @Autowired
     private UserSessionRepository userSessionRepository;
 
-    @Autowired
-    private AttachService attachService;
 
-    @Autowired
-    private SessionService sessionService;
-
-    @Autowired
-    private GroupRepository groupRepository;
+    public static boolean hasPermission(String permission) {
+        return true;
+    }
 
 
     /**
      * 检查当前用户是否拥有指定权限
      *
-     * @param permission 权限标识，如：system:user:view
+     * @param permissionCode 权限标识，如：system:user:view
      * @return 如果用户拥有该权限返回true，否则返回false
      */
-    public static boolean hasPermission(String permission) {
+    public boolean require(String permissionCode) {
 
-        UserSessionVo session = null;
+        try {
 
-        return true;
+            var session = SessionService.session();
 
-        //UserSessionVo session = getCurrentUserSession();
-        //var uid = -1;
-        //if (session == null || session.getPermissions() == null) {
-        //    log.warn("权限校验未通过 uid:{} permission:{}", uid, permission);
-        //    return false;
-        //}
-//
-        //if(session.getPermissions().contains(permission)){
-        //    return true;
-        //}
-        //log.warn("权限校验未通过 uid:{} permission:{}", uid, permission);
-        //return false;
+
+            if (session == null) {
+                return false;
+            }
+
+            Collection<? extends GrantedAuthority> authorities = session.getAuthorities();
+
+            for (var authority : authorities) {
+                if (authority.getAuthority().equals(permissionCode)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (AuthException e) {
+            return false;
+        }
+
     }
-
 
     /**
      * 根据URL路径检查当前用户是否拥有权限
@@ -102,14 +105,6 @@ public class AuthService {
 
         log.warn("用户ID: {} 访问端点: {} 时权限校验未通过,所需权限: {}", session.getUserId(), urlPath, requiredPermissions);
         return false;*/
-    }
-
-    /**
-     * 清除所有已登录用户的会话状态
-     */
-    public void clearUserSession() {
-        // 删除所有用户会话记录
-        userSessionRepository.deleteAll();
     }
 
 
