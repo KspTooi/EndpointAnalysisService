@@ -103,7 +103,7 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             AND (:groupId IS NULL OR :hasPermission IS NULL OR
                  ((:hasPermission = 1 AND EXISTS (SELECT 1 FROM GroupPermissionPo gp WHERE gp.groupId = :groupId))
                   OR (:hasPermission = 0 AND NOT EXISTS (SELECT 1 FROM GroupPermissionPo gp WHERE gp.groupId = :groupId))))
-            ORDER BY p.sortOrder ASC
+            ORDER BY p.seq ASC
             """)
     Page<PermissionPo> getPermissionsByKeywordAndGroup(@Param("keyword") String keyword, @Param("groupId") Long groupId, @Param("hasPermission") Integer hasPermission, Pageable pageable);
 
@@ -128,7 +128,7 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             FROM PermissionPo p
             WHERE (:#{#dto.code} IS NULL OR LOWER(p.code) LIKE LOWER(CONCAT('%', :#{#dto.code}, '%')))
             AND (:#{#dto.name} IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :#{#dto.name}, '%')))
-            ORDER BY p.sortOrder ASC
+            ORDER BY p.seq ASC
             """)
     Page<PermissionPo> getPermissionList(
             @Param("dto") GetPermissionListDto dto,
