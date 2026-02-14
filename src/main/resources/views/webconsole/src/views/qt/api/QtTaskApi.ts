@@ -24,6 +24,7 @@ export interface GetQtTaskListVo {
   cron: string; // CRON表达式
   target: string; // 调用目标(BEAN代码或HTTP地址)
   expireTime: string; // 任务有效期截止
+  isExpired: number; // 是否已过有效期 0:未过 1:已过
   lastExecStatus: number; // 上次状态 0:成功 1:异常
   lastStartTime: string; // 上次开始时间
   lastEndTime: string; // 上次结束时间
