@@ -1,0 +1,5 @@
+ALTER TABLE `auth_group`
+    MODIFY COLUMN `id` BIGINT NOT NULL COMMENT '组ID';
+
+ALTER TABLE `auth_permission`
+    MODIFY COLUMN `id` BIGINT NOT NULL COMMENT '权限ID';
