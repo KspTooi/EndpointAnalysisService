@@ -8,70 +8,60 @@ import type Result from "@/commons/entity/Result.ts";
  * 查询列表DTO
  */
 export interface GetPostListDto extends PageQuery {
-  name?: string; // 岗位名称
-  code?: string; // 岗位编码
-  seq?: number; // 岗位排序
+  name?: string; //岗位名称
+  code?: string; //岗位编码
 }
 
 /**
  * 列表VO
  */
 export interface GetPostListVo {
-  id: string; // 岗位ID
-  name: string; // 岗位名称
-  code: string; // 岗位编码
-  seq: number; // 岗位排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
-  deleteTime: string; // 删除时间 NULL未删
+  id: string; //岗位ID
+  name: string; //岗位名称
+  code: string; //岗位编码
+  seq: number; //岗位排序
+  createTime: string; //创建时间
 }
 
 /**
  * 详情VO
  */
 export interface GetPostDetailsVo {
-  id: string; // 岗位ID
-  name: string; // 岗位名称
-  code: string; // 岗位编码
-  seq: number; // 岗位排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
-  deleteTime: string; // 删除时间 NULL未删
+  id: string; //岗位ID
+  name: string; //岗位名称
+  code: string; //岗位编码
+  seq: number; //岗位排序
 }
 
 /**
  * 新增DTO
  */
 export interface AddPostDto {
-  name: string; // 岗位名称
-  code: string; // 岗位编码
-  seq: number; // 岗位排序
+  name: string; //岗位名称
+  code: string; //岗位编码
+  seq: number; //岗位排序
 }
 
 /**
  * 编辑DTO
  */
 export interface EditPostDto {
-  id: string; // 岗位ID
-  name: string; // 岗位名称
-  code: string; // 岗位编码
-  seq: number; // 岗位排序
+  id: string; //岗位ID
+  name: string; //岗位名称
+  code: string; //岗位编码
+  seq: number; //岗位排序
 }
 
 export default {
   /**
-   * 获取岗位表列表
+   * 获取岗位列表
    */
   getPostList: async (dto: GetPostListDto): Promise<PageResult<GetPostListVo>> => {
     return await Http.postEntity<PageResult<GetPostListVo>>("/post/getPostList", dto);
   },
 
   /**
-   * 获取岗位表详情
+   * 获取岗位详情
    */
   getPostDetails: async (dto: CommonIdDto): Promise<GetPostDetailsVo> => {
     const result = await Http.postEntity<Result<GetPostDetailsVo>>("/post/getPostDetails", dto);
@@ -82,7 +72,7 @@ export default {
   },
 
   /**
-   * 新增岗位表
+   * 新增岗位
    */
   addPost: async (dto: AddPostDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/post/addPost", dto);
@@ -93,7 +83,7 @@ export default {
   },
 
   /**
-   * 编辑岗位表
+   * 编辑岗位
    */
   editPost: async (dto: EditPostDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/post/editPost", dto);
@@ -104,7 +94,7 @@ export default {
   },
 
   /**
-   * 删除岗位表
+   * 删除岗位
    */
   removePost: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/post/removePost", dto);

@@ -1,12 +1,6 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type {
-  GetPostListDto,
-  GetPostListVo,
-  GetPostDetailsVo,
-  AddPostDto,
-  EditPostDto,
-} from "@/views/post/api/PostApi.ts";
+import type { GetPostListDto, GetPostListVo, GetPostDetailsVo, AddPostDto, EditPostDto } from "@/views/post/api/PostApi.ts";
 import PostApi from "@/views/post/api/PostApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -18,7 +12,7 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 岗位表列表管理
+   * 岗位列表管理
    */
   usePostList() {
     const listForm = ref<GetPostListDto>({
@@ -26,7 +20,6 @@ export default {
       pageSize: 20,
       name: "",
       code: "",
-      seq: null,
     });
 
     const listData = ref<GetPostListVo[]>([]);
