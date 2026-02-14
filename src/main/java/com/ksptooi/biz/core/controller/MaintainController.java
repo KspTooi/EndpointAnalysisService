@@ -39,21 +39,21 @@ public class MaintainController {
     @Autowired
     private MaintainService maintainService;
 
-    @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
+    //@PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
     @Operation(summary = "校验系统内置权限节点")
     @PostMapping("/validatePermissions")
     public Result<MaintainUpdateVo> validatePermissions() {
         return Result.success(maintainService.validatePermissions());
     }
 
-    @PreAuthorize(value = "@auth.hasCode('maintain:validate:groups')")
+    //@PreAuthorize(value = "@auth.hasCode('maintain:validate:groups')")
     @Operation(summary = "校验系统内置用户组")
     @PostMapping("/validateGroups")
     public Result<MaintainUpdateVo> validateGroups() throws BizException {
         return Result.success(maintainService.validateGroups());
     }
 
-    @PreAuthorize(value = "@auth.hasCode('maintain:validate:users')")
+    //@PreAuthorize(value = "@auth.hasCode('maintain:validate:users')")
     @Operation(summary = "校验系统内置用户")
     @PostMapping("/validateUsers")
     public Result<MaintainUpdateVo> validateUsers() throws BizException {
