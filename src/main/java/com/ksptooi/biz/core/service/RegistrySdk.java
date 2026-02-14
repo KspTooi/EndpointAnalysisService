@@ -651,4 +651,43 @@ public class RegistrySdk {
 
         return repository.getRegistryNodeByKeyPath(keyPath);
     }
+
+    /**
+     * 获取子节点列表
+     *
+     * @param keyPath 父节点全路径
+     * @return 子节点列表
+     */
+    public List<RegistryPo> getChildNodes(String keyPath) {
+
+        // 空值校验
+        if (Str.isBlank(keyPath)) {
+            return new ArrayList<>();
+        }
+
+        // 校验keyPath合法性
+        if (!RegistryTool.allowKeyPath(keyPath)) {
+            return new ArrayList<>();
+        }
+
+        // 查找父节点
+        RegistryPo parentNode = repository.getRegistryNodeByKeyPath(keyPath);
+
+        if (parentNode == null) {
+            return new ArrayList<>();
+        }
+
+        // 查询子节点(kind=0表示节点)
+        return repository.findAll().stream()
+                .filter(item -> item.getKind() == 0 && parentNode.getId().equals(item.getParentId()))
+                .sorted((a, b) -> {
+                    // 先按seq排序,再按nkey排序
+                    int seqCompare = Integer.compare(a.getSeq(), b.getSeq());
+                    if (seqCompare != 0) {
+                        return seqCompare;
+                    }
+                    return a.getNkey().compareTo(b.getNkey());
+                })
+                .toList();
+    }
 }
