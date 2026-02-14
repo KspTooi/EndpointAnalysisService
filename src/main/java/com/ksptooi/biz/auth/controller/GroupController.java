@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,18 +40,21 @@ public class GroupController {
         return Result.success(service.getGroupDefinitions());
     }
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:view')")
     @Operation(summary = "获取组列表")
     @PostMapping("getGroupList")
     public PageResult<GetGroupListVo> getGroupList(@RequestBody @Valid GetGroupListDto dto) {
         return service.getGroupList(dto);
     }
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:view')")
     @Operation(summary = "获取组详情")
     @PostMapping("getGroupDetails")
     public Result<GetGroupDetailsVo> getGroupDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(service.getGroupDetails(dto.getId()));
     }
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:add')")
     @Operation(summary = "新增组")
     @PostMapping("addGroup")
     public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) throws Exception {
@@ -58,6 +62,7 @@ public class GroupController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:edit')")
     @Operation(summary = "编辑组")
     @PostMapping("editGroup")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
@@ -68,18 +73,19 @@ public class GroupController {
     }
 
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:edit')")
     @Operation(summary = "获取组权限菜单视图")
     @PostMapping("getGroupPermissionMenuView")
     public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) throws Exception {
         return Result.success(service.getGroupPermissionMenuView(dto));
     }
-
+    @PreAuthorize(value = "@auth.hasCode('auth:group:edit')")
     @Operation(summary = "获取组权限节点视图")
     @PostMapping("getGroupPermissionNodeView")
     public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) throws Exception {
         return service.getGroupPermissionNodeView(dto);
     }
-
+    @PreAuthorize(value = "@auth.hasCode('auth:group:edit')")
     @Operation(summary = "批量授权或取消授权")
     @PostMapping("grantAndRevoke")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
@@ -89,6 +95,7 @@ public class GroupController {
         return Result.success("授权或取消授权成功");
     }
 
+    @PreAuthorize(value = "@auth.hasCode('auth:group:remove')")
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)

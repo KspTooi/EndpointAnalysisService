@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,19 +27,22 @@ public class SessionController {
     @Autowired
     private SessionService service;
 
-    @Operation(summary = "获取会话列表")
+    @PreAuthorize(value = "@auth.hasCode('auth:session:view')")
+    @Operation(summary = "获取在线用户列表")
     @PostMapping("getSessionList")
     public PageResult<GetSessionListVo> getSessionList(@RequestBody @Valid GetSessionListDto dto) {
         return service.getSessionList(dto);
     }
 
-    @Operation(summary = "获取会话详情")
+    @PreAuthorize(value = "@auth.hasCode('auth:session:view')")
+    @Operation(summary = "获取在线用户详情")
     @PostMapping("getSessionDetails")
     public Result<GetSessionDetailsVo> getSessionDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(service.getSessionDetails(dto.getId()));
     }
 
-    @Operation(summary = "关闭会话")
+    @PreAuthorize(value = "@auth.hasCode('auth:session:remove')")
+    @Operation(summary = "关闭在线用户会话", description = "强退用户时使用")
     @PostMapping("closeSession")
     public Result<String> closeSession(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.closeSessionByPrimaryKey(dto.getId());
