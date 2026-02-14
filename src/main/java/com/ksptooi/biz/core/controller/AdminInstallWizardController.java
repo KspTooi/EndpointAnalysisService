@@ -135,12 +135,12 @@ public class AdminInstallWizardController {
             results.add(permissionMessage);
 
             // 2. 校验系统内置用户组
-            String groupResult = adminGroupService.validateSystemGroups();
-            results.add(groupResult);
+            //String groupResult = adminGroupService.validateSystemGroups();
+            //results.add(groupResult);
 
             // 3. 校验系统内置用户
-            String userResult = userService.validateSystemUsers();
-            results.add(userResult);
+            //String userResult = userService.validateSystemUsers();
+            //results.add(userResult);
 
             // 4. 校验系统全局配置项
             String configResult = globalConfigService.validateSystemConfigs();

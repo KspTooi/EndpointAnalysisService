@@ -1,6 +1,5 @@
 package com.ksptooi.biz.core.controller;
 
-import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.biz.core.service.GlobalConfigService;
@@ -9,9 +8,7 @@ import com.ksptooi.biz.core.service.UserService;
 import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
-
 import io.swagger.v3.oas.annotations.Operation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
@@ -67,7 +64,7 @@ public class MaintainController {
     @ResponseBody
     public Result<String> validateSystemUsers() {
         try {
-            String result = userService.validateSystemUsers();
+            String result = maintainService.validateSystemUsers();
             return Result.success(result, null);
         } catch (Exception e) {
             return Result.error("校验用户失败：" + e.getMessage());

@@ -16,7 +16,6 @@ import com.ksptooi.biz.core.model.user.vo.UserPermissionVo;
 import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.dataprocess.Str;
-import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -344,66 +342,6 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-
-    /**
-     * 校验系统内置用户
-     * 检查数据库中是否存在所有系统内置用户，如果不存在则自动创建
-     * 对于admin用户，会赋予所有现有用户组
-     *
-     * @return 校验结果消息
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public String validateSystemUsers() {
-        // 获取所有系统内置用户枚举
-        UserEnum[] userEnums = UserEnum.values();
-
-        // 记录已存在和新增的用户数量
-        int existCount = 0;
-        int addedCount = 0;
-        List<String> addedUsers = new ArrayList<>();
-
-        // 遍历所有系统内置用户
-        for (UserEnum userEnum : userEnums) {
-            String username = userEnum.getUsername();
-
-            // 检查用户是否已存在
-            UserPo existingUser = userRepository.findByUsername(username);
-            if (existingUser != null) {
-                existCount++;
-                // 如果是admin用户，更新其用户组
-                if (userEnum == UserEnum.ADMIN) {
-                    updateAdminGroups(existingUser);
-                }
-                continue;
-            }
-
-            try {
-                // 创建新用户，密码与用户名相同
-                UserPo newUser = registerSystemUser(username, username);
-                newUser.setNickname(userEnum.getNickname());
-
-                // 如果是admin用户，赋予所有用户组
-                if (userEnum == UserEnum.ADMIN) {
-                    updateAdminGroups(newUser);
-                    newUser.setIsSystem(1);
-                }
-
-                addedCount++;
-                addedUsers.add(username);
-            } catch (BizException e) {
-                // 注册失败的情况已经在register方法中处理过了
-                continue;
-            }
-        }
-
-        // 返回结果消息
-        if (addedCount > 0) {
-            return String.format("校验完成，已添加 %d 个缺失的用户（%s），已存在 %d 个用户",
-                    addedCount, String.join("、", addedUsers), existCount);
-        }
-
-        return String.format("校验完成，所有 %d 个系统用户均已存在", existCount);
-    }
 
     /**
      * 更新admin用户的用户组，确保拥有所有现有用户组

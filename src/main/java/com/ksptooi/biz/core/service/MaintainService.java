@@ -1,19 +1,24 @@
 package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.auth.model.GroupPermissionPo;
+import com.ksptooi.biz.auth.model.UserGroupPo;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.repository.GroupPermissionRepository;
 import com.ksptooi.biz.auth.repository.GroupRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
+import com.ksptooi.biz.auth.repository.UserGroupRepository;
 import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
+import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.enums.GroupEnum;
+import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
-
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +49,16 @@ public class MaintainService {
     private GroupPermissionRepository gpRepository;
 
     @Autowired
+    private UserGroupRepository ugRepository;
+
+    @Autowired
     private PermissionRepository permissionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 校验系统内置权限节点
@@ -112,7 +125,7 @@ public class MaintainService {
             po.setCode(permissionCode);
             po.setName(name);
             po.setDescription(remark);
-            po.setSortOrder(0);
+            po.setSortOrder(100);
             po.setIsSystem(1);
             scannedPermissions.add(po);
         }
@@ -182,6 +195,76 @@ public class MaintainService {
     }
 
     /**
+     * 校验系统内置用户
+     * 检查数据库中是否存在所有系统内置用户，如果不存在则自动创建
+     * 对于Admin用户，会赋予管理员组
+     *
+     * @return 校验结果消息
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public MaintainUpdateVo validateSystemUsers() throws BizException {
+
+        //先获取超级组
+        var superGroup = groupRepository.getGroupByCode(GroupEnum.ADMIN.getCode());
+
+        if (superGroup == null) {
+            throw new BizException("在校验系统内置用户时出现问题，超级组不存在,请检查系统内置用户组是否完整!");
+        }
+
+        // 获取所有系统内置用户枚举
+        UserEnum[] userEnums = UserEnum.values();
+
+        // 记录已存在和新增的用户数量
+        int existCount = userRepository.countBySystemUser();
+        List<String> addedUsers = new ArrayList<>();
+
+        // 遍历所有系统内置用户
+        for (UserEnum userEnum : userEnums) {
+            String username = userEnum.getUsername();
+
+            //先查找数据库用户
+            UserPo user = userRepository.getUserByUsername(username);
+
+            //数据库用户不存在 直接创建
+            if (user == null) {
+                user = new UserPo();
+                user.setUsername(username);
+                user.setPassword(passwordEncoder.encode(username));
+                user.setNickname(userEnum.getNickname());
+                user.setGender(2);
+                user.setLoginCount(0);
+                user.setStatus(0);
+                user.setIsSystem(1);
+                user = userRepository.save(user);
+            }
+
+            //检查用户是否是管理员用户
+            if (user.getUsername().equals(UserEnum.ADMIN.getUsername())) {
+
+                //如果管理员用户没有超级组关联 则赋予超级组
+                var ug = ugRepository.getUgByUserIdAndGroupId(user.getId(), superGroup.getId());
+                if (ug == null) {
+                    var ugPo = new UserGroupPo();
+                    ugPo.setUserId(user.getId());
+                    ugPo.setGroupId(superGroup.getId());
+                    ugRepository.save(ugPo);
+                }
+            }
+
+            addedUsers.add(username);
+        }
+
+        //构建响应Vo
+        var vo = new MaintainUpdateVo();
+        vo.setExistCount(existCount);
+        vo.setAddedCount(addedUsers.size());
+        vo.setAddedList(addedUsers);
+        vo.setRemovedCount(0);
+        vo.setRemovedList(new ArrayList<>());
+        return vo;
+    }
+
+    /**
      * 校验系统内置组
      * 检查数据库中是否存在所有系统内置组，如果不存在则自动创建
      * 对于管理员组，会赋予所有现有权限
@@ -213,7 +296,7 @@ public class MaintainService {
             var group = groupRepository.getGroupByCode(code);
 
             //数据库组不存在 直接创建
-            if(group == null){
+            if (group == null) {
                 group = new GroupPo();
                 group.setCode(code);
                 group.setName(groupEnum.getName());
@@ -225,12 +308,18 @@ public class MaintainService {
             }
 
             //检查组是否是管理员组
-            if(group.getCode().equals(GroupEnum.ADMIN.getCode())){
-                //管理员组赋予超级权限
-                var gpPo = new GroupPermissionPo();
-                gpPo.setGroupId(group.getId());
-                gpPo.setPermissionId(superPermission.getId());
-                gpRepository.save(gpPo);
+            if (group.getCode().equals(GroupEnum.ADMIN.getCode())) {
+
+                //如果管理员组没有超级权限关联 则赋予超级权限
+                var gp = gpRepository.getGpByGroupIdAndPermissionId(group.getId(), superPermission.getId());
+
+                if (gp == null) {
+                    var gpPo = new GroupPermissionPo();
+                    gpPo.setGroupId(group.getId());
+                    gpPo.setPermissionId(superPermission.getId());
+                    gpRepository.save(gpPo);
+                }
+
             }
 
             addedGroups.add(code);

@@ -63,4 +63,16 @@ public interface UserGroupRepository extends JpaRepository<UserGroupPo, UserGrou
             """)
     List<Long> getUserIdsByGroupId(@Param("groupId") Long groupId);
 
+    /**
+     * 根据用户ID和用户组ID获取用户组关联
+     *
+     * @param userId 用户ID
+     * @param groupId 用户组ID
+     * @return 用户组关联
+     */
+    @Query("""
+            SELECT ug FROM UserGroupPo ug WHERE ug.userId = :userId AND ug.groupId = :groupId
+    """)
+    UserGroupPo getUgByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
+
 }

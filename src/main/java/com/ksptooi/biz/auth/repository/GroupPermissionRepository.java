@@ -14,8 +14,17 @@ import java.util.List;
 public interface GroupPermissionRepository extends JpaRepository<GroupPermissionPo, GroupPermissionPo.Pk>, JpaSpecificationExecutor<GroupPermissionPo> {
 
 
-
-
+    /**
+     * 根据用户组ID和权限ID获取权限关联
+     *
+     * @param groupId 用户组ID
+     * @param permissionId 权限ID
+     * @return 权限关联
+     */
+    @Query("""
+            SELECT gp FROM GroupPermissionPo gp WHERE gp.groupId = :groupId AND gp.permissionId = :permissionId
+    """)
+    GroupPermissionPo getGpByGroupIdAndPermissionId(@Param("groupId") Long groupId, @Param("permissionId") Long permissionId);
 
 
     /**

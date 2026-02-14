@@ -76,10 +76,6 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
     Integer countByUsername(@Param("username") String username);
 
 
-    // 根据用户名查找用户
-    UserPo findByUsername(String username);
-
-
     // 获取用户的所有权限（通过用户组）
     @Query("""
             SELECT DISTINCT p
@@ -152,5 +148,16 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             WHERE p.deptId IN :deptIds
             """)
     List<UserPo> getUserListByDeptIds(@Param("deptIds") List<Long> deptIds);
+
+
+    /**
+     * 统计系统内置用户数量
+     *
+     * @return 系统内置用户数量
+     */
+    @Query("""
+            SELECT COUNT(p.id) FROM UserPo p WHERE p.isSystem = 1
+            """)
+    Integer countBySystemUser();
 
 }
