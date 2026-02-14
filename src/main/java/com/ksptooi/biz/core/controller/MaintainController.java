@@ -93,6 +93,14 @@ public class MaintainController {
         return Result.success(maintainService.upgradeDatabase());
     }
 
+    @PreAuthorize(value = "@auth.hasCode('maintain:repair:registry')")
+    @Operation(summary = "维护中心:修复注册表")
+    @PostMapping("/repairRegistry")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<MaintainUpdateVo> repairRegistry() throws BizException {
+        return Result.success(maintainService.repairRegistry());
+    }
+
 
     @PreAuthorize(value = "@auth.hasCode('maintain:reset:endpoints')")
     @Operation(summary = "维护中心:重置端点权限配置")

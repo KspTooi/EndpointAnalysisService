@@ -489,4 +489,25 @@ public class MaintainService {
         return vo;
     }
 
+    /**
+     * 修复注册表
+     * 修复注册表的全部节点和条目
+     *
+     * @return 修复结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public MaintainUpdateVo repairRegistry() throws BizException {
+
+        
+
+
+
+
+
+
+
+
+        return vo;
+    }
+
 }
