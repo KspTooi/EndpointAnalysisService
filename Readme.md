@@ -1,4 +1,4 @@
-# EAS Crown 快速开发平台
+# BioCode 快速开发平台
 
 [![Java 21](https://img.shields.io/badge/Java-21-blue.svg)](https://www.oracle.com/java/)
 [![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
