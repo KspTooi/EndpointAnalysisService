@@ -14,7 +14,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "core_user_group", comment = "用户组关联表")
+@Table(name = "auth_user_group", comment = "用户组关联表")
 @Getter
 @Setter
 @IdClass(UserGroupPo.Pk.class)

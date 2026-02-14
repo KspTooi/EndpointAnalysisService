@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,17 +55,17 @@ public class UserController {
     @Operation(summary = "编辑用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("editUser")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editUser(@RequestBody @Valid EditUserDto dto) throws Exception {
         service.editUser(dto);
-        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("修改成功");
     }
 
     @Operation(summary = "删除用户")
     @PostMapping("removeUser")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeUser(dto.getId());
-        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("success");
     }
 
@@ -89,6 +90,7 @@ public class UserController {
 
     @Operation(summary = "批量编辑用户")
     @PostMapping("batchEditUser")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> batchEditUser(@RequestBody @Valid BatchEditUserDto dto) throws Exception {
 
         //校验变更部门ID

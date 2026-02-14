@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,7 @@ public class GroupController {
 
     @Operation(summary = "编辑组")
     @PostMapping("editGroup")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) throws Exception {
         service.editGroup(dto);
         menuService.clearUserMenuTreeCache();
@@ -80,6 +82,7 @@ public class GroupController {
 
     @Operation(summary = "批量授权或取消授权")
     @PostMapping("grantAndRevoke")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) throws Exception {
         service.grantAndRevoke(dto);
         menuService.clearUserMenuTreeCache();
@@ -88,6 +91,7 @@ public class GroupController {
 
     @Operation(summary = "删除组")
     @PostMapping("removeGroup")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeGroup(dto);
         menuService.clearUserMenuTreeCache();

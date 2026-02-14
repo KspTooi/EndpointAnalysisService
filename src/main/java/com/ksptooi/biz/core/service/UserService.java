@@ -93,7 +93,7 @@ public class UserService {
 
         // 获取用户组信息
         List<UserGroupVo> groupVos = new ArrayList<>();
-        List<GroupPo> allGroups = groupRepository.findAll(Sort.by(Sort.Direction.ASC, "sortOrder"));
+        List<GroupPo> allGroups = groupRepository.findAll(Sort.by(Sort.Direction.ASC, "seq"));
 
         //获取该用户拥有的组IDS
         var userGroupIds = ugRepository.getGroupIdsByGrantedUserId(id);

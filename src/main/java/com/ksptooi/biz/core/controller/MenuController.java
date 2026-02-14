@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,7 @@ public class MenuController {
 
     @PostMapping("/addMenu")
     @Operation(summary = "新增菜单与按钮")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> addMenu(@RequestBody @Valid AddMenuDto dto) throws Exception {
 
         //纠正输入参数
@@ -65,6 +67,7 @@ public class MenuController {
 
     @PostMapping("/editMenu")
     @Operation(summary = "编辑菜单与按钮")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editMenu(@RequestBody @Valid EditMenuDto dto) throws Exception {
 
         //纠正输入参数
@@ -88,6 +91,7 @@ public class MenuController {
 
     @PostMapping("/removeMenu")
     @Operation(summary = "删除菜单与按钮")
+    @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeMenu(@RequestBody @Valid CommonIdDto dto) throws Exception {
         menuService.removeMenu(dto);
         return Result.success("删除成功");

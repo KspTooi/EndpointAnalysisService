@@ -14,7 +14,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "core_group_permission", comment = "权限组关联表")
+@Table(name = "auth_group_permission", comment = "权限组关联表")
 @Getter
 @Setter
 @IdClass(GroupPermissionPo.Pk.class)

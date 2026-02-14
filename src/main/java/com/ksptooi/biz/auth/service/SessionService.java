@@ -254,12 +254,8 @@ public class SessionService {
         //获取用户拥有的全部用户组
         var groups = groupRepository.getGroupsByUserId(userPo.getId());
 
-        var grantedAuthoritiesStr = new HashSet<String>();
-
         //处理权限码
-        for (var permission : permissionCodes) {
-            grantedAuthoritiesStr.add(permission);
-        }
+        var grantedAuthoritiesStr = new HashSet<String>(permissionCodes);
 
         //处理用户组
         for (var group : groups) {
@@ -273,7 +269,7 @@ public class SessionService {
                 userSessionRepository.delete(session);
                 continue;
             }
-            session.update(userPo, permissionCodes, expiresInSeconds);
+            session.update(userPo, grantedAuthoritiesStr, expiresInSeconds);
             userSessionRepository.save(session);
         }
 
