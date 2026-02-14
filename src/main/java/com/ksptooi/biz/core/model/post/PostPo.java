@@ -33,6 +33,12 @@ public class PostPo {
     @Column(name = "seq", nullable = false, comment = "岗位排序")
     private Integer seq;
 
+    @Column(name = "status", nullable = false, columnDefinition = "TINYINT", comment = "0:启用 1:停用")
+    private Integer status;
+
+    @Column(name = "remark", columnDefinition = "TEXT", comment = "备注")
+    private String remark;
+
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 

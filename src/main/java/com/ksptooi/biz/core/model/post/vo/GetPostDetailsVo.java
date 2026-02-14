@@ -20,5 +20,11 @@ public class GetPostDetailsVo {
     @Schema(description = "岗位排序")
     private Integer seq;
 
+    @Schema(description = "0:启用 1:停用")
+    private Integer status;
+
+    @Schema(description = "备注")
+    private String remark;
+
 }
 
