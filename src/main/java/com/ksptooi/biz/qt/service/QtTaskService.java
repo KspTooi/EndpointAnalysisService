@@ -204,6 +204,8 @@ public class QtTaskService {
                 .usingJobData("taskId", po.getId())
                 .usingJobData("target", po.getTarget()) // Bean Name
                 .usingJobData("params", po.getTargetParam()) // JSON
+                .usingJobData("policyError", po.getPolicyError()) // 失败策略 0:默认 1:自动暂停
+                .usingJobData("policyRcd", po.getPolicyRcd()) // 日志策略 0:全部 1:仅异常 2:不记录
                 .build();
 
         //构建Trigger
