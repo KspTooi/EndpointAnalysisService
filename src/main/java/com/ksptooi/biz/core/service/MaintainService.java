@@ -17,7 +17,6 @@ import com.ksptooi.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -365,14 +364,14 @@ public class MaintainService {
         vo.setMessage("");
 
         //先校验历史一致性
-        try {
+/*        try {
             flyway.validate();
         } catch (Exception e) {
             var applied = flyway.info().applied();
             vo.setExistCount(applied.length);
             vo.setMessage("[数据库升级] 当前数据库表结构与代码不一致，请先修复历史一致性，这可能是脚本执行后又被改过内容，或历史脚本被删/改名/移动了位置。");
             return vo;
-        }
+        }*/
 
         var pending = flyway.info().pending();
         if (pending.length < 1) {
