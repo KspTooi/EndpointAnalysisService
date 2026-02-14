@@ -67,10 +67,10 @@ public class MaintainController {
     @CacheEvict(cacheNames = "menuTree", allEntries = true)
     public Result<MaintainUpdateVo> resetMenus() throws BizException {
 
-        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_5W109.sql");
+        ClassPathResource sqlScript = new ClassPathResource("sql/default_menus_1_5Z25.sql");
 
         if (!sqlScript.exists()) {
-            throw new BizException("SQL脚本文件 'sql/default_menus_1_5W109.sql' 不存在。请检查文件是否已正确放置。");
+            throw new BizException("SQL脚本文件 'sql/default_menus_1_5Z25.sql' 不存在。请检查文件是否已正确放置。");
         }
 
         try {
