@@ -14,7 +14,7 @@ import java.util.UUID;
 import static com.ksptool.entities.Entities.*;
 
 @Entity
-@Table(name = "core_user_session", comment = "用户会话")
+@Table(name = "auth_user_session", comment = "用户会话")
 @Data
 public class UserSessionPo {
 
