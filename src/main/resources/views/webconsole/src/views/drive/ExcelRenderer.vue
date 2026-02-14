@@ -28,6 +28,7 @@ import VueOfficeExcel from "@vue-office/excel/lib/v3/vue-office-excel.mjs";
 import "@vue-office/excel/lib/v3/index.css";
 // 1. 引入缩放服务
 import DriveRendererService from "@/views/drive/service/DriveRendererService";
+import Http from "@/commons/Http";
 
 const route = useRoute();
 const loading = ref(false);
@@ -42,7 +43,7 @@ const isXlsx = computed(() => {
 const fileUrl = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
 const onRendered = () => {

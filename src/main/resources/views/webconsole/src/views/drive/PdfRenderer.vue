@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-
+import Http from "@/commons/Http";
 const route = useRoute();
 
 const pdfSrc = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
   // 许多浏览器使用 iframe 打开 PDF 时表现良好
-  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 </script>
 

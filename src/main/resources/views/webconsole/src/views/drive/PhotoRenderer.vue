@@ -3,7 +3,7 @@ import { computed, ref, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { RefreshLeft } from "@element-plus/icons-vue";
 import DriveRendererService from "@/views/drive/service/DriveRendererService";
-
+import Http from "@/commons/Http";
 const route = useRoute();
 const imgRef = ref<HTMLImageElement | null>(null);
 const containerRef = ref<HTMLElement | null>(null);
@@ -12,7 +12,7 @@ const containerRef = ref<HTMLElement | null>(null);
 const imgSrc = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
 // 注入拖拽服务

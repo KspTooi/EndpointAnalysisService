@@ -8,9 +8,9 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
-import VueOfficeDocx from '@vue-office/docx/lib/v3/vue-office-docx.mjs'
-import '@vue-office/docx/lib/v3/index.css'
-
+import VueOfficeDocx from "@vue-office/docx/lib/v3/vue-office-docx.mjs";
+import "@vue-office/docx/lib/v3/index.css";
+import Http from "@/commons/Http";
 const route = useRoute();
 
 // 计算下载链接
@@ -18,7 +18,7 @@ const fileUrl = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
   // 直接使用您后端的下载接口，组件会自动下载并解析
-  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
 const onRendered = () => {

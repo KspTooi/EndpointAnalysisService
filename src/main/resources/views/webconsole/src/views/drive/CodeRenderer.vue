@@ -7,6 +7,7 @@ import axios from "axios";
 import hljs from "highlight.js";
 // 引入样式，你可以选择其他主题，如 'github', 'vs2015' 等
 import "highlight.js/styles/atom-one-dark.css";
+import Http from "@/commons/Http";
 
 const route = useRoute();
 
@@ -23,7 +24,7 @@ const sign = computed(() => route.query.sign as string);
 // 计算下载/预览链接
 const fileUrl = computed(() => {
   if (!sign.value) return "";
-  return `/api/drive/object/access/downloadEntry?sign=${sign.value}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign.value}&preview=1`);
 });
 
 // 扩展名到语言的简单映射（Highlight.js 通常能自动检测，但手动指定更准确）

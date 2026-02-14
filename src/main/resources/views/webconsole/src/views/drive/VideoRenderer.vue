@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-
+import Http from "@/commons/Http";
 const route = useRoute();
 
 const mediaSrc = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 </script>
 
