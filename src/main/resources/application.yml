@@ -1,5 +1,4 @@
 spring:
-
   profiles:
     active: dev
 
@@ -16,7 +15,6 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
       enabled: true
-
 
   datasource:
     #driver-class-name: com.mysql.cj.jdbc.Driver
@@ -83,7 +81,7 @@ session:
 
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
     path: /v3/api-docs
   swagger-ui:
     enabled: false
@@ -92,9 +90,6 @@ springdoc:
     try-it-out-enabled: true
     operations-sorter: alpha
     tags-sorter: alpha
-
-knife4j:
-  enable: false
 
 application:
   version: 1.5SCP18 # 应用版本号
@@ -125,8 +120,6 @@ audit:
 
 mybatis:
   mapper-locations: classpath:mappers/**/*.xml
-
-
 #logging:
 #  level:
 #    org.springframework.boot.context.logging: INFO
