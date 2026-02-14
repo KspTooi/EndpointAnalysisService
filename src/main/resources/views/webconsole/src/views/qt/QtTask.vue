@@ -60,8 +60,10 @@
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
         <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip>
           <template #default="scope">
-            <span v-if="scope.row.expireTime">{{ scope.row.expireTime }}</span>
-            <span v-else class="text-gray-400 text-sm">长期有效</span>
+            <span v-if="scope.row.expireTime" :class="{ 'text-red-700': scope.row.isExpired === 1 }">
+              {{ scope.row.expireTime }}
+            </span>
+            <span v-if="!scope.row.expireTime" class="text-gray-400 text-sm">长期有效</span>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" min-width="70" show-overflow-tooltip align="center">
@@ -87,9 +89,7 @@
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit">
-              编辑
-            </el-button>
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
           </template>
         </el-table-column>
