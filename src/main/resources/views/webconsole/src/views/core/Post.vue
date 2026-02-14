@@ -19,13 +19,36 @@
     </StdListAreaQuery>
 
     <!-- 操作按钮区域 -->
-    <StdListAreaAction class="flex gap-2">
+    <StdListAreaAction class="">
       <el-button type="success" @click="openModal('add', null)">新增岗位</el-button>
+      <el-button
+        type="danger"
+        @click="() => removeListBatch(listSelected)"
+        :disabled="listSelected.length === 0"
+        :loading="listLoading"
+      >
+        删除选中项
+      </el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table
+        :data="listData"
+        stripe
+        v-loading="listLoading"
+        border
+        height="100%"
+        @selection-change="(val: GetPostListVo[]) => (listSelected = val)"
+      >
+        <el-table-column type="selection" width="40" />
+        <el-table-column
+          type="index"
+          label="岗位序号"
+          width="100"
+          align="center"
+          :index="(index) => (listForm.pageNum - 1) * listForm.pageSize + index + 1"
+        />
         <el-table-column prop="name" label="岗位名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="岗位编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="岗位排序" min-width="120" show-overflow-tooltip align="center">
@@ -49,7 +72,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="100">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
@@ -130,6 +153,7 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import PostService from "@/views/core/service/PostService.ts";
 import PostApi from "@/views/core/api/PostApi.ts";
+import type { GetPostListVo } from "@/views/core/api/PostApi.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -141,7 +165,11 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = PostService.usePostList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
+  PostService.usePostList();
+
+// 选中的列表项
+const listSelected = ref<GetPostListVo[]>([]);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

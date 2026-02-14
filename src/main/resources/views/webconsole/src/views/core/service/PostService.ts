@@ -79,6 +79,35 @@ export default {
       }
     };
 
+    /**
+     * 批量删除记录
+     */
+    const removeListBatch = async (selectedItems: GetPostListVo[]) => {
+      if (selectedItems.length === 0) {
+        ElMessage.warning("请选择要删除的岗位");
+        return;
+      }
+
+      try {
+        await ElMessageBox.confirm(`确定删除选中的${selectedItems.length}个岗位吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        const ids = selectedItems.map((item) => item.id);
+        await PostApi.removePost({ ids });
+        ElMessage.success("删除成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     onMounted(async () => {
       await loadList();
     });
@@ -91,6 +120,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      removeListBatch,
     };
   },
 
