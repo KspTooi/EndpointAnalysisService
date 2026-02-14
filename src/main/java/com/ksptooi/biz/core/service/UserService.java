@@ -305,7 +305,7 @@ public class UserService {
 
 
     public UserPo getUser(String username) throws BizException {
-        UserPo user = userRepository.findByUsername(username);
+        UserPo user = userRepository.getUserByUsername(username);
         if (user == null) {
             throw new BizException("该用户不存在");
         }
@@ -314,7 +314,7 @@ public class UserService {
 
     public UserPo register(String username, String password) throws BizException {
         // 检查是否已存在同名用户
-        if (userRepository.findByUsername(username) != null) {
+        if (userRepository.getUserByUsername(username) != null) {
             throw new BizException("用户名已存在");
         }
 
@@ -329,7 +329,7 @@ public class UserService {
 
     public UserPo registerSystemUser(String username, String password) throws BizException {
         // 检查是否已存在同名用户
-        if (userRepository.findByUsername(username) != null) {
+        if (userRepository.getUserByUsername(username) != null) {
             throw new BizException("用户名已存在");
         }
 
