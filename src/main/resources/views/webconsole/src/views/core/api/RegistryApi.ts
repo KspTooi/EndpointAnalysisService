@@ -165,7 +165,7 @@ export default {
    * @param dto 查询参数
    */
   exportRegistry: async (dto: GetRegistryListDto): Promise<void> => {
-    const response = await axios.post(`/registry/exportRegistry`, dto, {
+    const response = await Http.axios().post(`/registry/exportRegistry`, dto, {
       responseType: "blob",
       headers: {
         "AE-Request-With": "XHR",

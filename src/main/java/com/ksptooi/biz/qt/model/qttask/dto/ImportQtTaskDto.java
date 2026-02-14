@@ -67,6 +67,6 @@ public class ImportQtTaskDto extends AbstractImportDto {
 
     @Override
     public String validate() {
-        return null;
+        return this.validateAnnotations();
     }
 }
