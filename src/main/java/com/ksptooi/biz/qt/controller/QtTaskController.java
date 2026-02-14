@@ -4,11 +4,13 @@ import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.dto.IExportQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.service.QtTaskService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -22,7 +24,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -129,6 +133,30 @@ public class QtTaskController {
     public Result<String> executeTask(@RequestBody @Valid ExecuteTaskDto dto) throws Exception {
         qtTaskService.executeTask(dto);
         return Result.success("操作成功");
+    }
+    
+
+    @PreAuthorize("@auth.hasCode('qt:task:import')")
+    @Operation(summary = "导入任务")
+    @PostMapping("/importQtTask")
+    public Result<String> importQtTask(@RequestParam("file") MultipartFile file) throws Exception {
+
+        //准备向导
+        var iw = new ImportWizard<>(file, IExportQtTaskDto.class);
+
+        //开始传输
+        iw.transfer();
+
+        //验证导入数据
+        var errors = iw.validate();
+        if (Str.isNotBlank(errors)) {
+            return Result.error(errors);
+        }
+        
+        //获取导入数据
+        var data = iw.getData();
+
+        return Result.success("操作成功,已导入数据:" + data.size() + "条", null);
     }
 
 }

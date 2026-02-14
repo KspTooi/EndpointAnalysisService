@@ -182,4 +182,11 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 导出任务
+   */
+  exportQtTask: async (dto: GetQtTaskListDto): Promise<void> => {
+    await Http.downloadFile("/qtTask/exportQtTask", dto, "QT任务导出.xlsx");
+  },
 };
