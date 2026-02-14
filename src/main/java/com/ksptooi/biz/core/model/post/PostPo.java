@@ -1,13 +1,15 @@
-package com.ksptooi.biz.post.model;
+package com.ksptooi.biz.core.model.post;
 
-import java.time.LocalDateTime;
-import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
+
 import static com.ksptooi.biz.auth.service.SessionService.session;
 
 @Getter
@@ -53,22 +55,22 @@ public class PostPo {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-        
-        
+
+
         LocalDateTime now = LocalDateTime.now();
-        
+
         if (this.createTime == null) {
             this.createTime = now;
         }
-        
+
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
-        
+
         if (this.creatorId == null) {
             this.creatorId = session().getUserId();
         }
-        
+
         if (this.updaterId == null) {
             this.updaterId = session().getUserId();
         }
@@ -76,9 +78,9 @@ public class PostPo {
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        
+
         this.updateTime = LocalDateTime.now();
-        
+
         if (this.updaterId == null) {
             this.updaterId = session().getUserId();
         }
