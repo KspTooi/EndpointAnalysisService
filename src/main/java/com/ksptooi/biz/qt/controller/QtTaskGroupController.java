@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,12 +32,14 @@ public class QtTaskGroupController {
     @Autowired
     private QtTaskGroupService qtTaskGroupService;
 
+    @PreAuthorize("@auth.hasCode('qt:group:view')")
     @PostMapping("/getQtTaskGroupList")
     @Operation(summary = "查询任务分组列表")
     public PageResult<GetQtTaskGroupListVo> getQtTaskGroupList(@RequestBody @Valid GetQtTaskGroupListDto dto) throws Exception {
         return qtTaskGroupService.getQtTaskGroupList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('qt:group:add')")
     @Operation(summary = "新增任务分组")
     @PostMapping("/addQtTaskGroup")
     public Result<String> addQtTaskGroup(@RequestBody @Valid AddQtTaskGroupDto dto) throws Exception {
@@ -44,6 +47,7 @@ public class QtTaskGroupController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('qt:group:edit')")
     @Operation(summary = "编辑任务分组")
     @PostMapping("/editQtTaskGroup")
     public Result<String> editQtTaskGroup(@RequestBody @Valid EditQtTaskGroupDto dto) throws Exception {
@@ -51,6 +55,7 @@ public class QtTaskGroupController {
         return Result.success("修改成功");
     }
 
+    @PreAuthorize("@auth.hasCode('qt:group:view')")
     @Operation(summary = "查询任务分组详情")
     @PostMapping("/getQtTaskGroupDetails")
     public Result<GetQtTaskGroupDetailsVo> getQtTaskGroupDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -61,6 +66,7 @@ public class QtTaskGroupController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('qt:group:remove')")
     @Operation(summary = "删除任务分组")
     @PostMapping("/removeQtTaskGroup")
     public Result<String> removeQtTaskGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
