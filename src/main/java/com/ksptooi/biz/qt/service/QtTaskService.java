@@ -23,7 +23,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -222,10 +224,14 @@ public class QtTaskService {
             cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
         }
 
-        var trigger = TriggerBuilder.newTrigger()
+        var triggerBuilder = TriggerBuilder.newTrigger()
                 .withIdentity(po.getIdentity())
-                .withSchedule(cronSchedule)
-                .build();
+                .withSchedule(cronSchedule);
+
+        //处理有效期截止
+        if (po.getExpireTime() != null) {
+            triggerBuilder.endAt(Date.from(po.getExpireTime().atZone(ZoneId.systemDefault()).toInstant()));
+        }
 
         try {
 
@@ -236,7 +242,7 @@ public class QtTaskService {
 
             //只有状态为“正常”才调度，暂停的不调度
             if (po.getStatus() == 0) {
-                scheduler.scheduleJob(jobDetail, trigger);
+                scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             }
 
         } catch (SchedulerException e) {

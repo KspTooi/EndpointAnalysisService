@@ -88,6 +88,11 @@ public class AddQtTaskDto {
 
         }
 
+        //如果填写了有效期截止则有效期不能小于当前时间
+        if (expireTime != null && expireTime.isBefore(LocalDateTime.now())) {
+            return "有效期截止不能小于当前时间";
+        }
+
         return null;
     }
 
