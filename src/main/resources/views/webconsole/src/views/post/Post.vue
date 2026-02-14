@@ -10,9 +10,6 @@
           <el-form-item label="岗位编码">
             <el-input v-model="listForm.code" placeholder="输入岗位编码" clearable />
           </el-form-item>
-          <el-form-item label="岗位排序">
-            <el-input v-model.number="listForm.seq" placeholder="输入岗位排序" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
@@ -23,7 +20,7 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增岗位表</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增岗位</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -34,7 +31,6 @@
         <el-table-column prop="code" label="岗位编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="岗位排序" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -72,7 +68,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑岗位表' : '新增岗位表'"
+      :title="modalMode === 'edit' ? '编辑岗位' : '新增岗位'"
       width="600px"
       :close-on-click-modal="false"
       @close="
@@ -89,10 +85,10 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="岗位名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入岗位名称" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入岗位名称" maxlength="32" show-word-limit clearable />
         </el-form-item>
         <el-form-item label="岗位编码" prop="code">
-          <el-input v-model="modalForm.code" placeholder="请输入岗位编码" clearable />
+          <el-input v-model="modalForm.code" placeholder="请输入岗位编码" maxlength="32" show-word-limit clearable />
         </el-form-item>
         <el-form-item label="岗位排序" prop="seq">
           <el-input v-model.number="modalForm.seq" placeholder="请输入岗位排序" clearable />
