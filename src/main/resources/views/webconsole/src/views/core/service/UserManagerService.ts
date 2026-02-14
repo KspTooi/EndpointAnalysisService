@@ -252,8 +252,8 @@ export default {
           groupOptions.value.push({
             id: group.id,
             name: group.name,
-            description: "",
-            sortOrder: 0,
+            remark: "",
+            seq: 0,
             isSystem: group.isSystem,
             hasGroup: false,
             status: group.status,

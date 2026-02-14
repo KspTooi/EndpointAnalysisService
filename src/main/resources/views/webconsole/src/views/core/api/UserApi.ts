@@ -7,8 +7,8 @@ import type Result from "@/commons/entity/Result.ts";
 export interface UserGroupVo {
   id: string; // 用户组ID
   name: string; // 用户组名称
-  description: string; // 用户组描述
-  sortOrder: number; // 排序顺序
+  remark: string; // 用户组描述
+  seq: number; // 排序号
   isSystem: boolean; // 是否为系统内置组
   hasGroup: boolean; // 用户是否属于此组
   status: number; // 组状态 0:禁用，1:启用
@@ -18,7 +18,7 @@ export interface UserPermissionVo {
   id: string; // 权限ID
   permKey: string; // 权限键
   name: string; // 权限名称
-  description: string; // 权限描述
+  remark: string; // 权限描述
   isSystem: boolean; // 是否为系统内置权限
 }
 

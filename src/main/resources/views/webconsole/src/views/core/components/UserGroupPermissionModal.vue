@@ -176,7 +176,7 @@
                 }"
               />
               <el-table-column
-                prop="description"
+                prop="remark"
                 label="权限描述"
                 min-width="200"
                 show-overflow-tooltip
