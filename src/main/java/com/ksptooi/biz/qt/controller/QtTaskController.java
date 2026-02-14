@@ -136,7 +136,7 @@ public class QtTaskController {
     public Result<String> importQtTask(@RequestParam("file") MultipartFile file) throws Exception {
 
         //准备向导
-        var iw = new ImportWizard<>(file, IExportQtTaskDto.class);
+        var iw = new ImportWizard<>(file, ImportQtTaskDto.class);
 
         //开始传输
         iw.transfer();
