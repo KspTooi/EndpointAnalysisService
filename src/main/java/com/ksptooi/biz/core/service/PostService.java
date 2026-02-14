@@ -27,6 +27,11 @@ public class PostService {
     @Autowired
     private PostRepository repository;
 
+    /**
+     * 查询岗位列表
+     * @param dto 查询条件
+     * @return 岗位列表
+     */
     public PageResult<GetPostListVo> getPostList(GetPostListDto dto) {
         PostPo query = new PostPo();
         assign(dto, query);
@@ -40,12 +45,21 @@ public class PostService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增岗位
+     * @param dto 新增岗位信息
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addPost(AddPostDto dto) {
         PostPo insertPo = as(dto, PostPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑岗位
+     * @param dto 编辑岗位信息
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editPost(EditPostDto dto) throws BizException {
         PostPo updatePo = repository.findById(dto.getId())
@@ -55,12 +69,23 @@ public class PostService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询岗位详情
+     * @param dto 查询条件
+     * @return 岗位详情
+     * @throws BizException 业务异常
+     */
     public GetPostDetailsVo getPostDetails(CommonIdDto dto) throws BizException {
         PostPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetPostDetailsVo.class);
     }
 
+    /**
+     * 删除岗位
+     * @param dto 删除条件
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removePost(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

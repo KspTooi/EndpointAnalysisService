@@ -13,14 +13,14 @@ public class CodeGeneratorVue {
     public static void main(String[] args) {
 
         //数据库名称
-        var databaseName = "endpoint_analysis_service_test";
+        var databaseName = "endpoint_analysis_service";
 
         //需要生成的
-        var tableNames = List.of("qt_task_rcd");
+        var tableNames = List.of("core_post");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
-        coll.setUrl("jdbc:mysql://192.168.10.202:3306/" + databaseName);
+        coll.setUrl("jdbc:mysql://127.0.0.1:3306/" + databaseName);
         coll.setUsername("root");
         coll.setPassword("root");
         coll.setDatabase(databaseName);
