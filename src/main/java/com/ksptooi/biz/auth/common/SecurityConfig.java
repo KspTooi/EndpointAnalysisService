@@ -30,7 +30,8 @@ public class SecurityConfig {
      */
     private final List<String> whiteList = Arrays.asList(
             "/maintain/**", //维护中心
-            "/auth/userLogin" //用户登录(新)
+            "/auth/userLogin", //用户登录(新)
+            "/v3/api-docs" //OpenApi端点
     );
 
     @Autowired
