@@ -594,4 +594,61 @@ public class RegistrySdk {
 
         return createEntry(keyPath, nkey, 3, value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), label);
     }
+
+    /**
+     * 删除注册表条目
+     *
+     * @param keyPath 条目全路径
+     * @return 是否成功
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeEntry(String keyPath) {
+
+        // 空值校验
+        if (Str.isBlank(keyPath)) {
+            return false;
+        }
+
+        // 校验keyPath合法性
+        if (!RegistryTool.allowKeyPath(keyPath)) {
+            return false;
+        }
+
+        // 查找条目
+        RegistryPo entryPo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (entryPo == null) {
+            return false;
+        }
+
+        // 检查条目类型
+        if (entryPo.getKind() != 1) {
+            return false;
+        }
+
+        // 删除条目
+        repository.deleteById(entryPo.getId());
+        return true;
+    }
+
+    /**
+     * 获取注册表节点
+     *
+     * @param keyPath 节点全路径
+     * @return 注册表节点
+     */
+    public RegistryPo getNode(String keyPath) {
+
+        // 空值校验
+        if (Str.isBlank(keyPath)) {
+            return null;
+        }
+
+        // 校验keyPath合法性
+        if (!RegistryTool.allowKeyPath(keyPath)) {
+            return null;
+        }
+
+        return repository.getRegistryNodeByKeyPath(keyPath);
+    }
 }
