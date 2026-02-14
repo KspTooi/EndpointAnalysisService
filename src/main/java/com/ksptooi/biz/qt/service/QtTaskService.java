@@ -200,6 +200,11 @@ public class QtTaskService {
         var taskPo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("执行任务失败,数据不存在或无权限访问."));
 
+        //如果任务状态为暂停 则抛出异常
+        if (taskPo.getStatus() == 1) {
+            throw new BizException("任务已暂停,请先启用任务.");
+        }
+
         var jobKey = new JobKey(taskPo.getIdentity());
 
         //准备任务数据
