@@ -1,7 +1,7 @@
 <template>
   <StdListContainer>
     <!-- 查询条件区域 -->
-    <StdListAreaQuery>
+    <StdListAreaQuery show-persist-tip>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">

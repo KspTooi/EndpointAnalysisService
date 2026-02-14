@@ -11,6 +11,7 @@ import type {
 import QtTaskApi from "@/views/qt/api/QtTaskApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
+import QueryPersistService from "@/service/QueryPersistService.ts";
 
 /**
  * 模态框模式类型
@@ -51,6 +52,9 @@ export default {
       }
 
       listLoading.value = false;
+      
+      // 持久化查询条件
+      QueryPersistService.persistQuery("qt-task", listForm.value);
     };
 
     /**
@@ -62,6 +66,10 @@ export default {
       listForm.value.groupId = "";
       listForm.value.name = "";
       listForm.value.status = null;
+      
+      // 清除持久化的查询条件
+      QueryPersistService.clearQuery("qt-task");
+      
       loadList();
     };
 
@@ -89,6 +97,8 @@ export default {
     };
 
     onMounted(async () => {
+      // 加载持久化的查询条件
+      QueryPersistService.loadQuery("qt-task", listForm.value);
       await loadList();
     });
 
