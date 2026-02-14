@@ -71,6 +71,13 @@
             />
           </template>
         </el-table-column>
+        <el-table-column prop="status" label="状态" width="80" align="center">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
+              {{ scope.row.status === 0 ? "启用" : "停用" }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="100">
           <template #default="scope">
@@ -132,7 +139,23 @@
           <el-input v-model="modalForm.code" placeholder="请输入岗位编码" maxlength="32" show-word-limit clearable />
         </el-form-item>
         <el-form-item label="岗位排序" prop="seq">
-          <el-input v-model.number="modalForm.seq" placeholder="请输入岗位排序" clearable />
+          <el-input-number v-model="modalForm.seq" :min="0" placeholder="请输入岗位排序" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="modalForm.status">
+            <el-radio :value="0">启用</el-radio>
+            <el-radio :value="1">停用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="modalForm.remark"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入备注"
+            maxlength="1000"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <template #footer>

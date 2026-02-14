@@ -136,6 +136,8 @@ export default {
       name: "",
       code: "",
       seq: 0,
+      status: 0,
+      remark: "",
     });
 
     /**
@@ -151,6 +153,8 @@ export default {
         { max: 32, message: "岗位编码长度不能超过32个字符", trigger: "blur" },
       ],
       seq: [{ required: true, message: "请输入岗位排序", trigger: "blur" }],
+      status: [{ required: true, message: "请选择状态", trigger: "change" }],
+      remark: [{ max: 1000, message: "备注长度不能超过1000个字符", trigger: "blur" }],
     };
 
     /**
@@ -166,6 +170,8 @@ export default {
         modalForm.name = "";
         modalForm.code = "";
         modalForm.seq = 0;
+        modalForm.status = 0;
+        modalForm.remark = "";
         modalVisible.value = true;
         return;
       }
@@ -182,6 +188,8 @@ export default {
           modalForm.name = details.name;
           modalForm.code = details.code;
           modalForm.seq = details.seq;
+          modalForm.status = details.status;
+          modalForm.remark = details.remark;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -201,6 +209,8 @@ export default {
       modalForm.name = "";
       modalForm.code = "";
       modalForm.seq = 0;
+      modalForm.status = 0;
+      modalForm.remark = "";
     };
 
     /**
@@ -225,6 +235,8 @@ export default {
             name: modalForm.name,
             code: modalForm.code,
             seq: modalForm.seq,
+            status: modalForm.status,
+            remark: modalForm.remark,
           };
           await PostApi.addPost(addDto);
           ElMessage.success("新增成功");
@@ -251,6 +263,8 @@ export default {
             name: modalForm.name,
             code: modalForm.code,
             seq: modalForm.seq,
+            status: modalForm.status,
+            remark: modalForm.remark,
           };
           await PostApi.editPost(editDto);
           ElMessage.success("编辑成功");

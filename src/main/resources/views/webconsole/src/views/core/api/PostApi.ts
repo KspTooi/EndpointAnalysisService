@@ -20,6 +20,7 @@ export interface GetPostListVo {
   name: string; //岗位名称
   code: string; //岗位编码
   seq: number; //岗位排序
+  status: number; //0:启用 1:停用
   createTime: string; //创建时间
 }
 
@@ -31,6 +32,8 @@ export interface GetPostDetailsVo {
   name: string; //岗位名称
   code: string; //岗位编码
   seq: number; //岗位排序
+  status: number; //0:启用 1:停用
+  remark: string; //备注
 }
 
 /**
@@ -40,6 +43,8 @@ export interface AddPostDto {
   name: string; //岗位名称
   code: string; //岗位编码
   seq: number; //岗位排序
+  status: number; //0:启用 1:停用
+  remark: string; //备注
 }
 
 /**
@@ -50,6 +55,8 @@ export interface EditPostDto {
   name: string; //岗位名称
   code: string; //岗位编码
   seq: number; //岗位排序
+  status: number; //0:启用 1:停用
+  remark: string; //备注
 }
 
 export default {
