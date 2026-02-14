@@ -149,8 +149,8 @@ public class QtTaskController {
 
         //获取导入数据
         var data = iw.getData();
-
-        return Result.success("操作成功,已导入数据:" + data.size() + "条", null);
+        var success = qtTaskService.importQtTask(data);
+        return Result.success("操作成功,已导入数据:" + success + "条", null);
     }
 
     @PreAuthorize("@auth.hasCode('qt:task:export')")

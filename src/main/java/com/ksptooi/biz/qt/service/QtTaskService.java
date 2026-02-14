@@ -4,10 +4,7 @@ import com.ksptooi.biz.qt.common.LocalBeanExecutionJob;
 import com.ksptooi.biz.qt.common.QuickTask;
 import com.ksptooi.biz.qt.common.QuickTaskRegistry;
 import com.ksptooi.biz.qt.model.qttask.QtTaskPo;
-import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.dto.*;
 import com.ksptooi.biz.qt.model.qttask.vo.ExportQtTaskVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
@@ -299,14 +296,14 @@ public class QtTaskService {
     public void abortTask(Long id) {
         abortTask(id, false);
     }
-    
+
     /**
      * 终止任务
      *
      * @param id 任务ID
      */
     @Transactional(rollbackFor = Exception.class)
-    public void abortTask(Long id,boolean hasError) {
+    public void abortTask(Long id, boolean hasError) {
 
         var taskPo = repository.findById(id).orElse(null);
 
@@ -342,6 +339,44 @@ public class QtTaskService {
             log.error("删除 Quartz 任务失败: " + e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * 导入任务
+     *
+     * @param data 导入数据
+     */
+    public int importQtTask(List<ImportQtTaskDto> data) throws BizException {
+
+        var success = 0;
+
+        for (var dto : data) {
+
+            try {
+
+                Long groupId = null;
+
+                //如果填写了分组名 则需要查询分组信息
+                if (dto.getGroupName() != null) {
+                    var groupPo = groupRepository.getByName(dto.getGroupName());
+
+                    if (groupPo == null) {
+                        throw new BizException("任务分组不存在:[" + dto.getGroupName() + "]");
+                    }
+
+                    groupId = groupPo.getId();
+                }
+
+                var addDto = as(dto, AddQtTaskDto.class);
+                addDto.setGroupId(groupId);
+                addQtTask(addDto);
+                success++;
+            } catch (BizException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
+        return success;
     }
 
     /**

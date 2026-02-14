@@ -46,4 +46,15 @@ public interface QtTaskGroupRepository extends JpaRepository<QtTaskGroupPo, Long
     Long countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 
 
+    /**
+     * 根据名称获取任务分组
+     * @param name 任务分组名称
+     * @return 任务分组
+     */
+    @Query("""
+            SELECT t FROM QtTaskGroupPo t WHERE t.name = :name
+            """)
+    QtTaskGroupPo getByName(@Param("name") String name);
+
+
 }
