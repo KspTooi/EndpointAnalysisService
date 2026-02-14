@@ -15,7 +15,7 @@ import java.util.Objects;
  * 例如：system:user:view, system:user:edit
  */
 @Entity
-@Table(name = "core_permission", comment = "权限表")
+@Table(name = "auth_permission", comment = "权限码表")
 @Getter
 @Setter
 public class PermissionPo {
@@ -25,26 +25,32 @@ public class PermissionPo {
     @Column(name = "id", comment = "权限ID")
     private Long id;
 
-    @Column(name = "code", nullable = false, unique = true, length = 100, comment = "权限标识，如：system:user:view")
-    private String code;
-
-    @Column(name = "name", nullable = false, unique = true, length = 50, comment = "权限名称，如：查看用户")
+    @Column(name = "name", nullable = false, length = 32, comment = "权限名称，如：查看用户")
     private String name;
 
-    @Column(name = "description", length = 200, comment = "权限描述")
-    private String description;
+    @Column(name = "code", nullable = false, unique = true, length = 320, comment = "权限标识，如：system:user:view")
+    private String code;
 
-    @Column(name = "sort_order", nullable = false, comment = "排序号")
-    private Integer sortOrder;
+    @Column(name = "remark", columnDefinition = "TEXT", comment = "权限描述")
+    private String remark;
 
-    @Column(name = "is_system", nullable = false, comment = "是否系统权限 0:非系统权限 1:系统权限")
+    @Column(name = "seq", nullable = false, comment = "排序号")
+    private Integer seq;
+
+    @Column(name = "is_system", nullable = false, columnDefinition = "TINYINT", comment = "系统内置权限 0:否 1:是")
     private Integer isSystem = 0;
 
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @Column(name = "creator_id", nullable = false, updatable = false, comment = "创建人")
+    private Long creatorId;
+
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
+
+    @Column(name = "updater_id", nullable = false, comment = "修改人")
+    private Long updaterId;
 
     @PrePersist
     public void prePersist() {
@@ -53,8 +59,8 @@ public class PermissionPo {
             this.id = IdWorker.nextId();
         }
 
-        if (sortOrder == null) {
-            sortOrder = 0;
+        if (seq == null) {
+            seq = 0;
         }
         createTime = LocalDateTime.now();
         updateTime = LocalDateTime.now();

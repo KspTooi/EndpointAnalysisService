@@ -12,34 +12,48 @@ public class GetPermissionDetailsVo {
     private Long id;
 
     /**
-     * 权限代码
-     */
-    private String code;
-
-    /**
      * 权限名称
      */
     private String name;
 
     /**
-     * 权限描述
+     * 权限代码
      */
-    private String description;
+    private String code;
 
     /**
-     * 排序顺序
+     * 权限描述
      */
-    private Integer sortOrder;
+    private String remark;
+
+    /**
+     * 排序号
+     */
+    private Integer seq;
 
     /**
      * 是否为系统权限（1-是，0-否）
      */
     private Integer isSystem;
 
-    //创建时间
+    /**
+     * 创建时间
+     */
     private String createTime;
 
-    //修改时间
+    /**
+     * 创建人
+     */
+    private Long creatorId;
+
+    /**
+     * 修改时间
+     */
     private String updateTime;
+
+    /**
+     * 修改人
+     */
+    private Long updaterId;
 
 }
