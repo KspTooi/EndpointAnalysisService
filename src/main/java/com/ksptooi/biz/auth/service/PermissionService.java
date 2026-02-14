@@ -7,10 +7,8 @@ import com.ksptooi.biz.auth.model.permission.dto.GetPermissionListDto;
 import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDefinitionVo;
 import com.ksptooi.biz.auth.model.permission.vo.GetPermissionDetailsVo;
 import com.ksptooi.biz.auth.model.permission.vo.GetPermissionListVo;
-import com.ksptooi.biz.auth.model.permission.vo.ValidateSystemPermissionsVo;
 import com.ksptooi.biz.auth.repository.GroupPermissionRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
-import com.ksptooi.commons.enums.PermissionEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -208,53 +206,4 @@ public class PermissionService {
                 .orElse(0) + 1;
     }
 
-    /**
-     * 校验系统内置权限节点
-     * 检查数据库中是否存在所有系统内置权限，如果不存在则自动创建
-     *
-     * @return 校验结果，包含新增的权限数量和已存在的权限数量
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ValidateSystemPermissionsVo validateSystemPermissions() {
-        ValidateSystemPermissionsVo result = new ValidateSystemPermissionsVo();
-
-        // 获取所有系统内置权限枚举
-        PermissionEnum[] permissionEnums = PermissionEnum.values();
-
-        // 记录已存在和新增的权限数量
-        int existCount = 0;
-        int addedCount = 0;
-        List<String> addedPermissions = new ArrayList<>();
-
-        // 遍历所有系统内置权限
-        for (PermissionEnum permEnum : permissionEnums) {
-            String code = permEnum.getCode();
-
-            // 检查权限是否已存在
-            if (repository.existsByCode(code)) {
-                existCount++;
-            } else {
-                // 创建新的权限
-                PermissionPo permission = new PermissionPo();
-                permission.setCode(code);
-                permission.setName(permEnum.getDescription());
-                permission.setRemark(permEnum.getDescription());
-                permission.setIsSystem(1); // 标记为系统权限
-                permission.setSeq(getNextSeq());
-
-                // 保存权限
-                repository.save(permission);
-
-                addedCount++;
-                addedPermissions.add(code);
-            }
-        }
-
-        // 设置结果
-        result.setExistCount(existCount);
-        result.setAddedCount(addedCount);
-        result.setAddedPermissions(addedPermissions);
-
-        return result;
-    }
 }
