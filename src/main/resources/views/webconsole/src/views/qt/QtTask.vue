@@ -87,8 +87,9 @@
         <el-table-column prop="lastStartTime" label="最近一次开始时间" min-width="170" show-overflow-tooltip />
         <el-table-column prop="lastEndTime" label="最近一次结束时间" min-width="170" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
+            <el-button link type="primary" size="small" @click="execOpenModal(scope.row)" icon="Play"> 立即执行 </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
           </template>
@@ -118,6 +119,36 @@
         />
       </template>
     </StdListAreaTable>
+
+    <!-- 立即执行任务模态框 -->
+    <el-dialog
+      v-model="execModalVisible"
+      title="立即执行任务调度"
+      width="850px"
+      :close-on-click-modal="false"
+      @close="execModalVisible = false"
+      :loading="execModalLoading"
+      ref="execModalFormRef"
+    >
+      <el-form
+        v-if="execModalVisible"
+        ref="execModalFormRef"
+        :model="execModalForm"
+        :rules="execModalRules"
+        label-width="120px"
+        :validate-on-rule-change="false"
+      >
+        <el-form-item label="调用参数JSON" prop="targetParam">
+          <el-input v-model="execModalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="execModalVisible = false">关闭</el-button>
+          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading"> 立即执行 </el-button>
+        </div>
+      </template>
+    </el-dialog>
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
@@ -354,7 +385,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, markRaw } from "vue";
 import { Calendar, InfoFilled } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import cronstrue from "cronstrue/i18n";
@@ -367,7 +398,6 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import QtTaskGroupService from "@/views/qt/service/QtTaskGroupService";
 import CronCalculatorModal from "@/views/qt/components/public/CronCalculatorModal.vue";
 import ComCronFixer from "@/soa/console-framework/ComCronFixer.vue";
-
 // Cron 计算器引用
 const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
 
@@ -395,9 +425,22 @@ groupListForm.value.pageSize = 10000;
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
 
+// 立即执行任务模态框表单引用
+const execModalFormRef = ref<FormInstance>();
+
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   QtTaskService.useQtTaskModal(modalFormRef, loadList);
+
+// 立即执行任务模态框打包
+const {
+  modalVisible: execModalVisible,
+  modalLoading: execModalLoading,
+  modalForm: execModalForm,
+  modalRules: execModalRules,
+  openModal: execOpenModal,
+  submitModal: execSubmitModal,
+} = QtTaskService.useExecuteTaskModal(execModalFormRef);
 
 // 本地任务Bean列表管理打包
 const {
