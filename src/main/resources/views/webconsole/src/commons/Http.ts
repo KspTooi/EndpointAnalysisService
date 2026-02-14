@@ -1,5 +1,5 @@
 import type Result from "@/commons/entity/Result.ts";
-import axios from "axios";
+import axios, { type AxiosInstance } from "axios";
 import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
 import UserAuthService from "@/views/auth/service/UserAuthService";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -59,6 +59,14 @@ axiosInstance.interceptors.response.use(
 );
 
 export default {
+  /**
+   * 获取Axios实例
+   * @returns Axios实例
+   */
+  axios: (): AxiosInstance => {
+    return axiosInstance;
+  },
+
   /**
    * 解析URL 这会使用Axios中配置的baseURL和代理配置来解析URL
    * @param url 请求URL

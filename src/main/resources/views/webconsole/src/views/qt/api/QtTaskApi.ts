@@ -188,7 +188,7 @@ export default {
    * 导出任务列表
    */
   exportQtTask: async (dto: GetQtTaskListDto): Promise<void> => {
-    const response = await axios.post(`/qtTask/exportQtTask`, dto, {
+    const response = await Http.axios().post(`/qtTask/exportQtTask`, dto, {
       responseType: "blob",
       headers: {
         "AE-Request-With": "XHR",

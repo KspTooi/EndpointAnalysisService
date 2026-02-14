@@ -1,11 +1,6 @@
 package com.ksptooi.biz.qt.controller;
 
-import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
-import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
-import com.ksptooi.biz.qt.model.qttask.dto.IExportQtTaskDto;
-import com.ksptooi.biz.qt.model.qttask.vo.ExportQtTaskVo;
+import com.ksptooi.biz.qt.model.qttask.dto.*;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
@@ -24,11 +19,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -137,7 +128,7 @@ public class QtTaskController {
         qtTaskService.executeTask(dto);
         return Result.success("操作成功");
     }
-    
+
 
     @PreAuthorize("@auth.hasCode('qt:task:import')")
     @Operation(summary = "导入任务")
@@ -155,7 +146,7 @@ public class QtTaskController {
         if (Str.isNotBlank(errors)) {
             return Result.error(errors);
         }
-        
+
         //获取导入数据
         var data = iw.getData();
 
@@ -167,7 +158,15 @@ public class QtTaskController {
     @RequestMapping("/exportQtTask")
     public void exportQtTask(@RequestBody @Valid GetQtTaskListDto dto, HttpServletResponse hsrp) throws Exception {
         //准备导出向导
-        var ew = new ExportWizard<ExportQtTaskVo>(qtTaskService.exportQtTask(dto), hsrp);
+        var data = qtTaskService.exportQtTask(dto);
+
+        //需要处理一下数据 将终止的任务改为暂停
+        for (var vo : data) {
+            if (vo.getStatus() == 2) {
+                vo.setStatus(1);
+            }
+        }
+        var ew = new ExportWizard<>(data, hsrp);
         ew.transfer("任务调度");
     }
 
