@@ -411,6 +411,7 @@ export default {
       id: "",
       targetParam: "",
     });
+    const rowData = ref<GetQtTaskListVo | null>(null);
 
     const modalRules: FormRules = {
       id: [{ required: true, message: "请选择任务", trigger: "blur" }],
@@ -437,6 +438,7 @@ export default {
     const openModal = async (row: GetQtTaskListVo) => {
       modalVisible.value = true;
       modalForm.id = row.id;
+      rowData.value = row;
     };
 
     const submitModal = async () => {
@@ -451,6 +453,7 @@ export default {
     return {
       modalVisible,
       modalLoading,
+      rowData,
       modalForm,
       modalRules,
       submitModal,

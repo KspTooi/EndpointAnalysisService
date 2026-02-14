@@ -89,7 +89,7 @@
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="execOpenModal(scope.row)" icon="Play"> 立即执行 </el-button>
+            <el-button link type="primary" size="small" @click="execOpenModal(scope.row)" icon="Refresh"> 运行 </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit"> 编辑 </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
           </template>
@@ -123,29 +123,46 @@
     <!-- 立即执行任务模态框 -->
     <el-dialog
       v-model="execModalVisible"
-      title="立即执行任务调度"
-      width="850px"
+      :title="`正在准备调度任务: ${execRowData?.name}`"
+      width="600px"
       :close-on-click-modal="false"
       @close="execModalVisible = false"
       :loading="execModalLoading"
       ref="execModalFormRef"
     >
+      <div v-if="execRowData" class="mb-4 p-3 bg-gray-50 rounded border border-gray-100">
+        <div class="flex items-center mb-2">
+          <span class="text-gray-400 w-20">任务ID:</span>
+          <span class="font-mono text-blue-600">{{ execRowData.id }}</span>
+        </div>
+        <div class="flex items-center">
+          <span class="text-gray-400 w-20">调用目标:</span>
+          <span class="truncate" :title="execRowData.target">{{ execRowData.target }}</span>
+        </div>
+      </div>
+
       <el-form
         v-if="execModalVisible"
         ref="execModalFormRef"
         :model="execModalForm"
         :rules="execModalRules"
-        label-width="120px"
+        label-position="top"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="调用参数JSON" prop="targetParam">
-          <el-input v-model="execModalForm.targetParam" placeholder="请输入调用参数JSON" clearable type="textarea" :rows="3" />
+        <el-form-item label="一次性参数 (JSON)" prop="targetParam">
+          <el-input
+            v-model="execModalForm.targetParam"
+            placeholder='请输入 JSON 格式参数，例如: {"key": "value"}'
+            clearable
+            type="textarea"
+            :rows="6"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="execModalVisible = false">关闭</el-button>
-          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading"> 立即执行 </el-button>
+          <el-button @click="execModalVisible = false">取消</el-button>
+          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading" icon="CaretRight"> 立即执行 </el-button>
         </div>
       </template>
     </el-dialog>
@@ -386,7 +403,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, markRaw } from "vue";
-import { Calendar, InfoFilled } from "@element-plus/icons-vue";
+import { Calendar, InfoFilled, CaretRight } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import cronstrue from "cronstrue/i18n";
 import { CronExpressionParser } from "cron-parser";
@@ -440,6 +457,7 @@ const {
   modalRules: execModalRules,
   openModal: execOpenModal,
   submitModal: execSubmitModal,
+  rowData: execRowData,
 } = QtTaskService.useExecuteTaskModal(execModalFormRef);
 
 // 本地任务Bean列表管理打包
