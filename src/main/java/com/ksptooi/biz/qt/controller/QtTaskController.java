@@ -5,11 +5,13 @@ import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
 import com.ksptooi.biz.qt.model.qttask.dto.IExportQtTaskDto;
+import com.ksptooi.biz.qt.model.qttask.vo.ExportQtTaskVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
 import com.ksptooi.biz.qt.service.QtTaskService;
 import com.ksptooi.commons.annotation.PrintLog;
+import com.ksptooi.commons.dataprocess.ExportWizard;
 import com.ksptooi.commons.dataprocess.ImportWizard;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -17,6 +19,7 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +160,15 @@ public class QtTaskController {
         var data = iw.getData();
 
         return Result.success("操作成功,已导入数据:" + data.size() + "条", null);
+    }
+
+    @PreAuthorize("@auth.hasCode('qt:task:export')")
+    @Operation(summary = "导出任务")
+    @RequestMapping("/exportQtTask")
+    public void exportQtTask(@RequestBody @Valid GetQtTaskListDto dto, HttpServletResponse hsrp) throws Exception {
+        //准备导出向导
+        var ew = new ExportWizard<ExportQtTaskVo>(qtTaskService.exportQtTask(dto), hsrp);
+        ew.transfer("任务调度");
     }
 
 }

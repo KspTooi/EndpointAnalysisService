@@ -21,10 +21,15 @@
           </el-form-item>
         </div>
         <el-form-item>
-          <div class="w-[140px]">
-            <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-          </div>
+          <el-dropdown split-button type="primary" @click="loadList" :disabled="listLoading">
+            查询
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item :icon="DownloadIcon" @click="onExport">导出查询结果</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-button @click="resetList" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
         </el-form-item>
       </el-form>
     </StdListAreaQuery>
@@ -33,6 +38,7 @@
     <StdListAreaAction>
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
       <el-button type="danger" :disabled="listSelected.length === 0" @click="removeListBatch">删除选中项</el-button>
+      <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入任务</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -409,16 +415,26 @@
 
     <!-- Cron 计算器 -->
     <CronCalculatorModal ref="cronCalculatorRef" @onConfirm="(cron) => (modalForm.cron = cron || '')" />
+
+    <!-- 导入向导 -->
+    <ImportWizardModal
+      ref="importWizardRef"
+      url="/qtTask/importQtTask"
+      templateCode="qt_task"
+      @on-success="loadList"
+      @on-close="loadList"
+    />
   </StdListContainer>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed, markRaw } from "vue";
-import { Calendar, InfoFilled, CaretRight } from "@element-plus/icons-vue";
+import { Calendar, InfoFilled, CaretRight, Upload, Download } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import cronstrue from "cronstrue/i18n";
 import { CronExpressionParser } from "cron-parser";
 import QtTaskService from "@/views/qt/service/QtTaskService.ts";
+import QtTaskApi from "@/views/qt/api/QtTaskApi.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -426,8 +442,26 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import QtTaskGroupService from "@/views/qt/service/QtTaskGroupService";
 import CronCalculatorModal from "@/views/qt/components/public/CronCalculatorModal.vue";
 import ComCronFixer from "@/soa/console-framework/ComCronFixer.vue";
+import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+
+// 使用markRaw包装图标组件
+const UploadIcon = markRaw(Upload);
+const DownloadIcon = markRaw(Download);
+
 // Cron 计算器引用
 const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
+
+// 导入向导引用
+const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
+
+// 导出功能
+const onExport = async () => {
+  try {
+    await QtTaskApi.exportQtTask(listForm.value);
+  } catch (e: any) {
+    console.error(e);
+  }
+};
 
 // Cron 输入框焦点状态
 const cronInputFocused = ref(false);

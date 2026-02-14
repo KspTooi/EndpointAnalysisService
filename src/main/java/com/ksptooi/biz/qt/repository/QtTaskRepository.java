@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
 
@@ -36,6 +38,31 @@ public interface QtTaskRepository extends JpaRepository<QtTaskPo, Long> {
             ORDER BY u.createTime DESC
             """)
     Page<QtTaskPo> getQtTaskList(@Param("po") QtTaskPo po, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM QtTaskPo u
+            WHERE
+            (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
+            AND (:#{#po.groupId} IS NULL OR u.groupId  = :#{#po.groupId} )
+            AND (:#{#po.groupName} IS NULL OR u.groupName  LIKE CONCAT('%', :#{#po.groupName}, '%') )
+            AND (:#{#po.name} IS NULL OR u.name  LIKE CONCAT('%', :#{#po.name}, '%') )
+            AND (:#{#po.kind} IS NULL OR u.kind  = :#{#po.kind} )
+            AND (:#{#po.cron} IS NULL OR u.cron  LIKE CONCAT('%', :#{#po.cron}, '%') )
+            AND (:#{#po.target} IS NULL OR u.target  LIKE CONCAT('%', :#{#po.target}, '%') )
+            AND (:#{#po.targetParam} IS NULL OR u.targetParam  LIKE CONCAT('%', :#{#po.targetParam}, '%') )
+            AND (:#{#po.reqMethod} IS NULL OR u.reqMethod  LIKE CONCAT('%', :#{#po.reqMethod}, '%') )
+            AND (:#{#po.concurrent} IS NULL OR u.concurrent  = :#{#po.concurrent} )
+            AND (:#{#po.policyMisfire} IS NULL OR u.policyMisfire  = :#{#po.policyMisfire} )
+            AND (:#{#po.expireTime} IS NULL OR u.expireTime  = :#{#po.expireTime} )
+            AND (:#{#po.status} IS NULL OR u.status  = :#{#po.status} )
+            AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )
+            AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
+            AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
+            AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
+            AND (:#{#po.deleteTime} IS NULL OR u.deleteTime  = :#{#po.deleteTime} )
+            ORDER BY u.createTime DESC
+            """)
+    List<QtTaskPo> getQtTaskListNotPage(@Param("po") QtTaskPo po);
 
 
     /**

@@ -3,6 +3,7 @@ import type PageResult from "@/commons/entity/PageResult.ts";
 import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type PageQuery from "@/commons/entity/PageQuery.ts";
 import type Result from "@/commons/entity/Result.ts";
+import axios from "axios";
 
 /**
  * 查询列表DTO
@@ -184,9 +185,33 @@ export default {
   },
 
   /**
-   * 导出任务
+   * 导出任务列表
    */
   exportQtTask: async (dto: GetQtTaskListDto): Promise<void> => {
-    await Http.downloadFile("/qtTask/exportQtTask", dto, "QT任务导出.xlsx");
+    const response = await axios.post(`/qtTask/exportQtTask`, dto, {
+      responseType: "blob",
+      headers: {
+        "AE-Request-With": "XHR",
+      },
+    });
+
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "任务调度导出.xlsx";
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = decodeURIComponent(filenameMatch[1]);
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   },
 };

@@ -8,6 +8,7 @@ import com.ksptooi.biz.qt.model.qttask.dto.AddQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.EditQtTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.ExecuteTaskDto;
 import com.ksptooi.biz.qt.model.qttask.dto.GetQtTaskListDto;
+import com.ksptooi.biz.qt.model.qttask.vo.ExportQtTaskVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetLocalBeanListVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskDetailsVo;
 import com.ksptooi.biz.qt.model.qttask.vo.GetQtTaskListVo;
@@ -343,5 +344,17 @@ public class QtTaskService {
 
     }
 
+    /**
+     * 导出任务列表
+     *
+     * @param dto 查询条件
+     * @return 导出数据列表
+     */
+    public List<ExportQtTaskVo> exportQtTask(GetQtTaskListDto dto) throws BizException {
+        QtTaskPo query = new QtTaskPo();
+        assign(dto, query);
+        List<QtTaskPo> pos = repository.getQtTaskListNotPage(query);
+        return as(pos, ExportQtTaskVo.class);
+    }
 
 }
