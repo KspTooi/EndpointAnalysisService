@@ -653,4 +653,58 @@ public class RegistryService {
         return true;
     }
 
+    /**
+     * 获取注册表条目
+     *
+     * @param keyPath 全路径
+     * @return 注册表条目
+     */
+    public RegistryPo getRegistryEntry(String keyPath){
+        return repository.getRegistryEntryByKeyPath(keyPath);
+    }
+
+    /**
+     * 判断注册表条目是否存在
+     *
+     * @param keyPath 全路径
+     * @return 是否存在
+     */
+    public boolean hasEntry(String keyPath){
+        return repository.countByKeyPathAndKind(keyPath, 1) > 0;
+    }
+
+    /**
+     * 判断注册表节点是否存在
+     *
+     * @param keyPath 全路径
+     * @return 是否存在
+     */
+    public boolean hasNode(String keyPath){
+        return repository.countByKeyPathAndKind(keyPath, 0) > 0;
+    }
+
+
+    /**
+     * 获取注册表条目列表
+     *
+     * @param nodeKeyPath 节点全路径
+     * @return 注册表条目列表
+     */
+    public List<RegistryPo> getEntries(String nodeKeyPath){
+
+        if (Str.isBlank(nodeKeyPath)) {
+            return new ArrayList<>();
+        }
+
+        //查找注册表节点
+        RegistryPo nodePo = repository.getRegistryNodeByKeyPath(nodeKeyPath);
+
+        if (nodePo == null) {
+            return new ArrayList<>();
+        }
+
+        //查询该节点下全部子项
+        return repository.getRegistryEntryListNotPage(nodePo.getId(), null);
+    }
+
 }
