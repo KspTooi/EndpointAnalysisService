@@ -1,5 +1,6 @@
 package com.ksptooi.biz.auth.model.group;
 
+import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,6 +56,11 @@ public class GroupPo {
 
     @PrePersist
     public void prePersist() {
+        
+        if (this.id == null) {
+            this.id = IdWorker.nextId();
+        }
+
         if (status == null) {
             status = 1; // 默认启用
         }
