@@ -95,8 +95,8 @@ public class PermissionService {
         PermissionPo permission = new PermissionPo();
         permission.setIsSystem(0);
 
-        if (dto.getSortOrder() == null) {
-            dto.setSortOrder(getNextSortOrder());
+        if (dto.getSeq() == null) {
+            dto.setSeq(getNextSeq());
         }
 
         assign(dto, permission);
@@ -132,8 +132,8 @@ public class PermissionService {
             throw new BizException("权限标识已存在");
         }
 
-        if (dto.getSortOrder() == null) {
-            dto.setSortOrder(getNextSortOrder());
+        if (dto.getSeq() == null) {
+            dto.setSeq(getNextSeq());
         }
 
         assign(dto, permission);
@@ -198,11 +198,11 @@ public class PermissionService {
     /**
      * 获取下一个可用的排序号
      */
-    private Integer getNextSortOrder() {
+    private Integer getNextSeq() {
         // 通过查询所有权限计算最大排序号
         List<PermissionPo> allPerms = repository.findAll();
         return allPerms.stream()
-                .map(PermissionPo::getSortOrder)
+                .map(PermissionPo::getSeq)
                 .filter(Objects::nonNull)
                 .max(Integer::compareTo)
                 .orElse(0) + 1;
@@ -238,9 +238,9 @@ public class PermissionService {
                 PermissionPo permission = new PermissionPo();
                 permission.setCode(code);
                 permission.setName(permEnum.getDescription());
-                permission.setDescription(permEnum.getDescription());
+                permission.setRemark(permEnum.getDescription());
                 permission.setIsSystem(1); // 标记为系统权限
-                permission.setSortOrder(getNextSortOrder());
+                permission.setSeq(getNextSeq());
 
                 // 保存权限
                 repository.save(permission);
