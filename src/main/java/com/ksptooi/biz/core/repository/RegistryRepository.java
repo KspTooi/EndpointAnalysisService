@@ -114,6 +114,18 @@ public interface RegistryRepository extends JpaRepository<RegistryPo, Long> {
             WHERE u.keyPath = :keyPath AND u.kind = 0
             """)
     RegistryPo getRegistryNodeByKeyPath(@Param("keyPath") String keyPath);
+            
+    /**
+     * 根据KEY的全路径查询注册表条目
+     *
+     * @param keyPath KEY的全路径
+     * @return 注册表条目
+     */
+    @Query("""
+            SELECT u FROM RegistryPo u
+            WHERE u.keyPath = :keyPath AND u.kind = 1
+            """)
+    RegistryPo getRegistryEntryByKeyPath(@Param("keyPath") String keyPath);
 
 
     /**

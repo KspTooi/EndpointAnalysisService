@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.ksptool.entities.Entities.as;
@@ -189,14 +191,14 @@ public class RegistryService {
         }
 
         //fix: 如果修改的是节点 则不能直接assign(因为这样会把条目的字段也赋值给节点)
-        if(updatePo.getKind() == 0){
+        if (updatePo.getKind() == 0) {
             updatePo.setLabel(dto.getLabel());
             updatePo.setRemark(dto.getRemark());
             updatePo.setSeq(dto.getSeq());
         }
 
         //如果修改的是条目 则可以直接assign
-        if(updatePo.getKind() == 1){
+        if (updatePo.getKind() == 1) {
             assign(dto, updatePo);
         }
 
@@ -264,7 +266,7 @@ public class RegistryService {
     /**
      * 导入注册表条目
      *
-     * @param file 导入文件
+     * @param data 导入数据
      * @throws BizException 业务异常
      */
     public int importRegistry(String keyPath, List<ImportRegistryDto> data) throws BizException {
@@ -413,6 +415,242 @@ public class RegistryService {
         }
 
         return exportList;
+    }
+
+    /**
+     * 获取整数条目值
+     *
+     * @param keyPath 全路径
+     * @param defaultValue 默认值
+     * @return 配置值
+     */
+    public int getInt(String keyPath,int defaultValue){
+
+        if (Str.isBlank(keyPath)) {
+            return defaultValue;
+        }
+        
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return defaultValue;
+        }
+
+        var nvalue = nodePo.getNvalue();
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 1 || Str.isBlank(nvalue)) {
+            return defaultValue;
+        }
+
+        return Integer.parseInt(nodePo.getNvalue());
+    }
+    
+    /**
+     * 获取浮点条目值
+     *
+     * @param keyPath 全路径
+     * @param defaultValue 默认值
+     * @return 配置值
+     */
+    public double getDouble(String keyPath,double defaultValue){
+
+        if (Str.isBlank(keyPath)) {
+            return defaultValue;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return defaultValue;
+        }
+
+        var nvalue = nodePo.getNvalue();
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 2 || Str.isBlank(nvalue)) {
+            return defaultValue;
+        }
+
+        return Double.parseDouble(nodePo.getNvalue());
+    }
+
+    /**
+     * 获取字串条目值
+     *
+     * @param keyPath 全路径
+     * @param defaultValue 默认值
+     * @return 配置值
+     */
+    public String getString(String keyPath,String defaultValue){
+        if (Str.isBlank(keyPath)) {
+            return defaultValue;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return defaultValue;
+        }
+
+        var nvalue = nodePo.getNvalue();
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 0 || Str.isBlank(nvalue)) {
+            return defaultValue;
+        }
+
+        return nodePo.getNvalue();
+    }
+
+    /**
+     * 获取日期时间条目值
+     *
+     * @param keyPath 全路径
+     * @param defaultValue 默认值
+     * @return 配置值
+     */
+    public LocalDateTime getDateTime(String keyPath,LocalDateTime defaultValue){
+        if (Str.isBlank(keyPath)) {
+            return defaultValue;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return defaultValue;
+        }
+
+        var nvalue = nodePo.getNvalue();
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 3 || Str.isBlank(nvalue)) {
+            return defaultValue;
+        }
+
+        return LocalDateTime.parse(nodePo.getNvalue());
+    }
+
+    /**
+     * 设置整数条目值
+     *
+     * @param keyPath 全路径
+     * @param value 值
+     * @return 是否成功
+     */
+    public boolean setInt(String keyPath,int value){
+
+        if (Str.isBlank(keyPath)) {
+            return false;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return false;
+        }
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 1) {
+            return false;
+        }
+
+        nodePo.setNvalue(String.valueOf(value));
+        repository.save(nodePo);
+        return true;
+    }
+
+    /**
+     * 设置浮点条目值
+     *
+     * @param keyPath 全路径
+     * @param nvalue 值
+     * @return 是否成功
+     */
+    public boolean setDouble(String keyPath,double nvalue){
+        if (Str.isBlank(keyPath)) {
+            return false;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return false;
+        }
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 2) {
+            return false;
+        }
+
+        nodePo.setNvalue(String.valueOf(nvalue));
+        repository.save(nodePo);
+        return true;
+    
+    }
+
+    /**
+     * 设置字串条目值
+     *
+     * @param keyPath 全路径
+     * @param nvalue 值
+     * @return 是否成功
+     */
+    public boolean setString(String keyPath,String nvalue){
+        if (Str.isBlank(keyPath)) {
+            return false;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return false;
+        }
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 0) {
+            return false;
+        }
+
+        nodePo.setNvalue(nvalue);
+        repository.save(nodePo);
+        return true;
+    }   
+
+    /**
+     * 设置日期时间条目值
+     *
+     * @param keyPath 全路径
+     * @param nvalue 值
+     * @return 是否成功
+     */
+    public boolean setDateTime(String keyPath,LocalDateTime nvalue){
+        if (Str.isBlank(keyPath)) {
+            return false;
+        }
+
+        //查找注册表条目
+        RegistryPo nodePo = repository.getRegistryEntryByKeyPath(keyPath);
+
+        if (nodePo == null) {
+            return false;
+        }
+
+        //数据类型 0:字串 1:整数 2:浮点 3:日期(LDT)
+        if (nodePo.getNvalueKind() != 3) {
+            return false;
+        }
+
+        nodePo.setNvalue(nvalue.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        repository.save(nodePo);
+        return true;
     }
 
 }
