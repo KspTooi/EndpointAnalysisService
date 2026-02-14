@@ -28,7 +28,26 @@
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="name" label="岗位名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="岗位编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="seq" label="岗位排序" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="seq" label="岗位排序" min-width="120" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <ComSeqFixer
+              :id="scope.row.id"
+              seq-field="seq"
+              :get-detail-api="
+                async (id: string) => {
+                  return await PostApi.getPostDetails({ id });
+                }
+              "
+              :edit-api="
+                async (id: string, dto: any) => {
+                  return await PostApi.editPost({ id, ...dto });
+                }
+              "
+              :display-value="scope.row.seq"
+              :on-success="loadList"
+            />
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
@@ -110,10 +129,12 @@ import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import PostService from "@/views/core/service/PostService.ts";
+import PostApi from "@/views/core/api/PostApi.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
