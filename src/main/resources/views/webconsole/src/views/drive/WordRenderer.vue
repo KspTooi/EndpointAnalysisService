@@ -18,7 +18,7 @@ const fileUrl = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
   // 直接使用您后端的下载接口，组件会自动下载并解析
-  return `/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
 });
 
 const onRendered = () => {

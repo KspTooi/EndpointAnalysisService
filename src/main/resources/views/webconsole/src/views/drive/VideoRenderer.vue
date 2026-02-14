@@ -7,7 +7,7 @@ const route = useRoute();
 const mediaSrc = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
 });
 </script>
 

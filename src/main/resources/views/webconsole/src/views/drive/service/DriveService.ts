@@ -240,7 +240,7 @@ export default {
           const result = await DriveApi.getEntrySign({ ids: entries.map((item) => item.id as string) });
           if (Result.isSuccess(result)) {
             const params = result.data.params;
-            window.open(`/drive/object/access/downloadEntry?sign=${params}`, "_blank");
+            window.open(`/api/drive/object/access/downloadEntry?sign=${params}`, "_blank");
           }
         } catch (error: any) {
           ElMessage.error(error.message || "下载失败");
@@ -264,7 +264,7 @@ export default {
             // 获取当前页面的协议、主机名和端口
             const origin = window.location.origin;
             // 拼接完整的下载链接
-            const fullUrl = `${origin}/drive/object/access/downloadEntry?sign=${params}`;
+            const fullUrl = `${origin}/api/drive/object/access/downloadEntry?sign=${params}`;
 
             //弹出URL模态框
             downloadUrlModalRef.value?.openModal(fullUrl);

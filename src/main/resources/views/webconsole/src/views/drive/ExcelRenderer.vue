@@ -42,7 +42,7 @@ const isXlsx = computed(() => {
 const fileUrl = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
 });
 
 const onRendered = () => {

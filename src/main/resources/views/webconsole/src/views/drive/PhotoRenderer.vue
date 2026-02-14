@@ -12,7 +12,7 @@ const containerRef = ref<HTMLElement | null>(null);
 const imgSrc = computed(() => {
   const sign = route.query.sign as string;
   if (!sign) return "";
-  return `/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
+  return `/api/drive/object/access/downloadEntry?sign=${sign}&preview=1`;
 });
 
 // 注入拖拽服务

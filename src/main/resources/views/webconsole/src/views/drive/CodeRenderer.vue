@@ -23,7 +23,7 @@ const sign = computed(() => route.query.sign as string);
 // 计算下载/预览链接
 const fileUrl = computed(() => {
   if (!sign.value) return "";
-  return `/drive/object/access/downloadEntry?sign=${sign.value}&preview=1`;
+  return `/api/drive/object/access/downloadEntry?sign=${sign.value}&preview=1`;
 });
 
 // 扩展名到语言的简单映射（Highlight.js 通常能自动检测，但手动指定更准确）
