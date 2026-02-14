@@ -1,5 +1,7 @@
 package com.ksptooi.biz.auth.model.group;
 
+import com.ksptooi.biz.auth.service.SessionService;
+import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -54,7 +56,7 @@ public class GroupPo {
 
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws AuthException {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
@@ -78,14 +80,26 @@ public class GroupPo {
             this.createTime = now;
         }
 
+        if (this.creatorId == null) {
+            this.creatorId = SessionService.session().getUserId();
+        }
+
         if (this.updateTime == null) {
             this.updateTime = now;
+        }
+
+        if (this.updaterId == null) {
+            this.updaterId = SessionService.session().getUserId();
         }
 
     }
 
     @PreUpdate
-    private void onUpdate() {
+    private void onUpdate() throws AuthException {
         this.updateTime = LocalDateTime.now();
+
+        if (this.updaterId == null) {
+            this.updaterId = SessionService.session().getUserId();
+        }
     }
 } 
