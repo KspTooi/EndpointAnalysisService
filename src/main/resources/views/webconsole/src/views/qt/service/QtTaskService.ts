@@ -416,7 +416,6 @@ export default {
     const modalRules: FormRules = {
       id: [{ required: true, message: "请选择任务", trigger: "blur" }],
       targetParam: [
-        { required: true, message: "请输入调用参数", trigger: "blur" },
         {
           validator: (rule: any, value: string, callback: any) => {
             if (!value) {
