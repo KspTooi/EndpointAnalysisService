@@ -1,5 +1,6 @@
 package com.ksptooi.biz.auth.model.permission;
 
+import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +48,11 @@ public class PermissionPo {
 
     @PrePersist
     public void prePersist() {
+
+        if (this.id == null) {
+            this.id = IdWorker.nextId();
+        }
+
         if (sortOrder == null) {
             sortOrder = 0;
         }

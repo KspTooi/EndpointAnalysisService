@@ -5,7 +5,6 @@ import com.ksptooi.biz.auth.repository.GroupPermissionRepository;
 import com.ksptooi.biz.auth.repository.PermissionRepository;
 import com.ksptooi.biz.core.model.maintain.vo.MaintainUpdateVo;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,8 +35,6 @@ public class MaintainService {
     @Autowired
     private PermissionRepository permissionRepository;
 
-    @Autowired
-    private EntityManager em;
 
     /**
      * 校验系统内置权限节点
