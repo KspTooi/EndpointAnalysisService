@@ -20,7 +20,7 @@ public class GroupPo {
 
     @Id
     @Column(name = "id", nullable = false, comment = "组ID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "code", length = 32, nullable = false, comment = "组标识，如：admin、developer等")
     private String code;
@@ -57,7 +57,7 @@ public class GroupPo {
     private void onCreate() {
 
         if (this.id == null) {
-            this.id = IdWorker.nextId().intValue();
+            this.id = IdWorker.nextId();
         }
 
         if (this.status == null) {
