@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,12 +35,14 @@ public class EpSiteController {
     @Autowired
     private EpSiteService epSiteService;
 
+    @PreAuthorize("@auth.hasCode('ep:site:view')")
     @PostMapping("/getEpSiteList")
     @Operation(summary = "查询站点列表")
     public PageResult<GetEpSiteListVo> getEpSiteList(@RequestBody @Valid GetEpSiteListDto dto) throws Exception {
         return epSiteService.getEpSiteList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:add')")
     @Operation(summary = "新增站点")
     @PostMapping("/addEpSite")
     public Result<String> addEpSite(@RequestBody @Valid AddEpSiteDto dto) throws Exception {
@@ -47,6 +50,7 @@ public class EpSiteController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:edit')")
     @Operation(summary = "编辑站点")
     @PostMapping("/editEpSite")
     public Result<String> editEpSite(@RequestBody @Valid EditEpSiteDto dto) throws Exception {
@@ -54,6 +58,7 @@ public class EpSiteController {
         return Result.success("修改成功");
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:view')")
     @Operation(summary = "查询站点详情")
     @PostMapping("/getEpSiteDetails")
     public Result<GetEpSiteDetailsVo> getEpSiteDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -64,6 +69,7 @@ public class EpSiteController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:remove')")
     @Operation(summary = "删除站点")
     @PostMapping("/removeEpSite")
     public Result<String> removeEpSite(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -71,6 +77,7 @@ public class EpSiteController {
         return Result.success("操作成功");
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:import')")
     @Operation(summary = "导入站点")
     @PostMapping("/importEpSite")
     public Result<String> importEpSite(@RequestParam("file") MultipartFile file) throws Exception {
@@ -90,6 +97,7 @@ public class EpSiteController {
         return Result.success("操作成功,已导入数据:" + count + "条", null);
     }
 
+    @PreAuthorize("@auth.hasCode('ep:site:export')")
     @Operation(summary = "导出站点")
     @RequestMapping("/exportEpSite")
     public void exportEpSite(@RequestBody @Valid GetEpSiteListDto dto, HttpServletResponse hsrp) throws Exception {

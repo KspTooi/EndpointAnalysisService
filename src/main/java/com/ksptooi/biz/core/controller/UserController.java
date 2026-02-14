@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,18 +33,21 @@ public class UserController {
     @Autowired
     private MenuService menuService;
 
+    @PreAuthorize("@auth.hasCode('core:user:view')")
     @Operation(summary = "获取用户列表")
     @PostMapping("getUserList")
     public PageResult<GetUserListVo> getUserList(@RequestBody @Valid GetUserListDto dto) {
         return service.getUserList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('core:user:view')")
     @Operation(summary = "获取用户详情")
     @PostMapping("getUserDetails")
     public Result<GetUserDetailsVo> getUserDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(service.getUserDetails(dto.getId()));
     }
 
+    @PreAuthorize("@auth.hasCode('core:user:add')")
     @Operation(summary = "新增用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("addUser")
@@ -52,6 +56,7 @@ public class UserController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:user:edit')")
     @Operation(summary = "编辑用户")
     @PrintLog(sensitiveFields = "password")
     @PostMapping("editUser")
@@ -61,6 +66,7 @@ public class UserController {
         return Result.success("修改成功");
     }
 
+    @PreAuthorize("@auth.hasCode('core:user:remove')")
     @Operation(summary = "删除用户")
     @PostMapping("removeUser")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
@@ -70,6 +76,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("@auth.hasCode('core:user:import')")
     @Operation(summary = "导入用户")
     @PostMapping("importUser")
     public Result<String> importUser(@RequestParam("file") MultipartFile file) throws Exception {
@@ -88,6 +95,7 @@ public class UserController {
         return Result.success("导入成功,已导入数据:" + count + "条", null);
     }
 
+    @PreAuthorize("@auth.hasCode('core:user:batch_edit')")
     @Operation(summary = "批量编辑用户")
     @PostMapping("batchEditUser")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
