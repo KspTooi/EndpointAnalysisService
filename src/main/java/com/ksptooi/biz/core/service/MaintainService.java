@@ -134,8 +134,8 @@ public class MaintainService {
             var po = new PermissionPo();
             po.setCode(permissionCode);
             po.setName(name);
-            po.setDescription(remark);
-            po.setSortOrder(100);
+            po.setRemark(remark);
+            po.setSeq(100);
             po.setIsSystem(1);
             scannedPermissions.add(po);
         }
@@ -144,8 +144,8 @@ public class MaintainService {
         var superCode = new PermissionPo();
         superCode.setCode("*:*:*");
         superCode.setName("超级权限");
-        superCode.setDescription("拥有此权限的用户组不受任何权限限制");
-        superCode.setSortOrder(0);
+        superCode.setRemark("拥有此权限的用户组不受任何权限限制");
+        superCode.setSeq(0);
         superCode.setIsSystem(1);
         scannedPermissions.add(superCode);
 
