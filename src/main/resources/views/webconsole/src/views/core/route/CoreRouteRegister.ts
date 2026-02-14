@@ -120,6 +120,13 @@ export default class CoreRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/core/NoticeRcdManager.vue"),
         meta: { breadcrumb: "个人消息中心" },
       }),
+      RouteEntryPo.build({
+        biz: "core",
+        path: "post-manager",
+        name: "post-manager",
+        component: () => import("@/views/core/Post.vue"),
+        meta: { breadcrumb: "岗位管理" },
+      }),
     ];
   }
 }
