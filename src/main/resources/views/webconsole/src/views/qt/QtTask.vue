@@ -52,7 +52,11 @@
             {{ scope.row.kind === 0 ? "本地BEAN" : "远程HTTP" }}
           </template>
         </el-table-column>
-        <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="cron" label="CRON表达式" min-width="150" show-overflow-tooltip>
+          <template #default="scope">
+            <ComCronFixer :cron="scope.row.cron" />
+          </template>
+        </el-table-column>
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
         <el-table-column prop="expireTime" label="任务有效期截止" min-width="160" show-overflow-tooltip>
           <template #default="scope">
@@ -83,10 +87,10 @@
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -350,8 +354,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, watch, computed } from "vue";
-import { Edit, Delete, Calendar, InfoFilled } from "@element-plus/icons-vue";
+import { ref, watch, computed } from "vue";
+import { Calendar, InfoFilled } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import cronstrue from "cronstrue/i18n";
 import { CronExpressionParser } from "cron-parser";
@@ -362,10 +366,7 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import QtTaskGroupService from "@/views/qt/service/QtTaskGroupService";
 import CronCalculatorModal from "@/views/qt/components/public/CronCalculatorModal.vue";
-
-// 使用markRaw包装图标组件，防止被Vue响应式系统处理
-const EditIcon = markRaw(Edit);
-const DeleteIcon = markRaw(Delete);
+import ComCronFixer from "@/soa/console-framework/ComCronFixer.vue";
 
 // Cron 计算器引用
 const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
