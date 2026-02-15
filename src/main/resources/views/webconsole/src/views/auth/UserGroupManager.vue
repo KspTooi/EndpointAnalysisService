@@ -129,7 +129,7 @@
   <el-dialog
     v-model="modalVisible"
     :title="modalMode === 'edit' ? '编辑用户组' : '添加用户组'"
-    width="800px"
+    width="900px"
     :close-on-click-modal="false"
     @close="
       (async () => {
@@ -146,97 +146,96 @@
       label-width="100px"
       :validate-on-rule-change="false"
     >
-      <div class="form-two-columns">
-        <div class="form-left-column">
-          <el-form-item label="用户组标识" prop="code" label-for="group-code">
-            <el-input
-              v-model="modalForm.code"
-              :disabled="modalMode === 'edit' && isSystemGroup"
-              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改标识' : '请输入组标识'"
-              id="group-code"
-            />
-          </el-form-item>
-          <el-form-item label="用户组名称" prop="name" label-for="group-name">
-            <el-input
-              v-model="modalForm.name"
-              :disabled="modalMode === 'edit' && isSystemGroup"
-              :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改名称' : '请输入组名称'"
-              id="group-name"
-            />
-          </el-form-item>
-          <el-form-item label="用户组描述" prop="remark" label-for="group-remark">
-            <el-input v-model="modalForm.remark" type="textarea" :rows="3" id="group-remark" />
-          </el-form-item>
-          <el-form-item label="用户组状态" prop="status" label-for="group-status">
-            <el-radio-group v-model="modalForm.status" id="group-status">
-              <el-radio :value="1">启用</el-radio>
-              <el-radio :value="0">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="数据权限" prop="rowScope" label-for="group-rowScope">
-            <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" style="width: 100%">
-              <el-option :value="0" label="全部" />
-              <el-option :value="1" label="本公司/租户及以下" />
-              <el-option :value="2" label="本部门及以下" />
-              <el-option :value="3" label="本部门" />
-              <el-option :value="4" label="仅本人" />
-              <el-option :value="5" label="指定部门" />
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="modalForm.rowScope === 5" label="指定部门" prop="deptIds">
-            <div class="dept-select-container">
-              <el-button type="primary" size="small" @click="openDeptSelect">选择部门</el-button>
-              <div class="selected-depts">
-                <el-tag
-                  v-for="dept in selectedDepts"
-                  :key="dept.id"
-                  closable
-                  size="small"
-                  @close="removeDept(dept.id)"
-                  class="dept-tag"
-                >
-                  {{ dept.name }}
-                </el-tag>
-              </div>
-            </div>
-          </el-form-item>
-        </div>
+      <el-row :gutter="20">
+        <!-- 左侧基础信息 -->
+        <el-col :span="12">
+          <div class="form-section">
+            <div class="section-title">基础信息</div>
+            <el-form-item label="用户组标识" prop="code" label-for="group-code">
+              <el-input
+                v-model="modalForm.code"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改标识' : '请输入组标识'"
+                id="group-code"
+              />
+            </el-form-item>
+            <el-form-item label="用户组名称" prop="name" label-for="group-name">
+              <el-input
+                v-model="modalForm.name"
+                :disabled="modalMode === 'edit' && isSystemGroup"
+                :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改名称' : '请输入组名称'"
+                id="group-name"
+              />
+            </el-form-item>
+            <el-form-item label="排序号" prop="seq">
+              <el-input-number v-model="modalForm.seq" :min="0" style="width: 100%" />
+            </el-form-item>
+            <el-form-item label="用户组状态" prop="status" label-for="group-status">
+              <el-radio-group v-model="modalForm.status" id="group-status">
+                <el-radio :value="1">启用</el-radio>
+                <el-radio :value="0">禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="用户组描述" prop="remark" label-for="group-remark">
+              <el-input v-model="modalForm.remark" type="textarea" :rows="2" id="group-remark" placeholder="请输入描述" />
+            </el-form-item>
 
-        <div class="form-right-column">
-          <el-form-item label="权限码" prop="permissionIds" label-for="permission-search" class="permission-form-item">
-            <div class="permission-container">
-              <div class="permission-search">
-                <el-input v-model="permissionSearch" placeholder="搜索权限码" clearable id="permission-search">
+            <div class="section-title mt-4">数据权限</div>
+            <el-form-item label="权限范围" prop="rowScope" label-for="group-rowScope">
+              <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" style="width: 100%">
+                <el-option :value="0" label="全部" />
+                <el-option :value="1" label="本公司/租户及以下" />
+                <el-option :value="2" label="本部门及以下" />
+                <el-option :value="3" label="本部门" />
+                <el-option :value="4" label="仅本人" />
+                <el-option :value="5" label="指定部门" />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="modalForm.rowScope === 5" label="指定部门" prop="deptIds">
+              <div class="dept-select-box">
+                <el-button type="primary" @click="openDeptSelect" size="small">选择部门</el-button>
+                <span class="ml-2 text-gray-500">已选择 {{ modalForm.deptIds?.length || 0 }} 个部门</span>
+              </div>
+            </el-form-item>
+          </div>
+        </el-col>
+
+        <!-- 右侧权限分配 -->
+        <el-col :span="12">
+          <div class="form-section">
+            <div class="section-title">功能权限分配</div>
+            <div class="permission-wrapper">
+              <div class="permission-header">
+                <el-input v-model="permissionSearch" placeholder="搜索权限码/名称" clearable size="small">
                   <template #prefix>
                     <el-icon><Search /></el-icon>
                   </template>
                 </el-input>
-                <div class="permission-select-buttons">
+                <div class="mt-2 flex justify-between items-center">
+                  <span class="text-xs text-gray-500">已选 {{ selectedPermissionIds.length }} 项</span>
                   <el-button-group>
-                    <el-button type="primary" size="small" @click="selectAllPermissions"> 全选 </el-button>
-                    <el-button type="primary" size="small" @click="deselectAllPermissions"> 取消全选 </el-button>
+                    <el-button type="primary" size="small" link @click="selectAllPermissions">全选</el-button>
+                    <el-button type="primary" size="small" link @click="deselectAllPermissions">清空</el-button>
                   </el-button-group>
                 </div>
               </div>
-              <div class="permission-list">
-                <el-checkbox-group v-model="selectedPermissionIds" id="permission-group" style="width: 240px">
-                  <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-item">
+              <div class="permission-body">
+                <el-checkbox-group v-model="selectedPermissionIds">
+                  <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-row">
                     <el-checkbox :value="permission.id">
-                      <div class="permission-info">
-                        <span class="permission-name">{{ permission.name }}</span>
-                        <span class="permission-code">{{ permission.code }}</span>
+                      <div class="perm-info">
+                        <div class="perm-name">{{ permission.name }}</div>
+                        <div class="perm-code">{{ permission.code }}</div>
                       </div>
                     </el-checkbox>
                   </div>
                 </el-checkbox-group>
-                <div v-if="filteredPermissions.length === 0" class="no-permission">
-                  <el-empty description="未找到匹配的权限码" />
-                </div>
+                <el-empty v-if="filteredPermissions.length === 0" :image-size="60" description="无匹配权限" />
               </div>
             </div>
-          </el-form-item>
-        </div>
-      </div>
+          </div>
+        </el-col>
+      </el-row>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
@@ -289,132 +288,126 @@ const {
   selectAllPermissions,
   deselectAllPermissions,
   deptSelectModalVisible,
-  selectedDepts,
   openDeptSelect,
   onDeptSelectConfirm,
-  removeDept,
 } = UserGroupService.useUserGroupModal(modalFormRef, loadList);
 
 /**
  * 用户组权限模态框打包
  */
-const { modalPermissionEditVisible, modalPermissionEditRow, openPermissionEditModal: openPermModal } =
-  UserGroupService.useUserGroupPermissionModal();
+const {
+  modalPermissionEditVisible,
+  modalPermissionEditRow,
+  openPermissionEditModal: openPermModal,
+} = UserGroupService.useUserGroupPermissionModal();
 
 const openPermissionEditModal = openPermModal;
-
 
 /**
  * 选中的列表项
  */
 const listSelected = ref<GetGroupListVo[]>([]);
-
-//部门列表打包
-const {
-  queryForm,
-  listData: deptListData,
-  listLoading: deptListLoading,
-  filteredData: deptFilteredData,
-  treeSelectData: deptTreeSelectData,
-  filterData: deptFilterData,
-  resetQuery: deptResetQuery,
-  loadList: deptLoadList,
-} = OrgManagerService.useOrgTree(null);
 </script>
 
 <style scoped>
-.form-two-columns {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  width: 100%;
-}
-
-.form-left-column {
-  flex: 1;
-  min-width: 200px;
-}
-
-.form-right-column {
-  flex: 1;
-  min-width: 200px;
-}
-
-.permission-form-item {
-  height: 100%;
-}
-
-.permission-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-}
-
-.permission-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid var(--el-border-color);
-  border-radius: 4px;
+.form-section {
   padding: 10px;
 }
 
-.permission-item {
-  margin: 8px 0;
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--el-text-color-primary);
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 4px solid var(--el-color-primary);
+}
+
+.mt-4 {
+  margin-top: 20px;
+}
+
+.dept-select-box {
   display: flex;
   align-items: center;
 }
 
-.permission-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.permission-wrapper {
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.permission-name {
-  font-size: 14px;
+.permission-header {
+  padding: 10px;
+  background-color: var(--el-fill-color-light);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.permission-body {
+  height: 380px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.permission-row {
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--el-border-color-extra-light);
+}
+
+.permission-row:last-child {
+  border-bottom: none;
+}
+
+.perm-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+  margin-left: 8px;
+}
+
+.perm-name {
+  font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
-.permission-code {
-  font-size: 12px;
+.perm-code {
+  font-size: 11px;
   color: var(--el-text-color-secondary);
   font-family: monospace;
 }
 
-.no-permission {
-  padding: 20px 0;
+:deep(.el-checkbox) {
+  height: auto;
+  display: flex;
+  align-items: center;
 }
 
 :deep(.el-checkbox__label) {
-  display: flex;
-  align-items: flex-start;
+  padding-left: 0;
 }
 
-.permission-select-buttons {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  margin-top: 10px;
-}
-.dept-select-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
+.ml-2 {
+  margin-left: 8px;
 }
 
-.selected-depts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  border: 1px solid var(--el-border-color-lighter);
-  padding: 4px;
-  min-height: 32px;
-  border-radius: 4px;
+.text-gray-500 {
+  color: var(--el-text-color-secondary);
 }
 
-.dept-tag {
-  margin: 2px;
+.text-xs {
+  font-size: 12px;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
 }
 </style>

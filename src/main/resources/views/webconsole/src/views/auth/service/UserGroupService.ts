@@ -193,7 +193,6 @@ export default {
 
     // 部门选择相关
     const deptSelectModalVisible = ref(false);
-    const selectedDepts = ref<GetOrgTreeVo[]>([]);
 
     const openDeptSelect = () => {
       deptSelectModalVisible.value = true;
@@ -201,14 +200,8 @@ export default {
 
     const onDeptSelectConfirm = (depts: GetOrgTreeVo | GetOrgTreeVo[]) => {
       if (Array.isArray(depts)) {
-        selectedDepts.value = depts;
         modalForm.deptIds = depts.map((d) => d.id);
       }
-    };
-
-    const removeDept = (deptId: string) => {
-      selectedDepts.value = selectedDepts.value.filter((d) => d.id !== deptId);
-      modalForm.deptIds = selectedDepts.value.map((d) => d.id);
     };
 
     /**
@@ -227,7 +220,6 @@ export default {
 
       permissionSearch.value = "";
       selectedPermissionIds.value = [];
-      selectedDepts.value = [];
 
       if (modalMode.value === "add") {
         try {
@@ -275,12 +267,6 @@ export default {
 
           permissionList.value = ret.permissions || [];
           selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => p.id) : [];
-
-          // 如果是指定部门，需要初始化已选部门列表 (由于详情接口只返回了ID，这里可能需要额外查询部门名称，或者在详情接口中增加部门详情)
-          // 暂时简化处理，实际开发中可能需要调用部门详情接口
-          if (modalForm.deptIds.length > 0) {
-            selectedDepts.value = modalForm.deptIds.map((id) => ({ id, name: `部门(${id})`, kind: 0 } as GetOrgTreeVo));
-          }
         } catch (error: any) {
           ElMessage.error(error.message || "获取用户组详情失败");
           return;
@@ -380,10 +366,8 @@ export default {
       selectedPermissionIds,
       filteredPermissions,
       deptSelectModalVisible,
-      selectedDepts,
       openDeptSelect,
       onDeptSelectConfirm,
-      removeDept,
       openModal,
       resetModal,
       submitModal,
