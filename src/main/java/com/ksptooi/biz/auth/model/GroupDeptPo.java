@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Table(name = "auth_group_dept", comment = "GD表")
 @Getter
 @Setter
-@IdClass(AuthGroupDeptPo.Pk.class)
-public class AuthGroupDeptPo {
+@IdClass(GroupDeptPo.Pk.class)
+public class GroupDeptPo {
 
     @Id
     @Column(name = "group_id", nullable = false, comment = "组ID")

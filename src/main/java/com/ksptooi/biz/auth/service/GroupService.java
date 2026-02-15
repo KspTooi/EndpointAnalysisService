@@ -118,6 +118,7 @@ public class GroupService {
         group.setRemark(dto.getRemark());
         group.setStatus(dto.getStatus());
         group.setSeq(dto.getSeq());
+        group.setRowScope(dto.getRowScope());
         group.setIsSystem(0);
 
         //保存用户组
@@ -134,11 +135,16 @@ public class GroupService {
             gpPos.add(gpPo);
         }
 
-
         //保存用户组关联权限码关系
         if (!gpPos.isEmpty()) {
             gpRepository.saveAll(gpPos);
         }
+
+        //处理部门关系(如果数据权限为5(指定部门)时，则需要处理部门关系)
+        
+
+
+
     }
 
     /**
@@ -162,6 +168,7 @@ public class GroupService {
         group.setRemark(dto.getRemark());
         group.setStatus(dto.getStatus());
         group.setSeq(dto.getSeq());
+        group.setRowScope(dto.getRowScope());
         group.setIsSystem(0);
 
         //处理权限关系 先清除该用户组下挂载的权限关系
