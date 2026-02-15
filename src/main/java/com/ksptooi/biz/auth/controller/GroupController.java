@@ -2,7 +2,10 @@ package com.ksptooi.biz.auth.controller;
 
 
 import com.ksptooi.biz.auth.model.group.dto.*;
-import com.ksptooi.biz.auth.model.group.vo.*;
+import com.ksptooi.biz.auth.model.group.vo.GetGroupDetailsVo;
+import com.ksptooi.biz.auth.model.group.vo.GetGroupListVo;
+import com.ksptooi.biz.auth.model.group.vo.GetGroupPermissionMenuViewVo;
+import com.ksptooi.biz.auth.model.group.vo.GetGroupPermissionNodeVo;
 import com.ksptooi.biz.auth.service.GroupService;
 import com.ksptooi.biz.core.service.MenuService;
 import com.ksptooi.commons.annotation.PrintLog;
@@ -34,11 +37,6 @@ public class GroupController {
     @Autowired
     private MenuService menuService;
 
-    @Operation(summary = "获取组定义列表")
-    @PostMapping("getGroupDefinitions")
-    public Result<List<GetGroupDefinitionsVo>> getGroupDefinitions() {
-        return Result.success(service.getGroupDefinitions());
-    }
 
     @PreAuthorize("@auth.hasCode('auth:group:view')")
     @Operation(summary = "获取组列表")
@@ -79,12 +77,14 @@ public class GroupController {
     public Result<List<GetGroupPermissionMenuViewVo>> getGroupPermissionMenuView(@RequestBody @Valid GetGroupPermissionMenuViewDto dto) throws Exception {
         return Result.success(service.getGroupPermissionMenuView(dto));
     }
+
     @PreAuthorize("@auth.hasCode('auth:group:edit')")
     @Operation(summary = "获取组权限节点视图")
     @PostMapping("getGroupPermissionNodeView")
     public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(@RequestBody @Valid GetGroupPermissionNodeDto dto) throws Exception {
         return service.getGroupPermissionNodeView(dto);
     }
+
     @PreAuthorize("@auth.hasCode('auth:group:edit')")
     @Operation(summary = "批量授权或取消授权")
     @PostMapping("grantAndRevoke")
