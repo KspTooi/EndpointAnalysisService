@@ -1,55 +1,46 @@
 package com.ksptooi.biz.authgroupdept.model;
 
-import java.time.LocalDateTime;
-import com.ksptooi.biz.auth.service.AuthService;
-import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "auth_group_dept", comment = "GD表")
 @Getter
 @Setter
-@Entity
-@Table(name = "auth_group_dept")
+@IdClass(AuthGroupDeptPo.Pk.class)
 public class AuthGroupDeptPo {
 
-    @Column(name = "group_id", comment = "组ID")
     @Id
+    @Column(name = "group_id", nullable = false, comment = "组ID")
     private Long groupId;
 
-    @Column(name = "dept_id", comment = "部ID")
     @Id
+    @Column(name = "dept_id", nullable = false, comment = "部ID")
     private Long deptId;
 
-    @Column(name = "create_time", comment = "创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
-
 
     @PrePersist
     private void onCreate() {
-
-        if (this.groupId == null) {
-            this.groupId = IdWorker.nextId();
-        }
-        if (this.deptId == null) {
-            this.deptId = IdWorker.nextId();
-        }
-        
-        
-        LocalDateTime now = LocalDateTime.now();
-        
         if (this.createTime == null) {
-            this.createTime = now;
+            this.createTime = LocalDateTime.now();
         }
-        
-        
-        
     }
 
-    @PreUpdate
-    private void onUpdate() {
-        
-        
+    /**
+     * 用于复合主键的类
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    public static class Pk implements Serializable {
+        private Long groupId;
+        private Long deptId;
     }
 }
