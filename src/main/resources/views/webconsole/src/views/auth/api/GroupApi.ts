@@ -35,6 +35,8 @@ export interface GetGroupDetailsVo {
   isSystem: number; // 系统内置组 0:否 1:是
   status: number; // 组状态：0-禁用，1-启用
   seq: number; // 排序号
+  rowScope: number; // 数据权限 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门
+  deptIds?: string[]; // 部门ID列表
   permissions: GroupPermissionDefinitionVo[]; // 权限节点列表
 }
 

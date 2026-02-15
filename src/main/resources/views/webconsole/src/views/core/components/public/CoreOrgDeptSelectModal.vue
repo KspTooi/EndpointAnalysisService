@@ -24,11 +24,10 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="onCancel">取消</el-button>
-        <el-button
-          type="primary"
-          @click="onConfirm"
-          :disabled="multiple ? validDeptCount === 0 : !selectedNode"
-        >
+        <!--         <el-button type="primary" @click="onConfirm" :disabled="multiple ? validDeptCount === 0 : !selectedNode">
+          确定{{ multiple && validDeptCount > 0 ? `(${validDeptCount})` : "" }}
+        </el-button> -->
+        <el-button type="primary" @click="onConfirm">
           确定{{ multiple && validDeptCount > 0 ? `(${validDeptCount})` : "" }}
         </el-button>
       </div>
@@ -44,10 +43,10 @@ import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: boolean;             // 弹窗显隐控制 (支持 v-model)
-    title?: string;                   // 弹窗标题，默认为 "选择部门"
-    width?: string | number;          // 弹窗宽度，默认为 "450px"
-    multiple?: boolean;               // 是否开启多选模式，默认为 false
+    modelValue?: boolean; // 弹窗显隐控制 (支持 v-model)
+    title?: string; // 弹窗标题，默认为 "选择部门"
+    width?: string | number; // 弹窗宽度，默认为 "450px"
+    multiple?: boolean; // 是否开启多选模式，默认为 false
     defaultSelected?: string | string[]; // 默认选中的节点 ID 或 ID 数组
   }>(),
   {
@@ -116,15 +115,15 @@ watch(
  */
 const select = async (): Promise<GetOrgTreeVo | GetOrgTreeVo[]> => {
   visible.value = true;
-  
+
   // 等待组件挂载后再访问 orgTreeRef
   await nextTick();
-  
+
   // 等待树数据加载完成
   if (orgTreeRef.value) {
     await orgTreeRef.value.loadTreeData();
   }
-  
+
   initSelection();
 
   return new Promise((resolve, reject) => {
@@ -148,7 +147,7 @@ const initSelection = () => {
     if (props.multiple) {
       // 恢复树组件的视觉勾选状态
       orgTreeRef.value.setCheckedKeys(props.defaultSelected);
-      
+
       // 手动同步 selectedNodes（setCheckedKeys 不会触发 on-check 事件）
       nextTick(() => {
         if (orgTreeRef.value) {
@@ -162,7 +161,7 @@ const initSelection = () => {
 
 const onConfirm = () => {
   let result: GetOrgTreeVo | GetOrgTreeVo[] | null = null;
-  
+
   if (props.multiple) {
     // 多选模式：过滤掉企业节点（kind === 1），只保留部门节点（kind === 0）
     result = selectedNodes.value.filter((node) => node.kind === 0);
@@ -170,7 +169,7 @@ const onConfirm = () => {
   if (!props.multiple) {
     result = selectedNode.value;
   }
-  
+
   if (!result) {
     return;
   }

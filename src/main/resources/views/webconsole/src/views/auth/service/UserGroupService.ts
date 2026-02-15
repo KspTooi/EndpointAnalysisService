@@ -4,12 +4,13 @@ import AdminGroupApi, {
   type GetGroupListDto,
   type GetGroupListVo,
   type GroupPermissionDefinitionVo,
-  type GetGroupDetailsVo,
+  type   GetGroupDetailsVo,
   type AddGroupDto,
   type EditGroupDto,
 } from "@/views/auth/api/GroupApi.ts";
 import AdminPermissionApi from "@/views/auth/api/PermissionApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 export default {
   /**
@@ -148,6 +149,8 @@ export default {
       status: 1,
       seq: 0,
       permissions: [],
+      rowScope: 0,
+      deptIds: [],
     });
 
     // 表单校验规则
@@ -170,6 +173,7 @@ export default {
         { required: true, message: "请输入排序号", trigger: "blur" },
         { min: 0, message: "排序号必须大于等于0", trigger: "blur" },
       ],
+      rowScope: [{ required: true, message: "请选择数据权限范围", trigger: "change" }],
     };
 
     // 权限相关
@@ -187,6 +191,26 @@ export default {
       );
     });
 
+    // 部门选择相关
+    const deptSelectModalVisible = ref(false);
+    const selectedDepts = ref<GetOrgTreeVo[]>([]);
+
+    const openDeptSelect = () => {
+      deptSelectModalVisible.value = true;
+    };
+
+    const onDeptSelectConfirm = (depts: GetOrgTreeVo | GetOrgTreeVo[]) => {
+      if (Array.isArray(depts)) {
+        selectedDepts.value = depts;
+        modalForm.deptIds = depts.map((d) => d.id);
+      }
+    };
+
+    const removeDept = (deptId: string) => {
+      selectedDepts.value = selectedDepts.value.filter((d) => d.id !== deptId);
+      modalForm.deptIds = selectedDepts.value.map((d) => d.id);
+    };
+
     /**
      * 重置模态框
      */
@@ -198,9 +222,12 @@ export default {
       modalForm.status = 1;
       modalForm.seq = 0;
       modalForm.permissions = [];
+      modalForm.rowScope = 0;
+      modalForm.deptIds = [];
 
       permissionSearch.value = "";
       selectedPermissionIds.value = [];
+      selectedDepts.value = [];
 
       if (modalMode.value === "add") {
         try {
@@ -243,9 +270,17 @@ export default {
           modalForm.status = ret.status;
           modalForm.seq = ret.seq;
           modalForm.permissions = ret.permissions || [];
+          modalForm.rowScope = ret.rowScope ?? 0;
+          modalForm.deptIds = ret.deptIds || [];
 
           permissionList.value = ret.permissions || [];
           selectedPermissionIds.value = ret.permissions ? ret.permissions.filter((p) => p.has === 0).map((p) => p.id) : [];
+
+          // 如果是指定部门，需要初始化已选部门列表 (由于详情接口只返回了ID，这里可能需要额外查询部门名称，或者在详情接口中增加部门详情)
+          // 暂时简化处理，实际开发中可能需要调用部门详情接口
+          if (modalForm.deptIds.length > 0) {
+            selectedDepts.value = modalForm.deptIds.map((id) => ({ id, name: `部门(${id})`, kind: 0 } as GetOrgTreeVo));
+          }
         } catch (error: any) {
           ElMessage.error(error.message || "获取用户组详情失败");
           return;
@@ -279,6 +314,8 @@ export default {
             remark: modalForm.remark,
             status: modalForm.status,
             seq: modalForm.seq,
+            rowScope: modalForm.rowScope,
+            deptIds: modalForm.deptIds,
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.addGroup(addDto);
@@ -300,6 +337,8 @@ export default {
             remark: modalForm.remark,
             status: modalForm.status,
             seq: modalForm.seq,
+            rowScope: modalForm.rowScope,
+            deptIds: modalForm.deptIds,
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.editGroup(editDto);
@@ -340,6 +379,11 @@ export default {
       permissionSearch,
       selectedPermissionIds,
       filteredPermissions,
+      deptSelectModalVisible,
+      selectedDepts,
+      openDeptSelect,
+      onDeptSelectConfirm,
+      removeDept,
       openModal,
       resetModal,
       submitModal,
