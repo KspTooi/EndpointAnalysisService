@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-15 02:40:28",
+  "updatedTime": "2026-2-15 08:00:56",
   "dbConns": [],
   "profile": {
     "default": {
@@ -24015,6 +24015,24 @@
           "uiHint": "642D2E0A-8846-4549-BE56-8C0473F26EDE"
         },
         {
+          "defKey": "row_scope",
+          "defName": "数据范围 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
+          "extProps": {},
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
+          "id": "D852F4F5-F16D-4F9B-9369-A444FBBB1314"
+        },
+        {
           "defKey": "is_system",
           "defName": "系统内置组 0:否 1:是",
           "comment": "",
@@ -25463,6 +25481,215 @@
       "correlations": [],
       "indexes": [],
       "type": "P"
+    },
+    {
+      "id": "8A0F4B6D-185D-4461-B142-C8D50A457785",
+      "env": {
+        "base": {
+          "nameSpace": "",
+          "codeRoot": ""
+        }
+      },
+      "defKey": "auth_group_dept",
+      "defName": "GD表",
+      "comment": "",
+      "properties": {
+        "partitioned by": "(date string)",
+        "row format delimited": "",
+        "fields terminated by ','": "",
+        "collection items terminated by '-'": "",
+        "map keys terminated by ':'": "",
+        "store as textfile;": ""
+      },
+      "sysProps": {
+        "nameTemplate": "{defKey}[{defName}]"
+      },
+      "notes": {},
+      "headers": [
+        {
+          "refKey": "hideInGraph",
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "defName",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "primaryKey",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "notNull",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "autoIncrement",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "domain",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "type",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "len",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "scale",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "comment",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "refDict",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "defaultValue",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "isStandard",
+          "freeze": false,
+          "hideInGraph": false
+        },
+        {
+          "refKey": "uiHint",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "extProps",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr1",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr2",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr3",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr4",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr5",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr6",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr7",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr8",
+          "freeze": false,
+          "hideInGraph": true
+        },
+        {
+          "refKey": "attr9",
+          "freeze": false,
+          "hideInGraph": true
+        }
+      ],
+      "fields": [
+        {
+          "defKey": "group_id",
+          "defName": "组ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": true,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
+          "id": "2C5CA3D9-1461-4BF4-A76A-F580DABDDC7A"
+        },
+        {
+          "defKey": "dept_id",
+          "defName": "部ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": true,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
+          "id": "3B6F4B2A-281B-4B48-B0A4-224793A82EE9"
+        },
+        {
+          "defKey": "create_time",
+          "defName": "创建时间",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5",
+          "extProps": {},
+          "domain": "0C248E7A-4D9E-4356-9584-9A274C88D86B",
+          "id": "1C33475A-2E93-414E-A146-C82AC36A5F92"
+        }
+      ],
+      "correlations": [],
+      "indexes": [],
+      "type": "P"
     }
   ],
   "views": [],
@@ -25488,6 +25715,7 @@
         "17B1B397-2D29-47EB-ADC2-2253F1C789A8",
         "9A8D9248-E23D-47B9-BD95-CB272B822A88",
         "95C5DE35-DF85-491C-8C6F-8A91B56DFA35",
+        "8A0F4B6D-185D-4461-B142-C8D50A457785",
         "D6F48C4C-E105-4BEC-9E1D-A9D26DED47FA",
         "8B4D20CE-9D55-469B-83F3-674074C11199"
       ],
@@ -25498,7 +25726,7 @@
     },
     {
       "defKey": "CORE",
-      "defName": "核心模块",
+      "defName": "核心域",
       "refEntities": [
         "E6E8051F-1897-4F5C-B74B-0147A5B91017",
         "18D12A28-19AD-40E9-9046-9F5895B37770",
@@ -25567,6 +25795,20 @@
       "undefined": []
     },
     {
+      "defKey": "QT",
+      "defName": "轻任务调度",
+      "refEntities": [
+        "25FB2FBD-53EF-4D80-9BB0-362BBDA29B88",
+        "F8CAAAEA-7F01-42CF-8A66-6673FD501FE2",
+        "4063553A-6E0B-44B2-A109-578CEB0E9D44"
+      ],
+      "refViews": [],
+      "refDiagrams": [],
+      "refDicts": [],
+      "id": "4BFCE167-1DAD-41D7-82B6-DBB43A4B0E86",
+      "undefined": []
+    },
+    {
       "defKey": "RELAY",
       "defName": "请求中继",
       "refEntities": [
@@ -25593,20 +25835,6 @@
       "refDiagrams": [],
       "refDicts": [],
       "id": "FE332C2D-600E-4840-86DC-9CDCDA57B526",
-      "undefined": []
-    },
-    {
-      "defKey": "QT",
-      "defName": "轻任务调度",
-      "refEntities": [
-        "25FB2FBD-53EF-4D80-9BB0-362BBDA29B88",
-        "F8CAAAEA-7F01-42CF-8A66-6673FD501FE2",
-        "4063553A-6E0B-44B2-A109-578CEB0E9D44"
-      ],
-      "refViews": [],
-      "refDiagrams": [],
-      "refDicts": [],
-      "id": "4BFCE167-1DAD-41D7-82B6-DBB43A4B0E86",
       "undefined": []
     },
     {
