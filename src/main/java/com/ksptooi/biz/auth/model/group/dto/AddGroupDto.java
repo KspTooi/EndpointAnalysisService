@@ -38,6 +38,12 @@ public class AddGroupDto {
     @Min(value = 0, message = "排序号必须大于等于0")
     private Integer seq;
 
+    @Schema(description = "数据权限 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
+    @NotNull(message = "数据权限不能为空")
+    @Min(value = 0, message = "数据权限不正确")
+    @Max(value = 5, message = "数据权限不正确")
+    private Integer rowScope;
+
     @Schema(description = "权限ID列表")
     private List<Long> permissionIds;
 }
