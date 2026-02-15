@@ -8,43 +8,43 @@
     @close="resetModal"
   >
     <div class="modal-content">
-      <el-tabs v-model="tab">
-        <el-tab-pane :label="'菜单视图(' + menuTotalCount + ')'" name="menu">
+      <el-tabs v-model="tabState.tab.value">
+        <el-tab-pane :label="'菜单视图(' + menuViewList.menuTotalCount.value + ')'" name="menu">
           <div class="menu-filter-container">
             <div class="filter-item">
-              <el-input v-model="menuFilterKeyword" placeholder="根据名称或所需权限过滤" clearable>
+              <el-input v-model="menuViewList.menuFilterKeyword.value" placeholder="根据名称或所需权限过滤" clearable>
                 <template #prefix>
                   <Icon icon="mdi:magnify" :width="16" :height="16" />
                 </template>
               </el-input>
             </div>
             <div class="filter-item">
-              <el-select v-model="menuFilterHasPermission" placeholder="是否已授权">
+              <el-select v-model="menuViewList.menuFilterHasPermission.value" placeholder="是否已授权">
                 <el-option label="全部" :value="null" />
                 <el-option label="已授权" :value="1" />
                 <el-option label="未授权" :value="0" />
               </el-select>
             </div>
             <div class="filter-item">
-              <el-button type="primary" @click="loadList">查询</el-button>
-              <el-button @click="resetList">重置</el-button>
+              <el-button type="primary" @click="menuViewList.loadList">查询</el-button>
+              <el-button @click="menuViewList.resetList">重置</el-button>
             </div>
           </div>
           <div class="list-table">
             <el-table
-              :data="listData"
-              v-loading="listLoading"
+              :data="menuViewList.listData.value"
+              v-loading="menuViewList.listLoading.value"
               border
               row-key="id"
               default-expand-all
               ref="listTableRef"
               max-height="500"
               height="500"
-              :row-class-name="getMenuRowClassName"
-              @selection-change="(val: GetGroupPermissionMenuViewVo[]) => (listSelected = val)"
-              @row-click="onRowClick"
+              :row-class-name="menuViewList.getMenuRowClassName"
+              @selection-change="(val: GetGroupPermissionMenuViewVo[]) => (menuViewList.listSelected.value = val)"
+              @row-click="menuViewList.onRowClick"
             >
-              <el-table-column type="selection" width="40" :selectable="isMenuRowSelectable" />
+              <el-table-column type="selection" width="40" :selectable="menuViewList.isMenuRowSelectable" />
               <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
                 <template #default="scope">
                   <div style="display: flex; align-items: center; gap: 8px; display: inline">
@@ -119,38 +119,41 @@
             </el-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane :label="listNodeTotal > 0 ? '节点视图(' + listNodeTotal + ')' : '节点视图'" name="node">
+        <el-tab-pane
+          :label="nodeViewList.listNodeTotal.value > 0 ? '节点视图(' + nodeViewList.listNodeTotal.value + ')' : '节点视图'"
+          name="node"
+        >
           <div class="node-filter-container">
             <div class="filter-item">
-              <el-input v-model="listNodeForm.keyword" placeholder="根据名称或权限代码过滤" clearable>
+              <el-input v-model="nodeViewList.listNodeForm.keyword" placeholder="根据名称或权限代码过滤" clearable>
                 <template #prefix>
                   <Icon icon="mdi:magnify" :width="16" :height="16" />
                 </template>
               </el-input>
             </div>
             <div class="filter-item">
-              <el-select v-model="listNodeForm.hasPermission" placeholder="是否已授权">
+              <el-select v-model="nodeViewList.listNodeForm.hasPermission" placeholder="是否已授权">
                 <el-option label="全部" :value="null" />
                 <el-option label="已授权" :value="1" />
                 <el-option label="未授权" :value="0" />
               </el-select>
             </div>
             <div class="filter-item">
-              <el-button type="primary" @click="loadNodeList">查询</el-button>
-              <el-button @click="resetNodeList">重置</el-button>
+              <el-button type="primary" @click="nodeViewList.loadNodeList">查询</el-button>
+              <el-button @click="nodeViewList.resetNodeList">重置</el-button>
             </div>
           </div>
           <div class="list-table">
             <el-table
-              :data="listNodeData"
-              v-loading="listNodeLoading"
+              :data="nodeViewList.listNodeData.value"
+              v-loading="nodeViewList.listNodeLoading.value"
               border
               row-key="id"
               ref="listNodeTableRef"
               max-height="450"
               height="450"
-              @selection-change="(val: GetGroupPermissionNodeVo[]) => (listNodeSelected = val)"
-              @row-click="onNodeRowClick"
+              @selection-change="(val: GetGroupPermissionNodeVo[]) => (nodeViewList.listNodeSelected.value = val)"
+              @row-click="nodeViewList.onNodeRowClick"
             >
               <el-table-column type="selection" width="40" />
               <el-table-column
@@ -206,21 +209,21 @@
 
             <div class="pagination-container">
               <el-pagination
-                v-model:current-page="listNodeForm.pageNum"
-                v-model:page-size="listNodeForm.pageSize"
+                v-model:current-page="nodeViewList.listNodeForm.pageNum"
+                v-model:page-size="nodeViewList.listNodeForm.pageSize"
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
-                :total="listNodeTotal"
+                :total="nodeViewList.listNodeTotal.value"
                 @size-change="
                   (val: number) => {
-                    listNodeForm.pageSize = val;
-                    loadNodeList();
+                    nodeViewList.listNodeForm.pageSize = val;
+                    nodeViewList.loadNodeList();
                   }
                 "
                 @current-change="
                   (val: number) => {
-                    listNodeForm.pageNum = val;
-                    loadNodeList();
+                    nodeViewList.listNodeForm.pageNum = val;
+                    nodeViewList.loadNodeList();
                   }
                 "
                 background
@@ -242,21 +245,14 @@
 
 <script setup lang="ts">
 import type {
-  GetGroupDetailsVo,
   GetGroupListVo,
   GetGroupPermissionMenuViewVo,
-  GetGroupPermissionNodeDto,
   GetGroupPermissionNodeVo,
-  GroupPermissionDefinitionVo,
 } from "@/views/auth/api/GroupApi.ts";
-import type { GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import MenuApi from "@/views/core/api/MenuApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, type TableInstance } from "element-plus";
-import { nextTick, onMounted, ref, watch, reactive, computed } from "vue";
+import { ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
-import GroupApi from "@/views/auth/api/GroupApi.ts";
-import PermissionApi, { type GetPermissionListVo, type GetPermissionListDto } from "@/views/auth/api/PermissionApi.ts";
+import UserGpModalService from "@/views/auth/service/UserGpModalService.vue.ts";
 
 const props = defineProps<{
   visible: boolean;
@@ -267,272 +263,71 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-//node显示权限节点，menu显示菜单
-const tab = ref<"node" | "menu">("menu");
-
-const listNodeTableRef = ref<TableInstance>();
-const listNodeData = ref<GetGroupPermissionNodeVo[]>([]);
-const listNodeSelected = ref<GetGroupPermissionNodeVo[]>([]);
-const listNodeSelectedGlobal = ref<Set<string>>(new Set());
-const listNodeLoading = ref(false);
-const listNodeTotal = ref(0);
-const listNodeForm = reactive<GetGroupPermissionNodeDto>({
-  groupId: props.row?.id || "",
-  keyword: null,
-  hasPermission: null,
-  pageNum: 1,
-  pageSize: 20,
-});
-
+// 表格引用
 const listTableRef = ref<TableInstance>();
-const listData = ref<GetGroupPermissionMenuViewVo[]>([]);
-const listSelected = ref<GetGroupPermissionMenuViewVo[]>([]);
-const listLoading = ref(true);
-const menuFilterKeyword = ref("");
-const menuFilterHasPermission = ref<number | null>(null);
-const groupDetails = ref<GetGroupDetailsVo | null>(null);
+const listNodeTableRef = ref<TableInstance>();
 
-/**
- * 递归计算菜单树中的所有节点数量
- */
-const countMenuNodes = (menus: GetGroupPermissionMenuViewVo[]): number => {
-  if (!menus || menus.length === 0) {
-    return 0;
-  }
-  let count = 0;
-  for (const menu of menus) {
-    count++;
-    if (menu.children && menu.children.length > 0) {
-      count += countMenuNodes(menu.children);
-    }
-  }
-  return count;
-};
-
-/**
- * 菜单视图总数量（递归计算）
- */
-const menuTotalCount = computed(() => {
-  return countMenuNodes(listData.value);
-});
-
+// 根据当前tab加载对应的列表
 const loadListByTab = async () => {
-  if (tab.value === "menu") {
-    await loadList();
+  if (tabState.tab.value === "menu") {
+    await menuViewList.loadList();
   }
-  if (tab.value === "node") {
-    await loadNodeList();
+  if (tabState.tab.value === "node") {
+    await nodeViewList.loadNodeList();
   }
 };
 
-const loadList = async () => {
-  listLoading.value = true;
-  const result = await GroupApi.getGroupPermissionMenuView({
-    groupId: props.row?.id || "",
-    keyword: menuFilterKeyword.value || undefined,
-    hasPermission: menuFilterHasPermission.value,
-  });
-  listData.value = result;
-  listLoading.value = false;
-};
+// Tab状态管理
+const tabState = UserGpModalService.useGpTab(loadListByTab);
 
-const resetList = () => {
-  menuFilterKeyword.value = "";
-  menuFilterHasPermission.value = null;
-  loadList();
-};
+// 菜单视图列表
+const menuViewList = UserGpModalService.useGpMenuViewList(props, listTableRef);
+
+// 节点视图列表
+const nodeViewList = UserGpModalService.useGpNodeViewList(props, listNodeTableRef);
+
+// 权限操作
+const permissionOps = UserGpModalService.useGpPermissionOperations(
+  props,
+  tabState.tab,
+  menuViewList.listSelected,
+  nodeViewList.listNodeSelected,
+  loadListByTab
+);
 
 /**
- * 判断菜单行是否可选择
- * permission 为 * 或 menuKind 为 0（目录）的行不可选择
+ * 重置模态框
  */
-const isMenuRowSelectable = (row: GetGroupPermissionMenuViewVo): boolean => {
-  if (row.menuKind === 0) {
-    return false;
-  }
-  if (row.permission === "*") {
-    return false;
-  }
-  return true;
-};
-
-/**
- * 获取菜单行的类名
- * 不可选择的行添加 disabled-row 类名
- */
-const getMenuRowClassName = ({ row }: { row: GetGroupPermissionMenuViewVo }): string => {
-  if (!isMenuRowSelectable(row)) {
-    return "disabled-row";
-  }
-  return "";
-};
-
-const loadNodeList = async () => {
-  listNodeLoading.value = true;
-  const result = await GroupApi.getGroupPermissionNodeView(listNodeForm);
-  listNodeData.value = result.data;
-  listNodeTotal.value = result.total;
-  listNodeLoading.value = false;
-};
-
-const resetNodeList = () => {
-  listNodeForm.keyword = null;
-  listNodeForm.hasPermission = null;
-  listNodeForm.pageNum = 1;
-  listNodeForm.pageSize = 20;
-  loadNodeList();
-};
-
 const resetModal = () => {
-  listSelected.value = [];
-  listTableRef.value?.clearSelection();
-  listNodeSelected.value = [];
-  listNodeTableRef.value?.clearSelection();
-  listNodeSelectedGlobal.value.clear();
-  menuFilterKeyword.value = "";
-  menuFilterHasPermission.value = null;
+  menuViewList.clearSelection();
+  nodeViewList.clearSelection();
+  menuViewList.menuFilterKeyword.value = "";
+  menuViewList.menuFilterHasPermission.value = null;
   emit("close");
 };
 
 /**
- * 处理行点击事件
- */
-const onRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event) => {
-  const target = event.target as HTMLElement;
-  if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
-    return;
-  }
-
-  // 如果行不可选择，直接返回
-  if (!isMenuRowSelectable(row)) {
-    return;
-  }
-
-  const isSelected = listSelected.value.some((item) => item.id === row.id);
-  listTableRef.value?.toggleRowSelection(row, !isSelected);
-};
-
-/**
- * 处理节点行点击事件
- */
-const onNodeRowClick = (row: GetPermissionListVo, column: any, event: Event) => {
-  const target = event.target as HTMLElement;
-  if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
-    return;
-  }
-
-  const isSelected = listNodeSelected.value.some((item) => item.id === row.id);
-  listNodeTableRef.value?.toggleRowSelection(row, !isSelected);
-};
-
-/**
- * 批量授权或取消授权
- * @param row 菜单或节点对象
- * @param type 0:授权 1:取消授权
+ * 授权或取消授权
  */
 const grandAndRevoke = async (row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo, type: number) => {
-  const permissionCodes = getSelectedPermissionCodes(row);
-  if (permissionCodes.length === 0) {
-    ElMessage.warning("没有可操作的权限");
-    return;
-  }
-  const result = await GroupApi.grantAndRevoke({
-    groupId: props.row?.id || "",
-    permissionCodes: permissionCodes,
-    type: type,
-  });
-  if (Result.isSuccess(result)) {
-    ElMessage.success(type === 0 ? "授权成功" : "取消授权成功");
-    loadListByTab();
-  }
+  await permissionOps.grandAndRevoke(row, type, ElMessage);
 };
 
 /**
  * 批量授权
  */
 const batchGrant = async () => {
-  const permissionCodes = getSelectedPermissionCodes();
-  const result = await GroupApi.grantAndRevoke({
-    groupId: props.row?.id || "",
-    permissionCodes: permissionCodes,
-    type: 0,
-  });
-  if (Result.isSuccess(result)) {
-    ElMessage.success("批量授权成功");
-    loadListByTab();
-  }
+  await permissionOps.batchGrant(ElMessage);
 };
 
 /**
  * 批量取消授权
  */
 const batchRevoke = async () => {
-  const permissionCodes = getSelectedPermissionCodes();
-  const result = await GroupApi.grantAndRevoke({
-    groupId: props.row?.id || "",
-    permissionCodes: permissionCodes,
-    type: 1,
-  });
-  if (Result.isSuccess(result)) {
-    ElMessage.success("批量取消授权成功");
-    loadListByTab();
-  }
+  await permissionOps.batchRevoke(ElMessage);
 };
 
-const getSelectedPermissionCodes = (row?: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo): string[] => {
-  if (!row) {
-    let permissionCodes: string[] = [];
-    if (tab.value === "menu") {
-      for (const item of listSelected.value) {
-        //忽略空和*
-        if (item.permission === "" || item.permission === "*") {
-          continue;
-        }
-
-        //如果有;代表有多个权限，需要分割
-        if (item.permission.includes(";")) {
-          permissionCodes.push(...item.permission.split(";"));
-        }
-
-        //只有一个权限，直接添加
-        if (!item.permission.includes(";")) {
-          permissionCodes.push(item.permission);
-        }
-      }
-    }
-    if (tab.value === "node") {
-      for (const item of listNodeSelected.value) {
-        permissionCodes.push(item.code);
-      }
-    }
-    return permissionCodes;
-  }
-
-  // 根据row的类型获取权限代码
-  if ("code" in row) {
-    // GetGroupPermissionNodeVo类型，直接返回code
-    return [row.code];
-  }
-
-  // GetGroupPermissionMenuViewVo类型，处理permission字段
-  if ("permission" in row) {
-    const permission = row.permission;
-    //忽略空和*
-    if (!permission || permission === "" || permission === "*") {
-      return [];
-    }
-
-    //如果有;代表有多个权限，需要分割
-    if (permission.includes(";")) {
-      return permission.split(";").filter((p) => p.trim() !== "");
-    }
-
-    //只有一个权限，直接返回
-    return [permission];
-  }
-
-  return [];
-};
+// 监听 visible 变化，加载数据
 watch(
   () => props.visible,
   async (newVal) => {
@@ -542,23 +337,24 @@ watch(
   }
 );
 
-watch(tab, async (newVal) => {
-  loadListByTab();
+// 监听 tab 变化，加载对应数据
+watch(tabState.tab, async () => {
+  await loadListByTab();
 });
 
-watch(menuFilterKeyword, () => {
-  if (tab.value === "menu" && groupDetails.value) {
-    nextTick(() => {
-      listTableRef.value?.clearSelection();
-    });
+// 监听筛选关键字变化，清空选择
+watch(menuViewList.menuFilterKeyword, () => {
+  if (tabState.tab.value === "menu" && menuViewList.groupDetails.value) {
+    menuViewList.onFilterKeywordChange();
   }
 });
 
+// 监听 row 变化，更新节点列表的 groupId
 watch(
   () => props.row,
   () => {
     if (props.row) {
-      listNodeForm.groupId = props.row.id;
+      nodeViewList.updateGroupId(props.row.id);
     }
   }
 );

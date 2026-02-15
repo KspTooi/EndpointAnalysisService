@@ -44,6 +44,8 @@ export interface AddGroupDto {
   remark?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
   seq: number; // 排序号
+  rowScope: number; // 数据权限 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门
+  deptIds?: string[]; // 部门ID列表
   permissionIds?: string[]; // 权限ID列表
 }
 
@@ -54,9 +56,10 @@ export interface EditGroupDto {
   remark?: string; // 组描述
   status: number; // 组状态：0-禁用，1-启用
   seq: number; // 排序号
+  rowScope: number; // 数据权限 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门
+  deptIds?: string[]; // 部门ID列表
   permissionIds?: string[]; // 权限ID列表
 }
-
 
 export interface GetGroupPermissionMenuViewDto {
   groupId: string; // 组ID
@@ -101,7 +104,6 @@ export interface GrantAndRevokeDto {
 }
 
 export default {
-
   /**
    * 获取组列表
    */
