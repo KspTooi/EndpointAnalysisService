@@ -1,4 +1,4 @@
-import { ref, reactive, computed, type Ref, onMounted } from "vue";
+import { ref, reactive, computed, watch, type Ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import AdminGroupApi, {
   type GetGroupListDto,
@@ -174,6 +174,20 @@ export default {
         { type: "number", min: 0, message: "排序号必须大于等于0", trigger: "blur" },
       ],
       rowScope: [{ required: true, message: "请选择数据权限范围", trigger: "change" }],
+      deptIds: [
+        {
+          validator: (rule: any, value: any, callback: any) => {
+            if (modalForm.rowScope === 5) {
+              if (!value || value.length === 0) {
+                callback(new Error("请选择至少一个部门"));
+                return;
+              }
+            }
+            callback();
+          },
+          trigger: "change",
+        },
+      ],
     };
 
     // 权限相关
@@ -201,6 +215,10 @@ export default {
     const onDeptSelectConfirm = (depts: GetOrgTreeVo | GetOrgTreeVo[]) => {
       if (Array.isArray(depts)) {
         modalForm.deptIds = depts.map((d) => d.id);
+        // 触发表单验证，清除错误提示
+        if (modalFormRef.value) {
+          modalFormRef.value.validateField("deptIds");
+        }
       }
     };
 
@@ -301,7 +319,7 @@ export default {
             status: modalForm.status,
             seq: modalForm.seq,
             rowScope: modalForm.rowScope,
-            deptIds: modalForm.deptIds,
+            deptIds: modalForm.rowScope === 5 ? modalForm.deptIds : [],
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.addGroup(addDto);
@@ -324,7 +342,7 @@ export default {
             status: modalForm.status,
             seq: modalForm.seq,
             rowScope: modalForm.rowScope,
-            deptIds: modalForm.deptIds,
+            deptIds: modalForm.rowScope === 5 ? modalForm.deptIds : [],
             permissionIds: selectedPermissionIds.value,
           };
           const result = await AdminGroupApi.editGroup(editDto);
@@ -353,6 +371,21 @@ export default {
     const deselectAllPermissions = () => {
       selectedPermissionIds.value = [];
     };
+
+    // 监听 rowScope 变化，触发 deptIds 验证
+    watch(
+      () => modalForm.rowScope,
+      (newVal) => {
+        // 如果不是指定部门，清空部门选择
+        if (newVal !== 5) {
+          modalForm.deptIds = [];
+        }
+        // 触发验证
+        if (modalFormRef.value) {
+          modalFormRef.value.validateField("deptIds");
+        }
+      }
+    );
 
     return {
       modalVisible,
