@@ -221,17 +221,23 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import type { GetGroupListVo } from "@/views/auth/api/GroupApi.ts";
 import UserGroupService from "@/views/auth/service/UserGroupService.ts";
-import UserGroupPermissionModal from "@/views/core/components/UserGroupPermissionModal.vue";
+import UserGroupPermissionModal from "@/views/auth/components/UserGroupPermissionModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import OrgManagerService from "../core/service/OrgManagerService";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const modalFormRef = ref<FormInstance>();
 
+/**
+ * 用户组列表打包
+ */
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   UserGroupService.useUserGroupList();
 
-const modalFormRef = ref<FormInstance>();
-
+/**
+ * 用户组模态框打包
+ */
 const {
   modalVisible,
   modalMode,
@@ -249,6 +255,9 @@ const {
   deselectAllPermissions,
 } = UserGroupService.useUserGroupModal(modalFormRef, loadList);
 
+/**
+ * 用户组权限模态框打包
+ */
 const { modalPermissionEditVisible, modalPermissionEditRow, openPermissionEditModal } =
   UserGroupService.useUserGroupPermissionModal();
 
@@ -256,6 +265,18 @@ const { modalPermissionEditVisible, modalPermissionEditRow, openPermissionEditMo
  * 选中的列表项
  */
 const listSelected = ref<GetGroupListVo[]>([]);
+
+//部门列表打包
+const {
+  queryForm,
+  listData: deptListData,
+  listLoading: deptListLoading,
+  filteredData: deptFilteredData,
+  treeSelectData: deptTreeSelectData,
+  filterData: deptFilterData,
+  resetQuery: deptResetQuery,
+  loadList: deptLoadList,
+} = OrgManagerService.useOrgTree(null);
 </script>
 
 <style scoped>
