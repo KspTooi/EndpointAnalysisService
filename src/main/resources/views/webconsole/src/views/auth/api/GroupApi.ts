@@ -11,11 +11,6 @@ export interface GroupPermissionDefinitionVo {
   has: number; // 当前组是否拥有 0:拥有 1:不拥有
 }
 
-export interface GetGroupDefinitionsVo {
-  id: string; // 组ID
-  name: string; // 组名称
-}
-
 export interface GetGroupListDto extends PageQuery {
   keyword?: string; // 模糊匹配 组标识、组名称、组描述
   status?: number; // 组状态：0:禁用 1:启用
@@ -62,10 +57,6 @@ export interface EditGroupDto {
   permissionIds?: string[]; // 权限ID列表
 }
 
-export interface ApplyPermissionDto {
-  groupId: string; // 组ID
-  permissionCodes: string[]; // 权限代码列表
-}
 
 export interface GetGroupPermissionMenuViewDto {
   groupId: string; // 组ID
@@ -110,16 +101,6 @@ export interface GrantAndRevokeDto {
 }
 
 export default {
-  /**
-   * 获取组定义列表
-   */
-  getGroupDefinitions: async (): Promise<GetGroupDefinitionsVo[]> => {
-    var result = await Http.postEntity<Result<GetGroupDefinitionsVo[]>>("/group/getGroupDefinitions", {});
-    if (result.code == 0) {
-      return result.data;
-    }
-    throw new Error(result.message);
-  },
 
   /**
    * 获取组列表
