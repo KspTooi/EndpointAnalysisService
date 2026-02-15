@@ -56,6 +56,12 @@ public class GroupController {
     @Operation(summary = "新增组")
     @PostMapping("addGroup")
     public Result<String> addGroup(@RequestBody @Valid AddGroupDto dto) throws Exception {
+
+        //验证入参
+        if (dto.validate() != null) {
+            return Result.error(dto.validate());
+        }
+
         service.addGroup(dto);
         return Result.success("新增成功");
     }
@@ -65,6 +71,12 @@ public class GroupController {
     @PostMapping("editGroup")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editGroup(@RequestBody @Valid EditGroupDto dto) throws Exception {
+
+        //验证入参
+        if (dto.validate() != null) {
+            return Result.error(dto.validate());
+        }
+
         service.editGroup(dto);
         menuService.clearUserMenuTreeCache();
         return Result.success("修改成功");

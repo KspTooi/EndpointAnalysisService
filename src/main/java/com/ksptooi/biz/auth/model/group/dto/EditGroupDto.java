@@ -48,6 +48,26 @@ public class EditGroupDto {
     @Max(value = 5, message = "数据权限不正确")
     private Integer rowScope;
 
+    @NotNull(message = "部门ID列表不能为空")
+    @Schema(description = "部门ID列表")
+    private List<Long> deptIds;
+
     @Schema(description = "权限ID列表")
     private List<Long> permissionIds;
+
+    /**
+     * 验证入参
+     * @return 错误信息 为空则验证通过
+     */
+    public String validate() {
+
+        //当数据权限为5(指定部门)时，部门ID列表不能为空
+        if (this.rowScope == 5) {
+            if (this.deptIds.isEmpty()) {
+                return "部门ID列表不能为空";
+            }
+        }
+
+        return null;
+    }
 }
