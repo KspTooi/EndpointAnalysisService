@@ -1,6 +1,7 @@
 package com.ksptooi.biz.auth.service;
 
 
+import com.ksptooi.biz.auth.model.GroupDeptPo;
 import com.ksptooi.biz.auth.model.GroupPermissionPo;
 import com.ksptooi.biz.auth.model.group.GroupPo;
 import com.ksptooi.biz.auth.model.group.dto.*;
@@ -9,6 +10,7 @@ import com.ksptooi.biz.auth.model.permission.PermissionPo;
 import com.ksptooi.biz.auth.model.session.UserSessionPo;
 import com.ksptooi.biz.auth.repository.*;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
+import com.ksptooi.biz.core.repository.OrgRepository;
 import com.ksptooi.biz.core.repository.ResourceRepository;
 import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
@@ -50,6 +52,12 @@ public class GroupService {
 
     @Autowired
     private GroupPermissionRepository gpRepository;
+
+    @Autowired
+    private GroupDeptRepository gdRepository;
+
+    @Autowired
+    private OrgRepository orgRepository;
 
 
     /**
@@ -140,9 +148,43 @@ public class GroupService {
             gpRepository.saveAll(gpPos);
         }
 
-        //处理部门关系(如果数据权限为5(指定部门)时，则需要处理部门关系)
-        
+        //处理部门关系 先清除该用户组下挂载的部门关系
+        gdRepository.clearGroupDeptByGroupId(save.getId());
 
+        //如果数据权限为5(指定部门)时，则需要处理部门关系
+        if(dto.getRowScope() == 5){
+
+            var deptPos = orgRepository.getDeptsByIds(dto.getDeptIds());
+            var gdPos = new ArrayList<GroupDeptPo>();
+            var rootId = 0L;
+
+            if(deptPos.size() != dto.getDeptIds().size()){
+                throw new BizException("至少有一个部门不存在!");
+            }
+
+            //获取第一个部门的租户ID
+            rootId = deptPos.get(0).getRootId();
+
+            //组装GD关系
+            for (var dept : deptPos) {
+
+                if(dept.getRootId() != rootId){
+                    throw new BizException("部门[" + dept.getName() + "]不属于同一租户!");
+                }
+
+                //组装GD关系
+                var gdPo = new GroupDeptPo();
+                gdPo.setGroupId(save.getId());
+                gdPo.setDeptId(dept.getId());
+                gdPos.add(gdPo);
+            }
+
+            //保存GD关系
+            if(!gdPos.isEmpty()){
+                gdRepository.saveAll(gdPos);
+            }
+
+        }
 
 
     }
@@ -189,6 +231,44 @@ public class GroupService {
         //保存用户组关联权限码关系
         if (!gpPos.isEmpty()) {
             gpRepository.saveAll(gpPos);
+        }
+
+        //处理部门关系 先清除该用户组下挂载的部门关系
+        gdRepository.clearGroupDeptByGroupId(group.getId());
+
+        //如果数据权限为5(指定部门)时，则需要处理部门关系
+        if(dto.getRowScope() == 5){
+
+            var deptPos = orgRepository.getDeptsByIds(dto.getDeptIds());
+            var gdPos = new ArrayList<GroupDeptPo>();
+            var rootId = 0L;
+
+            if(deptPos.size() != dto.getDeptIds().size()){
+                throw new BizException("至少有一个部门不存在!");
+            }
+
+            //获取第一个部门的租户ID
+            rootId = deptPos.get(0).getRootId();
+
+            //组装GD关系
+            for (var dept : deptPos) {
+
+                if(dept.getRootId() != rootId){
+                    throw new BizException("部门[" + dept.getName() + "]不属于同一租户!");
+                }
+
+                //组装GD关系
+                var gdPo = new GroupDeptPo();
+                gdPo.setGroupId(group.getId());
+                gdPo.setDeptId(dept.getId());
+                gdPos.add(gdPo);
+            }
+
+            //保存GD关系
+            if(!gdPos.isEmpty()){
+                gdRepository.saveAll(gdPos);
+            }
+
         }
 
         //处理受影响的在线用户会话 先查询拥有该组的用户ID列表

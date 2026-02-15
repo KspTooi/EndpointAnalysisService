@@ -42,6 +42,14 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     OrgPo getDeptById(@Param("deptId") Long deptId);
 
     /**
+     * 根据部门id列表查询多个部门
+     * @param deptIds 部门id列表
+     * @return 部门列表
+     */
+    @Query("SELECT d FROM OrgPo d WHERE d.id IN :deptIds AND d.kind = 0")
+    List<OrgPo> getDeptsByIds(@Param("deptIds") List<Long> deptIds);
+
+    /**
      * 根据部门名称查询部门
      *
      * @param name  部门名称

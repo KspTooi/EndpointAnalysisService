@@ -4,6 +4,7 @@ import com.ksptooi.biz.auth.model.GroupDeptPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,16 @@ public interface GroupDeptRepository extends JpaRepository<GroupDeptPo, GroupDep
             ORDER BY u.createTime DESC
             """)
     Page<GroupDeptPo> getAuthGroupDeptList(@Param("po") GroupDeptPo po, Pageable pageable);
+
+
+    /**
+     * 根据用户组ID清除部门关系
+     * @param groupId 用户组ID
+     */
+    @Modifying
+    @Query("""
+            DELETE FROM GroupDeptPo u WHERE u.groupId = :groupId
+            """)
+    Integer clearGroupDeptByGroupId(@Param("groupId") Long groupId);
+
 }
