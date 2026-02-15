@@ -39,6 +39,9 @@ public class GroupPo {
     @Column(name = "seq", nullable = false, comment = "排序号")
     private Integer seq;
 
+    @Column(name = "row_scope", columnDefinition = "TINYINT", nullable = false, comment = "数据范围 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
+    private Integer rowScope;
+
     @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "系统内置组 0:否 1:是")
     private Integer isSystem;
 
@@ -72,6 +75,10 @@ public class GroupPo {
 
         if (this.seq == null) {
             this.seq = 0; // 默认排序号
+        }
+
+        if (this.rowScope == null) {
+            this.rowScope = 0; // 默认数据范围：全部
         }
 
         LocalDateTime now = LocalDateTime.now();
