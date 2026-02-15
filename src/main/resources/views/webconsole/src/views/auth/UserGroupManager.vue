@@ -118,6 +118,13 @@
     @close="modalPermissionEditVisible = false"
   />
 
+  <CoreOrgDeptSelectModal
+    v-model="deptSelectModalVisible"
+    multiple
+    :default-selected="modalForm.deptIds"
+    @confirm="onDeptSelectConfirm"
+  />
+
   <!-- 用户组编辑/新增模态框 -->
   <el-dialog
     v-model="modalVisible"
@@ -165,6 +172,33 @@
               <el-radio :value="1">启用</el-radio>
               <el-radio :value="0">禁用</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="数据权限" prop="rowScope" label-for="group-rowScope">
+            <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" style="width: 100%">
+              <el-option :value="0" label="全部" />
+              <el-option :value="1" label="本公司/租户及以下" />
+              <el-option :value="2" label="本部门及以下" />
+              <el-option :value="3" label="本部门" />
+              <el-option :value="4" label="仅本人" />
+              <el-option :value="5" label="指定部门" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="modalForm.rowScope === 5" label="指定部门" prop="deptIds">
+            <div class="dept-select-container">
+              <el-button type="primary" size="small" @click="openDeptSelect">选择部门</el-button>
+              <div class="selected-depts">
+                <el-tag
+                  v-for="dept in selectedDepts"
+                  :key="dept.id"
+                  closable
+                  size="small"
+                  @close="removeDept(dept.id)"
+                  class="dept-tag"
+                >
+                  {{ dept.name }}
+                </el-tag>
+              </div>
+            </div>
           </el-form-item>
         </div>
 
@@ -222,6 +256,7 @@ import type { FormInstance } from "element-plus";
 import type { GetGroupListVo } from "@/views/auth/api/GroupApi.ts";
 import UserGroupService from "@/views/auth/service/UserGroupService.ts";
 import UserGpModal from "@/views/auth/components/UserGpModal.vue";
+import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import OrgManagerService from "../core/service/OrgManagerService";
 
@@ -253,13 +288,21 @@ const {
   submitModal,
   selectAllPermissions,
   deselectAllPermissions,
+  deptSelectModalVisible,
+  selectedDepts,
+  openDeptSelect,
+  onDeptSelectConfirm,
+  removeDept,
 } = UserGroupService.useUserGroupModal(modalFormRef, loadList);
 
 /**
  * 用户组权限模态框打包
  */
-const { modalPermissionEditVisible, modalPermissionEditRow, openPermissionEditModal } =
+const { modalPermissionEditVisible, modalPermissionEditRow, openPermissionEditModal: openPermModal } =
   UserGroupService.useUserGroupPermissionModal();
+
+const openPermissionEditModal = openPermModal;
+
 
 /**
  * 选中的列表项
@@ -353,5 +396,25 @@ const {
   justify-content: flex-start;
   gap: 10px;
   margin-top: 10px;
+}
+.dept-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.selected-depts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border: 1px solid var(--el-border-color-lighter);
+  padding: 4px;
+  min-height: 32px;
+  border-radius: 4px;
+}
+
+.dept-tag {
+  margin: 2px;
 }
 </style>
