@@ -149,8 +149,8 @@
       <el-row :gutter="20">
         <!-- 左侧基础信息 -->
         <el-col :span="12">
-          <div class="form-section">
-            <div class="section-title">基础信息</div>
+          <div class="p-2.5">
+            <div class="section-title text-sm font-bold mb-4 pl-2.5">基础信息</div>
             <el-form-item label="用户组标识" prop="code" label-for="group-code">
               <el-input
                 v-model="modalForm.code"
@@ -168,7 +168,7 @@
               />
             </el-form-item>
             <el-form-item label="排序号" prop="seq">
-              <el-input-number v-model="modalForm.seq" :min="0" style="width: 100%" />
+              <el-input-number v-model="modalForm.seq" :min="0" class="w-full" />
             </el-form-item>
             <el-form-item label="用户组状态" prop="status" label-for="group-status">
               <el-radio-group v-model="modalForm.status" id="group-status">
@@ -180,9 +180,9 @@
               <el-input v-model="modalForm.remark" type="textarea" :rows="2" id="group-remark" placeholder="请输入描述" />
             </el-form-item>
 
-            <div class="section-title mt-4">数据权限</div>
+            <div class="section-title text-sm font-bold mb-4 pl-2.5 mt-5">数据权限</div>
             <el-form-item label="权限范围" prop="rowScope" label-for="group-rowScope">
-              <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" style="width: 100%">
+              <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" class="w-full">
                 <el-option :value="0" label="全部" />
                 <el-option :value="1" label="本公司/租户及以下" />
                 <el-option :value="2" label="本部门及以下" />
@@ -192,7 +192,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="modalForm.rowScope === 5" label="指定部门" prop="deptIds">
-              <div class="dept-select-box">
+              <div class="flex items-center">
                 <el-button type="primary" @click="openDeptSelect" size="small">选择部门</el-button>
                 <span class="ml-2 text-gray-500">已选择 {{ modalForm.deptIds?.length || 0 }} 个部门</span>
               </div>
@@ -202,10 +202,10 @@
 
         <!-- 右侧权限分配 -->
         <el-col :span="12">
-          <div class="form-section">
-            <div class="section-title">功能权限分配</div>
-            <div class="permission-wrapper">
-              <div class="permission-header">
+          <div class="p-2.5">
+            <div class="section-title text-sm font-bold mb-4 pl-2.5">功能权限分配</div>
+            <div class="permission-wrapper rounded overflow-hidden">
+              <div class="p-2.5 permission-header-bg">
                 <el-input v-model="permissionSearch" placeholder="搜索权限码/名称" clearable size="small">
                   <template #prefix>
                     <el-icon><Search /></el-icon>
@@ -219,13 +219,13 @@
                   </el-button-group>
                 </div>
               </div>
-              <div class="permission-body">
+              <div class="h-[380px] overflow-y-auto p-2.5">
                 <el-checkbox-group v-model="selectedPermissionIds">
-                  <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-row">
+                  <div v-for="permission in filteredPermissions" :key="permission.id" class="permission-row py-1.5">
                     <el-checkbox :value="permission.id">
-                      <div class="perm-info">
-                        <div class="perm-name">{{ permission.name }}</div>
-                        <div class="perm-code">{{ permission.code }}</div>
+                      <div class="flex flex-col leading-snug ml-2">
+                        <div class="text-[13px] perm-name-color">{{ permission.name }}</div>
+                        <div class="text-[11px] font-mono perm-code-color">{{ permission.code }}</div>
                       </div>
                     </el-checkbox>
                   </div>
@@ -310,48 +310,22 @@ const listSelected = ref<GetGroupListVo[]>([]);
 </script>
 
 <style scoped>
-.form-section {
-  padding: 10px;
-}
-
+/* 使用 CSS 变量的样式保留在这里 */
 .section-title {
-  font-size: 14px;
-  font-weight: bold;
   color: var(--el-text-color-primary);
-  margin-bottom: 15px;
-  padding-left: 10px;
   border-left: 4px solid var(--el-color-primary);
-}
-
-.mt-4 {
-  margin-top: 20px;
-}
-
-.dept-select-box {
-  display: flex;
-  align-items: center;
 }
 
 .permission-wrapper {
   border: 1px solid var(--el-border-color-lighter);
-  border-radius: 4px;
-  overflow: hidden;
 }
 
-.permission-header {
-  padding: 10px;
+.permission-header-bg {
   background-color: var(--el-fill-color-light);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
-.permission-body {
-  height: 380px;
-  overflow-y: auto;
-  padding: 10px;
-}
-
 .permission-row {
-  padding: 5px 0;
   border-bottom: 1px dashed var(--el-border-color-extra-light);
 }
 
@@ -359,22 +333,12 @@ const listSelected = ref<GetGroupListVo[]>([]);
   border-bottom: none;
 }
 
-.perm-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.4;
-  margin-left: 8px;
-}
-
-.perm-name {
-  font-size: 13px;
+.perm-name-color {
   color: var(--el-text-color-primary);
 }
 
-.perm-code {
-  font-size: 11px;
+.perm-code-color {
   color: var(--el-text-color-secondary);
-  font-family: monospace;
 }
 
 :deep(.el-checkbox) {
@@ -385,29 +349,5 @@ const listSelected = ref<GetGroupListVo[]>([]);
 
 :deep(.el-checkbox__label) {
   padding-left: 0;
-}
-
-.ml-2 {
-  margin-left: 8px;
-}
-
-.text-gray-500 {
-  color: var(--el-text-color-secondary);
-}
-
-.text-xs {
-  font-size: 12px;
-}
-
-.flex {
-  display: flex;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.items-center {
-  align-items: center;
 }
 </style>

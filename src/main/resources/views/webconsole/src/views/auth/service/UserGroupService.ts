@@ -171,7 +171,7 @@ export default {
       remark: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
       seq: [
         { required: true, message: "请输入排序号", trigger: "blur" },
-        { min: 0, message: "排序号必须大于等于0", trigger: "blur" },
+        { type: "number", min: 0, message: "排序号必须大于等于0", trigger: "blur" },
       ],
       rowScope: [{ required: true, message: "请选择数据权限范围", trigger: "change" }],
     };
@@ -252,7 +252,7 @@ export default {
       await resetModal();
 
       if (mode === "edit" && row) {
-        isSystemGroup.value = row.isSystem;
+        isSystemGroup.value = row.isSystem === 1;
         try {
           const ret = await AdminGroupApi.getGroupDetails({ id: row.id });
           modalForm.id = ret.id;
