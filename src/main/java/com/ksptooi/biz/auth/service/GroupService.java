@@ -105,6 +105,13 @@ public class GroupService {
         }
 
         vo.setPermissions(defVos);
+
+        //如果数据权限为5(指定部门)时，则需要获取部门列表
+        if(po.getRowScope() == 5){
+            var deptIds = gdRepository.getDeptIdsByGroupId(id);
+            vo.setDeptIds(deptIds);
+        }
+
         return vo;
     }
 
