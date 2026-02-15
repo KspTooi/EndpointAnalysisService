@@ -1,4 +1,4 @@
-package com.ksptooi.biz.authgroupdept.model;
+package com.ksptooi.biz.auth.model;
 
 import jakarta.persistence.*;
 import lombok.*;
