@@ -112,7 +112,7 @@
     </template>
   </StdListLayout>
 
-  <UserGroupPermissionModal
+  <UserGpModal
     :visible="modalPermissionEditVisible"
     :row="modalPermissionEditRow"
     @close="modalPermissionEditVisible = false"
@@ -221,7 +221,7 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import type { GetGroupListVo } from "@/views/auth/api/GroupApi.ts";
 import UserGroupService from "@/views/auth/service/UserGroupService.ts";
-import UserGroupPermissionModal from "@/views/auth/components/UserGroupPermissionModal.vue";
+import UserGpModal from "@/views/auth/components/UserGpModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import OrgManagerService from "../core/service/OrgManagerService";
 
