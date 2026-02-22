@@ -43,9 +43,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 ### Node ###
-node_modules/
+**/node_modules/**
 .DS_Store/
-dist
+**/dist/**
 dist-ssr
 coverage
 *.local
@@ -56,3 +56,16 @@ targer/
 
 ### DESIGN ###
 T*.pdma.json
+
+### EDITOR ###
+**/.idea/**
+**/.cursor/**
+**/.vscode/**
+**/.antigravity/**
+
+### SERVICE ###
+projector.map.json
+
+### VIEWS ###
+**/node/**
+components.d.ts
