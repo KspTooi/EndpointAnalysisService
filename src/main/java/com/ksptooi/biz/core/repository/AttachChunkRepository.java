@@ -21,17 +21,4 @@ public interface AttachChunkRepository extends JpaRepository<AttachChunkPo, Long
             t.chunkId = :chunkId
             """)
     Long countByAttachIdAndChunkId(@Param("attachId") Long attachId, @Param("chunkId") Long chunkId);
-
-    /**
-     * 统计指定附件的分块数量
-     *
-     * @param attachId 附件ID
-     * @return 分块数量
-     */
-    @Query("""
-            SELECT COUNT(t) FROM AttachChunkPo t
-            WHERE t.attach.id = :attachId
-            """)
-    Long countByAttachId(@Param("attachId") Long attachId);
-
 }
