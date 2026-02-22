@@ -52,6 +52,7 @@ coverage
 
 ### BUILD ###
 targer/
+**/target/**
 
 ### DESIGN ###
-*.pdma.json
+T*.pdma.json
