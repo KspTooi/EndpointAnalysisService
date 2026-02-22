@@ -6,7 +6,6 @@ import com.ksptooi.biz.auth.model.group.dto.GetGroupListDto;
 import com.ksptooi.biz.auth.model.group.vo.GetGroupListVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -36,9 +35,6 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
      * 检查用户组标识是否存在
      */
     boolean existsByCode(String code);
-
-    @EntityGraph(value = "with-permissions")
-    GroupPo getGroupDetailsById(@Param("id") Long id);
 
     /**
      * 根据ID列表获取用户组及其关联的用户和权限

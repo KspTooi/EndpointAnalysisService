@@ -17,13 +17,13 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
     /**
      * 根据用户组ID和权限ID获取权限关联
      *
-     * @param groupId 用户组ID
+     * @param groupId      用户组ID
      * @param permissionId 权限ID
      * @return 权限关联
      */
     @Query("""
-            SELECT gp FROM GroupPermissionPo gp WHERE gp.groupId = :groupId AND gp.permissionId = :permissionId
-    """)
+                    SELECT gp FROM GroupPermissionPo gp WHERE gp.groupId = :groupId AND gp.permissionId = :permissionId
+            """)
     GroupPermissionPo getGpByGroupIdAndPermissionId(@Param("groupId") Long groupId, @Param("permissionId") Long permissionId);
 
 
@@ -38,19 +38,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             WHERE gp.groupId = :groupId
             """)
     List<Long> getPermissionIdsByGroupId(@Param("groupId") Long groupId);
-    
 
-    /**
-     * 根据用户组ID获取拥有的全部权限
-     *
-     * @param groupId 用户组ID
-     * @return 权限列表
-     */
-    @Query("""
-            SELECT gp FROM GroupPermissionPo gp
-            WHERE gp.groupId = :groupId
-            """)
-    List<GroupPermissionPo> getGroupPermissionsByGroupId(@Param("groupId") Long groupId);
 
     /**
      * 清除用户组拥有的全部权限关联
@@ -65,7 +53,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
 
     /**
      * 根据权限码ID列表清除全部权限关联
-     * 
+     *
      * @param permissionIds 权限码ID列表 列表不能为空
      */
     @Modifying
@@ -86,7 +74,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             """)
     void clearPermissionByGroupIds(@Param("groupIds") List<Long> groupIds);
 
-    
+
     /**
      * 根据权限ID统计有多少用户组在使用该权限
      *

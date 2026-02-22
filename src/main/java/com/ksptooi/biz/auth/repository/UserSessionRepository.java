@@ -66,6 +66,7 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
     /**
      * 根据用户IDS获取未过期的会话
      * 在线用户的判断标准是会话未过期（expiresAt > 当前时间）
+     *
      * @param userIds 用户IDS
      * @return 会话列表
      */
@@ -74,10 +75,6 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
                 WHERE us.userId IN :userIds AND us.expiresAt > CURRENT_TIMESTAMP
             """)
     List<UserSessionPo> getSessionByUserIds(@Param("userIds") List<Long> userIds);
-
-
-
-
 
 
     /**
@@ -92,15 +89,5 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             WHERE us.userId IN :userIds
             """)
     int removeUserSessionByUserIds(@Param("userIds") List<Long> userIds);
-
-    /**
-     * 根据SessionId删除会话
-     */
-    @Modifying
-    @Query("""
-            DELETE FROM UserSessionPo us
-            WHERE us.sessionId = :sessionId
-            """)
-    void removeUserSessionBySessionId(@Param("sessionId") String sessionId);
 
 }

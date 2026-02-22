@@ -107,14 +107,6 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             """)
     Page<PermissionPo> getPermissionsByKeywordAndGroup(@Param("keyword") String keyword, @Param("groupId") Long groupId, @Param("hasPermission") Integer hasPermission, Pageable pageable);
 
-    /**
-     * 检查权限标识是否存在
-     *
-     * @param code 权限标识
-     * @return 是否存在
-     */
-    boolean existsByCode(String code);
-
 
     /**
      * 根据关键词获取权限列表
@@ -147,16 +139,5 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             WHERE gp.groupId = :groupId
             """)
     List<PermissionPo> getPermissionsByGroupId(@Param("groupId") Long groupId);
-
-    /**
-     * 获取全部权限ID列表
-     *
-     * @return 权限ID列表
-     */
-    @Query("""
-            SELECT DISTINCT p.id FROM PermissionPo p
-            """)
-    List<Long> getAllPermissionIds();
-
 
 } 
