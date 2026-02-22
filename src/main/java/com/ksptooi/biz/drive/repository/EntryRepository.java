@@ -54,16 +54,6 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
             """)
     long countByName(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
 
-    @Query("""
-            SELECT COUNT(u) FROM EntryPo u
-            WHERE
-            u.parent.id = :parentId AND
-            u.companyId = :companyId AND
-            u.name = :name AND
-            u.id != :id
-            """)
-    long countByNameIgnoreId(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name, @Param("id") Long id);
-
 
     /**
      * 根据条目IDS更新文件附件状态
@@ -164,24 +154,6 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
             ORDER BY t.name ASC
             """)
     Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
-
-
-    /**
-     * 根据名称列表和父级目录ID和公司ID查找同名条目名称列表
-     *
-     * @param names     名称列表
-     * @param parentId  父级目录ID
-     * @param companyId 公司ID
-     * @return 匹配的同名条目名称列表
-     */
-    @Query("""
-            SELECT t FROM EntryPo t
-            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
-            t.name IN :names AND
-            t.companyId = :companyId
-            ORDER BY t.name ASC
-            """)
-    List<EntryPo> matchEntriesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
 
 
     /**
