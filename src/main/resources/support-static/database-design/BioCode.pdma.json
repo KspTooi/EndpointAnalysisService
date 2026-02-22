@@ -1,10 +1,10 @@
 {
-  "name": "EndpointAnalysisService",
-  "describe": "EndpointAnalysisService",
+  "name": "BioCodeDB",
+  "describe": "BioCode系统数据库设计方案",
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-15 08:25:12",
+  "updatedTime": "2026-2-23 07:10:57",
   "dbConns": [],
   "profile": {
     "default": {
