@@ -43,6 +43,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
 
     /**
      * 根据部门id列表查询多个部门
+     *
      * @param deptIds 部门id列表
      * @return 部门列表
      */
@@ -76,15 +77,6 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
 
 
     /**
-     * 根据企业ID查询部门列表
-     *
-     * @param orgId 企业ID
-     * @return 部门列表
-     */
-    @Query("SELECT d FROM OrgPo d WHERE d.rootId = :orgId AND d.kind = 0")
-    List<OrgPo> getDeptByOrgId(@Param("orgId") Long orgId);
-
-    /**
      * 根据一级组织ID查询组织机构数量
      *
      * @param parentId 一级组织ID
@@ -95,20 +87,6 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             WHERE u.parentId = :parentId
             """)
     Integer countByParentId(@Param("parentId") Long parentId);
-
-
-    /**
-     * 根据id列表和公司id查询部门列表
-     *
-     * @param ids   部门id列表
-     * @param orgId 公司id
-     * @return 部门列表
-     */
-    @Query("""
-                    SELECT d FROM OrgPo d
-                    WHERE d.id IN :ids AND d.rootId = :orgId AND d.kind = 0
-            """)
-    List<OrgPo> getDeptByIdsAndCompanyId(@Param("ids") List<Long> ids, @Param("orgId") Long orgId);
 
 
     /**
