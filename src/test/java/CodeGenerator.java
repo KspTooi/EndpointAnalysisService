@@ -50,7 +50,7 @@ public class CodeGenerator {
         projector.enableProjectorMap(true);
 
         //设置输入和输出路径(使用相对路径)
-        factory.setInputBasePathFromRelative("./src/resources/support-static/code-generator/blueprint_jpa");
+        factory.setInputBasePathFromRelative("./src/main/resources/support-static/code-generator/blueprint_jpa");
         factory.setOutputBasePathFromRelative("./");
 
         //选择要收集的表
