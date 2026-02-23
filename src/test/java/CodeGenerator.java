@@ -20,7 +20,7 @@ public class CodeGenerator {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的表名
-        var tableNames = List.of("auth_group_dept");
+        var tableNames = List.of("zremoved_auth_group");
 
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
@@ -50,7 +50,7 @@ public class CodeGenerator {
         projector.enableProjectorMap(true);
 
         //设置输入和输出路径(使用相对路径)
-        factory.setInputBasePathFromRelative("./blueprint_jpa");
+        factory.setInputBasePathFromRelative("./src/resources/support-static/code-generator/blueprint_jpa");
         factory.setOutputBasePathFromRelative("./");
 
         //选择要收集的表
