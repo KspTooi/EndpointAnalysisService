@@ -79,6 +79,12 @@ public class AuditLoginService {
 
     /**
      * 异步记录登录审计日志
+     * @param userId 用户ID
+     * @param username 用户名
+     * @param status 状态 0:成功 1:失败
+     * @param message 消息
+     * @param ipAddr IP地址
+     * @param uaString 用户代理字符串
      */
     @Async
     @Transactional(rollbackFor = Exception.class)

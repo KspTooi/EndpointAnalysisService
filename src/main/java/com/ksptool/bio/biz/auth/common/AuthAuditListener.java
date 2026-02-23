@@ -67,7 +67,7 @@ public class AuthAuditListener {
         var message = "登录成功";
 
         //记录登录审计日志
-        auditLoginService.recordLoginAudit(userId, username, loginKind, message, ip, uaStr);
+        auditLoginService.recordLoginAudit(userId, username, 0, message, ip, uaStr);
     }
 
 
@@ -102,6 +102,6 @@ public class AuthAuditListener {
         }
 
         //记录登录审计日志
-        auditLoginService.recordLoginAudit(userId, username, loginKind, message, ip, uaStr);
+        auditLoginService.recordLoginAudit(userId, username, 1, message, ip, uaStr);
     }
 }
