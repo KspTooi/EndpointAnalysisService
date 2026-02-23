@@ -25,7 +25,7 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
      * @return 会话列表
      */
     @Query("""
-            SELECT new com.ksptooi.biz.auth.model.session.vo.GetSessionListVo(
+            SELECT new com.ksptool.bio.biz.auth.model.session.vo.GetSessionListVo(
               us.id,
               u.username,
               us.createTime,

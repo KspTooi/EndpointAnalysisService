@@ -55,7 +55,7 @@ public interface NoticeRcdRepository extends JpaRepository<NoticeRcdPo, Long> {
      * @return 消息接收记录列表
      */
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo(
+            SELECT new com.ksptool.bio.biz.core.model.noticercd.vo.GetUserNoticeRcdListVo(
             r.id,
             n.title,
             n.kind,

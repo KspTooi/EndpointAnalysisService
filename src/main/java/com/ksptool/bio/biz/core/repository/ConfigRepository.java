@@ -24,7 +24,7 @@ public interface ConfigRepository extends JpaRepository<ConfigPo, Long> {
 
 
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.config.GetConfigListVo(
+            SELECT new com.ksptool.bio.biz.core.model.config.GetConfigListVo(
                 c.id, u.username, c.configKey,
                 c.configValue, c.description, c.createTime, c.updateTime
             )

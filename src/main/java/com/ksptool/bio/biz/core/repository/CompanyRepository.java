@@ -37,7 +37,7 @@ public interface CompanyRepository extends JpaRepository<CompanyPo, Long> {
      * @return 公司列表
      */
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.company.vo.GetCurrentUserCompanyListVo(
+            SELECT new com.ksptool.bio.biz.core.model.company.vo.GetCurrentUserCompanyListVo(
                 t.id,
                 t.founder.username,
                 (SELECT u2.username FROM CompanyMemberPo m2 JOIN m2.user u2 WHERE m2.company.id = t.id AND m2.role = 0),

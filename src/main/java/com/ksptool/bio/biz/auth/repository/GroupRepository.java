@@ -60,7 +60,7 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
     Integer findMaxSortOrder();
 
     @Query("""
-            SELECT new com.ksptooi.biz.auth.model.group.vo.GetGroupListVo(
+            SELECT new com.ksptool.bio.biz.auth.model.group.vo.GetGroupListVo(
                 g.id,
                 g.code,
                 g.name,

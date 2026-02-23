@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
 
 
     @Query("""
-            SELECT new com.ksptooi.biz.core.model.user.vo.GetUserListVo(
+            SELECT new com.ksptool.bio.biz.core.model.user.vo.GetUserListVo(
                 p.id,
                 p.rootId,
                 p.rootName,
