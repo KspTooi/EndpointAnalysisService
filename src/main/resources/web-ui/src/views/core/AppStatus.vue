@@ -14,6 +14,7 @@
                     <span class="title-with-icon">
                       <el-icon><Cpu /></el-icon>
                       CPU 使用率
+                      <span class="data-count">({{ rtData.length }}条)</span>
                     </span>
                     <el-tag size="small" :type="getCpuTagType(latestStatus?.cpuUsage)" effect="plain">
                       {{ latestStatus?.cpuUsage?.toFixed(1) ?? 0 }}%
@@ -30,6 +31,7 @@
                     <span class="title-with-icon">
                       <el-icon><Odometer /></el-icon>
                       内存使用率
+                      <span class="data-count">({{ rtData.length }}条)</span>
                     </span>
                     <el-tag size="small" :type="getMemTagType(latestStatus?.memoryUsage)" effect="plain">
                       {{ latestStatus?.memoryUsage?.toFixed(1) ?? 0 }}%
@@ -46,6 +48,7 @@
                     <span class="title-with-icon">
                       <el-icon><Connection /></el-icon>
                       网络流量 (KB/s)
+                      <span class="data-count">({{ rtData.length }}条)</span>
                     </span>
                     <div class="extra-info">
                       <span class="rx">↓ {{ formatNet(latestStatus?.networkRx) }}</span>
@@ -63,6 +66,7 @@
                     <span class="title-with-icon">
                       <el-icon><DataLine /></el-icon>
                       磁盘 IO (KB/s)
+                      <span class="data-count">({{ rtData.length }}条)</span>
                     </span>
                     <div class="extra-info">
                       <span class="rx">R {{ formatNet(latestStatus?.ioRead) }}</span>
@@ -226,8 +230,17 @@ provide(THEME_KEY, "light");
 const activeTab = ref("realtime");
 
 // 实时状态
-const { latestStatus, cpuOption, memOption, netOption, ioOption, formatNet, getCpuTagType, getMemTagType } =
-  AppStatusService.useAppRealTimeStatus();
+const {
+  data: rtData,
+  latestStatus,
+  cpuOption,
+  memOption,
+  netOption,
+  ioOption,
+  formatNet,
+  getCpuTagType,
+  getMemTagType,
+} = AppStatusService.useAppRealTimeStatus();
 
 // 系统信息
 const {
@@ -316,6 +329,13 @@ const formatBytes = (mb: number | undefined | null): string => {
 .title-with-icon .el-icon {
   font-size: 16px;
   color: var(--el-color-primary);
+}
+
+.data-count {
+  font-size: 12px;
+  font-weight: normal;
+  color: var(--el-text-color-secondary);
+  margin-left: 4px;
 }
 
 .chart {
