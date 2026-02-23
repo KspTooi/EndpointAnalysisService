@@ -28,7 +28,6 @@ import java.util.Set;
 public class UserPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", comment = "用户ID")
     private Long id;
 
