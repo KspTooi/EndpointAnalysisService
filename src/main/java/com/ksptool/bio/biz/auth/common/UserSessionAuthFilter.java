@@ -105,6 +105,10 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
         //UserSessionPo 转换为 AuthUserDetails
         var aud = as(sessionPo, AuthUserDetails.class);
         aud.setId(sessionPo.getUserId());
+
+        //设置RS数据权限到AUD中
+        aud.setRsMax(sessionPo.getRsMax());
+        aud.setRsAllowDepts(fromJsonArray(sessionPo.getRsAllowDepts(), Long.class));
         var authentication = new UsernamePasswordAuthenticationToken(aud, null, authorities);
 
         //设置认证详情
