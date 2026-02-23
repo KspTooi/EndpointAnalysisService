@@ -17,8 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
@@ -28,16 +30,27 @@ public class SecurityConfig {
     /**
      * 白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
      */
-    private final List<String> whiteList = Arrays.asList(
+    private final Set<String> whiteList = Stream.of(
             "/maintain/**",     // 维护中心
             "/auth/userLogin",  // 用户登录
             "/v3/api-docs",     // OpenApi 端点
             "/auth/genCaptcha", // 验证码端点
-            "/auth/check",      // 验证码端点
-            "/",                // SPA 入口
-            "/static/**",       // 打包静态文件
-            "/favicon.ico"      // 网站图标
-    );
+            "/auth/check"      // 验证码端点
+    ).collect(Collectors.toSet());
+
+    /**
+     * 集成部署白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
+     */
+    private final Set<String> integratedDeployWhiteList = Stream.of(
+            "/js/**",
+            "/css/**",
+            "/assets/**",
+            "/index.html",
+            "/favicon.ico",
+            "/",
+            "/index.html"
+    ).collect(Collectors.toSet());
+
 
     @Autowired
     private UserSessionAuthFilter userSessionAuthFilter;
@@ -57,6 +70,10 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        var whiteList = new HashSet<String>(this.whiteList);
+        whiteList.addAll(integratedDeployWhiteList);
+
         http
                 //关闭 CSRF（前后端分离项目通常关闭，使用 Session/Token 校验）
                 .csrf(AbstractHttpConfigurer::disable)
@@ -82,7 +99,7 @@ public class SecurityConfig {
                 //配置接口权限规则
                 .authorizeHttpRequests(auth -> auth
                                 //白名单
-                                .requestMatchers(whiteList.toArray(new String[0])).permitAll()
+                                .requestMatchers(whiteList.toArray(String[]::new)).permitAll()
 
                                 //兜底规则 其余所有请求都必须登录
                                 .anyRequest().authenticated()

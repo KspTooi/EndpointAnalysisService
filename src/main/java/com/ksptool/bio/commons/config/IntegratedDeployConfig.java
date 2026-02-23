@@ -43,8 +43,10 @@ public class IntegratedDeployConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         //打包静态文件
-        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/web-static/css");
-        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/web-static/js");
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/web-static/js/");
+        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/web-static/css/");
+        registry.addResourceHandler("/assets/**").addResourceLocations("classpath:/web-static/assets/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/web-static/");
 
         //网站图标
         registry.addResourceHandler("/favicon.ico").addResourceLocations("classpath:/web-static/");
@@ -63,6 +65,6 @@ public class IntegratedDeployConfig implements WebMvcConfigurer {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("forward:/static/index.html");
+        registry.addViewController("/").setViewName("forward:/index.html");
     }
 }
