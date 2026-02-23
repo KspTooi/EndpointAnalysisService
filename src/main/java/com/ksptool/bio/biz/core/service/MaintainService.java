@@ -245,6 +245,10 @@ public class MaintainService {
                 user.setLoginCount(0);
                 user.setStatus(0);
                 user.setIsSystem(1);
+            
+                //由系统创建的用户其创建者ID和修改者ID为-1
+                user.setCreatorId(-1L);
+                user.setUpdatorId(-1L);
                 user = userRepository.save(user);
             }
 

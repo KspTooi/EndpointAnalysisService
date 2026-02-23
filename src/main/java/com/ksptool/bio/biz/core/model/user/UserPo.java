@@ -104,7 +104,6 @@ public class UserPo {
     @Column(name = "delete_time", comment = "删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
 
-
     @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
     private Set<CompanyPo> createdCompanies = new HashSet<>();
 
