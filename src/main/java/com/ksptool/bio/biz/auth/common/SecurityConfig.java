@@ -29,13 +29,14 @@ public class SecurityConfig {
      * 白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
      */
     private final List<String> whiteList = Arrays.asList(
-            "/maintain/**", //维护中心
-            "/auth/userLogin", //用户登录(新)
-            "/v3/api-docs", //OpenApi端点
-            "/maintain/**", //OpenApi端点
-            "/auth/genCaptcha", //验证码端点
-            "/auth/check",//验证码端点
-            "/static/**" //静态资源
+            "/maintain/**",     // 维护中心
+            "/auth/userLogin",  // 用户登录
+            "/v3/api-docs",     // OpenApi 端点
+            "/auth/genCaptcha", // 验证码端点
+            "/auth/check",      // 验证码端点
+            "/",                // SPA 入口
+            "/static/**",       // 打包静态文件
+            "/favicon.ico"      // 网站图标
     );
 
     @Autowired
