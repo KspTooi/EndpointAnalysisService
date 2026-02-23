@@ -91,7 +91,7 @@ export default {
    * 下载Excel模板
    */
   downloadExcelTemplate: async (code: string): Promise<void> => {
-    const response = await axios.get(`/excelTemplate/downloadExcelTemplate`, {
+    const response = await Http.axios().get(`/excelTemplate/downloadExcelTemplate`, {
       params: { code },
       responseType: "blob",
       headers: {
@@ -100,7 +100,7 @@ export default {
     });
 
     const contentType = response.headers["content-type"];
-    
+
     if (contentType && contentType.includes("application/json")) {
       const text = await response.data.text();
       const result = JSON.parse(text);
