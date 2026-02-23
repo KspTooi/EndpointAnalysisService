@@ -26,8 +26,12 @@ public class DataScopeAspect {
     @Before("execution(* com.ksptool.bio.biz..service.*.*(..))")
     public void enableDataScopeFilter() throws BizException {
 
-        // 1. 获取当前登录用户的 Session 上下文
+        //获取当前登录用户的 Session 上下文
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null) {
+            throw new BizException("在处理数据权限时，获取当前登录用户的 Authentication 失败!");
+        }
 
         //获取登录成功的AUD
         AuthUserDetails aud = (AuthUserDetails) auth.getPrincipal();
@@ -50,11 +54,11 @@ public class DataScopeAspect {
         //注入参数
         filter.setParameter("rsMax", rsMax);
         filter.setParameter("userId", aud.getId());
-        filter.setParameter("companyId", aud.getCompanyId());
+        filter.setParameter("rootId", aud.getRootId());
 
         // 💣 防坑指南：Hibernate 中使用 IN 查询时，如果集合为空会报错
         List<Long> deptIds = aud.getRsAllowDepts();
-        
+
         if (deptIds == null || deptIds.isEmpty()) {
             filter.setParameterList("deptIds", Collections.singletonList(-1L)); // 塞入一个不存在的无效 ID
         }
