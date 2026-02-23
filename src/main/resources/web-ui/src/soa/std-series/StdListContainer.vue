@@ -1,10 +1,14 @@
 <template>
-  <div class="std-list-container">
+  <div class="std-list-container" :class="{ 'no-padding': nopadding }">
     <slot></slot>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+  nopadding?: boolean
+}>()
+</script>
 
 <style scoped>
 .std-list-container {
@@ -15,5 +19,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.std-list-container.no-padding {
+  padding: 0;
 }
 </style>
