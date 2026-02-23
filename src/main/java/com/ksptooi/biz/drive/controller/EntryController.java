@@ -6,9 +6,9 @@ import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
 import com.ksptooi.biz.drive.model.vo.GetEntryDetailsVo;
 import com.ksptooi.biz.drive.model.vo.GetEntryListVo;
 import com.ksptooi.biz.drive.service.EntryService;
-import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -103,7 +103,7 @@ public class EntryController {
     }
 
     @PreAuthorize("@auth.hasCode('drive:entry:move')")
-    @Operation(summary = "移动检测",description = "用于移动条目前的检测")
+    @Operation(summary = "移动检测", description = "用于移动条目前的检测")
     @PostMapping("/checkEntryMove")
     public Result<CheckEntryMoveVo> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 
@@ -117,7 +117,7 @@ public class EntryController {
 
 
     @PreAuthorize("@auth.hasCode('drive:entry:move')")
-    @Operation(summary = "移动条目",description = "允许用户在云盘内移动条目")
+    @Operation(summary = "移动条目", description = "允许用户在云盘内移动条目")
     @PostMapping("/moveEntry")
     public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
 

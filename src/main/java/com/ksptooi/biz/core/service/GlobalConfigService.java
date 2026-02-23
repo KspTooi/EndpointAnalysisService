@@ -2,25 +2,21 @@ package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.config.ConfigPo;
 import com.ksptooi.biz.core.repository.ConfigRepository;
-import com.ksptooi.commons.enums.GlobalConfigEnum;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GlobalConfigService {
-    
+
     private final ConfigRepository configRepository;
 
     public String getValue(String key) {
         ConfigPo config = configRepository.getGlobalConfig(key);
-        if(config == null){
+        if (config == null) {
             return null;
         }
         return config.getConfigValue();

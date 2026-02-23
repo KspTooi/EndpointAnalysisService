@@ -1,6 +1,6 @@
 package com.ksptooi.biz.core.model.registry.dto;
 
-import com.ksptooi.commons.dataprocess.Str;
+import com.ksptool.bio.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

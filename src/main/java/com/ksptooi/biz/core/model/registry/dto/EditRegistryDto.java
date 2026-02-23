@@ -1,13 +1,12 @@
 package com.ksptooi.biz.core.model.registry.dto;
 
+import com.ksptool.bio.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
-
-import com.ksptooi.commons.dataprocess.Str;
 
 @Getter
 @Setter

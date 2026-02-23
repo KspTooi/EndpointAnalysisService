@@ -1,8 +1,8 @@
 package com.ksptooi.biz.rdbg.model.collection.vo;
 
-import com.ksptooi.commons.httprelay.model.RelayBody;
-import com.ksptooi.commons.httprelay.model.RelayHeader;
-import com.ksptooi.commons.httprelay.model.RelayParam;
+import com.ksptool.bio.commons.model.RelayBody;
+import com.ksptool.bio.commons.model.RelayHeader;
+import com.ksptool.bio.commons.model.RelayParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

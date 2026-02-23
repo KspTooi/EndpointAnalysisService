@@ -9,10 +9,10 @@ import com.ksptooi.biz.document.model.epsite.vo.ExportEpSiteVo;
 import com.ksptooi.biz.document.model.epsite.vo.GetEpSiteDetailsVo;
 import com.ksptooi.biz.document.model.epsite.vo.GetEpSiteListVo;
 import com.ksptooi.biz.document.repository.EpSiteRepository;
-import com.ksptooi.commons.utils.PinyinUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.commons.utils.PinyinUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -119,7 +119,7 @@ public class EpSiteService {
                 existingSite.setUsernamePyIdx(PinyinUtils.getFirstLetters(item.getUsername()));
                 updatePos.add(existingSite);
                 continue;
-            } 
+            }
             var addPo = as(item, EpSitePo.class);
 
             //处理拼音索引

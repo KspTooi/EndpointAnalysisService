@@ -4,10 +4,10 @@ import com.ksptooi.biz.audit.modal.auditlogin.dto.GetAuditLoginListDto;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginDetailsVo;
 import com.ksptooi.biz.audit.modal.auditlogin.vo.GetAuditLoginListVo;
 import com.ksptooi.biz.audit.service.AuditLoginService;
-import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,7 +36,7 @@ public class AuditLoginController {
     public PageResult<GetAuditLoginListVo> getAuditLoginList(@RequestBody @Valid GetAuditLoginListDto dto) throws Exception {
         return auditLoginService.getAuditLoginList(dto);
     }
-    
+
     @PreAuthorize("@auth.hasCode('audit:login:view')")
     @Operation(summary = "获取登录日志详情")
     @PostMapping("/getAuditLoginDetails")

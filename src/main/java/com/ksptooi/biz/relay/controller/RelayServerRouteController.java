@@ -6,10 +6,10 @@ import com.ksptooi.biz.relay.model.relayserverroute.dto.GetRelayServerRouteListD
 import com.ksptooi.biz.relay.model.relayserverroute.vo.GetRelayServerRouteDetailsVo;
 import com.ksptooi.biz.relay.model.relayserverroute.vo.GetRelayServerRouteListVo;
 import com.ksptooi.biz.relay.service.RelayServerRouteService;
-import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -38,6 +38,7 @@ public class RelayServerRouteController {
     public PageResult<GetRelayServerRouteListVo> getRelayServerRouteList(@RequestBody @Valid GetRelayServerRouteListDto dto) throws Exception {
         return relayServerRouteService.getRelayServerRouteList(dto);
     }
+
     @PreAuthorize("@auth.hasCode('relay:route:add')")
     @Operation(summary = "新增中继路由策略")
     @PostMapping("/addRelayServerRoute")

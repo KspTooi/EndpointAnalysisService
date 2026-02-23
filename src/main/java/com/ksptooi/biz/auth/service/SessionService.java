@@ -10,10 +10,10 @@ import com.ksptooi.biz.auth.repository.UserSessionRepository;
 import com.ksptooi.biz.core.model.user.UserPo;
 import com.ksptooi.biz.core.repository.UserRepository;
 import com.ksptooi.commons.utils.IdWorker;
-import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.commons.utils.SHA256;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -291,7 +291,7 @@ public class SessionService {
      * @return 会话
      * @throws BizException 如果会话不存在，或会话已过期。
      */
-    @Cacheable(cacheNames = "userSession", key = "T(com.ksptooi.commons.utils.SHA256).hex(#sessionId)")
+    @Cacheable(cacheNames = "userSession", key = "T(com.ksptool.bio.commons.utils.SHA256).hex(#sessionId)")
     public UserSessionPo getSessionBySessionId(String sessionId) throws BizException {
 
         var session = userSessionRepository.getSessionBySessionId(SHA256.hex(sessionId));

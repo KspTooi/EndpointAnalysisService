@@ -7,9 +7,9 @@ import com.ksptooi.biz.core.model.attach.vo.ApplyChunkVo;
 import com.ksptooi.biz.core.model.attach.vo.PreCheckAttachVo;
 import com.ksptooi.biz.core.repository.AttachChunkRepository;
 import com.ksptooi.biz.core.repository.AttachRepository;
-import com.ksptooi.commons.config.AttachConfig;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.bio.commons.config.AttachConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,6 +53,56 @@ public class AttachService {
     @Autowired
     @Lazy
     private AttachService self;
+
+    private static String bytesToHex(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 根据文件大小和分块大小计算分块数量
+     *
+     * @param bytes     文件大小
+     * @param chunkSize 分块大小
+     * @return 分块数量
+     */
+    public static Long getChunkCount(Long bytes, Long chunkSize) {
+        return (bytes + chunkSize - 1) / chunkSize;
+    }
+
+    /**
+     * 获取分块大小
+     *
+     * @return 分块大小 5MB
+     */
+    public static long getChunkSize() {
+        return 5 * 1024 * 1024;
+    }
+
+    /**
+     * 获取文件后缀
+     *
+     * @param name 文件名
+     * @return 文件后缀
+     */
+    public static String getSuffix(String name) {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+
+        int lastDotIndex = name.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == name.length() - 1) {
+            return "";
+        }
+
+        return name.substring(lastDotIndex + 1);
+    }
 
     /**
      * 上传附件
@@ -173,57 +223,6 @@ public class AttachService {
             throw new BizException("附件ID不能为空");
         }
         return repository.findById(id).orElseThrow(() -> new BizException("附件不存在"));
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        if (bytes == null || bytes.length == 0) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-
-
-    /**
-     * 根据文件大小和分块大小计算分块数量
-     *
-     * @param bytes     文件大小
-     * @param chunkSize 分块大小
-     * @return 分块数量
-     */
-    public static Long getChunkCount(Long bytes, Long chunkSize) {
-        return (bytes + chunkSize - 1) / chunkSize;
-    }
-
-    /**
-     * 获取分块大小
-     *
-     * @return 分块大小 5MB
-     */
-    public static long getChunkSize() {
-        return 5 * 1024 * 1024;
-    }
-
-    /**
-     * 获取文件后缀
-     *
-     * @param name 文件名
-     * @return 文件后缀
-     */
-    public static String getSuffix(String name) {
-        if (StringUtils.isBlank(name)) {
-            return "";
-        }
-
-        int lastDotIndex = name.lastIndexOf('.');
-        if (lastDotIndex == -1 || lastDotIndex == name.length() - 1) {
-            return "";
-        }
-
-        return name.substring(lastDotIndex + 1);
     }
 
     /**

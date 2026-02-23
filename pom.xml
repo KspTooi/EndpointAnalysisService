@@ -350,7 +350,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.ksptooi.EASRunnerWithH2DB</mainClass>
+                    <mainClass>com.ksptool.bio.BioRunnerWithH2</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

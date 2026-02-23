@@ -2,10 +2,10 @@ package com.ksptooi.biz.core.controller;
 
 import com.ksptooi.biz.core.model.config.*;
 import com.ksptooi.biz.core.service.ConfigService;
-import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

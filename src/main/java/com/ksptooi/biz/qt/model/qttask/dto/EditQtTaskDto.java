@@ -1,12 +1,13 @@
 package com.ksptooi.biz.qt.model.qttask.dto;
 
+import com.ksptool.bio.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
-
-import com.ksptooi.commons.dataprocess.Str;
 
 import java.time.LocalDateTime;
 
@@ -79,9 +80,10 @@ public class EditQtTaskDto {
     @NotNull(message = "状态不能为空")
     @Range(min = 0, max = 2, message = "状态只能为0-1")
     private Integer status;
-    
+
     /**
      * 验证表单数据
+     *
      * @return 验证结果
      */
     public String validate() {

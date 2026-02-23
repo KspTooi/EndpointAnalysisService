@@ -9,9 +9,9 @@ import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointDetailsVo;
 import com.ksptooi.biz.core.model.endpoint.vo.GetEndpointTreeVo;
 import com.ksptooi.biz.core.model.resource.ResourcePo;
 import com.ksptooi.biz.core.repository.ResourceRepository;
-import com.ksptooi.commons.dataprocess.Str;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.commons.dataprocess.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -328,7 +328,7 @@ public class EndpointService {
 
         //直接全量查询接口PO
         var pos = resourceRepository.findByKind(1);
-        
+
         //构建VO
         var rules = new ArrayList<DynamicEndpointAuthorizationRule>();
 

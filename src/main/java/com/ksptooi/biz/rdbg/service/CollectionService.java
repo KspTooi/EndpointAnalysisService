@@ -13,12 +13,11 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetai
 import com.ksptooi.biz.rdbg.repository.CollectionHistoryRepository;
 import com.ksptooi.biz.rdbg.repository.CollectionRepository;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
-import com.ksptooi.commons.httprelay.HttpRelay;
-import com.ksptooi.commons.httprelay.HttpRelaySchemaConfig;
-import com.ksptooi.commons.httprelay.model.*;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.commons.HttpRelay;
+import com.ksptool.bio.commons.HttpRelaySchemaConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

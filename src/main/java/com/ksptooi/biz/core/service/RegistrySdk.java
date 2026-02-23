@@ -2,8 +2,8 @@ package com.ksptooi.biz.core.service;
 
 import com.ksptooi.biz.core.model.registry.RegistryPo;
 import com.ksptooi.biz.core.repository.RegistryRepository;
-import com.ksptooi.commons.dataprocess.Str;
-import com.ksptooi.commons.utils.RegistryTool;
+import com.ksptool.bio.commons.dataprocess.Str;
+import com.ksptool.bio.commons.utils.RegistryTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,8 +1,8 @@
 package com.ksptooi.biz.core.model.registry.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.ksptooi.commons.dataprocess.AbstractImportDto;
-import com.ksptooi.commons.dataprocess.Str;
+import com.ksptool.bio.commons.dataprocess.AbstractImportDto;
+import com.ksptool.bio.commons.dataprocess.Str;
 import lombok.Getter;
 import lombok.Setter;
 

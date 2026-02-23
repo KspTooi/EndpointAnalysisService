@@ -1,7 +1,7 @@
 package com.ksptooi.biz.document.model.epsite.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.ksptooi.commons.dataprocess.AbstractImportDto;
+import com.ksptool.bio.commons.dataprocess.AbstractImportDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +30,7 @@ public class ImportEpSiteDto extends AbstractImportDto {
 
     /**
      * 验证导入数据
+     *
      * @return 验证结果 如果验证通过则返回null 否则返回错误信息
      */
     @Override
@@ -40,27 +41,27 @@ public class ImportEpSiteDto extends AbstractImportDto {
         if (name.length() > 32) {
             return "站点名称长度不能超过32个字符";
         }
-        
+
         if (StringUtils.isNotBlank(address) && address.length() > 255) {
             return "地址长度不能超过255个字符";
         }
-        
+
         if (StringUtils.isNotBlank(username) && username.length() > 500) {
             return "账户长度不能超过500个字符";
         }
-        
+
         if (StringUtils.isNotBlank(password) && password.length() > 500) {
             return "密码长度不能超过500个字符";
         }
-        
+
         if (StringUtils.isNotBlank(remark) && remark.length() > 1000) {
             return "备注长度不能超过1000个字符";
         }
-        
+
         if (seq == null) {
             return "排序不能为空";
         }
-        
+
         return null;
     }
 }

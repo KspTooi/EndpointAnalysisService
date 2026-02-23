@@ -1,37 +1,36 @@
 package com.ksptooi.biz.drive.utils;
 
-import java.security.KeyStore.Entry;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ksptooi.biz.drive.model.vo.EntrySignVo;
-import com.ksptooi.commons.dataprocess.Str;
 import com.ksptooi.commons.utils.Base64;
-import com.ksptooi.commons.utils.SHA256;
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.bio.commons.utils.SHA256;
+
+import java.util.Map;
 
 public class DriveEntrySignUtils {
-    
+
     private static final Gson gson = new Gson();
 
     /**
      * 生成签名
+     *
      * @param params 参数
      * @return 签名
      * @throws BizException
      */
-    public static String generateSign(Map<String,Object> params,String secretKey) throws BizException {
+    public static String generateSign(Map<String, Object> params, String secretKey) throws BizException {
 
         //判断是单文件还是多文件
         var isBatch = params.get("isBatch");
 
-        if(isBatch == null){
+        if (isBatch == null) {
             throw new BizException("生成签名失败,参数isBatch不能为空!");
         }
 
         //单签
-        if(isBatch.equals(0)){
+        if (isBatch.equals(0)) {
             var cid = params.get("cid").toString();
             var eid = params.get("eid").toString();
             var aid = params.get("aid").toString();
@@ -44,7 +43,7 @@ public class DriveEntrySignUtils {
         }
 
         //多签
-        if(isBatch.equals(1)){
+        if (isBatch.equals(1)) {
             var cid = params.get("cid").toString();
             var eids = params.get("eids").toString();
             var t = params.get("t").toString();
@@ -57,19 +56,20 @@ public class DriveEntrySignUtils {
 
     /**
      * 验证签名
-     * @param sign 签名
+     *
+     * @param sign   签名
      * @param params 参数
      * @return 是否验证成功
      * @throws BizException
      */
-    public static EntrySignVo parserSignWithParams(String base64SignWithParams,String secretKey) throws BizException {
+    public static EntrySignVo parserSignWithParams(String base64SignWithParams, String secretKey) throws BizException {
 
         try {
-    
+
             var paramsJson = Base64.decodeUrlSafe(base64SignWithParams);
             var params = gson.fromJson(paramsJson, JsonObject.class);
 
-            if(!params.has("isBatch")){
+            if (!params.has("isBatch")) {
                 throw new BizException("生成签名失败,参数isBatch不能为空!");
             }
 
@@ -77,9 +77,9 @@ public class DriveEntrySignUtils {
             var isBatch = params.get("isBatch").getAsInt();
 
             //单签
-            if(isBatch == 0){
+            if (isBatch == 0) {
 
-                if(!params.has("cid") || !params.has("eid") || !params.has("aid") || !params.has("ek") || !params.has("aPath") || !params.has("eName") || !params.has("t")){
+                if (!params.has("cid") || !params.has("eid") || !params.has("aid") || !params.has("ek") || !params.has("aPath") || !params.has("eName") || !params.has("t")) {
                     throw new BizException("生成签名失败,参数 cid,eid,aid,ek,aPath,eName,t不能为空!");
                 }
 
@@ -94,7 +94,7 @@ public class DriveEntrySignUtils {
                 var sign = params.get("sign").getAsString();
                 var calcSign = SHA256.hex(cid + eid + aid + ek + aPath + eName + t + isBatch + s);
 
-                if(!sign.equals(calcSign)){
+                if (!sign.equals(calcSign)) {
                     throw new BizException("签名校验失败,提供的签名与计算签名不一致");
                 }
 
@@ -112,7 +112,7 @@ public class DriveEntrySignUtils {
             }
 
             //多签
-            if(!params.has("cid") || !params.has("eids") || !params.has("t")){
+            if (!params.has("cid") || !params.has("eids") || !params.has("t")) {
                 throw new BizException("生成签名失败,参数 cid,eids,t不能为空!");
             }
 
@@ -124,7 +124,7 @@ public class DriveEntrySignUtils {
             var sign = params.get("sign").getAsString();
             var calcSign = SHA256.hex(cid + eids + t + isBatch + s);
 
-            if(!sign.equals(calcSign)){
+            if (!sign.equals(calcSign)) {
                 throw new BizException("签名校验失败,提供的签名与计算签名不一致");
             }
 
@@ -140,7 +140,6 @@ public class DriveEntrySignUtils {
         }
 
     }
-
 
 
 }

@@ -6,10 +6,10 @@ import com.ksptooi.biz.rdbg.model.collectionhistory.dto.GetCollectionHistoryList
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
 import com.ksptooi.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryListVo;
 import com.ksptooi.biz.rdbg.service.CollectionHistoryService;
-import com.ksptooi.commons.annotation.PrintLog;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

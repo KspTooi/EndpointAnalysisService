@@ -1,6 +1,5 @@
 package com.ksptooi.biz.core.service;
 
-import com.ksptooi.biz.core.controller.NoticeRcdController;
 import com.ksptooi.biz.core.model.notice.NoticePo;
 import com.ksptooi.biz.core.model.notice.dto.AddNoticeDto;
 import com.ksptooi.biz.core.model.notice.dto.EditNoticeDto;
@@ -16,9 +15,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageQuery;
 import com.ksptool.assembly.entity.web.PageResult;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Async;
@@ -48,7 +45,7 @@ public class NoticeService {
 
     /**
      * 查询消息列表
-     * 
+     *
      * @param dto 查询条件
      * @return 消息列表
      */
@@ -67,7 +64,7 @@ public class NoticeService {
 
     /**
      * 新增消息
-     * 
+     *
      * @param dto 新增消息DTO
      */
     @Transactional(rollbackFor = Exception.class)
@@ -84,7 +81,7 @@ public class NoticeService {
         var insertRcdPos = new ArrayList<NoticeRcdPo>();
 
         //处理消息RCD转发 - 全员
-        if(dto.getTargetKind() == 0){
+        if (dto.getTargetKind() == 0) {
 
             //分页批量发送消息RCD
             var page = new PageQuery();
@@ -93,12 +90,12 @@ public class NoticeService {
 
             //预计接收人数
             var targetCount = 0;
-            
+
             while (true) {
-            
+
                 var userIds = userRepository.getUserIdsList(page.pageRequest());
 
-                if(userIds.isEmpty()){
+                if (userIds.isEmpty()) {
                     break;
                 }
 
@@ -123,7 +120,7 @@ public class NoticeService {
         }
 
         //处理消息RCD转发 - 指定部门
-        if(dto.getTargetKind() == 1){
+        if (dto.getTargetKind() == 1) {
 
             //查询部门下全部用户列表
             var userPos = userRepository.getUserListByDeptIds(dto.getTargetIds());
@@ -144,7 +141,7 @@ public class NoticeService {
         }
 
         //处理消息RCD转发 - 指定用户
-        if(dto.getTargetKind() == 2){
+        if (dto.getTargetKind() == 2) {
 
             var userPos = userRepository.findAllById(dto.getTargetIds());
 
@@ -169,7 +166,7 @@ public class NoticeService {
 
     /**
      * 编辑消息
-     * 
+     *
      * @param dto 编辑消息DTO
      * @throws BizException 编辑消息失败
      */
@@ -184,7 +181,7 @@ public class NoticeService {
 
     /**
      * 查询消息详情
-     * 
+     *
      * @param dto 查询消息详情DTO
      * @return 消息详情
      * @throws BizException 查询消息详情失败
@@ -197,7 +194,7 @@ public class NoticeService {
 
     /**
      * 删除消息
-     * 
+     *
      * @param dto 删除消息DTO
      * @throws BizException 删除消息失败
      */
@@ -212,19 +209,19 @@ public class NoticeService {
 
     /**
      * 发送系统通知
-     *  
-     * @param uid 接收人ID
-     * @param title 标题
+     *
+     * @param uid      接收人ID
+     * @param title    标题
      * @param category 业务类型/分类
-     * @param content 通知内容
+     * @param content  通知内容
      */
     @Async
     @Transactional(rollbackFor = Exception.class)
-    public void sendSystemNotice(Long uid, String title,String category, String content) {
+    public void sendSystemNotice(Long uid, String title, String category, String content) {
 
         var userPo = userRepository.findById(uid).orElse(null);
 
-        if(userPo == null){
+        if (userPo == null) {
             log.warn("发送系统通知失败,接收人不存在: uid={}", uid);
             return;
         }
@@ -238,7 +235,7 @@ public class NoticeService {
         dto.setTargetKind(2);
         dto.setTargetIds(List.of(uid));
         addNotice(dto);
-        log.info("发送系统通知成功: uid={} 通知标题:{}", uid,title);
+        log.info("发送系统通知成功: uid={} 通知标题:{}", uid, title);
     }
 
 }

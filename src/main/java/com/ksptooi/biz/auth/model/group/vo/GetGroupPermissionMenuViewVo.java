@@ -1,6 +1,6 @@
 package com.ksptooi.biz.auth.model.group.vo;
 
-import com.ksptooi.commons.dataprocess.Str;
+import com.ksptool.bio.commons.dataprocess.Str;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

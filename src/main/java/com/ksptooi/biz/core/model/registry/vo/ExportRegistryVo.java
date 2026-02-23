@@ -1,7 +1,7 @@
 package com.ksptooi.biz.core.model.registry.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.ksptooi.commons.dataprocess.AbstractImportDto;
+import com.ksptool.bio.commons.dataprocess.AbstractImportDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +40,7 @@ public class ExportRegistryVo extends AbstractImportDto {
      * @return 错误信息 无错误返回null
      */
     public String validate() {
-        
+
         return null;
     }
 

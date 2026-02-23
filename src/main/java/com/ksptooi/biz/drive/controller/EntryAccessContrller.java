@@ -3,11 +3,11 @@ package com.ksptooi.biz.drive.controller;
 import com.ksptooi.biz.drive.model.vo.GetEntrySignVo;
 import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
-import com.ksptooi.commons.annotation.PrintLog;
-import com.ksptooi.commons.config.DriveConfig;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.commons.annotation.PrintLog;
+import com.ksptool.bio.commons.config.DriveConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,7 +41,7 @@ public class EntryAccessContrller {
     private DriveConfig driveConfig;
 
     @PreAuthorize("@auth.hasCode('drive:entry:access:sign')")
-    @Operation(summary = "获取条目对象签名",description = "允许用户在云盘内获取文件签名")
+    @Operation(summary = "获取条目对象签名", description = "允许用户在云盘内获取文件签名")
     @PostMapping("/getEntrySign")
     public Result<GetEntrySignVo> getEntrySign(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
@@ -56,7 +56,7 @@ public class EntryAccessContrller {
     }
 
     @PreAuthorize("@auth.hasCode('drive:entry:access:download')")
-    @Operation(summary = "下载条目",description = "允许用户在云盘内下载文件")
+    @Operation(summary = "下载条目", description = "允许用户在云盘内下载文件")
     @GetMapping("/downloadEntry")
     @PostMapping("/downloadEntry")
     public ResponseEntity<Resource> downloadEntry(@RequestParam("sign") String sign
