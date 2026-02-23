@@ -4,8 +4,10 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.security.core.Authentication;
@@ -22,8 +24,15 @@ public class DataScopeAspect {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static final String ROW_SCOPE_FILTER_NAME = "rsFilter";
+
+    @Pointcut("@annotation(com.ksptool.bio.biz.auth.common.aop.RowScope) || @within(com.ksptool.bio.biz.auth.common.aop.RowScope)")
+    public void rsPointcut() {
+    }
+
+
     // 拦截标注了 @RowScope 的方法或类
-    @Before("@annotation(com.ksptool.bio.biz.auth.common.aop.RowScope) || @within(com.ksptool.bio.biz.auth.common.aop.RowScope)")
+    @Before("rsPointcut()")
     public void enableRowScopeFilter() throws BizException {
 
         //获取当前登录用户的 Session 上下文
@@ -49,7 +58,7 @@ public class DataScopeAspect {
 
         //取出 Hibernate 的 Session 并激活过滤器
         Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("rowScopeFilter");
+        Filter filter = session.enableFilter(ROW_SCOPE_FILTER_NAME);
 
         //注入参数
         filter.setParameter("rsMax", rsMax);
@@ -65,5 +74,13 @@ public class DataScopeAspect {
         }
 
         filter.setParameterList("deptIds", deptIds);
+    }
+
+    // 后置：无论成功失败，必定关闭过滤器
+    @After("rsPointcut()")
+    public void disableFilter() {
+        Session session = entityManager.unwrap(Session.class);
+        // 强制关闭，清空当前线程/Session的权限上下文
+        session.disableFilter(ROW_SCOPE_FILTER_NAME);
     }
 }

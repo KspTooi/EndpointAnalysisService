@@ -22,14 +22,14 @@ import org.hibernate.annotations.ParamDef;
  *
  */
 @MappedSuperclass
-@FilterDef(name = "rowScopeFilter", parameters = {
+@FilterDef(name = "rsFilter", parameters = {
         @ParamDef(name = "rsMax", type = Integer.class),
         @ParamDef(name = "userId", type = Long.class),
         @ParamDef(name = "rootId", type = Long.class),
         @ParamDef(name = "deptIds", type = Long.class)
 })
 @Filter(
-        name = "rowScopeFilter",
+        name = "rsFilter",
         condition = """
                 ( :rsMax = 1 AND root_id = :rootId )
                 OR ( :rsMax IN (2, 3, 5) AND dept_id IN (:deptIds) )
