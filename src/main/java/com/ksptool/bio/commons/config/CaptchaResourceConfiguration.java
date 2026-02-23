@@ -30,7 +30,7 @@ public class CaptchaResourceConfiguration {
             //格式化三位数
             String bgName = String.format("%03d", i);
 
-            resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "captcha/bg_" + bgName + ".jpg", "default"));
+            resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "support-static/captcha-image/bg_" + bgName + ".jpg", "default"));
         }
 
         return resourceStore;
