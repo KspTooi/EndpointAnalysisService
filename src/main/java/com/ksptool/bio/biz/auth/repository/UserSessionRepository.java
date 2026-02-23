@@ -28,6 +28,7 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             SELECT new com.ksptool.bio.biz.auth.model.session.vo.GetSessionListVo(
               us.id,
               u.username,
+              us.rsMax,
               us.createTime,
               us.expiresAt
             ) FROM UserSessionPo us

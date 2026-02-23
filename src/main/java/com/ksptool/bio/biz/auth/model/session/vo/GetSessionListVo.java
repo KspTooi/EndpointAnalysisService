@@ -12,18 +12,26 @@ public class GetSessionListVo {
 
     @Schema(description = "会话ID")
     private Long id;
+
     @Schema(description = "用户名")
     private String username;
+
     @Schema(description = "权限节点数量")
     private Integer permissionCount;
+
     @Schema(description = "登入时间")
     private LocalDateTime createTime;
+
+    @Schema(description = "最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
+    private Integer rsMax;
+
     @Schema(description = "过期时间")
     private LocalDateTime expiresAt;
 
-    public GetSessionListVo(Long id, String username, LocalDateTime createTime, LocalDateTime expiresAt) {
+    public GetSessionListVo(Long id, String username, Integer rsMax, LocalDateTime createTime, LocalDateTime expiresAt) {
         this.id = id;
         this.username = username;
+        this.rsMax = rsMax;
         this.createTime = createTime;
         this.expiresAt = expiresAt;
     }
