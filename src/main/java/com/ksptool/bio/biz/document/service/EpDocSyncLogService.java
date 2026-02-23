@@ -1,10 +1,10 @@
 package com.ksptool.bio.biz.document.service;
 
+import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.document.model.epdocsynclog.EndpointDocSyncLogPo;
 import com.ksptool.bio.biz.document.model.epdocsynclog.GetEpDocSyncLogListDto;
 import com.ksptool.bio.biz.document.model.epdocsynclog.GetEpDocSyncLogListVo;
 import com.ksptool.bio.biz.document.repository.EndpointDocSyncLogRepository;
-import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

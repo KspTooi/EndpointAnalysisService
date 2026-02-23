@@ -1,9 +1,9 @@
 package com.ksptool.bio.biz.document.controller;
 
+import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.document.model.epdocsynclog.GetEpDocSyncLogListDto;
 import com.ksptool.bio.biz.document.model.epdocsynclog.GetEpDocSyncLogListVo;
 import com.ksptool.bio.biz.document.service.EpDocSyncLogService;
-import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -10,18 +10,16 @@ import java.util.List;
 @Setter
 public class GetEpDocOperationTagListVo {
 
+    @Schema(description = "标签")
+    private String tag;
+    @Schema(description = "接口数量")
+    private Long apiCount;
+    @Schema(description = "接口定义")
+    private List<GetEpDocOperationTagListOperationDefineVo> operationDefineList;
+
     public GetEpDocOperationTagListVo(String tag, Long apiCount) {
         this.tag = tag;
         this.apiCount = apiCount;
     }
-
-    @Schema(description = "标签")
-    private String tag;
-
-    @Schema(description = "接口数量")
-    private Long apiCount;
-
-    @Schema(description = "接口定义")
-    private List<GetEpDocOperationTagListOperationDefineVo> operationDefineList;
 
 }

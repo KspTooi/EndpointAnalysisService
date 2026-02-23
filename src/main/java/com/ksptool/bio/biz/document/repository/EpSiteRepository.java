@@ -43,6 +43,7 @@ public interface EpSiteRepository extends JpaRepository<EpSitePo, Long> {
 
     /**
      * 根据站点名称查找站点
+     *
      * @param name 站点名称
      * @return 站点
      */
@@ -54,8 +55,9 @@ public interface EpSiteRepository extends JpaRepository<EpSitePo, Long> {
 
     /**
      * 根据站点名称查找站点，排除指定ID
+     *
      * @param name 站点名称
-     * @param id 排除的ID
+     * @param id   排除的ID
      * @return 站点
      */
     @Query("""

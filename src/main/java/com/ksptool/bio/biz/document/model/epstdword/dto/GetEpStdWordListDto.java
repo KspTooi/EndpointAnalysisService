@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetEpStdWordListDto extends PageQuery {
-    
+
     @Schema(description = "简称")
     private String sourceName;
 
