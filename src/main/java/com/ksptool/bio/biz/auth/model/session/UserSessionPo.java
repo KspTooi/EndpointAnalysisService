@@ -1,23 +1,23 @@
 package com.ksptool.bio.biz.auth.model.session;
 
-import com.ksptool.bio.commons.utils.IdWorker;
-import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
+import com.ksptool.bio.biz.auth.common.aop.RowScopePo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.ksptool.entities.Entities.*;
+import static com.ksptool.entities.Entities.toJson;
 
 @Entity
 @Table(name = "auth_user_session", comment = "用户会话")
-@Data
-public class UserSessionPo {
+@Getter
+@Setter
+public class UserSessionPo extends RowScopePo {
 
     @Id
     @Column(name = "id", comment = "会话ID")
@@ -50,7 +50,7 @@ public class UserSessionPo {
     @Column(name = "rs_max", nullable = false, columnDefinition = "TINYINT", comment = "最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
     private Integer rsMax;
 
-    @Column(name = "rs_allow_depts",nullable = false, columnDefinition = "JSON", comment = "RowScope允许访问的部门IDS")
+    @Column(name = "rs_allow_depts", nullable = false, columnDefinition = "JSON", comment = "RowScope允许访问的部门IDS")
     private String rsAllowDepts;
 
     @Column(name = "expires_at", nullable = false, comment = "过期时间")
@@ -58,6 +58,9 @@ public class UserSessionPo {
 
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
+
+    @Column(name = "creator_id", nullable = false, updatable = false, comment = "创建者ID")
+    private Long creatorId;
 
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
@@ -81,6 +84,7 @@ public class UserSessionPo {
         session.setCompanyId(userPo.getActiveCompanyId());
         session.setPermissionCodes(toJson(permissionCodes));
         session.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
+        session.setCreatorId(userPo.getId());
         return session;
     }
 
@@ -99,22 +103,6 @@ public class UserSessionPo {
         this.companyId = userPo.getActiveCompanyId();
         this.permissionCodes = toJson(permissionCodes);
         this.expiresAt = LocalDateTime.now().plusSeconds(expiresInSeconds);
-    }
-
-    /**
-     * 转换为VO
-     *
-     * @return 转换后的用户会话VO
-     */
-    public UserSessionVo toVo() {
-        var vo = new UserSessionVo();
-
-        //映射基本字段
-        assign(this, vo);
-
-        //反序列化权限代码集合
-        vo.setPermissionCodes(new HashSet<>(fromJsonArray(this.getPermissionCodes(), String.class)));
-        return vo;
     }
 
 

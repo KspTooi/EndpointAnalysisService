@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.auth.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.auth.common.aop.RowScope;
 import com.ksptool.bio.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptool.bio.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptool.bio.biz.auth.model.session.vo.GetSessionListVo;
@@ -27,6 +28,7 @@ public class SessionController {
     @Autowired
     private SessionService service;
 
+    @RowScope
     @PreAuthorize("@auth.hasCode('auth:session:view')")
     @Operation(summary = "获取在线用户列表")
     @PostMapping("getSessionList")
@@ -34,6 +36,7 @@ public class SessionController {
         return service.getSessionList(dto);
     }
 
+    @RowScope
     @PreAuthorize("@auth.hasCode('auth:session:view')")
     @Operation(summary = "获取在线用户详情")
     @PostMapping("getSessionDetails")
@@ -41,6 +44,7 @@ public class SessionController {
         return Result.success(service.getSessionDetails(dto.getId()));
     }
 
+    @RowScope
     @PreAuthorize("@auth.hasCode('auth:session:remove')")
     @Operation(summary = "关闭在线用户会话", description = "强退用户时使用")
     @PostMapping("closeSession")

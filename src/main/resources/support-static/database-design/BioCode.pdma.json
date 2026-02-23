@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-23 21:56:41",
+  "updatedTime": "2026-2-23 21:57:53",
   "dbConns": [],
   "profile": {
     "default": {
@@ -25476,24 +25476,6 @@
           "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5"
         },
         {
-          "defKey": "creator_id",
-          "defName": "创建者ID(用于兼容RS数据权限 必须与UserId一致)",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
-          "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
-          "id": "2621441F-0FE2-41AB-9A50-DD85B6781DD8"
-        },
-        {
           "defKey": "create_time",
           "defName": "创建时间",
           "comment": "",
@@ -25520,6 +25502,24 @@
           "attr9": "",
           "id": "71ABAA42-B9D3-4546-A2BB-C6AD65750902",
           "baseType": "C89F4D46-7F8C-4F81-9C1C-64094A0027E5"
+        },
+        {
+          "defKey": "creator_id",
+          "defName": "创建者ID(用于兼容RS数据权限 必须与UserId一致)",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "2621441F-0FE2-41AB-9A50-DD85B6781DD8"
         },
         {
           "defKey": "update_time",

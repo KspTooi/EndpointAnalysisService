@@ -6,6 +6,21 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
+
+/**
+ * 行级数据权限过滤器
+ * 用于在Hibernate查询时根据用户权限过滤数据
+ * 支持以下几种情况:
+ * 1. 全部权限: rsMax = 0
+ * 2. 本公司/租户及以下: rsMax = 1
+ * 3. 本部门及以下: rsMax = 2
+ * 4. 本部门: rsMax = 3
+ * 5. 仅本人: rsMax = 4
+ * 6. 指定部门: rsMax = 5
+ * <p>
+ * 请注意: 尽管在这个类中已经预定义了三个数据权限所必须的参数，但根据编码规范，继承此类的子类还需要显式声明这些参数。
+ *
+ */
 @MappedSuperclass
 @FilterDef(name = "rowScopeFilter", parameters = {
         @ParamDef(name = "rsMax", type = Integer.class),
