@@ -150,5 +150,19 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             """)
     Long countDeptByNameAndParentIdExcludeId(@Param("name") String name, @Param("parentId") Long parentId, @Param("id") Long id);
 
-
+    /**
+     * 根据部门id查询部门以及其子部门
+     *
+     * @param deptId 部门id
+     * @return 部门以及其子部门
+     */
+    @Query("""
+            SELECT d FROM OrgPo d
+            WHERE d.kind = 0
+            AND (
+                d.id = :deptId
+                OR CONCAT(',', d.orgPathIds, ',') LIKE CONCAT('%,', :deptId, ',%')
+            )
+            """)
+    List<OrgPo> getChildDeptsByDeptId(@Param("deptId") Long deptId);
 }
