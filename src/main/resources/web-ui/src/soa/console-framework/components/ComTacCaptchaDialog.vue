@@ -18,9 +18,6 @@
 import Http from "@/commons/Http";
 import { nextTick, onBeforeUnmount, ref } from "vue";
 
-// 静态资源基础路径
-const staticBaseUrl = import.meta.env.BASE_URL;
-
 declare global {
   interface Window {
     initTAC?: (
