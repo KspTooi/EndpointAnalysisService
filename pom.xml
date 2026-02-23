@@ -376,10 +376,13 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-
                 </includes>
                 <excludes>
                     <exclude>**/node_modules/**</exclude>
+                    <exclude>/support-static/code-generator/**</exclude>
+                    <exclude>/support-static/database-design/**</exclude>
+                    <exclude>/support-static/import-template/**</exclude>
+                    <exclude>/web-ui/**</exclude>
                 </excludes>
             </resource>
         </resources>
