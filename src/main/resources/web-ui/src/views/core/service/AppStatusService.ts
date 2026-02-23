@@ -1,5 +1,5 @@
 import { ref, onUnmounted, onMounted, computed, nextTick } from "vue";
-import type { GetRtStatusVo } from "../api/AppStatusApi";
+import type { GetRtStatusVo, GetSystemInfoVo } from "../api/AppStatusApi";
 import AppStatusApi from "../api/AppStatusApi";
 
 //最大记录数
@@ -30,11 +30,15 @@ export default {
     const loading = ref(false);
     let timer: any = null;
 
-    const fetchData = async () => {
-      if (loading.value) return;
+    const loadData = async () => {
+      if (loading.value) {
+        return;
+      }
       try {
         const res = await AppStatusApi.getRtStatus();
-        if (!res) return;
+        if (!res) {
+          return;
+        }
 
         // 使用 nextTick 延迟数据写入，避免在 ECharts 主进程渲染期间触发 setOption
         await nextTick();
@@ -49,8 +53,8 @@ export default {
 
     const start = () => {
       stop();
-      fetchData();
-      timer = setInterval(fetchData, sampleInterval);
+      loadData();
+      timer = setInterval(loadData, sampleInterval);
     };
 
     const stop = () => {
@@ -68,24 +72,43 @@ export default {
       stop();
     });
 
-    const latestStatus = computed(() => (data.value.length > 0 ? data.value[data.value.length - 1] : null));
+    const latestStatus = computed(() => {
+      if (data.value.length > 0) {
+        return data.value[data.value.length - 1];
+      }
+      return null;
+    });
 
     const formatNet = (val: number | undefined) => {
-      if (val === undefined) return "0";
+      if (val === undefined) {
+        return "0";
+      }
       return (val / 1024).toFixed(1);
     };
 
     const getCpuTagType = (usage: number | undefined) => {
-      if (!usage) return "info";
-      if (usage > 80) return "danger";
-      if (usage > 50) return "warning";
+      if (!usage) {
+        return "info";
+      }
+      if (usage > 80) {
+        return "danger";
+      }
+      if (usage > 50) {
+        return "warning";
+      }
       return "success";
     };
 
     const getMemTagType = (usage: number | undefined) => {
-      if (!usage) return "info";
-      if (usage > 90) return "danger";
-      if (usage > 70) return "warning";
+      if (!usage) {
+        return "info";
+      }
+      if (usage > 90) {
+        return "danger";
+      }
+      if (usage > 70) {
+        return "warning";
+      }
       return "success";
     };
 
@@ -185,6 +208,59 @@ export default {
       getMemTagType,
       start,
       stop,
+    };
+  },
+
+  /**
+   * 应用系统信息打包（仅加载一次，供静态展示）
+   */
+  useAppSystemInfo() {
+    const data = ref<GetSystemInfoVo | null>(null);
+    const loading = ref(false);
+
+    const loadData = async () => {
+      if (loading.value) {
+        return;
+      }
+      loading.value = true;
+      try {
+        data.value = await AppStatusApi.getSystemInfo();
+      } catch (error) {
+        console.error("获取系统信息失败:", error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    // 格式化字节数为带单位的可读字符串
+    const formatBytes = (bytes: number | undefined | null): string => {
+      if (bytes == null || bytes <= 0) {
+        return "0 B";
+      }
+      if (bytes < 1024) {
+        return `${bytes} B`;
+      }
+      if (bytes < 1024 * 1024) {
+        return `${(bytes / 1024).toFixed(1)} KB`;
+      }
+      if (bytes < 1024 * 1024 * 1024) {
+        return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+      }
+      if (bytes < 1024 * 1024 * 1024 * 1024) {
+        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+      }
+      return `${(bytes / 1024 / 1024 / 1024 / 1024).toFixed(2)} TB`;
+    };
+
+    onMounted(() => {
+      loadData();
+    });
+
+    return {
+      data,
+      loading,
+      loadData,
+      formatBytes,
     };
   },
 };
