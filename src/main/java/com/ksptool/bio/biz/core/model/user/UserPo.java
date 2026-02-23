@@ -135,6 +135,10 @@ public class UserPo {
         if (updaterId == null) {
             updaterId = SessionService.session().getUserId();
         }
+
+        if (dataVersion == null) {
+            dataVersion = 0L;
+        }
     }
 
     @PreUpdate
