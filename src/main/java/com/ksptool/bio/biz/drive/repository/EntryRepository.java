@@ -1,7 +1,7 @@
-package com.ksptooi.biz.drive.repository;
+package com.ksptool.bio.biz.drive.repository;
 
-import com.ksptooi.biz.drive.model.EntryPo;
-import com.ksptooi.biz.drive.model.vo.GetDriveInfo;
+import com.ksptool.bio.biz.drive.model.EntryPo;
+import com.ksptool.bio.biz.drive.model.vo.GetDriveInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

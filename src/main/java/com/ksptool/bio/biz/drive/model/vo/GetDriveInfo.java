@@ -1,4 +1,4 @@
-package com.ksptooi.biz.drive.model.vo;
+package com.ksptool.bio.biz.drive.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetDriveInfo {
-    
+
+    //总容量
+    private Long totalCapacity;
+    //已使用容量
+    private Long usedCapacity;
+    //对象数量
+    private Long objectCount;
+
     public GetDriveInfo() {
         this.totalCapacity = 0L;
         this.usedCapacity = 0L;
@@ -21,13 +28,4 @@ public class GetDriveInfo {
         this.objectCount = objectCount;
     }
 
-    //总容量
-    private Long totalCapacity;
-
-    //已使用容量
-    private Long usedCapacity;
-
-    //对象数量
-    private Long objectCount;
-    
 }

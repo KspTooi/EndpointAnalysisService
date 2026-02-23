@@ -1,6 +1,6 @@
-package com.ksptooi.biz.drive.model.vo;
+package com.ksptool.bio.biz.drive.model.vo;
 
-import com.ksptooi.biz.drive.model.EntryPo;
+import com.ksptool.bio.biz.drive.model.EntryPo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetEntryListPathVo {
-    
+
     @Schema(description = "条目ID")
     private Long id;
 
@@ -18,6 +18,7 @@ public class GetEntryListPathVo {
 
     /**
      * 从EntryPo创建
+     *
      * @param entryPo 条目
      * @return 目录路径
      */
@@ -30,6 +31,7 @@ public class GetEntryListPathVo {
 
     /**
      * 创建根目录
+     *
      * @return 根目录
      */
     public static GetEntryListPathVo ofRoot() {

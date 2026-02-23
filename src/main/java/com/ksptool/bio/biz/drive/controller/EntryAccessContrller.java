@@ -1,8 +1,8 @@
-package com.ksptooi.biz.drive.controller;
+package com.ksptool.bio.biz.drive.controller;
 
-import com.ksptooi.biz.drive.model.vo.GetEntrySignVo;
-import com.ksptooi.biz.drive.service.EntryAccessService;
-import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
+import com.ksptool.bio.biz.drive.model.vo.GetEntrySignVo;
+import com.ksptool.bio.biz.drive.service.EntryAccessService;
+import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;

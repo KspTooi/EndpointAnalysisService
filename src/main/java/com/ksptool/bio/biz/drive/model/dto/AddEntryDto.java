@@ -1,4 +1,4 @@
-package com.ksptooi.biz.drive.model.dto;
+package com.ksptool.bio.biz.drive.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -9,25 +9,25 @@ import org.hibernate.validator.constraints.Range;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter@Setter
+@Getter
+@Setter
 public class AddEntryDto {
 
-    @Schema(description="父级ID 为NULL顶级")
+    @Schema(description = "父级ID 为NULL顶级")
     private Long parentId;
 
-    @Schema(description="条目名称")
+    @Schema(description = "条目名称")
     @NotBlank(message = "条目名称不能为空")
     @Length(min = 1, max = 128, message = "条目名称长度必须在1-128个字符之间")
     private String name;
 
-    @Schema(description="条目类型 0:文件 1:文件夹")
+    @Schema(description = "条目类型 0:文件 1:文件夹")
     @NotNull(message = "条目类型不能为空")
     @Range(min = 0, max = 1, message = "条目类型只能在0-1之间")
     private Integer kind;
 
-    @Schema(description="文件附件ID 文件夹为NULL")
+    @Schema(description = "文件附件ID 文件夹为NULL")
     private Long attachId;
-
 
 
     public String validate() {

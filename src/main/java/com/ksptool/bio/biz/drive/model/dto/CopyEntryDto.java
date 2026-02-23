@@ -1,4 +1,4 @@
-package com.ksptooi.biz.drive.model.dto;
+package com.ksptool.bio.biz.drive.model.dto;
 
 import java.util.List;
 
@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CopyEntryDto {
-    
-    @Schema(description="父级目录ID 为NULL顶级目录")
+
+    @Schema(description = "父级目录ID 为NULL顶级目录")
     private Long parentId;
 
-    @Schema(description="条目ID列表 不能为空")
+    @Schema(description = "条目ID列表 不能为空")
     @NotNull(message = "条目ID列表不能为空")
     private List<Long> entryIds;
-    
+
 }

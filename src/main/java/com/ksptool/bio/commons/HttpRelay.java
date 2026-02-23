@@ -1,8 +1,7 @@
 package com.ksptool.bio.commons;
 
 
-import com.ksptooi.biz.drive.service.EntryAccessService;
-import com.ksptool.bio.commons.model.*;
+import com.ksptool.bio.biz.drive.service.EntryAccessService;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;

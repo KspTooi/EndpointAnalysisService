@@ -1,10 +1,10 @@
-package com.ksptooi.biz.drive.service;
+package com.ksptool.bio.biz.drive.service;
 
 import com.google.gson.Gson;
-import com.ksptooi.biz.drive.model.EntryPo;
-import com.ksptooi.biz.drive.model.vo.EntrySignVo;
-import com.ksptooi.biz.drive.repository.EntryRepository;
-import com.ksptooi.biz.drive.utils.DriveEntrySignUtils;
+import com.ksptool.bio.biz.drive.model.EntryPo;
+import com.ksptool.bio.biz.drive.model.vo.EntrySignVo;
+import com.ksptool.bio.biz.drive.repository.EntryRepository;
+import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptooi.commons.utils.Base64;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;

@@ -1,4 +1,4 @@
-package com.ksptooi.biz.drive.model;
+package com.ksptool.bio.biz.drive.model;
 
 import lombok.Getter;
 import lombok.Setter;

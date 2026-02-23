@@ -1,4 +1,4 @@
-package com.ksptooi.biz.drive.model;
+package com.ksptool.bio.biz.drive.model;
 
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
