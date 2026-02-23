@@ -1,5 +1,6 @@
 ---
-globs: *.ts,*.js,*.vue
+description: 
+globs: *.ts, *.js, *.vue
 alwaysApply: false
 ---
 

@@ -272,72 +272,82 @@
 
     </dependencies>
 
+    <profiles>
+        <!-- 启用此 Profile 后将执行前端构建并将产物打包进 Jar -->
+        <profile>
+            <id>with-web-ui</id>
+            <build>
+                <plugins>
+                    <!-- 前端构建插件 -->
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.15.0</version>
+                        <configuration>
+                            <workingDirectory>src/main/resources/views/webconsole</workingDirectory>
+                            <nodeVersion>v20.19.0</nodeVersion>
+                            <npmVersion>11.2.0</npmVersion>
+                            <pnpmVersion>10.14.0</pnpmVersion>
+                        </configuration>
+                        <executions>
+                            <!-- 安装 node 和 pnpm -->
+                            <execution>
+                                <id>install node and pnpm</id>
+                                <goals>
+                                    <goal>install-node-and-pnpm</goal>
+                                </goals>
+                            </execution>
+                            <!-- 执行 pnpm install -->
+                            <execution>
+                                <id>pnpm install</id>
+                                <goals>
+                                    <goal>pnpm</goal>
+                                </goals>
+                            </execution>
+                            <!-- 执行 pnpm run build -->
+                            <execution>
+                                <id>pnpm run build</id>
+                                <goals>
+                                    <goal>pnpm</goal>
+                                </goals>
+                                <configuration>
+                                    <pnpmInheritsProxyConfigFromMaven>false</pnpmInheritsProxyConfigFromMaven>
+                                    <arguments>run build</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- 将前端构建产物复制至 classpath -->
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-frontend-dist</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/views/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/resources/views/webconsole/dist</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
-            <!-- 前端构建插件 -->
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.15.0</version>
-                <configuration>
-                    <workingDirectory>src/main/resources/views/webconsole</workingDirectory>
-                    <nodeVersion>v20.19.0</nodeVersion>
-                    <npmVersion>11.2.0</npmVersion>
-                    <pnpmVersion>10.14.0</pnpmVersion>
-                </configuration>
-                <executions>
-                    <!-- 安装 node 和 pnpm -->
-                    <execution>
-                        <id>install node and pnpm</id>
-                        <goals>
-                            <goal>install-node-and-pnpm</goal>
-                        </goals>
-                    </execution>
-                    <!-- 执行 npm install -->
-                    <execution>
-                        <id>pnpm install</id>
-                        <goals>
-                            <goal>pnpm</goal>
-                        </goals>
-                    </execution>
-                    <!-- 执行 npm run build -->
-                    <execution>
-                        <id>pnpm run build</id>
-                        <goals>
-                            <goal>pnpm</goal>
-                        </goals>
-                        <configuration>
-                            <pnpmInheritsProxyConfigFromMaven>false</pnpmInheritsProxyConfigFromMaven>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- 复制构建后的文件 -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-frontend-dist</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/views/static</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/views/webconsole/dist</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
