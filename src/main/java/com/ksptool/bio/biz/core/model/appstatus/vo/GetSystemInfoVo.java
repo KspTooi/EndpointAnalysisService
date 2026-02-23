@@ -26,10 +26,10 @@ public class GetSystemInfoVo {
     @Schema(description = "CPU数量")
     private Integer cpuCount;
 
-    @Schema(description = "内存总量 MB")
+    @Schema(description = "内存总量 后端返字节数 前端自动显示为MB/GB/TB")
     private Long memoryTotal;
 
-    @Schema(description = "交换区总量 MB")
+    @Schema(description = "交换区总量 后端返字节数 前端自动显示为MB/GB/TB")
     private Long swapTotal;
 
     @Schema(description = "JDK厂商与虚拟机名称")
@@ -44,8 +44,8 @@ public class GetSystemInfoVo {
     @Schema(description = "JVM 启动时间")
     private LocalDateTime jvmStartTime;
 
-    @Schema(description = "JVM 连续运行时长 自动显示为HH:mm:ss")
-    private LocalTime jvmRunTime;
+    @Schema(description = "JVM 连续运行时长 后端返HH:mm:ss")
+    private String jvmRunTime;
 
     @Schema(description = "JVM 启动参数")
     private String jvmInputArgs;
