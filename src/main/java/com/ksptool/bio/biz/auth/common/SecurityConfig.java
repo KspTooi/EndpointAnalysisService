@@ -42,13 +42,19 @@ public class SecurityConfig {
      * 集成部署白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
      */
     private final Set<String> integratedDeployWhiteList = Stream.of(
+            "/api/maintain/**",
+            "/api/auth/userLogin",
+            "/api/v3/api-docs",
+            "/api/auth/genCaptcha",
+            "/api/auth/check",
             "/js/**",
             "/css/**",
             "/assets/**",
             "/index.html",
             "/favicon.ico",
             "/",
-            "/index.html"
+            "/index.html",
+            "/login"
     ).collect(Collectors.toSet());
 
 

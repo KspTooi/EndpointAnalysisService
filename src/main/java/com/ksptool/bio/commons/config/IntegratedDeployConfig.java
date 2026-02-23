@@ -61,10 +61,11 @@ public class IntegratedDeployConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 将根路径转发到 SPA 入口，Hash 路由由客户端接管，无需通配转发
+     * 将根路径转发到 SPA 入口
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("forward:/index.html");
+        registry.addViewController("/login").setViewName("forward:/index.html");
     }
 }
