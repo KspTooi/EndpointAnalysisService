@@ -1,5 +1,7 @@
 package com.ksptool.bio.biz.core.model.user;
 
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptool.bio.biz.core.model.company.CompanyPo;
 import com.ksptool.bio.biz.core.model.companymember.CompanyMemberPo;
@@ -84,11 +86,20 @@ public class UserPo {
     @Column(name = "is_system", columnDefinition = "tinyint", nullable = false, comment = "是否为系统用户 0:否 1:是")
     private Integer isSystem;
 
+    @Column(name = "data_version", nullable = false, comment = "数据版本")
+    private Long dataVersion;
+
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @Column(name = "creator_id", nullable = false, updatable = false, comment = "创建者ID")
+    private Long creatorId;
+
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
+
+    @Column(name = "updator_id", nullable = false, comment = "修改者ID")
+    private Long updatorId;
 
     @Column(name = "delete_time", comment = "删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
@@ -102,7 +113,7 @@ public class UserPo {
 
 
     @PrePersist
-    public void prePersist() {
+    public void prePersist() throws AuthException {
 
         if (this.id == null) {
             this.id = IdWorker.nextId();
@@ -118,11 +129,28 @@ public class UserPo {
         if (status == null) {
             status = 0;
         }
+
+        if (creatorId == null) {
+            creatorId = SessionService.session().getUserId();
+        }
+
+        if (updatorId == null) {
+            updatorId = SessionService.session().getUserId();
+        }
     }
 
     @PreUpdate
-    public void preUpdate() {
+    public void preUpdate() throws AuthException {
+
         updateTime = LocalDateTime.now();
+    
+        //数据版本自增
+        dataVersion++;
+
+        if (updatorId == null) {
+            updatorId = SessionService.session().getUserId();
+        }
+
     }
 
 
