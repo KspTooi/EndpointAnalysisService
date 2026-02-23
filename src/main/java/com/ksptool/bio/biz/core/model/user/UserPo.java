@@ -3,7 +3,7 @@ package com.ksptool.bio.biz.core.model.user;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptool.bio.biz.core.model.company.CompanyPo;
 import com.ksptool.bio.biz.core.model.companymember.CompanyMemberPo;
-import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
+import com.ksptool.bio.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
