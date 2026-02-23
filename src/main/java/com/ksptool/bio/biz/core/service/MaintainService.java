@@ -1,7 +1,5 @@
 package com.ksptool.bio.biz.core.service;
 
-import com.ksptool.bio.commons.enums.GroupEnum;
-import com.ksptool.bio.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.model.GroupPermissionPo;
 import com.ksptool.bio.biz.auth.model.UserGroupPo;
@@ -15,6 +13,8 @@ import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.UserRepository;
+import com.ksptool.bio.commons.enums.GroupEnum;
+import com.ksptool.bio.commons.enums.UserEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -245,10 +245,10 @@ public class MaintainService {
                 user.setLoginCount(0);
                 user.setStatus(0);
                 user.setIsSystem(1);
-            
+
                 //由系统创建的用户其创建者ID和修改者ID为-1
                 user.setCreatorId(-1L);
-                user.setUpdatorId(-1L);
+                user.setUpdaterId(-1L);
                 user = userRepository.save(user);
             }
 

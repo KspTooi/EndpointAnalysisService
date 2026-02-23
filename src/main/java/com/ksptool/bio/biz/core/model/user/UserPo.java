@@ -97,8 +97,8 @@ public class UserPo {
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updator_id", nullable = false, comment = "修改者ID")
-    private Long updatorId;
+    @Column(name = "updater_id", nullable = false, comment = "修改者ID")
+    private Long updaterId;
 
     @Column(name = "delete_time", comment = "删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
@@ -132,8 +132,8 @@ public class UserPo {
             creatorId = SessionService.session().getUserId();
         }
 
-        if (updatorId == null) {
-            updatorId = SessionService.session().getUserId();
+        if (updaterId == null) {
+            updaterId = SessionService.session().getUserId();
         }
     }
 
@@ -141,12 +141,12 @@ public class UserPo {
     public void preUpdate() throws AuthException {
 
         updateTime = LocalDateTime.now();
-    
+
         //数据版本自增
         dataVersion++;
 
-        if (updatorId == null) {
-            updatorId = SessionService.session().getUserId();
+        if (updaterId == null) {
+            updaterId = SessionService.session().getUserId();
         }
 
     }
