@@ -1,4 +1,4 @@
-import { ref, onUnmounted, onMounted, computed } from "vue";
+import { ref, onUnmounted, onMounted, computed, nextTick } from "vue";
 import type { GetRtStatusVo } from "../api/AppStatusApi";
 import AppStatusApi from "../api/AppStatusApi";
 
@@ -7,6 +7,19 @@ const maxRcdCount = 120;
 
 //采样间隔时间
 const sampleInterval = 1000;
+
+/**
+ * 公用图表结构配置（纯静态对象，不含任何响应式引用，避免 vue-echarts 深克隆时产生循环引用）
+ */
+const baseChartLayout = {
+  grid: { top: 30, right: 10, bottom: 20, left: 40 },
+  tooltip: { trigger: "axis" },
+  xAxis: {
+    type: "category",
+    axisLabel: { show: false },
+    data: [] as string[],
+  },
+};
 
 export default {
   /**
@@ -23,6 +36,8 @@ export default {
         const res = await AppStatusApi.getRtStatus();
         if (!res) return;
 
+        // 使用 nextTick 延迟数据写入，避免在 ECharts 主进程渲染期间触发 setOption
+        await nextTick();
         data.value.push(res);
         if (data.value.length > maxRcdCount) {
           data.value.shift();
@@ -53,10 +68,8 @@ export default {
       stop();
     });
 
-    // 计算逻辑
     const latestStatus = computed(() => (data.value.length > 0 ? data.value[data.value.length - 1] : null));
 
-    // 格式化网络/IO 速率 (B/s -> KB/s)
     const formatNet = (val: number | undefined) => {
       if (val === undefined) return "0";
       return (val / 1024).toFixed(1);
@@ -76,34 +89,11 @@ export default {
       return "success";
     };
 
-    // 通用图表配置基础
-    const baseOption = {
-      grid: {
-        top: 30,
-        right: 10,
-        bottom: 20,
-        left: 40,
-      },
-      tooltip: {
-        trigger: "axis",
-      },
-      xAxis: {
-        type: "category",
-        data: computed(() => data.value.map((item) => item.createTime.split(" ")[1])),
-        axisLabel: {
-          show: false,
-        },
-      },
-    };
-
-    // CPU 图表配置
+    // xAxis.data 在每个 computed 内部单独计算，不嵌套 computed 对象到 option 中
     const cpuOption = computed(() => ({
-      ...baseOption,
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      ...baseChartLayout,
+      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      yAxis: { type: "value", min: 0, max: 100 },
       series: [
         {
           name: "CPU 使用率",
@@ -111,24 +101,16 @@ export default {
           data: data.value.map((item) => item.cpuUsage),
           smooth: true,
           showSymbol: false,
-          areaStyle: {
-            opacity: 0.1,
-          },
-          itemStyle: {
-            color: "#409eff",
-          },
+          areaStyle: { opacity: 0.1 },
+          itemStyle: { color: "#409eff" },
         },
       ],
     }));
 
-    // 内存图表配置
     const memOption = computed(() => ({
-      ...baseOption,
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      ...baseChartLayout,
+      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      yAxis: { type: "value", min: 0, max: 100 },
       series: [
         {
           name: "内存使用率",
@@ -136,22 +118,16 @@ export default {
           data: data.value.map((item) => item.memoryUsage),
           smooth: true,
           showSymbol: false,
-          areaStyle: {
-            opacity: 0.1,
-          },
-          itemStyle: {
-            color: "#67c23a",
-          },
+          areaStyle: { opacity: 0.1 },
+          itemStyle: { color: "#67c23a" },
         },
       ],
     }));
 
-    // 网络图表配置
     const netOption = computed(() => ({
-      ...baseOption,
-      yAxis: {
-        type: "value",
-      },
+      ...baseChartLayout,
+      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      yAxis: { type: "value" },
       series: [
         {
           name: "接收 (Rx)",
@@ -159,9 +135,7 @@ export default {
           data: data.value.map((item) => (item.networkRx / 1024).toFixed(1)),
           smooth: true,
           showSymbol: false,
-          itemStyle: {
-            color: "#e6a23c",
-          },
+          itemStyle: { color: "#e6a23c" },
         },
         {
           name: "发送 (Tx)",
@@ -169,19 +143,15 @@ export default {
           data: data.value.map((item) => (item.networkTx / 1024).toFixed(1)),
           smooth: true,
           showSymbol: false,
-          itemStyle: {
-            color: "#f56c6c",
-          },
+          itemStyle: { color: "#f56c6c" },
         },
       ],
     }));
 
-    // 磁盘 IO 图表配置
     const ioOption = computed(() => ({
-      ...baseOption,
-      yAxis: {
-        type: "value",
-      },
+      ...baseChartLayout,
+      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      yAxis: { type: "value" },
       series: [
         {
           name: "读取",
@@ -189,9 +159,7 @@ export default {
           data: data.value.map((item) => (item.ioRead / 1024).toFixed(1)),
           smooth: true,
           showSymbol: false,
-          itemStyle: {
-            color: "#909399",
-          },
+          itemStyle: { color: "#909399" },
         },
         {
           name: "写入",
@@ -199,9 +167,7 @@ export default {
           data: data.value.map((item) => (item.ioWrite / 1024).toFixed(1)),
           smooth: true,
           showSymbol: false,
-          itemStyle: {
-            color: "#409eff",
-          },
+          itemStyle: { color: "#409eff" },
         },
       ],
     }));
