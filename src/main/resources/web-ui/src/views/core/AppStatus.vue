@@ -142,6 +142,10 @@
                 <el-descriptions-item label="JVM 启动时间">{{ sysData.jvmStartTime }}</el-descriptions-item>
                 <el-descriptions-item label="JVM 运行时长">{{ sysData.jvmRunTime }}</el-descriptions-item>
                 <el-descriptions-item label="JDK 路径" :span="2">{{ sysData.jdkHome }}</el-descriptions-item>
+                <el-descriptions-item label="JVM 启动参数" :span="2">
+                  <span v-if="sysData.jvmInputArgs" class="jvm-args">{{ sysData.jvmInputArgs }}</span>
+                  <el-text v-else type="info" size="small">未开放（expose-jvm-args=false）</el-text>
+                </el-descriptions-item>
               </el-descriptions>
             </el-card>
 
@@ -398,6 +402,14 @@ const formatBytes = (mb: number | undefined | null): string => {
 }
 
 /* Tabs 直角化 */
+.jvm-args {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: var(--el-text-color-primary);
+}
+
 :deep(.el-tabs--top .el-tabs__item.is-top:nth-child(2)) {
   padding-left: 20px;
 }
