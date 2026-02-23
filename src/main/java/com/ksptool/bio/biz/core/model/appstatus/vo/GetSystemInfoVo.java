@@ -1,7 +1,6 @@
 package com.ksptool.bio.biz.core.model.appstatus.vo;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

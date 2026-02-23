@@ -1,6 +1,9 @@
 package com.ksptool.bio.biz.core.service;
 
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetRtStatusVo;
+import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoDiskVo;
+import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoIFVo;
+import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoVo;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +15,16 @@ import oshi.hardware.GlobalMemory;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
+import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,6 +34,10 @@ public class AppStatusService {
 
     @Value("${module-app-status.sample-delay-ms:1000}")
     private long sampleDelayMs;
+
+    // 为 true 时在 getSystemInfo 中返回 jvmInputArgs 原始值，默认关闭（避免泄露密码/Token/连接串）
+    @Value("${module-app-status.expose-jvm-args:false}")
+    private boolean exposeJvmArgs;
 
     // OSHI 核心对象，只初始化一次
     private SystemInfo si;
@@ -158,7 +172,107 @@ public class AppStatusService {
         return snapshot.get();
     }
 
+    /**
+     * 获取静态系统信息（主机/OS/CPU/JDK/JVM/磁盘/网卡）
+     */
+    public GetSystemInfoVo getSystemInfo() {
+        GetSystemInfoVo vo = new GetSystemInfoVo();
+
+        // ---- 主机与操作系统 ----
+        vo.setServerName(os.getNetworkParams().getHostName());
+        vo.setOsName(os.toString());
+
+        // ---- CPU ----
+        vo.setCpuArch(cpu.getProcessorIdentifier().getMicroarchitecture());
+        vo.setCpuModel(cpu.getProcessorIdentifier().getName());
+        vo.setCpuCount(cpu.getLogicalProcessorCount());
+
+        // ---- 内存与交换区（字节数） ----
+        GlobalMemory mem = hal.getMemory();
+        vo.setMemoryTotal(mem.getTotal());
+        vo.setSwapTotal(mem.getVirtualMemory().getSwapTotal());
+
+        // ---- JDK/JVM 信息（JVM 原生） ----
+        RuntimeMXBean rtMxBean = ManagementFactory.getRuntimeMXBean();
+        vo.setJdkName(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name"));
+        vo.setJdkVersion(System.getProperty("java.version"));
+        vo.setJdkHome(System.getProperty("java.home"));
+
+        long startMs = rtMxBean.getStartTime();
+        vo.setJvmStartTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(startMs), ZoneId.systemDefault()));
+        vo.setJvmRunTime(formatUptime(System.currentTimeMillis() - startMs));
+
+        // exposeJvmArgs=false 时不暴露启动参数，避免泄露敏感信息
+        if (exposeJvmArgs) {
+            vo.setJvmInputArgs(String.join(" ", rtMxBean.getInputArguments()));
+        }
+
+        // ---- 磁盘 ----
+        vo.setDiskInfo(buildDiskInfo());
+
+        // ---- 网卡 ----
+        vo.setIfInfo(buildIfInfo());
+
+        return vo;
+    }
+
     // ---- 私有工具方法 ----
+
+    /**
+     * 将毫秒级运行时长格式化为 HH:mm:ss（小时可超过 24）
+     */
+    private String formatUptime(long uptimeMs) {
+        long totalSeconds = uptimeMs / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    /**
+     * 用 OSHI FileSystem 组装磁盘信息列表
+     */
+    private List<GetSystemInfoDiskVo> buildDiskInfo() {
+        List<OSFileStore> stores = os.getFileSystem().getFileStores();
+        List<GetSystemInfoDiskVo> result = new ArrayList<>();
+        for (OSFileStore store : stores) {
+            GetSystemInfoDiskVo disk = new GetSystemInfoDiskVo();
+            disk.setDirName(store.getMount());
+            disk.setFileSystem(store.getType());
+
+            long total = store.getTotalSpace();
+            long available = store.getUsableSpace();
+            long used = total - available;
+
+            disk.setTotalCapacity(total);
+            disk.setAvailableCapacity(available);
+            disk.setUsedCapacity(used < 0 ? 0L : used);
+            disk.setUsage(calcUsagePercent(total, used < 0 ? 0L : used));
+            result.add(disk);
+        }
+        return result;
+    }
+
+    /**
+     * 用 OSHI NetworkIF 组装网卡信息列表，过滤无 IPv4 地址的接口
+     */
+    private List<GetSystemInfoIFVo> buildIfInfo() {
+        List<NetworkIF> nics = hal.getNetworkIFs(true);
+        List<GetSystemInfoIFVo> result = new ArrayList<>();
+        for (NetworkIF nic : nics) {
+            String[] addrs = nic.getIPv4addr();
+            if (addrs == null || addrs.length == 0) {
+                continue;
+            }
+            GetSystemInfoIFVo ifVo = new GetSystemInfoIFVo();
+            ifVo.setName(nic.getName());
+            ifVo.setDisplayName(nic.getDisplayName());
+            ifVo.setMac(nic.getMacaddr());
+            ifVo.setIpv4Addrs(Arrays.asList(addrs));
+            result.add(ifVo);
+        }
+        return result;
+    }
 
     /**
      * 聚合所有网卡的累计收发字节数和包数
