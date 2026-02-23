@@ -255,6 +255,7 @@ public class SessionService {
         newSession.setSessionId(hashedSessionId);
         newSession.setPermissionCodes(toJson(permCodes));
         newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
+        newSession.setCreatorId(aud.getId());
         userSessionRepository.save(newSession);
 
         //处理用户登录次数与最后登录时间
