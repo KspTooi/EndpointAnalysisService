@@ -284,7 +284,7 @@
                         <artifactId>frontend-maven-plugin</artifactId>
                         <version>1.15.0</version>
                         <configuration>
-                            <workingDirectory>src/main/resources/views/webconsole</workingDirectory>
+                            <workingDirectory>src/main/resources/web-ui</workingDirectory>
                             <nodeVersion>v20.19.0</nodeVersion>
                             <npmVersion>11.2.0</npmVersion>
                             <pnpmVersion>10.14.0</pnpmVersion>
@@ -330,10 +330,10 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}/views/static</outputDirectory>
+                                    <outputDirectory>${project.build.outputDirectory}/web-static</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>src/main/resources/views/webconsole/dist</directory>
+                                            <directory>src/main/resources/web-ui/dist</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>
