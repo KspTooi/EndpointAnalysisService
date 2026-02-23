@@ -1,7 +1,7 @@
 package com.ksptooi.biz.auth.common;
 
-import com.ksptooi.biz.core.model.endpoint.DynamicEndpointAuthorizationRule;
-import com.ksptooi.biz.core.service.EndpointService;
+import com.ksptool.bio.biz.core.model.endpoint.DynamicEndpointAuthorizationRule;
+import com.ksptool.bio.biz.core.service.EndpointService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class DynamicAuthorizationManager {
      * Spring Security 调用入口。
      */
     public AuthorizationManager<RequestAuthorizationContext> asAuthorizationManager() {
-        
+
         return this::check;
     }
 

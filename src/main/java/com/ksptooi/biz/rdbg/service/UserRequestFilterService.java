@@ -2,7 +2,7 @@ package com.ksptooi.biz.rdbg.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterOperationPo;
 import com.ksptooi.biz.rdbg.model.filter.SimpleFilterTriggerPo;
 import com.ksptooi.biz.rdbg.model.userrequest.UserRequestPo;

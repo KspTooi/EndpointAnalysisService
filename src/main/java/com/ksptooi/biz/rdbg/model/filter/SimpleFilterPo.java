@@ -1,6 +1,6 @@
 package com.ksptooi.biz.rdbg.model.filter;
 
-import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.UserRequestGroupPo;
 import jakarta.persistence.*;
 import lombok.Getter;

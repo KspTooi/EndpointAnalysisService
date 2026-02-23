@@ -2,8 +2,8 @@ package com.ksptooi.biz.rdbg.service;
 
 import com.ksptooi.biz.auth.service.AuthService;
 import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptooi.biz.core.model.user.UserPo;
-import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptool.bio.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.repository.UserRepository;
 import com.ksptooi.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
 import com.ksptooi.biz.rdbg.model.userrequestenv.dto.AddUserRequestEnvDto;
 import com.ksptooi.biz.rdbg.model.userrequestenv.dto.EditUserRequestEnvDto;

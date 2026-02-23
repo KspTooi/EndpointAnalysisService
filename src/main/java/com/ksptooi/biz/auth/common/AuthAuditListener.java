@@ -1,9 +1,9 @@
 package com.ksptooi.biz.auth.common;
 
-import com.ksptooi.biz.audit.service.AuditLoginService;
 import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
-import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptool.bio.biz.core.repository.UserRepository;
 import com.ksptooi.commons.WebUtils;
+import com.ksptool.bio.biz.audit.service.AuditLoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 用户登录审计监听器 用于记录登录审计日志
- * 
+ * <p>
  * 这个类主要用于记录用户登录审计日志，包括登录成功和登录失败的情况。
  * 它会监听SpringSecurity的登录成功和登录失败事件，并记录相应的审计日志。
  */
@@ -97,7 +97,7 @@ public class AuthAuditListener {
 
 
         //查找一次用户
-        if(userRepository.countByUsername(username) < 1){
+        if (userRepository.countByUsername(username) < 1) {
             message = "用户不存在";
         }
 

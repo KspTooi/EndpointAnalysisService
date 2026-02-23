@@ -1,10 +1,11 @@
 package com.ksptooi.biz.rdbg.model.userrequestenv;
 
-import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.rdbg.model.userrequestenvstorage.UserRequestEnvStoragePo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

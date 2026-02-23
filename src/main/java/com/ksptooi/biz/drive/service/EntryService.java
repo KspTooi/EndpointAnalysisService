@@ -1,8 +1,8 @@
 package com.ksptooi.biz.drive.service;
 
-import com.ksptooi.biz.core.model.attach.AttachPo;
-import com.ksptooi.biz.core.repository.AttachRepository;
-import com.ksptooi.biz.core.service.AttachService;
+import com.ksptool.bio.biz.core.model.attach.AttachPo;
+import com.ksptool.bio.biz.core.repository.AttachRepository;
+import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptooi.biz.drive.model.EntryPo;
 import com.ksptooi.biz.drive.model.dto.*;
 import com.ksptooi.biz.drive.model.vo.*;

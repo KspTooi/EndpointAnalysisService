@@ -1,7 +1,7 @@
 package com.ksptool.bio;
 
 import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.relay.service.RelayServerService;
 import com.ksptooi.commons.enums.GlobalConfigEnum;
 import jakarta.annotation.PostConstruct;

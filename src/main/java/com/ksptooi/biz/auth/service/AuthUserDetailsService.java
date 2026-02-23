@@ -2,7 +2,7 @@ package com.ksptooi.biz.auth.service;
 
 import com.ksptooi.biz.auth.model.auth.AuthUserDetails;
 import com.ksptooi.biz.auth.repository.GroupRepository;
-import com.ksptooi.biz.core.repository.UserRepository;
+import com.ksptool.bio.biz.core.repository.UserRepository;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,7 +1,7 @@
 package com.ksptooi.biz.rdbg.model.userrequest;
 
 
-import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.UserRequestGroupPo;
 import com.ksptooi.biz.rdbg.model.userrequestlog.UserRequestLogPo;

@@ -3,7 +3,7 @@ package com.ksptooi.biz.rdbg.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.rdbg.model.userrequest.EditUserRequestDto;
 import com.ksptooi.biz.rdbg.model.userrequest.GetUserRequestDetailsVo;
 import com.ksptooi.biz.rdbg.model.userrequest.SaveAsUserRequestDto;

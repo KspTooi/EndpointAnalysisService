@@ -7,7 +7,7 @@ import com.ksptooi.biz.auth.model.group.vo.GetGroupListVo;
 import com.ksptooi.biz.auth.model.group.vo.GetGroupPermissionMenuViewVo;
 import com.ksptooi.biz.auth.model.group.vo.GetGroupPermissionNodeVo;
 import com.ksptooi.biz.auth.service.GroupService;
-import com.ksptooi.biz.core.service.MenuService;
+import com.ksptool.bio.biz.core.service.MenuService;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;

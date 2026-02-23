@@ -1,6 +1,6 @@
 package com.ksptooi.biz.relay.model.replayrequest;
 
-import com.ksptooi.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import com.ksptooi.biz.relay.model.request.RequestPo;
 import jakarta.persistence.*;

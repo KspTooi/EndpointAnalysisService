@@ -1,6 +1,6 @@
 package com.ksptooi.biz.drive.model;
 
-import com.ksptooi.biz.core.model.attach.AttachPo;
+import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;

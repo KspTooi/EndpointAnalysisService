@@ -1,6 +1,6 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptooi.biz.core.service.GlobalConfigService;
+import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.biz.rdbg.model.collection.CollectionPo;
 import com.ksptooi.biz.rdbg.model.collection.dto.AddCollectionDto;
