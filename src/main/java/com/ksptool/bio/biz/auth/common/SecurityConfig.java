@@ -34,7 +34,8 @@ public class SecurityConfig {
             "/v3/api-docs", //OpenApi端点
             "/maintain/**", //OpenApi端点
             "/auth/genCaptcha", //验证码端点
-            "/auth/check"//验证码端点
+            "/auth/check",//验证码端点
+            "/static/**" //静态资源
     );
 
     @Autowired
