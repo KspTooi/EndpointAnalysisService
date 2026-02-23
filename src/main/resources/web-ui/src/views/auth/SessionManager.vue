@@ -27,7 +27,7 @@
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="username" label="用户名" min-width="150" />
-        <el-table-column prop="rsMax" label="数据权限等级" min-width="150">
+        <el-table-column prop="rsMax" label="数据权限(RS)等级" min-width="150">
           <template #default="scope">
             <el-tag v-if="scope.row.rsMax === 0" type="success">全部</el-tag>
             <el-tag v-if="scope.row.rsMax === 1">本公司/租户及以下</el-tag>
@@ -80,48 +80,59 @@
   </StdListLayout>
 
   <!-- 会话详情模态框 -->
-  <el-dialog v-model="modalVisible" title="会话详情" width="800px" :close-on-click-modal="false">
-    <el-descriptions :column="1" border v-if="currentSessionDetails">
-      <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
-      <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
-      <el-descriptions-item label="登入时间">{{ currentSessionDetails.createTime }}</el-descriptions-item>
-      <el-descriptions-item label="数据权限等级">
-        <el-tag v-if="currentSessionDetails.rsMax === 0" type="success">全部</el-tag>
-        <el-tag v-if="currentSessionDetails.rsMax === 1">本公司/租户及以下</el-tag>
-        <el-tag v-if="currentSessionDetails.rsMax === 2">本部门及以下</el-tag>
-        <el-tag v-if="currentSessionDetails.rsMax === 3">本部门</el-tag>
-        <el-tag v-if="currentSessionDetails.rsMax === 4">仅本人</el-tag>
-        <el-tag v-if="currentSessionDetails.rsMax === 5" type="warning">指定部门</el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item label="允许访问部门" v-if="currentSessionDetails.rsMax === 5">
-        <div v-if="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0">
-          <el-tag v-for="dept in currentSessionDetails.rsDeptNames" :key="dept" type="info">
-            {{ dept }}
-          </el-tag>
-        </div>
-        <span v-else>未指定部门</span>
-      </el-descriptions-item>
-      <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
-      <el-descriptions-item label="权限节点">
-        <div v-if="currentSessionDetails.permissions && currentSessionDetails.permissions.length > 0">
-          <el-input
-            v-model="permissionSearchKeyword"
-            placeholder="搜索权限节点"
-            clearable
-            style="margin-bottom: 10px; width: 100%"
-          />
-          <el-table :data="filteredPermissions" stripe max-height="300px" style="width: 100%">
-            <el-table-column label="权限代码" min-width="500">
+  <el-dialog v-model="modalVisible" title="会话详情" width="900px" :close-on-click-modal="false" destroy-on-close>
+    <div v-if="currentSessionDetails" class="session-details-container">
+      <!-- 基本信息 -->
+      <el-descriptions :column="2" border title="基本信息" class="mb-4">
+        <el-descriptions-item label="会话ID" :span="2">{{ currentSessionDetails.id }}</el-descriptions-item>
+        <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
+        <el-descriptions-item label="数据权限(RS)等级">
+          <el-tag v-if="currentSessionDetails.rsMax === 0" type="success">全部</el-tag>
+          <el-tag v-if="currentSessionDetails.rsMax === 1">本公司/租户及以下</el-tag>
+          <el-tag v-if="currentSessionDetails.rsMax === 2">本部门及以下</el-tag>
+          <el-tag v-if="currentSessionDetails.rsMax === 3">本部门</el-tag>
+          <el-tag v-if="currentSessionDetails.rsMax === 4">仅本人</el-tag>
+          <el-tag v-if="currentSessionDetails.rsMax === 5" type="warning">指定部门</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="登入时间">{{ currentSessionDetails.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
+      </el-descriptions>
+
+      <el-row :gutter="20">
+        <!-- 数据权限部门列表 -->
+        <el-col :span="10" v-if="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0">
+          <div class="section-title">允许访问部门(RSAD) ({{ currentSessionDetails.rsDeptNames.length }})</div>
+          <el-table :data="currentSessionDetails.rsDeptNames" stripe border max-height="400px" size="small">
+            <el-table-column label="部门名称">
               <template #default="scope">
-                {{ scope.row }}
+                <el-tag size="small" type="info">{{ scope.row }}</el-tag>
               </template>
             </el-table-column>
           </el-table>
-          <div style="margin-top: 10px; text-align: right">总权限数：{{ currentSessionDetails.permissions.length }}</div>
-        </div>
-        <el-tag v-else type="info">无权限</el-tag>
-      </el-descriptions-item>
-    </el-descriptions>
+        </el-col>
+
+        <!-- 权限节点列表 -->
+        <el-col :span="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0 ? 14 : 24">
+          <div class="section-title">
+            权限节点 ({{ currentSessionDetails.permissions?.length || 0 }})
+            <el-input
+              v-model="permissionSearchKeyword"
+              placeholder="搜索权限代码"
+              clearable
+              size="small"
+              style="width: 200px; float: right"
+            />
+          </div>
+          <el-table :data="filteredPermissions" stripe border max-height="400px" size="small">
+            <el-table-column label="权限代码" show-overflow-tooltip>
+              <template #default="scope">
+                <code>{{ scope.row }}</code>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+    </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="modalVisible = false">关闭</el-button>
@@ -225,13 +236,34 @@ loadList();
 </script>
 
 <style scoped>
-.el-descriptions {
-  margin-top: 0; /* Reset margin if any default from el-dialog content */
+.session-details-container {
+  padding: 10px 0;
+}
+
+.mb-4 {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ebeef5;
+  color: #606266;
+  line-height: 32px;
+}
+
+code {
+  font-family: monospace;
+  background-color: #f5f7fa;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #409eff;
 }
 
 .el-tag {
   margin-right: 5px;
-  margin-bottom: 5px;
 }
 
 /* Ensure tooltip content is readable if it becomes too long */

@@ -158,6 +158,7 @@ public class SessionService {
 
         }
 
+        vo.setRsMax(maxRs);
         vo.setRsDeptNames(rsAllowDeptNames);
         return vo;
     }
