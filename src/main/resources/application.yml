@@ -114,6 +114,11 @@ audit:
   #是否记录系统错误记录
   record-error-rcd: true
 
+#应用状态监控模块配置
+module-app-status:
+  #后台采样间隔（毫秒），前端轮询频率建议 >= 此值
+  sample-delay-ms: 1000
+
 mybatis:
   mapper-locations: classpath:mappers/**/*.xml
 #logging:

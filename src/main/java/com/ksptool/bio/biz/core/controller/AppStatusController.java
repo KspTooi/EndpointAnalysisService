@@ -27,7 +27,7 @@ public class AppStatusController {
     @Operation(summary = "获取实时性能监控数据")
     @PostMapping("/getRtStatus")
     public Result<GetRtStatusVo> getRtStatus() {
-        return Result.success(null);
+        return Result.success(appStatusService.getRtStatus());
     }
 
 }
