@@ -4,7 +4,6 @@ import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetRtStatusVo;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoVo;
 import com.ksptool.bio.biz.core.service.AppStatusService;
-import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@PrintLog
+
 @RestController
 @RequestMapping("/appStatus")
 @Tag(name = "应用性能监控", description = "应用性能监控")

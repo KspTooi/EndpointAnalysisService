@@ -52,7 +52,6 @@ spring:
         use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.MySQLDialect
 
-
   main:
     lazy-initialization: true
 
@@ -118,6 +117,8 @@ audit:
 module-app-status:
   #后台采样间隔（毫秒），前端轮询频率建议 >= 此值
   sample-delay-ms: 1000
+  #是否暴露JVM启动参数
+  expose-jvm-args: true
 
 mybatis:
   mapper-locations: classpath:mappers/**/*.xml
@@ -126,7 +127,6 @@ mybatis:
 #    org.springframework.boot.context.logging: INFO
 #    # 开启 Spring Bean 初始化的详细日志
 #    org.springframework.beans.factory.support.DefaultListableBeanFactory: DEBUG
-
 
 # 行为验证码配置， 详细请看 cloud.tianai.captcha.autoconfiguration.ImageCaptchaProperties 类
 captcha:
