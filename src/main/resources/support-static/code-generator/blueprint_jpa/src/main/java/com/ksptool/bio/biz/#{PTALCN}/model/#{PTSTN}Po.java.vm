@@ -31,7 +31,7 @@ public class ${ptstn}Po {
     #end
 
     @PrePersist
-    private void onCreate() {
+    private void onCreate() throws AuthException {
 
         #foreach ($field in $fields)
         #if(${field.primaryKey})
@@ -90,7 +90,7 @@ public class ${ptstn}Po {
     }
 
     @PreUpdate
-    private void onUpdate() {
+    private void onUpdate() throws AuthException {
         #set($hasUpdateTime = false)
         #set($hasUpdaterId = false)
         #foreach ($field in $fields)
