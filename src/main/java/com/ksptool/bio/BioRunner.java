@@ -1,9 +1,9 @@
 package com.ksptool.bio;
 
-import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.relay.service.RelayServerService;
+import com.ksptool.bio.commons.enums.GlobalConfigEnum;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
-@MapperScan(basePackages = "com.ksptooi.biz", annotationClass = Mapper.class)
+@MapperScan(basePackages = "com.ksptool.bio.biz", annotationClass = Mapper.class)
 @EnableTransactionManagement
 @SpringBootApplication
 @EnableScheduling
