@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-23 17:56:37",
+  "updatedTime": "2026-2-23 19:42:15",
   "dbConns": [],
   "profile": {
     "default": {
@@ -25410,6 +25410,42 @@
           "attr9": "",
           "id": "427F1EE1-4980-43EB-9427-A26E0A3BCBCE",
           "baseType": "2F88EAF9-55AD-4118-AD4B-CF341ECC9A4D"
+        },
+        {
+          "defKey": "rs_max",
+          "defName": "最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "extProps": {},
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "id": "66F83DC3-3371-45E3-B440-D8D436802907"
+        },
+        {
+          "defKey": "rs_allow_depts",
+          "defName": "RowScope允许访问的部门IDS",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "2F88EAF9-55AD-4118-AD4B-CF341ECC9A4D",
+          "extProps": {},
+          "domain": "6EDF7824-209D-43F3-AE9D-02247D33147B",
+          "id": "64A5F191-9D34-4246-A0A4-69C1367E48A8"
         },
         {
           "defKey": "expires_at",
