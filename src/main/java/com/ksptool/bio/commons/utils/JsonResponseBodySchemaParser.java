@@ -1,7 +1,7 @@
 package com.ksptool.bio.commons.utils;
 
-import com.ksptooi.commons.model.BodySchema;
-import com.ksptooi.commons.model.BodySchemaParam;
+import com.ksptool.bio.commons.model.BodySchema;
+import com.ksptool.bio.commons.model.BodySchemaParam;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;

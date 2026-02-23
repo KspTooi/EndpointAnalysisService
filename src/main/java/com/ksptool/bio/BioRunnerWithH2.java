@@ -1,6 +1,6 @@
 package com.ksptool.bio;
 
-import com.ksptooi.commons.H2Server;
+import com.ksptool.bio.commons.H2Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 

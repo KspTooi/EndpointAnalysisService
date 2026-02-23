@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.auth.service;
 
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -285,7 +285,7 @@ public class SessionService {
     }
 
     /**
-     * 根据SessionId获取会话 这是一个带有缓存的查询方法 缓存配置位于com.ksptooi.commons.config.CacheConfig
+     * 根据SessionId获取会话 这是一个带有缓存的查询方法 缓存配置位于com.ksptool.bio.commons.config.CacheConfig
      *
      * @param sessionId 会话SessionId
      * @return 会话

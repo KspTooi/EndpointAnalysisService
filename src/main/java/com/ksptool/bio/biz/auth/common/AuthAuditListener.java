@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.auth.common;
 
-import com.ksptooi.commons.WebUtils;
+import com.ksptool.bio.commons.WebUtils;
 import com.ksptool.bio.biz.audit.service.AuditLoginService;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import com.ksptool.bio.biz.core.repository.UserRepository;

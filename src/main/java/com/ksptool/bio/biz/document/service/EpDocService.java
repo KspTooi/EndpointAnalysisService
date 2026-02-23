@@ -2,7 +2,7 @@ package com.ksptool.bio.biz.document.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ksptooi.biz.document.model.epdoc.*;
-import com.ksptooi.commons.utils.OpenApiUtils;
+import com.ksptool.bio.commons.utils.OpenApiUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.document.model.epdoc.*;

@@ -2,7 +2,7 @@ package com.ksptooi.biz.${ptalcn}.model;
 
 import java.time.LocalDateTime;
 import com.ksptool.bio.biz.auth.service.AuthService;
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

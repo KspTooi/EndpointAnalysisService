@@ -10,7 +10,7 @@ import com.ksptool.bio.biz.core.model.noticercd.NoticeRcdPo;
 import com.ksptool.bio.biz.core.repository.NoticeRcdRepository;
 import com.ksptool.bio.biz.core.repository.NoticeRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageQuery;

@@ -2,7 +2,7 @@ package com.ksptool.bio.biz.document.service;
 
 import com.google.gson.Gson;
 import com.ksptooi.biz.document.model.epdocoperation.*;
-import com.ksptooi.commons.model.BodySchema;
+import com.ksptool.bio.commons.model.BodySchema;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.document.model.epdoc.EndpointDocPo;
 import com.ksptool.bio.biz.document.model.epdocoperation.*;
@@ -267,7 +267,7 @@ public class EpDocOperationService {
 
 
                 // 设置请求体 (Request Body)
-                BodySchema reqSchema = com.ksptooi.commons.utils.JsonRequestBodySchemaParser.parse(openApi, operation);
+                BodySchema reqSchema = com.ksptool.bio.commons.utils.JsonRequestBodySchemaParser.parse(openApi, operation);
                 if (reqSchema != null) {
                     po.setReqBodyJson(gson.toJson(reqSchema));
                 }
@@ -276,7 +276,7 @@ public class EpDocOperationService {
                 // resQueryJson` 字段可能意指存储所有响应，这里我们存入完整的Responses对象
                 po.setResQueryJson(gson.toJson(operation.getResponses()));
 
-                BodySchema resSchema = com.ksptooi.commons.utils.JsonResponseBodySchemaParser.parse(openApi, operation);
+                BodySchema resSchema = com.ksptool.bio.commons.utils.JsonResponseBodySchemaParser.parse(openApi, operation);
                 if (resSchema != null) {
                     po.setResBodyJson(gson.toJson(resSchema));
                 }

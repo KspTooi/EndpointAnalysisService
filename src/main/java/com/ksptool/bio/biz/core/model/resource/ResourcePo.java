@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.core.model.resource;
 
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.commons.dataprocess.Str;
 import jakarta.persistence.*;

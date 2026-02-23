@@ -3,7 +3,7 @@ package com.ksptool.bio.biz.relay.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.ksptooi.biz.relay.model.replayrequest.*;
-import com.ksptooi.commons.utils.GsonUtils;
+import com.ksptool.bio.commons.utils.GsonUtils;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;

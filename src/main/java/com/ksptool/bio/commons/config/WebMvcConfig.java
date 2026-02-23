@@ -1,6 +1,6 @@
 package com.ksptool.bio.commons.config;
 
-import com.ksptooi.commons.aop.SessionKeepMethodArgumentResolver;
+import com.ksptool.bio.commons.aop.SessionKeepMethodArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

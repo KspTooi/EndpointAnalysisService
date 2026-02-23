@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.auth.model.session;
 
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import jakarta.persistence.*;

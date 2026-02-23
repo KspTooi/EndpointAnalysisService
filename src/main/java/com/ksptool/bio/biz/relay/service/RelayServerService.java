@@ -2,7 +2,7 @@ package com.ksptool.bio.biz.relay.service;
 
 import com.google.gson.Gson;
 import com.ksptooi.biz.relay.model.relayserver.*;
-import com.ksptooi.commons.aop.relay.HttpRelayServlet;
+import com.ksptool.bio.commons.aop.relay.HttpRelayServlet;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;

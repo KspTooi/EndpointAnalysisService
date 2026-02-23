@@ -4,7 +4,7 @@ import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptool.bio.biz.core.model.company.CompanyPo;
 import com.ksptool.bio.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptool.bio.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

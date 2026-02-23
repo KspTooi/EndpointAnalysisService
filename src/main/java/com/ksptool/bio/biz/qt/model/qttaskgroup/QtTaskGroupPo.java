@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.qt.model.qttaskgroup;
 
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import jakarta.persistence.*;
 import lombok.Getter;

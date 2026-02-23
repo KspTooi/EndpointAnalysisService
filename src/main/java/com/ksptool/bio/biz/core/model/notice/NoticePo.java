@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.core.model.notice;
 
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

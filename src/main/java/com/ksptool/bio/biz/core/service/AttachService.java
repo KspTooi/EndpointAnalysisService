@@ -7,7 +7,7 @@ import com.ksptool.bio.biz.core.model.attach.vo.ApplyChunkVo;
 import com.ksptool.bio.biz.core.model.attach.vo.PreCheckAttachVo;
 import com.ksptool.bio.biz.core.repository.AttachChunkRepository;
 import com.ksptool.bio.biz.core.repository.AttachRepository;
-import com.ksptooi.commons.utils.IdWorker;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.commons.config.AttachConfig;
 import lombok.extern.slf4j.Slf4j;

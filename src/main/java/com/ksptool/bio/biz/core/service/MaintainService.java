@@ -1,7 +1,7 @@
 package com.ksptool.bio.biz.core.service;
 
-import com.ksptooi.commons.enums.GroupEnum;
-import com.ksptooi.commons.enums.UserEnum;
+import com.ksptool.bio.commons.enums.GroupEnum;
+import com.ksptool.bio.commons.enums.UserEnum;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.model.GroupPermissionPo;
 import com.ksptool.bio.biz.auth.model.UserGroupPo;

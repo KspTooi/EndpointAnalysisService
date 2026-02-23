@@ -319,7 +319,7 @@ public class EndpointService {
     }
 
     /**
-     * 获取全量端点权限配置数据 这是一个带有缓存的查询方法 缓存配置位于com.ksptooi.commons.config.CacheConfig
+     * 获取全量端点权限配置数据 这是一个带有缓存的查询方法 缓存配置位于com.ksptool.bio.commons.config.CacheConfig
      *
      * @return 端点权限配置数据
      */
