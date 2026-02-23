@@ -2,6 +2,7 @@ package com.ksptool.bio.biz.core.controller;
 
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetRtStatusVo;
+import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoVo;
 import com.ksptool.bio.biz.core.service.AppStatusService;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,13 @@ public class AppStatusController {
     @PostMapping("/getRtStatus")
     public Result<GetRtStatusVo> getRtStatus() {
         return Result.success(appStatusService.getRtStatus());
+    }
+
+    @PreAuthorize("@auth.hasCode('app:status:view')")
+    @Operation(summary = "获取系统信息")
+    @PostMapping("/getSystemInfo")
+    public Result<GetSystemInfoVo> getSystemInfo() {
+        return Result.success(appStatusService.getSystemInfo());
     }
 
 }
