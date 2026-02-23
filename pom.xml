@@ -270,6 +270,13 @@
             <version>1.5.5</version>
         </dependency>
 
+        <!-- Source: https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.9.3</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>
