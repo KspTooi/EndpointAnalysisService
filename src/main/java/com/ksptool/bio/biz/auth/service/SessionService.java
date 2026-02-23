@@ -1,6 +1,5 @@
 package com.ksptool.bio.biz.auth.service;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -15,6 +14,7 @@ import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
+import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.bio.commons.utils.SHA256;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ksptool.entities.Entities.*;
@@ -133,24 +129,24 @@ public class SessionService {
 
 
         //处理RS权限列表
-        if(maxRs == 2 || maxRs == 3){
+        if (maxRs == 2 || maxRs == 3 || maxRs == 5) {
 
             var depts = orgRepository.getDeptsByIds(rsAllowDepts);
 
-            if(depts.isEmpty()){
+            if (depts.isEmpty()) {
                 return vo;
             }
 
             var rootIds = depts.stream().map(OrgPo::getRootId).distinct().collect(Collectors.toList());
             var roots = orgRepository.getRootsByIds(rootIds);
 
-            for(var dept : depts){
+            for (var dept : depts) {
 
                 var rootName = "未知企业";
 
-                for(var root : roots){
+                for (var root : roots) {
 
-                    if(Objects.equals(root.getId(), dept.getRootId())){
+                    if (Objects.equals(root.getId(), dept.getRootId())) {
                         rootName = root.getName();
                         break;
                     }

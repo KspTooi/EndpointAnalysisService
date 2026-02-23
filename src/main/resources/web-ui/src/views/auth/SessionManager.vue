@@ -27,6 +27,16 @@
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="username" label="用户名" min-width="150" />
+        <el-table-column prop="rsMax" label="数据权限等级" min-width="150">
+          <template #default="scope">
+            <el-tag v-if="scope.row.rsMax === 0" type="success">全部</el-tag>
+            <el-tag v-if="scope.row.rsMax === 1">本公司/租户及以下</el-tag>
+            <el-tag v-if="scope.row.rsMax === 2">本部门及以下</el-tag>
+            <el-tag v-if="scope.row.rsMax === 3">本部门</el-tag>
+            <el-tag v-if="scope.row.rsMax === 4">仅本人</el-tag>
+            <el-tag v-if="scope.row.rsMax === 5" type="warning">指定部门</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="登入时间" min-width="180" />
         <el-table-column prop="expiresAt" label="过期时间" min-width="180" />
         <el-table-column prop="isExpired" label="是否过期" min-width="180">
@@ -75,6 +85,22 @@
       <el-descriptions-item label="会话ID">{{ currentSessionDetails.id }}</el-descriptions-item>
       <el-descriptions-item label="用户名">{{ currentSessionDetails.username }}</el-descriptions-item>
       <el-descriptions-item label="登入时间">{{ currentSessionDetails.createTime }}</el-descriptions-item>
+      <el-descriptions-item label="数据权限等级">
+        <el-tag v-if="currentSessionDetails.rsMax === 0" type="success">全部</el-tag>
+        <el-tag v-if="currentSessionDetails.rsMax === 1">本公司/租户及以下</el-tag>
+        <el-tag v-if="currentSessionDetails.rsMax === 2">本部门及以下</el-tag>
+        <el-tag v-if="currentSessionDetails.rsMax === 3">本部门</el-tag>
+        <el-tag v-if="currentSessionDetails.rsMax === 4">仅本人</el-tag>
+        <el-tag v-if="currentSessionDetails.rsMax === 5" type="warning">指定部门</el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="允许访问部门" v-if="currentSessionDetails.rsMax === 5">
+        <div v-if="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0">
+          <el-tag v-for="dept in currentSessionDetails.rsDeptNames" :key="dept" type="info">
+            {{ dept }}
+          </el-tag>
+        </div>
+        <span v-else>未指定部门</span>
+      </el-descriptions-item>
       <el-descriptions-item label="过期时间">{{ currentSessionDetails.expiresAt }}</el-descriptions-item>
       <el-descriptions-item label="权限节点">
         <div v-if="currentSessionDetails.permissions && currentSessionDetails.permissions.length > 0">
