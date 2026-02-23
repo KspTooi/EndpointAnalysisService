@@ -254,7 +254,7 @@ export default {
             name: group.name,
             remark: "",
             seq: 0,
-            isSystem: group.isSystem,
+            isSystem: group.isSystem === 1 ? true : false, // 1:是 0:否
             hasGroup: false,
             status: group.status,
           });
