@@ -11,7 +11,9 @@ import com.ksptool.bio.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptool.bio.biz.auth.model.session.vo.GetSessionListVo;
 import com.ksptool.bio.biz.auth.repository.GroupRepository;
 import com.ksptool.bio.biz.auth.repository.UserSessionRepository;
+import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
+import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
 import com.ksptool.bio.commons.utils.SHA256;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.ksptool.entities.Entities.*;
 
@@ -53,6 +57,9 @@ public class SessionService {
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private OrgRepository orgRepository;
 
 
     /**
@@ -118,6 +125,43 @@ public class SessionService {
         vo.setCreateTime(session.getCreateTime());
         vo.setExpiresAt(session.getExpiresAt());
         vo.setPermissions(new HashSet<>(fromJsonArray(session.getPermissionCodes(), String.class)));
+
+        //RS 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门
+        var maxRs = session.getRsMax();
+        var rsAllowDepts = fromJsonArray(session.getRsAllowDepts(), Long.class);
+        var rsAllowDeptNames = new ArrayList<String>();
+
+
+        //处理RS权限列表
+        if(maxRs == 2 || maxRs == 3){
+
+            var depts = orgRepository.getDeptsByIds(rsAllowDepts);
+
+            if(depts.isEmpty()){
+                return vo;
+            }
+
+            var rootIds = depts.stream().map(OrgPo::getRootId).distinct().collect(Collectors.toList());
+            var roots = orgRepository.getRootsByIds(rootIds);
+
+            for(var dept : depts){
+
+                var rootName = "未知企业";
+
+                for(var root : roots){
+
+                    if(Objects.equals(root.getId(), dept.getRootId())){
+                        rootName = root.getName();
+                        break;
+                    }
+
+                }
+
+                rsAllowDeptNames.add(rootName + " - " + dept.getName());
+            }
+
+        }
+
         return vo;
     }
 

@@ -22,6 +22,15 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
     @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 1")
     OrgPo getRootByName(@Param("name") String name);
 
+    /**
+     * 根据id列表查询企业
+     *
+     * @param ids 企业id列表
+     * @return 企业列表
+     */
+    @Query("SELECT d FROM OrgPo d WHERE d.id IN :ids AND d.kind = 1")
+    List<OrgPo> getRootsByIds(@Param("ids") List<Long> ids);
+
 
     /**
      * 根据id查询企业
