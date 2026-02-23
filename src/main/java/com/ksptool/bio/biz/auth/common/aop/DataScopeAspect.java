@@ -22,9 +22,9 @@ public class DataScopeAspect {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // 拦截所有 Service 层方法 (您可以根据项目实际情况调整切点，比如加上自定义注解 @DataPermission)
-    @Before("execution(* com.ksptool.bio.biz..service.*.*(..))")
-    public void enableDataScopeFilter() throws BizException {
+    // 拦截标注了 @RowScope 的方法或类
+    @Before("@annotation(com.ksptool.bio.biz.auth.common.aop.RowScope) || @within(com.ksptool.bio.biz.auth.common.aop.RowScope)")
+    public void enableRowScopeFilter() throws BizException {
 
         //获取当前登录用户的 Session 上下文
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -49,22 +49,21 @@ public class DataScopeAspect {
 
         //取出 Hibernate 的 Session 并激活过滤器
         Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("dataScopeFilter");
+        Filter filter = session.enableFilter("rowScopeFilter");
 
         //注入参数
         filter.setParameter("rsMax", rsMax);
         filter.setParameter("userId", aud.getId());
         filter.setParameter("rootId", aud.getRootId());
 
-        // 💣 防坑指南：Hibernate 中使用 IN 查询时，如果集合为空会报错
+        // Hibernate IN 查询集合为空时会报错，塞入无效 ID 占位
         List<Long> deptIds = aud.getRsAllowDepts();
 
         if (deptIds == null || deptIds.isEmpty()) {
-            filter.setParameterList("deptIds", Collections.singletonList(-1L)); // 塞入一个不存在的无效 ID
+            filter.setParameterList("deptIds", Collections.singletonList(-1L));
+            return;
         }
 
-        if (deptIds != null && !deptIds.isEmpty()) {
-            filter.setParameterList("deptIds", deptIds);
-        }
+        filter.setParameterList("deptIds", deptIds);
     }
 }
