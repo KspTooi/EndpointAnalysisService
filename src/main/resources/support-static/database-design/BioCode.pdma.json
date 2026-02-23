@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-23 21:57:53",
+  "updatedTime": "2026-2-24 00:40:52",
   "dbConns": [],
   "profile": {
     "default": {
@@ -1198,6 +1198,24 @@
           "uiHint": "642D2E0A-8846-4549-BE56-8C0473F26EDE"
         },
         {
+          "defKey": "data_version",
+          "defName": "数据版本号",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "5FBEB1B4-C995-49F2-A8A2-5C348E2426E5"
+        },
+        {
           "defKey": "create_time",
           "defName": "创建时间",
           "comment": "",
@@ -1226,6 +1244,24 @@
           "uiHint": "642D2E0A-8846-4549-BE56-8C0473F26EDE"
         },
         {
+          "defKey": "creator_id",
+          "defName": "创建人ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "1563E522-543A-4F07-832C-7244AE0D2F27"
+        },
+        {
           "defKey": "update_time",
           "defName": "修改时间",
           "comment": "",
@@ -1252,6 +1288,24 @@
           "attr8": "",
           "attr9": "",
           "uiHint": "642D2E0A-8846-4549-BE56-8C0473F26EDE"
+        },
+        {
+          "defKey": "updater_id",
+          "defName": "更新人ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "3C168EF4-EEED-4E0E-8796-44146C664638"
         },
         {
           "defKey": "delete_time",
