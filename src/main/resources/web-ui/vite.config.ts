@@ -9,7 +9,7 @@ import Components from "unplugin-vue-components/vite";
 // https://vite.dev/config/
 export default defineConfig({
   // 设置静态资源路径
-  base: "/static/",
+  base: "/",
 
   plugins: [
     vue(),

@@ -15,14 +15,18 @@
 </template>
 
 <script setup lang="ts">
+import Http from "@/commons/Http";
 import { nextTick, onBeforeUnmount, ref } from "vue";
+
+// 静态资源基础路径
+const staticBaseUrl = import.meta.env.BASE_URL;
 
 declare global {
   interface Window {
     initTAC?: (
       path: string | Record<string, unknown>,
       config: Record<string, unknown>,
-      style?: Record<string, unknown>,
+      style?: Record<string, unknown>
     ) => Promise<any>;
   }
 }
@@ -57,8 +61,8 @@ const handleDialogClose = () => {
 
 const buildCaptchaConfig = () => {
   return {
-    requestCaptchaDataUrl: "/api/auth/genCaptcha",
-    validCaptchaUrl: "/api/auth/check",
+    requestCaptchaDataUrl: Http.resolve("/auth/genCaptcha"),
+    validCaptchaUrl: Http.resolve("/auth/check"),
     bindEl: `#${captchaBindId}`,
     validSuccess: (res: any, _captcha: any, tac: any) => {
       if (tac?.destroyWindow) {
@@ -104,13 +108,13 @@ const initCaptcha = async () => {
   try {
     tacInstance.value = await window.initTAC(
       {
-        scriptUrls: ["/js/tac.min.js"],
-        cssUrls: ["/css/tac.css"],
+        scriptUrls: [`/js/tac.min.js`],
+        cssUrls: [`/css/tac.css`],
       },
       buildCaptchaConfig(),
       {
         logoUrl: null,
-      },
+      }
     );
     tacInstance.value.init();
   } catch (_error) {
