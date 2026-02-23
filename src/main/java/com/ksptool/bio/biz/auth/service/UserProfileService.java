@@ -174,8 +174,8 @@ public class UserProfileService {
      * @return 默认头像资源
      */
     private ResponseEntity<Resource> getDefaultAvatar() {
-        var resource = new ClassPathResource("views/webconsole/src/assets/EAS_CROWN_SHORT_LOGO.jpg");
-        var filename = "EAS_CROWN_SHORT_LOGO.jpg";
+        var resource = new ClassPathResource("web-static/default_user_avatar.jpg");
+        var filename = "default_user_avatar.jpg";
         if (!resource.exists()) {
             throw new RuntimeException("默认头像文件不存在");
         }
