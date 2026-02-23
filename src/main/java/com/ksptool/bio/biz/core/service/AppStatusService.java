@@ -47,7 +47,7 @@ public class AppStatusService {
     // 上一帧采样时间戳（毫秒），用于计算实际间隔
     private long prevSampleMs;
 
-    // 最新快照，AtomicReference 保证可见性
+    //最新快照，用于缓存最新采样数据
     private final AtomicReference<GetRtStatusVo> snapshot = new AtomicReference<>();
 
     @PostConstruct
