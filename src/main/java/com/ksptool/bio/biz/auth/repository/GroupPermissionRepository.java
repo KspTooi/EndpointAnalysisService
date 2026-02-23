@@ -22,7 +22,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
      * @return 权限关联
      */
     @Query("""
-                    SELECT gp FROM GroupPermissionPo gp WHERE gp.groupId = :groupId AND gp.permissionId = :permissionId
+            SELECT gp FROM GroupPermissionPo gp WHERE gp.groupId = :groupId AND gp.permissionId = :permissionId
             """)
     GroupPermissionPo getGpByGroupIdAndPermissionId(@Param("groupId") Long groupId, @Param("permissionId") Long permissionId);
 

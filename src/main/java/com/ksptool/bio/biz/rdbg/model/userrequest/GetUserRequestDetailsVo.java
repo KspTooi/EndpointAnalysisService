@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.rdbg.model.userrequest;
 
-import com.ksptool.bio.commons.HttpHeaderVo;
+import com.ksptool.bio.commons.model.HttpHeaderVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

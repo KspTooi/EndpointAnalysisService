@@ -1,11 +1,11 @@
 package com.ksptool.bio.biz.core.controller;
 
-import com.ksptooi.biz.core.model.config.*;
-import com.ksptool.bio.biz.core.model.config.*;
-import com.ksptool.bio.biz.core.service.ConfigService;
+
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.core.model.config.*;
+import com.ksptool.bio.biz.core.service.ConfigService;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

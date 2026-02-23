@@ -1,7 +1,5 @@
 package com.ksptool.bio.commons.model;
 
-import com.ksptool.bio.commons.HopByHopHeaders;
-import com.ksptool.bio.commons.HttpRelaySchemaConfig;
 import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
 import lombok.Setter;

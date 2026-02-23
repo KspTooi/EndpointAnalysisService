@@ -1,4 +1,4 @@
-package com.ksptool.bio.commons;
+package com.ksptool.bio.commons.model;
 
 import java.util.HashSet;
 import java.util.Set;
