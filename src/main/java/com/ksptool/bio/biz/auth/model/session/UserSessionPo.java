@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,6 +46,12 @@ public class UserSessionPo {
 
     @Column(name = "permissions", nullable = false, columnDefinition = "JSON", comment = "用户权限代码JSON")
     private String permissionCodes;
+
+    @Column(name = "rs_max", nullable = false, columnDefinition = "TINYINT", comment = "最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
+    private Integer rsMax;
+
+    @Column(name = "rs_allow_depts",nullable = false, columnDefinition = "JSON", comment = "RowScope允许访问的部门IDS")
+    private String rsAllowDepts;
 
     @Column(name = "expires_at", nullable = false, comment = "过期时间")
     private LocalDateTime expiresAt;
