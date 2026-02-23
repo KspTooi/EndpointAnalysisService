@@ -162,6 +162,7 @@ public class SessionService {
 
         }
 
+        vo.setRsDeptNames(rsAllowDeptNames);
         return vo;
     }
 
