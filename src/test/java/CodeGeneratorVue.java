@@ -42,10 +42,10 @@ public class CodeGeneratorVue {
         //置路径
 
         //输入：指向 blueprint_vue 蓝图目录
-        factory.setInputBasePathFromRelative("./blueprint_vue");
+        factory.setInputBasePathFromRelative("./src/main/resources/support-static/code-generator/blueprint_vue");
 
         //输出：直接生成到项目前端源码目录
-        factory.setOutputBasePathFromRelative("./src/main/resources/views/webconsole/");
+        factory.setOutputBasePathFromRelative("./src/main/resources/web-ui");
 
         //选择表 & 设置前缀
         factory.selectTables(tableNames.toArray(new String[0]));
