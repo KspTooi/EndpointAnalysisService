@@ -1,4 +1,4 @@
-package com.ksptooi.biz.${ptalcn}.service;
+package com.ksptool.bio.biz.${ptalcn}.service;
 
 ## 引入公用包
 import com.ksptool.assembly.entity.web.PageResult;
@@ -15,13 +15,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import java.util.Optional;
 ## 引入专用包
-import com.ksptooi.biz.${ptalcn}.repository.${ptstn}Repository;
-import com.ksptooi.biz.${ptalcn}.model.${ptstn}Po;
-import com.ksptooi.biz.${ptalcn}.model.vo.Get${ptstn}ListVo;
-import com.ksptooi.biz.${ptalcn}.model.dto.Get${ptstn}ListDto;
-import com.ksptooi.biz.${ptalcn}.model.vo.Get${ptstn}DetailsVo;
-import com.ksptooi.biz.${ptalcn}.model.dto.Edit${ptstn}Dto;
-import com.ksptooi.biz.${ptalcn}.model.dto.Add${ptstn}Dto;
+import com.ksptool.bio.biz.${ptalcn}.repository.${ptstn}Repository;
+import com.ksptool.bio.biz.${ptalcn}.model.${ptstn}Po;
+import com.ksptool.bio.biz.${ptalcn}.model.vo.Get${ptstn}ListVo;
+import com.ksptool.bio.biz.${ptalcn}.model.dto.Get${ptstn}ListDto;
+import com.ksptool.bio.biz.${ptalcn}.model.vo.Get${ptstn}DetailsVo;
+import com.ksptool.bio.biz.${ptalcn}.model.dto.Edit${ptstn}Dto;
+import com.ksptool.bio.biz.${ptalcn}.model.dto.Add${ptstn}Dto;
 
 
 @Service

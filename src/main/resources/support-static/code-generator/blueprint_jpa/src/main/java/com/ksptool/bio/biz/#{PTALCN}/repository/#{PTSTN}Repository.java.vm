@@ -1,6 +1,6 @@
-package com.ksptooi.biz.${ptalcn}.repository;
+package com.ksptool.bio.biz.${ptalcn}.repository;
 
-import com.ksptooi.biz.${ptalcn}.model.${ptstn}Po;
+import com.ksptool.bio.biz.${ptalcn}.model.${ptstn}Po;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
