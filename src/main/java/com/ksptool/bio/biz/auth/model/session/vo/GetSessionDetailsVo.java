@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,5 +26,11 @@ public class GetSessionDetailsVo {
 
     @Schema(description = "权限节点")
     private Set<String> permissions;
+
+    @Schema(description = "最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门")
+    private Integer rsMax;
+
+    @Schema(description = "RowScope允许访问的部门名称列表")
+    private List<String> rsDeptNames;
 
 }
