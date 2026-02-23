@@ -31,7 +31,7 @@ public class AppStatusController {
         return Result.success(appStatusService.getRtStatus());
     }
 
-    @PreAuthorize("@auth.hasCode('app:status:view')")
+    @PreAuthorize("@auth.hasCode('app:system:view')")
     @Operation(summary = "获取系统信息")
     @PostMapping("/getSystemInfo")
     public Result<GetSystemInfoVo> getSystemInfo() {
