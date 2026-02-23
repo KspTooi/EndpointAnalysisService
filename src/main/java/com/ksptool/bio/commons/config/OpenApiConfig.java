@@ -21,10 +21,10 @@ public class OpenApiConfig {
                 .name("token");
 
         var info = new Info()
-                .title("Endpoint Analysis Service API")
-                .description("EAS 接口文档")
+                .title("Bio API")
+                .description("Bio 接口文档")
                 .version("1.0.0")
-                .contact(new Contact().name("EAS").email("admin@example.com"))
+                .contact(new Contact().name("Bio").email("ksptooi@outlook.com"))
                 .license(new License().name("Apache-2.0"));
 
         return new OpenAPI()
