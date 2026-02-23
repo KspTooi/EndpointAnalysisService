@@ -1,6 +1,8 @@
 package com.ksptool.bio.biz.core.controller;
 
 
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.core.model.menu.dto.AddMenuDto;
 import com.ksptool.bio.biz.core.model.menu.dto.EditMenuDto;
 import com.ksptool.bio.biz.core.model.menu.dto.GetMenuTreeDto;
@@ -8,8 +10,6 @@ import com.ksptool.bio.biz.core.model.menu.vo.GetMenuDetailsVo;
 import com.ksptool.bio.biz.core.model.menu.vo.GetMenuTreeVo;
 import com.ksptool.bio.biz.core.model.menu.vo.GetUserMenuTreeVo;
 import com.ksptool.bio.biz.core.service.MenuService;
-import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 @PrintLog
 @RestController

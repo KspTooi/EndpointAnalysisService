@@ -12,7 +12,7 @@ import org.quartz.CronExpression;
 
 import java.time.LocalDateTime;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 @Getter
 @Setter
@@ -135,8 +135,8 @@ public class QtTaskPo {
     }
 
     public String validate() {
-        
-        if(this.kind == null){
+
+        if (this.kind == null) {
             return "任务类型不能为空";
         }
 

@@ -1,8 +1,8 @@
 package com.ksptooi.biz.drive.model;
 
-import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 
 @Getter

@@ -12,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 
 @Getter

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 @PrintLog
 @RestController

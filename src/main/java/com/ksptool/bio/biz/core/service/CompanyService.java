@@ -1,6 +1,10 @@
 package com.ksptool.bio.biz.core.service;
 
-import com.ksptooi.biz.auth.service.SessionService;
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.company.CompanyPo;
 import com.ksptool.bio.biz.core.model.company.dto.AddCompanyDto;
 import com.ksptool.bio.biz.core.model.company.dto.EditCompanyDto;
@@ -13,16 +17,12 @@ import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.CompanyMemberRepository;
 import com.ksptool.bio.biz.core.repository.CompanyRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 

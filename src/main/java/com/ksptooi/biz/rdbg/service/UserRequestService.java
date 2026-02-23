@@ -2,8 +2,6 @@ package com.ksptooi.biz.rdbg.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.ksptooi.biz.auth.service.SessionService;
-import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptooi.biz.rdbg.model.userrequest.EditUserRequestDto;
 import com.ksptooi.biz.rdbg.model.userrequest.GetUserRequestDetailsVo;
 import com.ksptooi.biz.rdbg.model.userrequest.SaveAsUserRequestDto;
@@ -19,6 +17,8 @@ import com.ksptooi.biz.relay.repository.RequestRepository;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.commons.HttpHeaderVo;
 import com.ksptool.bio.commons.RequestSchema;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 
 @Slf4j

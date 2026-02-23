@@ -1,6 +1,5 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptooi.biz.rdbg.model.userrequest.RemoveUserRequestTreeDto;
 import com.ksptooi.biz.rdbg.model.userrequest.UserRequestPo;
 import com.ksptooi.biz.rdbg.model.userrequestgroup.UserRequestGroupPo;
@@ -16,13 +15,14 @@ import com.ksptooi.biz.rdbg.repository.UserRequestTreeRepository;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 
 @Service

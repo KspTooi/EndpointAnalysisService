@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.core.repository;
 
-import com.ksptooi.biz.auth.model.permission.PermissionPo;
+import com.ksptool.bio.biz.auth.model.permission.PermissionPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.model.user.dto.GetUserListDto;
 import com.ksptool.bio.biz.core.model.user.vo.GetUserListVo;

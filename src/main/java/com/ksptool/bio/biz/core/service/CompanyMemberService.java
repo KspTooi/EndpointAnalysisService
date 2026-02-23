@@ -1,9 +1,13 @@
 package com.ksptool.bio.biz.core.service;
 
-import com.ksptooi.biz.auth.service.SessionService;
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.company.CompanyPo;
 import com.ksptool.bio.biz.core.model.companymember.CompanyMemberPo;
-import com.ksptooi.biz.core.model.companymember.dto.*;
 import com.ksptool.bio.biz.core.model.companymember.dto.*;
 import com.ksptool.bio.biz.core.model.companymember.vo.GetCompanyMemberDetailsVo;
 import com.ksptool.bio.biz.core.model.companymember.vo.GetCompanyMemberListVo;
@@ -12,11 +16,6 @@ import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.CompanyMemberRepository;
 import com.ksptool.bio.biz.core.repository.CompanyRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.web.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -27,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 

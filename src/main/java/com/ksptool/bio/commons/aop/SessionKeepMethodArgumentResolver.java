@@ -1,8 +1,8 @@
 package com.ksptool.bio.commons.aop;
 
-import com.ksptooi.biz.auth.model.session.vo.UserSessionVo;
-import com.ksptooi.biz.auth.service.SessionService;
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;

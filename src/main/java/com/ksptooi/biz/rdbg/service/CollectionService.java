@@ -1,6 +1,5 @@
 package com.ksptooi.biz.rdbg.service;
 
-import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptooi.biz.drive.service.EntryAccessService;
 import com.ksptooi.biz.rdbg.model.collection.CollectionPo;
 import com.ksptooi.biz.rdbg.model.collection.dto.AddCollectionDto;
@@ -16,6 +15,7 @@ import com.ksptooi.commons.enums.GlobalConfigEnum;
 import com.ksptooi.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.commons.HttpRelay;
 import com.ksptool.bio.commons.HttpRelaySchemaConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.ksptooi.biz.auth.service.SessionService.session;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.*;
 
 @Service

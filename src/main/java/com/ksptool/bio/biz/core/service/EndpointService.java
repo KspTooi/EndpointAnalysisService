@@ -1,6 +1,8 @@
 package com.ksptool.bio.biz.core.service;
 
-import com.ksptooi.biz.auth.repository.PermissionRepository;
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.bio.biz.auth.repository.PermissionRepository;
 import com.ksptool.bio.biz.core.model.endpoint.DynamicEndpointAuthorizationRule;
 import com.ksptool.bio.biz.core.model.endpoint.dto.AddEndpointDto;
 import com.ksptool.bio.biz.core.model.endpoint.dto.EditEndpointDto;
@@ -9,8 +11,6 @@ import com.ksptool.bio.biz.core.model.endpoint.vo.GetEndpointDetailsVo;
 import com.ksptool.bio.biz.core.model.endpoint.vo.GetEndpointTreeVo;
 import com.ksptool.bio.biz.core.model.resource.ResourcePo;
 import com.ksptool.bio.biz.core.repository.ResourceRepository;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.bio.commons.dataprocess.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
