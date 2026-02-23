@@ -478,10 +478,7 @@ public class GroupService {
     public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(GetGroupPermissionNodeDto dto) throws BizException {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
-        if (group == null) {
-            throw new BizException("用户组不存在");
-        }
-
+        
         //查找权限节点
         var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(), dto.getHasPermission(), dto.pageRequest());
         List<GetGroupPermissionNodeVo> vos = as(pPos.getContent(), GetGroupPermissionNodeVo.class);
