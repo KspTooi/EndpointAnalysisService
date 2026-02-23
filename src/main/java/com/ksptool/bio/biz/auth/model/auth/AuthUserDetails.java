@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,6 +73,12 @@ public class AuthUserDetails implements UserDetails {
 
     //用户权限码和角色码(角色码通过ROLE_前缀区分)
     private Set<GrantedAuthority> authorities;
+
+    //最大RowScope等级 0:全部 1:本公司/租户及以下 2:本部门及以下 3:本部门 4:仅本人 5:指定部门
+    private Integer rsMax;
+
+    //RowScope允许访问的部门IDS
+    private List<Long> rsAllowDepts;
 
     @NullMarked
     @Override

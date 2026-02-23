@@ -34,4 +34,16 @@ public interface GroupDeptRepository extends JpaRepository<GroupDeptPo, GroupDep
             """)
     List<Long> getDeptIdsByGroupId(@Param("groupId") Long groupId);
 
+
+    /**
+     * 根据组IDS获取与之关联的部门IDS
+     *
+     * @param groupIds 组ID列表
+     * @return 与之关联的部门IDS
+     */
+    @Query("""
+            SELECT DISTINCT u.deptId FROM GroupDeptPo u WHERE u.groupId IN :groupIds
+            """)
+    List<Long> getDeptIdsByGroupIds(@Param("groupIds") List<Long> groupIds);
+
 }
