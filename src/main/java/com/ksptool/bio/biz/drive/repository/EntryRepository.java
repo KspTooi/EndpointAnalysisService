@@ -24,7 +24,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
      * @return 云盘信息
      */
     @Query("""
-            SELECT new com.ksptooi.biz.drive.model.vo.GetDriveInfo(
+            SELECT new com.ksptool.bio.biz.drive.model.vo.GetDriveInfo(
                 CAST(0 AS long),
                 CAST(COALESCE(SUM(CASE WHEN u.kind = 0 THEN u.attachSize ELSE CAST(0 AS long) END), CAST(0 AS long)) AS long),
                 COUNT(u)

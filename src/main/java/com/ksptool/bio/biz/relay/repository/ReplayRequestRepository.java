@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public interface ReplayRequestRepository extends CrudRepository<ReplayRequestPo, Long> {
 
     @Query("""
-                    SELECT new com.ksptooi.biz.relay.model.replayrequest.GetReplayRequestListVo(
+                    SELECT new com.ksptool.bio.biz.relay.model.replayrequest.GetReplayRequestListVo(
                         t.id,
                         t.requestId,
                         t.method,

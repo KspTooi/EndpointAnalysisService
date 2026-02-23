@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface RequestRepository extends JpaRepository<RequestPo, Long> {
 
     @Query("""
-                    SELECT new com.ksptooi.biz.relay.model.request.GetRequestListVo(
+                    SELECT new com.ksptool.bio.biz.relay.model.request.GetRequestListVo(
                         t.id,
                         t.requestId,
                         t.method,
@@ -55,7 +55,7 @@ public interface RequestRepository extends JpaRepository<RequestPo, Long> {
      * @return 原始请求
      */
     @Query("""
-                SELECT new com.ksptooi.biz.relay.model.replayrequest.GetOriginRequestVo(
+                SELECT new com.ksptool.bio.biz.relay.model.replayrequest.GetOriginRequestVo(
                     t.id,
                     t.requestId,
                     t.method,

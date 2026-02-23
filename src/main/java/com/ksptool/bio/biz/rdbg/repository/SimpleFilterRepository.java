@@ -16,7 +16,7 @@ import java.util.List;
 public interface SimpleFilterRepository extends JpaRepository<SimpleFilterPo, Long> {
 
     @Query("""
-            SELECT new com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterListVo(
+            SELECT new com.ksptool.bio.biz.rdbg.model.filter.vo.GetSimpleFilterListVo(
                 t.id,
                 t.name,
                 t.direction,
@@ -41,7 +41,7 @@ public interface SimpleFilterRepository extends JpaRepository<SimpleFilterPo, Lo
      * @return 基本过滤器列表
      */
     @Query("""
-            SELECT new com.ksptooi.biz.rdbg.model.filter.vo.GetSimpleFilterListVo(
+            SELECT new com.ksptool.bio.biz.rdbg.model.filter.vo.GetSimpleFilterListVo(
                 t.id,
                 t.name,
                 t.direction,

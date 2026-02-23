@@ -37,7 +37,7 @@ public class OpenApiConfig {
 //    public GroupedOpenApi coreApiGroup() {
 //        return GroupedOpenApi.builder()
 //                .group("core")
-//                .packagesToScan("com.ksptooi.biz")
+//                .packagesToScan("com.ksptool.bio.biz")
 //                .build();
 //    }
 

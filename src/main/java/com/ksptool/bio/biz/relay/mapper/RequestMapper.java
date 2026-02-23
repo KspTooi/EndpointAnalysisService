@@ -4,7 +4,7 @@ package com.ksptool.bio.biz.relay.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.ksptooi.biz.relay.model.request.GetRequestListDto;
+import com.ksptool.bio.biz.relay.model.request.GetRequestListDto;
 import com.ksptool.assembly.entity.web.PageCalculator;
 
 @Mapper

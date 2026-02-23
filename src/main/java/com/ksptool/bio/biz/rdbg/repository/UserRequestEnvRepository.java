@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRequestEnvRepository extends JpaRepository<UserRequestEnvPo, Long> {
 
     @Query("""
-            SELECT new com.ksptooi.biz.rdbg.model.userrequestenv.vo.GetUserRequestEnvListVo(
+            SELECT new com.ksptool.bio.biz.rdbg.model.userrequestenv.vo.GetUserRequestEnvListVo(
                 u.id,
                 u.user.id,
                 u.name,

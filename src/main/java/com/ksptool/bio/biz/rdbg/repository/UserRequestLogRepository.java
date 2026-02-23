@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRequestLogRepository extends JpaRepository<UserRequestLogPo, Long> {
 
     @Query("""
-            SELECT new com.ksptooi.biz.rdbg.model.userrequestlog.GetUserRequestLogListVo
+            SELECT new com.ksptool.bio.biz.rdbg.model.userrequestlog.GetUserRequestLogListVo
             (
                 u.id,
                 u.requestId,
