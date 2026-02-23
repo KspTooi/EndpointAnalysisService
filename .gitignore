@@ -51,7 +51,6 @@ T*.pdma.json
 
 ### EDITOR ###
 **/.idea/**
-**/.cursor/**
 **/.vscode/**
 **/.antigravity/**
 
