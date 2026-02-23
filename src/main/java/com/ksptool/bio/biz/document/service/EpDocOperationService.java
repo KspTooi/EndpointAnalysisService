@@ -2,7 +2,6 @@ package com.ksptool.bio.biz.document.service;
 
 import com.google.gson.Gson;
 import com.ksptooi.biz.document.model.epdocoperation.*;
-import com.ksptooi.biz.relay.model.relayserver.RelayServerPo;
 import com.ksptooi.commons.model.BodySchema;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.document.model.epdoc.EndpointDocPo;
@@ -11,6 +10,7 @@ import com.ksptool.bio.biz.document.model.epdocversion.EndpointDocVersionPo;
 import com.ksptool.bio.biz.document.repository.EndpointDocOperationRepository;
 import com.ksptool.bio.biz.document.repository.EndpointDocRepository;
 import com.ksptool.bio.biz.document.repository.EndpointDocVersionRepository;
+import com.ksptool.bio.biz.relay.model.relayserver.RelayServerPo;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
