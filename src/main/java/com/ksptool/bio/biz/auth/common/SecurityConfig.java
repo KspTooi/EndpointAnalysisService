@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.auth.common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +28,7 @@ import java.util.stream.Stream;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@Slf4j
 public class SecurityConfig {
 
     /**
@@ -65,6 +69,9 @@ public class SecurityConfig {
     private JsonAuthEntryPoint jsonAuthEntryPoint;
 
     @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Autowired
     private DynamicAuthorizationManager dam;
 
     /**
@@ -78,7 +85,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         var whiteList = new HashSet<String>(this.whiteList);
-        whiteList.addAll(integratedDeployWhiteList);
+
+        if (isIntegratedDeploy()) {
+            whiteList.addAll(integratedDeployWhiteList);
+            log.info("Auth域安全配置: 当前已启用集成部署模式，加载集成部署白名单。条目:{}", whiteList.size());
+        }
+
+        if(!isIntegratedDeploy()){
+            log.info("Auth域安全配置: 当前处于标准部署模式，加载标准白名单。条目:{}", whiteList.size());
+        }
 
         http
                 //关闭 CSRF（前后端分离项目通常关闭，使用 Session/Token 校验）
@@ -133,5 +148,15 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    
+    /**
+     * 判断是否是集成部署
+     * <p>
+     * 如果classpath:/web-static/index.html存在，则认为是集成部署
+     */
+    public boolean isIntegratedDeploy() {
+        return resourceLoader.getResource("classpath:/web-static/index.html").exists();
     }
 }
