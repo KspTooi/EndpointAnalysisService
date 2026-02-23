@@ -1,7 +1,8 @@
 package com.ksptool.bio.biz.${ptalcn}.model;
 
+import com.ksptool.assembly.entity.exception.AuthException;
 import java.time.LocalDateTime;
-import com.ksptool.bio.biz.auth.service.AuthService;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -78,13 +79,13 @@ public class ${ptstn}Po {
         
         #if($hasCreatorId)
         if (this.creatorId == null) {
-            this.creatorId = AuthService.getCurrentUserId();
+            this.creatorId = SessionService.session().getUserId();
         }
         #end
         
         #if($hasUpdaterId)
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = SessionService.session().getUserId();
         }
         #end
     }
@@ -108,7 +109,7 @@ public class ${ptstn}Po {
         
         #if($hasUpdaterId)
         if (this.updaterId == null) {
-            this.updaterId = AuthService.getCurrentUserId();
+            this.updaterId = SessionService.session().getUserId();
         }
         #end
     }
