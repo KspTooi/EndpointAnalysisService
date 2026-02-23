@@ -1,6 +1,6 @@
 import { ref, onUnmounted, onMounted, computed, nextTick } from "vue";
-import type { GetRtStatusVo, GetSystemInfoVo } from "../api/AppStatusApi";
-import AppStatusApi from "../api/AppStatusApi";
+import type { GetRtStatusVo, GetSystemInfoVo } from "@/views/core/api/AppStatusApi";
+import AppStatusApi from "@/views/core/api/AppStatusApi";
 
 //最大记录数
 const maxRcdCount = 120;
