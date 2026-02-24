@@ -12,7 +12,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,22 +23,32 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 密码固定: 123456
  */
 @Slf4j
-public class RpcTestUserController {
+public class TestUserController {
 
     // ========== 可调参数 ==========
-    /** 目标服务地址 */
-    private static final String BASE_URL = "http://localhost:8080";
+    /**
+     * 目标服务地址
+     */
+    private static final String BASE_URL = "http://127.0.0.1:27500";
 
-    /** 账号编号范围 [0, MAX_USER_INDEX] */
+    /**
+     * 账号编号范围 [0, MAX_USER_INDEX]
+     */
     private static final int MAX_USER_INDEX = 1000;
 
-    /** 并发线程数 */
-    private static final int CONCURRENCY = 20;
+    /**
+     * 并发线程数
+     */
+    private static final int CONCURRENCY = 150;
 
-    /** 每批请求之间的间隔(毫秒) */
-    private static final long BATCH_INTERVAL_MS = 500;
+    /**
+     * 每批请求之间的间隔(毫秒)
+     */
+    private static final long BATCH_INTERVAL_MS = 300;
 
-    /** 固定密码 */
+    /**
+     * 固定密码
+     */
     private static final String PASSWORD = "123456";
     // ================================
 
@@ -54,7 +66,7 @@ public class RpcTestUserController {
 
         List<String> accounts = new ArrayList<>();
         for (int i = 0; i <= MAX_USER_INDEX; i++) {
-            accounts.add("EAS-T#" + i);
+            accounts.add("EAS-T" + i);
         }
 
         int total = accounts.size();
