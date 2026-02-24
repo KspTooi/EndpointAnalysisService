@@ -1,6 +1,9 @@
 package com.ksptool.bio.biz.core.service;
 
 
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.org.dto.AddOrgDto;
 import com.ksptool.bio.biz.core.model.org.dto.EditOrgDto;
@@ -13,9 +16,6 @@ import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
 import com.ksptool.bio.commons.utils.IdWorker;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -154,6 +154,7 @@ public class OrgService {
         }
 
         var addPo = as(dto, OrgPo.class);
+        addPo.setId(IdWorker.nextId());
         addPo.setRootId(parentPo.getRootId());
         addPo.setParentId(parentPo.getId());
 
@@ -172,24 +173,24 @@ public class OrgService {
             addPo.setPrincipalName(userPo.getUsername());
         }
 
-        var _parent = parentPo;
-        var pathIds = new ArrayList<String>();
-        pathIds.add(_parent.getId() + "");
-
         //处理组织路径ID
-        while (_parent.getParentId() != null) {
+        var pathIds = new ArrayList<String>();
+        pathIds.add(String.valueOf(addPo.getId()));
 
-            _parent = repository.findById(_parent.getParentId())
+        var parentId = addPo.getParentId();
+        while (parentId != null) {
+            var parent = repository.findById(parentId)
                     .orElseThrow(() -> new BizException("无法处理新增请求,父级组织不存在,导致组织路径ID处理失败."));
-
-            pathIds.add(_parent.getId() + "");
+            pathIds.add(String.valueOf(parent.getId()));
+            parentId = parent.getParentId();
         }
 
+        Collections.reverse(pathIds);
         addPo.setOrgPathIds(String.join(",", pathIds));
         repository.save(addPo);
 
         //如果是部门新增，则给该企业/租户下的全部在线用户加版本
-        if(parentPo != null){
+        if (parentPo != null) {
             //给该企业/租户下的全部在线用户加版本
             userService.increaseDvByRootId(parentPo.getRootId());
         }
@@ -269,25 +270,23 @@ public class OrgService {
             if (dto.getPrincipalId() != null) {
                 UserPo userPo = userRepository.findById(dto.getPrincipalId())
                         .orElseThrow(() -> new BizException("无法处理编辑请求,主管不存在."));
-                if (userPo == null) {
-                    throw new BizException("无法处理编辑请求,主管不存在或不属于该组织!");
-                }
                 updatePo.setPrincipalId(userPo.getId());
                 updatePo.setPrincipalName(userPo.getUsername());
             }
 
             //处理组织路径ID
-            var _parent = parentPo;
             var pathIds = new ArrayList<String>();
-            pathIds.add(_parent.getId() + "");
-
-            while (_parent.getParentId() != null) {
-
-                _parent = repository.findById(_parent.getParentId())
+            pathIds.add(String.valueOf(updatePo.getId()));
+            
+            var parentId = updatePo.getParentId();
+            while (parentId != null) {
+                var parent = repository.findById(parentId)
                         .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在,导致组织路径ID处理失败."));
-
-                pathIds.add(_parent.getId() + "");
+                pathIds.add(String.valueOf(parent.getId()));
+                parentId = parent.getParentId();
             }
+            
+            Collections.reverse(pathIds);
             updatePo.setOrgPathIds(String.join(",", pathIds));
 
         }
