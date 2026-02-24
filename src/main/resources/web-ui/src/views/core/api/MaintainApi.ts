@@ -89,4 +89,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 维护中心:修复注册表
+   */
+  repairRegistry: async (): Promise<MaintainUpdateVo> => {
+    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/repairRegistry", {});
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
 };
