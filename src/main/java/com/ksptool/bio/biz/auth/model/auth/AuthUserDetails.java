@@ -68,6 +68,9 @@ public class AuthUserDetails implements UserDetails {
     //是否为系统内置用户
     private Integer isSystem;
 
+    //数据版本
+    private Long dataVersion;
+
     //创建时间
     private LocalDateTime createTime;
 

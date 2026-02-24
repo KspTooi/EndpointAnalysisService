@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,6 +45,9 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @NullMarked
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -67,11 +71,24 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        //从数据库查询会话信息
+        //从数据库查询会话信息(getSessionBySessionId已配置缓存,不会每次都查询数据库)
         UserSessionPo sessionPo = null;
 
         try {
             sessionPo = sessionService.getSessionBySessionId(sessionId);
+
+            //如果系统使用了缓存,需要检查缓存中是否标记了该用户数据版本已变更,如果已变更,则刷新会话
+            var cache = cacheManager.getCache("userSession");
+            if (cache != null) {
+                var key = "user_dv_changed_" + sessionPo.getUserId();
+
+                if(cache.get(key) != null){
+                    sessionPo = sessionService.refreshSession(sessionPo);
+                    cache.evict(key);
+                }
+
+            }
+
         } catch (BizException e) {
             filterChain.doFilter(request, response);
             return;

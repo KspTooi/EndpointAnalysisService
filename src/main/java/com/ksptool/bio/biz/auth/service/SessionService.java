@@ -272,6 +272,7 @@ public class SessionService {
         newSession.setPermissionCodes(toJson(permCodes));
         newSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         newSession.setCreatorId(aud.getId());
+        newSession.setDataVersion(aud.getDataVersion());
         userSessionRepository.save(newSession);
 
         //处理用户登录次数与最后登录时间
@@ -297,6 +298,11 @@ public class SessionService {
      */
     public UserSessionPo refreshSession(UserSessionPo oldSession) throws BizException {
 
+        //过期则不刷新
+        if (oldSession.isExpired()) {
+            return oldSession;
+        }
+
         //更新基本信息
         var aud = (AuthUserDetails) userDetailsService.loadUserByUsername(oldSession.getUsername());
 
@@ -305,6 +311,7 @@ public class SessionService {
         oldSession.setRootName(aud.getRootName());
         oldSession.setDeptId(aud.getDeptId());
         oldSession.setDeptName(aud.getDeptName());
+        oldSession.setDataVersion(aud.getDataVersion());
 
         //更新权限码
         var permCodes = new HashSet<String>();

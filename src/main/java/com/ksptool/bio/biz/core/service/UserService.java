@@ -22,10 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,6 +59,9 @@ public class UserService {
 
     @Autowired
     private UserGroupRepository ugRepository;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     /**
      * 获取用户列表
@@ -551,6 +556,28 @@ public class UserService {
         }
 
         throw new BizException("不支持的批量操作类型: " + dto.getKind() + "，请检查kind参数");
+    }
+
+    /**
+     * 当用户信息发生变更时，需要增加数据版本，这会使得用户会话失效，并在下次请求时刷新会话
+     *
+     * @param userIds 用户ID列表
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void increaseDv(List<Long> userIds) {
+
+        //先增加数据版本
+        userRepository.increaseDv(userIds);
+
+        var cache = cacheManager.getCache("userSession");
+
+        //如果系统使用了缓存，需向缓存添加一条数据,用于标识该用户数据版本已变更
+        if (cache != null) {
+            for (var userId : userIds) {
+                cache.put("user_dv_changed_" + userId, "0");
+            }
+        }
+
     }
 
 

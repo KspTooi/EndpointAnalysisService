@@ -146,9 +146,6 @@ public class UserPo {
 
         updateTime = LocalDateTime.now();
 
-        //数据版本自增
-        dataVersion++;
-
         if (updaterId == null) {
             updaterId = SessionService.session().getUserId();
         }
