@@ -10,6 +10,7 @@ import com.ksptool.bio.biz.auth.repository.GroupRepository;
 import com.ksptool.bio.biz.auth.repository.PermissionRepository;
 import com.ksptool.bio.biz.auth.repository.UserGroupRepository;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.SystemRegistry;
 import com.ksptool.bio.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.UserRepository;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +71,9 @@ public class MaintainService {
 
     @Autowired
     private NoticeService noticeService;
+
+    @Autowired
+    private RegistrySdk registrySdk;
 
     /**
      * 校验系统内置权限节点
@@ -495,15 +500,54 @@ public class MaintainService {
 
     /**
      * 修复注册表
-     * 修复注册表的全部节点和条目
+     * 遍历SystemRegistry枚举,对数据库中缺失的条目自动创建
      *
      * @return 修复结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public MaintainUpdateVo repairRegistry() throws BizException {
+    public MaintainUpdateVo repairRegistry() {
 
+        var addedList = new ArrayList<String>();
 
-        return null;
+        for (SystemRegistry item : SystemRegistry.values()) {
+
+            String nodeKeyPath = item.getNodeKeyPath();
+            String nkey = item.getNkey();
+            String defaultValue = item.getValue();
+            String label = item.getLabel();
+            SystemRegistry.NvalueKind kind = item.getNvalueKind();
+
+            boolean created = false;
+
+            if (kind == SystemRegistry.NvalueKind.STRING) {
+                created = registrySdk.createStringEntry(nodeKeyPath, nkey, defaultValue, label);
+            }
+
+            if (kind == SystemRegistry.NvalueKind.INTEGER) {
+                created = registrySdk.createIntEntry(nodeKeyPath, nkey, Integer.parseInt(defaultValue), label);
+            }
+
+            if (kind == SystemRegistry.NvalueKind.DOUBLE) {
+                created = registrySdk.createDoubleEntry(nodeKeyPath, nkey, Double.parseDouble(defaultValue), label);
+            }
+
+            if (kind == SystemRegistry.NvalueKind.DATETIME) {
+                created = registrySdk.createDateTimeEntry(nodeKeyPath, nkey, LocalDateTime.parse(defaultValue), label);
+            }
+
+            if (created) {
+                addedList.add(item.getFullKey());
+            }
+        }
+
+        var vo = new MaintainUpdateVo();
+        vo.setExistCount(SystemRegistry.values().length - addedList.size());
+        vo.setAddedCount(addedList.size());
+        vo.setAddedList(addedList);
+        vo.setRemovedCount(0);
+        vo.setRemovedList(new ArrayList<>());
+        vo.setMessage("注册表修复完成,新增条目:" + addedList.size() + " 条");
+        return vo;
     }
 
 }
