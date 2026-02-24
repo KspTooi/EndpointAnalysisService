@@ -8,7 +8,6 @@ import com.ksptool.bio.biz.auth.model.session.UserSessionPo;
 import com.ksptool.bio.biz.auth.model.session.dto.GetSessionListDto;
 import com.ksptool.bio.biz.auth.model.session.vo.GetSessionDetailsVo;
 import com.ksptool.bio.biz.auth.model.session.vo.GetSessionListVo;
-import com.ksptool.bio.biz.auth.repository.GroupRepository;
 import com.ksptool.bio.biz.auth.repository.UserSessionRepository;
 import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
@@ -48,9 +47,6 @@ public class SessionService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
 
     @Autowired
     private CacheManager cacheManager;
@@ -331,7 +327,7 @@ public class SessionService {
         //更新会话并返回
         return userSessionRepository.save(oldSession);
     }
-    
+
     /**
      * 清除所有已登录用户的会话状态
      */

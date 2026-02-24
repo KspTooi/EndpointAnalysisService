@@ -254,7 +254,7 @@ public class GroupService {
             }
 
             //获取第一个部门的租户ID
-            rootId = deptPos.get(0).getRootId();
+            rootId = deptPos.getFirst().getRootId();
 
             //组装GD关系
             for (var dept : deptPos) {
