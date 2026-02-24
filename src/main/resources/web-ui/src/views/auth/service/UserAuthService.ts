@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { Directive, DirectiveBinding } from "vue";
 import type { UserLoginDto, UserLoginVo } from "@/views/auth/api/AuthApi";
 import AuthApi from "@/views/auth/api/AuthApi";
 
@@ -77,5 +78,35 @@ export default {
     return {
       login,
     };
+  },
+
+  /**
+   * 使用按钮检查权限
+   */
+  usePreAuthorize() {
+    // 检查用户是否拥有指定权限码（单个或多个，满足其一即可）
+    const hasCode = (codes: string | string[]): boolean => {
+      const authorities = AuthStore().userInfo?.authorities ?? [];
+      const codeList = Array.isArray(codes) ? codes : [codes];
+      return codeList.some((code) => authorities.includes(code));
+    };
+
+    // v-hasCode 自定义指令，无权限时隐藏元素
+    const vHasCode: Directive = {
+      mounted(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+        if (!hasCode(binding.value)) {
+          el.style.display = "none";
+        }
+      },
+      updated(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+        if (!hasCode(binding.value)) {
+          el.style.display = "none";
+          return;
+        }
+        el.style.display = "";
+      },
+    };
+
+    return { hasCode, vHasCode };
   },
 };
