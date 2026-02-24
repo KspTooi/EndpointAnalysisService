@@ -16,15 +16,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Aspect
 @Component
 public class DataScopeAspect {
 
+    private static final String ROW_SCOPE_FILTER_NAME = "rsFilter";
     @PersistenceContext
     private EntityManager entityManager;
-
-    private static final String ROW_SCOPE_FILTER_NAME = "rsFilter";
 
     @Pointcut("@annotation(com.ksptool.bio.biz.auth.common.aop.RowScope) || @within(com.ksptool.bio.biz.auth.common.aop.RowScope)")
     public void rsPointcut() {
@@ -47,6 +47,13 @@ public class DataScopeAspect {
 
         if (aud == null) {
             throw new BizException("在处理数据权限时，获取当前登录用户的 AUD 失败!");
+        }
+
+        //如果用户有超级权限 则直接放行
+        for (var authority : auth.getAuthorities()) {
+            if (Objects.equals(authority.getAuthority(), "*:*:*")) {
+                return;
+            }
         }
 
         Integer rsMax = aud.getRsMax();
