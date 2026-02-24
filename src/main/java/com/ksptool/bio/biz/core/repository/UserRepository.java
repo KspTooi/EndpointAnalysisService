@@ -7,6 +7,7 @@ import com.ksptool.bio.biz.core.model.user.vo.GetUserListVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -171,5 +172,18 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             WHERE p.id = :userId
             """)
     Long getDvByUserId(@Param("userId") Long userId);
+
+
+    /**
+     * 根据用户ID列表增加数据版本
+     *
+     * @param userIds 用户ID列表
+     * @return 受影响的行数
+     */
+    @Modifying
+    @Query("""
+            UPDATE UserPo p SET p.dataVersion = p.dataVersion + 1 WHERE p.id IN :userIds
+            """)
+    int increaseDv(@Param("userIds") List<Long> userIds);
 
 }

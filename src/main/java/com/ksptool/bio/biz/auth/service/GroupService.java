@@ -10,7 +10,6 @@ import com.ksptool.bio.biz.auth.model.group.GroupPo;
 import com.ksptool.bio.biz.auth.model.group.dto.*;
 import com.ksptool.bio.biz.auth.model.group.vo.*;
 import com.ksptool.bio.biz.auth.model.permission.PermissionPo;
-import com.ksptool.bio.biz.auth.model.session.UserSessionPo;
 import com.ksptool.bio.biz.auth.repository.*;
 import com.ksptool.bio.biz.core.model.resource.ResourcePo;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
@@ -281,18 +280,6 @@ public class GroupService {
         //处理受影响的在线用户会话 先查询拥有该组的用户ID列表
         var userIds = ugRepository.getUserIdsByGroupId(group.getId());
 
-        //获取当前在线的用户会话
-        var onlineSessions = userSessionRepository.getSessionByUserIds(userIds);
-
-        //更新在线用户会话
-        for (UserSessionPo session : onlineSessions) {
-            try {
-                sessionService.updateSession(session.getUserId());
-            } catch (Exception e) {
-                log.error("更新用户会话失败:{}", e.getMessage());
-            }
-
-        }
     }
 
 
@@ -478,7 +465,7 @@ public class GroupService {
     public PageResult<GetGroupPermissionNodeVo> getGroupPermissionNodeView(GetGroupPermissionNodeDto dto) throws BizException {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
-        
+
         //查找权限节点
         var pPos = permissionRepository.getPermissionsByKeywordAndGroup(dto.getKeyword(), group.getId(), dto.getHasPermission(), dto.pageRequest());
         List<GetGroupPermissionNodeVo> vos = as(pPos.getContent(), GetGroupPermissionNodeVo.class);

@@ -280,8 +280,7 @@ public class UserService {
             ugRepository.saveAll(userGroupPos);
         }
 
-        //更新用户会话
-        sessionService.updateSession(user.getId());
+
     }
 
     /**

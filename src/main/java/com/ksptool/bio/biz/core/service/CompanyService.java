@@ -185,8 +185,6 @@ public class CompanyService {
                 userRepository.save(user);
             }
 
-            //刷新用户Session
-            sessionService.updateSession(userId);
             return;
         }
 
@@ -199,8 +197,6 @@ public class CompanyService {
             user.setActiveCompany(null);
             userRepository.save(user);
         }
-        //刷新用户Session
-        sessionService.updateSession(userId);
     }
 
     /**
@@ -234,8 +230,7 @@ public class CompanyService {
 
         user.setActiveCompany(company);
 
-        //激活团队后，刷新用户会话
-        sessionService.updateSession(user.getId());
+
         userRepository.save(user);
     }
 

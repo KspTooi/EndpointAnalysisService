@@ -61,7 +61,6 @@ public class SessionService {
     @Autowired
     private UserDetailsService userDetailsService;
 
-
     /**
      * 获取当前用户会话
      *
@@ -92,7 +91,6 @@ public class SessionService {
         }
     }
 
-
     /**
      * 获取当前用户权限
      *
@@ -106,7 +104,6 @@ public class SessionService {
         }
         return new ArrayList<>(authentication.getAuthorities());
     }
-
 
     /**
      * 获取在线用户会话列表
@@ -327,57 +324,7 @@ public class SessionService {
         //更新会话并返回
         return userSessionRepository.save(oldSession);
     }
-
-
-    /**
-     * 更新用户会话
-     *
-     * @param uid 用户ID
-     * @return 用户会话
-     */
-    public void updateSession(Long uid) {
-
-        //查询用户会话(用户现在可能有多个会话,因为用户可能同时登录了多个设备)
-        var existingSessions = userSessionRepository.getSessionsByUserId(uid);
-
-        if (existingSessions.isEmpty()) {
-            return;
-        }
-
-        //查询用户
-        var userPo = userRepository.findById(uid).orElse(null);
-
-        if (userPo == null) {
-            return;
-        }
-
-        //获取用户拥有的全部权限码
-        var permissionCodes = userRepository.getUserPermissionCodes(userPo.getId());
-
-        //获取用户拥有的全部用户组
-        var groups = groupRepository.getGroupsByUserId(userPo.getId());
-
-        //处理权限码
-        var grantedAuthoritiesStr = new HashSet<String>(permissionCodes);
-
-        //处理用户组
-        for (var group : groups) {
-            grantedAuthoritiesStr.add("ROLE_" + group.getCode());
-        }
-
-
-        //处理用户的每个会话
-        for (var session : existingSessions) {
-            if (session.isExpired()) {
-                userSessionRepository.delete(session);
-                continue;
-            }
-            session.update(userPo, grantedAuthoritiesStr, expiresInSeconds);
-            userSessionRepository.save(session);
-        }
-
-    }
-
+    
     /**
      * 清除所有已登录用户的会话状态
      */
