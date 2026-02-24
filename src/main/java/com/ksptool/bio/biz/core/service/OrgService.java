@@ -264,6 +264,9 @@ public class OrgService {
                 throw new BizException("无法处理编辑请求,部门无法跨组织移动.");
             }
 
+            //获取旧的组织路径ID
+            var oldPath = updatePo.getOrgPathIds();
+
             assign(dto, updatePo);
 
             //处理主管
@@ -288,6 +291,40 @@ public class OrgService {
             
             Collections.reverse(pathIds);
             updatePo.setOrgPathIds(String.join(",", pathIds));
+
+            var newPath = updatePo.getOrgPathIds();
+
+            //如果组织路径ID发生变化，则需要批量更新该组织下的全部子孙组织的组织路径ID
+            if(!Objects.equals(oldPath, newPath)){
+                
+                //查询该组织下的全部子孙组织
+                var subtree = repository.getChildDeptsByDeptId(updatePo.getId());
+
+                var oldPrefix = oldPath + ",";
+                var newPrefix = newPath + ",";
+
+                for (var po : subtree) {
+                    if (Objects.equals(po.getId(), updatePo.getId())) {
+                        continue;
+                    }
+                
+                    var childPath = po.getOrgPathIds();
+                    if (childPath == null) {
+                        throw new BizException("组织路径ID为空,无法更新子孙节点.");
+                    }
+                
+                    if (!childPath.startsWith(oldPrefix)) {
+                        throw new BizException("组织路径ID前缀不匹配,无法更新子孙节点.");
+                    }
+                
+                    var suffix = childPath.substring(oldPrefix.length());
+                    po.setOrgPathIds(newPrefix + suffix);
+                }
+
+                //批量更新该组织下的全部子孙组织的组织路径ID
+                repository.saveAll(subtree);
+            }
+
         }
 
         repository.save(updatePo);
