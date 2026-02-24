@@ -11,6 +11,9 @@ import com.ksptool.bio.biz.auth.model.permission.vo.GetPermissionDetailsVo;
 import com.ksptool.bio.biz.auth.model.permission.vo.GetPermissionListVo;
 import com.ksptool.bio.biz.auth.repository.GroupPermissionRepository;
 import com.ksptool.bio.biz.auth.repository.PermissionRepository;
+import com.ksptool.bio.biz.core.service.UserService;
+import com.ksptool.bio.biz.core.service.MenuService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -35,6 +38,12 @@ public class PermissionService {
 
     @Autowired
     private GroupPermissionRepository gpRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MenuService menuService;
 
     public List<GetPermissionDefinitionVo> getPermissionDefinition() {
         List<PermissionPo> pos = repository.findAll(Sort.by(Sort.Direction.DESC, "createTime"));
@@ -191,6 +200,14 @@ public class PermissionService {
 
         // 执行删除
         repository.deleteAllById(safeRemoveIds);
+
+        //给拥有该权限的用户加版本
+        for (var id : ids) {
+            userService.increaseDvByPermissionId(id);
+        }
+
+        //清菜单缓存
+        menuService.clearUserMenuTreeCache();
     }
 
     /**

@@ -10,6 +10,8 @@ import com.ksptool.bio.biz.auth.model.permission.vo.GetPermissionDefinitionVo;
 import com.ksptool.bio.biz.auth.model.permission.vo.GetPermissionDetailsVo;
 import com.ksptool.bio.biz.auth.model.permission.vo.GetPermissionListVo;
 import com.ksptool.bio.biz.auth.service.PermissionService;
+import com.ksptool.bio.biz.core.service.UserService;
+import com.ksptool.bio.biz.core.service.MenuService;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +35,11 @@ public class PermissionController {
     @Autowired
     private PermissionService service;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MenuService menuService;
 
     @Operation(summary = "获取权限定义列表")
     @PostMapping("getPermissionDefinition")
@@ -67,6 +74,12 @@ public class PermissionController {
     @PostMapping("editPermission")
     public Result<String> editPermission(@RequestBody @Valid EditPermissionDto dto) throws Exception {
         service.editPermission(dto);
+
+        //给拥有该权限的用户加版本
+        userService.increaseDvByPermissionId(dto.getId());
+
+        //清菜单缓存
+        menuService.clearUserMenuTreeCache();
         return Result.success("修改成功");
     }
 
