@@ -11,6 +11,7 @@ import com.ksptool.bio.biz.auth.model.group.vo.GetGroupPermissionMenuViewVo;
 import com.ksptool.bio.biz.auth.model.group.vo.GetGroupPermissionNodeVo;
 import com.ksptool.bio.biz.auth.service.GroupService;
 import com.ksptool.bio.biz.core.service.MenuService;
+import com.ksptool.bio.biz.core.service.UserService;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,6 +37,9 @@ public class GroupController {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private UserService userService;
 
 
     @PreAuthorize("@auth.hasCode('auth:group:view')")
@@ -78,6 +82,11 @@ public class GroupController {
         }
 
         service.editGroup(dto);
+
+        //给拥有该组的用户加版本
+        userService.increaseDvByGroupId(dto.getId());
+
+        //清菜单缓存
         menuService.clearUserMenuTreeCache();
         return Result.success("修改成功");
     }
@@ -103,6 +112,11 @@ public class GroupController {
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> grantAndRevoke(@RequestBody @Valid GrantAndRevokeDto dto) throws Exception {
         service.grantAndRevoke(dto);
+
+        //给拥有该组的用户加版本
+        userService.increaseDvByGroupId(dto.getGroupId());
+
+        //清菜单缓存
         menuService.clearUserMenuTreeCache();
         return Result.success("授权或取消授权成功");
     }
@@ -113,6 +127,12 @@ public class GroupController {
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeGroup(dto);
+        menuService.clearUserMenuTreeCache();
+
+        //给拥有该组的用户加版本
+        userService.increaseDvByGroupId(dto.getId());
+
+        //清菜单缓存
         menuService.clearUserMenuTreeCache();
         return Result.success("删除成功");
     }
