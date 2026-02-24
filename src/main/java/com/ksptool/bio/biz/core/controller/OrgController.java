@@ -6,6 +6,7 @@ import com.ksptool.bio.biz.core.model.org.dto.GetOrgTreeDto;
 import com.ksptool.bio.biz.core.model.org.vo.GetOrgDetailsVo;
 import com.ksptool.bio.biz.core.model.org.vo.GetOrgTreeVo;
 import com.ksptool.bio.biz.core.service.OrgService;
+import com.ksptool.bio.biz.core.service.UserService;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,9 @@ public class OrgController {
     @Autowired
     private OrgService orgService;
 
+    @Autowired
+    private UserService userService;
+
     @PreAuthorize("@auth.hasCode('core:org:view')")
     @PostMapping("/getOrgTree")
     @Operation(summary = "查询组织机构树(不分页)")
@@ -50,6 +54,9 @@ public class OrgController {
         }
 
         orgService.addOrg(dto);
+
+        //给该企业/租户下的全部在线用户加版本
+        userService.increaseDvByRootId(dto.getParentId());
         return Result.success("新增成功");
     }
 

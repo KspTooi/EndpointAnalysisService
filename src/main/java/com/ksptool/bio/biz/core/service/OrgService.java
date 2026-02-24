@@ -37,6 +37,9 @@ public class OrgService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
 
     /**
      * 查询组织架构树
@@ -184,6 +187,12 @@ public class OrgService {
 
         addPo.setOrgPathIds(String.join(",", pathIds));
         repository.save(addPo);
+
+        //如果是部门新增，则给该企业/租户下的全部在线用户加版本
+        if(parentPo != null){
+            //给该企业/租户下的全部在线用户加版本
+            userService.increaseDvByRootId(parentPo.getRootId());
+        }
     }
 
     /**
@@ -284,6 +293,9 @@ public class OrgService {
         }
 
         repository.save(updatePo);
+
+        //给该企业/租户下的全部在线用户加版本
+        userService.increaseDvByRootId(updatePo.getRootId());
     }
 
     /**
