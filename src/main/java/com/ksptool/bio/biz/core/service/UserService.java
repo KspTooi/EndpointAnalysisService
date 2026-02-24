@@ -535,6 +535,7 @@ public class UserService {
     }
 
     /**
+     * 为指定用户列表的在线用户加版本
      * 当用户信息发生变更时，需要增加数据版本，这会使得用户会话失效，并在下次请求时刷新会话
      *
      * @param userIds 用户ID列表
@@ -590,6 +591,24 @@ public class UserService {
             }
         }
 
+    }
+    
+    /**
+     * 为拥有该组的全部在线用户加版本
+     *
+     * @param groupId 组ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void increaseDvByGroupId(Long groupId) {
+
+        //获取拥有该组的用户ID列表
+        var userIds = ugRepository.getUserIdsByGroupId(groupId);
+
+        if (userIds.isEmpty()) {
+            return;
+        }
+
+        increaseDv(userIds);
     }
 
 }
