@@ -1,21 +1,3 @@
-<script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { computed } from "vue";
-
-const route = useRoute();
-const router = useRouter();
-
-const requestedPath = computed(() => route.path);
-
-const goBack = () => {
-  router.back();
-};
-
-const goHome = () => {
-  router.push("/");
-};
-</script>
-
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center bg-white text-gray-800 p-12">
     <div class="flex items-center gap-12 max-w-4xl border-l-8 border-blue-500 pl-12 py-4">
@@ -41,5 +23,23 @@ const goHome = () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+
+const route = useRoute();
+const router = useRouter();
+
+const requestedPath = computed(() => route.path);
+
+const goBack = () => {
+  router.back();
+};
+
+const goHome = () => {
+  router.push("/index");
+};
+</script>
 
 <style scoped></style>
