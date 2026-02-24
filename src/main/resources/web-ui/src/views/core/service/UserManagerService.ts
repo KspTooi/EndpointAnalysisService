@@ -153,8 +153,24 @@ export default {
 
     const modalRules = {
       username: [
-        { required: true, message: "请输入用户名", trigger: "blur" },
-        { pattern: /^[a-zA-Z0-9_]{4,20}$/, message: "用户名只能包含4-20位字母、数字和下划线", trigger: "blur" },
+        {
+          trigger: "blur",
+          validator: (rule: any, value: string, callback: Function) => {
+            if (modalMode.value === "edit") {
+              callback();
+              return;
+            }
+            if (!value) {
+              callback(new Error("请输入用户名"));
+              return;
+            }
+            if (!/^[a-zA-Z0-9_]{4,20}$/.test(value)) {
+              callback(new Error("用户名只能包含4-20位字母、数字和下划线"));
+              return;
+            }
+            callback();
+          },
+        },
       ],
       nickname: [{ max: 50, message: "昵称长度不能超过50个字符", trigger: "blur" }],
       password: [
