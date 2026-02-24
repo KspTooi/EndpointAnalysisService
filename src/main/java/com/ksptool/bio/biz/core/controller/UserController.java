@@ -66,13 +66,14 @@ public class UserController {
         return Result.success("修改成功");
     }
 
+
     @PreAuthorize("@auth.hasCode('core:user:remove')")
     @Operation(summary = "删除用户")
     @PostMapping("removeUser")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) throws Exception {
         service.removeUser(dto.getId());
-        return Result.success("success");
+        return Result.success("删除成功");
     }
 
 

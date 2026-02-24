@@ -53,6 +53,9 @@ public class UserSessionPo extends RowScopePo {
     @Column(name = "rs_allow_depts", nullable = false, columnDefinition = "JSON", comment = "RowScope允许访问的部门IDS")
     private String rsAllowDepts;
 
+    @Column(name = "data_version", nullable = false, comment = "数据版本")
+    private Long dataVersion;
+
     @Column(name = "expires_at", nullable = false, comment = "过期时间")
     private LocalDateTime expiresAt;
 
@@ -84,6 +87,7 @@ public class UserSessionPo extends RowScopePo {
         session.setCompanyId(userPo.getActiveCompanyId());
         session.setPermissionCodes(toJson(permissionCodes));
         session.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
+        session.setDataVersion(userPo.getDataVersion());
         session.setCreatorId(userPo.getId());
         return session;
     }
