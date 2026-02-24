@@ -91,4 +91,18 @@ public interface UserSessionRepository extends JpaRepository<UserSessionPo, Long
             """)
     int removeUserSessionByUserIds(@Param("userIds") List<Long> userIds);
 
+
+    /**
+     * 根据用户ID列表获取未过期的用户ID列表
+     * 在线用户的判断标准是会话未过期（expiresAt > 当前时间）
+     *
+     * @param userIds 用户ID列表
+     * @return 用户ID列表
+     */
+    @Query("""
+            SELECT us.userId FROM UserSessionPo us
+            WHERE us.userId IN :userIds AND us.expiresAt > NOW()    
+            """)
+    List<Long> getOnlineUserIdsByUserIds(@Param("userIds") List<Long> userIds);
+
 }

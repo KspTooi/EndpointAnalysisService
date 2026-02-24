@@ -7,6 +7,7 @@ import com.ksptool.bio.biz.auth.model.group.GroupPo;
 import com.ksptool.bio.biz.auth.model.permission.PermissionPo;
 import com.ksptool.bio.biz.auth.repository.GroupRepository;
 import com.ksptool.bio.biz.auth.repository.UserGroupRepository;
+import com.ksptool.bio.biz.auth.repository.UserSessionRepository;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
@@ -62,6 +63,9 @@ public class UserService {
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private UserSessionRepository userSessionRepository;
 
     /**
      * 获取用户列表
@@ -566,14 +570,21 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public void increaseDv(List<Long> userIds) {
 
+        //只对那些当前在线的用户增加数据版本以缩小缓存更新范围
+        var onlineUserIds = userSessionRepository.getOnlineUserIdsByUserIds(userIds);
+
+        if (onlineUserIds.isEmpty()) {
+            return;
+        }
+
         //先增加数据版本
-        userRepository.increaseDv(userIds);
+        userRepository.increaseDv(onlineUserIds);
 
         var cache = cacheManager.getCache("userSession");
 
         //如果系统使用了缓存，需向缓存添加一条数据,用于标识该用户数据版本已变更
         if (cache != null) {
-            for (var userId : userIds) {
+            for (var userId : onlineUserIds) {
                 cache.put("user_dv_changed_" + userId, "0");
             }
         }
