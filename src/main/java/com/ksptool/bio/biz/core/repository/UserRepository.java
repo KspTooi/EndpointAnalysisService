@@ -200,4 +200,20 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             """)
     List<Long> getOnlineUserIdsByRootId(@Param("rootId") Long rootId);
 
+    /**
+     * 根据权限ID获取当前在线的用户ID列表
+     *
+     * @param permissionId 权限ID
+     * @return 当前在线的用户ID列表
+     */
+    @Query("""
+            SELECT DISTINCT p.id FROM UserPo p
+            JOIN UserSessionPo usp ON p.id = usp.userId
+            JOIN UserGroupPo ug ON p.id = ug.userId
+            JOIN GroupPermissionPo gp ON ug.groupId = gp.groupId
+            WHERE gp.permissionId = :permissionId
+            AND usp.expiresAt > NOW()
+            """)
+    List<Long> getOnlineUserIdsByPermissionId(@Param("permissionId") Long permissionId);
+
 }

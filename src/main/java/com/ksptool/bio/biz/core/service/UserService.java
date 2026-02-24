@@ -611,4 +611,22 @@ public class UserService {
         increaseDv(userIds);
     }
 
+    /**
+     * 为拥有该权限的全部在线用户加版本
+     *
+     * @param permissionId 权限ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void increaseDvByPermissionId(Long permissionId) {
+        
+        //获取拥有该权限的用户ID列表
+        var onlineUserIds = userRepository.getOnlineUserIdsByPermissionId(permissionId);
+
+        if (onlineUserIds.isEmpty()) {
+            return;
+        }
+
+        increaseDv(onlineUserIds);
+    }
+
 }
