@@ -160,4 +160,16 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             """)
     Integer countBySystemUser();
 
+    /**
+     * 根据用户ID获取数据版本
+     *
+     * @param userId 用户ID
+     * @return 数据版本
+     */
+    @Query("""
+            SELECT p.dataVersion FROM UserPo p
+            WHERE p.id = :userId
+            """)
+    Long getDvByUserId(@Param("userId") Long userId);
+
 }

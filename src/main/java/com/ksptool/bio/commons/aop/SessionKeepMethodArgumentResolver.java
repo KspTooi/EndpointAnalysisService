@@ -35,7 +35,7 @@ public class SessionKeepMethodArgumentResolver implements HandlerMethodArgumentR
     @Override
     public @Nullable Object resolveArgument(@NonNull MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer, @NonNull NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
-        var session = SessionService.getSession();
+        var session = SessionService.sessionWithNullable();
 
         if (session == null) {
             throw new AuthException("当前操作需要有效的用户会话,请先登录!");

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ksptool.bio.biz.auth.service.SessionService.getSession;
+import static com.ksptool.bio.biz.auth.service.SessionService.sessionWithNullable;
 
 @Slf4j
 @RestControllerAdvice
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
 
         if (recordErrorRcd) {
             // 审计模块记录系统错误记录
-            var session = getSession();
+            var session = sessionWithNullable();
             var userId = 0L;
             var userName = "无法获取";
             var errorCode = auditErrorRcdService.nextErrorCode("PARAM");
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
 
         if (recordErrorRcd) {
             // 审计模块记录系统错误记录
-            var session = getSession();
+            var session = sessionWithNullable();
             var userId = 0L;
             var userName = "无法获取";
             var errorCode = auditErrorRcdService.nextErrorCode("INTERNAL");

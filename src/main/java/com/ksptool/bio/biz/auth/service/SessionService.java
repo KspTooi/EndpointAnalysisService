@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +58,9 @@ public class SessionService {
     @Autowired
     private OrgRepository orgRepository;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
 
     /**
      * 获取当前用户会话
@@ -76,6 +80,20 @@ public class SessionService {
     }
 
     /**
+     * 获取当前用户会话
+     *
+     * @return 当前用户会话，如果用户未登录，则返回null
+     */
+    public static AuthUserDetails sessionWithNullable() {
+        try {
+            return session();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
      * 获取当前用户权限
      *
      * @return 当前用户权限
@@ -89,25 +107,25 @@ public class SessionService {
         return new ArrayList<>(authentication.getAuthorities());
     }
 
+
     /**
-     * 获取当前用户会话
+     * 获取在线用户会话列表
      *
-     * @return 当前用户会话，如果用户未登录，则返回null
+     * @param dto 查询条件
+     * @return 在线用户会话列表
      */
-    public static AuthUserDetails getSession() {
-        try {
-            return session();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
     public PageResult<GetSessionListVo> getSessionList(GetSessionListDto dto) {
         Page<GetSessionListVo> pPos = userSessionRepository.getSessionList(dto, dto.pageRequest());
         return PageResult.success(pPos.getContent(), pPos.getTotalElements());
     }
 
+    /**
+     * 获取在线用户会话详情
+     *
+     * @param id 会话ID
+     * @return 用户会话详情
+     * @throws BizException 如果会话不存在
+     */
     public GetSessionDetailsVo getSessionDetails(Long id) throws BizException {
 
         UserSessionPo session = userSessionRepository.findById(id)
@@ -232,7 +250,7 @@ public class SessionService {
      * 创建用户会话
      *
      * @param aud 认证用户详情
-     * @return 用户会话ID
+     * @return 用户会话ID(未经过SHA256的SessionId)
      */
     public String createSession(AuthUserDetails aud) throws BizException {
 
@@ -251,6 +269,7 @@ public class SessionService {
 
         //存入数据库
         newSession.setId(IdWorker.nextId());
+        newSession.setUsername(aud.getUsername());
         newSession.setUserId(aud.getId());
         newSession.setSessionId(hashedSessionId);
         newSession.setPermissionCodes(toJson(permCodes));
@@ -266,6 +285,47 @@ public class SessionService {
         //更新用户
         userRepository.save(userPo);
         return sessionId;
+    }
+
+    /**
+     * 刷新用户会话
+     * 这个函数将会刷新
+     * 1.会话基本数据
+     * 2.权限码
+     * 3.RS数据
+     * 4.过期时间
+     *
+     * @param oldSession 旧用户会话
+     * @return 新用户会话
+     */
+    public UserSessionPo refreshSession(UserSessionPo oldSession) throws BizException {
+
+        //更新基本信息
+        var aud = (AuthUserDetails) userDetailsService.loadUserByUsername(oldSession.getUsername());
+
+        oldSession.setUsername(aud.getUsername());
+        oldSession.setRootId(aud.getRootId());
+        oldSession.setRootName(aud.getRootName());
+        oldSession.setDeptId(aud.getDeptId());
+        oldSession.setDeptName(aud.getDeptName());
+
+        //更新权限码
+        var permCodes = new HashSet<String>();
+
+        for (var authority : aud.getAuthorities()) {
+            permCodes.add(authority.getAuthority());
+        }
+        oldSession.setPermissionCodes(toJson(permCodes));
+
+        //更新RS数据
+        oldSession.setRsMax(aud.getRsMax());
+        oldSession.setRsAllowDepts(toJson(aud.getRsAllowDepts()));
+
+        //更新过期时间
+        oldSession.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
+
+        //更新会话并返回
+        return userSessionRepository.save(oldSession);
     }
 
 
@@ -341,6 +401,15 @@ public class SessionService {
 
         if (session == null) {
             throw new BizException("会话不存在");
+        }
+
+        //使用当前数据库会话DV对比用户DV
+        var uDv = userRepository.getDvByUserId(session.getUserId());
+        var sDv = session.getDataVersion();
+
+        //如果用户DV大于会话DV，说明会话过期,需要刷新该用户下本次会话
+        if (!Objects.equals(uDv, sDv)) {
+            return refreshSession(session);
         }
 
         return session;
