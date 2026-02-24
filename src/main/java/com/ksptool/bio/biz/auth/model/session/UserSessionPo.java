@@ -26,6 +26,9 @@ public class UserSessionPo extends RowScopePo {
     @Column(name = "session_id", nullable = false, unique = true, length = 128, comment = "用户凭据SessionID")
     private String sessionId;
 
+    @Column(name = "username", nullable = false, length = 80, comment = "用户名")
+    private String username;
+
     @Column(name = "user_id", nullable = false, comment = "用户ID")
     private Long userId;
 

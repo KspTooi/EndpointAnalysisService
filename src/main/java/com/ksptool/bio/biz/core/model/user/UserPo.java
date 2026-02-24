@@ -31,7 +31,7 @@ public class UserPo {
     @Column(name = "id", comment = "用户ID")
     private Long id;
 
-    @Column(name = "username", nullable = false, length = 50, comment = "用户名")
+    @Column(name = "username", nullable = false, length = 80, comment = "用户名")
     private String username;
 
     @Column(name = "password", nullable = false, length = 1280, comment = "密码")
