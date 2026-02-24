@@ -99,7 +99,8 @@ public interface PermissionRepository extends JpaRepository<PermissionPo, Long> 
             SELECT DISTINCT p
             FROM PermissionPo p
             WHERE
-            (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            ( (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR
+            (:keyword IS NULL OR LOWER(p.code) LIKE LOWER(CONCAT('%', :keyword, '%'))) )
             AND (:groupId IS NULL OR :hasPermission IS NULL OR
                  ((:hasPermission = 1 AND EXISTS (SELECT 1 FROM GroupPermissionPo gp WHERE gp.groupId = :groupId))
                   OR (:hasPermission = 0 AND NOT EXISTS (SELECT 1 FROM GroupPermissionPo gp WHERE gp.groupId = :groupId))))
