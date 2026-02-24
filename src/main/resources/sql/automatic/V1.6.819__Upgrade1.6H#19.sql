@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS auth_user_session;
 CREATE TABLE auth_user_session(
                                   `id` BIGINT NOT NULL  COMMENT '会话ID' ,
                                   `session_id` VARCHAR(128) NOT NULL  COMMENT '用户凭据' ,
+                                  `username` VARCHAR(80) NOT NULL  COMMENT '用户名' ,
                                   `user_id` BIGINT NOT NULL  COMMENT '用户ID' ,
                                   `root_id` BIGINT   COMMENT '所属企业ID' ,
                                   `root_name` VARCHAR(32)   COMMENT '所属企业名' ,
