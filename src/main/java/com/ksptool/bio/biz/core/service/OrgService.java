@@ -288,7 +288,6 @@ public class OrgService {
             
             Collections.reverse(pathIds);
             updatePo.setOrgPathIds(String.join(",", pathIds));
-
         }
 
         repository.save(updatePo);
