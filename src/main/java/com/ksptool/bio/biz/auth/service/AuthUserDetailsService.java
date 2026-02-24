@@ -145,6 +145,7 @@ public class AuthUserDetailsService implements UserDetailsService {
         //如果RS为2(本部门及以下) 将用户所属部门以及其子部门添加到ADGS中
         if (rsMax == 2) {
             var depts = orgRepository.getChildDeptsByDeptId(user.getDeptId());
+            rsAllowDepts.add(user.getDeptId());
             for (var dept : depts) {
                 rsAllowDepts.add(dept.getId());
             }
