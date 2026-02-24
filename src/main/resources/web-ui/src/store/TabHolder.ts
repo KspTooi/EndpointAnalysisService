@@ -3,14 +3,25 @@ import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 export interface Tab {
-  id: string; // Corresponds to menu id
-  title: string;
-  path: string;
-  closable?: boolean;
+  id: string; // 标签ID
+  title: string; // 标签标题
+  path: string; // 标签路径
+  closable?: boolean; // 是否可关闭
 }
+
+const fixedTabs = [
+  {
+    id: "index",
+    title: "首页",
+    path: "/index",
+    closable: false,
+  },
+];
 
 const STORAGE_KEY_TABS = "admin_tabs_state";
 const STORAGE_KEY_ACTIVE_TAB = "admin_active_tab_state";
+
+const fixedTabIds = new Set(fixedTabs.map((t) => t.id));
 
 export const useTabStore = defineStore("tabStore", () => {
   const router = useRouter();
@@ -33,16 +44,21 @@ export const useTabStore = defineStore("tabStore", () => {
     return defaultValue;
   };
 
-  const tabs = ref<Tab[]>(loadFromStorage(STORAGE_KEY_TABS, []));
+  // 持久化只存非固定标签，加载时将fixedTabs插入头部
+  const savedDynamicTabs = loadFromStorage<Tab[]>(STORAGE_KEY_TABS, []).filter(
+    (t) => !fixedTabIds.has(t.id)
+  );
+  const tabs = ref<Tab[]>([...fixedTabs, ...savedDynamicTabs]);
   const activeTabId = ref<string | null>(loadFromStorage(STORAGE_KEY_ACTIVE_TAB, null));
   const refreshCounter = ref(0);
 
-  // Watch for changes and save to localStorage
+  // 持久化时只保存非固定标签
   watch(
     tabs,
     (newTabs) => {
       try {
-        localStorage.setItem(STORAGE_KEY_TABS, JSON.stringify(newTabs));
+        const dynamicTabs = newTabs.filter((t) => !fixedTabIds.has(t.id));
+        localStorage.setItem(STORAGE_KEY_TABS, JSON.stringify(dynamicTabs));
       } catch (error) {
         console.error("Failed to save tabs state to localStorage:", error);
       }
@@ -73,7 +89,7 @@ export const useTabStore = defineStore("tabStore", () => {
   };
 
   /**
-   * 添加标签
+   * 添加标签，始终追加到非固定标签末尾
    * @param tab 标签
    */
   const addTab = (tab: Tab) => {
@@ -85,14 +101,14 @@ export const useTabStore = defineStore("tabStore", () => {
   };
 
   /**
-   * 插入标签
+   * 插入标签，索引不得小于fixedTabs数量
    * @param tab 标签
-   * @param index 索引
+   * @param index 索引（从0开始，最小为fixedTabs.length）
    */
   const insertTab = (tab: Tab, index: number) => {
     let _index = index;
-    if (_index < 1) {
-      _index = 1;
+    if (_index < fixedTabs.length) {
+      _index = fixedTabs.length;
     }
     if (_index > tabs.value.length) {
       _index = tabs.value.length;
@@ -108,18 +124,18 @@ export const useTabStore = defineStore("tabStore", () => {
   };
 
   const removeTab = (tabId: string) => {
+    // 固定标签不可删除
+    if (fixedTabIds.has(tabId)) return;
+
     const index = tabs.value.findIndex((t) => t.id === tabId);
     if (index === -1) return;
 
-    // If the closed tab was active, decide which tab to activate next
     if (activeTabId.value === tabId) {
       const newActiveTab = tabs.value[index + 1] || tabs.value[index - 1];
       if (newActiveTab) {
         setActiveTab(newActiveTab.id);
       } else {
         activeTabId.value = null;
-        // Optionally, navigate to a default route if all tabs are closed
-        // router.push('/');
       }
     }
 
@@ -128,17 +144,23 @@ export const useTabStore = defineStore("tabStore", () => {
 
   const closeOtherTabs = (tabId: string) => {
     const currentTab = tabs.value.find((t) => t.id === tabId);
-    if (currentTab) {
-      tabs.value = [currentTab];
-      setActiveTab(tabId);
+    if (!currentTab) return;
+    // 保留固定标签 + 当前标签（若当前标签本身是固定标签则只保留固定标签）
+    if (fixedTabIds.has(tabId)) {
+      tabs.value = [...fixedTabs];
+    } else {
+      tabs.value = [...fixedTabs, currentTab];
     }
+    setActiveTab(tabId);
   };
 
   const setTabs = (newTabs: Tab[]) => {
-    tabs.value = newTabs;
+    // 确保fixedTabs始终在最前
+    const dynamicTabs = newTabs.filter((t) => !fixedTabIds.has(t.id));
+    tabs.value = [...fixedTabs, ...dynamicTabs];
   };
 
-  // Sync active tab with router
+  // 同步路由到激活标签
   watch(
     () => router.currentRoute.value.path,
     (newPath) => {
@@ -151,9 +173,8 @@ export const useTabStore = defineStore("tabStore", () => {
   );
 
   /**
-   * 激活指定索引的标签
+   * 激活指定索引的标签（1-based）
    * @param index 索引
-   * @returns 标签
    */
   const activeOf = (index: number) => {
     if (index < 1 || index > tabs.value.length) {
