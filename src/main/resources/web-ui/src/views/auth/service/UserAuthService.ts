@@ -86,6 +86,11 @@ export default {
   usePreAuthorize() {
     // 检查用户是否拥有指定权限码（单个或多个，满足其一即可）
     const hasCode = (codes: string | string[]): boolean => {
+      //如果用户有超级权限 则直接返回true
+      if (AuthStore().userInfo?.authorities?.includes("*:*:*")) {
+        return true;
+      }
+
       const authorities = AuthStore().userInfo?.authorities ?? [];
       const codeList = Array.isArray(codes) ? codes : [codes];
       return codeList.some((code) => authorities.includes(code));
