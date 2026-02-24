@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -96,6 +97,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理Spring Security的权限不足异常
+     * com.ksptool.bio.auth.common.JsonAuthEntryPoint已经能够处理Filter层的异常,但当异常发生在Controller或方法级时,需要在这里处理。
+     */
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public Result<Object> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        return Result.error(403, "权限不足");
+    }
+
+
+    /**
      * 打印增强型请求日志
      *
      * @param ex 异常
@@ -111,5 +122,6 @@ public class GlobalExceptionHandler {
                     requestInfo.getBodySupplier().get(), ex.getMessage(), ex);
         }
     }
+    
 
 }
