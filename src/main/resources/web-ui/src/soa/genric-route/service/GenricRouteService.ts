@@ -5,6 +5,7 @@ import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
 import NoPermission from "@/soa/no-permission/NoPermission.vue";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
+import Index from "@/soa/index/SoaIndex.vue";
 
 //是否已初始化
 let hasInitialized = false;
@@ -21,6 +22,12 @@ const routeRegistries = ref<GenricRouteRegister[]>([]);
 const vueRouter = createRouter({
   history: createWebHashHistory(),
   routes: [
+    {
+      path: "/index",
+      name: "index",
+      component: Index,
+      meta: {},
+    },
     {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
