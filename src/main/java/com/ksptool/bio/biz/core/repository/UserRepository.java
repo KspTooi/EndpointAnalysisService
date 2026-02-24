@@ -186,4 +186,18 @@ public interface UserRepository extends JpaRepository<UserPo, Long> {
             """)
     int increaseDv(@Param("userIds") List<Long> userIds);
 
+
+    /**
+     * 根据企业/租户ID获取当前在线的用户ID列表
+     *
+     * @param rootId 企业/租户ID
+     * @return 当前在线的用户ID列表
+     */
+    @Query("""
+            SELECT DISTINCT p.id FROM UserPo p
+            LEFT JOIN UserSessionPo usp ON p.id = usp.userId
+            WHERE p.rootId = :rootId AND usp.expiresAt > NOW()
+            """)
+    List<Long> getOnlineUserIdsByRootId(@Param("rootId") Long rootId);
+
 }

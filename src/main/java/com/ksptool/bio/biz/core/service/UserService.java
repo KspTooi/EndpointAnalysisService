@@ -288,8 +288,6 @@ public class UserService {
         if (!userGroupPos.isEmpty()) {
             ugRepository.saveAll(userGroupPos);
         }
-
-
     }
 
     /**
@@ -348,32 +346,6 @@ public class UserService {
         newUser.setIsSystem(1);
 
         return userRepository.save(newUser);
-    }
-
-
-    /**
-     * 更新admin用户的用户组，确保拥有所有现有用户组
-     */
-    private void updateAdminGroups(UserPo adminUser) {
-        // 获取所有用户组
-        List<GroupPo> allGroups = groupRepository.findAll();
-
-        // 更新admin的用户组 先清除该用户的全部用户组关联
-        ugRepository.clearGroupGrantedByUserId(adminUser.getId());
-
-        var userGroupPos = new ArrayList<UserGroupPo>();
-        for (var gId : allGroups) {
-            var userGroupPo = new UserGroupPo();
-            userGroupPo.setUserId(adminUser.getId());
-            userGroupPo.setGroupId(gId.getId());
-            userGroupPos.add(userGroupPo);
-        }
-
-        //保存用户组关联
-        if (!userGroupPos.isEmpty()) {
-            ugRepository.saveAll(userGroupPos);
-        }
-
     }
 
 
@@ -591,5 +563,33 @@ public class UserService {
 
     }
 
+    /**
+     * 为该企业/租户下的全部在线用户加版本
+     *
+     * @param rootId 企业/租户ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void increaseDvByRootId(Long rootId) {
+        
+        //获取该企业/租户下的全部用户ID
+        var onlineUserIds = userRepository.getOnlineUserIdsByRootId(rootId);
+
+        if (onlineUserIds.isEmpty()) {
+            return;
+        }
+
+        //先增加数据版本
+        userRepository.increaseDv(onlineUserIds);
+
+        var cache = cacheManager.getCache("userSession");
+
+        //如果系统使用了缓存，需向缓存添加一条数据,用于标识该用户数据版本已变更
+        if (cache != null) {
+            for (var userId : onlineUserIds) {
+                cache.put("user_dv_changed_" + userId, "0");
+            }
+        }
+
+    }
 
 }

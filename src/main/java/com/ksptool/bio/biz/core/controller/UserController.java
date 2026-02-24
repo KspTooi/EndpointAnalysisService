@@ -13,6 +13,9 @@ import com.ksptool.bio.commons.dataprocess.ImportWizard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -62,7 +65,14 @@ public class UserController {
     @PostMapping("editUser")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editUser(@RequestBody @Valid EditUserDto dto) throws Exception {
+
         service.editUser(dto);
+
+        //给用户加版本
+        service.increaseDv(List.of(dto.getId()));
+
+        //清除用户菜单缓存
+        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("修改成功");
     }
 
@@ -72,7 +82,14 @@ public class UserController {
     @PostMapping("removeUser")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> removeUser(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
         service.removeUser(dto.getId());
+
+        //给用户加版本
+        service.increaseDv(List.of(dto.getId()));
+
+        //清除用户菜单缓存
+        menuService.clearUserMenuTreeCacheByUserId(dto.getId());
         return Result.success("删除成功");
     }
 
@@ -109,11 +126,11 @@ public class UserController {
 
         var count = service.batchEditUser(dto);
 
-        //清除用户菜单缓存
-        for (Long uid : dto.getIds()) {
-            menuService.clearUserMenuTreeCacheByUserId(uid);
-        }
+        //给用户加版本
+        service.increaseDv(dto.getIds());
 
+        //清除用户菜单缓存
+        menuService.clearUserMenuTreeCache();
         return Result.success("批量操作成功,已操作数据:" + count + "条");
     }
 
