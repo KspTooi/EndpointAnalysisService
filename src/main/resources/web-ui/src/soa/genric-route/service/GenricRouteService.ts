@@ -3,6 +3,7 @@ import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
 import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
+import NoPermission from "@/soa/no-permission/NoPermission.vue";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 
 //是否已初始化
@@ -28,6 +29,14 @@ const vueRouter = createRouter({
         layout: "blank",
       },
     },
+    {
+      path: "/no-permission",
+      name: "no-permission",
+      component: NoPermission,
+      meta: {
+        layout: "blank",
+      },
+    },
   ],
 });
 
@@ -47,9 +56,7 @@ vueRouter.beforeEach((to, from, next) => {
   }
 
   // 激活标签不可用时，回退到最近访问的业务标签（同样排除根路径和登录页）
-  const fallbackTab = [...tabStore.tabs]
-    .reverse()
-    .find((t) => t.path !== "/" && t.path !== "/auth/login");
+  const fallbackTab = [...tabStore.tabs].reverse().find((t) => t.path !== "/" && t.path !== "/auth/login");
 
   // 防止重定向到当前目标，避免产生循环跳转
   if (fallbackTab && fallbackTab.path !== to.path) {

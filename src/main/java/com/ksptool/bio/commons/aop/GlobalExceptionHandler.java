@@ -4,14 +4,17 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.audit.service.AuditErrorRcdService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
@@ -101,7 +104,8 @@ public class GlobalExceptionHandler {
      * com.ksptool.bio.auth.common.JsonAuthEntryPoint已经能够处理Filter层的异常,但当异常发生在Controller或方法级时,需要在这里处理。
      */
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public Result<Object> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+    public Result<Object> handleAuthorizationDeniedException(AuthorizationDeniedException ex,HttpServletResponse hsrp) {
+        hsrp.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return Result.error(403, "权限不足");
     }
 
@@ -122,6 +126,6 @@ public class GlobalExceptionHandler {
                     requestInfo.getBodySupplier().get(), ex.getMessage(), ex);
         }
     }
-    
+
 
 }
