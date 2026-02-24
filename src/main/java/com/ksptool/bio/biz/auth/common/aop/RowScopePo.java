@@ -31,9 +31,9 @@ import org.hibernate.annotations.ParamDef;
 @Filter(
         name = "rsFilter",
         condition = """
-                ( :rsMax = 1 AND root_id = :rootId )
+                   (( :rsMax = 1 AND root_id = :rootId )
                 OR ( :rsMax IN (2, 3, 5) AND dept_id IN (:deptIds) )
-                OR ( :rsMax = 4 AND creator_id = :userId )
+                OR ( :rsMax = 4 AND creator_id = :userId ))
                 """
 )
 public abstract class RowScopePo {
