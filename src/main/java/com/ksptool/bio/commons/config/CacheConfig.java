@@ -49,6 +49,13 @@ public class CacheConfig {
                         .maximumSize(100)
                         .build()));
 
+        //限流相关缓存
+        caches.add(new CaffeineCache("rateLimit_30",
+                Caffeine.newBuilder()
+                        .expireAfterWrite(31, TimeUnit.MINUTES)
+                        .maximumSize(1000)
+                        .build()));
+
         cacheManager.setCaches(caches);
         return cacheManager;
     }
