@@ -32,9 +32,9 @@
           </StdListAreaQuery>
 
           <StdListAreaAction class="flex gap-3">
-            <el-button type="success" @click="openModal('add', null)">创建用户</el-button>
+            <el-button type="success" @click="openModal('add', null)" v-hasCode="['core:user:add']">创建用户</el-button>
             <el-dropdown @command="onBatchAction">
-              <el-button type="primary" :disabled="!canBatchAction">
+              <el-button type="primary" :disabled="!canBatchAction" v-hasCode="['core:user:batch_edit']">
                 批量操作<template v-if="canBatchAction">({{ batchCount }})</template>
                 <el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
@@ -47,7 +47,9 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-            <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入用户</el-button>
+            <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon" v-hasCode="['core:user:import']"
+              >导入用户</el-button
+            >
           </StdListAreaAction>
 
           <StdListAreaTable>
@@ -227,7 +229,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" @click="submitModal" :loading="modalLoading" v-hasCode="['core:user:edit']">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
@@ -252,6 +254,10 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
 import { ElMessage } from "element-plus";
+import UserAuthService from "@/views/auth/service/UserAuthService";
+
+//按钮级权限打包
+const { hasCode, vHasCode } = UserAuthService.usePreAuthorize();
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
