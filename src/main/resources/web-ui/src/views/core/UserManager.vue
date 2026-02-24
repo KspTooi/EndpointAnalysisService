@@ -71,7 +71,7 @@
                   <span v-if="scope.row.gender === 2">不愿透露</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="rootName" label="企业" min-width="150" :v-show="orgId == null">
+              <el-table-column prop="rootName" label="企业" min-width="160" :v-show="orgId == null" show-overflow-tooltip>
                 <template #default="scope">
                   <span v-if="scope.row.rootName">{{ scope.row.rootName }}</span>
                   <span v-else>-</span>
