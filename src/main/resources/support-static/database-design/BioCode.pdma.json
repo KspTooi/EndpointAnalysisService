@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-24 15:48:47",
+  "updatedTime": "2026-2-24 16:43:28",
   "dbConns": [],
   "profile": {
     "default": {
@@ -25286,6 +25286,24 @@
           "attr9": "",
           "id": "2B4D2D35-6FA0-468C-BA2D-875754AE9900",
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0"
+        },
+        {
+          "defKey": "username",
+          "defName": "用户名",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
+          "id": "C8974467-1A9A-4F10-A620-814BD67123FE"
         },
         {
           "defKey": "user_id",
