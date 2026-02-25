@@ -238,11 +238,11 @@ public class DriveSpaceService {
             var myUserId = session.getUserId();
             var myDeptId = session.getDeptId();
             var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
-    
+
             if (myBestRole == null) {
                 throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间.");
             }
-    
+
             if (myBestRole != 0 && myBestRole != 1) {
                 throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间.");
             }
@@ -279,7 +279,7 @@ public class DriveSpaceService {
             if (myBestRole == null) {
                 throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间成员.");
             }
-    
+
             if (myBestRole != 0 && myBestRole != 1) {
                 throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间成员.");
             }
@@ -307,9 +307,6 @@ public class DriveSpaceService {
 
             //如果我是行政管理员,则不可以把成员加/改成主管理员或行政管理员 也不能操作主管理员和其他行政管理员
             if (!hasSuperCode && myBestRole == 1) {
-                if (dto.getRole() == 0) {
-                    throw new BizException("行政管理员不能添加主管理员.");
-                }
                 if (dto.getRole() == 1) {
                     throw new BizException("行政管理员不能添加其他行政管理员.");
                 }
@@ -353,16 +350,7 @@ public class DriveSpaceService {
             }
 
             //不存在就加 先处理加用户
-            //但是在这之前要判断一下我要加的成员是不是主管理员或行政管理员 如果我是行政管理员,我不可以加主管理员和其他行政管理员
-            //如果我有超级权限,则不检查
-            if (!hasSuperCode && myBestRole == 1) {
-                if (dto.getRole() == 0) {
-                    throw new BizException("行政管理员不能添加主管理员.");
-                }
-                if (dto.getRole() == 1) {
-                    throw new BizException("行政管理员不能添加其他行政管理员.");
-                }
-            }
+
 
             //继续处理加用户
             if (dto.getMemberKind() == 0) {
@@ -434,9 +422,6 @@ public class DriveSpaceService {
 
         //如果我是行政管理员,则不可以删主管理员和其他行政管理员(超级权限不检查)
         if (!hasSuperCode && myBestRole == 1) {
-            if (dsmToDelete.getRole() == 0) {
-                throw new BizException("行政管理员不能删除主管理员.");
-            }
             if (dsmToDelete.getRole() == 1) {
                 throw new BizException("行政管理员不能删除其他行政管理员.");
             }
@@ -470,7 +455,7 @@ public class DriveSpaceService {
     public GetDriveSpaceDetailsVo getDriveSpaceDetails(CommonIdDto dto) throws Exception {
         DriveSpacePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
-        
+
         //先查当前人在这个空间里面有没有角色(超级权限不检查)
         var session = SessionService.session();
         var myUserId = session.getUserId();
@@ -553,7 +538,7 @@ public class DriveSpaceService {
         //在第一条插入主管理员
         for (var member : userMembers) {
             if (member.getRole() == 0) {
-                allMembers.add(0, member);
+                allMembers.addFirst(member);
                 break;
             }
         }
@@ -587,7 +572,7 @@ public class DriveSpaceService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeDriveSpace(CommonIdDto dto) throws Exception {
-        
+
         if (dto.isBatch()) {
             throw new BizException("批量删除云盘空间不支持.");
         }
@@ -604,16 +589,16 @@ public class DriveSpaceService {
             if (myBestRole == null) {
                 throw new BizException("当前用户不是云盘空间成员,无法删除云盘空间.");
             }
-    
+
             //行政管理员虽然可以管理成员和空间,但是不能删除空间
             if (myBestRole == 1) {
                 throw new BizException("行政管理员不能删除云盘空间,请联系主管理员删除.");
             }
-    
+
             if (myBestRole != 0) {
                 throw new BizException("当前用户不是主管理员,无法删除云盘空间.");
             }
-            
+
         }
 
 
