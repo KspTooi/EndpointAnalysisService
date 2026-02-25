@@ -60,6 +60,13 @@ export default class DriveRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/drive/CodeRenderer.vue"),
         meta: { breadcrumb: "云盘-代码预览" },
       }),
+      RouteEntryPo.build({
+        biz: "drive",
+        path: "drive-space",
+        name: "drive-space",
+        component: () => import("@/views/drive/DriveSpace.vue"),
+        meta: { breadcrumb: "云盘空间" },
+      }),
     ];
   }
 }
