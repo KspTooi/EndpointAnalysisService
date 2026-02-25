@@ -17,6 +17,7 @@ export default {
    */
   useEntryList(emit: EntryGridEmitter) {
     const listQuery = reactive<GetEntryListDto>({
+      driveSpaceId: DriveStore().getCurrentDriveSpace.id,
       directoryId: DriveStore().getCurrentDir.id,
       keyword: null,
       pageNum: 1,

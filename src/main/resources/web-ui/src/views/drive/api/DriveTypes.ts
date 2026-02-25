@@ -3,6 +3,7 @@ import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
 import type PageQuery from "@/commons/entity/PageQuery.ts";
 
 export interface GetEntryListDto extends PageQuery {
+  driveSpaceId: string; //云盘空间ID
   directoryId: string | null; //目录ID
   keyword: string | null; //关键词
 }
