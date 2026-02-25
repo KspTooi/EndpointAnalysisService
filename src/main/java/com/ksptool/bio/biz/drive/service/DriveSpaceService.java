@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.drive.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.notice.dto.AddNoticeDto;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
@@ -24,7 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
@@ -55,17 +59,29 @@ public class DriveSpaceService {
      * @param dto 查询条件
      * @return 云盘空间列表
      */
-    public PageResult<GetDriveSpaceListVo> getDriveSpaceList(GetDriveSpaceListDto dto) {
+    public PageResult<GetDriveSpaceListVo> getDriveSpaceList(GetDriveSpaceListDto dto) throws Exception {
+
         DriveSpacePo query = new DriveSpacePo();
         assign(dto, query);
 
-        Page<DriveSpacePo> page = repository.getDriveSpaceList(query, dto.pageRequest());
+        //先准备查询条件
+        var isSuper = false;
+        var session = session();
+        var myUserId = session.getUserId();
+        var myDeptId = session.getDeptId();
+
+        //如果我有超级权限,可以查看所有的云盘空间
+        if (SessionService.hasSuperCode()) {
+            isSuper = true;
+        }
+
+        //如果没有超级权限,只能查看自己是成员的云盘空间
+        Page<GetDriveSpaceListVo> page = repository.getDriveSpaceList(query, myUserId, myDeptId, isSuper, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<GetDriveSpaceListVo> vos = as(page.getContent(), GetDriveSpaceListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(page.getContent(), (int) page.getTotalElements());
     }
 
     /**

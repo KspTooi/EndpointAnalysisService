@@ -102,6 +102,17 @@ public class SessionService {
     }
 
     /**
+     * 判断当前用户是否具有超级权限
+     *
+     * @return 是否具有超级权限
+     * @throws AuthException 如果用户未登录
+     */
+    public static boolean hasSuperCode() throws AuthException {
+        var authorities = authorities();
+        return authorities.stream().anyMatch(authority -> authority.getAuthority().equals("*:*:*"));
+    }
+
+    /**
      * 获取在线用户会话列表
      *
      * @param dto 查询条件
