@@ -230,17 +230,22 @@ public class DriveSpaceService {
         DriveSpacePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
-        var session = SessionService.session();
-        var myUserId = session.getUserId();
-        var myDeptId = session.getDeptId();
-        var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
+        var hasSuperCode = SessionService.hasSuperCode();
 
-        if (myBestRole == null) {
-            throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间.");
-        }
-
-        if (myBestRole != 0 && myBestRole != 1) {
-            throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间.");
+        //如果我没有超级权限,则需要检查一下我是不是主管理员或行政管理员
+        if (!hasSuperCode) {
+            var session = SessionService.session();
+            var myUserId = session.getUserId();
+            var myDeptId = session.getDeptId();
+            var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
+    
+            if (myBestRole == null) {
+                throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间.");
+            }
+    
+            if (myBestRole != 0 && myBestRole != 1) {
+                throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间.");
+            }
         }
 
         assign(dto, updatePo);
@@ -261,17 +266,24 @@ public class DriveSpaceService {
                 .orElseThrow(() -> new BizException("云盘空间 [ " + dto.getDriveSpaceId() + " ] 不存在,无法编辑云盘空间成员."));
 
         //先查当前人在这个空间里面是不是主管理员或行政管理员
-        var myUserId = session().getUserId();
-        var myDeptId = session().getDeptId();
+        var session = SessionService.session();
+        var myUserId = session.getUserId();
+        var myDeptId = session.getDeptId();
+        var hasSuperCode = SessionService.hasSuperCode();
 
+        //如果没有超级权限,则需要检查一下我是不是主管理员或行政管理员
         var myBestRole = repository.getBestRole(dto.getDriveSpaceId(), myUserId, myDeptId);
 
-        if (myBestRole == null) {
-            throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间成员.");
-        }
+        if (!hasSuperCode) {
 
-        if (myBestRole != 0 && myBestRole != 1) {
-            throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间成员.");
+            if (myBestRole == null) {
+                throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间成员.");
+            }
+    
+            if (myBestRole != 0 && myBestRole != 1) {
+                throw new BizException("当前用户不是主管理员或行政管理员,无法编辑云盘空间成员.");
+            }
+
         }
 
         //先准备好要发送的消息
@@ -294,7 +306,7 @@ public class DriveSpaceService {
             }
 
             //如果我是行政管理员,则不可以把成员加/改成主管理员或行政管理员 也不能操作主管理员和其他行政管理员
-            if (myBestRole == 1) {
+            if (!hasSuperCode && myBestRole == 1) {
                 if (dto.getRole() == 0) {
                     throw new BizException("行政管理员不能添加主管理员.");
                 }
@@ -342,7 +354,8 @@ public class DriveSpaceService {
 
             //不存在就加 先处理加用户
             //但是在这之前要判断一下我要加的成员是不是主管理员或行政管理员 如果我是行政管理员,我不可以加主管理员和其他行政管理员
-            if (myBestRole == 1) {
+            //如果我有超级权限,则不检查
+            if (!hasSuperCode && myBestRole == 1) {
                 if (dto.getRole() == 0) {
                     throw new BizException("行政管理员不能添加主管理员.");
                 }
@@ -419,8 +432,8 @@ public class DriveSpaceService {
             throw new BizException("不能删除主管理员.");
         }
 
-        //如果我是行政管理员,则不可以删主管理员和其他行政管理员
-        if (myBestRole == 1) {
+        //如果我是行政管理员,则不可以删主管理员和其他行政管理员(超级权限不检查)
+        if (!hasSuperCode && myBestRole == 1) {
             if (dsmToDelete.getRole() == 0) {
                 throw new BizException("行政管理员不能删除主管理员.");
             }
@@ -458,14 +471,14 @@ public class DriveSpaceService {
         DriveSpacePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         
-        //先查当前人在这个空间里面有没有角色
+        //先查当前人在这个空间里面有没有角色(超级权限不检查)
         var session = SessionService.session();
         var myUserId = session.getUserId();
         var myDeptId = session.getDeptId();
-
+        var hasSuperCode = SessionService.hasSuperCode();
         var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
 
-        if (myBestRole == null) {
+        if (!hasSuperCode && myBestRole == null) {
             throw new BizException("当前用户不是云盘空间成员,无法查询云盘空间详情.");
         }
 
@@ -583,19 +596,26 @@ public class DriveSpaceService {
         var myUserId = session.getUserId();
         var myDeptId = session.getDeptId();
         var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
+        var hasSuperCode = SessionService.hasSuperCode();
 
-        if (myBestRole == null) {
-            throw new BizException("当前用户不是云盘空间成员,无法删除云盘空间.");
+        //如果我没有超级权限，则走正常流程
+        if (!hasSuperCode) {
+
+            if (myBestRole == null) {
+                throw new BizException("当前用户不是云盘空间成员,无法删除云盘空间.");
+            }
+    
+            //行政管理员虽然可以管理成员和空间,但是不能删除空间
+            if (myBestRole == 1) {
+                throw new BizException("行政管理员不能删除云盘空间,请联系主管理员删除.");
+            }
+    
+            if (myBestRole != 0) {
+                throw new BizException("当前用户不是主管理员,无法删除云盘空间.");
+            }
+            
         }
 
-        //行政管理员虽然可以管理成员和空间,但是不能删除空间
-        if (myBestRole == 1) {
-            throw new BizException("行政管理员不能删除云盘空间,请联系主管理员删除.");
-        }
-
-        if (myBestRole != 0) {
-            throw new BizException("当前用户不是主管理员,无法删除云盘空间.");
-        }
 
         repository.deleteById(dto.getId());
     }
