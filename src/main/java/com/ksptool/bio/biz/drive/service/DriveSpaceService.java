@@ -446,9 +446,20 @@ public class DriveSpaceService {
      * @return 云盘空间详情
      * @throws BizException 业务异常
      */
-    public GetDriveSpaceDetailsVo getDriveSpaceDetails(CommonIdDto dto) throws BizException {
+    public GetDriveSpaceDetailsVo getDriveSpaceDetails(CommonIdDto dto) throws Exception {
         DriveSpacePo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
+        
+        //先查当前人在这个空间里面有没有角色
+        var session = SessionService.session();
+        var myUserId = session.getUserId();
+        var myDeptId = session.getDeptId();
+
+        var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
+
+        if (myBestRole == null) {
+            throw new BizException("当前用户不是云盘空间成员,无法查询云盘空间详情.");
+        }
 
         //查询云盘空间下的成员
         var members = driveSpaceMemberRepository.getByDriveSpaceId(po.getId());
