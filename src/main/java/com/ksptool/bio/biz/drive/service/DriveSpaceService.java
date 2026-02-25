@@ -424,7 +424,7 @@ public class DriveSpaceService {
                         userVo.setId(dsMemberPo.getId());
                         userVo.setDriveSpaceId(dsMemberPo.getDriveSpaceId());
                         userVo.setMemberName(userPo.getUsername());
-                        userVo.setMemberKind(dsMemberPo.getMemberKind());
+                        userVo.setMemberKind(0);
                         userVo.setMemberId(dsMemberPo.getMemberId());
                         userVo.setRole(dsMemberPo.getRole());
                         userMembers.add(userVo);
@@ -442,7 +442,7 @@ public class DriveSpaceService {
                         deptVo.setId(dsMemberPo.getId());
                         deptVo.setDriveSpaceId(dsMemberPo.getDriveSpaceId());
                         deptVo.setMemberName(deptPo.getName());
-                        deptVo.setMemberKind(dsMemberPo.getMemberKind());
+                        deptVo.setMemberKind(1);
                         deptVo.setMemberId(dsMemberPo.getMemberId());
                         deptVo.setRole(dsMemberPo.getRole());
                         deptMembers.add(deptVo);
