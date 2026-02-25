@@ -28,6 +28,7 @@ export interface GetEntryListItemVo {
 }
 
 export interface AddEntryDto {
+  driveSpaceId: string; //云盘空间ID
   parentId: string | null; //父级ID
   name: string; //条目名称
   kind: number; //条目类型 0:文件 1:文件夹
@@ -56,11 +57,13 @@ export interface GetDriveInfoVo {
 }
 
 export interface CopyEntryDto {
+  driveSpaceId: string; //云盘空间ID
   entryIds: string[]; //条目ID列表
   parentId: string | null; //父级ID
 }
 
 export interface RenameEntryDto {
+  driveSpaceId: string; //云盘空间ID
   entryId: string; //条目ID
   name: string; //条目名称
 }
@@ -71,12 +74,14 @@ export interface GetEntrySignVo {
 }
 
 export interface MoveEntryDto {
+  driveSpaceId: string; //云盘空间ID
   targetId: string | null; //目标ID 为NULL顶级
   entryIds: string[] | null; //条目ID列表 为NULL表示拖拽到顶级
   mode: number | null; //移动模式 0:覆盖 1:跳过
 }
 
 export interface CheckEntryMoveVo {
+  driveSpaceId: string; //云盘空间ID
   canMove: number; //是否可以移动 0:是 1:名称冲突 2:不可移动
   message: string; //提示信息
   conflictNames: string[]; //存在冲突的条目名称列表
@@ -106,4 +111,8 @@ export interface EntryPo {
 export interface GetEntryListPathVo {
   id: string; //条目ID
   name: string; //条目名称
+}
+
+export interface DriveCommonIdDto extends CommonIdDto {
+  driveSpaceId: string; //云盘空间ID
 }
