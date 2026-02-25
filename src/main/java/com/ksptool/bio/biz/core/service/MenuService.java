@@ -58,6 +58,11 @@ public class MenuService {
                 continue;
             }
 
+            //在此过滤被隐藏的菜单
+            if (po.getMenuHidden() == 1) {
+                continue;
+            }
+
             var vo = as(po, GetUserMenuTreeVo.class);
             vo.setChildren(new ArrayList<>());
             vo.setParentId(null);
