@@ -51,7 +51,7 @@
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
-              编辑
+              管理空间
             </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
@@ -85,7 +85,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑云盘空间' : '新增云盘空间'"
+      :title="modalMode === 'edit' ? '管理云盘空间' : '新增云盘空间'"
       width="600px"
       :close-on-click-modal="false"
       @close="
@@ -105,7 +105,14 @@
           <el-input v-model="modalForm.name" placeholder="请输入空间名称" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="空间描述" prop="remark">
-          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入空间描述" :rows="3" maxlength="65535" show-word-limit />
+          <el-input
+            v-model="modalForm.remark"
+            type="textarea"
+            placeholder="请输入空间描述"
+            :rows="3"
+            maxlength="65535"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="配额限制(MB)" prop="quotaLimit">
           <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制(MB)" clearable />
@@ -117,6 +124,63 @@
           </el-select>
         </el-form-item>
       </el-form>
+
+      <!-- 成员列表区域 -->
+      <div style="margin-top: 16px">
+        <div class="flex justify-between items-center" style="margin-bottom: 8px">
+          <span style="font-size: 14px; font-weight: 600">成员列表</span>
+          <div class="flex gap-2">
+            <el-button size="small" @click="openUserSelect">添加用户</el-button>
+            <el-button size="small" @click="openDeptSelect">添加部门</el-button>
+          </div>
+        </div>
+        <el-table :data="modalMembers" border stripe size="small" max-height="240" v-loading="memberOpLoading">
+          <el-table-column label="类型" width="70">
+            <template #default="scope">
+              <el-tag :type="scope.row.memberKind === 0 ? 'primary' : 'warning'" size="small">
+                {{ scope.row.memberKind === 0 ? "用户" : "部门" }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="memberName" label="名称" min-width="120" show-overflow-tooltip />
+          <el-table-column label="角色" width="150">
+            <template #default="scope">
+              <el-select
+                v-model="scope.row.role"
+                size="small"
+                style="width: 100%"
+                :disabled="modalMode === 'edit' && scope.row.role === 0"
+                @change="modalMode === 'edit' ? editUpdateMemberRole(scope.row) : undefined"
+              >
+                <el-option label="主管理员" :value="0" />
+                <el-option label="行政管理员" :value="1" />
+                <el-option label="编辑者" :value="2" />
+                <el-option label="查看者" :value="3" />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="70" fixed="right">
+            <template #default="scope">
+              <el-button
+                v-if="modalMode === 'add'"
+                link
+                type="danger"
+                size="small"
+                @click="removeMember(scope.$index)"
+              >移除</el-button>
+              <el-button
+                v-if="modalMode === 'edit'"
+                link
+                type="danger"
+                size="small"
+                :disabled="scope.row.role === 0"
+                @click="editRemoveMember(scope.row)"
+              >移除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
@@ -126,6 +190,10 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 用户选择弹窗 -->
+    <CoreUserSelectModal ref="userSelectModalRef" :multiple="true" />
+    <!-- 部门选择弹窗 -->
+    <CoreOrgDeptSelectModal ref="deptSelectModalRef" :multiple="true" />
   </StdListContainer>
 </template>
 
@@ -138,6 +206,10 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import CoreUserSelectModal from "@/views/core/components/public/CoreUserSelectModal.vue";
+import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
+import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 
 // bytes 转 MB 显示
 const mbDisplay = (bytes: string) => {
@@ -157,8 +229,52 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
 const modalFormRef = ref<FormInstance>();
 
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  DriveSpaceService.useDriveSpaceModal(modalFormRef, loadList);
+const {
+  modalVisible,
+  modalLoading,
+  modalMode,
+  modalForm,
+  modalRules,
+  modalMembers,
+  memberOpLoading,
+  openModal,
+  resetModal,
+  submitModal,
+  addUserMembers,
+  addDeptMembers,
+  removeMember,
+  editUpdateMemberRole,
+  editRemoveMember,
+} = DriveSpaceService.useDriveSpaceModal(modalFormRef, loadList);
+
+// 用户选择 Modal ref
+const userSelectModalRef = ref<InstanceType<typeof CoreUserSelectModal>>();
+// 部门选择 Modal ref
+const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();
+
+// 打开用户选择弹窗
+const openUserSelect = async () => {
+  if (!userSelectModalRef.value) return;
+  try {
+    const result = await userSelectModalRef.value.select();
+    const users = Array.isArray(result) ? (result as GetUserListVo[]) : [result as GetUserListVo];
+    await addUserMembers(users);
+  } catch {
+    // 用户取消
+  }
+};
+
+// 打开部门选择弹窗
+const openDeptSelect = async () => {
+  if (!deptSelectModalRef.value) return;
+  try {
+    const result = await deptSelectModalRef.value.select();
+    const depts = Array.isArray(result) ? (result as GetOrgTreeVo[]) : [result as GetOrgTreeVo];
+    await addDeptMembers(depts);
+  } catch {
+    // 用户取消
+  }
+};
 </script>
 
 <style scoped></style>

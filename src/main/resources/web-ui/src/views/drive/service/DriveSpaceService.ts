@@ -4,12 +4,16 @@ import type {
   GetDriveSpaceListDto,
   GetDriveSpaceListVo,
   GetDriveSpaceDetailsVo,
+  GetDriveSpaceMemberDetailsVo,
   AddDriveSpaceDto,
   EditDriveSpaceDto,
+  EditDriveSpaceMembersDto,
 } from "@/views/drive/api/DriveSpaceApi.ts";
 import DriveSpaceApi from "@/views/drive/api/DriveSpaceApi.ts";
 import { Result } from "@/commons/entity/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
+import type { GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
+import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
 
 /**
  * 模态框模式类型
@@ -116,7 +120,197 @@ export default {
       remark: "",
       quotaLimit: "",
       status: 0,
+      members: [],
     });
+
+    // 新增/编辑时维护的成员列表（独立于 modalForm，便于单独操作）
+    const modalMembers = ref<GetDriveSpaceMemberDetailsVo[]>([]);
+
+    // edit 模式下成员操作的全局 loading
+    const memberOpLoading = ref(false);
+
+    /**
+     * 重新从接口加载当前空间的成员列表
+     */
+    const reloadMembers = async () => {
+      const details = await DriveSpaceApi.getDriveSpaceDetails({ id: modalForm.id });
+      modalMembers.value = [];
+      for (const m of details.members) {
+        modalMembers.value.push({ ...m });
+      }
+    };
+
+    /**
+     * 将选中的用户批量添加到成员列表（去重，add 模式纯本地；edit 模式调接口后刷新）
+     */
+    const addUserMembers = async (users: GetUserListVo[]) => {
+      if (modalMode.value === "add") {
+        for (const user of users) {
+          let exists = false;
+          for (const m of modalMembers.value) {
+            if (m.memberKind === 0 && m.memberId === user.id) {
+              exists = true;
+              break;
+            }
+          }
+          if (exists) {
+            continue;
+          }
+          modalMembers.value.push({
+            id: "",
+            driveSpaceId: "",
+            memberName: user.nickname || user.username,
+            memberKind: 0,
+            memberId: user.id,
+            role: 3,
+          });
+        }
+        return;
+      }
+
+      memberOpLoading.value = true;
+      try {
+        for (const user of users) {
+          let exists = false;
+          for (const m of modalMembers.value) {
+            if (m.memberKind === 0 && m.memberId === user.id) {
+              exists = true;
+              break;
+            }
+          }
+          if (exists) {
+            continue;
+          }
+          await DriveSpaceApi.editDriveSpaceMembers({
+            driveSpaceId: modalForm.id,
+            memberId: user.id,
+            memberKind: 0,
+            role: 3,
+            action: 0,
+          });
+        }
+        await reloadMembers();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        memberOpLoading.value = false;
+      }
+    };
+
+    /**
+     * 将选中的部门批量添加到成员列表（去重，add 模式纯本地；edit 模式调接口后刷新）
+     */
+    const addDeptMembers = async (depts: GetOrgTreeVo[]) => {
+      if (modalMode.value === "add") {
+        for (const dept of depts) {
+          let exists = false;
+          for (const m of modalMembers.value) {
+            if (m.memberKind === 1 && m.memberId === dept.id) {
+              exists = true;
+              break;
+            }
+          }
+          if (exists) {
+            continue;
+          }
+          modalMembers.value.push({
+            id: "",
+            driveSpaceId: "",
+            memberName: dept.name,
+            memberKind: 1,
+            memberId: dept.id,
+            role: 3,
+          });
+        }
+        return;
+      }
+
+      memberOpLoading.value = true;
+      try {
+        for (const dept of depts) {
+          let exists = false;
+          for (const m of modalMembers.value) {
+            if (m.memberKind === 1 && m.memberId === dept.id) {
+              exists = true;
+              break;
+            }
+          }
+          if (exists) {
+            continue;
+          }
+          await DriveSpaceApi.editDriveSpaceMembers({
+            driveSpaceId: modalForm.id,
+            memberId: dept.id,
+            memberKind: 1,
+            role: 3,
+            action: 0,
+          });
+        }
+        await reloadMembers();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        memberOpLoading.value = false;
+      }
+    };
+
+    /**
+     * edit 模式：修改成员角色，调接口后刷新
+     */
+    const editUpdateMemberRole = async (member: GetDriveSpaceMemberDetailsVo) => {
+      memberOpLoading.value = true;
+      try {
+        await DriveSpaceApi.editDriveSpaceMembers({
+          driveSpaceId: modalForm.id,
+          memberId: member.memberId,
+          memberKind: member.memberKind,
+          role: member.role,
+          action: 0,
+        });
+        await reloadMembers();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        memberOpLoading.value = false;
+      }
+    };
+
+    /**
+     * edit 模式：删除成员，二次确认后调接口刷新
+     */
+    const editRemoveMember = async (member: GetDriveSpaceMemberDetailsVo) => {
+      try {
+        await ElMessageBox.confirm(`确定移除成员「${member.memberName}」吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch {
+        return;
+      }
+      memberOpLoading.value = true;
+      try {
+        await DriveSpaceApi.editDriveSpaceMembers({
+          driveSpaceId: modalForm.id,
+          memberId: member.memberId,
+          memberKind: member.memberKind,
+          role: member.role,
+          action: 1,
+        });
+        await reloadMembers();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      } finally {
+        memberOpLoading.value = false;
+      }
+    };
+
+    /**
+     * add 模式：从成员列表移除一条记录（纯本地）
+     */
+    const removeMember = (index: number) => {
+      modalMembers.value.splice(index, 1);
+    };
 
     /**
      * 表单验证规则
@@ -145,6 +339,7 @@ export default {
         modalForm.remark = "";
         modalForm.quotaLimit = "";
         modalForm.status = 0;
+        modalMembers.value = [];
         modalVisible.value = true;
         return;
       }
@@ -163,6 +358,11 @@ export default {
           // 后端返回 bytes，转换为 MB 回填
           modalForm.quotaLimit = details.quotaLimit ? String(Math.round(Number(details.quotaLimit) / 1048576)) : "";
           modalForm.status = details.status;
+          // 回填成员列表
+          modalMembers.value = [];
+          for (const m of details.members) {
+            modalMembers.value.push({ ...m });
+          }
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -183,6 +383,7 @@ export default {
       modalForm.remark = "";
       modalForm.quotaLimit = "";
       modalForm.status = 0;
+      modalMembers.value = [];
     };
 
     /**
@@ -203,12 +404,21 @@ export default {
 
       if (modalMode.value === "add") {
         try {
+          const addDtoMembers = [];
+          for (const m of modalMembers.value) {
+            addDtoMembers.push({
+              memberKind: m.memberKind,
+              memberId: m.memberId,
+              role: m.role,
+            });
+          }
           const addDto: AddDriveSpaceDto = {
             name: modalForm.name,
             remark: modalForm.remark,
             // MB 转换为 bytes
             quotaLimit: String(Number(modalForm.quotaLimit) * 1048576),
             status: modalForm.status,
+            members: addDtoMembers,
           };
           await DriveSpaceApi.addDriveSpace(addDto);
           ElMessage.success("新增成功");
@@ -256,9 +466,16 @@ export default {
       modalMode,
       modalForm,
       modalRules,
+      modalMembers,
+      memberOpLoading,
       openModal,
       resetModal,
       submitModal,
+      addUserMembers,
+      addDeptMembers,
+      removeMember,
+      editUpdateMemberRole,
+      editRemoveMember,
     };
   },
 };
