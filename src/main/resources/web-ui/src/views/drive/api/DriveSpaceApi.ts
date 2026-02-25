@@ -26,6 +26,18 @@ export interface GetDriveSpaceListVo {
 }
 
 /**
+ * 成员详情VO
+ */
+export interface GetDriveSpaceMemberDetailsVo {
+  id: string; // 成员ID
+  driveSpaceId: string; // 云盘空间ID
+  memberName: string; // 成员名称
+  memberKind: number; // 成员类型 0:用户 1:部门
+  memberId: string; // 成员ID
+  role: number; // 成员角色 0:主管理员 1:行政管理员 2:编辑者 3:查看者
+}
+
+/**
  * 详情VO
  */
 export interface GetDriveSpaceDetailsVo {
@@ -34,6 +46,16 @@ export interface GetDriveSpaceDetailsVo {
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
   status: number; // 状态 0:正常 1:归档
+  members: GetDriveSpaceMemberDetailsVo[]; // 成员列表
+}
+
+/**
+ * 新增成员DTO
+ */
+export interface AddDriveSpaceMemberDto {
+  memberKind: number; // 成员类型 0:用户 1:部门
+  memberId: string; // 成员ID
+  role: number; // 成员角色 0:主管理员 1:行政管理员 2:编辑者 3:查看者
 }
 
 /**
@@ -44,6 +66,7 @@ export interface AddDriveSpaceDto {
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
   status: number; // 状态 0:正常 1:归档
+  members: AddDriveSpaceMemberDto[]; // 成员列表
 }
 
 /**
