@@ -2,9 +2,9 @@ package com.ksptool.bio.biz.drive.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.drive.model.vo.EntrySignVo;
 import com.ksptool.bio.commons.utils.Base64;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.commons.utils.SHA256;
 
 import java.util.Map;
@@ -57,8 +57,8 @@ public class DriveEntrySignUtils {
     /**
      * 验证签名
      *
-     * @param sign   签名
-     * @param params 参数
+     * @param base64SignWithParams 签名
+     * @param secretKey            参数
      * @return 是否验证成功
      * @throws BizException
      */
