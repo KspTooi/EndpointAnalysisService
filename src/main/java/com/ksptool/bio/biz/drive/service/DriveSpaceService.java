@@ -605,4 +605,17 @@ public class DriveSpaceService {
         repository.deleteById(dto.getId());
     }
 
+    /**
+     * 获取当前用户在云盘空间中的最佳角色
+     *
+     * @param driveSpaceId 云盘空间ID
+     * @return 最佳角色
+     */
+    public Integer getMyBestRole(Long driveSpaceId) throws Exception {
+        var session = SessionService.session();
+        var myUserId = session.getUserId();
+        var myDeptId = session.getDeptId();
+        return repository.getBestRole(driveSpaceId, myUserId, myDeptId);
+    }
+
 }
