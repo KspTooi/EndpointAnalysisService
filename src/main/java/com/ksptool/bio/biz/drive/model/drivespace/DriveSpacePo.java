@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.drivespace.model;
+package com.ksptool.bio.biz.drive.model.drivespace;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;
@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 
 @Getter
