@@ -1,15 +1,14 @@
-package com.ksptool.bio.biz.drivespacemember.model.dto;
+package com.ksptool.bio.biz.drive.model.drivespacemember.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.ksptool.assembly.entity.web.PageQuery;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class EditDriveSpaceMemberDto {
+public class GetDriveSpaceMemberListDto extends PageQuery {
 
 
     @Schema(description="空间ID")
@@ -35,6 +34,5 @@ public class EditDriveSpaceMemberDto {
 
     @Schema(description="更新人")
     private Long updaterId;
-
 }
 

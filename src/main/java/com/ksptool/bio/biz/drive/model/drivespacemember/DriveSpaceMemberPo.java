@@ -1,12 +1,12 @@
-package com.ksptool.bio.biz.drivespacemember.model;
+package com.ksptool.bio.biz.drive.model.drivespacemember;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import java.time.LocalDateTime;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -47,22 +47,22 @@ public class DriveSpaceMemberPo {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-        
-        
+
+
         LocalDateTime now = LocalDateTime.now();
-        
+
         if (this.createTime == null) {
             this.createTime = now;
         }
-        
+
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
-        
+
         if (this.creatorId == null) {
             this.creatorId = SessionService.session().getUserId();
         }
-        
+
         if (this.updaterId == null) {
             this.updaterId = SessionService.session().getUserId();
         }
@@ -70,9 +70,9 @@ public class DriveSpaceMemberPo {
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        
+
         this.updateTime = LocalDateTime.now();
-        
+
         if (this.updaterId == null) {
             this.updaterId = SessionService.session().getUserId();
         }

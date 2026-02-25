@@ -1,18 +1,14 @@
-package com.ksptool.bio.biz.drivespacemember.model.vo;
+package com.ksptool.bio.biz.drive.model.drivespacemember.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetDriveSpaceMemberDetailsVo{
+public class AddDriveSpaceMemberDto {
 
-    @Schema(description="空间ID")
-    private Long id;
 
     @Schema(description="成员类型 0:用户 1:部门")
     private Integer memberKind;
