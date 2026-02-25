@@ -41,11 +41,18 @@
         <el-table-column prop="remark" label="空间描述" min-width="150" show-overflow-tooltip />
         <el-table-column prop="maName" label="主管理员" min-width="100" show-overflow-tooltip />
         <el-table-column prop="memberCount" label="成员数量" min-width="80" align="center" />
-        <el-table-column label="我的角色" min-width="100" align="center">
+        <el-table-column label="我的角色" min-width="120" align="center">
           <template #default="scope">
-            <span :class="roleClass(scope.row.myRole)" style="font-weight: 500">
-              {{ roleLabel(scope.row.myRole) }}
-            </span>
+            <el-tooltip effect="dark" :content="roleDescription(scope.row.myRole)" placement="top">
+              <div class="flex items-center justify-center gap-1 cursor-help">
+                <el-icon class="text-info" style="vertical-align: middle; margin-top: -1px">
+                  <InfoIcon />
+                </el-icon>
+                <span :class="roleClass(scope.row.myRole)" style="font-weight: 500; line-height: 1">
+                  {{ roleLabel(scope.row.myRole) }}
+                </span>
+              </div>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column label="配额使用情况" min-width="200">
@@ -232,7 +239,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, InfoFilled } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import DriveSpaceService from "@/views/drive/service/DriveSpaceService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -285,9 +292,19 @@ const roleClass = (role: number) => {
   return "text-info";
 };
 
+// 角色权限说明映射
+const roleDescription = (role: number) => {
+  if (role === 0) return "主管理员：拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置。";
+  if (role === 1) return "行政管理员：可管理空间成员（除主管理员外）和基本信息，拥有文件的全部操作权限。";
+  if (role === 2) return "编辑者：可上传、下载、编辑、删除空间内的文件和目录。";
+  if (role === 3) return "查看者：仅拥有空间内文件的查看和下载权限。";
+  return "暂无权限说明";
+};
+
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const InfoIcon = markRaw(InfoFilled);
 
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = DriveSpaceService.useDriveSpaceList();
@@ -415,6 +432,10 @@ const openDeptSelect = async () => {
 
 .text-info {
   color: var(--el-color-info);
+}
+
+.cursor-help {
+  cursor: help;
 }
 
 :deep(.el-form-item__label) {
