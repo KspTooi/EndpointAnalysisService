@@ -27,6 +27,11 @@ public class DriveSpaceService {
     @Autowired
     private DriveSpaceRepository repository;
 
+    /**
+     * 查询云盘空间列表
+     * @param dto 查询条件
+     * @return 云盘空间列表
+     */ 
     public PageResult<GetDriveSpaceListVo> getDriveSpaceList(GetDriveSpaceListDto dto){
         DriveSpacePo query = new DriveSpacePo();
         assign(dto,query);
@@ -40,12 +45,21 @@ public class DriveSpaceService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增云盘空间
+     * @param dto 新增条件
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addDriveSpace(AddDriveSpaceDto dto){
         DriveSpacePo insertPo = as(dto,DriveSpacePo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑云盘空间
+     * @param dto 编辑条件
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editDriveSpace(EditDriveSpaceDto dto) throws BizException {
         DriveSpacePo updatePo = repository.findById(dto.getId())
@@ -55,12 +69,23 @@ public class DriveSpaceService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询云盘空间详情
+     * @param dto 查询条件
+     * @return 云盘空间详情
+     * @throws BizException 业务异常
+     */
     public GetDriveSpaceDetailsVo getDriveSpaceDetails(CommonIdDto dto) throws BizException {
         DriveSpacePo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetDriveSpaceDetailsVo.class);
     }
 
+    /**
+     * 删除云盘空间
+     * @param dto 删除条件
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeDriveSpace(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

@@ -29,26 +29,26 @@ public class DriveSpaceController {
     private DriveSpaceService driveSpaceService;
 
     @PostMapping("/getDriveSpaceList")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询云盘空间列表")
     public PageResult<GetDriveSpaceListVo> getDriveSpaceList(@RequestBody @Valid GetDriveSpaceListDto dto) throws Exception{
         return driveSpaceService.getDriveSpaceList(dto);
     }
 
-    @Operation(summary ="新增")
+    @Operation(summary ="新增云盘空间")
     @PostMapping("/addDriveSpace")
     public Result<String> addDriveSpace(@RequestBody @Valid AddDriveSpaceDto dto) throws Exception{
 		driveSpaceService.addDriveSpace(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary ="编辑")
+    @Operation(summary ="编辑云盘空间")
     @PostMapping("/editDriveSpace")
     public Result<String> editDriveSpace(@RequestBody @Valid EditDriveSpaceDto dto) throws Exception{
 		driveSpaceService.editDriveSpace(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询云盘空间详情")
     @PostMapping("/getDriveSpaceDetails")
     public Result<GetDriveSpaceDetailsVo> getDriveSpaceDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetDriveSpaceDetailsVo details = driveSpaceService.getDriveSpaceDetails(dto);
@@ -58,7 +58,7 @@ public class DriveSpaceController {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除云盘空间")
     @PostMapping("/removeDriveSpace")
     public Result<String> removeDriveSpace(@RequestBody @Valid CommonIdDto dto) throws Exception{
         driveSpaceService.removeDriveSpace(dto);
