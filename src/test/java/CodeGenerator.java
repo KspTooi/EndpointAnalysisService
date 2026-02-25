@@ -20,7 +20,7 @@ public class CodeGenerator {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的表名
-        var tableNames = List.of("zremoved_auth_group");
+        var tableNames = List.of("drive_space", "drive_space_member");
 
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
