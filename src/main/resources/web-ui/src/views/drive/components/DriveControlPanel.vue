@@ -10,9 +10,18 @@
           class="space-select"
           :loading="spaceLoading"
           filterable
+          :teleported="false"
           @change="onSpaceChange"
         >
-          <el-option v-for="space in spaceList" :key="space.id" :label="space.name" :value="space.id" />
+          <template #prefix>
+            <el-icon><Box /></el-icon>
+          </template>
+          <el-option v-for="space in spaceList" :key="space.id" :label="space.name" :value="space.id">
+            <div class="space-option">
+              <el-icon><Box /></el-icon>
+              <span>{{ space.name }}</span>
+            </div>
+          </el-option>
         </el-select>
 
         <el-input
@@ -80,7 +89,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { Search, Upload, Coin } from "@element-plus/icons-vue";
+import { Search, Upload, Coin, Box } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
@@ -261,23 +270,57 @@ onMounted(() => {
   flex: 1;
 }
 
+.space-select :deep(.el-select__popper),
+.space-select :deep(.el-select-dropdown),
+.space-select :deep(.el-popper) {
+  border-radius: 0 !important;
+}
+
+.space-select :deep(.el-select-dropdown__list) {
+  padding: 0;
+}
+
+.space-select :deep(.el-select-dropdown__item) {
+  border-radius: 0 !important;
+}
+
 .space-select {
-  width: 200px;
+  width: 220px;
   flex-shrink: 0;
+  --el-border-radius-base: 0px;
+  --el-input-border-radius: 0px;
+}
+
+.space-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .space-select :deep(.el-input__wrapper) {
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   border: 1px solid var(--el-border-color);
+  background-color: var(--el-fill-color-lighter);
+  transition: all 0.2s;
 }
 
 .space-select :deep(.el-input__wrapper:hover) {
   border-color: var(--el-border-color-hover);
+  background-color: var(--el-fill-color-light);
 }
 
 .space-select :deep(.el-input__wrapper.is-focus) {
   border-color: var(--el-color-primary);
+  background-color: var(--el-bg-color);
+}
+
+.space-select :deep(.el-input__inner) {
+  font-weight: 500;
+}
+
+.space-select :deep(.el-input__prefix) {
+  color: var(--el-color-primary);
 }
 
 .search-input {
