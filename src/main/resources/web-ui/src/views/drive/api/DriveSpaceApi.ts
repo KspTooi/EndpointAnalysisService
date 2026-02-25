@@ -24,7 +24,7 @@ export interface GetDriveSpaceListVo {
   quotaUsed: string; // 已用配额(bytes)
   memberCount: number; // 成员数量
   maName: string; // 主管理员名称
-  myRole: number; // 我在该空间的角色,0:主管理员 1:行政管理员 2:编辑者 3:查看者
+  myRole: number; // 我在该空间的角色,0:主管理员 1:行政管理员 2:编辑者 3:查看者 -1:未加入(因为超级权限可以查到他未加入的空间,所以需要这个)
   status: number; // 状态 0:正常 1:归档
 }
 

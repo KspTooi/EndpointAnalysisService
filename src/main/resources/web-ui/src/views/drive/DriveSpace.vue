@@ -272,6 +272,7 @@ const roleLabel = (role: number) => {
   if (role === 1) return "行政管理员";
   if (role === 2) return "编辑者";
   if (role === 3) return "查看者";
+  if (role === -1) return "超级权限";
   return "未知";
 };
 
@@ -280,6 +281,7 @@ const roleClass = (role: number) => {
   if (role === 0) return "text-danger";
   if (role === 1) return "text-primary";
   if (role === 2) return "text-success";
+  if (role === -1) return "text-success";
   return "text-info";
 };
 
