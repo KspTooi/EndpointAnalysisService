@@ -6,7 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+
 import org.hibernate.validator.constraints.Range;
+
+import com.ksptool.bio.biz.drive.model.drivespacemember.dto.AddDriveSpaceMemberDto;
 
 @Getter
 @Setter
@@ -30,5 +35,9 @@ public class AddDriveSpaceDto {
     @Range(min = 0, max = 1, message = "状态只能在0-1之间")
     @Schema(description = "状态 0:正常 1:归档")
     private Integer status;
+
+    @NotNull(message = "成员列表不能为空")
+    @Schema(description = "成员列表")
+    private List<AddDriveSpaceMemberDto> members;
 
 }

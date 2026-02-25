@@ -1,5 +1,9 @@
 package com.ksptool.bio.biz.drive.model.drivespace.vo;
 
+import java.util.List;
+
+import com.ksptool.bio.biz.drive.model.drivespacemember.vo.GetDriveSpaceMemberDetailsVo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +26,9 @@ public class GetDriveSpaceDetailsVo {
 
     @Schema(description = "状态 0:正常 1:归档")
     private Integer status;
+
+    @Schema(description = "成员列表")
+    private List<GetDriveSpaceMemberDetailsVo> members;
 
 }
 
