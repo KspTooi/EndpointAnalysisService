@@ -12,6 +12,10 @@ import java.util.List;
 @Setter
 public class MoveEntryDto {
 
+    @Schema(description = "云盘空间ID")
+    @NotNull(message = "云盘空间ID不能为空")
+    private Long driveSpaceId;
+
     @Schema(description = "目标ID 为NULL顶级")
     private Long targetId;
 

@@ -101,11 +101,10 @@ public class EntryController {
         return Result.success("移动成功");
     }
 
-    @DriveSpace
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @Operation(summary = "查询条目详情")
     @PostMapping("/getEntryDetails")
-    public Result<GetEntryDetailsVo> getEntryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+    public Result<GetEntryDetailsVo> getEntryDetails(@RequestBody @Valid DriveCommonIdDto dto) throws Exception {
 
         GetEntryDetailsVo details = entryService.getEntryDetails(dto);
         if (details == null) {
@@ -119,7 +118,7 @@ public class EntryController {
     @PreAuthorize("@auth.hasCode('drive:entry:remove')")
     @Operation(summary = "删除条目")
     @PostMapping("/removeEntry")
-    public Result<String> removeEntry(@RequestBody @Valid CommonIdDto dto) throws Exception {
+    public Result<String> removeEntry(@RequestBody @Valid DriveCommonIdDto dto) throws Exception {
         entryService.removeEntry(dto);
         return Result.success("操作成功");
     }

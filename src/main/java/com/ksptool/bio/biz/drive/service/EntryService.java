@@ -425,7 +425,7 @@ public class EntryService {
      * @param dto 查询条件
      * @return 条目详情
      */
-    public GetEntryDetailsVo getEntryDetails(CommonIdDto dto) throws BizException {
+    public GetEntryDetailsVo getEntryDetails(DriveCommonIdDto dto) throws BizException {
         EntryPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
         return as(po, GetEntryDetailsVo.class);
@@ -437,7 +437,7 @@ public class EntryService {
      * @param dto 删除条件
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeEntry(CommonIdDto dto) throws BizException {
+    public void removeEntry(DriveCommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
         }
@@ -446,7 +446,12 @@ public class EntryService {
         }
     }
 
-
+    /**
+     * 复制条目
+     *
+     * @param entryPos 条目列表
+     * @return 新条目列表
+     */
     public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
 
         var result = new ArrayList<EntryPo>();

@@ -12,6 +12,10 @@ import org.hibernate.validator.constraints.Range;
 @Setter
 public class AddEntryDto {
 
+    @Schema(description = "云盘空间ID")
+    @NotNull(message = "云盘空间ID不能为空")
+    private Long driveSpaceId;
+
     @Schema(description = "父级ID 为NULL顶级")
     private Long parentId;
 

@@ -11,6 +11,10 @@ import lombok.Setter;
 @Setter
 public class RenameEntry {
 
+    @Schema(description = "云盘空间ID")
+    @NotNull(message = "云盘空间ID不能为空")
+    private Long driveSpaceId;
+
     @Schema(description = "条目ID")
     @NotNull(message = "条目ID不能为空")
     private Long entryId;
