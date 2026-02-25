@@ -19,7 +19,11 @@
           <template #label="{ label }">
             <div class="space-select-label">
               <span>{{ label }}</span>
-              <span v-if="driveStore.currentDriveSpace" :class="roleClass(driveStore.currentDriveSpace.myRole)" class="space-role-tag">
+              <span
+                v-if="driveStore.currentDriveSpace"
+                :class="roleClass(driveStore.currentDriveSpace.myRole)"
+                class="space-role-tag"
+              >
                 {{ roleLabel(driveStore.currentDriveSpace.myRole) }}
               </span>
             </div>
@@ -165,7 +169,19 @@ const roleClass = (role: number): string => {
 };
 
 //列表加载完成后：校验持久化ID有效性，失效则自动选第一个，没有空间则向上通知
-watch(spaceList, (list) => {
+watch(
+  spaceList,
+  (list) => {
+    selectOneSpace(list);
+  },
+  { once: true }
+);
+
+/**
+ * 选择任何一个有效空间
+ * @param list 空间列表
+ */
+const selectOneSpace = (list) => {
   if (!list.length) {
     //清除已失效的持久化数据
     if (selectedSpaceId.value) {
@@ -193,7 +209,7 @@ watch(spaceList, (list) => {
 
   selectedSpaceId.value = list[0].id;
   driveStore.setCurrentDriveSpace(list[0]);
-}, { once: true });
+};
 
 const reversedPaths = computed(() => {
   return [...currentDirPaths.value].reverse();
@@ -281,6 +297,12 @@ const onPathClick = (path: GetEntryListPathVo | null) => {
 };
 
 onMounted(() => {
+  //如果没有任何空间则不进行任何操作
+  if (!spaceList.value.length) {
+    emit("no-space-available");
+    return;
+  }
+
   loadDriveInfo();
 });
 </script>
@@ -379,10 +401,18 @@ onMounted(() => {
   opacity: 0.85;
 }
 
-.role-danger  { color: var(--el-color-danger); }
-.role-primary { color: var(--el-color-primary); }
-.role-success { color: var(--el-color-success); }
-.role-info    { color: var(--el-color-info); }
+.role-danger {
+  color: var(--el-color-danger);
+}
+.role-primary {
+  color: var(--el-color-primary);
+}
+.role-success {
+  color: var(--el-color-success);
+}
+.role-info {
+  color: var(--el-color-info);
+}
 
 .space-select :deep(.el-input__wrapper) {
   border-radius: 0 !important;
