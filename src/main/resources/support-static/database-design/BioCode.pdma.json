@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-25 22:42:45",
+  "updatedTime": "2026-2-26 02:58:44",
   "dbConns": [],
   "profile": {
     "default": {
@@ -18202,6 +18202,24 @@
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
           "uiHint": "642D2E0A-8846-4549-BE56-8C0473F26EDE"
+        },
+        {
+          "defKey": "drive_space_id",
+          "defName": "云盘空间ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "B61ACF72-8FE2-40FE-A86A-064BEBD74EDD"
         },
         {
           "defKey": "root_id",
