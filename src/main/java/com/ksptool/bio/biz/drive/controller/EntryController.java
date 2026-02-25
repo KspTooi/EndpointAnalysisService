@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.ksptool.bio.biz.auth.service.SessionService.session;
-
 @PrintLog
 @RestController
 @RequestMapping("/drive/entry")
 @Tag(name = "Entry", description = "团队云盘接口")
 @Slf4j
+@RowScope(requireRoot = true)
 public class EntryController {
 
     @Autowired
@@ -39,11 +38,6 @@ public class EntryController {
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
     public Result<GetDriveInfo> getDriveInfo() throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         return Result.success(entryService.getDriveInfo());
     }
 
@@ -52,11 +46,6 @@ public class EntryController {
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
     public Result<GetEntryListVo> getEntryList(@RequestBody @Valid GetEntryListDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         var ret = entryService.getEntryList(dto);
         return Result.success(ret);
     }
@@ -66,10 +55,6 @@ public class EntryController {
     @Operation(summary = "新增条目")
     @PostMapping("/addEntry")
     public Result<String> addEntry(@RequestBody @Valid AddEntryDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
 
         //验证输入参数
         if (dto.validate() != null) {
@@ -86,11 +71,6 @@ public class EntryController {
     @Operation(summary = "复制条目")
     @PostMapping("/copyEntry")
     public Result<String> copyEntry(@RequestBody @Valid CopyEntryDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         entryService.copyEntry(dto);
         return Result.success("复制成功");
     }
@@ -100,11 +80,6 @@ public class EntryController {
     @Operation(summary = "重命名条目")
     @PostMapping("/renameEntry")
     public Result<String> renameEntry(@RequestBody @Valid RenameEntry dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         entryService.renameEntry(dto);
         return Result.success("重命名成功");
     }
@@ -114,11 +89,6 @@ public class EntryController {
     @Operation(summary = "移动检测", description = "用于移动条目前的检测")
     @PostMapping("/checkEntryMove")
     public Result<CheckEntryMoveVo> checkEntryMove(@RequestBody @Valid MoveEntryDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         var ret = entryService.checkEntryMove(dto);
         return Result.success(ret);
     }
@@ -129,11 +99,6 @@ public class EntryController {
     @Operation(summary = "移动条目", description = "允许用户在云盘内移动条目")
     @PostMapping("/moveEntry")
     public Result<String> moveEntry(@RequestBody @Valid MoveEntryDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         entryService.moveEntry(dto);
         return Result.success("移动成功");
     }
@@ -144,14 +109,11 @@ public class EntryController {
     @PostMapping("/getEntryDetails")
     public Result<GetEntryDetailsVo> getEntryDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         GetEntryDetailsVo details = entryService.getEntryDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
+
         return Result.success(details);
     }
 
@@ -160,11 +122,6 @@ public class EntryController {
     @Operation(summary = "删除条目")
     @PostMapping("/removeEntry")
     public Result<String> removeEntry(@RequestBody @Valid CommonIdDto dto) throws Exception {
-
-        if (session().getCompanyId() == null) {
-            return Result.error(101, "该操作需要用户加入团队后才能执行");
-        }
-
         entryService.removeEntry(dto);
         return Result.success("操作成功");
     }
