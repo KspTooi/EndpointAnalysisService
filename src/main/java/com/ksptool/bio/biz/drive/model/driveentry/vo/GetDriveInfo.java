@@ -1,8 +1,6 @@
-package com.ksptool.bio.biz.drive.model.vo;
+package com.ksptool.bio.biz.drive.model.driveentry.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -11,7 +9,7 @@ public class GetDriveInfo {
 
     //总容量
     private Long totalCapacity;
-    
+
     //已使用容量
     private Long usedCapacity;
 

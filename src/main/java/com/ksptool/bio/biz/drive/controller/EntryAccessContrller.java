@@ -1,11 +1,11 @@
 package com.ksptool.bio.biz.drive.controller;
 
-import com.ksptool.bio.biz.drive.model.vo.GetEntrySignVo;
-import com.ksptool.bio.biz.drive.service.EntryAccessService;
-import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.drive.model.driveentry.vo.GetEntrySignVo;
+import com.ksptool.bio.biz.drive.service.EntryAccessService;
+import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import com.ksptool.bio.commons.config.DriveConfig;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ import java.util.Arrays;
 public class EntryAccessContrller {
 
     private final Tika tika = new Tika();
-    
+
     @Autowired
     private EntryAccessService entryAccessService;
 

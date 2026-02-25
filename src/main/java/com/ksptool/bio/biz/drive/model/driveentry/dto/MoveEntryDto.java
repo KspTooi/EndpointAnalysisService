@@ -1,12 +1,12 @@
-package com.ksptool.bio.biz.drive.model.dto;
+package com.ksptool.bio.biz.drive.model.driveentry.dto;
 
-import java.util.List;
-
-import org.hibernate.validator.constraints.Range;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
+
+import java.util.List;
 
 @Getter
 @Setter

@@ -1,7 +1,6 @@
-package com.ksptool.bio.biz.drive.model.vo;
+package com.ksptool.bio.biz.drive.model.driveentry.vo;
 
-import com.ksptool.bio.biz.drive.model.EntryPo;
-
+import com.ksptool.bio.biz.drive.model.driveentry.EntryPo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

@@ -3,7 +3,7 @@ package com.ksptool.bio.biz.drive.utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.bio.biz.drive.model.vo.EntrySignVo;
+import com.ksptool.bio.biz.drive.model.driveentry.vo.EntrySignVo;
 import com.ksptool.bio.commons.utils.Base64;
 import com.ksptool.bio.commons.utils.SHA256;
 

@@ -1,7 +1,7 @@
 package com.ksptool.bio.biz.drive.repository;
 
-import com.ksptool.bio.biz.drive.model.EntryPo;
-import com.ksptool.bio.biz.drive.model.vo.GetDriveInfo;
+import com.ksptool.bio.biz.drive.model.driveentry.EntryPo;
+import com.ksptool.bio.biz.drive.model.driveentry.vo.GetDriveInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +23,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
      * @return 云盘信息
      */
     @Query("""
-            SELECT new com.ksptool.bio.biz.drive.model.vo.GetDriveInfo(
+            SELECT new com.ksptool.bio.biz.drive.model.driveentry.vo.GetDriveInfo(
                 CAST(0 AS long),
                 CAST(COALESCE(SUM(CASE WHEN u.kind = 0 THEN u.attachSize ELSE CAST(0 AS long) END), CAST(0 AS long)) AS long),
                 COUNT(u)

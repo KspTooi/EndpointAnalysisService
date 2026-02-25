@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.drive.model;
+package com.ksptool.bio.biz.drive.model.driveentry;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.common.aop.RowScopePo;

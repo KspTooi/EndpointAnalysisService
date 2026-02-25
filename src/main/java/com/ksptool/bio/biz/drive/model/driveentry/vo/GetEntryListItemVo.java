@@ -1,20 +1,17 @@
-package com.ksptool.bio.biz.drive.model.vo;
-
-import java.time.LocalDateTime;
+package com.ksptool.bio.biz.drive.model.driveentry.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class GetEntryDetailsVo {
+public class GetEntryListItemVo {
 
     @Schema(description = "条目ID")
     private Long id;
-
-    @Schema(description = "父级ID 为NULL顶级")
-    private Long parentId;
 
     @Schema(description = "条目名称")
     private String name;
@@ -34,14 +31,4 @@ public class GetEntryDetailsVo {
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description = "创建人")
-    private Long creatorId;
-
-    @Schema(description = "更新人")
-    private Long updaterId;
-
 }
-
