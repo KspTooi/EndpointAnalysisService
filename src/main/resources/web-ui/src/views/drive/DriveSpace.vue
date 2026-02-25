@@ -86,99 +86,108 @@
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '管理云盘空间' : '新增云盘空间'"
-      width="600px"
+      width="800px"
       :close-on-click-modal="false"
+      class="drive-space-modal"
       @close="
         resetModal();
         loadList();
       "
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="120px"
-        :validate-on-rule-change="false"
-      >
-        <el-form-item label="空间名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入空间名称" clearable maxlength="80" show-word-limit />
-        </el-form-item>
-        <el-form-item label="空间描述" prop="remark">
-          <el-input
-            v-model="modalForm.remark"
-            type="textarea"
-            placeholder="请输入空间描述"
-            :rows="3"
-            maxlength="65535"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item label="配额限制(MB)" prop="quotaLimit">
-          <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制(MB)" clearable />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="modalForm.status" style="width: 100%">
-            <el-option label="正常" :value="0" />
-            <el-option label="归档" :value="1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <div class="modal-content-wrapper" v-if="modalVisible">
+        <!-- 左侧：基本信息表单 -->
+        <div class="base-info-section">
+          <div class="section-title">基本信息</div>
+          <el-form
+            ref="modalFormRef"
+            :model="modalForm"
+            :rules="modalRules"
+            label-position="top"
+            :validate-on-rule-change="false"
+          >
+            <el-form-item label="空间名称" prop="name">
+              <el-input v-model="modalForm.name" placeholder="请输入空间名称" clearable maxlength="80" show-word-limit />
+            </el-form-item>
+            <el-form-item label="空间描述" prop="remark">
+              <el-input
+                v-model="modalForm.remark"
+                type="textarea"
+                placeholder="请输入空间描述"
+                :rows="4"
+                maxlength="65535"
+                show-word-limit
+              />
+            </el-form-item>
+            <div class="flex gap-4">
+              <el-form-item label="配额限制(MB)" prop="quotaLimit" class="flex-1">
+                <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制" clearable />
+              </el-form-item>
+              <el-form-item label="状态" prop="status" class="flex-1">
+                <el-select v-model="modalForm.status" style="width: 100%">
+                  <el-option label="正常" :value="0" />
+                  <el-option label="归档" :value="1" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form>
+        </div>
 
-      <!-- 成员列表区域 -->
-      <div style="margin-top: 16px">
-        <div class="flex justify-between items-center" style="margin-bottom: 8px">
-          <span style="font-size: 14px; font-weight: 600">成员列表</span>
-          <div class="flex gap-2">
-            <el-button size="small" @click="openUserSelect">添加用户</el-button>
-            <el-button size="small" @click="openDeptSelect">添加部门</el-button>
+        <!-- 右侧：成员管理 -->
+        <div class="member-section">
+          <div class="section-header">
+            <div class="section-title">成员管理</div>
+            <div class="action-buttons">
+              <el-button size="small" type="primary" plain @click="openUserSelect">添加用户</el-button>
+              <el-button size="small" type="primary" plain @click="openDeptSelect">添加部门</el-button>
+            </div>
+          </div>
+
+          <div class="member-table-wrapper">
+            <el-table :data="modalMembers" border stripe size="small" height="100%" v-loading="memberOpLoading">
+              <el-table-column prop="memberName" label="名称" min-width="100" show-overflow-tooltip />
+              <el-table-column label="类型" width="65" align="center">
+                <template #default="scope">
+                  <span :class="scope.row.memberKind === 0 ? 'text-primary' : 'text-warning'" style="font-weight: 500">
+                    {{ scope.row.memberKind === 0 ? "用户" : "部门" }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column label="角色" width="120">
+                <template #default="scope">
+                  <el-select
+                    v-model="scope.row.role"
+                    size="small"
+                    style="width: 100%"
+                    :disabled="modalMode === 'edit' && scope.row.role === 0"
+                    @change="modalMode === 'edit' ? editUpdateMemberRole(scope.row) : undefined"
+                  >
+                    <el-option label="主管理员" :value="0" disabled />
+                    <el-option label="行政管理员" :value="1" />
+                    <el-option label="编辑者" :value="2" />
+                    <el-option label="查看者" :value="3" />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="60" align="center" fixed="right">
+                <template #default="scope">
+                  <el-button v-if="modalMode === 'add'" link type="danger" size="small" @click="removeMember(scope.$index)">
+                    移除
+                  </el-button>
+                  <el-button
+                    v-if="modalMode === 'edit'"
+                    link
+                    type="danger"
+                    size="small"
+                    :disabled="scope.row.role === 0"
+                    @click="editRemoveMember(scope.row)"
+                  >
+                    移除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
         </div>
-        <el-table :data="modalMembers" border stripe size="small" max-height="240" v-loading="memberOpLoading">
-          <el-table-column label="类型" width="70">
-            <template #default="scope">
-              <el-tag :type="scope.row.memberKind === 0 ? 'primary' : 'warning'" size="small">
-                {{ scope.row.memberKind === 0 ? "用户" : "部门" }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="memberName" label="名称" min-width="120" show-overflow-tooltip />
-          <el-table-column label="角色" width="150">
-            <template #default="scope">
-              <el-select
-                v-model="scope.row.role"
-                size="small"
-                style="width: 100%"
-                :disabled="modalMode === 'edit' && scope.row.role === 0"
-                @change="modalMode === 'edit' ? editUpdateMemberRole(scope.row) : undefined"
-              >
-                <el-option label="主管理员" :value="0" />
-                <el-option label="行政管理员" :value="1" />
-                <el-option label="编辑者" :value="2" />
-                <el-option label="查看者" :value="3" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="70" fixed="right">
-            <template #default="scope">
-              <el-button
-                v-if="modalMode === 'add'"
-                link
-                type="danger"
-                size="small"
-                @click="removeMember(scope.$index)"
-              >移除</el-button>
-              <el-button
-                v-if="modalMode === 'edit'"
-                link
-                type="danger"
-                size="small"
-                :disabled="scope.row.role === 0"
-                @click="editRemoveMember(scope.row)"
-              >移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
       </div>
 
       <template #footer>
@@ -277,4 +286,73 @@ const openDeptSelect = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.drive-space-modal :deep(.el-dialog__body) {
+  padding: 20px;
+}
+
+.modal-content-wrapper {
+  display: flex;
+  gap: 24px;
+  height: 480px;
+}
+
+.base-info-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.member-section {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--el-border-color-lighter);
+  padding-left: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-bottom: 12px;
+}
+
+.section-header .section-title {
+  margin-bottom: 0;
+}
+
+.member-table-wrapper {
+  flex: 1;
+  overflow: hidden;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.text-primary {
+  color: var(--el-color-primary);
+}
+
+.text-warning {
+  color: var(--el-color-warning);
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  padding-bottom: 4px !important;
+}
+
+:deep(.el-table) {
+  --el-table-header-bg-color: var(--el-fill-color-light);
+}
+</style>
