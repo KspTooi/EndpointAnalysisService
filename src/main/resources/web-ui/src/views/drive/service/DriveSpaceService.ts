@@ -337,7 +337,7 @@ export default {
         modalForm.id = "";
         modalForm.name = "";
         modalForm.remark = "";
-        modalForm.quotaLimit = "";
+        modalForm.quotaLimit = "1024";
         modalForm.status = 0;
         modalMembers.value = [];
         modalVisible.value = true;

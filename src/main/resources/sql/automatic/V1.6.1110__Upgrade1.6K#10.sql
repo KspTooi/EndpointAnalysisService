@@ -31,3 +31,5 @@ CREATE TABLE `drive_space_member` (
                                       UNIQUE KEY `uk_space_member` (`drive_space_id`,`member_kind`,`member_id`) USING BTREE,
                                       KEY `idx_member` (`member_kind`,`member_id`)
 ) COMMENT='云盘空间成员';
+
+ALTER TABLE `core_notice` MODIFY COLUMN `title` varchar(320) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标题';
