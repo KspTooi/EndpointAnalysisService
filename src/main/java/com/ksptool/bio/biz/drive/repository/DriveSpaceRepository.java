@@ -61,7 +61,7 @@ public interface DriveSpaceRepository extends JpaRepository<DriveSpacePo, Long> 
                            )
                      )
                    )
-             ORDER BY s.updateTime DESC
+             ORDER BY s.createTime DESC
             """)
     Page<GetDriveSpaceListVo> getDriveSpaceList(@Param("po") DriveSpacePo po,
                                                 @Param("userId") Long userId,
