@@ -48,11 +48,22 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="quotaLimit" label="配额限制" min-width="120" show-overflow-tooltip>
-          <template #default="scope">{{ mbDisplay(scope.row.quotaLimit) }}</template>
-        </el-table-column>
-        <el-table-column prop="quotaUsed" label="已用配额" min-width="120" show-overflow-tooltip>
-          <template #default="scope">{{ mbDisplay(scope.row.quotaUsed) }}</template>
+        <el-table-column label="配额使用情况" min-width="200">
+          <template #default="scope">
+            <div class="quota-progress-wrapper">
+              <div class="quota-info">
+                <span>{{ mbDisplay(scope.row.quotaUsed) }} / {{ mbDisplay(scope.row.quotaLimit) }}</span>
+                <span class="quota-percentage">{{ getQuotaPercentage(scope.row.quotaUsed, scope.row.quotaLimit) }}%</span>
+              </div>
+              <el-progress
+                :percentage="getQuotaPercentage(scope.row.quotaUsed, scope.row.quotaLimit)"
+                :stroke-width="8"
+                :show-text="false"
+                :color="getQuotaColor(scope.row.quotaUsed, scope.row.quotaLimit)"
+                class="square-progress"
+              />
+            </div>
+          </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" min-width="80" show-overflow-tooltip>
           <template #default="scope">
@@ -240,6 +251,21 @@ const mbDisplay = (bytes: string) => {
   return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
 };
 
+// 计算配额百分比
+const getQuotaPercentage = (used: string, limit: string) => {
+  if (!limit || limit === "0") return 0;
+  const percentage = Math.round((Number(used) / Number(limit)) * 100);
+  return percentage > 100 ? 100 : percentage;
+};
+
+// 根据使用百分比获取进度条颜色
+const getQuotaColor = (used: string, limit: string) => {
+  const p = getQuotaPercentage(used, limit);
+  if (p >= 90) return "#f56c6c"; // 危险
+  if (p >= 70) return "#e6a23c"; // 警告
+  return "#409eff"; // 正常
+};
+
 // 角色文字映射
 const roleLabel = (role: number) => {
   if (role === 0) return "主管理员";
@@ -396,5 +422,31 @@ const openDeptSelect = async () => {
 
 :deep(.el-table) {
   --el-table-header-bg-color: var(--el-fill-color-light);
+}
+
+.quota-progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quota-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.quota-percentage {
+  font-weight: 500;
+}
+
+/* 直角风格进度条 */
+.square-progress :deep(.el-progress-bar__outer) {
+  border-radius: 0 !important;
+}
+
+.square-progress :deep(.el-progress-bar__inner) {
+  border-radius: 0 !important;
 }
 </style>
