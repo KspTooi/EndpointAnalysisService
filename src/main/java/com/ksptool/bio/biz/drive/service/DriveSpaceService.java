@@ -248,15 +248,16 @@ public class DriveSpaceService {
                 .orElseThrow(() -> new BizException("云盘空间 [ " + dto.getDriveSpaceId() + " ] 不存在,无法编辑云盘空间成员."));
 
         //先查当前人在这个空间里面是不是主管理员
-        var currentUserId = session().getUserId();
+        var myUserId = session().getUserId();
+        var myDeptId = session().getDeptId();
 
-        var currentUserDsm = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dto.getDriveSpaceId(), currentUserId);
+        var myBestRole = repository.getBestRole(dto.getDriveSpaceId(), myUserId, myDeptId);
 
-        if (currentUserDsm == null) {
+        if (myBestRole == null) {
             throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间成员.");
         }
 
-        if (currentUserDsm.getRole() != 0) {
+        if (myBestRole != 0) {
             throw new BizException("当前用户不是主管理员,无法编辑云盘空间成员.");
         }
 
