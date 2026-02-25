@@ -17,7 +17,7 @@ export default {
    */
   useEntryList(emit: EntryGridEmitter) {
     const listQuery = reactive<GetEntryListDto>({
-      driveSpaceId: DriveStore().getCurrentDriveSpace.id,
+      driveSpaceId: null,
       directoryId: DriveStore().getCurrentDir.id,
       keyword: null,
       pageNum: 1,
@@ -44,6 +44,12 @@ export default {
     const listLoad = async () => {
       listLoading.value = true;
       try {
+        //如果当前没有空间则不进行任何操作
+        if (DriveStore().getCurrentDriveSpace == null) {
+          return;
+        }
+
+        listQuery.driveSpaceId = DriveStore().getCurrentDriveSpace.id;
         const res = await DriveApi.getEntryList(listQuery);
 
         if (res.code != 0) {

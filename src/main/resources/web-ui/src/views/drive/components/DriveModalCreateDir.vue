@@ -53,7 +53,7 @@ const nameInputRef = ref();
 const submitLoading = ref(false);
 
 const form = reactive<AddEntryDto>({
-  driveSpaceId: DriveStore().getCurrentDriveSpace.id,
+  driveSpaceId: null,
   parentId: null,
   name: "",
   kind: 1,
@@ -68,6 +68,11 @@ const rules = reactive<FormRules>({
 });
 
 const openModal = () => {
+  //如果当前没有空间则不进行任何操作
+  if (DriveStore().getCurrentDriveSpace == null) {
+    ElMessage.error("请先选择一个云盘空间");
+    return;
+  }
   //清空表单
   resetModal();
   modalVisible.value = true;
@@ -79,6 +84,7 @@ const onDialogOpened = () => {
 
 const resetModal = () => {
   formRef.value?.resetFields();
+  form.driveSpaceId = DriveStore().getCurrentDriveSpace.id;
   form.name = "";
   form.parentId = props.currentDir.id;
   form.kind = 1;
