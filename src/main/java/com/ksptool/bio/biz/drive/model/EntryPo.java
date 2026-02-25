@@ -89,7 +89,7 @@ public class EntryPo extends RowScopePo {
         var now = LocalDateTime.now();
         var session = session();
 
-        if(session.getRootId() == null || session.getDeptId() == null){
+        if (session.getRootId() == null || session.getDeptId() == null) {
             throw new AuthException("用户不属于任何租户或部门,无法创建条目!");
         }
 
@@ -107,7 +107,7 @@ public class EntryPo extends RowScopePo {
             this.updaterId = session.getUserId();
         }
         if (this.rootId == null) {
-            this.rootId = session.getCompanyId();
+            this.rootId = session.getRootId();
         }
         if (this.deptId == null) {
             this.deptId = session.getDeptId();
