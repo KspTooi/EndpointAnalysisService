@@ -18,7 +18,8 @@ CREATE TABLE `drive_space` (
 
 DROP TABLE IF EXISTS drive_space_member;
 CREATE TABLE `drive_space_member` (
-                                      `id` bigint NOT NULL COMMENT '空间ID',
+                                      `id` bigint NOT NULL COMMENT '云盘空间成员ID',
+                                      `drive_space_id` bigint NOT NULL COMMENT '云盘空间ID',
                                       `member_kind` tinyint NOT NULL COMMENT '成员类型 0:用户 1:部门',
                                       `member_id` bigint NOT NULL COMMENT '成员ID',
                                       `role` tinyint NOT NULL COMMENT '成员角色 0:主管理员 1:行政管理员 2:编辑者 3:查看者',

@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-2-25 21:59:28",
+  "updatedTime": "2026-2-25 22:42:45",
   "dbConns": [],
   "profile": {
     "default": {
@@ -26484,6 +26484,24 @@
           "attr9": "",
           "id": "528A4BD1-810B-4704-8DDD-83C4CD933B99",
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D"
+        },
+        {
+          "defKey": "space_id",
+          "defName": "云盘空间ID",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
+          "extProps": {},
+          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "id": "284BE71C-07BE-463A-900E-D5F88885BE0A"
         },
         {
           "defKey": "member_kind",

@@ -8,8 +8,11 @@ import lombok.Setter;
 @Setter
 public class GetDriveSpaceMemberDetailsVo {
 
-    @Schema(description = "空间ID")
+    @Schema(description = "成员ID")
     private Long id;
+
+    @Schema(description = "云盘空间ID")
+    private Long driveSpaceId;
 
     @Schema(description = "成员名称")
     private String memberName;

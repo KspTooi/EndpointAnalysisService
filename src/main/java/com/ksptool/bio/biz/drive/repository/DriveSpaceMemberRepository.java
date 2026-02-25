@@ -1,6 +1,9 @@
 package com.ksptool.bio.biz.drive.repository;
 
 import com.ksptool.bio.biz.drive.model.drivespacemember.DriveSpaceMemberPo;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +28,18 @@ public interface DriveSpaceMemberRepository extends JpaRepository<DriveSpaceMemb
             ORDER BY u.updateTime DESC
             """)
     Page<DriveSpaceMemberPo> getDriveSpaceMemberList(@Param("po") DriveSpaceMemberPo po, Pageable pageable);
+
+
+    /**
+     * 查询云盘空间下的成员
+     *
+     * @param driveSpaceId 云盘空间ID
+     * @return 云盘空间成员列表
+     */
+    @Query("""
+            SELECT u FROM DriveSpaceMemberPo u
+            WHERE
+            u.driveSpace.id = :#{#driveSpaceId}
+            """)
+    List<DriveSpaceMemberPo> getByDriveSpaceId(@Param("driveSpaceId") Long driveSpaceId);
 }

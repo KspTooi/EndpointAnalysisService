@@ -10,8 +10,11 @@ import java.time.LocalDateTime;
 @Setter
 public class GetDriveSpaceMemberListVo {
 
-    @Schema(description = "空间ID")
+    @Schema(description = "成员ID")
     private Long id;
+
+    @Schema(description = "云盘空间ID")
+    private Long driveSpaceId;
 
     @Schema(description = "成员类型 0:用户 1:部门")
     private Integer memberKind;

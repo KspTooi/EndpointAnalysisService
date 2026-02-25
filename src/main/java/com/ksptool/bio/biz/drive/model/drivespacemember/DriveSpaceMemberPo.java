@@ -15,9 +15,12 @@ import java.time.LocalDateTime;
 @Table(name = "drive_space_member")
 public class DriveSpaceMemberPo {
 
-    @Column(name = "id", comment = "空间ID")
+    @Column(name = "id", comment = "云盘空间成员ID")
     @Id
     private Long id;
+
+    @Column(name = "drive_space_id", comment = "云盘空间ID")
+    private Long driveSpaceId;
 
     @Column(name = "member_kind", comment = "成员类型 0:用户 1:部门")
     private Integer memberKind;
