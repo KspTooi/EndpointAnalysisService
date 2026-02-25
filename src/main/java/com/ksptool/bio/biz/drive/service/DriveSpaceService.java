@@ -229,12 +229,9 @@ public class DriveSpaceService {
     @Transactional(rollbackFor = Exception.class)
     public void editDriveSpaceMembers(EditDriveSpaceMembersDto dto) throws Exception {
 
-        DriveSpaceMemberPo dsmPo = driveSpaceMemberRepository.findById(dto.getMemberId())
-                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
-
         //查云盘空间
-        var driveSpace = repository.findById(dsmPo.getDriveSpaceId())
-                .orElseThrow(() -> new BizException("云盘空间 [ " + dsmPo.getDriveSpaceId() + " ] 不存在,无法编辑云盘空间成员."));
+        var driveSpace = repository.findById(dto.getDriveSpaceId())
+                .orElseThrow(() -> new BizException("云盘空间 [ " + dto.getDriveSpaceId() + " ] 不存在,无法编辑云盘空间成员."));
 
         //先查当前人在这个空间里面是不是主管理员
         var currentUserId = session().getUserId();
@@ -262,7 +259,7 @@ public class DriveSpaceService {
         if (dto.getAction() == 0) {
 
             //先查是否存在
-            var existingDsm = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dsmPo.getDriveSpaceId(), dto.getMemberId());
+            var existingDsm = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dto.getDriveSpaceId(), dto.getMemberId());
 
             //不能把成员加/改成主管理员
             if (dto.getRole() == 0) {
@@ -280,7 +277,7 @@ public class DriveSpaceService {
                     """);
                 content.setParameter("operatorName", session().getUsername());
                 content.setParameter("spaceName", driveSpace.getName());
-                content.setParameter("role", dsmPo.getRole() == 0 ? "主管理员" : dsmPo.getRole() == 1 ? "行政管理员" : dsmPo.getRole() == 2 ? "编辑者" : "查看者");
+                content.setParameter("role", existingDsm.getRole() == 0 ? "主管理员" : existingDsm.getRole() == 1 ? "行政管理员" : existingDsm.getRole() == 2 ? "编辑者" : "查看者");
                 and.setContent(content.execute());
 
                 if (existingDsm.getMemberKind() == 0) {
@@ -299,7 +296,7 @@ public class DriveSpaceService {
             if (dto.getMemberKind() == 0) {
                 userRepository.findById(dto.getMemberId()).orElseThrow(() -> new BizException("用户 [ " + dto.getMemberId() + " ] 不存在,无法添加到云盘空间!"));
                 var newDsmPo = new DriveSpaceMemberPo();
-                newDsmPo.setDriveSpaceId(dsmPo.getDriveSpaceId());
+                newDsmPo.setDriveSpaceId(dto.getDriveSpaceId());
                 newDsmPo.setMemberId(dto.getMemberId());
                 newDsmPo.setMemberKind(dto.getMemberKind());
                 newDsmPo.setRole(dto.getRole());
@@ -323,7 +320,7 @@ public class DriveSpaceService {
             if (dto.getMemberKind() == 1) {
                 orgRepository.findById(dto.getMemberId()).orElseThrow(() -> new BizException("部门 [ " + dto.getMemberId() + " ] 不存在,无法添加到云盘空间!"));
                 var newDsmPo = new DriveSpaceMemberPo();
-                newDsmPo.setDriveSpaceId(dsmPo.getDriveSpaceId());
+                newDsmPo.setDriveSpaceId(dto.getDriveSpaceId());
                 newDsmPo.setMemberId(dto.getMemberId());
                 newDsmPo.setMemberKind(dto.getMemberKind());
                 newDsmPo.setRole(dto.getRole());
@@ -347,7 +344,7 @@ public class DriveSpaceService {
         }
 
         //处理删成员 先查要这个空间里要被删的成员
-        var dsmToDelete = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dsmPo.getDriveSpaceId(), dto.getMemberId());
+        var dsmToDelete = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dto.getDriveSpaceId(), dto.getMemberId());
 
         if (dsmToDelete == null) {
             throw new BizException("要删除的成员不存在,无法删除.");
