@@ -52,8 +52,15 @@ public class CacheConfig {
         //限流相关缓存
         caches.add(new CaffeineCache("rateLimit_30",
                 Caffeine.newBuilder()
-                        .expireAfterWrite(31, TimeUnit.MINUTES)
+                        .expireAfterWrite(31, TimeUnit.SECONDS)
                         .maximumSize(1000)
+                        .build()));
+
+        //注册表缓存
+        caches.add(new CaffeineCache("registry",
+                Caffeine.newBuilder()
+                        .expireAfterWrite(15, TimeUnit.MINUTES)
+                        .maximumSize(10000)
                         .build()));
 
         cacheManager.setCaches(caches);
