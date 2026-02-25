@@ -22,6 +22,9 @@ export interface GetDriveSpaceListVo {
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
   quotaUsed: string; // 已用配额(bytes)
+  memberCount: number; // 成员数量
+  maName: string; // 主管理员名称
+  myRole: number; // 我在该空间的角色,0:主管理员 1:行政管理员 2:编辑者 3:查看者
   status: number; // 状态 0:正常 1:归档
 }
 

@@ -32,9 +32,22 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="空间ID" min-width="120" show-overflow-tooltip />
+        <el-table-column type="index" label="序号" width="60" align="center">
+          <template #default="scope">
+            {{ (listForm.pageNum - 1) * listForm.pageSize + scope.$index + 1 }}
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="空间名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="remark" label="空间描述" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="maName" label="主管理员" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="memberCount" label="成员数" min-width="80" align="center" />
+        <el-table-column label="我的角色" min-width="100" align="center">
+          <template #default="scope">
+            <span :class="roleClass(scope.row.myRole)" style="font-weight: 500">
+              {{ roleLabel(scope.row.myRole) }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="quotaLimit" label="配额限制" min-width="120" show-overflow-tooltip>
           <template #default="scope">{{ mbDisplay(scope.row.quotaLimit) }}</template>
         </el-table-column>
@@ -227,6 +240,23 @@ const mbDisplay = (bytes: string) => {
   return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
 };
 
+// 角色文字映射
+const roleLabel = (role: number) => {
+  if (role === 0) return "主管理员";
+  if (role === 1) return "行政管理员";
+  if (role === 2) return "编辑者";
+  if (role === 3) return "查看者";
+  return "未知";
+};
+
+// 角色颜色类映射
+const roleClass = (role: number) => {
+  if (role === 0) return "text-danger";
+  if (role === 1) return "text-primary";
+  if (role === 2) return "text-success";
+  return "text-info";
+};
+
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -345,6 +375,18 @@ const openDeptSelect = async () => {
 
 .text-warning {
   color: var(--el-color-warning);
+}
+
+.text-danger {
+  color: var(--el-color-danger);
+}
+
+.text-success {
+  color: var(--el-color-success);
+}
+
+.text-info {
+  color: var(--el-color-info);
 }
 
 :deep(.el-form-item__label) {
