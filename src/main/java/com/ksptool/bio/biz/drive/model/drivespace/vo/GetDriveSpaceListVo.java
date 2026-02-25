@@ -33,7 +33,7 @@ public class GetDriveSpaceListVo {
     @Schema(description = "主管理员名称")
     private String maName;
 
-    @Schema(defaultValue = "我在该空间的角色,0:主管理员 1:行政管理员 2:编辑者 3:查看者")
+    @Schema(defaultValue = "我在该空间的角色,0:主管理员 1:行政管理员 2:编辑者 3:查看者 -1:未加入(因为超级权限可以查到他未加入的空间,所以需要这个)")
     private Integer myRole;
 
     @Schema(description = "状态 0:正常 1:归档")

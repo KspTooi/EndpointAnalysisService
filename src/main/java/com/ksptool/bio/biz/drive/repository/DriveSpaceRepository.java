@@ -42,7 +42,7 @@ public interface DriveSpaceRepository extends JpaRepository<DriveSpacePo, Long> 
                             (m.memberKind = 0 AND m.memberId = :userId)
                          OR (m.memberKind = 1 AND m.memberId = :deptId)
                        )
-                 ), 3),
+                 ), -1),
                  s.status
              )
              FROM DriveSpacePo s
