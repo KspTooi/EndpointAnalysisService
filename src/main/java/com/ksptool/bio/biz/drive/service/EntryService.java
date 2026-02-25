@@ -131,7 +131,6 @@ public class EntryService {
 
         //组装新增数据
         EntryPo insertPo = as(dto, EntryPo.class);
-        insertPo.setCompanyId(companyId);
 
         //文件夹
         if (dto.getKind() == 1) {
@@ -273,10 +272,6 @@ public class EntryService {
 
         EntryPo updatePo = repository.findById(dto.getEntryId())
                 .orElseThrow(() -> new BizException("重命名失败,数据不存在."));
-
-        if (!Objects.equals(updatePo.getCompanyId(), companyId)) {
-            throw new BizException("重命名失败,无权限访问.");
-        }
 
         Long parentId = null;
 
@@ -487,7 +482,6 @@ public class EntryService {
 
         var newEntry = new EntryPo();
         newEntry.setId(IdWorker.nextId());
-        newEntry.setCompanyId(companyId);
         newEntry.setParent(parentPo);
         newEntry.setName(sourcePo.getName());
         newEntry.setKind(sourcePo.getKind());
