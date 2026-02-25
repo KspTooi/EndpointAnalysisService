@@ -293,11 +293,15 @@ public class DriveSpaceService {
                 throw new BizException("不能把成员加/改成主管理员.");
             }
 
-            //存在就改(只能改角色,不能改成员类型和成员ID)
-            if (existingDsm != null) {
-
-                //如果我是行政管理员,我不可以改主管理员和其他行政管理员
-                if (myBestRole == 1) {
+            //如果我是行政管理员,则不可以把成员加/改成主管理员或行政管理员 也不能操作主管理员和其他行政管理员
+            if (myBestRole == 1) {
+                if (dto.getRole() == 0) {
+                    throw new BizException("行政管理员不能添加主管理员.");
+                }
+                if (dto.getRole() == 1) {
+                    throw new BizException("行政管理员不能添加其他行政管理员.");
+                }
+                if (existingDsm != null) {
                     if (existingDsm.getRole() == 0) {
                         throw new BizException("行政管理员不能修改主管理员.");
                     }
@@ -305,6 +309,10 @@ public class DriveSpaceService {
                         throw new BizException("行政管理员不能修改其他行政管理员.");
                     }
                 }
+            }
+
+            //存在就改(只能改角色,不能改成员类型和成员ID)
+            if (existingDsm != null) {
 
                 existingDsm.setRole(dto.getRole());
                 driveSpaceMemberRepository.save(existingDsm);
@@ -411,7 +419,7 @@ public class DriveSpaceService {
             throw new BizException("不能删除主管理员.");
         }
 
-        //如果我是行政管理员,我不可以删主管理员和其他行政管理员
+        //如果我是行政管理员,则不可以删主管理员和其他行政管理员
         if (myBestRole == 1) {
             if (dsmToDelete.getRole() == 0) {
                 throw new BizException("行政管理员不能删除主管理员.");
