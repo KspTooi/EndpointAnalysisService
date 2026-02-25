@@ -22,6 +22,48 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
+   * 云盘空间选择器（用于下拉选择，一次加载全量）
+   */
+  useDriveSpaceSelector() {
+    const spaceList = ref<GetDriveSpaceListVo[]>([]);
+    const spaceLoading = ref(false);
+
+    /**
+     * 加载全量云盘空间列表
+     */
+    const loadSpaceList = async () => {
+      spaceLoading.value = true;
+      const result = await DriveSpaceApi.getDriveSpaceList({
+        pageNum: 1,
+        pageSize: 10000,
+        name: "",
+        remark: "",
+        status: null,
+      });
+
+      if (Result.isSuccess(result)) {
+        spaceList.value = result.data;
+      }
+
+      if (Result.isError(result)) {
+        ElMessage.error(result.message);
+      }
+
+      spaceLoading.value = false;
+    };
+
+    onMounted(async () => {
+      await loadSpaceList();
+    });
+
+    return {
+      spaceList,
+      spaceLoading,
+      loadSpaceList,
+    };
+  },
+
+  /**
    * 云盘空间列表管理
    */
   useDriveSpaceList() {

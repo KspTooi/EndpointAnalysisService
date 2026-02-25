@@ -3,6 +3,18 @@
     <!-- 上层：搜索、容量信息与操作按钮 -->
     <div class="panel-row top-row">
       <div class="search-section">
+        <!-- 云盘空间选择器 -->
+        <el-select
+          v-model="selectedSpaceId"
+          placeholder="选择云盘空间"
+          class="space-select"
+          :loading="spaceLoading"
+          filterable
+          @change="onSpaceChange"
+        >
+          <el-option v-for="space in spaceList" :key="space.id" :label="space.name" :value="space.id" />
+        </el-select>
+
         <el-input
           v-model="keyword"
           placeholder="在团队云盘中搜索..."
@@ -76,6 +88,7 @@ import type Result from "@/commons/entity/Result.ts";
 import type { GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveControlPanelPaths from "@/views/drive/components/DriveControlPanelPaths.vue";
+import DriveSpaceService from "@/views/drive/service/DriveSpaceService.ts";
 
 //定义props
 const props = withDefaults(
@@ -102,6 +115,18 @@ let searchTimer: number | null = null;
 
 const driveStore = DriveStore();
 const { currentDirPaths } = storeToRefs(driveStore);
+
+//云盘空间选择器
+const { spaceList, spaceLoading } = DriveSpaceService.useDriveSpaceSelector();
+const selectedSpaceId = ref<string>(driveStore.currentDriveSpace?.id ?? "");
+
+/**
+ * 云盘空间切换
+ */
+const onSpaceChange = (id: string) => {
+  const space = spaceList.value.find((s) => s.id === id) ?? null;
+  driveStore.setCurrentDriveSpace(space);
+};
 
 const reversedPaths = computed(() => {
   return [...currentDirPaths.value].reverse();
@@ -234,6 +259,25 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   flex: 1;
+}
+
+.space-select {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.space-select :deep(.el-input__wrapper) {
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid var(--el-border-color);
+}
+
+.space-select :deep(.el-input__wrapper:hover) {
+  border-color: var(--el-border-color-hover);
+}
+
+.space-select :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--el-color-primary);
 }
 
 .search-input {
