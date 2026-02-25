@@ -24,11 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
@@ -274,8 +270,8 @@ public class DriveSpaceService {
                 //给成员发消息
                 and.setTitle("您在云盘空间 [ " + driveSpace.getName() + " ] 中的角色已被修改");
                 var content = PreparedPrompt.prepare("""
-                    您在云盘空间 [#{spaceName}] 中的角色已被 [#{operatorName}] 修改为 [#{role}] .
-                    """);
+                        您在云盘空间 [#{spaceName}] 中的角色已被 [#{operatorName}] 修改为 [#{role}] .
+                        """);
                 content.setParameter("operatorName", session().getUsername());
                 content.setParameter("spaceName", driveSpace.getName());
                 content.setParameter("role", existingDsm.getRole() == 0 ? "主管理员" : existingDsm.getRole() == 1 ? "行政管理员" : existingDsm.getRole() == 2 ? "编辑者" : "查看者");
@@ -283,11 +279,11 @@ public class DriveSpaceService {
 
                 if (existingDsm.getMemberKind() == 0) {
                     and.setTargetKind(2); //发给用户
-                    and.setTargetIds(Arrays.asList(existingDsm.getMemberId()));
+                    and.setTargetIds(Collections.singletonList(existingDsm.getMemberId()));
                 }
                 if (existingDsm.getMemberKind() == 1) {
                     and.setTargetKind(1); //发给部门
-                    and.setTargetIds(Arrays.asList(existingDsm.getMemberId()));
+                    and.setTargetIds(Collections.singletonList(existingDsm.getMemberId()));
                 }
                 noticeService.addNotice(and);
                 return;
@@ -306,14 +302,14 @@ public class DriveSpaceService {
                 //给成员发消息
                 and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
                 var content = PreparedPrompt.prepare("""
-                    您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
-                    """);
+                        您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
+                        """);
                 content.setParameter("operatorName", session().getUsername());
                 content.setParameter("spaceName", driveSpace.getName());
                 content.setParameter("role", dto.getRole() == 0 ? "主管理员" : dto.getRole() == 1 ? "行政管理员" : dto.getRole() == 2 ? "编辑者" : "查看者");
                 and.setContent(content.execute());
                 and.setTargetKind(2); //发给用户
-                and.setTargetIds(Arrays.asList(newDsmPo.getMemberId()));
+                and.setTargetIds(Collections.singletonList(newDsmPo.getMemberId()));
                 noticeService.addNotice(and);
                 return;
             }
@@ -331,14 +327,14 @@ public class DriveSpaceService {
                 //给部门发消息
                 and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
                 var content = PreparedPrompt.prepare("""
-                    您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
-                    """);
+                        您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
+                        """);
                 content.setParameter("operatorName", session().getUsername());
                 content.setParameter("spaceName", driveSpace.getName());
                 content.setParameter("role", dto.getRole() == 0 ? "主管理员" : dto.getRole() == 1 ? "行政管理员" : dto.getRole() == 2 ? "编辑者" : "查看者");
                 and.setContent(content.execute());
                 and.setTargetKind(1); //发给部门
-                and.setTargetIds(Arrays.asList(newDsmPo.getMemberId()));
+                and.setTargetIds(Collections.singletonList(newDsmPo.getMemberId()));
                 noticeService.addNotice(and);
                 return;
             }
@@ -364,13 +360,13 @@ public class DriveSpaceService {
         //给成员发消息
         and.setTitle("您已被从云盘空间 [ " + driveSpace.getName() + " ] 中移除");
         var content = PreparedPrompt.prepare("""
-            您已被 [#{operatorName}] 从云盘空间 [#{spaceName}] 中移除.
-            """);
+                您已被 [#{operatorName}] 从云盘空间 [#{spaceName}] 中移除.
+                """);
         content.setParameter("operatorName", session().getUsername());
         content.setParameter("spaceName", driveSpace.getName());
         and.setContent(content.execute());
         and.setTargetKind(dsmToDelete.getMemberKind() == 0 ? 1 : 2); //发给用户或部门 1:部门 2:用户
-        and.setTargetIds(Arrays.asList(dsmToDelete.getMemberId()));
+        and.setTargetIds(Collections.singletonList(dsmToDelete.getMemberId()));
         noticeService.addNotice(and);
     }
 
