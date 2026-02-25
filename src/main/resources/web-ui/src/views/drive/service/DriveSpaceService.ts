@@ -189,10 +189,10 @@ export default {
             action: 0,
           });
         }
-        await reloadMembers();
       } catch (error: any) {
         ElMessage.error(error.message);
       } finally {
+        await reloadMembers();
         memberOpLoading.value = false;
       }
     };
@@ -246,10 +246,10 @@ export default {
             action: 0,
           });
         }
-        await reloadMembers();
       } catch (error: any) {
         ElMessage.error(error.message);
       } finally {
+        await reloadMembers();
         memberOpLoading.value = false;
       }
     };
@@ -267,11 +267,11 @@ export default {
           role: member.role,
           action: 0,
         });
-        await reloadMembers();
       } catch (error: any) {
         ElMessage.error(error.message);
       } finally {
         memberOpLoading.value = false;
+        await reloadMembers();
       }
     };
 
@@ -297,11 +297,11 @@ export default {
           role: member.role,
           action: 1,
         });
-        await reloadMembers();
       } catch (error: any) {
         ElMessage.error(error.message);
       } finally {
         memberOpLoading.value = false;
+        await reloadMembers();
       }
     };
 
