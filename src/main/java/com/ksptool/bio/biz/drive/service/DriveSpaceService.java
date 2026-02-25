@@ -282,7 +282,6 @@ public class DriveSpaceService {
         and.setCategory("团队云盘");
         and.setTargetKind(2);
 
-
         //处理加/改成员
         if (dto.getAction() == 0) {
 
@@ -522,11 +521,30 @@ public class DriveSpaceService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeDriveSpace(CommonIdDto dto) throws BizException {
+    public void removeDriveSpace(CommonIdDto dto) throws Exception {
+        
         if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+            throw new BizException("批量删除云盘空间不支持.");
         }
+
+        var session = SessionService.session();
+        var myUserId = session.getUserId();
+        var myDeptId = session.getDeptId();
+        var myBestRole = repository.getBestRole(dto.getId(), myUserId, myDeptId);
+
+        if (myBestRole == null) {
+            throw new BizException("当前用户不是云盘空间成员,无法删除云盘空间.");
+        }
+
+        //行政管理员虽然可以管理成员和空间,但是不能删除空间
+        if (myBestRole == 1) {
+            throw new BizException("行政管理员不能删除云盘空间,请联系主管理员删除.");
+        }
+
+        if (myBestRole != 0) {
+            throw new BizException("当前用户不是主管理员,无法删除云盘空间.");
+        }
+
         repository.deleteById(dto.getId());
     }
 
