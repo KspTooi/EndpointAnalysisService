@@ -161,6 +161,35 @@
               </el-form-item>
             </div>
           </el-form>
+
+          <!-- 角色权限说明 -->
+          <el-scrollbar class="role-guide-scrollbar">
+            <div class="role-guide-section">
+              <div class="section-title">角色权限说明</div>
+              <div class="guide-list">
+                <div class="guide-item">
+                  <span class="guide-label text-danger">主管理员</span>
+                  <span class="guide-text"
+                    >拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。</span
+                  >
+                </div>
+                <div class="guide-item">
+                  <span class="guide-label text-primary">行政管理员</span>
+                  <span class="guide-text"
+                    >可管理空间成员和基本信息，拥有文件的全部操作权限，但是无法添加或修改主管理员和其他行政管理员，也不能删除空间。</span
+                  >
+                </div>
+                <div class="guide-item">
+                  <span class="guide-label text-success">编辑者</span>
+                  <span class="guide-text">可上传、下载、编辑、删除空间内的文件和目录，但是不能管理成员和空间基本信息。</span>
+                </div>
+                <div class="guide-item">
+                  <span class="guide-label text-info">查看者</span>
+                  <span class="guide-text">仅拥有空间内文件的查看和下载权限。</span>
+                </div>
+              </div>
+            </div>
+          </el-scrollbar>
         </div>
 
         <!-- 右侧：成员管理 -->
@@ -378,6 +407,51 @@ const openDeptSelect = async () => {
   flex: 3;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.base-info-form {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.role-guide-scrollbar {
+  flex-shrink: 0;
+  height: 160px;
+  border-top: 1px dashed var(--el-border-color-lighter);
+  margin-top: 12px;
+}
+
+.role-guide-scrollbar :deep(.el-scrollbar__view) {
+  padding-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.role-guide-section {
+  padding: 12px 0;
+}
+
+.guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-item {
+  display: flex;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.guide-label {
+  width: 70px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.guide-text {
+  color: var(--el-text-color-secondary);
 }
 
 .member-section {
