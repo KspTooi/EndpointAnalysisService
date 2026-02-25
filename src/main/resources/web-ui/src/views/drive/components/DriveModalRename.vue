@@ -30,7 +30,7 @@ import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
 import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
-
+import { DriveStore } from "@/views/drive/service/DriveStore";
 const emit = defineEmits<{
   (e: "success"): void;
 }>();
@@ -42,6 +42,7 @@ const submitLoading = ref(false);
 const currentEntry = ref<GetEntryListItemVo | null>(null);
 
 const form = reactive<RenameEntryDto>({
+  driveSpaceId: "",
   entryId: "",
   name: "",
 });
@@ -104,6 +105,7 @@ const onSubmit = async () => {
 
     try {
       const result = await DriveApi.renameEntry({
+        driveSpaceId: DriveStore().getCurrentDriveSpace.id,
         entryId: form.entryId,
         name: trimmedName,
       });
