@@ -38,10 +38,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" label="空间名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="remark" label="空间描述" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="remark" label="空间描述" min-width="100" show-overflow-tooltip />
         <el-table-column prop="maName" label="主管理员" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="memberCount" label="成员数量" min-width="80" align="center" />
-        <el-table-column label="我的角色" min-width="120" align="center">
+        <el-table-column prop="memberCount" label="成员数量" min-width="60" align="center" />
+        <el-table-column label="我的角色" min-width="90" align="center">
           <template #default="scope">
             <el-tooltip effect="dark" :content="roleDescription(scope.row.myRole)" placement="top">
               <div class="flex items-center justify-center gap-1 cursor-help">
