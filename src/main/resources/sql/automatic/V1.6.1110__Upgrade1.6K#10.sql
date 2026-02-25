@@ -28,6 +28,6 @@ CREATE TABLE `drive_space_member` (
                                       `update_time` datetime NOT NULL COMMENT '更新时间',
                                       `updater_id` bigint NOT NULL COMMENT '更新人',
                                       PRIMARY KEY (`id`),
-                                      UNIQUE KEY `uk_space_member` (`id`,`member_kind`,`member_id`),
+                                      UNIQUE KEY `uk_space_member` (`drive_space_id`,`member_kind`,`member_id`) USING BTREE,
                                       KEY `idx_member` (`member_kind`,`member_id`)
 ) COMMENT='云盘空间成员';
