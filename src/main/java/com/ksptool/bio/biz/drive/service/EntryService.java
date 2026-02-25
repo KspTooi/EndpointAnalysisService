@@ -45,7 +45,7 @@ public class EntryService {
     public GetDriveInfo getDriveInfo() throws Exception {
 
         var companyId = session().getCompanyId();
-        var ret = repository.getDriveInfo(companyId);
+        var ret = repository.getDriveInfo();
 
         //总容量为2TB
         ret.setTotalCapacity(2L * 1024 * 1024 * 1024 * 1024);
@@ -69,7 +69,7 @@ public class EntryService {
 
         //查询目录详情
         if (dto.getDirectoryId() != null) {
-            var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId(), companyId);
+            var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId());
 
             if (dirEntryPo == null || dirEntryPo.getKind() != 1) {
                 throw new BizException("指定的目录不存在或无权限访问");
@@ -108,7 +108,7 @@ public class EntryService {
         ret.setDirParentId(dirParentId);
         ret.setPaths(pathVos);
 
-        Page<EntryPo> page = repository.getEntryList(dto.getDirectoryId(), dto.getKeyword(), companyId, dto.pageRequest());
+        Page<EntryPo> page = repository.getEntryList(dto.getDirectoryId(), dto.getKeyword(), dto.pageRequest());
         ret.setTotal(page.getTotalElements());
         ret.setItems(as(page.getContent(), GetEntryListItemVo.class));
         return ret;
@@ -122,10 +122,9 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void addEntry(AddEntryDto dto) throws BizException, Exception {
 
-        var companyId = session().getCompanyId();
         var userId = session().getUserId();
 
-        if (repository.countByName(companyId, dto.getParentId(), dto.getName()) > 0) {
+        if (repository.countByName(dto.getParentId(), dto.getName()) > 0) {
             throw new BizException("指定的条目与已存在的条目名称重复");
         }
 
@@ -179,10 +178,8 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void copyEntry(CopyEntryDto dto) throws BizException, Exception {
 
-        var companyId = session().getCompanyId();
-
         //查询要复制的条目
-        var entryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
+        var entryPos = repository.getByIdAndCompanyIds(dto.getEntryIds());
 
         if (entryPos.isEmpty()) {
             throw new BizException("要复制的条目不存在或无权限访问");
@@ -192,7 +189,7 @@ public class EntryService {
         EntryPo parentPo = null;
 
         if (dto.getParentId() != null) {
-            parentPo = repository.getByIdAndCompanyId(dto.getParentId(), companyId);
+            parentPo = repository.getByIdAndCompanyId(dto.getParentId());
 
             if (parentPo == null) {
                 throw new BizException("指定的父级条目不存在或无权限访问");
@@ -223,14 +220,14 @@ public class EntryService {
             // 生成规则：原名 -> 原名-副本 -> 原名-副本(1) -> 原名-副本(2)...
 
             // 第一次检查：是否直接冲突
-            if (isNameConflict(companyId, dto.getParentId(), finalName, usedNames)) {
+            if (isNameConflict(dto.getParentId(), finalName, usedNames)) {
 
                 // 尝试 "名称-副本"
                 finalName = originalName + "-副本";
 
                 // 如果 "名称-副本" 还冲突，开始循环递增 (1), (2)...
                 int index = 1;
-                while (isNameConflict(companyId, dto.getParentId(), finalName, usedNames)) {
+                while (isNameConflict(dto.getParentId(), finalName, usedNames)) {
                     finalName = originalName + "-副本(" + index + ")";
                     index++;
                 }
@@ -250,13 +247,13 @@ public class EntryService {
      * 辅助方法：检测名称是否冲突
      * 冲突条件：数据库里存在 OR 本次批量操作已占用了该名字
      */
-    private boolean isNameConflict(Long companyId, Long parentId, String name, Set<String> currentBatchUsedNames) {
+    private boolean isNameConflict(Long parentId, String name, Set<String> currentBatchUsedNames) {
         // 1. 先看本次批量操作是否已经用过这个名字
         if (currentBatchUsedNames.contains(name)) {
             return true;
         }
         // 2. 再看数据库里是否已存在
-        return repository.countByNameParentIdAndCompanyId(companyId, parentId, name) > 0;
+        return repository.countByNameParentIdAndCompanyId(parentId, name) > 0;
     }
 
 
@@ -268,8 +265,6 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void renameEntry(RenameEntry dto) throws BizException, AuthException {
 
-        var companyId = session().getCompanyId();
-
         EntryPo updatePo = repository.findById(dto.getEntryId())
                 .orElseThrow(() -> new BizException("重命名失败,数据不存在."));
 
@@ -279,7 +274,7 @@ public class EntryService {
             parentId = updatePo.getParent().getId();
         }
 
-        if (repository.countByNameParentIdAndCompanyId(companyId, parentId, dto.getName()) > 0) {
+        if (repository.countByNameParentIdAndCompanyId(parentId, dto.getName()) > 0) {
             throw new BizException("此位置已存在同名文件,无法重命名.");
         }
         updatePo.setName(dto.getName());
@@ -298,13 +293,12 @@ public class EntryService {
         var ret = new CheckEntryMoveVo();
         ret.setCanMove(2); //0:可以移动 1:名称冲突 2:不可移动
 
-        var companyId = session().getCompanyId();
         Long targetId = null;
 
         //移动到非根目录 
         if (dto.getTargetId() != null) {
 
-            var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+            var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId());
 
             if (targetEntryPo == null) {
                 ret.setCanMove(2);
@@ -328,14 +322,14 @@ public class EntryService {
             targetId = dto.getTargetId();
         }
 
-        Set<String> names = repository.getNamesByIds(dto.getEntryIds(), companyId);
+        Set<String> names = repository.getNamesByIds(dto.getEntryIds());
 
         if (names.isEmpty()) {
             throw new BizException("要移动的文件/目录不存在或无权限访问");
         }
 
         //查找出目标条目下的重复项
-        var matchNames = repository.matchNamesByParentId(names, targetId, companyId);
+        var matchNames = repository.matchNamesByParentId(names, targetId);
 
         if (!matchNames.isEmpty()) {
             ret.setCanMove(1);
@@ -357,14 +351,12 @@ public class EntryService {
     @Transactional(rollbackFor = Exception.class)
     public void moveEntry(MoveEntryDto dto) throws BizException, AuthException {
 
-        var companyId = session().getCompanyId();
-
         EntryPo targetDir = null;
 
         //移动到非根目录
         if (dto.getTargetId() != null) {
 
-            targetDir = repository.getByIdAndCompanyId(dto.getTargetId(), companyId);
+            targetDir = repository.getByIdAndCompanyId(dto.getTargetId());
 
             if (targetDir == null) {
                 throw new BizException("目标条目不存在或无权限访问.");
@@ -382,7 +374,7 @@ public class EntryService {
 
 
         //查找被移动条目
-        var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds(), companyId);
+        var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds());
 
         if (moveEntryPos.isEmpty()) {
             throw new BizException("要移动的条目不存在或无权限访问.");
@@ -398,7 +390,7 @@ public class EntryService {
         if (dto.getMode() == 0) {
 
             //删除目标下全部重名条目
-            repository.removeByNameAndParentId(moveEntryNames, dto.getTargetId(), companyId);
+            repository.removeByNameAndParentId(moveEntryNames, dto.getTargetId());
 
             //将被移动条目挂载到目标条目
             for (var entryPo : moveEntryPos) {
@@ -413,7 +405,7 @@ public class EntryService {
         //跳过模式移动
 
         //查找目标条目下的重复项
-        var matchNames = repository.matchNamesByParentId(moveEntryNames, dto.getTargetId(), companyId);
+        var matchNames = repository.matchNamesByParentId(moveEntryNames, dto.getTargetId());
 
         for (var entryPo : moveEntryPos) {
 
@@ -459,11 +451,10 @@ public class EntryService {
 
     public List<EntryPo> copyEntry(List<EntryPo> entryPos) throws BizException, AuthException {
 
-        var companyId = session().getCompanyId();
         var result = new ArrayList<EntryPo>();
 
         for (var entryPo : entryPos) {
-            var newEntry = copyEntryRecursive(entryPo, null, companyId);
+            var newEntry = copyEntryRecursive(entryPo, null);
             result.add(newEntry);
         }
 
@@ -475,10 +466,9 @@ public class EntryService {
      *
      * @param sourcePo  源条目
      * @param parentPo  父级条目
-     * @param companyId 公司ID
      * @return 新条目
      */
-    private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo, Long companyId) throws BizException {
+    private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo) throws BizException {
 
         var newEntry = new EntryPo();
         newEntry.setId(IdWorker.nextId());
@@ -493,7 +483,7 @@ public class EntryService {
         if (sourcePo.getChildren() != null && !sourcePo.getChildren().isEmpty()) {
             var children = new ArrayList<EntryPo>();
             for (var child : sourcePo.getChildren()) {
-                var newChild = copyEntryRecursive(child, newEntry, companyId);
+                var newChild = copyEntryRecursive(child, newEntry);
                 children.add(newChild);
             }
             newEntry.setChildren(new HashSet<>(children));
