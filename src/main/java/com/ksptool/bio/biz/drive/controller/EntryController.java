@@ -1,7 +1,6 @@
 package com.ksptool.bio.biz.drive.controller;
 
 
-import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.drive.common.aop.DriveSpace;
 import com.ksptool.bio.biz.drive.model.driveentry.dto.*;
@@ -16,15 +15,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.ksptool.bio.biz.auth.service.SessionService.hasSuperCode;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.ksptool.bio.biz.auth.service.SessionService.hasSuperCode;
 
 @PrintLog
 @RestController
@@ -43,7 +41,7 @@ public class EntryController {
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
-    public Result<GetDriveInfo> getDriveInfo() throws Exception {
+    public Result<GetDriveInfo> getDriveInfo(@RequestBody @Valid DriveCommonIdDto dto) throws Exception {
         return Result.success(entryService.getDriveInfo());
     }
 
@@ -219,7 +217,7 @@ public class EntryController {
         if (details == null) {
             return Result.error("无数据");
         }
-        
+
         return Result.success(details);
     }
 

@@ -67,6 +67,7 @@ import DriveApi from "@/views/drive/api/DriveApi.ts";
 import { Result } from "@/commons/entity/Result";
 import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
+import { DriveStore } from "@/views/drive/service/DriveStore";
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -99,7 +100,7 @@ const onConfirm = async () => {
 
   try {
     const ids = entries.value.map((entry) => entry.id);
-    const result = await DriveApi.deleteEntry({ ids });
+    const result = await DriveApi.deleteEntry({ driveSpaceId: DriveStore().getCurrentDriveSpace.id, ids });
 
     if (Result.isSuccess(result)) {
       ElMessage.success(`成功删除 ${entries.value.length} 个项目`);

@@ -35,6 +35,7 @@ public class DriveSpaceAspect {
     public void enableDriveSpaceFilter(JoinPoint joinPoint) throws BizException {
 
         Long driveSpaceId = resolveDriveSpaceId(joinPoint.getArgs());
+        
         if (driveSpaceId == null) {
             throw new BizException("在处理云盘空间过滤时，driveSpaceId 为空");
         }

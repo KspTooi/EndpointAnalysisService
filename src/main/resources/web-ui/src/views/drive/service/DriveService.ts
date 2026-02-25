@@ -108,6 +108,7 @@ export default {
         try {
           //调用后端粘贴接口
           const result = await DriveApi.copyEntry({
+            driveSpaceId: DriveStore().getCurrentDriveSpace.id,
             entryIds: entries.map((item) => item.id as string),
             parentId: entryGridRef.value.getCurrentDirId(),
           });
@@ -325,7 +326,12 @@ export default {
         });
 
         //检测移动
-        const result = await DriveApi.checkEntryMove({ targetId: target.id, entryIds: entryIds, mode: 0 });
+        const result = await DriveApi.checkEntryMove({
+          driveSpaceId: DriveStore().getCurrentDriveSpace.id,
+          targetId: target.id,
+          entryIds: entryIds,
+          mode: 0,
+        });
         const canMove = result.data.canMove;
 
         //0:可以移动 1:名称冲突 2:不可移动
@@ -345,14 +351,24 @@ export default {
 
           //跳过
           if (action === 1) {
-            await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 1 });
+            await DriveApi.moveEntry({
+              driveSpaceId: DriveStore().getCurrentDriveSpace.id,
+              targetId: target.id,
+              entryIds: entryIds,
+              mode: 1,
+            });
             entryGridRef.value.listLoad();
             return;
           }
         }
 
         //覆盖移动
-        await DriveApi.moveEntry({ targetId: target.id, entryIds: entryIds, mode: 0 });
+        await DriveApi.moveEntry({
+          driveSpaceId: DriveStore().getCurrentDriveSpace.id,
+          targetId: target.id,
+          entryIds: entryIds,
+          mode: 0,
+        });
         entryGridRef.value.listLoad();
       },
     };

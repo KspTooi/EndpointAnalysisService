@@ -1,15 +1,19 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts"
-import type Result from "@/commons/entity/Result.ts"
-import Http from "@/commons/Http.ts"
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type Result from "@/commons/entity/Result.ts";
+import Http from "@/commons/Http.ts";
 import type {
   AddEntryDto,
-  CheckEntryMoveVo, CopyEntryDto,
-  GetDriveInfoVo, GetEntryDetailsVo,
+  CheckEntryMoveVo,
+  CopyEntryDto,
+  DriveCommonIdDto,
+  GetDriveInfoVo,
+  GetEntryDetailsVo,
   GetEntryListDto,
   GetEntryListVo,
   GetEntrySignVo,
-  MoveEntryDto, RenameEntryDto,
-} from "@/views/drive/api/DriveTypes"
+  MoveEntryDto,
+  RenameEntryDto,
+} from "@/views/drive/api/DriveTypes";
 
 export default {
   /**
@@ -61,7 +65,7 @@ export default {
    * @param dto 查询条件
    * @returns 云盘条目详情
    */
-  getEntryDetails: async (dto: CommonIdDto): Promise<Result<GetEntryDetailsVo>> => {
+  getEntryDetails: async (dto: DriveCommonIdDto): Promise<Result<GetEntryDetailsVo>> => {
     return await Http.postEntity<Result<GetEntryDetailsVo>>("/drive/entry/getEntryDetails", dto);
   },
 
@@ -70,7 +74,7 @@ export default {
    * @param dto 删除条件
    * @returns 删除结果
    */
-  deleteEntry: async (dto: CommonIdDto): Promise<Result<string>> => {
+  deleteEntry: async (dto: DriveCommonIdDto): Promise<Result<string>> => {
     return await Http.postEntity<Result<string>>("/drive/entry/removeEntry", dto);
   },
 
