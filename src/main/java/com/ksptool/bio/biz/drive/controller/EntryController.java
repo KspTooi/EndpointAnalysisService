@@ -27,13 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/drive/entry")
 @Tag(name = "Entry", description = "团队云盘接口")
 @Slf4j
-@RowScope(requireRoot = true)
 public class EntryController {
 
     @Autowired
     private EntryService entryService;
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getDriveInfo")
     @Operation(summary = "获取云盘信息")
@@ -41,7 +40,7 @@ public class EntryController {
         return Result.success(entryService.getDriveInfo());
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
@@ -50,7 +49,7 @@ public class EntryController {
         return Result.success(ret);
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:add')")
     @Operation(summary = "新增条目")
     @PostMapping("/addEntry")
@@ -66,7 +65,7 @@ public class EntryController {
         return Result.success("新增成功");
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:copy')")
     @Operation(summary = "复制条目")
     @PostMapping("/copyEntry")
@@ -75,7 +74,7 @@ public class EntryController {
         return Result.success("复制成功");
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:rename')")
     @Operation(summary = "重命名条目")
     @PostMapping("/renameEntry")
@@ -84,7 +83,7 @@ public class EntryController {
         return Result.success("重命名成功");
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:move')")
     @Operation(summary = "移动检测", description = "用于移动条目前的检测")
     @PostMapping("/checkEntryMove")
@@ -94,7 +93,7 @@ public class EntryController {
     }
 
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:move')")
     @Operation(summary = "移动条目", description = "允许用户在云盘内移动条目")
     @PostMapping("/moveEntry")
@@ -103,7 +102,7 @@ public class EntryController {
         return Result.success("移动成功");
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @Operation(summary = "查询条目详情")
     @PostMapping("/getEntryDetails")
@@ -117,7 +116,7 @@ public class EntryController {
         return Result.success(details);
     }
 
-    @RowScope
+    @RowScope(requireRoot = true)
     @PreAuthorize("@auth.hasCode('drive:entry:remove')")
     @Operation(summary = "删除条目")
     @PostMapping("/removeEntry")
