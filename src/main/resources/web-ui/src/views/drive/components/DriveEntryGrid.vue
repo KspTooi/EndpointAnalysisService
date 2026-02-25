@@ -229,7 +229,7 @@ defineExpose({
   align-content: flex-start;
   padding: 10px 0;
   width: calc(100% - 2px);
-  height: calc(100vh - 185px);
+  height: calc(100vh - 190px);
   /* border: 1px solid var(--el-border-color); */
   overflow-y: auto;
   outline: none;
