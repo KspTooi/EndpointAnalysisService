@@ -62,7 +62,7 @@
             >
               <el-table-column type="selection" width="40" />
               <el-table-column prop="nkey" label="Key" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="label" label="标签" min-width="120" />
+              <el-table-column prop="label" label="标签" min-width="150" show-overflow-tooltip />
               <el-table-column label="数据类型" width="100">
                 <template #default="scope">
                   <el-tag size="small" v-if="scope.row.nvalueKind === 0">字符串</el-tag>
@@ -232,8 +232,18 @@ const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
 };
 
 // 注册表条目列表打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch, onSelectionChange, listSelected } =
-  RegistryManagerService.useRegistryList(currentKeyPath);
+const {
+  listForm,
+  listData,
+  listTotal,
+  listLoading,
+  loadList,
+  resetList,
+  removeList,
+  removeListBatch,
+  onSelectionChange,
+  listSelected,
+} = RegistryManagerService.useRegistryList(currentKeyPath);
 
 const modalFormRef = ref<FormInstance>();
 const _loadList = () => loadList(currentKeyPath.value);
@@ -258,7 +268,7 @@ const onExport = async () => {
     ElMessage.warning("请先选择节点");
     return;
   }
-  
+
   try {
     await RegistryApi.exportRegistry(listForm.value);
   } catch (e: any) {
