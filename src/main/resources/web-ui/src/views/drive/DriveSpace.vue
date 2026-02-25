@@ -4,25 +4,13 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
-          <el-form-item label="租户ID">
-            <el-input v-model="listForm.rootId" placeholder="输入租户ID" clearable />
-          </el-form-item>
-          <el-form-item label="部门ID">
-            <el-input v-model="listForm.deptId" placeholder="输入部门ID" clearable />
-          </el-form-item>
           <el-form-item label="空间名称">
             <el-input v-model="listForm.name" placeholder="输入空间名称" clearable />
           </el-form-item>
           <el-form-item label="空间描述">
             <el-input v-model="listForm.remark" placeholder="输入空间描述" clearable />
           </el-form-item>
-          <el-form-item label="配额限制(bytes)">
-            <el-input v-model="listForm.quotaLimit" placeholder="输入配额限制(bytes)" clearable />
-          </el-form-item>
-          <el-form-item label="已用配额(bytes)">
-            <el-input v-model="listForm.quotaUsed" placeholder="输入已用配额(bytes)" clearable />
-          </el-form-item>
-          <el-form-item label="状态 0:正常 1:归档">
+          <el-form-item label="状态">
             <el-input v-model.number="listForm.status" placeholder="输入状态 0:正常 1:归档" clearable />
           </el-form-item>
         </div>
@@ -42,15 +30,11 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="id" label="空间ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="rootId" label="租户ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="deptId" label="部门ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="空间名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="remark" label="空间描述" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="quotaLimit" label="配额限制(bytes)" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="quotaUsed" label="已用配额(bytes)" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="状态 0:正常 1:归档" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="remark" label="空间描述" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="quotaLimit" label="配额限制(bytes)" min-width="140" show-overflow-tooltip />
+        <el-table-column prop="quotaUsed" label="已用配额(bytes)" min-width="140" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -101,29 +85,20 @@
         ref="modalFormRef"
         :model="modalForm"
         :rules="modalRules"
-        label-width="100px"
+        label-width="120px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="租户ID" prop="rootId">
-          <el-input v-model="modalForm.rootId" placeholder="请输入租户ID" clearable />
-        </el-form-item>
-        <el-form-item label="部门ID" prop="deptId">
-          <el-input v-model="modalForm.deptId" placeholder="请输入部门ID" clearable />
-        </el-form-item>
         <el-form-item label="空间名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入空间名称" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入空间名称" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="空间描述" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入空间描述" clearable />
+          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入空间描述" :rows="3" maxlength="65535" show-word-limit />
         </el-form-item>
         <el-form-item label="配额限制(bytes)" prop="quotaLimit">
           <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制(bytes)" clearable />
         </el-form-item>
-        <el-form-item label="已用配额(bytes)" prop="quotaUsed">
-          <el-input v-model="modalForm.quotaUsed" placeholder="请输入已用配额(bytes)" clearable />
-        </el-form-item>
-        <el-form-item label="状态 0:正常 1:归档" prop="status">
-          <el-input v-model.number="modalForm.status" placeholder="请输入状态 0:正常 1:归档" clearable />
+        <el-form-item label="状态" prop="status">
+          <el-input v-model.number="modalForm.status" placeholder="0:正常 1:归档" clearable />
         </el-form-item>
       </el-form>
       <template #footer>

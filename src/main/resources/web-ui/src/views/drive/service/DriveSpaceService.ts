@@ -24,12 +24,8 @@ export default {
     const listForm = ref<GetDriveSpaceListDto>({
       pageNum: 1,
       pageSize: 20,
-      rootId: "",
-      deptId: "",
       name: "",
       remark: "",
-      quotaLimit: "",
-      quotaUsed: "",
       status: null,
     });
 
@@ -62,12 +58,8 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
-      listForm.value.rootId = "";
-      listForm.value.deptId = "";
       listForm.value.name = "";
       listForm.value.remark = "";
-      listForm.value.quotaLimit = "";
-      listForm.value.quotaUsed = "";
       listForm.value.status = null;
       loadList();
     };
@@ -119,30 +111,23 @@ export default {
     const modalMode = ref<ModalMode>("add");
     const modalForm = reactive<GetDriveSpaceDetailsVo>({
       id: "",
-      rootId: "",
-      deptId: "",
       name: "",
       remark: "",
       quotaLimit: "",
-      quotaUsed: "",
       status: 0,
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
-      deleteTime: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      rootId: [{ required: true, message: "请输入租户ID", trigger: "blur" }],
-      deptId: [{ required: true, message: "请输入部门ID", trigger: "blur" }],
-      name: [{ required: true, message: "请输入空间名称", trigger: "blur" }],
+      name: [
+        { required: true, message: "请输入空间名称", trigger: "blur" },
+        { max: 80, message: "空间名称不超过80个字符", trigger: "blur" },
+      ],
+      remark: [{ max: 65535, message: "空间描述过长", trigger: "blur" }],
       quotaLimit: [{ required: true, message: "请输入配额限制(bytes)", trigger: "blur" }],
-      quotaUsed: [{ required: true, message: "请输入已用配额(bytes)", trigger: "blur" }],
-      status: [{ required: true, message: "请输入状态 0:正常 1:归档", trigger: "blur" }],
+      status: [{ required: true, message: "请选择状态", trigger: "blur" }],
     };
 
     /**
@@ -155,18 +140,10 @@ export default {
 
       if (mode === "add") {
         modalForm.id = "";
-        modalForm.rootId = "";
-        modalForm.deptId = "";
         modalForm.name = "";
         modalForm.remark = "";
         modalForm.quotaLimit = "";
-        modalForm.quotaUsed = "";
         modalForm.status = 0;
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
-        modalForm.deleteTime = "";
         modalVisible.value = true;
         return;
       }
@@ -180,18 +157,10 @@ export default {
         try {
           const details = await DriveSpaceApi.getDriveSpaceDetails({ id: row.id });
           modalForm.id = details.id;
-          modalForm.rootId = details.rootId;
-          modalForm.deptId = details.deptId;
           modalForm.name = details.name;
           modalForm.remark = details.remark;
           modalForm.quotaLimit = details.quotaLimit;
-          modalForm.quotaUsed = details.quotaUsed;
           modalForm.status = details.status;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
-          modalForm.deleteTime = details.deleteTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -208,18 +177,10 @@ export default {
       }
       modalFormRef.value.resetFields();
       modalForm.id = "";
-      modalForm.rootId = "";
-      modalForm.deptId = "";
       modalForm.name = "";
       modalForm.remark = "";
       modalForm.quotaLimit = "";
-      modalForm.quotaUsed = "";
       modalForm.status = 0;
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
-      modalForm.deleteTime = "";
     };
 
     /**
@@ -241,12 +202,9 @@ export default {
       if (modalMode.value === "add") {
         try {
           const addDto: AddDriveSpaceDto = {
-            rootId: modalForm.rootId,
-            deptId: modalForm.deptId,
             name: modalForm.name,
             remark: modalForm.remark,
             quotaLimit: modalForm.quotaLimit,
-            quotaUsed: modalForm.quotaUsed,
             status: modalForm.status,
           };
           await DriveSpaceApi.addDriveSpace(addDto);
@@ -271,12 +229,9 @@ export default {
         try {
           const editDto: EditDriveSpaceDto = {
             id: modalForm.id,
-            rootId: modalForm.rootId,
-            deptId: modalForm.deptId,
             name: modalForm.name,
             remark: modalForm.remark,
             quotaLimit: modalForm.quotaLimit,
-            quotaUsed: modalForm.quotaUsed,
             status: modalForm.status,
           };
           await DriveSpaceApi.editDriveSpace(editDto);

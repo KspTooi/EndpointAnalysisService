@@ -8,12 +8,8 @@ import type Result from "@/commons/entity/Result.ts";
  * 查询列表DTO
  */
 export interface GetDriveSpaceListDto extends PageQuery {
-  rootId?: string; // 租户ID
-  deptId?: string; // 部门ID
   name?: string; // 空间名称
   remark?: string; // 空间描述
-  quotaLimit?: string; // 配额限制(bytes)
-  quotaUsed?: string; // 已用配额(bytes)
   status?: number; // 状态 0:正常 1:归档
 }
 
@@ -22,18 +18,11 @@ export interface GetDriveSpaceListDto extends PageQuery {
  */
 export interface GetDriveSpaceListVo {
   id: string; // 空间ID
-  rootId: string; // 租户ID
-  deptId: string; // 部门ID
   name: string; // 空间名称
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
   quotaUsed: string; // 已用配额(bytes)
   status: number; // 状态 0:正常 1:归档
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人
-  deleteTime: string; // 删除时间 为NULL未删除
 }
 
 /**
@@ -41,30 +30,19 @@ export interface GetDriveSpaceListVo {
  */
 export interface GetDriveSpaceDetailsVo {
   id: string; // 空间ID
-  rootId: string; // 租户ID
-  deptId: string; // 部门ID
   name: string; // 空间名称
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
-  quotaUsed: string; // 已用配额(bytes)
   status: number; // 状态 0:正常 1:归档
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人
-  deleteTime: string; // 删除时间 为NULL未删除
 }
 
 /**
  * 新增DTO
  */
 export interface AddDriveSpaceDto {
-  rootId: string; // 租户ID
-  deptId: string; // 部门ID
   name: string; // 空间名称
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
-  quotaUsed: string; // 已用配额(bytes)
   status: number; // 状态 0:正常 1:归档
 }
 
@@ -73,12 +51,9 @@ export interface AddDriveSpaceDto {
  */
 export interface EditDriveSpaceDto {
   id: string; // 空间ID
-  rootId: string; // 租户ID
-  deptId: string; // 部门ID
   name: string; // 空间名称
   remark: string; // 空间描述
   quotaLimit: string; // 配额限制(bytes)
-  quotaUsed: string; // 已用配额(bytes)
   status: number; // 状态 0:正常 1:归档
 }
 
