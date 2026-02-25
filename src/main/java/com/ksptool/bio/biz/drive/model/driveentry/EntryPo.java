@@ -1,8 +1,8 @@
 package com.ksptool.bio.biz.drive.model.driveentry;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.bio.biz.auth.common.aop.RowScopePo;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
+import com.ksptool.bio.biz.drive.common.aop.DriveSpacePo;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,11 +23,14 @@ import static com.ksptool.bio.biz.auth.service.SessionService.session;
 @Table(name = "drive_entry")
 @SQLDelete(sql = "UPDATE drive_entry SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
-public class EntryPo extends RowScopePo {
+public class EntryPo extends DriveSpacePo {
 
     @Column(name = "id", comment = "条目ID")
     @Id
     private Long id;
+
+    @Column(name = "drive_space_id", nullable = false, comment = "云盘空间ID")
+    private Long driveSpaceId;
 
     @Column(name = "root_id", nullable = false, comment = "公司/租户ID")
     private Long rootId;

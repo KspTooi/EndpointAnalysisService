@@ -4,6 +4,7 @@ package com.ksptool.bio.biz.drive.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.auth.common.aop.RowScope;
+import com.ksptool.bio.biz.drive.common.aop.DriveSpace;
 import com.ksptool.bio.biz.drive.model.driveentry.dto.*;
 import com.ksptool.bio.biz.drive.model.driveentry.vo.CheckEntryMoveVo;
 import com.ksptool.bio.biz.drive.model.driveentry.vo.GetDriveInfo;
@@ -41,6 +42,7 @@ public class EntryController {
     }
 
     @RowScope(requireRoot = true)
+    @DriveSpace
     @PreAuthorize("@auth.hasCode('drive:entry:view')")
     @PostMapping("/getEntryList")
     @Operation(summary = "查询条目列表")
