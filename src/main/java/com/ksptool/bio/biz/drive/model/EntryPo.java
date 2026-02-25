@@ -1,8 +1,9 @@
 package com.ksptool.bio.biz.drive.model;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.common.aop.RowScopePo;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +21,9 @@ import static com.ksptool.bio.biz.auth.service.SessionService.session;
 @Setter
 @Entity
 @Table(name = "drive_entry")
-@SQLDelete(sql = "UPDATE drive_entry SET delete_time = now() WHERE id = ?")
+@SQLDelete(sql = "UPDATE drive_entry SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
-public class EntryPo {
+public class EntryPo extends RowScopePo {
 
     @Column(name = "id", comment = "条目ID")
     @Id

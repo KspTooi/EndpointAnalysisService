@@ -35,8 +35,10 @@ import java.util.Arrays;
 public class EntryAccessContrller {
 
     private final Tika tika = new Tika();
+    
     @Autowired
     private EntryAccessService entryAccessService;
+
     @Autowired
     private DriveConfig driveConfig;
 
