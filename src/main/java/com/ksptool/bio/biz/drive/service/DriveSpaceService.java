@@ -269,6 +269,7 @@ public class DriveSpaceService {
 
                 //给成员发消息
                 and.setTitle("您在云盘空间 [ " + driveSpace.getName() + " ] 中的角色已被修改");
+                and.setKind(2);
                 var content = PreparedPrompt.prepare("""
                         您在云盘空间 [#{spaceName}] 中的角色已被 [#{operatorName}] 修改为 [#{role}] .
                         """);
@@ -301,6 +302,7 @@ public class DriveSpaceService {
 
                 //给成员发消息
                 and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
+                and.setKind(2);
                 var content = PreparedPrompt.prepare("""
                         您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
                         """);
@@ -326,6 +328,7 @@ public class DriveSpaceService {
 
                 //给部门发消息
                 and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
+                and.setKind(2);
                 var content = PreparedPrompt.prepare("""
                         您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
                         """);
@@ -359,13 +362,14 @@ public class DriveSpaceService {
 
         //给成员发消息
         and.setTitle("您已被从云盘空间 [ " + driveSpace.getName() + " ] 中移除");
+        and.setKind(1);
         var content = PreparedPrompt.prepare("""
                 您已被 [#{operatorName}] 从云盘空间 [#{spaceName}] 中移除.
                 """);
         content.setParameter("operatorName", session().getUsername());
         content.setParameter("spaceName", driveSpace.getName());
         and.setContent(content.execute());
-        and.setTargetKind(dsmToDelete.getMemberKind() == 0 ? 1 : 2); //发给用户或部门 1:部门 2:用户
+        and.setTargetKind(dsmToDelete.getMemberKind() == 0 ? 2 : 1); //发给用户或部门 1:部门 2:用户
         and.setTargetIds(Collections.singletonList(dsmToDelete.getMemberId()));
         noticeService.addNotice(and);
     }
