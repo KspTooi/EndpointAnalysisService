@@ -1,7 +1,7 @@
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 import { ElMessage } from "element-plus";
-import { ref, onUnmounted, type Ref, reactive, computed, type Reactive } from "vue";
+import { ref, onUnmounted, type Ref, reactive, computed, type Reactive, watch } from "vue";
 import type { CurrentDirPo, EntryPo, GetEntryListDto, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import type { EntryGridEmitter } from "@/views/drive/components/DriveEntryGrid.vue";
 import { DriveStore } from "@/views/drive/service/DriveStore";
@@ -506,6 +506,19 @@ export default {
       listLoad();
       selectedIds.value.clear();
     };
+
+    //监听云盘空间变更
+    watch(
+      () => DriveStore().getCurrentDriveSpace,
+      (newVal) => {
+        console.log("云盘空间变更", newVal);
+        //如果有变更 返回到root目录 并清空查询条件 然后重新加载
+        listQuery.directoryId = null;
+        listLoad();
+        selectedIds.value.clear();
+      },
+      { immediate: true, deep: true }
+    );
 
     return {
       redirectDirectory,
