@@ -67,7 +67,8 @@ public class DriveSpacePo {
             this.id = IdWorker.nextId();
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        var now = LocalDateTime.now();
+        var session = SessionService.session();
 
         if (this.createTime == null) {
             this.createTime = now;
@@ -78,12 +79,21 @@ public class DriveSpacePo {
         }
 
         if (this.creatorId == null) {
-            this.creatorId = SessionService.session().getUserId();
+            this.creatorId = session.getUserId();
         }
 
         if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
+            this.updaterId = session.getUserId();
         }
+
+        if(this.rootId == null){
+            this.rootId = session.getRootId();
+        }
+
+        if(this.deptId == null){
+            this.deptId = session.getDeptId();
+        }
+
     }
 
     @PreUpdate
