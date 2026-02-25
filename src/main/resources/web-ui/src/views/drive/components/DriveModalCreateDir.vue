@@ -37,6 +37,7 @@ import { reactive, ref, watch, nextTick } from "vue";
 import type { AddEntryDto, CurrentDirPo } from "@/views/drive/api/DriveTypes.ts";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
+import { DriveStore } from "@/views/drive/service/DriveStore";
 
 const props = defineProps<{
   currentDir: CurrentDirPo;
@@ -52,6 +53,7 @@ const nameInputRef = ref();
 const submitLoading = ref(false);
 
 const form = reactive<AddEntryDto>({
+  driveSpaceId: DriveStore().getCurrentDriveSpace.id,
   parentId: null,
   name: "",
   kind: 1,
@@ -104,6 +106,7 @@ const onSubmit = async () => {
 
     try {
       const result = await DriveApi.addEntry({
+        driveSpaceId: DriveStore().getCurrentDriveSpace.id,
         parentId: form.parentId || null,
         name: form.name.trim(),
         kind: 1,

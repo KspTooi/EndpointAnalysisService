@@ -20,8 +20,8 @@ export default {
    * 获取云盘信息
    * @returns 云盘信息
    */
-  getDriveInfo: async (): Promise<Result<GetDriveInfoVo>> => {
-    return await Http.postEntity<Result<GetDriveInfoVo>>("/drive/entry/getDriveInfo", {});
+  getDriveInfo: async (dto: DriveCommonIdDto): Promise<Result<GetDriveInfoVo>> => {
+    return await Http.postEntity<Result<GetDriveInfoVo>>("/drive/entry/getDriveInfo", dto);
   },
 
   /**

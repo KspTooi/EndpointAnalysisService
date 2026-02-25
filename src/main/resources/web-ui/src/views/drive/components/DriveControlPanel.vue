@@ -182,7 +182,7 @@ const formatSize = (bytes: string | number | null | undefined): string => {
 };
 
 const loadDriveInfo = async () => {
-  const result = await DriveApi.getDriveInfo();
+  const result = await DriveApi.getDriveInfo({ driveSpaceId: DriveStore().getCurrentDriveSpace.id });
   emit("refresh-drive-info", result);
   if (result.code === 0) {
     driveInfo.value = result.data;
@@ -190,7 +190,7 @@ const loadDriveInfo = async () => {
 };
 
 const onRefreshDriveInfo = async () => {
-  const result = await DriveApi.getDriveInfo();
+  const result = await DriveApi.getDriveInfo({ driveSpaceId: DriveStore().getCurrentDriveSpace.id });
   emit("refresh-drive-info", result);
   if (result.code === 0) {
     driveInfo.value = result.data;

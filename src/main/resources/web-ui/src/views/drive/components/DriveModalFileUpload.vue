@@ -39,6 +39,7 @@ import { Result } from "@/commons/entity/Result.ts";
 import Sha256Worker from "@/views/drive/workers/sha256.worker.ts?worker";
 import type { AddEntryDto } from "@/views/drive/api/DriveTypes.ts";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
+import { DriveStore } from "@/views/drive/service/DriveStore";
 
 export interface UploadQueueItem {
   file: File;
@@ -291,6 +292,7 @@ const uploadChunk = async (preCheckId: string, chunkId: number, chunk: Blob): Pr
 
 const createEntry = async (file: File, attachId: string, parentId: string | null) => {
   const addEntryDto: AddEntryDto = {
+    driveSpaceId: DriveStore().getCurrentDriveSpace.id,
     parentId: parentId,
     name: file.name,
     kind: 0,
