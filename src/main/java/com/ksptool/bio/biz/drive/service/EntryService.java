@@ -143,9 +143,9 @@ public class EntryService {
         if (dto.getKind() == 0) {
             var attachPo = attachRepository.findById(dto.getAttachId()).orElseThrow(() -> new BizException("指定的文件附件不存在."));
 
-            if (!Objects.equals(attachPo.getCreatorId(), userId)) {
-                throw new BizException("指定的文件附件不属于当前用户,无法新增驱动器条目.");
-            }
+            //if (!Objects.equals(attachPo.getCreatorId(), userId)) {
+            //    throw new BizException("指定的文件附件不属于当前用户,无法新增驱动器条目.");
+            //}
 
             insertPo.setKind(0);
             insertPo.setAttach(attachPo);
