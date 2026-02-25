@@ -3,6 +3,9 @@ package com.ksptool.bio.commons.aop;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.audit.service.AuditErrorRcdService;
+import com.ksptool.bio.biz.auth.common.exception.RootBindingException;
+import com.ksptool.bio.commons.web.ResultCode;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -125,6 +128,14 @@ public class GlobalExceptionHandler {
             log.error("请求处理失败=>{}[{}]{}载荷:{} 原因:{}", requestInfo.getUri(), requestInfo.getMethod(), appendMsg,
                     requestInfo.getBodySupplier().get(), ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * 处理用户未绑定租户异常
+     */
+    @ExceptionHandler(RootBindingException.class)
+    public Result<Object> handleRootBindingException(RootBindingException ex) {
+        return Result.error(ResultCode.REQUIRE_ROOT.getCode(), ResultCode.REQUIRE_ROOT.getMessage());
     }
 
 
