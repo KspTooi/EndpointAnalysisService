@@ -272,6 +272,7 @@ public class DriveSpaceService {
                 driveSpaceMemberRepository.save(existingDsm);
 
                 //给成员发消息
+                and.setTitle("您在云盘空间 [ " + driveSpace.getName() + " ] 中的角色已被修改");
                 var content = PreparedPrompt.prepare("""
                     您在云盘空间 [#{spaceName}] 中的角色已被 [#{operatorName}] 修改为 [#{role}] .
                     """);
@@ -303,6 +304,7 @@ public class DriveSpaceService {
                 driveSpaceMemberRepository.save(newDsmPo);
 
                 //给成员发消息
+                and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
                 var content = PreparedPrompt.prepare("""
                     您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
                     """);
@@ -327,6 +329,7 @@ public class DriveSpaceService {
                 driveSpaceMemberRepository.save(newDsmPo);
 
                 //给部门发消息
+                and.setTitle("您已被添加到云盘空间 [ " + driveSpace.getName() + " ]");
                 var content = PreparedPrompt.prepare("""
                     您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
                     """);
@@ -359,6 +362,7 @@ public class DriveSpaceService {
         driveSpaceMemberRepository.delete(dsmToDelete);
 
         //给成员发消息
+        and.setTitle("您已被从云盘空间 [ " + driveSpace.getName() + " ] 中移除");
         var content = PreparedPrompt.prepare("""
             您已被 [#{operatorName}] 从云盘空间 [#{spaceName}] 中移除.
             """);
