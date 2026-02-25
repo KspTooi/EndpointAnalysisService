@@ -18,6 +18,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 数据权限过滤器切面
+ * 用于在Hibernate查询时为Session启用数据权限过滤器
+ */
 @Aspect
 @Component
 public class DataScopeAspect {
