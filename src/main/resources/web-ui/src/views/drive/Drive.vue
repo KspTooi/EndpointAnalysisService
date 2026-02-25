@@ -272,7 +272,7 @@ const noSpaceAvailable = ref(false);
  */
 const goToCompanySetup = () => {
   router.push({
-    name: "company-manager",
+    name: "drive-space",
   });
 };
 
