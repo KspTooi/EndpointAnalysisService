@@ -1,25 +1,35 @@
 package com.ksptool.bio.biz.drivespace.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.hibernate.validator.constraints.Range;
+
+import jakarta.validation.constraints.Size;
 
 @Getter
 @Setter
 public class AddDriveSpaceDto {
 
-
-    @Schema(description="空间名称")
+    @NotBlank(message = "空间名称不能为空")
+    @Size(max = 80, min = 1, message = "空间名称长度必须在1-80个字符之间")
+    @Schema(description = "空间名称")
     private String name;
 
-    @Schema(description="空间描述")
+    @Size(max = 65535, message = "空间描述长度不能超过65535个字符")
+    @Schema(description = "空间描述")
     private String remark;
 
-    @Schema(description="配额限制(bytes)")
+    @NotNull(message = "配额限制不能为空")
+    @Range(min = 0, message = "配额限制不能小于0")
+    @Schema(description = "配额限制(bytes)")
     private Long quotaLimit;
 
-    @Schema(description="状态 0:正常 1:归档")
+    @NotNull(message = "状态不能为空")
+    @Range(min = 0, max = 1, message = "状态只能在0-1之间")
+    @Schema(description = "状态 0:正常 1:归档")
     private Integer status;
 
 }
-
