@@ -28,8 +28,11 @@ public class EntryPo {
     @Id
     private Long id;
 
-    @Column(name = "company_id", nullable = false, comment = "团队ID")
-    private Long companyId;
+    @Column(name = "root_id", nullable = false, comment = "公司/租户ID")
+    private Long rootId;
+
+    @Column(name = "dept_id", nullable = false, comment = "部门ID")
+    private Long deptId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT), comment = "父级ID 为NULL顶级")
@@ -57,17 +60,18 @@ public class EntryPo {
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @Column(name = "creator_id", nullable = false, comment = "创建人")
+    private Long creatorId;
+
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
+
+    @Column(name = "updater_id", nullable = false, comment = "更新人")
+    private Long updaterId;
 
     @Column(name = "delete_time", comment = "删除时间 为NULL未删除")
     private LocalDateTime deleteTime;
 
-    @Column(name = "creator_id", nullable = false, comment = "创建人")
-    private Long creatorId;
-
-    @Column(name = "updater_id", nullable = false, comment = "更新人")
-    private Long updaterId;
 
     //子级条目
     @BatchSize(size = 100)

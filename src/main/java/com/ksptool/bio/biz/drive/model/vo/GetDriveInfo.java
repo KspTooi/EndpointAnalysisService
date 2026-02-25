@@ -11,8 +11,10 @@ public class GetDriveInfo {
 
     //总容量
     private Long totalCapacity;
+    
     //已使用容量
     private Long usedCapacity;
+
     //对象数量
     private Long objectCount;
 
