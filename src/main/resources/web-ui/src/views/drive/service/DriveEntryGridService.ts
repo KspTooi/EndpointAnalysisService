@@ -512,7 +512,8 @@ export default {
       () => DriveStore().getCurrentDriveSpace,
       (newVal) => {
         console.log("云盘空间变更", newVal);
-        //如果有变更 返回到root目录 并清空查询条件 然后重新加载
+        //同步更新 driveSpaceId，否则 listLoad 仍会使用旧值
+        listQuery.driveSpaceId = newVal?.id ?? null;
         listQuery.directoryId = null;
         listLoad();
         selectedIds.value.clear();
