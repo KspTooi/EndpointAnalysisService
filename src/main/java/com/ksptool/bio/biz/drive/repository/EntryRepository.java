@@ -20,7 +20,6 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
     /**
      * 获取云盘信息
      *
-     * @param companyId 团队ID
      * @return 云盘信息
      */
     @Query("""
@@ -30,29 +29,26 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
                 COUNT(u)
             )
             FROM EntryPo u
-            WHERE u.companyId = :companyId
             """)
-    GetDriveInfo getDriveInfo(@Param("companyId") Long companyId);
+    GetDriveInfo getDriveInfo();
 
 
     @Query("""
             SELECT u FROM EntryPo u
             WHERE
             (:#{#keyword} IS NOT NULL OR ((:parentId IS NULL AND u.parent IS NULL) OR u.parent.id = :parentId)) AND
-            u.companyId = :companyId AND
             (:#{#keyword} IS NULL OR u.name LIKE CONCAT('%', :keyword, '%'))
             ORDER BY u.kind DESC,u.name ASC
             """)
-    Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, @Param("companyId") Long companyId, Pageable pageable);
+    Page<EntryPo> getEntryList(@Param("parentId") Long parentId, @Param("keyword") String keyword, Pageable pageable);
 
     @Query("""
             SELECT COUNT(t) FROM EntryPo t
             WHERE
             ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
-            t.companyId = :companyId AND
             t.name = :name
             """)
-    long countByName(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
+    long countByName(@Param("parentId") Long parentId, @Param("name") String name);
 
 
     /**
@@ -100,43 +96,39 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
     /**
      * 根据ID和公司ID查询条目
      *
-     * @param id        条目ID
-     * @param companyId 公司ID
+     * @param ids 条目IDS
      * @return 条目
      */
     @Query("""
             SELECT t FROM EntryPo t
-            WHERE t.id IN :ids AND t.companyId = :companyId
+            WHERE t.id IN :ids
             """)
-    List<EntryPo> getByIdAndCompanyIds(@Param("ids") List<Long> ids, @Param("companyId") Long companyId);
+    List<EntryPo> getByIdAndCompanyIds(@Param("ids") List<Long> ids);
 
     /**
      * 根据ID和公司ID查询条目
      *
-     * @param id        条目ID
-     * @param companyId 公司ID
+     * @param id 条目ID
      * @return 条目
      */
     @Query("""
-            SELECT t FROM EntryPo t WHERE t.id = :id AND t.companyId = :companyId
+            SELECT t FROM EntryPo t WHERE t.id = :id
             """)
-    EntryPo getByIdAndCompanyId(@Param("id") Long id, @Param("companyId") Long companyId);
+    EntryPo getByIdAndCompanyId(@Param("id") Long id);
 
     /**
      * 根据名称和父级目录ID和公司ID统计条目数量
      *
-     * @param companyId 公司ID
-     * @param parentId  父级目录ID
-     * @param name      名称
+     * @param parentId 父级目录ID
+     * @param name     名称
      * @return 条目数量
      */
     @Query("""
             SELECT COUNT(t) FROM EntryPo t
-            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND 
-            t.companyId = :companyId AND        
+            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND      
             t.name = :name
             """)
-    Long countByNameParentIdAndCompanyId(@Param("companyId") Long companyId, @Param("parentId") Long parentId, @Param("name") String name);
+    Long countByNameParentIdAndCompanyId(@Param("parentId") Long parentId, @Param("name") String name);
 
 
     /**
@@ -150,36 +142,33 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
             SELECT DISTINCT t.name FROM EntryPo t
             WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
             t.name IN :names AND
-            t.companyId = :companyId
             ORDER BY t.name ASC
             """)
-    Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
+    Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId);
 
 
     /**
      * 根据名称和父级目录ID和公司ID逻辑删除条目
      *
-     * @param names     名称列表
-     * @param parentId  父级目录ID
-     * @param companyId 公司ID
+     * @param names    名称列表
+     * @param parentId 父级目录ID
      * @return 更新条数
      */
     @Modifying
     @Query("""
-            UPDATE EntryPo t SET t.deleteTime = now() WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND t.name IN :names AND t.companyId = :companyId AND t.deleteTime IS NULL
+            UPDATE EntryPo t SET t.deleteTime = now() WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND t.name IN :names AND t.deleteTime IS NULL
             """)
-    int removeByNameAndParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId, @Param("companyId") Long companyId);
+    int removeByNameAndParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId);
 
     /**
      * 根据ID列表获取名称列表
      *
-     * @param ids       ID列表
-     * @param companyId 公司ID
+     * @param ids ID列表
      * @return 名称列表
      */
     @Query("""
-            SELECT DISTINCT t.name FROM EntryPo t WHERE t.id IN :ids AND t.companyId = :companyId
+            SELECT DISTINCT t.name FROM EntryPo t WHERE t.id IN :ids
             """)
-    Set<String> getNamesByIds(@Param("ids") List<Long> ids, @Param("companyId") Long companyId);
+    Set<String> getNamesByIds(@Param("ids") List<Long> ids);
 
 }
