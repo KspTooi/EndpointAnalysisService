@@ -156,7 +156,7 @@ public class DriveSpaceService {
         //先准备好要发送的消息
         var and = new AddNoticeDto();
         and.setTitle("云盘空间邀请 : " + insertPo.getName());
-        and.setKind(1);
+        and.setKind(2);
 
         var content = PreparedPrompt.prepare("""
                 您已被 [#{inviterName}] 邀请加入云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
@@ -181,6 +181,7 @@ public class DriveSpaceService {
 
             roleName = role == 0 ? "主管理员" : role == 1 ? "行政管理员" : role == 2 ? "编辑者" : "查看者";
             content.setParameter("role", roleName);
+            and.setTargetKind(2);
             and.setContent(content.execute());
             and.setTargetIds(targetUserIdsMap.get(role));
             noticeService.addNotice(and);
@@ -194,6 +195,7 @@ public class DriveSpaceService {
 
             roleName = role == 0 ? "主管理员" : role == 1 ? "行政管理员" : role == 2 ? "编辑者" : "查看者";
             content.setParameter("role", roleName);
+            and.setTargetKind(1);
             and.setContent(content.execute());
             and.setTargetIds(targetDeptIdsMap.get(role));
             noticeService.addNotice(and);
