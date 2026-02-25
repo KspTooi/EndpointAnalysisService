@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { Search, Upload, Coin, Box } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
@@ -140,7 +140,7 @@ const driveStore = DriveStore();
 const { currentDirPaths } = storeToRefs(driveStore);
 
 //云盘空间选择器
-const { spaceList, spaceLoading } = DriveSpaceService.useDriveSpaceSelector();
+const { spaceList, spaceLoading, loadSpaceList } = DriveSpaceService.useDriveSpaceSelector();
 const selectedSpaceId = ref<string>(driveStore.currentDriveSpace?.id ?? "");
 
 /**
@@ -296,14 +296,19 @@ const onPathClick = (path: GetEntryListPathVo | null) => {
   emit("on-path-change", path as any);
 };
 
-onMounted(() => {
-  //如果没有任何空间则不进行任何操作
-  if (!spaceList.value.length) {
-    emit("no-space-available");
-    return;
-  }
+onMounted(async () => {
+  //先加载空间列表(这应该会触发watch 如果有有效空间则自动选择第一个空间)
+  await loadSpaceList();
 
-  loadDriveInfo();
+  nextTick(() => {
+    //如果没有任何空间则不进行任何操作
+    if (!spaceList.value.length) {
+      emit("no-space-available");
+      return;
+    }
+
+    loadDriveInfo();
+  });
 });
 </script>
 

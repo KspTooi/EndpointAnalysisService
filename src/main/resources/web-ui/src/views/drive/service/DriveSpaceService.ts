@@ -52,9 +52,9 @@ export default {
       spaceLoading.value = false;
     };
 
-    onMounted(async () => {
+    /* onMounted(async () => {
       await loadSpaceList();
-    });
+    }); */
 
     return {
       spaceList,
