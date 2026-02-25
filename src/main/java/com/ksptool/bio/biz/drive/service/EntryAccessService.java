@@ -33,10 +33,13 @@ import java.util.zip.ZipOutputStream;
 public class EntryAccessService {
 
     private static final Gson gson = new Gson();
+
     @Autowired
     private AttachService attachService;
+
     @Autowired
     private EntryRepository entryRepository;
+
     @Autowired
     private DriveConfig driveConfig;
 
@@ -45,15 +48,13 @@ public class EntryAccessService {
      *
      * @param ids 条目IDS
      * @return 条目对象签名
-     * @throws BizException
-     * @throws AuthException
      */
     public String getEntrySign(List<Long> ids) throws BizException, AuthException {
 
         //单文件签名
         if (ids.size() < 2) {
 
-            var entryPo = entryRepository.getByIdAndCompanyId(ids.getFirst(), SessionService.session().getCompanyId());
+            var entryPo = entryRepository.getEntryById(ids.getFirst());
 
             if (entryPo == null) {
                 throw new BizException("条目不存在!");
@@ -85,7 +86,7 @@ public class EntryAccessService {
         }
 
         //多文件签名
-        var entryPos = entryRepository.getByIdAndCompanyIds(ids, SessionService.session().getCompanyId());
+        var entryPos = entryRepository.getEntryByIds(ids);
 
         if (entryPos.isEmpty() || (entryPos.size() != ids.size())) {
             throw new BizException("至少有一个文件不存在或无权限访问!");
@@ -118,10 +119,8 @@ public class EntryAccessService {
      *
      * @param signVo 签名信息
      * @return 资源
-     * @throws BizException
-     * @throws AuthException
      */
-    public Resource downloadEntry(EntrySignVo signVo) throws BizException, AuthException {
+    public Resource downloadEntry(EntrySignVo signVo) throws BizException {
 
         if (signVo.getEk() != 0) {
             throw new BizException("不支持的文件类型! ");
@@ -145,7 +144,7 @@ public class EntryAccessService {
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
-        var entries = entryRepository.getByIdAndCompanyIds(idList, signVo.getCid());
+        var entries = entryRepository.getEntryByIds(idList);
 
         if (entries.isEmpty() || (entries.size() != idList.size())) {
             throw new BizException("至少有一个文件不存在或无权限访问!");
@@ -202,9 +201,7 @@ public class EntryAccessService {
      */
     public Map<Long, File> getEntryFiles(List<Long> entryIds) throws BizException, AuthException {
 
-        var companyId = SessionService.session().getCompanyId();
-
-        var entryPos = entryRepository.getByIdAndCompanyIds(entryIds, companyId);
+        var entryPos = entryRepository.getEntryByIds(entryIds);
 
         if (entryPos.isEmpty()) {
             throw new BizException("要获取的条目不存在或无权限访问");

@@ -103,7 +103,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
             SELECT t FROM EntryPo t
             WHERE t.id IN :ids
             """)
-    List<EntryPo> getByIdAndCompanyIds(@Param("ids") List<Long> ids);
+    List<EntryPo> getEntryByIds(@Param("ids") List<Long> ids);
 
     /**
      * 根据ID和公司ID查询条目
@@ -114,7 +114,7 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
     @Query("""
             SELECT t FROM EntryPo t WHERE t.id = :id
             """)
-    EntryPo getByIdAndCompanyId(@Param("id") Long id);
+    EntryPo getEntryById(@Param("id") Long id);
 
     /**
      * 根据名称和父级目录ID和公司ID统计条目数量
@@ -125,10 +125,10 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
      */
     @Query("""
             SELECT COUNT(t) FROM EntryPo t
-            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND      
+            WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
             t.name = :name
             """)
-    Long countByNameParentIdAndCompanyId(@Param("parentId") Long parentId, @Param("name") String name);
+    Long countByNameParentId(@Param("parentId") Long parentId, @Param("name") String name);
 
 
     /**
@@ -141,8 +141,8 @@ public interface EntryRepository extends JpaRepository<EntryPo, Long>, JpaSpecif
     @Query("""
             SELECT DISTINCT t.name FROM EntryPo t
             WHERE ((:parentId IS NULL AND t.parent IS NULL) OR t.parent.id = :parentId) AND
-            t.name IN :names AND
-            ORDER BY t.name ASC
+            t.name IN :names
+            ORDER BY t.name DESC
             """)
     Set<String> matchNamesByParentId(@Param("names") Set<String> names, @Param("parentId") Long parentId);
 

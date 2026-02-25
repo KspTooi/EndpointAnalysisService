@@ -69,7 +69,7 @@ public class EntryService {
 
         //查询目录详情
         if (dto.getDirectoryId() != null) {
-            var dirEntryPo = repository.getByIdAndCompanyId(dto.getDirectoryId());
+            var dirEntryPo = repository.getEntryById(dto.getDirectoryId());
 
             if (dirEntryPo == null || dirEntryPo.getKind() != 1) {
                 throw new BizException("指定的目录不存在或无权限访问");
@@ -179,7 +179,7 @@ public class EntryService {
     public void copyEntry(CopyEntryDto dto) throws BizException, Exception {
 
         //查询要复制的条目
-        var entryPos = repository.getByIdAndCompanyIds(dto.getEntryIds());
+        var entryPos = repository.getEntryByIds(dto.getEntryIds());
 
         if (entryPos.isEmpty()) {
             throw new BizException("要复制的条目不存在或无权限访问");
@@ -189,7 +189,7 @@ public class EntryService {
         EntryPo parentPo = null;
 
         if (dto.getParentId() != null) {
-            parentPo = repository.getByIdAndCompanyId(dto.getParentId());
+            parentPo = repository.getEntryById(dto.getParentId());
 
             if (parentPo == null) {
                 throw new BizException("指定的父级条目不存在或无权限访问");
@@ -253,7 +253,7 @@ public class EntryService {
             return true;
         }
         // 2. 再看数据库里是否已存在
-        return repository.countByNameParentIdAndCompanyId(parentId, name) > 0;
+        return repository.countByNameParentId(parentId, name) > 0;
     }
 
 
@@ -274,7 +274,7 @@ public class EntryService {
             parentId = updatePo.getParent().getId();
         }
 
-        if (repository.countByNameParentIdAndCompanyId(parentId, dto.getName()) > 0) {
+        if (repository.countByNameParentId(parentId, dto.getName()) > 0) {
             throw new BizException("此位置已存在同名文件,无法重命名.");
         }
         updatePo.setName(dto.getName());
@@ -298,7 +298,7 @@ public class EntryService {
         //移动到非根目录 
         if (dto.getTargetId() != null) {
 
-            var targetEntryPo = repository.getByIdAndCompanyId(dto.getTargetId());
+            var targetEntryPo = repository.getEntryById(dto.getTargetId());
 
             if (targetEntryPo == null) {
                 ret.setCanMove(2);
@@ -356,7 +356,7 @@ public class EntryService {
         //移动到非根目录
         if (dto.getTargetId() != null) {
 
-            targetDir = repository.getByIdAndCompanyId(dto.getTargetId());
+            targetDir = repository.getEntryById(dto.getTargetId());
 
             if (targetDir == null) {
                 throw new BizException("目标条目不存在或无权限访问.");
@@ -374,7 +374,7 @@ public class EntryService {
 
 
         //查找被移动条目
-        var moveEntryPos = repository.getByIdAndCompanyIds(dto.getEntryIds());
+        var moveEntryPos = repository.getEntryByIds(dto.getEntryIds());
 
         if (moveEntryPos.isEmpty()) {
             throw new BizException("要移动的条目不存在或无权限访问.");
@@ -464,8 +464,8 @@ public class EntryService {
     /**
      * 递归复制条目
      *
-     * @param sourcePo  源条目
-     * @param parentPo  父级条目
+     * @param sourcePo 源条目
+     * @param parentPo 父级条目
      * @return 新条目
      */
     private EntryPo copyEntryRecursive(EntryPo sourcePo, EntryPo parentPo) throws BizException {
