@@ -167,6 +167,11 @@ const roleClass = (role: number): string => {
 //列表加载完成后：校验持久化ID有效性，失效则自动选第一个，没有空间则向上通知
 watch(spaceList, (list) => {
   if (!list.length) {
+    //清除已失效的持久化数据
+    if (selectedSpaceId.value) {
+      selectedSpaceId.value = "";
+      driveStore.setCurrentDriveSpace(null);
+    }
     emit("no-space-available");
     return;
   }
