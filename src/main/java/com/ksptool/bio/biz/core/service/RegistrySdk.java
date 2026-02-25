@@ -5,6 +5,8 @@ import com.ksptool.bio.biz.core.repository.RegistryRepository;
 import com.ksptool.bio.commons.dataprocess.Str;
 import com.ksptool.bio.commons.utils.RegistryTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +22,13 @@ public class RegistrySdk {
     private RegistryRepository repository;
 
     /**
-     * 获取整数条目值
+     * 获取整数条目值(这是一个带有缓存的函数)
      *
      * @param keyPath      全路径
      * @param defaultValue 默认值
      * @return 配置值
      */
+    @Cacheable(value = "registry", key = "#keyPath")
     public int getInt(String keyPath, int defaultValue) {
 
         if (Str.isBlank(keyPath)) {
@@ -50,12 +53,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 获取浮点条目值
+     * 获取浮点条目值(这是一个带有缓存的函数)
      *
      * @param keyPath      全路径
      * @param defaultValue 默认值
      * @return 配置值
      */
+    @Cacheable(value = "registry", key = "#keyPath")
     public double getDouble(String keyPath, double defaultValue) {
 
         if (Str.isBlank(keyPath)) {
@@ -80,12 +84,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 获取字串条目值
+     * 获取字串条目值(这是一个带有缓存的函数)
      *
      * @param keyPath      全路径
      * @param defaultValue 默认值
      * @return 配置值
      */
+    @Cacheable(value = "registry", key = "#keyPath")
     public String getString(String keyPath, String defaultValue) {
         if (Str.isBlank(keyPath)) {
             return defaultValue;
@@ -109,12 +114,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 获取日期时间条目值
+     * 获取日期时间条目值(这是一个带有缓存的函数)
      *
      * @param keyPath      全路径
      * @param defaultValue 默认值
      * @return 配置值
      */
+    @Cacheable(value = "registry", key = "#keyPath")
     public LocalDateTime getDateTime(String keyPath, LocalDateTime defaultValue) {
         if (Str.isBlank(keyPath)) {
             return defaultValue;
@@ -138,12 +144,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 设置整数条目值
+     * 设置整数条目值(这会清除指定keyPath的缓存)
      *
      * @param keyPath 全路径
      * @param value   值
      * @return 是否成功
      */
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean setInt(String keyPath, int value) {
 
         if (Str.isBlank(keyPath)) {
@@ -168,12 +175,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 设置浮点条目值
+     * 设置浮点条目值(这会清除指定keyPath的缓存)
      *
      * @param keyPath 全路径
      * @param nvalue  值
      * @return 是否成功
      */
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean setDouble(String keyPath, double nvalue) {
         if (Str.isBlank(keyPath)) {
             return false;
@@ -198,12 +206,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 设置字串条目值
+     * 设置字串条目值(这会清除指定keyPath的缓存)
      *
      * @param keyPath 全路径
      * @param nvalue  值
      * @return 是否成功
      */
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean setString(String keyPath, String nvalue) {
         if (Str.isBlank(keyPath)) {
             return false;
@@ -227,12 +236,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 设置日期时间条目值
+     * 设置日期时间条目值(这会清除指定keyPath的缓存)
      *
      * @param keyPath 全路径
      * @param nvalue  值
      * @return 是否成功
      */
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean setDateTime(String keyPath, LocalDateTime nvalue) {
         if (Str.isBlank(keyPath)) {
             return false;
