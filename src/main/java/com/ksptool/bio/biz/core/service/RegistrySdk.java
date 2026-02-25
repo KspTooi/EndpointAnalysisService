@@ -15,6 +15,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 注册表SDK 
+ * 这个类提供了注册表的常用操作，包括获取、设置、删除、创建等操作。
+ * 这个类使用了Spring Cache来缓存注册表的值，以提高性能。
+ */
 @Service
 public class RegistrySdk {
 
@@ -302,6 +307,7 @@ public class RegistrySdk {
      * @param nodeKeyPath 节点全路径
      * @return 注册表条目列表
      */
+    @Cacheable(value = "registry", key = "#nodeKeyPath")
     public List<RegistryPo> getEntries(String nodeKeyPath) {
 
         if (Str.isBlank(nodeKeyPath)) {
@@ -456,7 +462,7 @@ public class RegistrySdk {
     }
 
     /**
-     * 创建注册表条目
+     * 创建注册表条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath    父节点全路径
      * @param nkey       条目Key
@@ -466,6 +472,7 @@ public class RegistrySdk {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     protected boolean createEntry(String keyPath, String nkey, int nvalueKind, String nvalue, String label) {
 
         // 空值校验
@@ -545,7 +552,7 @@ public class RegistrySdk {
     }
 
     /**
-     * 创建字串类型条目
+     * 创建字串类型条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath 父节点全路径
      * @param nkey    条目Key
@@ -554,12 +561,13 @@ public class RegistrySdk {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean createStringEntry(String keyPath, String nkey, String value, String label) {
         return createEntry(keyPath, nkey, 0, value, label);
     }
 
     /**
-     * 创建整数类型条目
+     * 创建整数类型条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath 父节点全路径
      * @param nkey    条目Key
@@ -568,12 +576,13 @@ public class RegistrySdk {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean createIntEntry(String keyPath, String nkey, int value, String label) {
         return createEntry(keyPath, nkey, 1, String.valueOf(value), label);
     }
 
     /**
-     * 创建浮点类型条目
+     * 创建浮点类型条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath 父节点全路径
      * @param nkey    条目Key
@@ -582,12 +591,13 @@ public class RegistrySdk {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean createDoubleEntry(String keyPath, String nkey, double value, String label) {
         return createEntry(keyPath, nkey, 2, String.valueOf(value), label);
     }
 
     /**
-     * 创建日期时间类型条目
+     * 创建日期时间类型条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath 父节点全路径
      * @param nkey    条目Key
@@ -596,6 +606,7 @@ public class RegistrySdk {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean createDateTimeEntry(String keyPath, String nkey, LocalDateTime value, String label) {
 
         if (value == null) {
@@ -606,12 +617,13 @@ public class RegistrySdk {
     }
 
     /**
-     * 删除注册表条目
+     * 删除注册表条目(这会清除指定keyPath的缓存)
      *
      * @param keyPath 条目全路径
      * @return 是否成功
      */
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "registry", key = "#keyPath")
     public boolean removeEntry(String keyPath) {
 
         // 空值校验
