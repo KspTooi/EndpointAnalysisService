@@ -420,11 +420,10 @@ const openDeptSelect = async () => {
   flex-shrink: 0;
   height: 160px;
   border-top: 1px dashed var(--el-border-color-lighter);
-  margin-top: 12px;
 }
 
 .role-guide-scrollbar :deep(.el-scrollbar__view) {
-  padding-bottom: 12px;
+  padding-bottom: 16px;
   box-sizing: border-box;
 }
 
