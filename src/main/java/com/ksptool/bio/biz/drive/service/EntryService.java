@@ -60,8 +60,6 @@ public class EntryService {
      */
     public GetEntryListVo getEntryList(GetEntryListDto dto) throws Exception, BizException {
 
-        Long companyId = session().getCompanyId();
-
         Long dirId = null;
         String dirName = null;
         Long dirParentId = null;
