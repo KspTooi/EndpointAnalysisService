@@ -1,16 +1,16 @@
 package com.ksptool.bio.biz.drive.service;
 
 import com.google.gson.Gson;
-import com.ksptool.bio.biz.drive.model.EntryPo;
-import com.ksptool.bio.biz.drive.model.vo.EntrySignVo;
-import com.ksptool.bio.biz.drive.repository.EntryRepository;
-import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
-import com.ksptool.bio.commons.utils.Base64;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.service.AttachService;
+import com.ksptool.bio.biz.drive.model.EntryPo;
+import com.ksptool.bio.biz.drive.model.vo.EntrySignVo;
+import com.ksptool.bio.biz.drive.repository.EntryRepository;
+import com.ksptool.bio.biz.drive.utils.DriveEntrySignUtils;
 import com.ksptool.bio.commons.config.DriveConfig;
+import com.ksptool.bio.commons.utils.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -71,7 +71,7 @@ public class EntryAccessService {
 
             //生成签名
             var params = new HashMap<String, Object>();
-            params.put("cid", entryPo.getCompanyId());
+            params.put("cid", entryPo.getRootId());
             params.put("eid", entryPo.getId());
             params.put("aid", attach.getId());
             params.put("ek", entryPo.getKind());
