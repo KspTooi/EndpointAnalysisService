@@ -16,10 +16,19 @@
           <template #prefix>
             <el-icon><Box /></el-icon>
           </template>
+          <template #label="{ label }">
+            <div class="space-select-label">
+              <span>{{ label }}</span>
+              <span v-if="driveStore.currentDriveSpace" :class="roleClass(driveStore.currentDriveSpace.myRole)" class="space-role-tag">
+                {{ roleLabel(driveStore.currentDriveSpace.myRole) }}
+              </span>
+            </div>
+          </template>
           <el-option v-for="space in spaceList" :key="space.id" :label="space.name" :value="space.id">
             <div class="space-option">
               <el-icon><Box /></el-icon>
-              <span>{{ space.name }}</span>
+              <span class="space-option-name">{{ space.name }}</span>
+              <span :class="roleClass(space.myRole)" class="space-role-tag">{{ roleLabel(space.myRole) }}</span>
             </div>
           </el-option>
         </el-select>
@@ -138,15 +147,45 @@ const onSpaceChange = (id: string) => {
   driveStore.setCurrentDriveSpace(space);
 };
 
-//列表加载完成后：未选择过空间则自动选第一个，没有空间则向上通知
+const roleLabel = (role: number): string => {
+  if (role === 0) return "主管理员";
+  if (role === 1) return "行政管理员";
+  if (role === 2) return "编辑者";
+  if (role === 3) return "查看者";
+  if (role === -1) return "超级权限";
+  return "";
+};
+
+const roleClass = (role: number): string => {
+  if (role === 0) return "role-danger";
+  if (role === 1) return "role-primary";
+  if (role === 2) return "role-success";
+  if (role === -1) return "role-success";
+  return "role-info";
+};
+
+//列表加载完成后：校验持久化ID有效性，失效则自动选第一个，没有空间则向上通知
 watch(spaceList, (list) => {
   if (!list.length) {
     emit("no-space-available");
     return;
   }
-  if (selectedSpaceId.value) {
-    return;
+
+  //检查持久化的空间ID在当前列表中是否仍然有效
+  const savedId = selectedSpaceId.value;
+  if (savedId) {
+    const stillValid = list.find((s) => s.id === savedId);
+    if (stillValid) {
+      //持久化ID有效，用列表中最新的数据更新store（myRole等字段可能已变）
+      driveStore.setCurrentDriveSpace(stillValid);
+      return;
+    }
+    //持久化ID已失效（被移除），清空后降级到自动选第一个
+    ElMessage.warning("您已被移出原云盘空间，已自动切换至可用空间");
+    selectedSpaceId.value = "";
+    driveStore.setCurrentDriveSpace(null);
   }
+
   selectedSpaceId.value = list[0].id;
   driveStore.setCurrentDriveSpace(list[0]);
 }, { once: true });
@@ -310,6 +349,35 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
 }
+
+.space-option-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.space-select-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.space-role-tag {
+  font-size: 11px;
+  padding: 0 5px;
+  height: 16px;
+  line-height: 16px;
+  border-radius: 0;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.role-danger  { color: var(--el-color-danger); }
+.role-primary { color: var(--el-color-primary); }
+.role-success { color: var(--el-color-success); }
+.role-info    { color: var(--el-color-info); }
 
 .space-select :deep(.el-input__wrapper) {
   border-radius: 0 !important;
