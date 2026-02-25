@@ -295,6 +295,17 @@ public class DriveSpaceService {
 
             //存在就改(只能改角色,不能改成员类型和成员ID)
             if (existingDsm != null) {
+
+                //如果我是行政管理员,我不可以改主管理员和其他行政管理员
+                if (myBestRole == 1) {
+                    if (existingDsm.getRole() == 0) {
+                        throw new BizException("行政管理员不能修改主管理员.");
+                    }
+                    if (existingDsm.getRole() == 1) {
+                        throw new BizException("行政管理员不能修改其他行政管理员.");
+                    }
+                }
+
                 existingDsm.setRole(dto.getRole());
                 driveSpaceMemberRepository.save(existingDsm);
 
@@ -321,8 +332,20 @@ public class DriveSpaceService {
                 return;
             }
 
-            //不存在就加 先处理加成员
+            //不存在就加 先处理加用户
+            //但是在这之前要判断一下我要加的成员是不是主管理员或行政管理员 如果我是行政管理员,我不可以加主管理员和其他行政管理员
+            if (myBestRole == 1) {
+                if (dto.getRole() == 0) {
+                    throw new BizException("行政管理员不能添加主管理员.");
+                }
+                if (dto.getRole() == 1) {
+                    throw new BizException("行政管理员不能添加其他行政管理员.");
+                }
+            }
+
+            //继续处理加用户
             if (dto.getMemberKind() == 0) {
+
                 userRepository.findById(dto.getMemberId()).orElseThrow(() -> new BizException("用户 [ " + dto.getMemberId() + " ] 不存在,无法添加到云盘空间!"));
                 var newDsmPo = new DriveSpaceMemberPo();
                 newDsmPo.setDriveSpaceId(dto.getDriveSpaceId());
@@ -386,6 +409,16 @@ public class DriveSpaceService {
         //不能删主管理员
         if (dsmToDelete.getRole() == 0) {
             throw new BizException("不能删除主管理员.");
+        }
+
+        //如果我是行政管理员,我不可以删主管理员和其他行政管理员
+        if (myBestRole == 1) {
+            if (dsmToDelete.getRole() == 0) {
+                throw new BizException("行政管理员不能删除主管理员.");
+            }
+            if (dsmToDelete.getRole() == 1) {
+                throw new BizException("行政管理员不能删除其他行政管理员.");
+            }
         }
 
         //删除成员
