@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { Search, Upload, Coin, Box } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
@@ -117,6 +117,7 @@ const emit = defineEmits<{
   (e: "open-upload-queue"): void; //打开上传队列
   (e: "refresh-drive-info", result: Result<GetDriveInfoVo>): void; //刷新云盘信息
   (e: "on-path-change", path: GetEntryListPathVo): void; //当前目录路径变更
+  (e: "no-space-available"): void; //没有可用的云盘空间
 }>();
 
 const keyword = ref("");
@@ -136,6 +137,19 @@ const onSpaceChange = (id: string) => {
   const space = spaceList.value.find((s) => s.id === id) ?? null;
   driveStore.setCurrentDriveSpace(space);
 };
+
+//列表加载完成后：未选择过空间则自动选第一个，没有空间则向上通知
+watch(spaceList, (list) => {
+  if (!list.length) {
+    emit("no-space-available");
+    return;
+  }
+  if (selectedSpaceId.value) {
+    return;
+  }
+  selectedSpaceId.value = list[0].id;
+  driveStore.setCurrentDriveSpace(list[0]);
+}, { once: true });
 
 const reversedPaths = computed(() => {
   return [...currentDirPaths.value].reverse();

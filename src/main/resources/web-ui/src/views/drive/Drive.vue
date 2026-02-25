@@ -1,25 +1,25 @@
 <template>
-  <div class="no-active-company" v-if="noActiveCompany" style="width: 100%">
-    <el-empty description="暂无激活的团队">
+  <div class="no-active-company" v-if="noSpaceAvailable" style="width: 100%">
+    <el-empty>
       <template #description>
         <div class="empty-description">
-          <h3>您还没有激活或创建团队</h3>
-          <p>请先激活或创建一个团队，然后才能使用团队云盘</p>
+          <h3>暂无可用的云盘空间</h3>
+          <p>您尚未加入任何云盘空间，请联系管理员为您分配</p>
         </div>
       </template>
-      <el-button type="primary" @click="goToCompanySetup">前往团队设置</el-button>
+      <el-button type="primary" @click="goToCompanySetup">前往空间管理</el-button>
     </el-empty>
   </div>
 
-  <div class="list-container no-outline" ref="containerRef" v-if="!noActiveCompany">
+  <div class="list-container no-outline" ref="containerRef" v-if="!noSpaceAvailable">
     <!-- 控制面板 -->
     <DriveControlPanel
       :entry-count="entryTotal"
       :upload-count="inQueueUploadCount"
       @on-search="updateQueryKeyword"
       @open-upload-queue="openFileUploadModal"
-      @refresh-drive-info="refreshDriveInfo"
       @on-path-change="onPathChange"
+      @no-space-available="noSpaceAvailable = true"
     />
     <!-- {{ isFocused }} -->
 
@@ -93,7 +93,6 @@ import ElementFocusService from "@/service/ElmentFocusService";
 import GenricHotkeyService from "@/service/GenricHotkeyService";
 import type Result from "@/commons/entity/Result";
 import { useRouter } from "vue-router";
-
 const router = useRouter();
 
 const inQueueUploadCount = ref(0); //正在上传的文件数量
@@ -266,21 +265,10 @@ const onQueueUpdate = (queue: UploadQueueItem[]) => {
   inQueueUploadCount.value = count;
 };
 
-const noActiveCompany = ref(false);
+const noSpaceAvailable = ref(false);
 
 /**
- * 刷新云盘信息
- * @param result 云盘信息
- */
-const refreshDriveInfo = (result: Result<GetDriveInfoVo>) => {
-  if (result.code != 0) {
-    noActiveCompany.value = true;
-    return;
-  }
-};
-
-/**
- * 前往团队设置
+ * 前往空间管理
  */
 const goToCompanySetup = () => {
   router.push({
