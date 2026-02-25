@@ -1,15 +1,14 @@
 package com.ksptool.bio.biz.drive.repository;
 
 import com.ksptool.bio.biz.drive.model.drivespacemember.DriveSpaceMemberPo;
-
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface DriveSpaceMemberRepository extends JpaRepository<DriveSpaceMemberPo, Long> {
@@ -39,7 +38,7 @@ public interface DriveSpaceMemberRepository extends JpaRepository<DriveSpaceMemb
     @Query("""
             SELECT u FROM DriveSpaceMemberPo u
             WHERE
-            u.driveSpace.id = :#{#driveSpaceId}
+            u.driveSpaceId = :#{#driveSpaceId}
             """)
     List<DriveSpaceMemberPo> getByDriveSpaceId(@Param("driveSpaceId") Long driveSpaceId);
 
@@ -47,13 +46,13 @@ public interface DriveSpaceMemberRepository extends JpaRepository<DriveSpaceMemb
      * 查询云盘空间下的某个成员
      *
      * @param driveSpaceId 云盘空间ID
-     * @param memberId 成员ID
+     * @param memberId     成员ID
      * @return 云盘空间成员
      */
     @Query("""
             SELECT u FROM DriveSpaceMemberPo u
             WHERE
-            u.driveSpace.id = :#{#driveSpaceId}
+            u.driveSpaceId = :#{#driveSpaceId}
             AND u.memberId = :#{#memberId}
             """)
     DriveSpaceMemberPo getByDriveSpaceIdAndMemberId(@Param("driveSpaceId") Long driveSpaceId, @Param("memberId") Long memberId);
