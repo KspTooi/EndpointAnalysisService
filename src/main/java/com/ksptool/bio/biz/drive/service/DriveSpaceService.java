@@ -54,6 +54,7 @@ public class DriveSpaceService {
     @Transactional(rollbackFor = Exception.class)
     public void addDriveSpace(AddDriveSpaceDto dto) {
         DriveSpacePo insertPo = as(dto, DriveSpacePo.class);
+        insertPo.setQuotaUsed(0L);
         repository.save(insertPo);
     }
 

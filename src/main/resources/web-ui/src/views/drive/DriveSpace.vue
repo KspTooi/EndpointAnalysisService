@@ -11,7 +11,10 @@
             <el-input v-model="listForm.remark" placeholder="输入空间描述" clearable />
           </el-form-item>
           <el-form-item label="状态">
-            <el-input v-model.number="listForm.status" placeholder="输入状态 0:正常 1:归档" clearable />
+            <el-select v-model="listForm.status" placeholder="全部" clearable style="width: 120px">
+              <el-option label="正常" :value="0" />
+              <el-option label="归档" :value="1" />
+            </el-select>
           </el-form-item>
         </div>
         <el-form-item>
@@ -32,9 +35,19 @@
         <el-table-column prop="id" label="空间ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="空间名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="remark" label="空间描述" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="quotaLimit" label="配额限制(bytes)" min-width="140" show-overflow-tooltip />
-        <el-table-column prop="quotaUsed" label="已用配额(bytes)" min-width="140" show-overflow-tooltip />
-        <el-table-column prop="status" label="状态" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="quotaLimit" label="配额限制" min-width="120" show-overflow-tooltip>
+          <template #default="scope">{{ mbDisplay(scope.row.quotaLimit) }}</template>
+        </el-table-column>
+        <el-table-column prop="quotaUsed" label="已用配额" min-width="120" show-overflow-tooltip>
+          <template #default="scope">{{ mbDisplay(scope.row.quotaUsed) }}</template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" min-width="80" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'info'">
+              {{ scope.row.status === 0 ? "正常" : "归档" }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -94,11 +107,14 @@
         <el-form-item label="空间描述" prop="remark">
           <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入空间描述" :rows="3" maxlength="65535" show-word-limit />
         </el-form-item>
-        <el-form-item label="配额限制(bytes)" prop="quotaLimit">
-          <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制(bytes)" clearable />
+        <el-form-item label="配额限制(MB)" prop="quotaLimit">
+          <el-input v-model="modalForm.quotaLimit" placeholder="请输入配额限制(MB)" clearable />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model.number="modalForm.status" placeholder="0:正常 1:归档" clearable />
+          <el-select v-model="modalForm.status" style="width: 100%">
+            <el-option label="正常" :value="0" />
+            <el-option label="归档" :value="1" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -122,6 +138,13 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+
+// bytes 转 MB 显示
+const mbDisplay = (bytes: string) => {
+  if (!bytes) return "-";
+  const mb = Number(bytes) / 1048576;
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
+};
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

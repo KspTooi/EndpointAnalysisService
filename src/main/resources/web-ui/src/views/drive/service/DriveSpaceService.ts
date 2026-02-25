@@ -109,6 +109,7 @@ export default {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
+    // quotaLimit 表单以 MB 为单位，回填时 bytes→MB，发送时 MB→bytes
     const modalForm = reactive<GetDriveSpaceDetailsVo>({
       id: "",
       name: "",
@@ -126,8 +127,8 @@ export default {
         { max: 80, message: "空间名称不超过80个字符", trigger: "blur" },
       ],
       remark: [{ max: 65535, message: "空间描述过长", trigger: "blur" }],
-      quotaLimit: [{ required: true, message: "请输入配额限制(bytes)", trigger: "blur" }],
-      status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+      quotaLimit: [{ required: true, message: "请输入配额限制(MB)", trigger: "blur" }],
+      status: [{ required: true, message: "请选择状态", trigger: "change" }],
     };
 
     /**
@@ -159,7 +160,8 @@ export default {
           modalForm.id = details.id;
           modalForm.name = details.name;
           modalForm.remark = details.remark;
-          modalForm.quotaLimit = details.quotaLimit;
+          // 后端返回 bytes，转换为 MB 回填
+          modalForm.quotaLimit = details.quotaLimit ? String(Math.round(Number(details.quotaLimit) / 1048576)) : "";
           modalForm.status = details.status;
           modalVisible.value = true;
         } catch (error: any) {
@@ -204,7 +206,8 @@ export default {
           const addDto: AddDriveSpaceDto = {
             name: modalForm.name,
             remark: modalForm.remark,
-            quotaLimit: modalForm.quotaLimit,
+            // MB 转换为 bytes
+            quotaLimit: String(Number(modalForm.quotaLimit) * 1048576),
             status: modalForm.status,
           };
           await DriveSpaceApi.addDriveSpace(addDto);
@@ -231,7 +234,8 @@ export default {
             id: modalForm.id,
             name: modalForm.name,
             remark: modalForm.remark,
-            quotaLimit: modalForm.quotaLimit,
+            // MB 转换为 bytes
+            quotaLimit: String(Number(modalForm.quotaLimit) * 1048576),
             status: modalForm.status,
           };
           await DriveSpaceApi.editDriveSpace(editDto);
