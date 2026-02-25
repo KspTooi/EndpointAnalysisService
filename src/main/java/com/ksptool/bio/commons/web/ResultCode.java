@@ -14,7 +14,7 @@ public enum ResultCode {
     SUCCESS(0, HttpStatus.OK, "操作成功"),
 
     BIZ_ERROR(1, HttpStatus.OK, "业务异常"),
-    
+
     INTERNAL_ERROR(2, HttpStatus.INTERNAL_SERVER_ERROR, "系统内部错误"),
 
     PARAM_ERROR(3, HttpStatus.BAD_REQUEST, "参数异常"),
@@ -35,7 +35,6 @@ public enum ResultCode {
 
     //描述信息
     private final String message;
-
 
 
 }

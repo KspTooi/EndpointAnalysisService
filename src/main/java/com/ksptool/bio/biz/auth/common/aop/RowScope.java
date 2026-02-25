@@ -11,5 +11,10 @@ import java.lang.annotation.*;
 @Documented
 public @interface RowScope {
 
+    /**
+     * 是否需要用户绑定租户 为true时如果用户未绑定租户则抛出异常
+     * @return 是否需要用户绑定租户
+     */
+    boolean requireRoot() default false;
 
 }
