@@ -3,11 +3,14 @@ package com.ksptool.bio.biz.drive.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.core.model.notice.dto.AddNoticeDto;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
+import com.ksptool.bio.biz.core.service.NoticeService;
 import com.ksptool.bio.biz.drive.model.drivespace.DriveSpacePo;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.AddDriveSpaceDto;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.EditDriveSpaceDto;
+import com.ksptool.bio.biz.drive.model.drivespace.dto.EditDriveSpaceMembersDto;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.GetDriveSpaceListDto;
 import com.ksptool.bio.biz.drive.model.drivespace.vo.GetDriveSpaceDetailsVo;
 import com.ksptool.bio.biz.drive.model.drivespace.vo.GetDriveSpaceListVo;
@@ -15,12 +18,15 @@ import com.ksptool.bio.biz.drive.model.drivespacemember.DriveSpaceMemberPo;
 import com.ksptool.bio.biz.drive.model.drivespacemember.vo.GetDriveSpaceMemberDetailsVo;
 import com.ksptool.bio.biz.drive.repository.DriveSpaceMemberRepository;
 import com.ksptool.bio.biz.drive.repository.DriveSpaceRepository;
+import com.ksptool.text.PreparedPrompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,12 +43,15 @@ public class DriveSpaceService {
 
     @Autowired
     private DriveSpaceMemberRepository driveSpaceMemberRepository;
-    
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private OrgRepository orgRepository;
+
+    @Autowired
+    private NoticeService noticeService;
 
     /**
      * 查询云盘空间列表
@@ -104,7 +113,7 @@ public class DriveSpaceService {
                 addDsMemberPos.add(dsmPo);
                 continue;
             }
-            
+
             throw new BizException("无法处理新增请求,成员类型 [" + member.getMemberKind() + "] 不支持.");
         }
 
@@ -113,9 +122,9 @@ public class DriveSpaceService {
 
         var findMainAdmin = false;
 
-        for(var member : dto.getMembers()){
+        for (var member : dto.getMembers()) {
             //如果用户在创建的时候已经把自己添加了,则强制设置为主管理员
-            if(Objects.equals(member.getMemberId(), currentUserId)){
+            if (Objects.equals(member.getMemberId(), currentUserId)) {
                 findMainAdmin = true;
                 member.setRole(0);
                 break;
@@ -123,7 +132,7 @@ public class DriveSpaceService {
         }
 
         //如果创建的时候没有把自己添加为成员,则将当前用户设置为主管理员
-        if(!findMainAdmin){
+        if (!findMainAdmin) {
             var maMember = new DriveSpaceMemberPo();
             maMember.setDriveSpaceId(insertPo.getId());
             maMember.setMemberKind(0);
@@ -134,6 +143,66 @@ public class DriveSpaceService {
 
         //保存云盘成员
         driveSpaceMemberRepository.saveAll(addDsMemberPos);
+
+        //发送系统消息 搜集要接收消息的用户ID列表和部门ID列表 按云盘空间的Role分组 分组后每个组单独发送消息
+        var targetUserIdsMap = new HashMap<Integer, ArrayList<Long>>();
+        var targetDeptIdsMap = new HashMap<Integer, ArrayList<Long>>();
+
+        for (var member : addDsMemberPos) {
+            if (member.getMemberKind() == 0) {
+                targetUserIdsMap.computeIfAbsent(member.getRole(), k -> new ArrayList<>()).add(member.getMemberId());
+            }
+            if (member.getMemberKind() == 1) {
+                targetDeptIdsMap.computeIfAbsent(member.getRole(), k -> new ArrayList<>()).add(member.getMemberId());
+            }
+        }
+
+        //先准备好要发送的消息
+        var and = new AddNoticeDto();
+        and.setTitle("云盘空间邀请 : " + insertPo.getName());
+        and.setKind(1);
+
+        var content = PreparedPrompt.prepare("""
+                您已被 [#{inviterName}] 邀请加入云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
+                """);
+        content.setParameter("inviterName", session().getUsername());
+        content.setParameter("spaceName", insertPo.getName());
+        content.setParameter("role", "未知角色");
+
+        and.setPriority(2);
+        and.setCategory("团队云盘");
+        and.setTargetKind(1);
+
+        var roleName = "未知角色";
+
+        //遍历分组好的用户ID列表和部门ID列表 单独发送消息
+        for (var role : targetUserIdsMap.keySet()) {
+
+            //如果用户ID列表为空 则跳过
+            if (targetUserIdsMap.get(role).isEmpty()) {
+                continue;
+            }
+
+            roleName = role == 0 ? "主管理员" : role == 1 ? "行政管理员" : role == 2 ? "编辑者" : "查看者";
+            content.setParameter("role", roleName);
+            and.setContent(content.execute());
+            and.setTargetIds(targetUserIdsMap.get(role));
+            noticeService.addNotice(and);
+        }
+        for (var role : targetDeptIdsMap.keySet()) {
+
+            //如果部门ID列表为空 则跳过
+            if (targetDeptIdsMap.get(role).isEmpty()) {
+                continue;
+            }
+
+            roleName = role == 0 ? "主管理员" : role == 1 ? "行政管理员" : role == 2 ? "编辑者" : "查看者";
+            content.setParameter("role", roleName);
+            and.setContent(content.execute());
+            and.setTargetIds(targetDeptIdsMap.get(role));
+            noticeService.addNotice(and);
+        }
+
     }
 
     /**
@@ -150,6 +219,160 @@ public class DriveSpaceService {
         assign(dto, updatePo);
         repository.save(updatePo);
     }
+
+    /**
+     * 编辑云盘空间成员
+     *
+     * @param dto 编辑条件
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void editDriveSpaceMembers(EditDriveSpaceMembersDto dto) throws Exception {
+
+        DriveSpaceMemberPo dsmPo = driveSpaceMemberRepository.findById(dto.getMemberId())
+                .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        //查云盘空间
+        var driveSpace = repository.findById(dsmPo.getDriveSpaceId())
+                .orElseThrow(() -> new BizException("云盘空间 [ " + dsmPo.getDriveSpaceId() + " ] 不存在,无法编辑云盘空间成员."));
+
+        //先查当前人在这个空间里面是不是主管理员
+        var currentUserId = session().getUserId();
+
+        var currentUserDsm = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dto.getDriveSpaceId(), currentUserId);
+
+        if (currentUserDsm == null) {
+            throw new BizException("当前用户不是云盘空间成员,无法编辑云盘空间成员.");
+        }
+
+        if (currentUserDsm.getRole() != 0) {
+            throw new BizException("当前用户不是主管理员,无法编辑云盘空间成员.");
+        }
+
+        //先准备好要发送的消息
+        var and = new AddNoticeDto();
+        and.setTitle("云盘空间 [ " + driveSpace.getName() + " ] 成员变更");
+        and.setKind(1);
+        and.setPriority(2);
+        and.setCategory("团队云盘");
+        and.setTargetKind(2);
+
+
+        //处理加/改成员
+        if (dto.getAction() == 0) {
+
+            //先查是否存在
+            var existingDsm = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dsmPo.getDriveSpaceId(), dto.getMemberId());
+
+            //不能把成员加/改成主管理员
+            if (dto.getRole() == 0) {
+                throw new BizException("不能把成员加/改成主管理员.");
+            }
+
+            //存在就改(只能改角色,不能改成员类型和成员ID)
+            if (existingDsm != null) {
+                existingDsm.setRole(dto.getRole());
+                driveSpaceMemberRepository.save(existingDsm);
+
+                //给成员发消息
+                var content = PreparedPrompt.prepare("""
+                    您在云盘空间 [#{spaceName}] 中的角色已被 [#{operatorName}] 修改为 [#{role}] .
+                    """);
+                content.setParameter("operatorName", session().getUsername());
+                content.setParameter("spaceName", driveSpace.getName());
+                content.setParameter("role", dsmPo.getRole() == 0 ? "主管理员" : dsmPo.getRole() == 1 ? "行政管理员" : dsmPo.getRole() == 2 ? "编辑者" : "查看者");
+                and.setContent(content.execute());
+
+                if (existingDsm.getMemberKind() == 0) {
+                    and.setTargetKind(2); //发给用户
+                    and.setTargetIds(Arrays.asList(existingDsm.getMemberId()));
+                }
+                if (existingDsm.getMemberKind() == 1) {
+                    and.setTargetKind(1); //发给部门
+                    and.setTargetIds(Arrays.asList(existingDsm.getMemberId()));
+                }
+                noticeService.addNotice(and);
+                return;
+            }
+
+            //不存在就加 先处理加成员
+            if (dto.getMemberKind() == 0) {
+                userRepository.findById(dto.getMemberId()).orElseThrow(() -> new BizException("用户 [ " + dto.getMemberId() + " ] 不存在,无法添加到云盘空间!"));
+                var newDsmPo = new DriveSpaceMemberPo();
+                newDsmPo.setDriveSpaceId(dsmPo.getDriveSpaceId());
+                newDsmPo.setMemberId(dto.getMemberId());
+                newDsmPo.setMemberKind(dto.getMemberKind());
+                newDsmPo.setRole(dto.getRole());
+                driveSpaceMemberRepository.save(newDsmPo);
+
+                //给成员发消息
+                var content = PreparedPrompt.prepare("""
+                    您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
+                    """);
+                content.setParameter("operatorName", session().getUsername());
+                content.setParameter("spaceName", driveSpace.getName());
+                content.setParameter("role", dto.getRole() == 0 ? "主管理员" : dto.getRole() == 1 ? "行政管理员" : dto.getRole() == 2 ? "编辑者" : "查看者");
+                and.setContent(content.execute());
+                and.setTargetKind(2); //发给用户
+                and.setTargetIds(Arrays.asList(newDsmPo.getMemberId()));
+                noticeService.addNotice(and);
+                return;
+            }
+
+            //处理加部门
+            if (dto.getMemberKind() == 1) {
+                orgRepository.findById(dto.getMemberId()).orElseThrow(() -> new BizException("部门 [ " + dto.getMemberId() + " ] 不存在,无法添加到云盘空间!"));
+                var newDsmPo = new DriveSpaceMemberPo();
+                newDsmPo.setDriveSpaceId(dsmPo.getDriveSpaceId());
+                newDsmPo.setMemberId(dto.getMemberId());
+                newDsmPo.setMemberKind(dto.getMemberKind());
+                newDsmPo.setRole(dto.getRole());
+                driveSpaceMemberRepository.save(newDsmPo);
+
+                //给部门发消息
+                var content = PreparedPrompt.prepare("""
+                    您已被 [#{operatorName}] 添加到云盘空间 [#{spaceName}] ,您在空间中的角色为 [#{role}] .
+                    """);
+                content.setParameter("operatorName", session().getUsername());
+                content.setParameter("spaceName", driveSpace.getName());
+                content.setParameter("role", dto.getRole() == 0 ? "主管理员" : dto.getRole() == 1 ? "行政管理员" : dto.getRole() == 2 ? "编辑者" : "查看者");
+                and.setContent(content.execute());
+                and.setTargetKind(1); //发给部门
+                and.setTargetIds(Arrays.asList(newDsmPo.getMemberId()));
+                noticeService.addNotice(and);
+                return;
+            }
+
+            throw new BizException("无法处理新增请求,成员类型 [" + dto.getMemberKind() + "] 不支持.");
+        }
+
+        //处理删成员 先查要这个空间里要被删的成员
+        var dsmToDelete = driveSpaceMemberRepository.getByDriveSpaceIdAndMemberId(dsmPo.getDriveSpaceId(), dto.getMemberId());
+
+        if (dsmToDelete == null) {
+            throw new BizException("要删除的成员不存在,无法删除.");
+        }
+
+        //不能删主管理员
+        if (dsmToDelete.getRole() == 0) {
+            throw new BizException("不能删除主管理员.");
+        }
+
+        //删除成员
+        driveSpaceMemberRepository.delete(dsmToDelete);
+
+        //给成员发消息
+        var content = PreparedPrompt.prepare("""
+            您已被 [#{operatorName}] 从云盘空间 [#{spaceName}] 中移除.
+            """);
+        content.setParameter("operatorName", session().getUsername());
+        content.setParameter("spaceName", driveSpace.getName());
+        and.setContent(content.execute());
+        and.setTargetKind(dsmToDelete.getMemberKind() == 0 ? 1 : 2); //发给用户或部门 1:部门 2:用户
+        and.setTargetIds(Arrays.asList(dsmToDelete.getMemberId()));
+        noticeService.addNotice(and);
+    }
+
 
     /**
      * 查询云盘空间详情
@@ -187,13 +410,13 @@ public class DriveSpaceService {
         var userPos = userRepository.findAllById(userIds);
 
         //渲染查询结果为VO
-        for(var dsMemberPo : members){
+        for (var dsMemberPo : members) {
 
             //渲染用户
-            if(dsMemberPo.getMemberKind() == 0){
+            if (dsMemberPo.getMemberKind() == 0) {
 
-                for(var userPo : userPos){
-                    if(Objects.equals(userPo.getId(), dsMemberPo.getMemberId())){
+                for (var userPo : userPos) {
+                    if (Objects.equals(userPo.getId(), dsMemberPo.getMemberId())) {
                         var userVo = new GetDriveSpaceMemberDetailsVo();
                         userVo.setId(dsMemberPo.getId());
                         userVo.setDriveSpaceId(dsMemberPo.getDriveSpaceId());
@@ -209,9 +432,9 @@ public class DriveSpaceService {
             }
 
             //渲染部门
-            if(dsMemberPo.getMemberKind() == 1){
-                for(var deptPo : deptPos){
-                    if(Objects.equals(deptPo.getId(), dsMemberPo.getMemberId())){
+            if (dsMemberPo.getMemberKind() == 1) {
+                for (var deptPo : deptPos) {
+                    if (Objects.equals(deptPo.getId(), dsMemberPo.getMemberId())) {
                         var deptVo = new GetDriveSpaceMemberDetailsVo();
                         deptVo.setId(dsMemberPo.getId());
                         deptVo.setDriveSpaceId(dsMemberPo.getDriveSpaceId());
@@ -231,8 +454,8 @@ public class DriveSpaceService {
         var allMembers = new ArrayList<GetDriveSpaceMemberDetailsVo>();
 
         //在第一条插入主管理员
-        for(var member : userMembers){
-            if(member.getRole() == 0){
+        for (var member : userMembers) {
+            if (member.getRole() == 0) {
                 allMembers.add(0, member);
                 break;
             }
@@ -242,8 +465,8 @@ public class DriveSpaceService {
         allMembers.addAll(deptMembers);
 
         //在部门后插入其他用户
-        for(var member : userMembers){
-            if(member.getRole() != 0){
+        for (var member : userMembers) {
+            if (member.getRole() != 0) {
                 allMembers.add(member);
             }
         }

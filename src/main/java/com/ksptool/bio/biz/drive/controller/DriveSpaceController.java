@@ -5,6 +5,7 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.AddDriveSpaceDto;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.EditDriveSpaceDto;
+import com.ksptool.bio.biz.drive.model.drivespace.dto.EditDriveSpaceMembersDto;
 import com.ksptool.bio.biz.drive.model.drivespace.dto.GetDriveSpaceListDto;
 import com.ksptool.bio.biz.drive.model.drivespace.vo.GetDriveSpaceDetailsVo;
 import com.ksptool.bio.biz.drive.model.drivespace.vo.GetDriveSpaceListVo;
@@ -48,6 +49,14 @@ public class DriveSpaceController {
         driveSpaceService.editDriveSpace(dto);
         return Result.success("修改成功");
     }
+
+    @Operation(summary = "编辑云盘空间成员")
+    @PostMapping("/editDriveSpaceMembers")
+    public Result<String> editDriveSpaceMembers(@RequestBody @Valid EditDriveSpaceMembersDto dto) throws Exception {
+        driveSpaceService.editDriveSpaceMembers(dto);
+        return Result.success("操作成功");
+    }
+
 
     @Operation(summary = "查询云盘空间详情")
     @PostMapping("/getDriveSpaceDetails")

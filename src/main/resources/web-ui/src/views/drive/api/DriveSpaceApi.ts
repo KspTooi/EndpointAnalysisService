@@ -70,6 +70,17 @@ export interface AddDriveSpaceDto {
 }
 
 /**
+ * 编辑成员DTO
+ */
+export interface EditDriveSpaceMembersDto {
+  driveSpaceId: string; // 云盘空间ID
+  memberId: string; // 成员ID
+  memberKind: number; // 成员类型 0:用户 1:部门
+  role: number; // 成员角色 1:行政管理员 2:编辑者 3:查看者
+  action: number; // 操作类型 0:添加/修改成员 1:删除成员
+}
+
+/**
  * 编辑DTO
  */
 export interface EditDriveSpaceDto {
@@ -104,6 +115,17 @@ export default {
    */
   addDriveSpace: async (dto: AddDriveSpaceDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/driveSpace/addDriveSpace", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 编辑云盘空间成员
+   */
+  editDriveSpaceMembers: async (dto: EditDriveSpaceMembersDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/driveSpace/editDriveSpaceMembers", dto);
     if (result.code === 0) {
       return result.message;
     }

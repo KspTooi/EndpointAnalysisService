@@ -42,4 +42,19 @@ public interface DriveSpaceMemberRepository extends JpaRepository<DriveSpaceMemb
             u.driveSpace.id = :#{#driveSpaceId}
             """)
     List<DriveSpaceMemberPo> getByDriveSpaceId(@Param("driveSpaceId") Long driveSpaceId);
+
+    /**
+     * 查询云盘空间下的某个成员
+     *
+     * @param driveSpaceId 云盘空间ID
+     * @param memberId 成员ID
+     * @return 云盘空间成员
+     */
+    @Query("""
+            SELECT u FROM DriveSpaceMemberPo u
+            WHERE
+            u.driveSpace.id = :#{#driveSpaceId}
+            AND u.memberId = :#{#memberId}
+            """)
+    DriveSpaceMemberPo getByDriveSpaceIdAndMemberId(@Param("driveSpaceId") Long driveSpaceId, @Param("memberId") Long memberId);
 }
