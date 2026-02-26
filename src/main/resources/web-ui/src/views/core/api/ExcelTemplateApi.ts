@@ -71,7 +71,7 @@ export default {
       console.log("开始上传文件，文件数量：", files.length);
       console.log("FormData内容：", formData);
 
-      const response = await axios.post<Result<string>>("/excelTemplate/uploadExcelTemplate", formData, {
+      const response = await Http.axios().post<Result<string>>("/excelTemplate/uploadExcelTemplate", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "AE-Request-With": "XHR",
