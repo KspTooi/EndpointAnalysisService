@@ -17,15 +17,15 @@ spring:
       enabled: true
 
   datasource:
-    #driver-class-name: com.mysql.cj.jdbc.Driver
-    #url: jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service_test?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    #username: root
-    #password: root
-
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/endpoint_analysis_service?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://192.168.10.202:3306/endpoint_analysis_service?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: root
+
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:mysql://127.0.0.1:3306/endpoint_analysis_service?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    #username: root
+    #password: root
 
     #driver-class-name: org.h2.Driver
     #url: jdbc:h2:tcp://127.0.0.1:59000/./EndpointAnalysisService
@@ -45,7 +45,7 @@ spring:
     show-sql: false
     hibernate:
       #ddl-auto: update
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: false
@@ -87,7 +87,7 @@ springdoc:
     tags-sorter: alpha
 
 application:
-  version: 1.5SCP18 # 应用版本号
+  version: 1.6MCP37 # 应用版本号
 
 #附件模块配置
 module-attach:

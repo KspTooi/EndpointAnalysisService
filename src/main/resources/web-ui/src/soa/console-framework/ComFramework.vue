@@ -7,7 +7,7 @@
         :items="menuTree"
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
-        version="版本:1.5S CP18"
+        version="版本:1.6M CP37"
       />
 
       <el-container class="h-full w-full overflow-hidden min-h-0">
