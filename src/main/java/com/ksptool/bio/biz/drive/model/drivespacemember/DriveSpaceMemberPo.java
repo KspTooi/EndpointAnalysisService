@@ -19,28 +19,28 @@ public class DriveSpaceMemberPo {
     @Id
     private Long id;
 
-    @Column(name = "drive_space_id", comment = "云盘空间ID")
+    @Column(name = "drive_space_id",nullable = false, comment = "云盘空间ID")
     private Long driveSpaceId;
 
-    @Column(name = "member_kind", comment = "成员类型 0:用户 1:部门")
+    @Column(name = "member_kind",nullable = false, comment = "成员类型 0:用户 1:部门")
     private Integer memberKind;
 
-    @Column(name = "member_id", comment = "成员ID")
+    @Column(name = "member_id",nullable = false, comment = "成员ID")
     private Long memberId;
 
-    @Column(name = "role", comment = "成员角色 0:主管理员 1:行政管理员 2:编辑者 3:查看者")
+    @Column(name = "role",nullable = false, comment = "成员角色 0:主管理员 1:行政管理员 2:编辑者 3:查看者")
     private Integer role;
 
-    @Column(name = "create_time", comment = "加入时间")
+    @Column(name = "create_time",nullable = false, comment = "加入时间")
     private LocalDateTime createTime;
 
-    @Column(name = "creator_id", comment = "邀请人/操作人ID")
+    @Column(name = "creator_id",nullable = false, comment = "邀请人/操作人ID")
     private Long creatorId;
 
-    @Column(name = "update_time", comment = "更新时间")
+    @Column(name = "update_time",nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updater_id", comment = "更新人")
+    @Column(name = "updater_id",nullable = false, comment = "更新人")
     private Long updaterId;
 
 
