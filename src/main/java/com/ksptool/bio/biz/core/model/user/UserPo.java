@@ -52,7 +52,7 @@ public class UserPo {
     @Column(name = "login_count", nullable = false, comment = "登录次数")
     private Integer loginCount;
 
-    @Column(name = "status", nullable = false, comment = "用户状态 0:正常 1:封禁")
+    @Column(name = "status",columnDefinition = "tinyint", nullable = false, comment = "用户状态 0:正常 1:封禁")
     private Integer status;
 
     @Column(name = "last_login_time", comment = "最后登录时间")
