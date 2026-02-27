@@ -1,10 +1,10 @@
-package com.ksptool.bio.biz.auth.common;
+package com.ksptool.bio.biz.auth.common.aop;
 
-import com.ksptool.bio.commons.WebUtils;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import com.ksptool.bio.biz.auth.model.session.UserSessionPo;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.commons.WebUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,7 +82,7 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
             if (cache != null) {
                 var key = "user_dv_changed_" + sessionPo.getUserId();
 
-                if(cache.get(key) != null){
+                if (cache.get(key) != null) {
                     sessionPo = sessionService.refreshSession(sessionPo);
                     cache.evict(key);
                 }

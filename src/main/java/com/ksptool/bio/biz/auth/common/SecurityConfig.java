@@ -1,5 +1,7 @@
 package com.ksptool.bio.biz.auth.common;
 
+import com.ksptool.bio.biz.auth.common.aop.UserSessionAuthFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -72,7 +72,7 @@ public class SecurityConfig {
     private ResourceLoader resourceLoader;
 
     @Autowired
-    private DynamicAuthorizationManager dam;
+    private DynamicGlobalWhiteListManager dam;
 
     /**
      * 配置Spring Security
@@ -84,14 +84,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        var whiteList = new HashSet<String>(this.whiteList);
+        var whiteList = new HashSet<>(this.whiteList);
 
         if (isIntegratedDeploy()) {
             whiteList.addAll(integratedDeployWhiteList);
             log.info("Auth域安全配置: 当前已启用集成部署模式，加载集成部署白名单。条目:{}", whiteList.size());
         }
 
-        if(!isIntegratedDeploy()){
+        if (!isIntegratedDeploy()) {
             log.info("Auth域安全配置: 当前处于标准部署模式，加载标准白名单。条目:{}", whiteList.size());
         }
 
@@ -119,12 +119,12 @@ public class SecurityConfig {
 
                 //配置接口权限规则
                 .authorizeHttpRequests(auth -> auth
-                                //白名单
-                                .requestMatchers(whiteList.toArray(String[]::new)).permitAll()
+                        //白名单
+                        .requestMatchers(whiteList.toArray(String[]::new)).permitAll()
 
-                                //兜底规则 其余所有请求都必须登录
-                                .anyRequest().authenticated()
-                        //.anyRequest().access(dam.asAuthorizationManager())
+                        //兜底规则 其余所有请求都必须登录
+                        .anyRequest().authenticated()
+                        .anyRequest().access(dam.asAuthorizationManager())
                 )
 
 
@@ -150,7 +150,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    
+
     /**
      * 判断是否是集成部署
      * <p>
