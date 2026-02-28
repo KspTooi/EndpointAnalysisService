@@ -25,6 +25,8 @@ public enum ResultCode {
 
     REQUIRE_ROOT(101, HttpStatus.OK, "用户未绑定租户"),
 
+    INSTALL_WIZARD_ACTIVE(102, HttpStatus.OK, "安装向导模式已激活"),
+
     ;
 
     //业务状态码
