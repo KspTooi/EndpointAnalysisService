@@ -85,9 +85,14 @@
         </div>
       </div>
 
+      <div class="wizard-reload-tip">
+        <el-icon color="#E6A23C" style="flex-shrink:0"><WarningFilled /></el-icon>
+        <span>请刷新页面并重新登录以使配置生效</span>
+      </div>
+
       <div class="wizard-actions">
-        <el-button type="primary" size="large" class="wizard-start-btn" @click="enterMaintenanceCenter">
-          进入维护中心
+        <el-button type="primary" size="large" class="wizard-start-btn" @click="reloadPage">
+          刷新页面
         </el-button>
       </div>
     </div>
@@ -112,7 +117,7 @@
 import MaintainService from "@/views/core/service/MaintainService.ts";
 import MaintainApi, { type ExecuteInstallWizardVo } from "@/views/core/api/MaintainApi.ts";
 import { ref, onMounted } from "vue";
-import { Setting, CircleCheck, VideoPlay, CircleCheckFilled, CircleCloseFilled, Right } from "@element-plus/icons-vue";
+import { Setting, CircleCheck, VideoPlay, CircleCheckFilled, CircleCloseFilled, Right, WarningFilled } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 const isInstallWizardMode = ref(false);
@@ -155,10 +160,10 @@ const startWizard = async () => {
 };
 
 /**
- * 向导完成后进入维护中心
+ * 向导完成后刷新页面
  */
-const enterMaintenanceCenter = () => {
-  isInstallWizardMode.value = false;
+const reloadPage = () => {
+  window.location.reload();
 };
 
 /**
@@ -431,6 +436,20 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
   font-size: 13px;
   color: #606266;
   line-height: 1.5;
+}
+
+.wizard-reload-tip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #E6A23C;
+  background: rgba(230, 162, 60, 0.08);
+  border: 1px solid rgba(230, 162, 60, 0.3);
+  padding: 10px 14px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
 }
 
 .wizard-error-msg {

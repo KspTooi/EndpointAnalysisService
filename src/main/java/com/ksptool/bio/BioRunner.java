@@ -4,13 +4,10 @@ import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.common.AppVersion;
 import com.ksptool.bio.biz.core.service.GlobalConfigService;
-import com.ksptool.bio.biz.relay.service.RelayServerService;
-import com.ksptool.bio.commons.enums.GlobalConfigEnum;
-import com.ksptool.bio.commons.enums.Registry;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
+import com.ksptool.bio.biz.relay.service.RelayServerService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class BioRunner {
 
     //应用版本号
-    private static final AppVersion appVersion = AppVersion.of("1.6M32");
+    private static final AppVersion appVersion = AppVersion.of("1.6M55");
 
     @Autowired
     private RelayServerService relayServerService;
@@ -68,7 +65,7 @@ public class BioRunner {
         return args -> {
 
             //如果在注册表里面禁用了"自动升级向导"功能,则直接返回
-            if(reg.getInt(AppRegistry.CIW_ALLOW_UPGRADE.getFullKey(), 1) == 0){
+            if (reg.getInt(AppRegistry.CIW_ALLOW_UPGRADE.getFullKey(), 1) == 0) {
                 log.info("自动升级向导功能已禁用,跳过检查升级。");
                 return;
             }
@@ -77,14 +74,14 @@ public class BioRunner {
             var regVersionStr = reg.getString(AppRegistry.CM_VERSION.getFullKey(), "1.0A");
 
             //如果当前版本大于注册表中的版本,则触发升级向导
-            if(appVersion.isGreaterThan(regVersionStr)){
+            if (appVersion.isGreaterThan(regVersionStr)) {
 
                 log.info("应用程序版本落后 当前:{} 最新:{} 已激活升级向导。", regVersionStr, appVersion);
 
                 //设置注册表以启用安装向导
                 reg.setInt(AppRegistry.CIW_ENABLED.getFullKey(), 1);
             }
-            
+
         };
     }
 }
