@@ -100,4 +100,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 维护中心:检查当前是否处于安装向导模式
+   */
+  checkInstallWizardMode: async (): Promise<boolean> => {
+    const result = await Http.postEntity<Result<number>>("/maintain/checkInstallWizardMode", {});
+    if (result.code === 0) {
+      return result.data === 1;
+    }
+    throw new Error(result.message);
+  },
 };

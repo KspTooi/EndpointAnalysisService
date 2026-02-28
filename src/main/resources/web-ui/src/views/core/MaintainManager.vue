@@ -1,32 +1,21 @@
-<script setup lang="ts">
-import MaintainService from "@/views/core/service/MaintainService.ts";
-
-/**
- * 维护中心管理逻辑
- */
-const { loading, maintainOperations, executeOperation } = MaintainService.useMaintainOperation();
-
-</script>
-
 <template>
   <el-scrollbar class="maintain-scrollbar-wrapper w-full">
     <div class="maintain-admin-portal">
-      
       <header class="portal-header">
         <h1 class="portal-title">系统核心维护中心</h1>
         <p class="portal-subtitle">管理底层数据校验、权限同步及核心资产重置逻辑</p>
       </header>
 
       <div class="maintain-grid">
-        <div 
-          v-for="(operation, index) in maintainOperations" 
-          :key="index" 
+        <div
+          v-for="(operation, index) in maintainOperations"
+          :key="index"
           class="maintain-card"
           :style="{ '--op-accent': operation.iconColor }"
         >
           <!-- 顶部发光强调条 -->
           <div class="card-accent-bar"></div>
-          
+
           <div class="card-content">
             <!-- 图标区域 -->
             <div class="icon-wrapper" :style="{ color: operation.iconColor, backgroundColor: operation.bgColor }">
@@ -43,11 +32,7 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
 
             <!-- 操作区域 -->
             <div class="action-wrapper">
-              <el-button 
-                type="primary" 
-                class="execute-btn"
-                :loading="loading"                 @click="executeOperation(operation)"
-              >
+              <el-button type="primary" class="execute-btn" :loading="loading" @click="executeOperation(operation)">
                 <el-icon class="mr-1"><component :is="operation.icon" /></el-icon>
                 {{ operation.buttonText }}
               </el-button>
@@ -55,10 +40,31 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
           </div>
         </div>
       </div>
-
     </div>
   </el-scrollbar>
 </template>
+
+<script setup lang="ts">
+import MaintainService from "@/views/core/service/MaintainService.ts";
+import MaintainApi from "@/views/core/api/MaintainApi.ts";
+import { ref, onMounted } from "vue";
+
+const isInstallWizardMode = ref(false);
+
+onMounted(async () => {
+  try {
+    isInstallWizardMode.value = await MaintainApi.checkInstallWizardMode();
+  } catch (error) {
+    console.error(error);
+    isInstallWizardMode.value = false;
+  }
+});
+
+/**
+ * 维护中心管理逻辑
+ */
+const { loading, maintainOperations, executeOperation } = MaintainService.useMaintainOperation();
+</script>
 
 <style scoped lang="scss">
 .maintain-scrollbar-wrapper {
@@ -109,7 +115,7 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
   &:hover {
     border-color: var(--op-accent);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-    
+
     .card-accent-bar {
       opacity: 1;
     }
@@ -176,5 +182,4 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
     border-radius: 0 !important;
   }
 }
-
 </style>

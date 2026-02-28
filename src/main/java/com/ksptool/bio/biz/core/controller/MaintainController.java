@@ -133,6 +133,17 @@ public class MaintainController {
         }
     }
 
+    
+    /**
+     * 检查当前是否处于安装向导模式
+     */
+    @PreAuthorize(value = "@auth.hasCode('maintain:check:installWizardMode')")
+    @Operation(summary = "维护中心:检查当前是否处于安装向导模式")
+    @PostMapping("/checkInstallWizardMode")
+    public Result<Integer> checkInstallWizardMode() {
+        return Result.success("操作成功", regSdk.getInt(AppRegistry.CIW_ENABLED.getFullKey(), 0));
+    }
+
     @PreAuthorize(value = "@auth.hasCode('maintain:execute:installWizard')")
     @Operation(summary = "维护中心:执行安装向导")
     @PostMapping("/executeInstallWizard")

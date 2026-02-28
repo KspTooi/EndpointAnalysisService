@@ -26,7 +26,18 @@ axiosInstance.interceptors.request.use((config) => {
 
 // 添加响应拦截器
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    //处理Http200状态码
+    if (response.status === 200) {
+      //检查响应体是否是Result类型
+      const data = response.data as Result<unknown>;
+      if (data.code === 102) {
+        //ElMessage.warning(data.message);
+      }
+    }
+
+    return response;
+  },
   (error) => {
     console.log("----------------- ERROR -----------------", error.response);
 
