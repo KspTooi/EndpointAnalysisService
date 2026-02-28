@@ -116,5 +116,14 @@ public class AuthService {
         return !hasGroup(groupCode);
     }
 
+    /**
+     * 检查当前用户是否拥有超级权限(实例)
+     *
+     * @return 如果用户拥有超级权限返回true，否则返回false
+     */
+    public static boolean hasSuperCode() {
+        return hasPermission("*:*:*");
+    }
+
 
 }
