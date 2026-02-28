@@ -77,6 +77,11 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
 
         }
 
+        //如果从Cookie和Auth头都获取不到 则从请求参数中获取
+        if (StringUtils.isBlank(sessionId)) {
+            sessionId = request.getParameter("token");
+        }
+
         //如果sessionId为空，则直接放行(无请求上下文)
         if (StringUtils.isBlank(sessionId)) {
             filterChain.doFilter(request, response);
