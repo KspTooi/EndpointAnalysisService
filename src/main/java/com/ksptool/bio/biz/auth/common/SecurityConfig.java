@@ -35,11 +35,11 @@ public class SecurityConfig {
      * 白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
      */
     private final Set<String> whiteList = Stream.of(
-            "/maintain/**",     // 维护中心
-            "/auth/userLogin",  // 用户登录
-            "/v3/api-docs",     // OpenApi 端点
+            "/maintain/**", // 维护中心
+            "/auth/userLogin", // 用户登录
+            "/v3/api-docs", // OpenApi 端点
             "/auth/genCaptcha", // 验证码端点
-            "/auth/check"      // 验证码端点
+            "/auth/check" // 验证码端点
     ).collect(Collectors.toSet());
 
     /**
@@ -58,9 +58,7 @@ public class SecurityConfig {
             "/favicon.ico",
             "/",
             "/index.html",
-            "/login"
-    ).collect(Collectors.toSet());
-
+            "/login").collect(Collectors.toSet());
 
     @Autowired
     private UserSessionAuthFilter userSessionAuthFilter;
@@ -72,7 +70,7 @@ public class SecurityConfig {
     private ResourceLoader resourceLoader;
 
     @Autowired
-    private DynamicGlobalWhiteListManager dam;
+    private DynamicGlobalWhiteManager dgwm;
 
     /**
      * 配置Spring Security
@@ -96,46 +94,46 @@ public class SecurityConfig {
         }
 
         http
-                //关闭 CSRF（前后端分离项目通常关闭，使用 Session/Token 校验）
+                // 关闭 CSRF(现在前后端使用Authorization头进行鉴权,停用Cookie校验)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                //禁用Session
+                // 禁用Session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                //不使用 HttpSession 持久化 SecurityContext（每次请求由 token -> core_user_session 重建认证上下文）
-                .securityContext(securityContext -> securityContext.securityContextRepository(new NullSecurityContextRepository()))
+                // 不使用 HttpSession 持久化 SecurityContext（每次请求由 token -> core_user_session 重建认证上下文）
+                .securityContext(securityContext -> securityContext
+                        .securityContextRepository(new NullSecurityContextRepository()))
 
-                //禁用 SavedRequest（默认会把原始请求缓存到 session）
+                // 禁用 SavedRequest（默认会把原始请求缓存到 session）
                 .requestCache(AbstractHttpConfigurer::disable)
 
-                //禁用所有隐式依赖 session 的特性
+                // 禁用所有隐式依赖 session 的特性
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
 
-                //一些默认 header 写入可能依赖会话/重定向语义，这里统一禁用；如需 HSTS/CSP/FrameOptions 再单独开启
+                // 一些默认 header 写入可能依赖会话/重定向语义，这里统一禁用；如需 HSTS/CSP/FrameOptions 再单独开启
                 .headers(HeadersConfigurer::disable)
 
-                //配置接口权限规则
+                // 配置接口权限规则
                 .authorizeHttpRequests(auth -> auth
-                        //白名单
+                        // 白名单
                         .requestMatchers(whiteList.toArray(String[]::new)).permitAll()
 
-                        //兜底规则 其余所有请求都必须登录
+                        // 兜底规则 其余所有请求都必须登录
                         .anyRequest().authenticated()
-                        .anyRequest().access(dam.asAuthorizationManager())
+                // .anyRequest().access(dam.asAuthorizationManager())
                 )
 
-
-                //配置认证失败和权限不足的处理(统一返回JSON格式)
+                // 配置认证失败和权限不足的处理(统一返回JSON格式)
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(jsonAuthEntryPoint) //认证失败
-                        .accessDeniedHandler(jsonAuthEntryPoint) //权限不足
+                        .authenticationEntryPoint(jsonAuthEntryPoint) // 认证失败
+                        .accessDeniedHandler(jsonAuthEntryPoint) // 权限不足
                 );
 
-        //添加自定义过滤器
-        //这个过滤器会解析并验证用户会话（依赖 sessionId -> core_user_session 重建认证上下文），确保每次请求都能获取到有效的用户会话
+        // 添加自定义过滤器
+        // 这个过滤器会解析并验证用户会话（依赖 sessionId -> core_user_session 重建认证上下文），确保每次请求都能获取到有效的用户会话
         http.addFilterBefore(userSessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -149,7 +147,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     /**
      * 判断是否是集成部署

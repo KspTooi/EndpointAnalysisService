@@ -4,6 +4,8 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import com.ksptool.bio.biz.auth.model.session.UserSessionPo;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.SystemRegistry;
+import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.commons.WebUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,6 +50,9 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private RegistrySdk regSdk;
+
     @NullMarked
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -61,8 +66,15 @@ public class UserSessionAuthFilter extends OncePerRequestFilter {
         //优先从Authentication头中获取sessionId
         var sessionId = WebUtils.getAuthenticationBearerSessionId(request);
 
+        //如果Authentication头中获取不到sessionId，则从Cookie中获取
         if (StringUtils.isBlank(sessionId)) {
-            sessionId = WebUtils.getCookieValue(request, "bio-session-id");
+
+            //但在这之前，需要检查注册表中是否配置了允许使用Cookie鉴权, 如果配置了，才从Cookie中获取
+            if (regSdk.getInt(SystemRegistry.FA_COOKIE_ALLOWED.getFullKey(), 0) == 1) {
+                var cookieName = regSdk.getString(SystemRegistry.FA_COOKIE_NAME.getFullKey(), "bio-session-id");
+                sessionId = WebUtils.getCookieValue(request, cookieName);
+            }
+            
         }
 
         //如果sessionId为空，则直接放行(无请求上下文)

@@ -15,8 +15,10 @@ import com.ksptool.bio.biz.auth.model.auth.dto.UserLoginDto;
 import com.ksptool.bio.biz.auth.model.auth.vo.UserLoginVo;
 import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.SystemRegistry;
 import com.ksptool.bio.biz.core.model.user.dto.RegisterDto;
 import com.ksptool.bio.biz.core.service.GlobalConfigService;
+import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.core.service.UserService;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +60,9 @@ public class AuthController {
     @Autowired
     private ImageCaptchaApplication application;
 
+    @Autowired
+    private RegistrySdk regSdk;
+
     @Operation(summary = "登录(新)")
     @PrintLog(sensitiveFields = "password")
     @PostMapping(value = "/userLogin")
@@ -80,14 +85,17 @@ public class AuthController {
         //创建用户会话
         var sessionId = sessionService.createSession(aud);
 
-        // 设置 cookie
-        var cookie = new Cookie("bio-session-id", sessionId);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);  // 防止 XSS 攻击
-        cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
-        hsrp.addCookie(cookie);
+        //如果注册表中配置了允许使用Cookie鉴权, 下发Cookie到客户端
+        if (regSdk.getInt(SystemRegistry.FA_COOKIE_ALLOWED.getFullKey(), 0) == 1) {
+            var cookieName = regSdk.getString(SystemRegistry.FA_COOKIE_NAME.getFullKey(), "bio-session-id");
+            var cookie = new Cookie(cookieName, sessionId);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);  // 防止 XSS 攻击
+            cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
+            hsrp.addCookie(cookie);
+        }
 
-        //组装Vo
+        //组装Vo(如果Cookie鉴权被禁用, 只通过JSON返回给前端，前端需要自己在代码里面手动放Authorization: Bearer <sessionId>请求头)
         var vo = as(aud, UserLoginVo.class);
         vo.setSessionId(sessionId);
         return Result.success(vo);

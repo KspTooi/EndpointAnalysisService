@@ -29,6 +29,8 @@ public enum SystemRegistry {
     FA_ALLOW_USER_REGISTER("field.auth", "allow_user_register", "0", NvalueKind.INTEGER, "允许用户注册", "0:否 1:是"),
     FA_CAPTCHA_ENABLED_REGISTER("field.auth", "captcha_enabled_register", "0", NvalueKind.INTEGER, "注册验证码启用", "0:否 1:是"),
     FA_CAPTCHA_ENABLED_LOGIN("field.auth", "captcha_enabled_login", "0", NvalueKind.INTEGER, "登录验证码启用", "0:否 1:是"),
+    FA_COOKIE_ALLOWED("field.auth", "cookie_allowed", "0", NvalueKind.INTEGER, "允许使用Cookie鉴权", "0:否 1:是"),
+    FA_COOKIE_NAME("field.auth", "cookie_name", "bio-session-id", NvalueKind.STRING, "Cookie名称"),
 
     FA_ASP_MAX_ATTEMPTS_USER("field.auth", "asp_max_attempts_user", "5", NvalueKind.INTEGER, "同一用户最大尝试登录次数", "为-1时表示不限制"),
     FA_ASP_LOCK_TIME_USER("field.auth", "asp_lock_time_user", "10", NvalueKind.INTEGER, "达到最大尝试次数后的锁定时间(分钟)", "为-1时表示不限制"),

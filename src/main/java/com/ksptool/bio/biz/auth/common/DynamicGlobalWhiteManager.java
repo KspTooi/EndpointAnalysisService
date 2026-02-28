@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  *
  */
 @Component
-public class DynamicGlobalWhiteListManager implements AuthorizationManager<RequestAuthorizationContext> {
+public class DynamicGlobalWhiteManager implements AuthorizationManager<RequestAuthorizationContext> {
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
