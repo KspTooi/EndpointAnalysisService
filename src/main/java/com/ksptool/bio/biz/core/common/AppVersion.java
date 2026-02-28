@@ -87,27 +87,63 @@ public class AppVersion {
         String thirdPart = String.valueOf(rvNum) + bv;
         return String.format("%d.%d.%s", mv, sv, thirdPart);
     }
-    
+
     /**
-     * 判断给定的版本号是否大于当前版本号
-     * @param version 版本号
-     * @return 是否大于
+     * 判断给定的版本号是否大于目标版本号
      */
     public boolean isGreaterThan(AppVersion otherVersion) {
-        return this.mv > otherVersion.mv || (this.mv == otherVersion.mv && this.sv > otherVersion.sv) || (this.mv == otherVersion.mv && this.sv == otherVersion.sv && this.rv.compareTo(otherVersion.rv) > 0) || (this.mv == otherVersion.mv && this.sv == otherVersion.sv && this.rv.compareTo(otherVersion.rv) == 0 && this.bv > otherVersion.bv);
+        if (otherVersion == null) {
+            return true; // 与空值比较，当前对象始终更大（或者根据业务需求抛出异常）
+        }
+
+        //比较主版本
+        if (!this.mv.equals(otherVersion.mv)) {
+            return this.mv > otherVersion.mv;
+        }
+
+        //比较次版本
+        if (!this.sv.equals(otherVersion.sv)) {
+            return this.sv > otherVersion.sv;
+        }
+
+        //比较修订号 (字母字典序)
+        int rvCompare = this.rv.compareTo(otherVersion.rv);
+        if (rvCompare != 0) {
+            return rvCompare > 0;
+        }
+
+        //比较构建号
+        return this.bv > otherVersion.bv;
     }
 
     /**
-     * 判断给定的版本号是否小于当前版本号
-     * @param otherVersion 版本号
-     * @return 是否小于
+     * 判断给定的版本号是否小于目标版本号
      */
     public boolean isLessThan(AppVersion otherVersion) {
-        return !isGreaterThan(otherVersion);
+        if (otherVersion == null) {
+            return false;
+        }
+        //利用反向调用，完美避开"相等"时的逻辑错误
+        return otherVersion.isGreaterThan(this);
+    }
+
+    /**
+     * 判断当前版本是否等于目标版本
+     * (强烈建议顺手补上这个方法，逻辑就彻底闭环了)
+     */
+    public boolean isEqualTo(AppVersion otherVersion) {
+        if (otherVersion == null) {
+            return false;
+        }
+        return this.mv.equals(otherVersion.mv) &&
+                this.sv.equals(otherVersion.sv) &&
+                this.rv.equals(otherVersion.rv) &&
+                this.bv.equals(otherVersion.bv);
     }
 
     /**
      * 判断给定的版本号是否大于当前版本号
+     *
      * @param version 版本号
      * @return 是否大于
      */
@@ -117,11 +153,22 @@ public class AppVersion {
 
     /**
      * 判断给定的版本号是否小于当前版本号
+     *
      * @param version 版本号
      * @return 是否小于
      */
     public boolean isLessThan(String version) {
         return isLessThan(AppVersion.of(version));
+    }
+
+    /**
+     * 判断给定的版本号是否等于当前版本号
+     *
+     * @param version 版本号
+     * @return 是否等于
+     */
+    public boolean isEqualTo(String version) {
+        return isEqualTo(AppVersion.of(version));
     }
 
     /**
@@ -133,8 +180,6 @@ public class AppVersion {
     public String toString() {
         return String.format("%d.%d%s%d", mv, sv, rv, bv);
     }
-
-
 
 
 }

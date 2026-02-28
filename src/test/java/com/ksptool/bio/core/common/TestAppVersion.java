@@ -41,6 +41,11 @@ public class TestAppVersion {
         appVersion = AppVersion.of("1.0Z");
         System.out.println("1.0Z 大于 1.1A: " + appVersion.isGreaterThan("1.1A"));
         System.out.println("1.0Z 小于 1.1A: " + appVersion.isLessThan("1.1A"));
+
+        appVersion = AppVersion.of("1.12E");
+        System.out.println("1.12E 大于 1.13A: " + appVersion.isGreaterThan("1.13A"));
+        System.out.println("1.12E 小于 1.13A: " + appVersion.isLessThan("1.13A"));
+        System.out.println("1.12E 等于 1.12E: " + appVersion.isEqualTo("1.12E"));
     }
 
 }
