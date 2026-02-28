@@ -62,4 +62,9 @@ public class UserLoginVo {
     @Schema(description = "权限码")
     private Set<String> authorities;
 
+    @Schema(description = "应用版本号")
+    private String appVersion;
+
+    @Schema(description = "应用版本号(数字化)")
+    private String appVersionNumeric;
 }

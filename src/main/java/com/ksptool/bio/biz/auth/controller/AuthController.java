@@ -8,6 +8,7 @@ import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.BioRunner;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import com.ksptool.bio.biz.auth.model.auth.dto.UserLoginDto;
 import com.ksptool.bio.biz.auth.model.auth.vo.UserLoginVo;
@@ -98,6 +99,10 @@ public class AuthController {
         // <sessionId>请求头)
         var vo = as(aud, UserLoginVo.class);
         vo.setSessionId(sessionId);
+
+        var version = BioRunner.getVersion();
+        vo.setAppVersion(version.toString());
+        vo.setAppVersionNumeric(version.toNumericVersion());
         return Result.success(vo);
     }
 

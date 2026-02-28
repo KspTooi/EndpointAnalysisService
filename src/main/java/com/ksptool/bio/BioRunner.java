@@ -1,6 +1,7 @@
 package com.ksptool.bio;
 
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.AppVersion;
 import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.relay.service.RelayServerService;
 import com.ksptool.bio.commons.enums.GlobalConfigEnum;
@@ -28,8 +29,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class BioRunner {
 
-    // 从配置文件中读取应用版本号
-    private static String appVersion = "1.0A";
+    //应用版本号
+    private static final AppVersion appVersion = AppVersion.of("1.6M32");
 
     @Autowired
     private RelayServerService relayServerService;
@@ -44,7 +45,7 @@ public class BioRunner {
      *
      * @return 应用版本号
      */
-    public static String getVersion() {
+    public static AppVersion getVersion() {
         return appVersion;
     }
 
@@ -82,7 +83,7 @@ public class BioRunner {
                 //不允许版本落后时触发向导升级
                 if (!allowWizardWhenUpgraded) {
                     log.info("应用程序版本已落后 当前:{} 最新:{},升级向导当前被禁用,请注意数据同步。", storeVersion, appVersion);
-                    globalConfigService.setValue(GlobalConfigEnum.APPLICATION_VERSION.getKey(), getVersion());
+                    //globalConfigService.setValue(GlobalConfigEnum.APPLICATION_VERSION.getKey(), getVersion());
                 }
 
             }
