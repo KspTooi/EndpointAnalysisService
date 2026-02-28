@@ -28,4 +28,19 @@ public class TestAppVersion {
         System.out.println("数字版本号: " + appVersion.toNumericVersion());
     }
 
+    @Test
+    public void testIsGreaterThan() {
+        AppVersion appVersion = AppVersion.of("1.0M26");
+        System.out.println("1.0M26 大于 1.0M25: " + appVersion.isGreaterThan("1.0M25"));
+        System.out.println("1.0M26 小于 1.0M25: " + appVersion.isLessThan("1.0M25"));
+
+        appVersion = AppVersion.of("1.0A1500");
+        System.out.println("1.0A1500 大于 1.0B1024: " + appVersion.isGreaterThan("1.0B1024"));
+        System.out.println("1.0A1500 小于 1.0B1024: " + appVersion.isLessThan("1.0B1024"));
+
+        appVersion = AppVersion.of("1.0Z");
+        System.out.println("1.0Z 大于 1.1A: " + appVersion.isGreaterThan("1.1A"));
+        System.out.println("1.0Z 小于 1.1A: " + appVersion.isLessThan("1.1A"));
+    }
+
 }

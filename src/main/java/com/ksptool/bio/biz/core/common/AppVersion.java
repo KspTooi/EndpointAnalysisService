@@ -70,6 +70,7 @@ public class AppVersion {
 
     /**
      * 转换为三段式纯数字版本号 X.X.X
+     * 这是为了兼容那些不支持字母修订号的版本号系统和框架，例如flyway
      * 规则：第三段 = [修订号数字][构建号数字] 直接拼接而成
      */
     public String toNumericVersion() {
@@ -86,7 +87,42 @@ public class AppVersion {
         String thirdPart = String.valueOf(rvNum) + bv;
         return String.format("%d.%d.%s", mv, sv, thirdPart);
     }
+    
+    /**
+     * 判断给定的版本号是否大于当前版本号
+     * @param version 版本号
+     * @return 是否大于
+     */
+    public boolean isGreaterThan(AppVersion otherVersion) {
+        return this.mv > otherVersion.mv || (this.mv == otherVersion.mv && this.sv > otherVersion.sv) || (this.mv == otherVersion.mv && this.sv == otherVersion.sv && this.rv.compareTo(otherVersion.rv) > 0) || (this.mv == otherVersion.mv && this.sv == otherVersion.sv && this.rv.compareTo(otherVersion.rv) == 0 && this.bv > otherVersion.bv);
+    }
 
+    /**
+     * 判断给定的版本号是否小于当前版本号
+     * @param otherVersion 版本号
+     * @return 是否小于
+     */
+    public boolean isLessThan(AppVersion otherVersion) {
+        return !isGreaterThan(otherVersion);
+    }
+
+    /**
+     * 判断给定的版本号是否大于当前版本号
+     * @param version 版本号
+     * @return 是否大于
+     */
+    public boolean isGreaterThan(String version) {
+        return isGreaterThan(AppVersion.of(version));
+    }
+
+    /**
+     * 判断给定的版本号是否小于当前版本号
+     * @param version 版本号
+     * @return 是否小于
+     */
+    public boolean isLessThan(String version) {
+        return isLessThan(AppVersion.of(version));
+    }
 
     /**
      * 将AppVersion对象转换为字符串
@@ -97,6 +133,8 @@ public class AppVersion {
     public String toString() {
         return String.format("%d.%d%s%d", mv, sv, rv, bv);
     }
+
+
 
 
 }
