@@ -7,7 +7,7 @@
         :items="menuTree"
         :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
-        version="版本:1.6M CP37"
+        :version="`版本:${appVersion}`"
       />
 
       <el-container class="h-full w-full overflow-hidden min-h-0">
@@ -70,8 +70,8 @@ import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
 import ComLeftMenu from "@/soa/console-framework/components/ComLeftMenu.vue";
 import ComUserProfile from "@/soa/console-framework/components/ComUserProfile.vue";
 import ComLeftMenuShort from "@/soa/console-framework/components/ComLeftMenuShort.vue";
-
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
+import UserAuthService from "@/views/auth/service/UserAuthService";
 
 const router = useRouter();
 const route = useRoute();
@@ -81,6 +81,18 @@ const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 
 ComFrameworkService.useComTabHotkey();
 const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = ComFrameworkService.useComFramework();
+
+const authStore = UserAuthService.AuthStore();
+
+const appVersion = computed(() => {
+  var userInfo = authStore.getUserInfo;
+
+  if (!userInfo) {
+    return "未知";
+  }
+
+  return userInfo.appVersion;
+});
 </script>
 
 <style scoped>
