@@ -13,7 +13,7 @@ import com.ksptool.bio.biz.auth.model.auth.dto.UserLoginDto;
 import com.ksptool.bio.biz.auth.model.auth.vo.UserLoginVo;
 import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptool.bio.biz.auth.service.SessionService;
-import com.ksptool.bio.biz.core.common.SystemRegistry;
+import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.model.user.dto.RegisterDto;
 import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
@@ -84,8 +84,8 @@ public class AuthController {
         var sessionId = sessionService.createSession(aud);
 
         // 如果注册表中配置了允许使用Cookie鉴权, 下发Cookie到客户端
-        if (regSdk.getInt(SystemRegistry.FA_COOKIE_ALLOWED.getFullKey(), 0) == 1) {
-            var cookieName = regSdk.getString(SystemRegistry.FA_COOKIE_NAME.getFullKey(), "bio-session-id");
+        if (regSdk.getInt(AppRegistry.FA_COOKIE_ALLOWED.getFullKey(), 0) == 1) {
+            var cookieName = regSdk.getString(AppRegistry.FA_COOKIE_NAME.getFullKey(), "bio-session-id");
             var cookie = new Cookie(cookieName, sessionId);
             cookie.setPath("/");
             cookie.setHttpOnly(true); // 防止 XSS 攻击

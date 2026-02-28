@@ -2,9 +2,12 @@ package com.ksptool.bio.biz.core.controller;
 
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.core.common.AppRegistry;
+import com.ksptool.bio.biz.core.model.maintain.vo.ExecuteInstallWizardVo;
 import com.ksptool.bio.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptool.bio.biz.core.repository.ResourceRepository;
 import com.ksptool.bio.biz.core.service.MaintainService;
+import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class MaintainController {
 
     @Autowired
     private MaintainService maintainService;
+
+    @Autowired
+    private RegistrySdk regSdk;
 
     @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
     @Operation(summary = "校验系统内置权限节点")
@@ -125,6 +131,24 @@ public class MaintainController {
         } catch (Exception e) {
             throw new RuntimeException("重置接口权限配置失败: " + e.getMessage(), e);
         }
+    }
+
+    @PreAuthorize(value = "@auth.hasCode('maintain:execute:installWizard')")
+    @Operation(summary = "维护中心:执行安装向导")
+    @PostMapping("/executeInstallWizard")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<ExecuteInstallWizardVo> executeInstallWizard() throws BizException {
+
+        //清除全部注册表缓存
+        regSdk.clearAllCache();
+
+        //检查当前是否处于安装向导模式
+        if (regSdk.getInt(AppRegistry.CIW_ENABLED.getFullKey(), 0) == 0) {
+            throw new BizException("无法执行安装向导,因为当前未处于安装向导模式。");
+        }
+
+
+        return null;
     }
 
 

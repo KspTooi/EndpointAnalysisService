@@ -10,7 +10,8 @@ import com.ksptool.bio.biz.auth.repository.GroupRepository;
 import com.ksptool.bio.biz.auth.repository.PermissionRepository;
 import com.ksptool.bio.biz.auth.repository.UserGroupRepository;
 import com.ksptool.bio.biz.auth.service.SessionService;
-import com.ksptool.bio.biz.core.common.SystemRegistry;
+import com.ksptool.bio.biz.core.common.AppRegistry;
+import com.ksptool.bio.biz.core.model.maintain.vo.ExecuteInstallWizardVo;
 import com.ksptool.bio.biz.core.model.maintain.vo.MaintainUpdateVo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.UserRepository;
@@ -509,29 +510,29 @@ public class MaintainService {
 
         var addedList = new ArrayList<String>();
 
-        for (SystemRegistry item : SystemRegistry.values()) {
+        for (AppRegistry item : AppRegistry.values()) {
 
             String nodeKeyPath = item.getNodeKeyPath();
             String nkey = item.getNkey();
             String defaultValue = item.getValue();
             String label = item.getLabel();
-            SystemRegistry.NvalueKind kind = item.getNvalueKind();
+            AppRegistry.NvalueKind kind = item.getNvalueKind();
 
             boolean created = false;
 
-            if (kind == SystemRegistry.NvalueKind.STRING) {
+            if (kind == AppRegistry.NvalueKind.STRING) {
                 created = registrySdk.createStringEntry(nodeKeyPath, nkey, defaultValue, label);
             }
 
-            if (kind == SystemRegistry.NvalueKind.INTEGER) {
+            if (kind == AppRegistry.NvalueKind.INTEGER) {
                 created = registrySdk.createIntEntry(nodeKeyPath, nkey, Integer.parseInt(defaultValue), label);
             }
 
-            if (kind == SystemRegistry.NvalueKind.DOUBLE) {
+            if (kind == AppRegistry.NvalueKind.DOUBLE) {
                 created = registrySdk.createDoubleEntry(nodeKeyPath, nkey, Double.parseDouble(defaultValue), label);
             }
 
-            if (kind == SystemRegistry.NvalueKind.DATETIME) {
+            if (kind == AppRegistry.NvalueKind.DATETIME) {
                 created = registrySdk.createDateTimeEntry(nodeKeyPath, nkey, LocalDateTime.parse(defaultValue), label);
             }
 
@@ -541,12 +542,27 @@ public class MaintainService {
         }
 
         var vo = new MaintainUpdateVo();
-        vo.setExistCount(SystemRegistry.values().length - addedList.size());
+        vo.setExistCount(AppRegistry.values().length - addedList.size());
         vo.setAddedCount(addedList.size());
         vo.setAddedList(addedList);
         vo.setRemovedCount(0);
         vo.setRemovedList(new ArrayList<>());
         vo.setMessage("注册表修复完成,新增条目:" + addedList.size() + " 条");
+        return vo;
+    }
+
+    /**
+     * 执行安装向导
+     * 执行安装向导，将数据库表结构升级到最新版本
+     *
+     * @return 安装向导结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ExecuteInstallWizardVo executeInstallWizard() throws BizException {
+
+        var vo = new ExecuteInstallWizardVo();
+
+
         return vo;
     }
 

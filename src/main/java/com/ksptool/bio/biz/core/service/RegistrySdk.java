@@ -27,6 +27,13 @@ public class RegistrySdk {
     private RegistryRepository repository;
 
     /**
+     * 清除所有缓存
+     */
+    @CacheEvict(value = "registry", allEntries = true)
+    public void clearAllCache() {
+    }
+
+    /**
      * 获取整数条目值(这是一个带有缓存的函数)
      *
      * @param keyPath      全路径

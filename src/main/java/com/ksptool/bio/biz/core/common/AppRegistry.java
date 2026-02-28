@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * 系统注册表
  */
-public enum SystemRegistry {
+public enum AppRegistry {
 
     // ==================== 系统配置 ====================
     CM_VERSION("config.main", "version", "1.0A", NvalueKind.STRING, "系统版本", "系统内部版本号,不要修改这个值,它由系统自动更新."),
@@ -63,11 +63,11 @@ public enum SystemRegistry {
     private final String remark;
 
 
-    SystemRegistry(String nodeKeyPath, String nkey, String value, NvalueKind nvalueKind, String label) {
+    AppRegistry(String nodeKeyPath, String nkey, String value, NvalueKind nvalueKind, String label) {
         this(nodeKeyPath, nkey, value, nvalueKind, label, null);
     }
 
-    SystemRegistry(String nodeKeyPath, String nkey, String value, NvalueKind nvalueKind, String label, String remark) {
+    AppRegistry(String nodeKeyPath, String nkey, String value, NvalueKind nvalueKind, String label, String remark) {
         this.nodeKeyPath = nodeKeyPath;
         this.nkey = nkey;
         this.value = value;
@@ -76,15 +76,36 @@ public enum SystemRegistry {
         this.remark = remark;
     }
 
-    public String getNodeKeyPath() { return nodeKeyPath; }
-    public String getNkey() { return nkey; }
-    public String getValue() { return value; }
-    public NvalueKind getNvalueKind() { return nvalueKind; }
-    public String getLabel() { return label; }
-    public String getRemark() { return remark; }
+    public String getNodeKeyPath() {
+        return nodeKeyPath;
+    }
 
-    /** 拼接完整 keyPath,供 SDK 读取条目时使用 */
-    public String getFullKey() { return nodeKeyPath + "." + nkey; }
+    public String getNkey() {
+        return nkey;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public NvalueKind getNvalueKind() {
+        return nvalueKind;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * 拼接完整 keyPath,供 SDK 读取条目时使用
+     */
+    public String getFullKey() {
+        return nodeKeyPath + "." + nkey;
+    }
 
     @Getter
     public enum NvalueKind {

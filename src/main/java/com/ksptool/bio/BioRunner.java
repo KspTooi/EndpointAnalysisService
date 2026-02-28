@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 
 @MapperScan(basePackages = "com.ksptool.bio.biz", annotationClass = Mapper.class)
 @EnableTransactionManagement
@@ -31,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class BioRunner {
 
     // 从配置文件中读取应用版本号
-    private static String applicationVersion;
+    private static String appVersion = "1.0A";
 
     @Autowired
     private RelayServerService relayServerService;
@@ -47,12 +45,7 @@ public class BioRunner {
      * @return 应用版本号
      */
     public static String getVersion() {
-        return applicationVersion;
-    }
-
-    @Value("${application.version}")
-    public void setApplicationVersion(String version) {
-        applicationVersion = version;
+        return appVersion;
     }
 
     @PostConstruct
@@ -77,18 +70,18 @@ public class BioRunner {
             //检查是否在版本落后时允许执行升级向导
             boolean allowWizardWhenUpgraded = globalConfigService.getBoolean(GlobalConfigEnum.ALLOW_INSTALL_WIZARD_UPGRADED.getKey(), true);
 
-            if (!storeVersion.equals(applicationVersion)) {
+            if (!storeVersion.equals(appVersion)) {
 
                 //允许在版本落后时触发向导进行数据升级
                 if (allowWizardWhenUpgraded) {
-                    log.info("应用程序版本已落后 当前:{} 最新:{},自动运行升级向导。", storeVersion, applicationVersion);
+                    log.info("应用程序版本已落后 当前:{} 最新:{},自动运行升级向导。", storeVersion, appVersion);
                     globalConfigService.setValue(GlobalConfigEnum.ALLOW_INSTALL_WIZARD.getKey(), null);
                     allowInstallWizard = "true";
                 }
 
                 //不允许版本落后时触发向导升级
                 if (!allowWizardWhenUpgraded) {
-                    log.info("应用程序版本已落后 当前:{} 最新:{},升级向导当前被禁用,请注意数据同步。", storeVersion, applicationVersion);
+                    log.info("应用程序版本已落后 当前:{} 最新:{},升级向导当前被禁用,请注意数据同步。", storeVersion, appVersion);
                     globalConfigService.setValue(GlobalConfigEnum.APPLICATION_VERSION.getKey(), getVersion());
                 }
 

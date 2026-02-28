@@ -86,9 +86,6 @@ springdoc:
     operations-sorter: alpha
     tags-sorter: alpha
 
-application:
-  version: 1.6MCP37 # 应用版本号
-
 #附件模块配置
 module-attach:
   #默认存储类型
