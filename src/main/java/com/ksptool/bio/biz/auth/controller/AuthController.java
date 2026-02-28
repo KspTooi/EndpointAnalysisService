@@ -1,12 +1,10 @@
 package com.ksptool.bio.biz.auth.controller;
 
-
 import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
-import com.ksptool.bio.commons.enums.GlobalConfigEnum;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.Result;
@@ -21,6 +19,7 @@ import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.core.service.UserService;
 import com.ksptool.bio.commons.annotation.PrintLog;
+import com.ksptool.bio.commons.enums.GlobalConfigEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -71,36 +70,36 @@ public class AuthController {
         Authentication auth = null;
 
         try {
-            //使用Spring Security进行用户名密码认证
+            // 使用Spring Security进行用户名密码认证
             auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         } catch (AuthenticationException e) {
             return Result.error("用户名或密码错误");
         }
 
-        //获取认证用户
+        // 获取认证用户
         var aud = (AuthUserDetails) auth.getPrincipal();
 
-        //创建用户会话
+        // 创建用户会话
         var sessionId = sessionService.createSession(aud);
 
-        //如果注册表中配置了允许使用Cookie鉴权, 下发Cookie到客户端
+        // 如果注册表中配置了允许使用Cookie鉴权, 下发Cookie到客户端
         if (regSdk.getInt(SystemRegistry.FA_COOKIE_ALLOWED.getFullKey(), 0) == 1) {
             var cookieName = regSdk.getString(SystemRegistry.FA_COOKIE_NAME.getFullKey(), "bio-session-id");
             var cookie = new Cookie(cookieName, sessionId);
             cookie.setPath("/");
-            cookie.setHttpOnly(true);  // 防止 XSS 攻击
-            cookie.setMaxAge(7 * 24 * 60 * 60);  // 7天有效期
+            cookie.setHttpOnly(true); // 防止 XSS 攻击
+            cookie.setMaxAge(7 * 24 * 60 * 60); // 7天有效期
+            cookie.setAttribute("SameSite", "Lax");
             hsrp.addCookie(cookie);
         }
 
-        //组装Vo(如果Cookie鉴权被禁用, 只通过JSON返回给前端，前端需要自己在代码里面手动放Authorization: Bearer <sessionId>请求头)
+        // 组装Vo(如果Cookie鉴权被禁用, 只通过JSON返回给前端，前端需要自己在代码里面手动放Authorization: Bearer
+        // <sessionId>请求头)
         var vo = as(aud, UserLoginVo.class);
         vo.setSessionId(sessionId);
         return Result.success(vo);
     }
-
 
     @Operation(summary = "注册")
     @PrintLog(sensitiveFields = "password")
@@ -130,7 +129,6 @@ public class AuthController {
         return Result.success("注销成功");
     }
 
-
     @Operation(summary = "获取权限")
     @PostMapping("/getPermissions")
     @ResponseBody
@@ -146,7 +144,8 @@ public class AuthController {
     @PostMapping("/genCaptcha")
     public ApiResponse<ImageCaptchaVO> genCaptcha() {
         // 1.生成验证码(该数据返回给前端用于展示验证码数据)
-        // 参数1为具体的验证码类型， 默认支持 SLIDER、ROTATE、WORD_IMAGE_CLICK、CONCAT 等验证码类型，详见： `CaptchaTypeConstant`类
+        // 参数1为具体的验证码类型， 默认支持 SLIDER、ROTATE、WORD_IMAGE_CLICK、CONCAT 等验证码类型，详见：
+        // `CaptchaTypeConstant`类
         return application.generateCaptcha(CaptchaTypeConstant.SLIDER);
     }
 
@@ -173,6 +172,5 @@ public class AuthController {
         // 验证码数据,前端回传的验证码轨迹数据
         private ImageCaptchaTrack data;
     }
-
 
 }
