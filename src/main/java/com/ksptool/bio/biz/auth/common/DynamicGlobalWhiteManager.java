@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,14 +56,15 @@ public class DynamicGlobalWhiteManager implements AuthorizationManager<RequestAu
         //构建基础白名单
         basic.add("/auth/userLogin"); //用户登录
         basic.add("/auth/genCaptcha"); //验证码端点
+        basic.add("/auth/check"); //验证码端点
         basic.add("/v3/api-docs"); //OpenApi 端点
 
         //构建集成部署白名单
-        if(isIntegratedDeploy()){
+        if (isIntegratedDeploy()) {
             integratedDeploy.add("/api/auth/userLogin"); //用户登录
             integratedDeploy.add("/api/auth/genCaptcha"); //验证码端点
-            integratedDeploy.add("/api/v3/api-docs"); //OpenApi 端点
             integratedDeploy.add("/api/auth/check"); //验证码端点
+            integratedDeploy.add("/api/v3/api-docs"); //OpenApi 端点
             integratedDeploy.add("/index.html"); //主页
             integratedDeploy.add("/favicon.ico"); //网站图标
             integratedDeploy.add("/"); //根路径
@@ -76,11 +78,11 @@ public class DynamicGlobalWhiteManager implements AuthorizationManager<RequestAu
         whiteListMatchers.addAll(basic.stream().map(PathPatternRequestMatcher::pathPattern).collect(Collectors.toSet()));
         whiteListMatchers.addAll(integratedDeploy.stream().map(PathPatternRequestMatcher::pathPattern).collect(Collectors.toSet()));
 
-        if(isIntegratedDeploy()){
+        if (isIntegratedDeploy()) {
             log.info("DGWM 白名单加载: 当前已启用集成部署模式，总条目: {}", whiteListMatchers.size());
         }
 
-        if(!isIntegratedDeploy()){
+        if (!isIntegratedDeploy()) {
             log.info("DGWM 白名单加载: 当前处于标准部署模式，总条目: {}", whiteListMatchers.size());
         }
 
