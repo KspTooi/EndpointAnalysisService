@@ -158,8 +158,7 @@ public class MaintainController {
             throw new BizException("无法执行安装向导,因为当前未处于安装向导模式。");
         }
 
-
-        return null;
+        return Result.success(maintainService.executeInstallWizard());
     }
 
 

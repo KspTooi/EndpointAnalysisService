@@ -1,6 +1,7 @@
 package com.ksptool.bio.biz.core.service;
 
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.bio.BioRunner;
 import com.ksptool.bio.biz.auth.model.GroupPermissionPo;
 import com.ksptool.bio.biz.auth.model.UserGroupPo;
 import com.ksptool.bio.biz.auth.model.group.GroupPo;
@@ -75,6 +76,9 @@ public class MaintainService {
 
     @Autowired
     private RegistrySdk registrySdk;
+
+    @Autowired
+    private SessionService sessionService;
 
     /**
      * 校验系统内置权限节点
@@ -553,16 +557,53 @@ public class MaintainService {
 
     /**
      * 执行安装向导
-     * 执行安装向导，将数据库表结构升级到最新版本
-     *
-     * @return 安装向导结果
+     * 依次执行: 修复注册表 → 升级数据库 → 校验权限 → 校验用户组 → 校验用户
+     * 全部完成后自动关闭向导模式
      */
     @Transactional(rollbackFor = Exception.class)
     public ExecuteInstallWizardVo executeInstallWizard() throws BizException {
 
+        var changesContent = new ArrayList<String>();
+
+        // 读取执行前的系统版本
+        String oldVersion = registrySdk.getString(AppRegistry.CM_VERSION.getFullKey(), "未知");
+
+        // Step1: 修复注册表 — 确保所有内置配置条目存在
+        var registryResult = repairRegistry();
+        changesContent.add("[修复注册表] " + registryResult.getMessage());
+
+        // Step2: 升级数据库 — 执行 Flyway 迁移脚本
+        var dbResult = upgradeDatabase();
+        changesContent.add("[升级数据库] " + dbResult.getMessage());
+
+        // Step3: 校验系统内置权限码
+        var permResult = validatePermissions();
+        changesContent.add("[权限码同步] 新增 " + permResult.getAddedCount() + " 条，移除 " + permResult.getRemovedCount() + " 条");
+
+        // Step4: 校验系统内置用户组
+        var groupResult = validateGroups();
+        changesContent.add("[用户组修复] " + groupResult.getMessage());
+
+        // Step5: 校验系统内置用户
+        var userResult = validateUsers();
+        changesContent.add("[账号修复] " + userResult.getMessage());
+
+        registrySdk.clearAllCache();
+
+        //写入新系统版本到注册表
+        String newVersion = BioRunner.getVersion().toString();
+        registrySdk.setString(AppRegistry.CM_VERSION.getFullKey(), newVersion);
+
+        //关闭向导模式
+        registrySdk.setInt(AppRegistry.CIW_ENABLED.getFullKey(), 0);
+
+        //清除所有用户登录状态
+        sessionService.clearUserSession();
+
         var vo = new ExecuteInstallWizardVo();
-
-
+        vo.setOldVersion(oldVersion);
+        vo.setNewVersion(newVersion);
+        vo.setChangesContent(changesContent);
         return vo;
     }
 

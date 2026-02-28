@@ -23,6 +23,12 @@ export interface MaintainOperation {
   onComplete?: () => void; // 操作完成回调
 }
 
+export interface ExecuteInstallWizardVo {
+  oldVersion: string; // 旧版本
+  newVersion: string; // 新版本
+  changesContent: string[]; // 变更项内容
+}
+
 export default {
   /**
    * 校验系统内置权限节点
@@ -108,6 +114,17 @@ export default {
     const result = await Http.postEntity<Result<number>>("/maintain/checkInstallWizardMode", {});
     if (result.code === 0) {
       return result.data === 1;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 维护中心:执行安装向导
+   */
+  executeInstallWizard: async (): Promise<ExecuteInstallWizardVo> => {
+    const result = await Http.postEntity<Result<ExecuteInstallWizardVo>>("/maintain/executeInstallWizard", {});
+    if (result.code === 0) {
+      return result.data;
     }
     throw new Error(result.message);
   },
