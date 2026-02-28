@@ -15,6 +15,15 @@ const axiosInstance = axios.create({
   },
 });
 
+// 添加请求拦截器(如果用户已登录，则添加Authorization头)
+axiosInstance.interceptors.request.use((config) => {
+  const sessionId = UserAuthService.AuthStore().getSessionId;
+  if (sessionId) {
+    config.headers.Authorization = `Bearer ${sessionId}`;
+  }
+  return config;
+});
+
 // 添加响应拦截器
 axiosInstance.interceptors.response.use(
   (response) => response,
