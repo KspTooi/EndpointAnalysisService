@@ -50,10 +50,9 @@ public class AppInstallWizardInterceptor implements HandlerInterceptor {
             //如果超级用户已登录,且访问的不是维护中心接口,需要引导他们到维护中心(通过返回102业务码,这样前端才能知道当前处于安装向导模式)
             var result = Result.error(ResultCode.INSTALL_WIZARD_ACTIVE.getCode(), "系统处于维护模式,请访问维护中心进行操作。");
             hsrp.setStatus(ResultCode.INSTALL_WIZARD_ACTIVE.getHttpStatus().value());
-            hsrp.getWriter().write(gson.toJson(result));
-
             hsrp.setContentType("application/json;charset=UTF-8");
             hsrp.setCharacterEncoding("UTF-8");
+            hsrp.getWriter().write(gson.toJson(result));
             hsrp.flushBuffer();
             return false;
         }
