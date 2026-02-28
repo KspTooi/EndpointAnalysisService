@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -21,54 +20,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
 
-    /**
-     * 白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
-     */
-    private final Set<String> whiteList = Stream.of(
-            "/maintain/**", // 维护中心
-            "/auth/userLogin", // 用户登录
-            "/v3/api-docs", // OpenApi 端点
-            "/auth/genCaptcha", // 验证码端点
-            "/auth/check" // 验证码端点
-    ).collect(Collectors.toSet());
-
-    /**
-     * 集成部署白名单,这里可以硬编码一些常见的接口,如登录、注册、静态资源等，这些接口不需要登录即可访问
-     */
-    private final Set<String> integratedDeployWhiteList = Stream.of(
-            "/api/maintain/**",
-            "/api/auth/userLogin",
-            "/api/v3/api-docs",
-            "/api/auth/genCaptcha",
-            "/api/auth/check",
-            "/js/**",
-            "/css/**",
-            "/assets/**",
-            "/index.html",
-            "/favicon.ico",
-            "/",
-            "/index.html",
-            "/login").collect(Collectors.toSet());
-
     @Autowired
     private UserSessionAuthFilter usaf;
 
     @Autowired
     private JsonAuthEntryPoint jaep;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
 
     @Autowired
     private DynamicGlobalWhiteManager dgwm;
@@ -82,17 +44,6 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity hs) throws Exception {
-
-        var whiteList = new HashSet<>(this.whiteList);
-
-        if (isIntegratedDeploy()) {
-            whiteList.addAll(integratedDeployWhiteList);
-            log.info("Auth域安全配置: 当前已启用集成部署模式，加载集成部署白名单。条目:{}", whiteList.size());
-        }
-
-        if (!isIntegratedDeploy()) {
-            log.info("Auth域安全配置: 当前处于标准部署模式，加载标准白名单。条目:{}", whiteList.size());
-        }
 
         //关闭CSRF(现在前后端使用Authorization头进行鉴权,停用CSRF校验)
         hs.csrf(AbstractHttpConfigurer::disable);
@@ -114,12 +65,9 @@ public class SecurityConfig {
         //一些默认 header 写入可能依赖会话/重定向语义，这里统一禁用；如需 HSTS/CSP/FrameOptions 再单独开启
         hs.headers(HeadersConfigurer::disable);
 
-        //配置接口权限规则
+        //配置接口权限规则 使用DGWM进行权限管理
         hs.authorizeHttpRequests(auth -> auth
-                //白名单
-                .requestMatchers(whiteList.toArray(String[]::new)).permitAll()
-                //兜底规则 其余所有请求都必须登录
-                .anyRequest().authenticated()
+            .anyRequest().access(dgwm)
         );
 
         //配置认证失败和权限不足的处理(统一返回JSON格式)
@@ -143,15 +91,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * 判断是否是集成部署
-     * <p>
-     * 如果classpath:/web-static/index.html存在，则认为是集成部署
-     */
-    public boolean isIntegratedDeploy() {
-        return resourceLoader.getResource("classpath:/web-static/index.html").exists();
     }
 
     @Bean
