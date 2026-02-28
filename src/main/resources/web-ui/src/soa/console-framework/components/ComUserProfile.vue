@@ -7,12 +7,7 @@
   >
     <template #reference>
       <div class="user-info">
-        <el-avatar
-          :size="24"
-          :src="avatarUrl"
-          style="margin-right: 8px"
-          shape="square"
-        />
+        <el-avatar :size="24" :src="avatarUrl" style="margin-right: 8px" shape="square" />
         <div class="username-display">
           {{ profile?.nickname || profile?.username || "Operator" }}
         </div>
@@ -96,6 +91,9 @@ import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } f
 import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
 import AuthApi from "@/soa/console-framework/api/AuthApi";
 import ComPasswordReset from "@/soa/console-framework/components/ComPasswordReset.vue";
+import UserAuthService from "@/views/auth/service/UserAuthService";
+
+const authStore = UserAuthService.AuthStore();
 
 const profile = ref<GetCurrentUserProfile | null>(null);
 const changePasswordModalRef = ref();
@@ -133,10 +131,16 @@ const onChangePassword = () => {
 };
 
 const avatarUrl = computed(() => {
-  if (profile.value?.avatarAttachId) {
-    return `/getAttach?id=${profile.value.avatarAttachId}`;
+  var token = "";
+
+  if (authStore.getSessionId) {
+    token = authStore.getSessionId;
   }
-  return "/api/profile/getUserAvatar";
+
+  if (profile.value?.avatarAttachId) {
+    return `/getAttach?id=${profile.value.avatarAttachId}&token=${token}`;
+  }
+  return `/api/profile/getUserAvatar?token=${token}`;
 });
 
 const genderText = computed(() => {
