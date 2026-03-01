@@ -27,6 +27,11 @@ public class QfModelGroupService {
     @Autowired
     private QfModelGroupRepository repository;
 
+    /**
+     * 查询流程模型分组列表
+     * @param dto 查询参数
+     * @return 模型分组列表
+     */
     public PageResult<GetQfModelGroupListVo> getQfModelGroupList(GetQfModelGroupListDto dto){
         QfModelGroupPo query = new QfModelGroupPo();
         assign(dto,query);
@@ -40,12 +45,22 @@ public class QfModelGroupService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增流程模型分组
+     * @param dto 新增参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addQfModelGroup(AddQfModelGroupDto dto){
         QfModelGroupPo insertPo = as(dto,QfModelGroupPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑流程模型分组
+     * @param dto 编辑参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModelGroup(EditQfModelGroupDto dto) throws BizException {
         QfModelGroupPo updatePo = repository.findById(dto.getId())
@@ -55,12 +70,23 @@ public class QfModelGroupService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询流程模型分组详情
+     * @param dto 查询参数
+     * @return 模型分组详情
+     * @throws BizException
+     */
     public GetQfModelGroupDetailsVo getQfModelGroupDetails(CommonIdDto dto) throws BizException {
         QfModelGroupPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetQfModelGroupDetailsVo.class);
     }
 
+    /**
+     * 删除流程模型分组
+     * @param dto 删除参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeQfModelGroup(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

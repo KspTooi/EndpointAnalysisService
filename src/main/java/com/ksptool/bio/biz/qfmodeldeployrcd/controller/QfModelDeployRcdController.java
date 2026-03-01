@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-
 import com.ksptool.bio.biz.qfmodeldeployrcd.service.QfModelDeployRcdService;
-import com.ksptool.bio.biz.qfmodeldeployrcd.model.dto.AddQfModelDeployRcdDto;
-import com.ksptool.bio.biz.qfmodeldeployrcd.model.dto.EditQfModelDeployRcdDto;
 import com.ksptool.bio.biz.qfmodeldeployrcd.model.dto.GetQfModelDeployRcdListDto;
 import com.ksptool.bio.biz.qfmodeldeployrcd.model.vo.GetQfModelDeployRcdListVo;
 import com.ksptool.bio.biz.qfmodeldeployrcd.model.vo.GetQfModelDeployRcdDetailsVo;
@@ -21,7 +18,7 @@ import com.ksptool.bio.biz.qfmodeldeployrcd.model.vo.GetQfModelDeployRcdDetailsV
 
 @RestController
 @RequestMapping("/qfModelDeployRcd")
-@Tag(name = "qfModelDeployRcd", description = "流程模型部署历史")
+@Tag(name = "QF流程模型部署历史管理", description = "QF流程模型部署历史管理")
 @Slf4j
 public class QfModelDeployRcdController {
 
@@ -29,26 +26,12 @@ public class QfModelDeployRcdController {
     private QfModelDeployRcdService qfModelDeployRcdService;
 
     @PostMapping("/getQfModelDeployRcdList")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询流程模型部署历史列表")
     public PageResult<GetQfModelDeployRcdListVo> getQfModelDeployRcdList(@RequestBody @Valid GetQfModelDeployRcdListDto dto) throws Exception{
         return qfModelDeployRcdService.getQfModelDeployRcdList(dto);
     }
 
-    @Operation(summary ="新增")
-    @PostMapping("/addQfModelDeployRcd")
-    public Result<String> addQfModelDeployRcd(@RequestBody @Valid AddQfModelDeployRcdDto dto) throws Exception{
-		qfModelDeployRcdService.addQfModelDeployRcd(dto);
-        return Result.success("新增成功");
-    }
-
-    @Operation(summary ="编辑")
-    @PostMapping("/editQfModelDeployRcd")
-    public Result<String> editQfModelDeployRcd(@RequestBody @Valid EditQfModelDeployRcdDto dto) throws Exception{
-		qfModelDeployRcdService.editQfModelDeployRcd(dto);
-        return Result.success("修改成功");
-    }
-
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询流程模型部署历史详情")
     @PostMapping("/getQfModelDeployRcdDetails")
     public Result<GetQfModelDeployRcdDetailsVo> getQfModelDeployRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetQfModelDeployRcdDetailsVo details = qfModelDeployRcdService.getQfModelDeployRcdDetails(dto);
@@ -58,7 +41,7 @@ public class QfModelDeployRcdController {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除流程模型部署历史")
     @PostMapping("/removeQfModelDeployRcd")
     public Result<String> removeQfModelDeployRcd(@RequestBody @Valid CommonIdDto dto) throws Exception{
         qfModelDeployRcdService.removeQfModelDeployRcd(dto);

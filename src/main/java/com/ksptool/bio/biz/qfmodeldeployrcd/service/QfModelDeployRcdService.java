@@ -27,6 +27,11 @@ public class QfModelDeployRcdService {
     @Autowired
     private QfModelDeployRcdRepository repository;
 
+    /**
+     * 查询流程模型部署历史列表
+     * @param dto 查询参数
+     * @return 模型部署历史列表
+     */
     public PageResult<GetQfModelDeployRcdListVo> getQfModelDeployRcdList(GetQfModelDeployRcdListDto dto){
         QfModelDeployRcdPo query = new QfModelDeployRcdPo();
         assign(dto,query);
@@ -40,12 +45,22 @@ public class QfModelDeployRcdService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增流程模型部署历史
+     * @param dto 新增参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addQfModelDeployRcd(AddQfModelDeployRcdDto dto){
         QfModelDeployRcdPo insertPo = as(dto,QfModelDeployRcdPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑流程模型部署历史
+     * @param dto 编辑参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModelDeployRcd(EditQfModelDeployRcdDto dto) throws BizException {
         QfModelDeployRcdPo updatePo = repository.findById(dto.getId())
@@ -55,12 +70,23 @@ public class QfModelDeployRcdService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询流程模型部署历史详情
+     * @param dto 查询参数
+     * @return 模型部署历史详情
+     * @throws BizException
+     */
     public GetQfModelDeployRcdDetailsVo getQfModelDeployRcdDetails(CommonIdDto dto) throws BizException {
         QfModelDeployRcdPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetQfModelDeployRcdDetailsVo.class);
     }
 
+    /**
+     * 删除流程模型部署历史
+     * @param dto 删除参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeQfModelDeployRcd(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

@@ -27,6 +27,11 @@ public class QfModelService {
     @Autowired
     private QfModelRepository repository;
 
+    /**
+     * 查询流程模型列表
+     * @param dto 查询参数
+     * @return 模型列表
+     */
     public PageResult<GetQfModelListVo> getQfModelList(GetQfModelListDto dto){
         QfModelPo query = new QfModelPo();
         assign(dto,query);
@@ -40,12 +45,22 @@ public class QfModelService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增流程模型
+     * @param dto 新增参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addQfModel(AddQfModelDto dto){
         QfModelPo insertPo = as(dto,QfModelPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑流程模型
+     * @param dto 编辑参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModel(EditQfModelDto dto) throws BizException {
         QfModelPo updatePo = repository.findById(dto.getId())
@@ -55,12 +70,23 @@ public class QfModelService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询流程模型详情
+     * @param dto 查询参数
+     * @return 模型详情
+     * @throws BizException
+     */
     public GetQfModelDetailsVo getQfModelDetails(CommonIdDto dto) throws BizException {
         QfModelPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetQfModelDetailsVo.class);
     }
 
+    /**
+     * 删除流程模型
+     * @param dto 删除参数
+     * @throws BizException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeQfModel(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
