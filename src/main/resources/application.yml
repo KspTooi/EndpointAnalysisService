@@ -65,8 +65,8 @@ spring:
     enabled: true
     locations: classpath:sql/automatic
     baseline-on-migrate: true
-    baseline-version: 1.5.23
-    baseline-description: "Baseline1.5W"
+    baseline-version: 1.6.1359
+    baseline-description: "BaseLine1.6M59"
 
 server:
   port: 27500
