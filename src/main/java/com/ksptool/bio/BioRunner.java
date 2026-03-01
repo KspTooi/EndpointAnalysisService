@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class BioRunner {
 
     //应用版本号
-    private static final AppVersion appVersion = AppVersion.of("1.6N1");
+    private static final AppVersion appVersion = AppVersion.of("1.6N7");
 
     @Autowired
     private RelayServerService relayServerService;
