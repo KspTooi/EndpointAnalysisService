@@ -20,9 +20,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+
 @MapperScan(basePackages = "com.ksptool.bio.biz", annotationClass = Mapper.class)
 @EnableTransactionManagement
-@SpringBootApplication
+@SpringBootApplication(
+        exclude = {
+                org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration.class,
+        }
+)
 @EnableScheduling
 @EnableCaching
 @EnableAsync
