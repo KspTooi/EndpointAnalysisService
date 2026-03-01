@@ -30,10 +30,10 @@ public class AppStatusService {
     //最新快照，用于缓存最新采样数据
     private final AtomicReference<GetRtStatusVo> snapshot = new AtomicReference<>();
     // OSHI 核心对象，只初始化一次
-    private final SystemInfo si;
-    private final HardwareAbstractionLayer hal;
-    private final CentralProcessor cpu;
-    private final OperatingSystem os;
+    private SystemInfo si;
+    private HardwareAbstractionLayer hal;
+    private CentralProcessor cpu;
+    private OperatingSystem os;
     @Value("${module-app-status.sample-delay-ms:1000}")
     private long sampleDelayMs;
     // 为 true 时在 getSystemInfo 中返回 jvmInputArgs 原始值，默认关闭（避免泄露密码/Token/连接串）
@@ -51,15 +51,6 @@ public class AppStatusService {
     private long prevDiskWriteBytes;
     // 上一帧采样时间戳（毫秒），用于计算实际间隔
     private long prevSampleMs = 0;
-
-    //直接在构造函数里初始化基础对象（这些很快，不涉及底层系统调用）
-    public AppStatusService() {
-        this.si = new SystemInfo();
-        this.hal = si.getHardware();
-        this.cpu = hal.getProcessor();
-        this.os = si.getOperatingSystem();
-    }
-
 
     /**
      * 定时采样任务，写入最新快照
@@ -145,6 +136,10 @@ public class AppStatusService {
     }
 
     private void initBaselines() {
+        this.si = new SystemInfo();
+        this.hal = si.getHardware();
+        this.cpu = hal.getProcessor();
+        this.os = si.getOperatingSystem();
         prevCpuTicks = cpu.getSystemCpuLoadTicks();
         prevSampleMs = System.currentTimeMillis();
 

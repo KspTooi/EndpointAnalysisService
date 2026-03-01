@@ -52,6 +52,7 @@ public class BioRunner {
         return appVersion;
     }
 
+
     @PostConstruct
     public void init() {
         relayServerService.initRelayServer();

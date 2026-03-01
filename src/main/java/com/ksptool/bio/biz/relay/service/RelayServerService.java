@@ -19,6 +19,7 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -456,6 +457,7 @@ public class RelayServerService {
     /**
      * 启动所有自动运行的中继服务器
      */
+    @Async
     @Transactional(rollbackFor = Exception.class)
     public void initRelayServer() {
 
