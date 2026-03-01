@@ -66,3 +66,6 @@ components.d.ts
 dist-ssr
 coverage
 *.local
+
+### spring-profiler分析结果 ###
+**/src/main/resources/support-static/spring-profiler/output/**
