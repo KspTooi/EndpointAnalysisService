@@ -7,6 +7,8 @@ import com.ksptool.bio.biz.qf.model.qfmodeldeployrcd.dto.GetQfModelDeployRcdList
 import com.ksptool.bio.biz.qf.model.qfmodeldeployrcd.vo.GetQfModelDeployRcdDetailsVo;
 import com.ksptool.bio.biz.qf.model.qfmodeldeployrcd.vo.GetQfModelDeployRcdListVo;
 import com.ksptool.bio.biz.qf.service.QfModelDeployRcdService;
+import com.ksptool.bio.commons.annotation.PrintLog;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@PrintLog(value = "QF流程模型部署历史管理")
 @RestController
 @RequestMapping("/qfModelDeployRcd")
 @Tag(name = "QF流程模型部署历史管理", description = "QF流程模型部署历史管理")

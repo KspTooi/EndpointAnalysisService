@@ -9,6 +9,8 @@ import com.ksptool.bio.biz.qf.model.qfmodelgroup.dto.GetQfModelGroupListDto;
 import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupDetailsVo;
 import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupListVo;
 import com.ksptool.bio.biz.qf.service.QfModelGroupService;
+import com.ksptool.bio.commons.annotation.PrintLog;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@PrintLog(value = "QF流程模型分组管理")
 @RestController
 @RequestMapping("/qfModelGroup")
 @Tag(name = "QF流程模型分组管理", description = "QF流程模型分组管理")
