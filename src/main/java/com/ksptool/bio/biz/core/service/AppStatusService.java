@@ -4,17 +4,12 @@ import com.ksptool.bio.biz.core.model.appstatus.vo.GetRtStatusVo;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoDiskVo;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoIFVo;
 import com.ksptool.bio.biz.core.model.appstatus.vo.GetSystemInfoVo;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.GlobalMemory;
-import oshi.hardware.HWDiskStore;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.NetworkIF;
+import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 
@@ -32,63 +27,39 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class AppStatusService {
 
+    //最新快照，用于缓存最新采样数据
+    private final AtomicReference<GetRtStatusVo> snapshot = new AtomicReference<>();
+    // OSHI 核心对象，只初始化一次
+    private final SystemInfo si;
+    private final HardwareAbstractionLayer hal;
+    private final CentralProcessor cpu;
+    private final OperatingSystem os;
     @Value("${module-app-status.sample-delay-ms:1000}")
     private long sampleDelayMs;
-
     // 为 true 时在 getSystemInfo 中返回 jvmInputArgs 原始值，默认关闭（避免泄露密码/Token/连接串）
     @Value("${module-app-status.expose-jvm-args:false}")
     private boolean exposeJvmArgs;
-
-    // OSHI 核心对象，只初始化一次
-    private SystemInfo si;
-    private HardwareAbstractionLayer hal;
-    private CentralProcessor cpu;
-    private OperatingSystem os;
-
     // 上一帧 CPU ticks（用于差值计算使用率）
     private long[] prevCpuTicks;
-
     // 上一帧网卡累计字节/包数
     private long prevNetRxBytes;
     private long prevNetTxBytes;
     private long prevNetRxPackets;
     private long prevNetTxPackets;
-
     // 上一帧磁盘累计字节数
     private long prevDiskReadBytes;
     private long prevDiskWriteBytes;
-
     // 上一帧采样时间戳（毫秒），用于计算实际间隔
-    private long prevSampleMs;
+    private long prevSampleMs = 0;
 
-    //最新快照，用于缓存最新采样数据
-    private final AtomicReference<GetRtStatusVo> snapshot = new AtomicReference<>();
-
-    @PostConstruct
-    public void init() {
-        si = new SystemInfo();
-        hal = si.getHardware();
-        cpu = hal.getProcessor();
-        os = si.getOperatingSystem();
-
-        // 初始化"上一帧"，避免第一次采样差值为负
-        prevCpuTicks = cpu.getSystemCpuLoadTicks();
-        prevSampleMs = System.currentTimeMillis();
-
-        // 初始化网卡累计基线
-        long[] netBase = sumNetworkCounters(hal.getNetworkIFs(true));
-        prevNetRxBytes = netBase[0];
-        prevNetTxBytes = netBase[1];
-        prevNetRxPackets = netBase[2];
-        prevNetTxPackets = netBase[3];
-
-        // 初始化磁盘累计基线
-        long[] diskBase = sumDiskCounters(hal.getDiskStores());
-        prevDiskReadBytes = diskBase[0];
-        prevDiskWriteBytes = diskBase[1];
-
-        log.info("AppStatusService 初始化完成，采样间隔: {}ms", sampleDelayMs);
+    //直接在构造函数里初始化基础对象（这些很快，不涉及底层系统调用）
+    public AppStatusService() {
+        this.si = new SystemInfo();
+        this.hal = si.getHardware();
+        this.cpu = hal.getProcessor();
+        this.os = si.getOperatingSystem();
     }
+
 
     /**
      * 定时采样任务，写入最新快照
@@ -98,6 +69,14 @@ public class AppStatusService {
     public void sample() {
         try {
             long nowMs = System.currentTimeMillis();
+
+            // 第一次运行时进行基线采样（在 scheduling 线程中执行，不阻塞启动）
+            if (prevSampleMs == 0) {
+                initBaselines();
+                prevSampleMs = nowMs;
+                return; // 第一帧仅作基线，不计算速率
+            }
+
             long intervalMs = nowMs - prevSampleMs;
 
             GetRtStatusVo vo = new GetRtStatusVo();
@@ -163,6 +142,25 @@ public class AppStatusService {
         } catch (Exception e) {
             log.error("AppStatus 采样失败", e);
         }
+    }
+
+    private void initBaselines() {
+        prevCpuTicks = cpu.getSystemCpuLoadTicks();
+        prevSampleMs = System.currentTimeMillis();
+
+        // 初始化网卡累计基线
+        long[] netBase = sumNetworkCounters(hal.getNetworkIFs(true));
+        prevNetRxBytes = netBase[0];
+        prevNetTxBytes = netBase[1];
+        prevNetRxPackets = netBase[2];
+        prevNetTxPackets = netBase[3];
+
+        // 初始化磁盘累计基线
+        long[] diskBase = sumDiskCounters(hal.getDiskStores());
+        prevDiskReadBytes = diskBase[0];
+        prevDiskWriteBytes = diskBase[1];
+
+        log.info("AppStatusService 初始化完成，采样间隔: {}ms", sampleDelayMs);
     }
 
     /**
