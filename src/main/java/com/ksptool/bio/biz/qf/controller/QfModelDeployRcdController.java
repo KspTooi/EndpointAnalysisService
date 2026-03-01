@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +28,14 @@ public class QfModelDeployRcdController {
     @Autowired
     private QfModelDeployRcdService qfModelDeployRcdService;
 
+    @PreAuthorize("@auth.hasCode('qf:mdr:view')")
     @PostMapping("/getQfModelDeployRcdList")
     @Operation(summary = "查询流程模型部署历史列表")
     public PageResult<GetQfModelDeployRcdListVo> getQfModelDeployRcdList(@RequestBody @Valid GetQfModelDeployRcdListDto dto) throws Exception {
         return qfModelDeployRcdService.getQfModelDeployRcdList(dto);
     }
 
+    @PreAuthorize("@auth.hasCode('qf:mdr:view')")
     @Operation(summary = "查询流程模型部署历史详情")
     @PostMapping("/getQfModelDeployRcdDetails")
     public Result<GetQfModelDeployRcdDetailsVo> getQfModelDeployRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -43,6 +46,7 @@ public class QfModelDeployRcdController {
         return Result.success(details);
     }
 
+    @PreAuthorize("@auth.hasCode('qf:mdr:remove')")
     @Operation(summary = "删除流程模型部署历史")
     @PostMapping("/removeQfModelDeployRcd")
     public Result<String> removeQfModelDeployRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
