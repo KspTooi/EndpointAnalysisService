@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/noticeTemplate")
-@Tag(name = "noticeTemplate", description = "通知模板表")
+@Tag(name = "消息通知模板管理", description = "消息通知模板管理")
 @Slf4j
 public class NoticeTemplateController {
 

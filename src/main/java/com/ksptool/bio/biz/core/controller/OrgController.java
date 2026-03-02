@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/org")
-@Tag(name = "org", description = "组织机构-核心")
+@Tag(name = "组织机构管理", description = "组织机构管理")
 @Slf4j
 public class OrgController {
 

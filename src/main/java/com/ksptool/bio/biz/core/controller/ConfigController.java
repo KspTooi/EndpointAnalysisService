@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/config")
-@Tag(name = "配置项管理", description = "配置项管理")
+@Tag(name = "配置管理", description = "配置管理")
 public class ConfigController {
 
     @Autowired

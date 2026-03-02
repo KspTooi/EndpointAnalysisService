@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @PrintLog
 @RestController
 @RequestMapping("/user")
-@Tag(name = "User", description = "用户管理")
+@Tag(name = "用户管理", description = "用户管理")
 public class UserController {
 
     @Autowired

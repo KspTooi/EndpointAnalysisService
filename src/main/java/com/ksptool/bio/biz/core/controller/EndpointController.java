@@ -25,7 +25,7 @@ import java.util.List;
 @PrintLog
 @RestController
 @RequestMapping("/endpoint")
-@Tag(name = "Endpoint", description = "端点与权限")
+@Tag(name = "端点管理", description = "端点管理")
 public class EndpointController {
 
     @Autowired

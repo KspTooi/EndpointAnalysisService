@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/notice")
-@Tag(name = "notice", description = "消息控制器")
+@Tag(name = "消息通知管理", description = "消息通知管理")
 @Slf4j
 public class NoticeController {
 
