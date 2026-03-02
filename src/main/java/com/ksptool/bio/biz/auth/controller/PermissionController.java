@@ -29,7 +29,7 @@ import java.util.List;
 @PrintLog
 @RestController
 @RequestMapping("/permission")
-@Tag(name = "Permission", description = "权限管理")
+@Tag(name = "权限管理", description = "权限管理")
 public class PermissionController {
 
     @Autowired

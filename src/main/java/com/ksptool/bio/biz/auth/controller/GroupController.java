@@ -29,7 +29,7 @@ import java.util.List;
 @PrintLog
 @RestController
 @RequestMapping("/group")
-@Tag(name = "Group", description = "组管理")
+@Tag(name = "用户组管理", description = "用户组管理")
 public class GroupController {
 
     @Autowired

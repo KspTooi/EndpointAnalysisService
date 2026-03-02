@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/session")
-@Tag(name = "Session", description = "会话管理")
+@Tag(name = "用户会话管理", description = "用户会话管理")
 public class SessionController {
 
     @Autowired

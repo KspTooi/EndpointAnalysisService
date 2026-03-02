@@ -41,7 +41,7 @@ import static com.ksptool.entities.Entities.as;
 
 @PrintLog
 @RestController
-@Tag(name = "Auth", description = "认证管理")
+@Tag(name = "认证管理", description = "认证管理")
 @RequestMapping("/auth")
 public class AuthController {
 
