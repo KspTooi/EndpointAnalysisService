@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/qtTaskGroup")
-@Tag(name = "qtTaskGroup", description = "任务分组")
+@Tag(name = "任务分组管理", description = "任务分组管理")
 @Slf4j
 public class QtTaskGroupController {
 

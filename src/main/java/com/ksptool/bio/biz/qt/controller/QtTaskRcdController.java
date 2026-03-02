@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/qtTaskRcd")
-@Tag(name = "qtTaskRcd", description = "任务调度日志表")
+@Tag(name = "任务调度日志管理", description = "任务调度日志管理")
 @Slf4j
 public class QtTaskRcdController {
 
