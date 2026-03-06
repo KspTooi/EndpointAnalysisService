@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gentymschemafield.service;
+package com.ksptool.bio.biz.gen.service;
 
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -9,16 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
-import java.util.Optional;
-import com.ksptool.bio.biz.gentymschemafield.repository.GenTymSchemaFieldRepository;
-import com.ksptool.bio.biz.gentymschemafield.model.GenTymSchemaFieldPo;
-import com.ksptool.bio.biz.gentymschemafield.model.vo.GetGenTymSchemaFieldListVo;
-import com.ksptool.bio.biz.gentymschemafield.model.dto.GetGenTymSchemaFieldListDto;
-import com.ksptool.bio.biz.gentymschemafield.model.vo.GetGenTymSchemaFieldDetailsVo;
-import com.ksptool.bio.biz.gentymschemafield.model.dto.EditGenTymSchemaFieldDto;
-import com.ksptool.bio.biz.gentymschemafield.model.dto.AddGenTymSchemaFieldDto;
+import com.ksptool.bio.biz.gen.repository.GenTymSchemaFieldRepository;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.GenTymSchemaFieldPo;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.vo.GetGenTymSchemaFieldListVo;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.dto.GetGenTymSchemaFieldListDto;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.vo.GetGenTymSchemaFieldDetailsVo;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.dto.EditGenTymSchemaFieldDto;
+import com.ksptool.bio.biz.gen.model.gentymschemafield.dto.AddGenTymSchemaFieldDto;
 
 
 @Service

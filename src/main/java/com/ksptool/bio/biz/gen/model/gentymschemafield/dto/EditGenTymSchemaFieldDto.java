@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gentymschemafield.model.dto;
+package com.ksptool.bio.biz.gen.model.gentymschemafield.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,11 @@ import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class AddGenTymSchemaFieldDto {
+public class EditGenTymSchemaFieldDto {
+
+    @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID")
+    private Long id;
 
     @NotNull(message = "类型映射方案ID不能为空")
     @Schema(description = "类型映射方案ID")

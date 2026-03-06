@@ -1,6 +1,5 @@
-package com.ksptool.bio.biz.gentymschemafield.model.dto;
+package com.ksptool.bio.biz.gen.model.gentymschemafield.vo;
 
-import com.ksptool.assembly.entity.web.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetGenTymSchemaFieldListDto extends PageQuery {
-
+public class GetGenTymSchemaFieldListVo{
 
     @Schema(description="主键ID")
     private Long id;
@@ -38,5 +36,6 @@ public class GetGenTymSchemaFieldListDto extends PageQuery {
 
     @Schema(description="更新人ID")
     private Long updaterId;
+
 }
 

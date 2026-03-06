@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gentymschemafield.model.vo;
+package com.ksptool.bio.biz.gen.model.gentymschemafield.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetGenTymSchemaFieldListVo{
+public class GetGenTymSchemaFieldDetailsVo{
 
     @Schema(description="主键ID")
     private Long id;
