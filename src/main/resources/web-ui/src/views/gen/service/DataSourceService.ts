@@ -140,7 +140,7 @@ export default {
       code: [{ required: true, message: "请输入数据源编码", trigger: "blur" }, { max: 32, message: "长度不能超过32个字符", trigger: "blur" }],
       kind: [{ required: true, message: "请选择数据源类型", trigger: "blur" }],
       drive: [{ required: true, message: "请输入JDBC驱动", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],
-      url: [{ required: true, message: "请输入连接字符串", trigger: "blur" }],
+      url: [{ required: true, message: "请输入连接字符串", trigger: "blur" }, { max: 1000, message: "长度不能超过1000个字符", trigger: "blur" }],
       username: [{ max: 320, message: "长度不能超过320个字符", trigger: "blur" }],
       password: [{ max: 1280, message: "长度不能超过1280个字符", trigger: "blur" }],
       dbSchema: [{ required: true, message: "请输入默认模式", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],

@@ -29,7 +29,11 @@
         <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="数据源名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="数据源编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="数据源类型 0:MYSQL" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="kind" label="数据源类型" min-width="150" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.kind === 0">MYSQL</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="url" label="连接字符串" min-width="200" show-overflow-tooltip />
         <el-table-column prop="dbSchema" label="默认模式" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
@@ -96,19 +100,33 @@
           <el-input v-model="modalForm.code" placeholder="请输入数据源编码" clearable maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="数据源类型" prop="kind">
-          <el-input v-model.number="modalForm.kind" placeholder="请输入数据源类型 0:MYSQL" clearable />
+          <el-select v-model="modalForm.kind" placeholder="请选择数据源类型" style="width: 100%">
+            <el-option :value="0" label="MYSQL" />
+          </el-select>
         </el-form-item>
         <el-form-item label="JDBC驱动" prop="drive">
           <el-input v-model="modalForm.drive" placeholder="请输入JDBC驱动" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="连接字符串" prop="url">
-          <el-input v-model="modalForm.url" placeholder="请输入连接字符串" clearable />
+          <el-input v-model="modalForm.url" placeholder="请输入连接字符串" clearable maxlength="1000" show-word-limit />
         </el-form-item>
         <el-form-item label="连接用户名" prop="username">
-          <el-input v-model="modalForm.username" :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接用户名'" clearable maxlength="320" show-word-limit />
+          <el-input
+            v-model="modalForm.username"
+            :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接用户名'"
+            clearable
+            maxlength="320"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="连接密码" prop="password">
-          <el-input v-model="modalForm.password" :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接密码'" clearable maxlength="1280" show-word-limit />
+          <el-input
+            v-model="modalForm.password"
+            :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接密码'"
+            clearable
+            maxlength="1280"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="默认模式" prop="dbSchema">
           <el-input v-model="modalForm.dbSchema" placeholder="请输入默认模式" clearable maxlength="80" show-word-limit />
@@ -142,7 +160,8 @@ const DeleteIcon = markRaw(Delete);
 const ConnectionIcon = markRaw(Connection);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, testConnection } = DataSourceService.useDataSourceList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, testConnection } =
+  DataSourceService.useDataSourceList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

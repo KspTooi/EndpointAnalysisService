@@ -46,7 +46,7 @@ export interface AddDataSourceDto {
   code: string; // 数据源编码 max:32
   kind: number; // 数据源类型 0:MYSQL
   drive: string; // JDBC驱动 max:80
-  url: string; // 连接字符串
+  url: string; // 连接字符串 max:1000
   username?: string; // 连接用户名 max:320
   password?: string; // 连接密码 max:1280
   dbSchema: string; // 默认模式 max:80
@@ -61,7 +61,7 @@ export interface EditDataSourceDto {
   code: string; // 数据源编码 max:32
   kind: number; // 数据源类型 0:MYSQL
   drive: string; // JDBC驱动 max:80
-  url: string; // 连接字符串
+  url: string; // 连接字符串 max:1000
   username?: string; // 连接用户名 max:320 留空不修改
   password?: string; // 连接密码 max:1280 留空不修改
   dbSchema: string; // 默认模式 max:80

@@ -1,8 +1,10 @@
 package com.ksptool.bio.biz.gen.model.datsource.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,7 @@ public class AddDataSourceDto {
     @Schema(description = "JDBC驱动")
     private String drive;
 
+    @Size(max = 1000, message = "连接字符串长度不能超过1000个字符")
     @NotBlank(message = "连接字符串不能为空")
     @Schema(description = "连接字符串")
     private String url;
