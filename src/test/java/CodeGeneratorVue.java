@@ -16,7 +16,7 @@ public class CodeGeneratorVue {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的
-        var tableNames = List.of("drive_space");
+        var tableNames = List.of("gen_data_source");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
@@ -49,7 +49,7 @@ public class CodeGeneratorVue {
 
         //选择表 & 设置前缀
         factory.selectTables(tableNames.toArray(new String[0]));
-        factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
+        factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_", "gen_");
         factory.setOverwriteEnabled(true);
 
         //工厂执行
