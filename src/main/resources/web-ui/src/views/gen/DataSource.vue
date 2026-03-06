@@ -10,24 +10,6 @@
           <el-form-item label="数据源编码">
             <el-input v-model="listForm.code" placeholder="输入数据源编码" clearable />
           </el-form-item>
-          <el-form-item label="数据源类型 0:MYSQL">
-            <el-input v-model.number="listForm.kind" placeholder="输入数据源类型 0:MYSQL" clearable />
-          </el-form-item>
-          <el-form-item label="JDBC驱动">
-            <el-input v-model="listForm.drive" placeholder="输入JDBC驱动" clearable />
-          </el-form-item>
-          <el-form-item label="连接字符串">
-            <el-input v-model="listForm.url" placeholder="输入连接字符串" clearable />
-          </el-form-item>
-          <el-form-item label="连接用户名">
-            <el-input v-model="listForm.username" placeholder="输入连接用户名" clearable />
-          </el-form-item>
-          <el-form-item label="连接密码">
-            <el-input v-model="listForm.password" placeholder="输入连接密码" clearable />
-          </el-form-item>
-          <el-form-item label="默认模式">
-            <el-input v-model="listForm.dbSchema" placeholder="输入默认模式" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
@@ -47,14 +29,10 @@
         <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="数据源名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="数据源编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="数据源类型 0:MYSQL" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="drive" label="JDBC驱动" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="url" label="连接字符串" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="username" label="连接用户名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="password" label="连接密码" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="kind" label="数据源类型 0:MYSQL" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="url" label="连接字符串" min-width="200" show-overflow-tooltip />
         <el-table-column prop="dbSchema" label="默认模式" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -109,28 +87,28 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="数据源名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入数据源名称" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入数据源名称" clearable maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="数据源编码" prop="code">
-          <el-input v-model="modalForm.code" placeholder="请输入数据源编码" clearable />
+          <el-input v-model="modalForm.code" placeholder="请输入数据源编码" clearable maxlength="32" show-word-limit />
         </el-form-item>
-        <el-form-item label="数据源类型 0:MYSQL" prop="kind">
+        <el-form-item label="数据源类型" prop="kind">
           <el-input v-model.number="modalForm.kind" placeholder="请输入数据源类型 0:MYSQL" clearable />
         </el-form-item>
         <el-form-item label="JDBC驱动" prop="drive">
-          <el-input v-model="modalForm.drive" placeholder="请输入JDBC驱动" clearable />
+          <el-input v-model="modalForm.drive" placeholder="请输入JDBC驱动" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="连接字符串" prop="url">
           <el-input v-model="modalForm.url" placeholder="请输入连接字符串" clearable />
         </el-form-item>
         <el-form-item label="连接用户名" prop="username">
-          <el-input v-model="modalForm.username" placeholder="请输入连接用户名" clearable />
+          <el-input v-model="modalForm.username" :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接用户名'" clearable maxlength="320" show-word-limit />
         </el-form-item>
         <el-form-item label="连接密码" prop="password">
-          <el-input v-model="modalForm.password" placeholder="请输入连接密码" clearable />
+          <el-input v-model="modalForm.password" :placeholder="modalMode === 'edit' ? '留空不修改' : '请输入连接密码'" clearable maxlength="1280" show-word-limit />
         </el-form-item>
         <el-form-item label="默认模式" prop="dbSchema">
-          <el-input v-model="modalForm.dbSchema" placeholder="请输入默认模式" clearable />
+          <el-input v-model="modalForm.dbSchema" placeholder="请输入默认模式" clearable maxlength="80" show-word-limit />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -149,7 +127,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import DataSourceService from "@/views/dataSource/service/DataSourceService.ts";
+import DataSourceService from "@/views/gen/service/DataSourceService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";

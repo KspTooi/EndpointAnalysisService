@@ -6,8 +6,8 @@ import type {
   GetDataSourceDetailsVo,
   AddDataSourceDto,
   EditDataSourceDto,
-} from "@/views/dataSource/api/DataSourceApi.ts";
-import DataSourceApi from "@/views/dataSource/api/DataSourceApi.ts";
+} from "@/views/gen/api/DataSourceApi.ts";
+import DataSourceApi from "@/views/gen/api/DataSourceApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -26,12 +26,6 @@ export default {
       pageSize: 20,
       name: "",
       code: "",
-      kind: null,
-      drive: "",
-      url: "",
-      username: "",
-      password: "",
-      dbSchema: "",
     });
 
     const listData = ref<GetDataSourceListVo[]>([]);
@@ -65,12 +59,6 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.code = "";
-      listForm.value.kind = null;
-      listForm.value.drive = "";
-      listForm.value.url = "";
-      listForm.value.username = "";
-      listForm.value.password = "";
-      listForm.value.dbSchema = "";
       loadList();
     };
 
@@ -119,7 +107,7 @@ export default {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetDataSourceDetailsVo>({
+    const modalForm = reactive<GetDataSourceDetailsVo & { username?: string; password?: string }>({
       id: "",
       name: "",
       code: "",
@@ -129,22 +117,20 @@ export default {
       username: "",
       password: "",
       dbSchema: "",
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入数据源名称", trigger: "blur" }],
-      code: [{ required: true, message: "请输入数据源编码", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入数据源类型 0:MYSQL", trigger: "blur" }],
-      drive: [{ required: true, message: "请输入JDBC驱动", trigger: "blur" }],
+      name: [{ required: true, message: "请输入数据源名称", trigger: "blur" }, { max: 32, message: "长度不能超过32个字符", trigger: "blur" }],
+      code: [{ required: true, message: "请输入数据源编码", trigger: "blur" }, { max: 32, message: "长度不能超过32个字符", trigger: "blur" }],
+      kind: [{ required: true, message: "请选择数据源类型", trigger: "blur" }],
+      drive: [{ required: true, message: "请输入JDBC驱动", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],
       url: [{ required: true, message: "请输入连接字符串", trigger: "blur" }],
-      dbSchema: [{ required: true, message: "请输入默认模式", trigger: "blur" }],
+      username: [{ max: 320, message: "长度不能超过320个字符", trigger: "blur" }],
+      password: [{ max: 1280, message: "长度不能超过1280个字符", trigger: "blur" }],
+      dbSchema: [{ required: true, message: "请输入默认模式", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],
     };
 
     /**
@@ -165,10 +151,6 @@ export default {
         modalForm.username = "";
         modalForm.password = "";
         modalForm.dbSchema = "";
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
         modalVisible.value = true;
         return;
       }
@@ -187,13 +169,9 @@ export default {
           modalForm.kind = details.kind;
           modalForm.drive = details.drive;
           modalForm.url = details.url;
-          modalForm.username = details.username;
-          modalForm.password = details.password;
+          modalForm.username = "";
+          modalForm.password = "";
           modalForm.dbSchema = details.dbSchema;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -218,10 +196,6 @@ export default {
       modalForm.username = "";
       modalForm.password = "";
       modalForm.dbSchema = "";
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
     };
 
     /**

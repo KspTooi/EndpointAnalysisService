@@ -10,12 +10,6 @@ import type Result from "@/commons/entity/Result.ts";
 export interface GetDataSourceListDto extends PageQuery {
   name?: string; // 数据源名称
   code?: string; // 数据源编码
-  kind?: number; // 数据源类型 0:MYSQL
-  drive?: string; // JDBC驱动
-  url?: string; // 连接字符串
-  username?: string; // 连接用户名
-  password?: string; // 连接密码
-  dbSchema?: string; // 默认模式
 }
 
 /**
@@ -26,15 +20,9 @@ export interface GetDataSourceListVo {
   name: string; // 数据源名称
   code: string; // 数据源编码
   kind: number; // 数据源类型 0:MYSQL
-  drive: string; // JDBC驱动
   url: string; // 连接字符串
-  username: string; // 连接用户名
-  password: string; // 连接密码
   dbSchema: string; // 默认模式
   createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**
@@ -47,27 +35,21 @@ export interface GetDataSourceDetailsVo {
   kind: number; // 数据源类型 0:MYSQL
   drive: string; // JDBC驱动
   url: string; // 连接字符串
-  username: string; // 连接用户名
-  password: string; // 连接密码
   dbSchema: string; // 默认模式
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**
  * 新增DTO
  */
 export interface AddDataSourceDto {
-  name: string; // 数据源名称
-  code: string; // 数据源编码
+  name: string; // 数据源名称 max:32
+  code: string; // 数据源编码 max:32
   kind: number; // 数据源类型 0:MYSQL
-  drive: string; // JDBC驱动
+  drive: string; // JDBC驱动 max:80
   url: string; // 连接字符串
-  username: string; // 连接用户名
-  password: string; // 连接密码
-  dbSchema: string; // 默认模式
+  username?: string; // 连接用户名 max:320
+  password?: string; // 连接密码 max:1280
+  dbSchema: string; // 默认模式 max:80
 }
 
 /**
@@ -75,14 +57,14 @@ export interface AddDataSourceDto {
  */
 export interface EditDataSourceDto {
   id: string; // 主键ID
-  name: string; // 数据源名称
-  code: string; // 数据源编码
+  name: string; // 数据源名称 max:32
+  code: string; // 数据源编码 max:32
   kind: number; // 数据源类型 0:MYSQL
-  drive: string; // JDBC驱动
+  drive: string; // JDBC驱动 max:80
   url: string; // 连接字符串
-  username: string; // 连接用户名
-  password: string; // 连接密码
-  dbSchema: string; // 默认模式
+  username?: string; // 连接用户名 max:320 留空不修改
+  password?: string; // 连接密码 max:1280 留空不修改
+  dbSchema: string; // 默认模式 max:80
 }
 
 export default {

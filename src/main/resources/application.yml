@@ -73,7 +73,7 @@ server:
   port: 27500
 
 session:
-  expires: 86400
+  expires: 186400
 
 springdoc:
   api-docs:
