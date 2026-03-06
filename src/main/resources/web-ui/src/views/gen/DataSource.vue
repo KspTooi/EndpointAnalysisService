@@ -20,18 +20,17 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增数据源表</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增数据源</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="数据源名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="数据源编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="数据源类型" min-width="150" show-overflow-tooltip>
+        <el-table-column prop="kind" label="数据源类型" min-width="100" show-overflow-tooltip>
           <template #default="scope">
-            <span v-if="scope.row.kind === 0">MYSQL</span>
+            <span v-if="scope.row.kind === 0" class="text-green-500">MYSQL</span>
           </template>
         </el-table-column>
         <el-table-column prop="url" label="连接字符串" min-width="200" show-overflow-tooltip />

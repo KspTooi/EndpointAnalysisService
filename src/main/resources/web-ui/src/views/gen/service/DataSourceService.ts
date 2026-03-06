@@ -68,9 +68,9 @@ export default {
     const testConnection = async (row: GetDataSourceListVo) => {
       try {
         const msg = await DataSourceApi.testDataSourceConnection({ id: row.id });
-        ElMessage.success(msg || "连接成功");
+        ElMessageBox.alert(msg || "连接成功", "测试结果", { type: "success", confirmButtonText: "确定" });
       } catch (error: any) {
-        ElMessage.error(error.message);
+        ElMessageBox.alert(error.message, "测试结果", { type: "error", confirmButtonText: "确定" });
       }
     };
 
@@ -136,14 +136,29 @@ export default {
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入数据源名称", trigger: "blur" }, { max: 32, message: "长度不能超过32个字符", trigger: "blur" }],
-      code: [{ required: true, message: "请输入数据源编码", trigger: "blur" }, { max: 32, message: "长度不能超过32个字符", trigger: "blur" }],
+      name: [
+        { required: true, message: "请输入数据源名称", trigger: "blur" },
+        { max: 32, message: "长度不能超过32个字符", trigger: "blur" },
+      ],
+      code: [
+        { required: true, message: "请输入数据源编码", trigger: "blur" },
+        { max: 32, message: "长度不能超过32个字符", trigger: "blur" },
+      ],
       kind: [{ required: true, message: "请选择数据源类型", trigger: "blur" }],
-      drive: [{ required: true, message: "请输入JDBC驱动", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],
-      url: [{ required: true, message: "请输入连接字符串", trigger: "blur" }, { max: 1000, message: "长度不能超过1000个字符", trigger: "blur" }],
+      drive: [
+        { required: true, message: "请输入JDBC驱动", trigger: "blur" },
+        { max: 80, message: "长度不能超过80个字符", trigger: "blur" },
+      ],
+      url: [
+        { required: true, message: "请输入连接字符串", trigger: "blur" },
+        { max: 1000, message: "长度不能超过1000个字符", trigger: "blur" },
+      ],
       username: [{ max: 320, message: "长度不能超过320个字符", trigger: "blur" }],
       password: [{ max: 1280, message: "长度不能超过1280个字符", trigger: "blur" }],
-      dbSchema: [{ required: true, message: "请输入默认模式", trigger: "blur" }, { max: 80, message: "长度不能超过80个字符", trigger: "blur" }],
+      dbSchema: [
+        { required: true, message: "请输入默认模式", trigger: "blur" },
+        { max: 80, message: "长度不能超过80个字符", trigger: "blur" },
+      ],
     };
 
     /**

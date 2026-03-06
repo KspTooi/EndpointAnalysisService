@@ -125,7 +125,7 @@ export default {
   testDataSourceConnection: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/dataSource/testDataSourceConnection", dto);
     if (result.code === 0) {
-      return result.message;
+      return result.data;
     }
     throw new Error(result.message);
   },
