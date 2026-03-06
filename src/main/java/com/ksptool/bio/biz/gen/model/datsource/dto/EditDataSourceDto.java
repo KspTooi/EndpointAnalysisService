@@ -39,11 +39,11 @@ public class EditDataSourceDto {
     private String url;
 
     @Size(max = 320, message = "连接用户名长度不能超过320个字符")
-    @Schema(description = "连接用户名")
+    @Schema(description = "连接用户名 留空不修改")
     private String username;
 
     @Size(max = 1280, message = "连接密码长度不能超过1280个字符")
-    @Schema(description = "连接密码")
+    @Schema(description = "连接密码 留空不修改")
     private String password;
 
     @NotBlank(message = "默认模式不能为空")

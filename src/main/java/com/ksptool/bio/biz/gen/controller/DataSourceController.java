@@ -66,4 +66,10 @@ public class DataSourceController {
         return Result.success("操作成功");
     }
 
+    @Operation(summary = "测试数据源连接")
+    @PostMapping("/testDataSourceConnection")
+    public Result<String> testDataSourceConnection(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return dataSourceService.testDataSourceConnection(dto);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.gen.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.gen.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.gen.model.datsource.dto.AddDataSourceDto;
 import com.ksptool.bio.biz.gen.model.datsource.dto.EditDataSourceDto;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -94,5 +98,33 @@ public class DataSourceService {
         }
         repository.deleteById(dto.getId());
     }
+
+    /**
+     * 测试数据源连接
+     * @param dto 查询参数
+     * @return 数据源详情
+     * @throws BizException
+     */
+    public Result<String> testDataSourceConnection(CommonIdDto dto) throws BizException {
+        DataSourcePo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("测试失败,数据不存在或无权限访问."));
+
+        long startTime = System.currentTimeMillis();
+        try {
+            Class.forName(po.getDrive());
+        } catch (ClassNotFoundException e) {
+            return Result.error("测试失败,JDBC驱动不存在.");
+        }
+
+        try {
+            Connection connection = DriverManager.getConnection(po.getUrl(), po.getUsername(), po.getPassword());
+            connection.close();
+        } catch (SQLException e) {
+            return Result.error("测试失败,连接失败: " + e.getMessage());
+        }
+
+        return Result.success("成功连接数据库 耗时: " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
 
 }
