@@ -22,6 +22,7 @@ import RdbgRouteRegister from "@/views/rdbg/route/RdbgRouteRegister";
 import DocumentRouteRegister from "@/views/document/route/DocumentRouteRegister";
 import AuditRouteRegister from "@/views/audit/route/AuditRouteRegister";
 import QtRouteRegister from "@/views/qt/route/QtRouteRegister.ts";
+import GenRouteRegister from "@/views/gen/route/GenRouteRegister.ts";
 
 setupIconify();
 
@@ -45,6 +46,7 @@ addRoute(new RdbgRouteRegister());
 addRoute(new DocumentRouteRegister());
 addRoute(new AuditRouteRegister());
 addRoute(new QtRouteRegister());
+addRoute(new GenRouteRegister());
 
 //初始化路由服务
 initialize(app);
