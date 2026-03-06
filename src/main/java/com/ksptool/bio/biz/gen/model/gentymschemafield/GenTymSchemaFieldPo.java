@@ -50,22 +50,22 @@ public class GenTymSchemaFieldPo {
         if (this.id == null) {
             this.id = IdWorker.nextId();
         }
-        
-        
+
+
         LocalDateTime now = LocalDateTime.now();
-        
+
         if (this.createTime == null) {
             this.createTime = now;
         }
-        
+
         if (this.updateTime == null) {
             this.updateTime = this.createTime;
         }
-        
+
         if (this.creatorId == null) {
             this.creatorId = SessionService.session().getUserId();
         }
-        
+
         if (this.updaterId == null) {
             this.updaterId = SessionService.session().getUserId();
         }
@@ -73,9 +73,9 @@ public class GenTymSchemaFieldPo {
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        
+
         this.updateTime = LocalDateTime.now();
-        
+
         if (this.updaterId == null) {
             this.updaterId = SessionService.session().getUserId();
         }
