@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gentymschema.model;
+package com.ksptool.bio.biz.gen.model.gentymschema;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;

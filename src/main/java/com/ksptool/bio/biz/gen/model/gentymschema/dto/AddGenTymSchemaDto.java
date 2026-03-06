@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gentymschema.model.dto;
+package com.ksptool.bio.biz.gen.model.gentymschema.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
