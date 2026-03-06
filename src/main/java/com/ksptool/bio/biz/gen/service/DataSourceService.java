@@ -11,6 +11,8 @@ import com.ksptool.bio.biz.gen.model.datsource.dto.GetDataSourceListDto;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceDetailsVo;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceListVo;
 import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -54,7 +56,13 @@ public class DataSourceService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addDataSource(AddDataSourceDto dto) {
+    public void addDataSource(AddDataSourceDto dto) throws BizException {
+
+        //校验编码是否唯一
+        if (repository.countByCode(dto.getCode()) > 0) {
+            throw new BizException("编码已存在:[" + dto.getCode() + "]");
+        }
+
         DataSourcePo insertPo = as(dto, DataSourcePo.class);
         repository.save(insertPo);
     }
@@ -69,7 +77,27 @@ public class DataSourceService {
         DataSourcePo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
+        //校验编码是否唯一
+        if (repository.countByCodeExcludeId(dto.getCode(), updatePo.getId()) > 0) {
+            throw new BizException("编码已存在:[" + dto.getCode() + "]");
+        }
+
+        //保存旧的用户名和密码
+        var oldUsername = updatePo.getUsername();
+        var oldPassword = updatePo.getPassword();
+
         assign(dto, updatePo);
+
+        //如果用户名为空则不修改
+        if (StringUtils.isBlank(dto.getUsername())) {
+            updatePo.setUsername(oldUsername);
+        }
+
+        //如果密码为空则不修改
+        if (StringUtils.isBlank(dto.getPassword())) {
+            updatePo.setPassword(oldPassword);
+        }
+
         repository.save(updatePo);
     }
 

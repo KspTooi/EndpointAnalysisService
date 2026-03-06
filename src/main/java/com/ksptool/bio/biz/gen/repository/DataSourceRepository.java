@@ -27,7 +27,31 @@ public interface DataSourceRepository extends JpaRepository<DataSourcePo, Long> 
             AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<DataSourcePo> getDataSourceList(@Param("po") DataSourcePo po, Pageable pageable);
+
+    /**
+     * 根据编码统计数据源数量
+     *
+     * @param code 编码
+     * @return 数据源数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM DataSourcePo u WHERE u.code = :code
+            """)
+    int countByCode(@Param("code") String code);
+
+    /**
+     * 根据编码统计数据源数量 排除指定ID
+     *
+     * @param code 编码
+     * @param id   数据源ID
+     * @return 数据源数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM DataSourcePo u WHERE u.code = :code AND u.id != :id
+            """)
+    int countByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
+
 }
