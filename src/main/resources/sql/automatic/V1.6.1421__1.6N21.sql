@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS gen_dat_source;
+DROP TABLE IF EXISTS gen_data_source;
 CREATE TABLE gen_data_source(
                                `id` BIGINT NOT NULL  COMMENT '主键ID' ,
                                `name` VARCHAR(32) NOT NULL  COMMENT '数据源名称' ,

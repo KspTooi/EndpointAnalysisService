@@ -33,8 +33,11 @@
         <el-table-column prop="url" label="连接字符串" min-width="200" show-overflow-tooltip />
         <el-table-column prop="dbSchema" label="默认模式" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="240">
           <template #default="scope">
+            <el-button link type="success" size="small" @click="testConnection(scope.row)" :icon="ConnectionIcon">
+              测试连接
+            </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
@@ -125,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, Connection } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import DataSourceService from "@/views/gen/service/DataSourceService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -136,9 +139,10 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const ConnectionIcon = markRaw(Connection);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = DataSourceService.useDataSourceList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, testConnection } = DataSourceService.useDataSourceList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

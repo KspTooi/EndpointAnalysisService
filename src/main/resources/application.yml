@@ -63,7 +63,7 @@ spring:
       initialize-schema: never
 
   flyway:
-    enabled: false
+    enabled: true
     locations: classpath:sql/automatic
     baseline-on-migrate: true
     baseline-version: 1.6.1359

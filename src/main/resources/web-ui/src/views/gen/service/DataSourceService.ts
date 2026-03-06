@@ -63,6 +63,18 @@ export default {
     };
 
     /**
+     * 测试连接
+     */
+    const testConnection = async (row: GetDataSourceListVo) => {
+      try {
+        const msg = await DataSourceApi.testDataSourceConnection({ id: row.id });
+        ElMessage.success(msg || "连接成功");
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
+    /**
      * 删除记录
      */
     const removeList = async (row: GetDataSourceListVo) => {
@@ -97,6 +109,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      testConnection,
     };
   },
 
