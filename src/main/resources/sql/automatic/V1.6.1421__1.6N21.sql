@@ -24,7 +24,7 @@ CREATE TABLE gen_tym_schema(
                                `map_source` VARCHAR(32) NOT NULL  COMMENT '映射源' ,
                                `map_target` VARCHAR(32) NOT NULL  COMMENT '映射目标' ,
                                `type_count` INT NOT NULL  COMMENT '类型数量' ,
-                               `default` VARCHAR(80) NOT NULL  COMMENT '默认类型' ,
+                               `default_type` VARCHAR(80) NOT NULL  COMMENT '默认类型' ,
                                `seq` INT NOT NULL  COMMENT '排序' ,
                                `remark` TEXT   COMMENT '备注' ,
                                `create_time` DATETIME NOT NULL  COMMENT '创建时间' ,

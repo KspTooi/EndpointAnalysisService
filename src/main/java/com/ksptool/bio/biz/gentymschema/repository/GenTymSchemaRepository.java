@@ -20,7 +20,7 @@ public interface GenTymSchemaRepository extends JpaRepository<GenTymSchemaPo, Lo
     AND (:#{#po.mapSource} IS NULL OR u.mapSource  LIKE CONCAT('%', :#{#po.mapSource}, '%') )
     AND (:#{#po.mapTarget} IS NULL OR u.mapTarget  LIKE CONCAT('%', :#{#po.mapTarget}, '%') )
     AND (:#{#po.typeCount} IS NULL OR u.typeCount  = :#{#po.typeCount} )
-    AND (:#{#po.default} IS NULL OR u.default  LIKE CONCAT('%', :#{#po.default}, '%') )
+    AND (:#{#po.defaultType} IS NULL OR u.defaultType LIKE CONCAT('%', :#{#po.defaultType}, '%') )
     AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )
     AND (:#{#po.remark} IS NULL OR u.remark  LIKE CONCAT('%', :#{#po.remark}, '%') )
     AND (:#{#po.createTime} IS NULL OR u.createTime  = :#{#po.createTime} )

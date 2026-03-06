@@ -32,7 +32,7 @@ public class GetGenTymSchemaListDto extends PageQuery {
     private Integer typeCount;
 
     @Schema(description="默认类型")
-    private String default;
+    private String defaultType;
 
     @Schema(description="排序")
     private Integer seq;

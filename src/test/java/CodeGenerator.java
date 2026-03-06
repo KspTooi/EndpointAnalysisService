@@ -20,7 +20,7 @@ public class CodeGenerator {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的表名
-        var tableNames = List.of("gen_dat_source", "gen_tym_schema", "gen_tym_schema_field");
+        var tableNames = List.of("gen_tym_schema");
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
         MysqlToJavaPolyConverter.TYPE_MAP.put("DATE", JavaTypeInfo.of(LocalDate.class));

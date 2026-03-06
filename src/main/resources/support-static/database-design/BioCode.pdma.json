@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-3-7 02:26:25",
+  "updatedTime": "2026-3-7 02:44:16",
   "dbConns": [],
   "profile": {
     "default": {
@@ -29392,7 +29392,7 @@
           "id": "444B412F-158F-4691-B550-2B490CFF6EEE"
         },
         {
-          "defKey": "default",
+          "defKey": "default_type",
           "defName": "默认类型",
           "comment": "",
           "type": "",
