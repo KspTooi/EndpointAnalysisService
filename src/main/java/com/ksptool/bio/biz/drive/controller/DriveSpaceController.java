@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/driveSpace")
-@Tag(name = "driveSpace", description = "云盘空间")
+@Tag(name = "云盘空间管理", description = "云盘空间管理")
 @Slf4j
 public class DriveSpaceController {
 

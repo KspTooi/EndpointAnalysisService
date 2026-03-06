@@ -10,6 +10,7 @@ import com.ksptool.bio.biz.core.service.MaintainService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
@@ -134,7 +135,7 @@ public class MaintainController {
         }
     }
 
-    
+
     /**
      * 检查当前是否处于安装向导模式
      */

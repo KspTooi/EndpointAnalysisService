@@ -27,7 +27,7 @@ import static com.ksptool.bio.biz.auth.service.SessionService.hasSuperCode;
 @PrintLog
 @RestController
 @RequestMapping("/drive/entry")
-@Tag(name = "Entry", description = "团队云盘接口")
+@Tag(name = "云盘条目管理", description = "云盘条目管理")
 @Slf4j
 public class EntryController {
 
