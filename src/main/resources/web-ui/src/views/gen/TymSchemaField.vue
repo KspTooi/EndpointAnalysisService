@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="管理方案字段" width="1200px" :close-on-click-modal="false" @close="onClose">
+  <el-dialog v-model="modalVisible" :title="title" width="1000px" :close-on-click-modal="false" @close="onClose">
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModalSelf('add', null)">新增方案字段</el-button>
@@ -10,7 +10,7 @@
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="source" label="匹配源类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="匹配目标类型" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="seq" label="排序" min-width="120" show-overflow-tooltip>
+        <el-table-column prop="seq" label="排序" min-width="65" show-overflow-tooltip>
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
@@ -22,7 +22,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="80" align="center">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModalSelf('edit', scope.row)" :icon="EditIcon">
               编辑
@@ -72,14 +72,14 @@
         ref="modalFormRef"
         :model="modalForm"
         :rules="modalRules"
-        label-width="100px"
+        label-width="110px"
         :validate-on-rule-change="false"
       >
         <el-form-item label="匹配源类型" prop="source">
-          <el-input v-model="modalForm.source" placeholder="请输入匹配源类型" clearable />
+          <el-input v-model="modalForm.source" placeholder="请输入匹配源类型" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="匹配目标类型" prop="target">
-          <el-input v-model="modalForm.target" placeholder="请输入匹配目标类型" clearable />
+          <el-input v-model="modalForm.target" placeholder="请输入匹配目标类型" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input v-model.number="modalForm.seq" placeholder="请输入排序" clearable />
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
+import { ref, markRaw, computed } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import TymSchemaFieldService from "@/views/gen/service/TymSchemaFieldService";
@@ -114,6 +114,13 @@ const getTymSchemaListVo = ref<GetTymSchemaListVo | null>(null);
 const emit = defineEmits<{
   (e: "on-close"): void;
 }>();
+
+const title = computed(() => {
+  if (getTymSchemaListVo.value) {
+    return `类型映射方案字段管理: ${getTymSchemaListVo.value.name}(${getTymSchemaListVo.value.code})`;
+  }
+  return "管理方案字段";
+});
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

@@ -86,7 +86,7 @@
     </StdListAreaTable>
 
     <!-- 方案字段管理模态框 -->
-    <TymSchemaField ref="schemaFieldRef" />
+    <TymSchemaField ref="schemaFieldRef" @on-close="loadList" />
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
