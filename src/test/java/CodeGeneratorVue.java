@@ -16,7 +16,7 @@ public class CodeGeneratorVue {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的
-        var tableNames = List.of("gen_tym_schema_field");
+        var tableNames = List.of("gen_out_blueprint");
 
         //创建 MySQL 采集器
         MysqlCollector coll = new MysqlCollector();
