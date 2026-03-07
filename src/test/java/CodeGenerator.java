@@ -20,7 +20,7 @@ public class CodeGenerator {
         var databaseName = "endpoint_analysis_service";
 
         //需要生成的表名
-        var tableNames = List.of("gen_out_blueprint");
+        var tableNames = List.of("gen_out_schema", "gen_out_model_poly", "gen_out_model_origin");
 
         //配置聚合转换器 映射Mysql的DATE类型为Java的LD和LDT
         MysqlToJavaPolyConverter.TYPE_MAP.put("DATE", JavaTypeInfo.of(LocalDate.class));
@@ -56,7 +56,7 @@ public class CodeGenerator {
         factory.selectTables(tableNames.toArray(new String[0]));
 
         //需移除的表前缀 可多个
-        factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_");
+        factory.removeTablePrefixes("tb_", "core_", "sys_", "pd_", "gen_");
         factory.setOverwriteEnabled(true);
 
         //执行
