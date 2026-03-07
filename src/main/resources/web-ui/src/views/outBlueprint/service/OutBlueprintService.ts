@@ -151,7 +151,7 @@ export default {
       name: [{ required: true, message: "请输入蓝图名称", trigger: "blur" }],
       code: [{ required: true, message: "请输入蓝图编码", trigger: "blur" }],
       scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur" }],
-      scmAuthKind: [{ required: true, message: "请输入SCM认证方式 0:公开 1:账号密码 2:SSH KEY", trigger: "blur" }],
+      scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
       scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur" }],
       scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur" }],
       remark: [{ required: true, message: "请输入蓝图备注", trigger: "blur" }],
