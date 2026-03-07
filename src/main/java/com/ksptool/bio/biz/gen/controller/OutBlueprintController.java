@@ -69,8 +69,7 @@ public class OutBlueprintController {
     @Operation(summary = "测试SCM连接")
     @PostMapping("/testScmConnection")
     public Result<String> testScmConnection(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        outBlueprintService.testScmConnection(dto);
-        return Result.success("操作成功");
+        return outBlueprintService.testScmConnection(dto);
     }
 
 }
