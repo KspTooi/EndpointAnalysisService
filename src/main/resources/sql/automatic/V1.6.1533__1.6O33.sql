@@ -1,0 +1,1 @@
+ALTER TABLE `gen_out_schema` MODIFY COLUMN `remove_table_prefix` varchar(80) NULL COMMENT '移除表前缀';
