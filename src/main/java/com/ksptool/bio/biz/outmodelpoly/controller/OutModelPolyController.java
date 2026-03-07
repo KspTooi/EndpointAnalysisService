@@ -21,7 +21,7 @@ import com.ksptool.bio.biz.outmodelpoly.model.vo.GetOutModelPolyDetailsVo;
 
 @RestController
 @RequestMapping("/outModelPoly")
-@Tag(name = "outModelPoly", description = "输出方案聚合模型表")
+@Tag(name = "输出方案聚合模型管理", description = "输出方案聚合模型管理")
 @Slf4j
 public class OutModelPolyController {
 
@@ -29,26 +29,26 @@ public class OutModelPolyController {
     private OutModelPolyService outModelPolyService;
 
     @PostMapping("/getOutModelPolyList")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询聚合模型列表")
     public PageResult<GetOutModelPolyListVo> getOutModelPolyList(@RequestBody @Valid GetOutModelPolyListDto dto) throws Exception{
         return outModelPolyService.getOutModelPolyList(dto);
     }
 
-    @Operation(summary ="新增")
+    @Operation(summary ="新增聚合模型")
     @PostMapping("/addOutModelPoly")
     public Result<String> addOutModelPoly(@RequestBody @Valid AddOutModelPolyDto dto) throws Exception{
 		outModelPolyService.addOutModelPoly(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary ="编辑")
+    @Operation(summary ="编辑聚合模型")
     @PostMapping("/editOutModelPoly")
     public Result<String> editOutModelPoly(@RequestBody @Valid EditOutModelPolyDto dto) throws Exception{
 		outModelPolyService.editOutModelPoly(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询聚合模型详情")
     @PostMapping("/getOutModelPolyDetails")
     public Result<GetOutModelPolyDetailsVo> getOutModelPolyDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetOutModelPolyDetailsVo details = outModelPolyService.getOutModelPolyDetails(dto);
@@ -58,7 +58,7 @@ public class OutModelPolyController {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除聚合模型元素")
     @PostMapping("/removeOutModelPoly")
     public Result<String> removeOutModelPoly(@RequestBody @Valid CommonIdDto dto) throws Exception{
         outModelPolyService.removeOutModelPoly(dto);

@@ -27,6 +27,11 @@ public class OutSchemaService {
     @Autowired
     private OutSchemaRepository repository;
 
+    /**
+     * 查询输出方案列表
+     * @param dto 查询参数
+     * @return 输出方案列表
+     */
     public PageResult<GetOutSchemaListVo> getOutSchemaList(GetOutSchemaListDto dto){
         OutSchemaPo query = new OutSchemaPo();
         assign(dto,query);
@@ -40,12 +45,21 @@ public class OutSchemaService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增输出方案
+     * @param dto 新增参数
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addOutSchema(AddOutSchemaDto dto){
         OutSchemaPo insertPo = as(dto,OutSchemaPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑输出方案
+     * @param dto 编辑参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editOutSchema(EditOutSchemaDto dto) throws BizException {
         OutSchemaPo updatePo = repository.findById(dto.getId())
@@ -55,12 +69,23 @@ public class OutSchemaService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询输出方案详情
+     * @param dto 查询参数
+     * @return 输出方案详情
+     * @throws BizException 业务异常
+     */
     public GetOutSchemaDetailsVo getOutSchemaDetails(CommonIdDto dto) throws BizException {
         OutSchemaPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetOutSchemaDetailsVo.class);
     }
 
+    /**
+     * 删除输出方案元素
+     * @param dto 删除参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeOutSchema(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

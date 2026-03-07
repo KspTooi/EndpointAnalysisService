@@ -47,17 +47,5 @@ public class GetOutModelPolyDetailsVo{
     @Schema(description="聚合排序")
     private Integer seq;
 
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description="创建人ID")
-    private Long creatorId;
-
-    @Schema(description="更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description="更新人ID")
-    private Long updaterId;
-
 }
 

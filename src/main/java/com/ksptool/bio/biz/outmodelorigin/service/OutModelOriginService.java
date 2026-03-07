@@ -27,6 +27,12 @@ public class OutModelOriginService {
     @Autowired
     private OutModelOriginRepository repository;
 
+
+    /**
+     * 查询原始模型列表
+     * @param dto 查询参数
+     * @return 原始模型列表
+     */
     public PageResult<GetOutModelOriginListVo> getOutModelOriginList(GetOutModelOriginListDto dto){
         OutModelOriginPo query = new OutModelOriginPo();
         assign(dto,query);
@@ -40,12 +46,21 @@ public class OutModelOriginService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增原始模型
+     * @param dto 新增参数
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addOutModelOrigin(AddOutModelOriginDto dto){
         OutModelOriginPo insertPo = as(dto,OutModelOriginPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑原始模型
+     * @param dto 编辑参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editOutModelOrigin(EditOutModelOriginDto dto) throws BizException {
         OutModelOriginPo updatePo = repository.findById(dto.getId())
@@ -55,12 +70,23 @@ public class OutModelOriginService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询原始模型详情
+     * @param dto 查询参数
+     * @return 原始模型详情
+     * @throws BizException 业务异常
+     */
     public GetOutModelOriginDetailsVo getOutModelOriginDetails(CommonIdDto dto) throws BizException {
         OutModelOriginPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetOutModelOriginDetailsVo.class);
     }
 
+    /**
+     * 删除原始模型元素
+     * @param dto 删除参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeOutModelOrigin(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

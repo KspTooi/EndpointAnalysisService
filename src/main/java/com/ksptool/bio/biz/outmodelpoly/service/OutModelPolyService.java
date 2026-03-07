@@ -27,6 +27,11 @@ public class OutModelPolyService {
     @Autowired
     private OutModelPolyRepository repository;
 
+    /**
+     * 查询聚合模型列表
+     * @param dto 查询参数
+     * @return 聚合模型列表
+     */
     public PageResult<GetOutModelPolyListVo> getOutModelPolyList(GetOutModelPolyListDto dto){
         OutModelPolyPo query = new OutModelPolyPo();
         assign(dto,query);
@@ -40,12 +45,21 @@ public class OutModelPolyService {
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
+    /**
+     * 新增聚合模型
+     * @param dto 新增参数
+     */
     @Transactional(rollbackFor = Exception.class)
     public void addOutModelPoly(AddOutModelPolyDto dto){
         OutModelPolyPo insertPo = as(dto,OutModelPolyPo.class);
         repository.save(insertPo);
     }
 
+    /**
+     * 编辑聚合模型
+     * @param dto 编辑参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void editOutModelPoly(EditOutModelPolyDto dto) throws BizException {
         OutModelPolyPo updatePo = repository.findById(dto.getId())
@@ -55,12 +69,23 @@ public class OutModelPolyService {
         repository.save(updatePo);
     }
 
+    /**
+     * 查询聚合模型详情
+     * @param dto 查询参数
+     * @return 聚合模型详情
+     * @throws BizException 业务异常
+     */
     public GetOutModelPolyDetailsVo getOutModelPolyDetails(CommonIdDto dto) throws BizException {
         OutModelPolyPo po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po,GetOutModelPolyDetailsVo.class);
     }
 
+    /**
+     * 删除聚合模型元素
+     * @param dto 删除参数
+     * @throws BizException 业务异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public void removeOutModelPoly(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {

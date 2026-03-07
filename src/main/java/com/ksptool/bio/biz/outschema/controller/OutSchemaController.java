@@ -21,7 +21,7 @@ import com.ksptool.bio.biz.outschema.model.vo.GetOutSchemaDetailsVo;
 
 @RestController
 @RequestMapping("/outSchema")
-@Tag(name = "outSchema", description = "输出方案表")
+@Tag(name = "输出方案管理", description = "输出方案管理")
 @Slf4j
 public class OutSchemaController {
 
@@ -29,26 +29,26 @@ public class OutSchemaController {
     private OutSchemaService outSchemaService;
 
     @PostMapping("/getOutSchemaList")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询输出方案列表")
     public PageResult<GetOutSchemaListVo> getOutSchemaList(@RequestBody @Valid GetOutSchemaListDto dto) throws Exception{
         return outSchemaService.getOutSchemaList(dto);
     }
 
-    @Operation(summary ="新增")
+    @Operation(summary ="新增输出方案")
     @PostMapping("/addOutSchema")
     public Result<String> addOutSchema(@RequestBody @Valid AddOutSchemaDto dto) throws Exception{
 		outSchemaService.addOutSchema(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary ="编辑")
+    @Operation(summary ="编辑输出方案")
     @PostMapping("/editOutSchema")
     public Result<String> editOutSchema(@RequestBody @Valid EditOutSchemaDto dto) throws Exception{
 		outSchemaService.editOutSchema(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询输出方案详情")
     @PostMapping("/getOutSchemaDetails")
     public Result<GetOutSchemaDetailsVo> getOutSchemaDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetOutSchemaDetailsVo details = outSchemaService.getOutSchemaDetails(dto);
@@ -58,7 +58,7 @@ public class OutSchemaController {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除输出方案元素")
     @PostMapping("/removeOutSchema")
     public Result<String> removeOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception{
         outSchemaService.removeOutSchema(dto);
