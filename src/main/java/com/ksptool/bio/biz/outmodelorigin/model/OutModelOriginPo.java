@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "out_model_origin")
+@Table(name = "gen_out_model_origin")
 public class OutModelOriginPo {
 
     @Column(name = "id", comment = "主键ID")

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "out_model_poly")
+@Table(name = "gen_out_model_poly")
 public class OutModelPolyPo {
 
     @Column(name = "id", comment = "主键ID")
