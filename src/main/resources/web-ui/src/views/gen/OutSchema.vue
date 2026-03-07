@@ -222,7 +222,19 @@
                 clearable
                 maxlength="80"
                 show-word-limit
-              />
+              >
+                <template #append>
+                  <el-button
+                    @click="
+                      () => {
+                        const parts = modalForm.tableName.split('_');
+                        modalForm.removeTablePrefix = parts.length > 1 ? parts[0] + '_' : '';
+                      }
+                    "
+                    :disabled="!modalForm.tableName"
+                  >推断</el-button>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>
