@@ -44,7 +44,6 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="outputSchemaId" label="输出方案ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="原始字段名" min-width="120" show-overflow-tooltip />
         <el-table-column prop="kind" label="原始数据类型" min-width="120" show-overflow-tooltip />
