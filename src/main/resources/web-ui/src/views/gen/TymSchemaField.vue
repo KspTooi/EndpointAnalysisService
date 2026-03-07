@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modalVisible" title="管理方案字段" width="1200px" :close-on-click-modal="false" @close="resetModal">
+  <el-dialog v-model="modalVisible" title="管理方案字段" width="1200px" :close-on-click-modal="false" @close="onClose">
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
       <el-button type="success" @click="openModalSelf('add', null)">新增方案字段</el-button>
@@ -106,9 +106,11 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import TymSchemaFieldApi from "@/views/gen/api/TymSchemaFieldApi";
+import type { GetTymSchemaListVo } from "./api/TymSchemaApi";
 
 const modalVisible = ref(false);
 const typeSchemaId = ref<string>("");
+const getTymSchemaListVo = ref<GetTymSchemaListVo | null>(null);
 const emit = defineEmits<{
   (e: "on-close"): void;
 }>();
@@ -136,14 +138,24 @@ const {
   submitModal,
 } = TymSchemaFieldService.useTymSchemaFieldModal(modalFormRef, typeSchemaId, loadList);
 
+/**
+ * 关闭模态框
+ */
+const onClose = () => {
+  emit("on-close");
+};
+
 defineExpose({
   /**
    * 打开模态框
    * @param typeSchemaId 类型映射方案ID
    */
-  openModal: async (tsId: string) => {
+  openModal: async (row: GetTymSchemaListVo | null) => {
+    if (row) {
+      getTymSchemaListVo.value = row;
+    }
     modalVisible.value = true;
-    typeSchemaId.value = tsId;
+    typeSchemaId.value = row.id;
     await loadList();
   },
 });

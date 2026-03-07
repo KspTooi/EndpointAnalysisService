@@ -50,7 +50,7 @@
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openSchemaFieldModal(scope.row.id)" :icon="EditIcon">
+            <el-button link type="primary" size="small" @click="openSchemaFieldModal(scope.row)" :icon="EditIcon">
               管理方案
             </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -150,7 +150,7 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
+import TymSchemaApi, { type GetTymSchemaListVo } from "@/views/gen/api/TymSchemaApi";
 import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import TymSchemaField from "@/views/gen/TymSchemaField.vue";
 
@@ -171,8 +171,12 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
 //方案字段管理模态框引用
 const schemaFieldRef = ref<InstanceType<typeof TymSchemaField>>();
 
-const openSchemaFieldModal = (typeSchemaId: string) => {
-  schemaFieldRef.value?.openModal(typeSchemaId);
+/**
+ * 打开方案字段管理模态框
+ * @param row 行数据
+ */
+const openSchemaFieldModal = (row: GetTymSchemaListVo) => {
+  schemaFieldRef.value?.openModal(row);
 };
 </script>
 
