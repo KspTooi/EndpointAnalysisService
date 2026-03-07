@@ -38,11 +38,11 @@
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="240">
           <template #default="scope">
-            <el-button link type="success" size="small" @click="testConnection(scope.row)" :icon="ConnectionIcon">
-              测试连接
-            </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
+            </el-button>
+            <el-button link type="success" size="small" @click="testConnection(scope.row)" :icon="ConnectionIcon">
+              测试数据源连接
             </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
