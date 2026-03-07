@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.genoutblueprint.model.dto;
+package com.ksptool.bio.biz.gen.model.outblueprint.dto;
 
 import com.ksptool.assembly.entity.web.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;

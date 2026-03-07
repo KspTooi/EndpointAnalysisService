@@ -1,16 +1,20 @@
-package com.ksptool.bio.biz.genoutblueprint.model.dto;
+package com.ksptool.bio.biz.gen.model.outblueprint.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class AddGenOutBlueprintDto {
+public class EditGenOutBlueprintDto {
+
+    @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID")
+    private Long id;
 
     @NotBlank(message = "蓝图名称不能为空")
     @Size(max = 32, message = "蓝图名称长度不能超过32个字符")

@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.genoutblueprint.model.vo;
+package com.ksptool.bio.biz.gen.model.outblueprint.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
