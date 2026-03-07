@@ -35,7 +35,7 @@ public class AddOutBlueprintDto implements DtoCustomValidator{
     private String scmUrl;
 
     @NotNull(message = "SCM认证方式不能为空")
-    @Range(min = 0, max = 3, message = "SCM认证方式无效，有效值：0公开 1:账号密码 2:SSH KEY 3:PAT")
+    @Range(min = 0, max = 3, message = "SCM认证方式无效，有效值：0:公开 1:账号密码 2:SSH KEY 3:PAT")
     @Schema(description = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT")
     private Integer scmAuthKind;
 
