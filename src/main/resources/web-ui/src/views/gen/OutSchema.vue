@@ -73,7 +73,7 @@
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑输出方案' : '新增输出方案'"
-      width="800px"
+      width="900px"
       :close-on-click-modal="false"
       @close="
         resetModal();
@@ -97,7 +97,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="模型名称" prop="modelName">
-              <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit />
+              <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit>
+                <template #append>
+                  <el-button @click="modalForm.modelName = modalForm.name">推断</el-button>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>

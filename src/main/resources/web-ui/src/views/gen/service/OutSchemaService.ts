@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetOutSchemaListDto,
@@ -145,8 +145,8 @@ export default {
         { max: 32, message: "输出方案名称不能超过32个字符", trigger: "blur" },
       ],
       modelName: [
-        { required: true, message: "请输入模型名称", trigger: "blur" },
-        { max: 255, message: "模型名称不能超过255个字符", trigger: "blur" },
+        { required: true, message: "请输入模型名称", trigger: "change" },
+        { max: 255, message: "模型名称不能超过255个字符", trigger: "change" },
       ],
       tableName: [{ max: 80, message: "数据源表名不能超过80个字符", trigger: "blur" }],
       removeTablePrefix: [
