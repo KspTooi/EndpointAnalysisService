@@ -55,7 +55,7 @@ public class AddOutBlueprintDto {
     @Schema(description = "基准路径")
     private String scmBasePath;
 
-    @NotBlank(message = "蓝图备注不能为空")
+    @Size(max = 500, message = "蓝图备注长度不能超过500个字符")
     @Schema(description = "蓝图备注")
     private String remark;
 
