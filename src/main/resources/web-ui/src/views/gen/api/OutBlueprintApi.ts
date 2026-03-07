@@ -11,14 +11,6 @@ export interface GetOutBlueprintListDto extends PageQuery {
   name?: string; // 蓝图名称
   projectName?: string; // 项目名称
   code?: string; // 蓝图编码
-  scmUrl?: string; // SCM仓库地址
-  scmAuthKind?: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY
-  scmUsername?: string; // SCM用户名
-  scmPassword?: string; // SCM密码
-  scmPk?: string; // SSH KEY
-  scmBranch?: string; // SCM分支
-  scmBasePath?: string; // 基准路径
-  remark?: string; // 蓝图备注
 }
 
 /**
@@ -30,17 +22,7 @@ export interface GetOutBlueprintListVo {
   projectName: string; // 项目名称
   code: string; // 蓝图编码
   scmUrl: string; // SCM仓库地址
-  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY
-  scmUsername: string; // SCM用户名
-  scmPassword: string; // SCM密码
-  scmPk: string; // SSH KEY
-  scmBranch: string; // SCM分支
-  scmBasePath: string; // 基准路径
-  remark: string; // 蓝图备注
   createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**
@@ -59,10 +41,6 @@ export interface GetOutBlueprintDetailsVo {
   scmBranch: string; // SCM分支
   scmBasePath: string; // 基准路径
   remark: string; // 蓝图备注
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**

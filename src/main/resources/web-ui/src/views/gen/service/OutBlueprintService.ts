@@ -27,14 +27,6 @@ export default {
       name: "",
       projectName: "",
       code: "",
-      scmUrl: "",
-      scmAuthKind: null,
-      scmUsername: "",
-      scmPassword: "",
-      scmPk: "",
-      scmBranch: "",
-      scmBasePath: "",
-      remark: "",
     });
 
     const listData = ref<GetOutBlueprintListVo[]>([]);
@@ -69,14 +61,6 @@ export default {
       listForm.value.name = "";
       listForm.value.projectName = "";
       listForm.value.code = "";
-      listForm.value.scmUrl = "";
-      listForm.value.scmAuthKind = null;
-      listForm.value.scmUsername = "";
-      listForm.value.scmPassword = "";
-      listForm.value.scmPk = "";
-      listForm.value.scmBranch = "";
-      listForm.value.scmBasePath = "";
-      listForm.value.remark = "";
       loadList();
     };
 
@@ -138,23 +122,20 @@ export default {
       scmBranch: "",
       scmBasePath: "",
       remark: "",
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入蓝图名称", trigger: "blur" }],
-      code: [{ required: true, message: "请输入蓝图编码", trigger: "blur" }],
-      scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur" }],
+      name: [{ required: true, message: "请输入蓝图名称", trigger: "blur", max: 32 }],
+      projectName: [{ required: false, trigger: "blur", max: 80 }],
+      code: [{ required: true, message: "请输入蓝图编码", trigger: "blur", max: 32 }],
+      scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur", max: 1000 }],
       scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
-      scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur" }],
-      scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur" }],
-      remark: [{ required: true, message: "请输入蓝图备注", trigger: "blur" }],
+      scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur", max: 80 }],
+      scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur", max: 1280 }],
+      remark: [{ required: false, trigger: "blur", max: 500 }],
     };
 
     /**
@@ -178,10 +159,6 @@ export default {
         modalForm.scmBranch = "";
         modalForm.scmBasePath = "";
         modalForm.remark = "";
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
         modalVisible.value = true;
         return;
       }
