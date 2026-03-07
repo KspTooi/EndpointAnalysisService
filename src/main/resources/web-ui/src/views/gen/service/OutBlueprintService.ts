@@ -119,8 +119,8 @@ export default {
       scmUsername: "",
       scmPassword: "",
       scmPk: "",
-      scmBranch: "",
-      scmBasePath: "",
+      scmBranch: "main",
+      scmBasePath: "/",
       remark: "",
     });
 
@@ -156,8 +156,8 @@ export default {
         modalForm.scmUsername = "";
         modalForm.scmPassword = "";
         modalForm.scmPk = "";
-        modalForm.scmBranch = "";
-        modalForm.scmBasePath = "";
+        modalForm.scmBranch = "main";
+        modalForm.scmBasePath = "/";
         modalForm.remark = "";
         modalVisible.value = true;
         return;
@@ -207,8 +207,8 @@ export default {
       modalForm.scmUsername = "";
       modalForm.scmPassword = "";
       modalForm.scmPk = "";
-      modalForm.scmBranch = "";
-      modalForm.scmBasePath = "";
+      modalForm.scmBranch = "main";
+      modalForm.scmBasePath = "/";
       modalForm.remark = "";
     };
 
