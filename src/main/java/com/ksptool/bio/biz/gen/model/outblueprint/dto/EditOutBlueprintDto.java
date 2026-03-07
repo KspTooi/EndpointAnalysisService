@@ -1,16 +1,19 @@
 package com.ksptool.bio.biz.gen.model.outblueprint.dto;
 
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class EditOutBlueprintDto {
+public class EditOutBlueprintDto implements DtoCustomValidator{
 
     @NotNull(message = "主键ID不能为空")
     @Schema(description = "主键ID")
@@ -62,5 +65,40 @@ public class EditOutBlueprintDto {
     @Size(max = 500, message = "蓝图备注长度不能超过500个字符")
     @Schema(description = "蓝图备注")
     private String remark;
+
+
+    @Override
+    public String validate() {
+
+        //认证方式为 1:账号密码 时，SCM用户名和SCM密码不能为空
+        if (scmAuthKind == 1) {
+            if (StringUtils.isBlank(scmUsername)) {
+                return "当SCM认证方式为账号密码时，SCM用户名不能为空";
+            }
+            if (StringUtils.isBlank(scmPassword)) {
+                return "当SCM认证方式为账号密码时，SCM密码不能为空";
+            }
+        }
+
+        //认证方式为 2:SSH KEY 时，SSH KEY不能为空
+        if (scmAuthKind == 2) {
+            if (StringUtils.isBlank(scmPk)) {
+                return "当SCM认证方式为SSH KEY时，SSH KEY不能为空";
+            }
+        }
+
+        //认证方式为 3:PAT 时，账号与密码不能为空(此时密码填写PAT令牌)
+        if (scmAuthKind == 3) {
+            if (StringUtils.isBlank(scmUsername)) {
+                return "当SCM认证方式为PAT时，SCM用户名不能为空";
+            }
+            if (StringUtils.isBlank(scmPassword)) {
+                return "当SCM认证方式为PAT时，SCM密码不能为空";
+            }
+        }
+
+        return null;
+
+    }
 
 }

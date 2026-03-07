@@ -23,7 +23,7 @@ public class GetOutBlueprintDetailsVo {
     @Schema(description = "SCM仓库地址")
     private String scmUrl;
 
-    @Schema(description = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY")
+    @Schema(description = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT")
     private Integer scmAuthKind;
 
     @Schema(description = "SCM用户名")
