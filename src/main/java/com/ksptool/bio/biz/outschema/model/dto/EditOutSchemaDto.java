@@ -1,76 +1,73 @@
 package com.ksptool.bio.biz.outschema.model.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
 public class EditOutSchemaDto {
 
-
-    @Schema(description="主键ID")
+    @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID")
     private Long id;
 
-    @Schema(description="数据源ID")
+    @Schema(description = "数据源ID")
     private Long dataSourceId;
 
-    @Schema(description="类型映射方案ID")
+    @Schema(description = "类型映射方案ID")
     private Long typeSchemaId;
 
-    @Schema(description="输入SCM ID")
+    @Schema(description = "输入SCM ID")
     private Long inputScmId;
 
-    @Schema(description="输出SCM ID")
+    @Schema(description = "输出SCM ID")
     private Long outputScmId;
 
-    @Schema(description="输出方案名称")
+    @NotBlank(message = "输出方案名称不能为空")
+    @Size(max = 32, message = "输出方案名称不能超过32个字符")
+    @Schema(description = "输出方案名称")
     private String name;
 
-    @Schema(description="模型名称")
+    @NotBlank(message = "模型名称不能为空")
+    @Size(max = 255, message = "模型名称不能超过255个字符")
+    @Schema(description = "模型名称")
     private String modelName;
 
-    @Schema(description="数据源表名")
+    @Size(max = 80, message = "数据源表名不能超过80个字符")
+    @Schema(description = "数据源表名")
     private String tableName;
 
-    @Schema(description="移除表前缀")
+    @NotBlank(message = "移除表前缀不能为空")
+    @Size(max = 80, message = "移除表前缀不能超过80个字符")
+    @Schema(description = "移除表前缀")
     private String removeTablePrefix;
 
-    @Schema(description="权限码前缀")
+    @NotBlank(message = "权限码前缀不能为空")
+    @Size(max = 32, message = "权限码前缀不能超过32个字符")
+    @Schema(description = "权限码前缀")
     private String permCodePrefix;
 
-    @Schema(description="写出策略 0:不覆盖 1:覆盖")
+    @NotNull(message = "写出策略不能为空")
+    @Range(min = 0, max = 1, message = "写出策略值无效，0:不覆盖 1:覆盖")
+    @Schema(description = "写出策略 0:不覆盖 1:覆盖")
     private Integer policyOverride;
 
-    @Schema(description="输入基准路径")
+    @NotBlank(message = "输入基准路径不能为空")
+    @Size(max = 320, message = "输入基准路径不能超过320个字符")
+    @Schema(description = "输入基准路径")
     private String baseInput;
 
-    @Schema(description="输出基准路径")
+    @NotBlank(message = "输出基准路径不能为空")
+    @Size(max = 320, message = "输出基准路径不能超过320个字符")
+    @Schema(description = "输出基准路径")
     private String baseOutput;
 
-    @Schema(description="备注")
+    @Schema(description = "备注")
     private String remark;
 
-    @Schema(description="字段数(原始)")
-    private Integer fieldCountOrigin;
-
-    @Schema(description="字段数(聚合)")
-    private Integer fieldCountPoly;
-
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description="创建人ID")
-    private Long creatorId;
-
-    @Schema(description="更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description="更新人ID")
-    private Long updaterId;
-
 }
-

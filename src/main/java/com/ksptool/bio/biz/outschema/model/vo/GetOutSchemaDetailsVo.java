@@ -53,23 +53,5 @@ public class GetOutSchemaDetailsVo{
     @Schema(description="备注")
     private String remark;
 
-    @Schema(description="字段数(原始)")
-    private Integer fieldCountOrigin;
-
-    @Schema(description="字段数(聚合)")
-    private Integer fieldCountPoly;
-
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
-    @Schema(description="创建人ID")
-    private Long creatorId;
-
-    @Schema(description="更新时间")
-    private LocalDateTime updateTime;
-
-    @Schema(description="更新人ID")
-    private Long updaterId;
-
 }
 
