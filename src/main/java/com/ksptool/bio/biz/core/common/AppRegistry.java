@@ -47,8 +47,8 @@ public enum AppRegistry {
     FG_PROXY_TYPE("field.gen", "proxy_type", "HTTP", NvalueKind.STRING, "代理类型", "只支持HTTP代理"),
     FG_PROXY_HOST("field.gen", "proxy_host", "127.0.0.1", NvalueKind.STRING, "代理主机"),
     FG_PROXY_PORT("field.gen", "proxy_port", "8080", NvalueKind.INTEGER, "代理端口"),
-    FG_PROXY_USERNAME("field.gen", "proxy_username", "?", NvalueKind.STRING, "代理用户名"),
-    FG_PROXY_PASSWORD("field.gen", "proxy_password", "?", NvalueKind.STRING, "代理密码"),
+    FG_PROXY_USERNAME("field.gen", "proxy_username", "?", NvalueKind.STRING, "代理用户名(为?时表示不使用代理用户名)"),
+    FG_PROXY_PASSWORD("field.gen", "proxy_password", "?", NvalueKind.STRING, "代理密码(为?时表示不使用代理密码)"),
     ;
 
 

@@ -2,11 +2,14 @@ package com.ksptool.bio.biz.gen.service;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.core.common.AppRegistry;
+import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.gen.model.outblueprint.GenOutBlueprintPo;
 import com.ksptool.bio.biz.gen.model.outblueprint.dto.AddOutBlueprintDto;
 import com.ksptool.bio.biz.gen.model.outblueprint.dto.EditOutBlueprintDto;
@@ -20,7 +23,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.http.HttpConnection;
+import org.eclipse.jgit.transport.http.HttpConnectionFactory;
+import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.transport.ssh.jsch.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.ssh.jsch.OpenSshConfig;
 import org.eclipse.jgit.util.FS;
@@ -29,6 +36,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.net.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,6 +50,9 @@ public class OutBlueprintService {
 
     @Autowired
     private OutBlueprintRepository repository;
+
+    @Autowired
+    private RegistrySdk registrySdk;
 
     /**
      * 获取输出蓝图列表
@@ -121,6 +133,13 @@ public class OutBlueprintService {
         GenOutBlueprintPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("测试连接失败,数据不存在或无权限访问."));
 
+        //从注册表获取代理配置 FG_PROXY_ENABLE=1时启用代理
+        String proxyEnable = registrySdk.getString(AppRegistry.FG_PROXY_ENABLE.getFullKey(), "0");
+        String proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
+        int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
+        String proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
+        String proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
+
         try {
 
             var startTime = System.currentTimeMillis();
@@ -129,17 +148,21 @@ public class OutBlueprintService {
                     .setRemote(po.getScmUrl())
                     .setTimeout(10); // 设置超时
 
-            
+            boolean useProxy = "1".equals(proxyEnable);
+
             // 根据不同的认证方式进行配置
             if (po.getScmAuthKind() == 1) { //账号密码/Token
                 lrc.setCredentialsProvider(
                         new UsernamePasswordCredentialsProvider(po.getScmUsername(), po.getScmPassword())
                 );
+                if (useProxy) {
+                    setupHttpProxy(lrc, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
             }
 
             //SSH KEY
             if (po.getScmAuthKind() == 2) {
-                setupSshAuthentication(lrc, po.getScmPk());
+                setupSshAuthentication(lrc, po.getScmPk(), useProxy ? proxyHost : null, useProxy ? proxyPort : -1, proxyUsername, proxyPassword);
             }
 
             //PAT
@@ -147,6 +170,9 @@ public class OutBlueprintService {
                 lrc.setCredentialsProvider(
                         new UsernamePasswordCredentialsProvider(po.getScmUsername(), po.getScmPassword())
                 );
+                if (useProxy) {
+                    setupHttpProxy(lrc, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
             }
 
             //执行请求获取远程分支
@@ -179,18 +205,64 @@ public class OutBlueprintService {
 
     }
 
-    private void setupSshAuthentication(LsRemoteCommand command, String privateKey) {
+    /**
+     * 为 HTTP/HTTPS 连接配置代理
+     */
+    private void setupHttpProxy(LsRemoteCommand command, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+        HttpConnectionFactory factory = new JDKHttpConnectionFactory() {
+            @Override
+            public HttpConnection create(URL url) throws IOException {
+                return create(url, null);
+            }
+
+            @Override
+            public HttpConnection create(URL url, Proxy proxy) throws IOException {
+                Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+                HttpConnection conn = super.create(url, httpProxy);
+                // 若代理需要认证
+                if (!"?".equals(proxyUsername) && !"?".equals(proxyPassword)) {
+                    Authenticator.setDefault(new Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            if (getRequestorType() == RequestorType.PROXY) {
+                                return new PasswordAuthentication(proxyUsername, proxyPassword.toCharArray());
+                            }
+                            return super.getPasswordAuthentication();
+                        }
+                    });
+                }
+                return conn;
+            }
+        };
+
+        command.setTransportConfigCallback(transport -> {
+            if (transport instanceof TransportHttp) {
+                ((TransportHttp) transport).setHttpConnectionFactory(factory);
+            }
+        });
+    }
+
+    /**
+     * 为 SSH 连接配置认证，可选启用 HTTP 代理穿透
+     */
+    private void setupSshAuthentication(LsRemoteCommand command, String privateKey, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
         SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
             @Override
             protected void configure(OpenSshConfig.Host host, Session session) {
-                session.setConfig("StrictHostKeyChecking", "no"); // 禁用严格主机密钥检查
+                session.setConfig("StrictHostKeyChecking", "no");
+                if (proxyHost != null && proxyPort > 0) {
+                    ProxyHTTP proxy = new ProxyHTTP(proxyHost, proxyPort);
+                    if (!"?".equals(proxyUsername) && !"?".equals(proxyPassword)) {
+                        proxy.setUserPasswd(proxyUsername, proxyPassword);
+                    }
+                    session.setProxy(proxy);
+                }
             }
 
             @Override
             protected JSch createDefaultJSch(FS fs) throws JSchException {
                 JSch jsch = super.createDefaultJSch(fs);
                 jsch.removeAllIdentity();
-                // 将数据库中的私钥字符串添加为身份信息
                 jsch.addIdentity("git-ssh-key", privateKey.getBytes(), null, null);
                 return jsch;
             }
