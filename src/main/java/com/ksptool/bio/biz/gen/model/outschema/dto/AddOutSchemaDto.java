@@ -6,11 +6,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
+
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
 
 @Getter
 @Setter
-public class AddOutSchemaDto {
+public class AddOutSchemaDto implements DtoCustomValidator{
 
     @Schema(description = "数据源ID")
     private Long dataSourceId;
@@ -64,5 +68,16 @@ public class AddOutSchemaDto {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Override
+    public String validate() {
+
+        //未选择数据源的情况下不可以填写表名
+        if(dataSourceId == null && StringUtils.isBlank(tableName)){
+            return "未选择数据源时不能填写数据源表名";
+        }
+
+        return null;
+    }
 
 }

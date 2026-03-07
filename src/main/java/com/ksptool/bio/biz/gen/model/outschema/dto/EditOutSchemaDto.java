@@ -7,10 +7,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
+import org.apache.commons.lang3.StringUtils;
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
 
 @Getter
 @Setter
-public class EditOutSchemaDto {
+public class EditOutSchemaDto implements DtoCustomValidator{
 
     @NotNull(message = "主键ID不能为空")
     @Schema(description = "主键ID")
@@ -68,5 +70,13 @@ public class EditOutSchemaDto {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Override
+    public String validate() {
+        if(dataSourceId == null && StringUtils.isBlank(tableName)){
+            return "未选择数据源时不能填写数据源表名";
+        }
+        return null;
+    }
 
 }
