@@ -183,10 +183,6 @@ export default {
           modalForm.scmBranch = details.scmBranch;
           modalForm.scmBasePath = details.scmBasePath;
           modalForm.remark = details.remark;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -214,10 +210,6 @@ export default {
       modalForm.scmBranch = "";
       modalForm.scmBasePath = "";
       modalForm.remark = "";
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
     };
 
     /**
