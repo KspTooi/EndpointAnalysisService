@@ -129,4 +129,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 测试SCM连接
+   */
+  testScmConnection: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/outBlueprint/testScmConnection", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
 };

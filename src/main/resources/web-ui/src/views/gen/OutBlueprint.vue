@@ -39,6 +39,9 @@
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
+            <el-button link type="success" size="small" @click="testScmConnection(scope.row)" :icon="TestIcon">
+              测试SCM连接
+            </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -157,22 +160,27 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
-import type { FormInstance } from "element-plus";
+import { Edit, Delete, Connection } from "@element-plus/icons-vue";
+import { ElMessage, type FormInstance } from "element-plus";
 import OutBlueprintService from "@/views/gen/service/OutBlueprintService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import type { GetOutBlueprintListVo } from "./api/OutBlueprintApi";
+import OutBlueprintApi from "./api/OutBlueprintApi";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const TestIcon = markRaw(Connection);
 
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+//列表管理打包
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, testScmConnection } =
   OutBlueprintService.useOutBlueprintList();
 
 const modalFormRef = ref<FormInstance>();
 
+//模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   OutBlueprintService.useOutBlueprintModal(modalFormRef, loadList);
 </script>

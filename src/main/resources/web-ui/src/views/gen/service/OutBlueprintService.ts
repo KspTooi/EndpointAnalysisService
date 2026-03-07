@@ -87,6 +87,21 @@ export default {
       }
     };
 
+    /**
+     * 测试SCM连接
+     */
+    const testScmConnection = async (row: GetOutBlueprintListVo) => {
+      listLoading.value = true;
+
+      try {
+        const msg = await OutBlueprintApi.testScmConnection({ id: row.id });
+        ElMessageBox.alert(msg || "连接成功", "测试结果", { type: "success", confirmButtonText: "确定" });
+      } catch (error: any) {
+        ElMessageBox.alert(error.message, "测试结果", { type: "error", confirmButtonText: "确定" });
+      }
+
+      listLoading.value = false;
+    };
     onMounted(async () => {
       await loadList();
     });
@@ -99,6 +114,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      testScmConnection,
     };
   },
 
