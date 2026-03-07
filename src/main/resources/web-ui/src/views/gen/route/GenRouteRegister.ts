@@ -18,6 +18,13 @@ export default class GenRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/gen/DataSource.vue"),
         meta: { breadcrumb: "数据源管理" },
       }),
+      RouteEntryPo.build({
+        biz: "gen",
+        path: "ty-schema-manager",
+        name: "ty-schema-manager",
+        component: () => import("@/views/gen/TymSchema.vue"),
+        meta: { breadcrumb: "类型映射方案管理" },
+      }),
     ];
   }
 }

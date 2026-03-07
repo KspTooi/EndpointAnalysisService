@@ -52,6 +52,7 @@ public class TymSchemaService {
     @Transactional(rollbackFor = Exception.class)
     public void addTymSchema(AddTymSchemaDto dto) {
         TymSchemaPo insertPo = as(dto, TymSchemaPo.class);
+        insertPo.setTypeCount(0);
         repository.save(insertPo);
     }
 

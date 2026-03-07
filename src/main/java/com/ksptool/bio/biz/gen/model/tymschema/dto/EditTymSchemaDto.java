@@ -36,11 +36,6 @@ public class EditTymSchemaDto {
     @Schema(description = "映射目标")
     private String mapTarget;
 
-    @NotNull(message = "类型数量不能为空")
-    @Range(min = 0, message = "类型数量不能小于0")
-    @Schema(description = "类型数量")
-    private Integer typeCount;
-
     @NotBlank(message = "默认类型不能为空")
     @Size(max = 80, min = 1, message = "默认类型长度必须在1-80个字符之间")
     @Schema(description = "默认类型")
