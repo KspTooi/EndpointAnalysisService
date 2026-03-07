@@ -56,6 +56,8 @@ public class OutSchemaService {
     @Transactional(rollbackFor = Exception.class)
     public void addOutSchema(AddOutSchemaDto dto) {
         OutSchemaPo insertPo = as(dto, OutSchemaPo.class);
+        insertPo.setFieldCountOrigin(0);
+        insertPo.setFieldCountPoly(0);
         repository.save(insertPo);
     }
 

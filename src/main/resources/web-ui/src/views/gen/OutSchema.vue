@@ -36,6 +36,7 @@
         <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
+            <el-button link type="primary" size="small" @click="" :icon="ManagementIcon"> 模型管理 </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
@@ -156,7 +157,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete, Management } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import OutSchemaService from "@/views/gen/service/OutSchemaService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -166,6 +167,7 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
+const ManagementIcon = markRaw(Management);
 
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutSchemaService.useOutSchemaList();
 
