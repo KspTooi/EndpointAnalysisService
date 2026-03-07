@@ -13,16 +13,6 @@
           <el-form-item label="蓝图编码">
             <el-input v-model="listForm.code" placeholder="输入蓝图编码" clearable />
           </el-form-item>
-          <el-form-item label="SCM认证方式">
-            <el-select v-model="listForm.scmAuthKind" placeholder="请选择" clearable style="width: 160px">
-              <el-option label="公开" :value="0" />
-              <el-option label="账号密码" :value="1" />
-              <el-option label="SSH KEY" :value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="SCM分支">
-            <el-input v-model="listForm.scmBranch" placeholder="输入SCM分支" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
@@ -44,18 +34,7 @@
         <el-table-column prop="projectName" label="项目名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="蓝图编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="scmUrl" label="SCM仓库地址" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="scmAuthKind" label="SCM认证方式" min-width="120" show-overflow-tooltip>
-          <template #default="scope">
-            <span v-if="scope.row.scmAuthKind === 0">公开</span>
-            <span v-if="scope.row.scmAuthKind === 1">账号密码</span>
-            <span v-if="scope.row.scmAuthKind === 2">SSH KEY</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="scmBranch" label="SCM分支" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="scmBasePath" label="基准路径" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="remark" label="蓝图备注" min-width="160" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="160" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -144,7 +123,7 @@
           <el-input v-model="modalForm.scmBasePath" placeholder="请输入基准路径" clearable maxlength="1280" show-word-limit />
         </el-form-item>
         <el-form-item label="蓝图备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入蓝图备注" type="textarea" :rows="3" />
+          <el-input v-model="modalForm.remark" placeholder="请输入蓝图备注" type="textarea" :rows="3" maxlength="500" show-word-limit />
         </el-form-item>
       </el-form>
       <template #footer>
