@@ -40,7 +40,15 @@ public enum AppRegistry {
     FA_ASP_MIN_LENGTH("field.auth", "asp_min_length", "8", NvalueKind.INTEGER, "密码最小长度", "为-1时表示不限制"),
 
     FA_SESSION_EXPIRE("field.auth", "session_expire", "30", NvalueKind.INTEGER, "用户Session过期时间(分钟)", "为-1时表示不限制"),
-    FA_SESSION_MAX_SIZE("field.auth", "session_max_size", "1000", NvalueKind.INTEGER, "用户单账号最大同时在线数量", "为-1时表示不限制"),
+    
+    
+    //==================== GEN域配置 ====================
+    FG_PROXY_ENABLE("field.gen", "proxy_enable", "0", NvalueKind.INTEGER, "是否启用代理", "0:否 1:是"),
+    FG_PROXY_TYPE("field.gen", "proxy_type", "HTTP", NvalueKind.STRING, "代理类型", "只支持HTTP代理"),
+    FG_PROXY_HOST("field.gen", "proxy_host", "127.0.0.1", NvalueKind.STRING, "代理主机"),
+    FG_PROXY_PORT("field.gen", "proxy_port", "8080", NvalueKind.INTEGER, "代理端口"),
+    FG_PROXY_USERNAME("field.gen", "proxy_username", "?", NvalueKind.STRING, "代理用户名"),
+    FG_PROXY_PASSWORD("field.gen", "proxy_password", "?", NvalueKind.STRING, "代理密码"),
     ;
 
 
