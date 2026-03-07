@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.gen.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.gen.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.gen.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.gen.model.tymschemafield.dto.AddTymSchemaFieldDto;
 import com.ksptool.bio.biz.gen.model.tymschemafield.dto.EditTymSchemaFieldDto;
@@ -10,6 +11,7 @@ import com.ksptool.bio.biz.gen.model.tymschemafield.dto.GetTymSchemaFieldListDto
 import com.ksptool.bio.biz.gen.model.tymschemafield.vo.GetTymSchemaFieldDetailsVo;
 import com.ksptool.bio.biz.gen.model.tymschemafield.vo.GetTymSchemaFieldListVo;
 import com.ksptool.bio.biz.gen.repository.TymSchemaFieldRepository;
+import com.ksptool.bio.biz.gen.repository.TymSchemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class TymSchemaFieldService {
 
     @Autowired
     private TymSchemaFieldRepository repository;
+
+    @Autowired
+    private TymSchemaRepository tymSchemaRepository;
 
     /**
      * 查询类型映射方案字段列表
@@ -52,9 +57,19 @@ public class TymSchemaFieldService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addTymSchemaField(AddTymSchemaFieldDto dto) {
+    public void addTymSchemaField(AddTymSchemaFieldDto dto) throws BizException {
+
+        //查询类型映射方案是否存在
+        TymSchemaPo tymSchemaPo = tymSchemaRepository.findById(dto.getTypeSchemaId())
+                .orElseThrow(() -> new BizException("类型映射方案不存在"));
+
         TymSchemaFieldPo insertPo = as(dto, TymSchemaFieldPo.class);
+        insertPo.setTypeSchemaId(tymSchemaPo.getId());
         repository.save(insertPo);
+
+        //更新类型映射方案字段数量
+        tymSchemaPo.setTypeCount(tymSchemaPo.getTypeCount() + 1);
+        tymSchemaRepository.save(tymSchemaPo);
     }
 
     /**
@@ -93,11 +108,32 @@ public class TymSchemaFieldService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeTymSchemaField(CommonIdDto dto) throws BizException {
+        //不支持批量删除
         if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+            throw new BizException("不支持批量删除");
         }
+
+        //查询TYMSF 
+        TymSchemaFieldPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("删除失败,数据不存在或无权限访问."));
+
+        //查询类型映射方案是否存在
+        TymSchemaPo tymSchemaPo = tymSchemaRepository.findById(po.getTypeSchemaId()).orElse(null);
+
+        //先删除
         repository.deleteById(dto.getId());
+
+        //更新类型映射方案字段数量
+        if (tymSchemaPo != null) {
+            tymSchemaPo.setTypeCount(tymSchemaPo.getTypeCount() - 1);
+
+            if (tymSchemaPo.getTypeCount() < 1) {
+                tymSchemaPo.setTypeCount(0);
+            }
+
+            tymSchemaRepository.save(tymSchemaPo);
+        }
+
     }
 
 }
