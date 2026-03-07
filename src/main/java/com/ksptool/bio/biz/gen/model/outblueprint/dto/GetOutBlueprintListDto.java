@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetGenOutBlueprintListDto extends PageQuery {
+public class GetOutBlueprintListDto extends PageQuery {
 
     @Schema(description = "蓝图名称")
     private String name;

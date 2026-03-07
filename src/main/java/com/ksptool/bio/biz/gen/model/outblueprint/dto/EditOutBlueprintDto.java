@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class EditGenOutBlueprintDto {
+public class EditOutBlueprintDto {
 
     @NotNull(message = "主键ID不能为空")
     @Schema(description = "主键ID")

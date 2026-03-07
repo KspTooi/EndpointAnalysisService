@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-3-7 02:44:16",
+  "updatedTime": "2026-3-7 22:48:12",
   "dbConns": [],
   "profile": {
     "default": {
@@ -30081,7 +30081,7 @@
         },
         {
           "defKey": "scm_auth_kind",
-          "defName": "SCM认证方式 0:公开 1:账号密码 2:SSH KEY",
+          "defName": "SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT",
           "comment": "",
           "type": "",
           "len": "",

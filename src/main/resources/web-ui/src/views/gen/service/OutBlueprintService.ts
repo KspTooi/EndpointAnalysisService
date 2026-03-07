@@ -6,8 +6,8 @@ import type {
   GetOutBlueprintDetailsVo,
   AddOutBlueprintDto,
   EditOutBlueprintDto,
-} from "@/views/outBlueprint/api/OutBlueprintApi.ts";
-import OutBlueprintApi from "@/views/outBlueprint/api/OutBlueprintApi.ts";
+} from "@/views/gen/api/OutBlueprintApi";
+import OutBlueprintApi from "@/views/gen/api/OutBlueprintApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

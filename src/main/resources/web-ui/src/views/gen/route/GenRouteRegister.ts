@@ -25,6 +25,13 @@ export default class GenRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/gen/TymSchema.vue"),
         meta: { breadcrumb: "类型映射方案管理" },
       }),
+      RouteEntryPo.build({
+        biz: "gen",
+        path: "out-blueprint-manager",
+        name: "out-blueprint-manager",
+        component: () => import("@/views/gen/OutBlueprint.vue"),
+        meta: { breadcrumb: "输出蓝图管理" },
+      }),
     ];
   }
 }

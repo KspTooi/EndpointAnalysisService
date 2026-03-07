@@ -163,7 +163,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutBlueprintService from "@/views/outBlueprint/service/OutBlueprintService.ts";
+import OutBlueprintService from "@/views/gen/service/OutBlueprintService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -172,7 +172,8 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutBlueprintService.useOutBlueprintList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  OutBlueprintService.useOutBlueprintList();
 
 const modalFormRef = ref<FormInstance>();
 

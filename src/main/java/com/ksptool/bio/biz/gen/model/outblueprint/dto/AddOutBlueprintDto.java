@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class AddGenOutBlueprintDto {
+public class AddOutBlueprintDto {
 
     @NotBlank(message = "蓝图名称不能为空")
     @Size(max = 32, message = "蓝图名称长度不能超过32个字符")

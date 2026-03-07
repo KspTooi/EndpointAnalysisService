@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GenOutBlueprintRepository extends JpaRepository<GenOutBlueprintPo, Long> {
+public interface OutBlueprintRepository extends JpaRepository<GenOutBlueprintPo, Long> {
 
     @Query("""
             SELECT u FROM GenOutBlueprintPo u
@@ -32,5 +32,5 @@ public interface GenOutBlueprintRepository extends JpaRepository<GenOutBlueprint
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
             ORDER BY u.updateTime DESC
             """)
-    Page<GenOutBlueprintPo> getGenOutBlueprintList(@Param("po") GenOutBlueprintPo po, Pageable pageable);
+    Page<GenOutBlueprintPo> getOutBlueprintList(@Param("po") GenOutBlueprintPo po, Pageable pageable);
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class GetGenOutBlueprintListVo {
+public class GetOutBlueprintListVo {
 
     @Schema(description = "主键ID")
     private Long id;
