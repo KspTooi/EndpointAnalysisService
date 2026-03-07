@@ -1,7 +1,6 @@
 package com.ksptool.bio.biz.outmodelpoly.model;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import java.time.LocalDateTime;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
@@ -19,49 +18,49 @@ public class OutModelPolyPo {
     @Id
     private Long id;
 
-    @Column(name = "output_schema_id", comment = "输出方案ID")
+    @Column(name = "output_schema_id", nullable = false, comment = "输出方案ID")
     private Long outputSchemaId;
 
-    @Column(name = "output_model_origin_id", comment = "原始字段ID")
+    @Column(name = "output_model_origin_id", nullable = false, comment = "原始字段ID")
     private Long outputModelOriginId;
 
-    @Column(name = "name", comment = "聚合字段名")
+    @Column(name = "name", nullable = false, length = 255, comment = "聚合字段名")
     private String name;
 
-    @Column(name = "kind", comment = "聚合数据类型")
+    @Column(name = "kind", nullable = false, length = 255, comment = "聚合数据类型")
     private String kind;
 
-    @Column(name = "length", nullable = true, comment = "聚合长度")
+    @Column(name = "length", length = 255, comment = "聚合长度")
     private String length;
 
-    @Column(name = "require", comment = "聚合必填 0:否 1:是")
+    @Column(name = "require", nullable = false, columnDefinition = "TINYINT", comment = "聚合必填 0:否 1:是")
     private Integer require;
 
-    @Column(name = "policy_crud_json", comment = "聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
+    @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
     private String policyCrudJson;
 
-    @Column(name = "policy_query", comment = "聚合查询策略 0:等于 1:模糊")
+    @Column(name = "policy_query", nullable = false, columnDefinition = "TINYINT", comment = "聚合查询策略 0:等于 1:模糊")
     private Integer policyQuery;
 
-    @Column(name = "policy_view", comment = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
+    @Column(name = "policy_view", nullable = false, columnDefinition = "TINYINT", comment = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
-    @Column(name = "placeholder", comment = "placeholder")
+    @Column(name = "placeholder", nullable = false, length = 80, comment = "placeholder")
     private String placeholder;
 
-    @Column(name = "seq", comment = "聚合排序")
+    @Column(name = "seq", nullable = false, comment = "聚合排序")
     private Integer seq;
 
-    @Column(name = "create_time", comment = "创建时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
-    @Column(name = "creator_id", comment = "创建人ID")
+    @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
-    @Column(name = "update_time", comment = "更新时间")
+    @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
-    @Column(name = "updater_id", comment = "更新人ID")
+    @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
 
 
