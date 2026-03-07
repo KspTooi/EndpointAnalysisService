@@ -31,7 +31,7 @@ public class OutModelOriginPo {
     @Column(name = "length", length = 255, comment = "原始长度")
     private String length;
 
-    @Column(name = "require", nullable = false, columnDefinition = "TINYINT", comment = "原始必填 0:否 1:是")
+    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "原始必填 0:否 1:是")
     private Integer require;
 
     @Column(name = "remark", length = 255, comment = "原始备注")
