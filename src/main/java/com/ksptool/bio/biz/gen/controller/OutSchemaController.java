@@ -37,15 +37,15 @@ public class OutSchemaController {
     @Operation(summary = "新增输出方案")
     @PostMapping("/addOutSchema")
     public Result<String> addOutSchema(@RequestBody @Valid AddOutSchemaDto dto) throws Exception {
-        outSchemaService.addOutSchema(dto);
-        return Result.success("新增成功");
+        var message = outSchemaService.addOutSchema(dto);
+        return Result.success(message);
     }
 
     @Operation(summary = "编辑输出方案")
     @PostMapping("/editOutSchema")
     public Result<String> editOutSchema(@RequestBody @Valid EditOutSchemaDto dto) throws Exception {
-        outSchemaService.editOutSchema(dto);
-        return Result.success("修改成功");
+        var message = outSchemaService.editOutSchema(dto);
+        return Result.success(message);
     }
 
     @Operation(summary = "查询输出方案详情")

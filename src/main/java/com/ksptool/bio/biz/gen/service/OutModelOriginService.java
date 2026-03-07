@@ -10,11 +10,14 @@ import static com.ksptool.entities.Entities.assign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
+import com.ksptool.bio.biz.gen.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import com.ksptool.bio.biz.gen.model.outmodelorigin.vo.GetOutModelOriginListVo;
 import com.ksptool.bio.biz.gen.model.outmodelorigin.dto.GetOutModelOriginListDto;
@@ -102,5 +105,62 @@ public class OutModelOriginService {
         }
         repository.deleteById(dto.getId());
     }
+
+
+    /**
+     * 查询数据源表字段
+     * @param dataSource 数据源
+     * @return 数据源表字段 获取异常时直接返回null
+     */
+    public List<OutModelOriginPo> getDataSourceTableFields(DataSourcePo dataSource) {
+
+        var drive = dataSource.getDrive();
+        var url = dataSource.getUrl();
+        var username = dataSource.getUsername();
+        var password = dataSource.getPassword();
+        var dbSchema = dataSource.getDbSchema();
+
+        try {
+            Class.forName(drive);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+
+        List<OutModelOriginPo> result = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            DatabaseMetaData metaData = conn.getMetaData();
+
+            // 查询主键列表
+            java.util.Set<String> pkColumns = new java.util.HashSet<>();
+            try (ResultSet pkRs = metaData.getPrimaryKeys(dbSchema, dbSchema, null)) {
+                while (pkRs.next()) {
+                    pkColumns.add(pkRs.getString("COLUMN_NAME"));
+                }
+            }
+
+            try (ResultSet rs = metaData.getColumns(dbSchema, dbSchema, "%", "%")) {
+                int seq = 1;
+                while (rs.next()) {
+                    OutModelOriginPo po = new OutModelOriginPo();
+                    po.setName(rs.getString("COLUMN_NAME"));
+                    po.setKind(rs.getString("TYPE_NAME"));
+                    int columnSize = rs.getInt("COLUMN_SIZE");
+                    po.setLength(columnSize > 0 ? String.valueOf(columnSize) : null);
+                    // IS_NULLABLE: YES 表示可为空, 主键或非空则 require=1
+                    String nullable = rs.getString("IS_NULLABLE");
+                    boolean isPk = pkColumns.contains(po.getName());
+                    po.setRequire((isPk || "NO".equalsIgnoreCase(nullable)) ? 1 : 0);
+                    po.setRemark(rs.getString("REMARKS"));
+                    po.setSeq(seq++);
+                    result.add(po);
+                }
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+
+        return result;
+    }
+
 
 }

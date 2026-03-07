@@ -99,7 +99,7 @@
             <el-form-item label="模型名称" prop="modelName">
               <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit>
                 <template #append>
-                  <el-button @click="modalForm.modelName = modalForm.name">推断</el-button>
+                  <el-button :icon="MagicStickIcon" @click="modalForm.modelName = modalForm.name">推断</el-button>
                 </template>
               </el-input>
             </el-form-item>
@@ -132,7 +132,16 @@
                 clearable
                 maxlength="32"
                 show-word-limit
-              />
+              >
+                <template #append>
+                  <el-button
+                    :icon="MagicStickIcon"
+                    :disabled="!modalForm.tableName"
+                    @click="modalForm.permCodePrefix = modalForm.tableName.toLowerCase().replace(/_/g, ':')"
+                    >推断</el-button
+                  >
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -225,14 +234,16 @@
               >
                 <template #append>
                   <el-button
+                    :icon="MagicStickIcon"
+                    :disabled="!modalForm.tableName"
                     @click="
                       () => {
                         const parts = modalForm.tableName.split('_');
                         modalForm.removeTablePrefix = parts.length > 1 ? parts[0] + '_' : '';
                       }
                     "
-                    :disabled="!modalForm.tableName"
-                  >推断</el-button>
+                    >推断</el-button
+                  >
                 </template>
               </el-input>
             </el-form-item>
@@ -254,7 +265,7 @@
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
           <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
+            {{ modalMode === "add" ? "创建并导入原始字段" : "保存并更新原始字段" }}
           </el-button>
         </div>
       </template>
@@ -264,7 +275,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete, Management } from "@element-plus/icons-vue";
+import { Edit, Delete, Management, MagicStick } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import OutSchemaService from "@/views/gen/service/OutSchemaService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
@@ -276,6 +287,7 @@ import DataSourceTableBrowser from "@/views/gen/components/DataSourceTableBrowse
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const ManagementIcon = markRaw(Management);
+const MagicStickIcon = markRaw(MagicStick);
 
 //列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutSchemaService.useOutSchemaList();
