@@ -18,27 +18,15 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 输出方案表列表管理
+   * 输出方案列表管理
    */
   useOutSchemaList() {
     const listForm = ref<GetOutSchemaListDto>({
       pageNum: 1,
       pageSize: 20,
-      dataSourceId: "",
-      typeSchemaId: "",
-      inputScmId: "",
-      outputScmId: "",
       name: "",
       modelName: "",
       tableName: "",
-      removeTablePrefix: "",
-      permCodePrefix: "",
-      policyOverride: null,
-      baseInput: "",
-      baseOutput: "",
-      remark: "",
-      fieldCountOrigin: null,
-      fieldCountPoly: null,
     });
 
     const listData = ref<GetOutSchemaListVo[]>([]);
@@ -70,21 +58,9 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
-      listForm.value.dataSourceId = "";
-      listForm.value.typeSchemaId = "";
-      listForm.value.inputScmId = "";
-      listForm.value.outputScmId = "";
       listForm.value.name = "";
       listForm.value.modelName = "";
       listForm.value.tableName = "";
-      listForm.value.removeTablePrefix = "";
-      listForm.value.permCodePrefix = "";
-      listForm.value.policyOverride = null;
-      listForm.value.baseInput = "";
-      listForm.value.baseOutput = "";
-      listForm.value.remark = "";
-      listForm.value.fieldCountOrigin = null;
-      listForm.value.fieldCountPoly = null;
       loadList();
     };
 
@@ -148,27 +124,38 @@ export default {
       baseInput: "",
       baseOutput: "",
       remark: "",
-      fieldCountOrigin: 0,
-      fieldCountPoly: 0,
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入输出方案名称", trigger: "blur" }],
-      modelName: [{ required: true, message: "请输入模型名称", trigger: "blur" }],
-      removeTablePrefix: [{ required: true, message: "请输入移除表前缀", trigger: "blur" }],
-      permCodePrefix: [{ required: true, message: "请输入权限码前缀", trigger: "blur" }],
-      policyOverride: [{ required: true, message: "请输入写出策略 0:不覆盖 1:覆盖", trigger: "blur" }],
-      baseInput: [{ required: true, message: "请输入输入基准路径", trigger: "blur" }],
-      baseOutput: [{ required: true, message: "请输入输出基准路径", trigger: "blur" }],
-      fieldCountOrigin: [{ required: true, message: "请输入字段数(原始)", trigger: "blur" }],
-      fieldCountPoly: [{ required: true, message: "请输入字段数(聚合)", trigger: "blur" }],
+      name: [
+        { required: true, message: "请输入输出方案名称", trigger: "blur" },
+        { max: 32, message: "输出方案名称不能超过32个字符", trigger: "blur" },
+      ],
+      modelName: [
+        { required: true, message: "请输入模型名称", trigger: "blur" },
+        { max: 255, message: "模型名称不能超过255个字符", trigger: "blur" },
+      ],
+      tableName: [{ max: 80, message: "数据源表名不能超过80个字符", trigger: "blur" }],
+      removeTablePrefix: [
+        { required: true, message: "请输入移除表前缀", trigger: "blur" },
+        { max: 80, message: "移除表前缀不能超过80个字符", trigger: "blur" },
+      ],
+      permCodePrefix: [
+        { required: true, message: "请输入权限码前缀", trigger: "blur" },
+        { max: 32, message: "权限码前缀不能超过32个字符", trigger: "blur" },
+      ],
+      policyOverride: [{ required: true, message: "请选择写出策略", trigger: "blur" }],
+      baseInput: [
+        { required: true, message: "请输入输入基准路径", trigger: "blur" },
+        { max: 320, message: "输入基准路径不能超过320个字符", trigger: "blur" },
+      ],
+      baseOutput: [
+        { required: true, message: "请输入输出基准路径", trigger: "blur" },
+        { max: 320, message: "输出基准路径不能超过320个字符", trigger: "blur" },
+      ],
     };
 
     /**
@@ -194,12 +181,6 @@ export default {
         modalForm.baseInput = "";
         modalForm.baseOutput = "";
         modalForm.remark = "";
-        modalForm.fieldCountOrigin = 0;
-        modalForm.fieldCountPoly = 0;
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
         modalVisible.value = true;
         return;
       }
@@ -226,12 +207,6 @@ export default {
           modalForm.baseInput = details.baseInput;
           modalForm.baseOutput = details.baseOutput;
           modalForm.remark = details.remark;
-          modalForm.fieldCountOrigin = details.fieldCountOrigin;
-          modalForm.fieldCountPoly = details.fieldCountPoly;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -261,12 +236,6 @@ export default {
       modalForm.baseInput = "";
       modalForm.baseOutput = "";
       modalForm.remark = "";
-      modalForm.fieldCountOrigin = 0;
-      modalForm.fieldCountPoly = 0;
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
     };
 
     /**
@@ -301,8 +270,6 @@ export default {
             baseInput: modalForm.baseInput,
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
-            fieldCountOrigin: modalForm.fieldCountOrigin,
-            fieldCountPoly: modalForm.fieldCountPoly,
           };
           await OutSchemaApi.addOutSchema(addDto);
           ElMessage.success("新增成功");
@@ -339,8 +306,6 @@ export default {
             baseInput: modalForm.baseInput,
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
-            fieldCountOrigin: modalForm.fieldCountOrigin,
-            fieldCountPoly: modalForm.fieldCountPoly,
           };
           await OutSchemaApi.editOutSchema(editDto);
           ElMessage.success("编辑成功");
