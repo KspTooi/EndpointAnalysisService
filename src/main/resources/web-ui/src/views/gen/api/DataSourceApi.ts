@@ -141,10 +141,10 @@ export default {
   /**
    * 查询数据源表列表
    */
-  getDataSourceTableList: async (dto: CommonIdDto): Promise<GetDataSourceTableListVo[]> => {
+  getDataSourceTableList: async (dto: CommonIdDto): Promise<Result<GetDataSourceTableListVo[]>> => {
     const result = await Http.postEntity<Result<GetDataSourceTableListVo[]>>("/dataSource/getDataSourceTableList", dto);
     if (result.code === 0) {
-      return result.data;
+      return result;
     }
     throw new Error(result.message);
   },

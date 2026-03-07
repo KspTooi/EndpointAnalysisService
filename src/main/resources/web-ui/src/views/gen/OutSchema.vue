@@ -159,7 +159,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="数据源表名" prop="tableName">
-              <el-input v-model="modalForm.tableName" placeholder="请输入数据源表名" clearable maxlength="80" show-word-limit />
+              <DataSourceTableBrowser v-model="modalForm.tableName" :data-source-id="modalForm.dataSourceId" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -259,6 +259,7 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import DataSourceTableBrowser from "@/views/gen/components/DataSourceTableBrowser.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);

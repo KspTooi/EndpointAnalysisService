@@ -202,8 +202,8 @@ export default {
         modalForm.removeTablePrefix = "";
         modalForm.permCodePrefix = "";
         modalForm.policyOverride = 0;
-        modalForm.baseInput = "";
-        modalForm.baseOutput = "";
+        modalForm.baseInput = "/";
+        modalForm.baseOutput = "/";
         modalForm.remark = "";
         modalVisible.value = true;
         return;
@@ -257,8 +257,8 @@ export default {
       modalForm.removeTablePrefix = "";
       modalForm.permCodePrefix = "";
       modalForm.policyOverride = 0;
-      modalForm.baseInput = "";
-      modalForm.baseOutput = "";
+      modalForm.baseInput = "/";
+      modalForm.baseOutput = "/";
       modalForm.remark = "";
     };
 
