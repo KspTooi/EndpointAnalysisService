@@ -7,20 +7,20 @@ import type Result from "@/commons/entity/Result.ts";
 /**
  * 查询列表DTO
  */
-export interface GetOutBlueprintListDto extends PageQuery {
-  name?: string; // 蓝图名称
+export interface GetScmListDto extends PageQuery {
+  name?: string; // SCM名称
   projectName?: string; // 项目名称
-  code?: string; // 蓝图编码
+  code?: string; // SCM编码
 }
 
 /**
  * 列表VO
  */
-export interface GetOutBlueprintListVo {
+export interface GetScmListVo {
   id: string; // 主键ID
-  name: string; // 蓝图名称
+  name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // 蓝图编码
+  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   createTime: string; // 创建时间
 }
@@ -28,69 +28,66 @@ export interface GetOutBlueprintListVo {
 /**
  * 详情VO
  */
-export interface GetOutBlueprintDetailsVo {
+export interface GetScmDetailsVo {
   id: string; // 主键ID
-  name: string; // 蓝图名称
+  name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // 蓝图编码
+  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY
   scmBranch: string; // SCM分支
-  scmBasePath: string; // 基准路径
-  remark: string; // 蓝图备注
+  remark: string; // SCM备注
 }
 
 /**
  * 新增DTO
  */
-export interface AddOutBlueprintDto {
-  name: string; // 蓝图名称
+export interface AddScmDto {
+  name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // 蓝图编码
+  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY
   scmBranch: string; // SCM分支
-  scmBasePath: string; // 基准路径
-  remark: string; // 蓝图备注
+  remark: string; // SCM备注
 }
 
 /**
  * 编辑DTO
  */
-export interface EditOutBlueprintDto {
+export interface EditScmDto {
   id: string; // 主键ID
-  name: string; // 蓝图名称
+  name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // 蓝图编码
+  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY
   scmBranch: string; // SCM分支
-  scmBasePath: string; // 基准路径
-  remark: string; // 蓝图备注
+  remark: string; // SCM备注
 }
 
 export default {
   /**
-   * 获取输出蓝图表列表
+   * 获取SCM列表
    */
-  getOutBlueprintList: async (dto: GetOutBlueprintListDto): Promise<PageResult<GetOutBlueprintListVo>> => {
-    return await Http.postEntity<PageResult<GetOutBlueprintListVo>>("/outBlueprint/getOutBlueprintList", dto);
+  getScmList: async (dto: GetScmListDto): Promise<PageResult<GetScmListVo>> => {
+    return await Http.postEntity<PageResult<GetScmListVo>>("/scm/getScmList", dto);
   },
 
   /**
-   * 获取输出蓝图表详情
+   * 获取SCM详情
    */
-  getOutBlueprintDetails: async (dto: CommonIdDto): Promise<GetOutBlueprintDetailsVo> => {
-    const result = await Http.postEntity<Result<GetOutBlueprintDetailsVo>>("/outBlueprint/getOutBlueprintDetails", dto);
+  getScmDetails: async (dto: CommonIdDto): Promise<GetScmDetailsVo> => {
+    const result = await Http.postEntity<Result<GetScmDetailsVo>>("/scm/getScmDetails", dto);
     if (result.code === 0) {
       return result.data;
     }
@@ -98,10 +95,10 @@ export default {
   },
 
   /**
-   * 新增输出蓝图表
+   * 新增SCM
    */
-  addOutBlueprint: async (dto: AddOutBlueprintDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outBlueprint/addOutBlueprint", dto);
+  addScm: async (dto: AddScmDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/scm/addScm", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -109,10 +106,10 @@ export default {
   },
 
   /**
-   * 编辑输出蓝图表
+   * 编辑SCM
    */
-  editOutBlueprint: async (dto: EditOutBlueprintDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outBlueprint/editOutBlueprint", dto);
+  editScm: async (dto: EditScmDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/scm/editScm", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -120,10 +117,10 @@ export default {
   },
 
   /**
-   * 删除输出蓝图表
+   * 删除SCM
    */
-  removeOutBlueprint: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outBlueprint/removeOutBlueprint", dto);
+  removeScm: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/scm/removeScm", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -134,7 +131,7 @@ export default {
    * 测试SCM连接
    */
   testScmConnection: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outBlueprint/testScmConnection", dto);
+    const result = await Http.postEntity<Result<string>>("/scm/testScmConnection", dto);
     if (result.code === 0) {
       return result.message;
     }

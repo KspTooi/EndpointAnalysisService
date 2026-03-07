@@ -27,10 +27,10 @@ export default class GenRouteRegister extends GenricRouteRegister {
       }),
       RouteEntryPo.build({
         biz: "gen",
-        path: "out-blueprint-manager",
-        name: "out-blueprint-manager",
-        component: () => import("@/views/gen/OutBlueprint.vue"),
-        meta: { breadcrumb: "输出蓝图管理" },
+        path: "scm-manager",
+        name: "scm-manager",
+        component: () => import("@/views/gen/Scm.vue"),
+        meta: { breadcrumb: "SCM管理" },
       }),
     ];
   }

@@ -1,13 +1,13 @@
 import { computed, onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  GetOutBlueprintListDto,
-  GetOutBlueprintListVo,
-  GetOutBlueprintDetailsVo,
-  AddOutBlueprintDto,
-  EditOutBlueprintDto,
-} from "@/views/gen/api/OutBlueprintApi";
-import OutBlueprintApi from "@/views/gen/api/OutBlueprintApi";
+  GetScmListDto,
+  GetScmListVo,
+  GetScmDetailsVo,
+  AddScmDto,
+  EditScmDto,
+} from "@/views/gen/api/ScmApi";
+import ScmApi from "@/views/gen/api/ScmApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -18,10 +18,10 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 输出蓝图表列表管理
+   * SCM列表管理
    */
-  useOutBlueprintList() {
-    const listForm = ref<GetOutBlueprintListDto>({
+  useScmList() {
+    const listForm = ref<GetScmListDto>({
       pageNum: 1,
       pageSize: 20,
       name: "",
@@ -29,7 +29,7 @@ export default {
       code: "",
     });
 
-    const listData = ref<GetOutBlueprintListVo[]>([]);
+    const listData = ref<GetScmListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -38,7 +38,7 @@ export default {
      */
     const loadList = async () => {
       listLoading.value = true;
-      const result = await OutBlueprintApi.getOutBlueprintList(listForm.value);
+      const result = await ScmApi.getScmList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -67,7 +67,7 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetOutBlueprintListVo) => {
+    const removeList = async (row: GetScmListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -79,7 +79,7 @@ export default {
       }
 
       try {
-        await OutBlueprintApi.removeOutBlueprint({ id: row.id });
+        await ScmApi.removeScm({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -90,11 +90,11 @@ export default {
     /**
      * 测试SCM连接
      */
-    const testScmConnection = async (row: GetOutBlueprintListVo) => {
+    const testScmConnection = async (row: GetScmListVo) => {
       listLoading.value = true;
 
       try {
-        const msg = await OutBlueprintApi.testScmConnection({ id: row.id });
+        const msg = await ScmApi.testScmConnection({ id: row.id });
         ElMessageBox.alert(msg || "连接成功", "测试结果", { type: "success", confirmButtonText: "确定" });
       } catch (error: any) {
         ElMessageBox.alert(error.message, "测试结果", { type: "error", confirmButtonText: "确定" });
@@ -102,6 +102,7 @@ export default {
 
       listLoading.value = false;
     };
+
     onMounted(async () => {
       await loadList();
     });
@@ -121,11 +122,11 @@ export default {
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  useOutBlueprintModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useScmModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetOutBlueprintDetailsVo>({
+    const modalForm = reactive<GetScmDetailsVo>({
       id: "",
       name: "",
       projectName: "",
@@ -136,7 +137,6 @@ export default {
       scmPassword: "",
       scmPk: "",
       scmBranch: "main",
-      scmBasePath: "/",
       remark: "",
     });
 
@@ -147,16 +147,15 @@ export default {
       const needUsernamePassword = modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3;
       const needPk = modalForm.scmAuthKind === 2;
       return {
-        name: [{ required: true, message: "请输入蓝图名称", trigger: "blur", max: 32 }],
+        name: [{ required: true, message: "请输入SCM名称", trigger: "blur", max: 32 }],
         projectName: [{ required: false, trigger: "blur", max: 80 }],
-        code: [{ required: true, message: "请输入蓝图编码", trigger: "blur", max: 32 }],
+        code: [{ required: true, message: "请输入SCM编码", trigger: "blur", max: 32 }],
         scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur", max: 1000 }],
         scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
         scmUsername: needUsernamePassword ? [{ required: true, message: "请输入SCM用户名", trigger: "blur" }] : [],
         scmPassword: needUsernamePassword ? [{ required: true, message: "请输入SCM密码", trigger: "blur" }] : [],
         scmPk: needPk ? [{ required: true, message: "请输入SSH KEY", trigger: "blur" }] : [],
         scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur", max: 80 }],
-        scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur", max: 1280 }],
         remark: [{ required: false, trigger: "blur", max: 500 }],
       };
     });
@@ -166,7 +165,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetOutBlueprintListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetScmListVo | null) => {
       modalMode.value = mode;
 
       if (mode === "add") {
@@ -180,7 +179,6 @@ export default {
         modalForm.scmPassword = "";
         modalForm.scmPk = "";
         modalForm.scmBranch = "main";
-        modalForm.scmBasePath = "/";
         modalForm.remark = "";
         modalVisible.value = true;
         return;
@@ -193,7 +191,7 @@ export default {
         }
 
         try {
-          const details = await OutBlueprintApi.getOutBlueprintDetails({ id: row.id });
+          const details = await ScmApi.getScmDetails({ id: row.id });
           modalForm.id = details.id;
           modalForm.name = details.name;
           modalForm.projectName = details.projectName;
@@ -204,7 +202,6 @@ export default {
           modalForm.scmPassword = details.scmPassword;
           modalForm.scmPk = details.scmPk;
           modalForm.scmBranch = details.scmBranch;
-          modalForm.scmBasePath = details.scmBasePath;
           modalForm.remark = details.remark;
           modalVisible.value = true;
         } catch (error: any) {
@@ -231,7 +228,6 @@ export default {
       modalForm.scmPassword = "";
       modalForm.scmPk = "";
       modalForm.scmBranch = "main";
-      modalForm.scmBasePath = "/";
       modalForm.remark = "";
     };
 
@@ -253,7 +249,7 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: AddOutBlueprintDto = {
+          const addDto: AddScmDto = {
             name: modalForm.name,
             projectName: modalForm.projectName,
             code: modalForm.code,
@@ -263,10 +259,9 @@ export default {
             scmPassword: modalForm.scmPassword,
             scmPk: modalForm.scmPk,
             scmBranch: modalForm.scmBranch,
-            scmBasePath: modalForm.scmBasePath,
             remark: modalForm.remark,
           };
-          await OutBlueprintApi.addOutBlueprint(addDto);
+          await ScmApi.addScm(addDto);
           ElMessage.success("新增成功");
           modalVisible.value = false;
           resetModal();
@@ -286,7 +281,7 @@ export default {
         }
 
         try {
-          const editDto: EditOutBlueprintDto = {
+          const editDto: EditScmDto = {
             id: modalForm.id,
             name: modalForm.name,
             projectName: modalForm.projectName,
@@ -297,10 +292,9 @@ export default {
             scmPassword: modalForm.scmPassword,
             scmPk: modalForm.scmPk,
             scmBranch: modalForm.scmBranch,
-            scmBasePath: modalForm.scmBasePath,
             remark: modalForm.remark,
           };
-          await OutBlueprintApi.editOutBlueprint(editDto);
+          await ScmApi.editScm(editDto);
           ElMessage.success("编辑成功");
           modalVisible.value = false;
           resetModal();

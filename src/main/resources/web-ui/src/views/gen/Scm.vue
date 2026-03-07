@@ -4,14 +4,14 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
-          <el-form-item label="蓝图名称">
-            <el-input v-model="listForm.name" placeholder="输入蓝图名称" clearable />
+          <el-form-item label="SCM名称">
+            <el-input v-model="listForm.name" placeholder="输入SCM名称" clearable />
           </el-form-item>
           <el-form-item label="项目名称">
             <el-input v-model="listForm.projectName" placeholder="输入项目名称" clearable />
           </el-form-item>
-          <el-form-item label="蓝图编码">
-            <el-input v-model="listForm.code" placeholder="输入蓝图编码" clearable />
+          <el-form-item label="SCM编码">
+            <el-input v-model="listForm.code" placeholder="输入SCM编码" clearable />
           </el-form-item>
         </div>
         <el-form-item>
@@ -23,15 +23,15 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增输出蓝图</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增SCM</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="name" label="蓝图名称" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="name" label="SCM名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="projectName" label="项目名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="code" label="蓝图编码" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="code" label="SCM编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="scmUrl" label="SCM仓库地址" min-width="160" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
@@ -74,7 +74,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑输出蓝图' : '新增输出蓝图'"
+      :title="modalMode === 'edit' ? '编辑SCM' : '新增SCM'"
       width="640px"
       :close-on-click-modal="false"
       @close="
@@ -90,14 +90,14 @@
         label-width="120px"
         :validate-on-rule-change="true"
       >
-        <el-form-item label="蓝图名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入蓝图名称" clearable maxlength="32" show-word-limit />
+        <el-form-item label="SCM名称" prop="name">
+          <el-input v-model="modalForm.name" placeholder="请输入SCM名称" clearable maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="项目名称" prop="projectName">
           <el-input v-model="modalForm.projectName" placeholder="请输入项目名称" clearable maxlength="80" show-word-limit />
         </el-form-item>
-        <el-form-item label="蓝图编码" prop="code">
-          <el-input v-model="modalForm.code" placeholder="请输入蓝图编码" clearable maxlength="32" show-word-limit />
+        <el-form-item label="SCM编码" prop="code">
+          <el-input v-model="modalForm.code" placeholder="请输入SCM编码" clearable maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="SCM类型">
           <el-select model-value="git" disabled style="width: 100%">
@@ -132,13 +132,10 @@
         <el-form-item label="SCM分支" prop="scmBranch">
           <el-input v-model="modalForm.scmBranch" placeholder="请输入SCM分支" clearable maxlength="80" show-word-limit />
         </el-form-item>
-        <el-form-item label="基准路径" prop="scmBasePath">
-          <el-input v-model="modalForm.scmBasePath" placeholder="请输入基准路径" clearable maxlength="1280" show-word-limit />
-        </el-form-item>
-        <el-form-item label="蓝图备注" prop="remark">
+        <el-form-item label="SCM备注" prop="remark">
           <el-input
             v-model="modalForm.remark"
-            placeholder="请输入蓝图备注"
+            placeholder="请输入SCM备注"
             type="textarea"
             :rows="3"
             maxlength="500"
@@ -161,14 +158,12 @@
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
 import { Edit, Delete, Connection } from "@element-plus/icons-vue";
-import { ElMessage, type FormInstance } from "element-plus";
-import OutBlueprintService from "@/views/gen/service/OutBlueprintService";
+import { type FormInstance } from "element-plus";
+import ScmService from "@/views/gen/service/ScmService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import type { GetOutBlueprintListVo } from "./api/OutBlueprintApi";
-import OutBlueprintApi from "./api/OutBlueprintApi";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -176,13 +171,13 @@ const TestIcon = markRaw(Connection);
 
 //列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, testScmConnection } =
-  OutBlueprintService.useOutBlueprintList();
+  ScmService.useScmList();
 
 const modalFormRef = ref<FormInstance>();
 
 //模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  OutBlueprintService.useOutBlueprintModal(modalFormRef, loadList);
+  ScmService.useScmModal(modalFormRef, loadList);
 </script>
 
 <style scoped></style>
