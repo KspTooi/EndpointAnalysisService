@@ -143,7 +143,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutModelOriginService from "@/views/outModelOrigin/service/OutModelOriginService.ts";
+import OutModelOriginService from "@/views/gen/service/OutModelOriginService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -154,7 +154,8 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutModelOriginService.useOutModelOriginList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  OutModelOriginService.useOutModelOriginList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

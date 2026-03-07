@@ -6,8 +6,8 @@ import type {
   GetOutModelPolyDetailsVo,
   AddOutModelPolyDto,
   EditOutModelPolyDto,
-} from "@/views/outModelPoly/api/OutModelPolyApi.ts";
-import OutModelPolyApi from "@/views/outModelPoly/api/OutModelPolyApi.ts";
+} from "@/views/gen/api/OutModelPolyApi";
+import OutModelPolyApi from "@/views/gen/api/OutModelPolyApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -153,7 +153,9 @@ export default {
       require: [{ required: true, message: "请输入聚合必填 0:否 1:是", trigger: "blur" }],
       policyCrudJson: [{ required: true, message: "请输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW", trigger: "blur" }],
       policyQuery: [{ required: true, message: "请输入聚合查询策略 0:等于 1:模糊", trigger: "blur" }],
-      policyView: [{ required: true, message: "请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT", trigger: "blur" }],
+      policyView: [
+        { required: true, message: "请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT", trigger: "blur" },
+      ],
       placeholder: [{ required: true, message: "请输入placeholder", trigger: "blur" }],
       seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
     };

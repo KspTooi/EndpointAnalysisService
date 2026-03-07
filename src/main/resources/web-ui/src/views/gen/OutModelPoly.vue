@@ -26,13 +26,21 @@
             <el-input v-model.number="listForm.require" placeholder="输入聚合必填 0:否 1:是" clearable />
           </el-form-item>
           <el-form-item label="聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW">
-            <el-input v-model="listForm.policyCrudJson" placeholder="输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW" clearable />
+            <el-input
+              v-model="listForm.policyCrudJson"
+              placeholder="输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW"
+              clearable
+            />
           </el-form-item>
           <el-form-item label="聚合查询策略 0:等于 1:模糊">
             <el-input v-model.number="listForm.policyQuery" placeholder="输入聚合查询策略 0:等于 1:模糊" clearable />
           </el-form-item>
           <el-form-item label="聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT">
-            <el-input v-model.number="listForm.policyView" placeholder="输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" clearable />
+            <el-input
+              v-model.number="listForm.policyView"
+              placeholder="输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT"
+              clearable
+            />
           </el-form-item>
           <el-form-item label="placeholder">
             <el-input v-model="listForm.placeholder" placeholder="输入placeholder" clearable />
@@ -63,9 +71,19 @@
         <el-table-column prop="kind" label="聚合数据类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="length" label="聚合长度" min-width="120" show-overflow-tooltip />
         <el-table-column prop="require" label="聚合必填 0:否 1:是" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="policyCrudJson" label="聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW" min-width="120" show-overflow-tooltip />
+        <el-table-column
+          prop="policyCrudJson"
+          label="聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW"
+          min-width="120"
+          show-overflow-tooltip
+        />
         <el-table-column prop="policyQuery" label="聚合查询策略 0:等于 1:模糊" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="policyView" label="聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" min-width="120" show-overflow-tooltip />
+        <el-table-column
+          prop="policyView"
+          label="聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT"
+          min-width="120"
+          show-overflow-tooltip
+        />
         <el-table-column prop="placeholder" label="placeholder" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="聚合排序" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
@@ -140,13 +158,21 @@
           <el-input v-model.number="modalForm.require" placeholder="请输入聚合必填 0:否 1:是" clearable />
         </el-form-item>
         <el-form-item label="聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW" prop="policyCrudJson">
-          <el-input v-model="modalForm.policyCrudJson" placeholder="请输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW" clearable />
+          <el-input
+            v-model="modalForm.policyCrudJson"
+            placeholder="请输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="聚合查询策略 0:等于 1:模糊" prop="policyQuery">
           <el-input v-model.number="modalForm.policyQuery" placeholder="请输入聚合查询策略 0:等于 1:模糊" clearable />
         </el-form-item>
         <el-form-item label="聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" prop="policyView">
-          <el-input v-model.number="modalForm.policyView" placeholder="请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" clearable />
+          <el-input
+            v-model.number="modalForm.policyView"
+            placeholder="请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="placeholder" prop="placeholder">
           <el-input v-model="modalForm.placeholder" placeholder="请输入placeholder" clearable maxlength="80" show-word-limit />
@@ -171,7 +197,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutModelPolyService from "@/views/outModelPoly/service/OutModelPolyService.ts";
+import OutModelPolyService from "@/views/gen/service/OutModelPolyService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -182,7 +208,8 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutModelPolyService.useOutModelPolyList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  OutModelPolyService.useOutModelPolyList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

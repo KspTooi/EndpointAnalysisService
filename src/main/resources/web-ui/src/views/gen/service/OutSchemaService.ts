@@ -6,8 +6,8 @@ import type {
   GetOutSchemaDetailsVo,
   AddOutSchemaDto,
   EditOutSchemaDto,
-} from "@/views/outSchema/api/OutSchemaApi.ts";
-import OutSchemaApi from "@/views/outSchema/api/OutSchemaApi.ts";
+} from "@/views/gen/api/OutSchemaApi";
+import OutSchemaApi from "@/views/gen/api/OutSchemaApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

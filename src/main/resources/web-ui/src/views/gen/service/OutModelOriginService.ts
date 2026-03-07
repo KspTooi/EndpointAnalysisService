@@ -6,8 +6,8 @@ import type {
   GetOutModelOriginDetailsVo,
   AddOutModelOriginDto,
   EditOutModelOriginDto,
-} from "@/views/outModelOrigin/api/OutModelOriginApi.ts";
-import OutModelOriginApi from "@/views/outModelOrigin/api/OutModelOriginApi.ts";
+} from "@/views/gen/api/OutModelOriginApi";
+import OutModelOriginApi from "@/views/gen/api/OutModelOriginApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

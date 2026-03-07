@@ -110,10 +110,22 @@
           <el-input v-model="modalForm.tableName" placeholder="请输入数据源表名" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="移除表前缀" prop="removeTablePrefix">
-          <el-input v-model="modalForm.removeTablePrefix" placeholder="请输入移除表前缀" clearable maxlength="80" show-word-limit />
+          <el-input
+            v-model="modalForm.removeTablePrefix"
+            placeholder="请输入移除表前缀"
+            clearable
+            maxlength="80"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="权限码前缀" prop="permCodePrefix">
-          <el-input v-model="modalForm.permCodePrefix" placeholder="请输入权限码前缀" clearable maxlength="32" show-word-limit />
+          <el-input
+            v-model="modalForm.permCodePrefix"
+            placeholder="请输入权限码前缀"
+            clearable
+            maxlength="32"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="写出策略" prop="policyOverride">
           <el-select v-model="modalForm.policyOverride" placeholder="请选择写出策略" style="width: 100%">
@@ -147,7 +159,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutSchemaService from "@/views/outSchema/service/OutSchemaService.ts";
+import OutSchemaService from "@/views/gen/service/OutSchemaService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
