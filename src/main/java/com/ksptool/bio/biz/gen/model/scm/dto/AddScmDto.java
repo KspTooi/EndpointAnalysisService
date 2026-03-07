@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gen.model.outblueprint.dto;
+package com.ksptool.bio.biz.gen.model.scm.dto;
 
 import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,26 +7,25 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class AddOutBlueprintDto implements DtoCustomValidator{
+public class AddScmDto implements DtoCustomValidator {
 
-    @NotBlank(message = "蓝图名称不能为空")
-    @Size(max = 32, message = "蓝图名称长度不能超过32个字符")
-    @Schema(description = "蓝图名称")
+    @NotBlank(message = "SCM名称不能为空")
+    @Size(max = 32, message = "SCM名称长度不能超过32个字符")
+    @Schema(description = "SCM名称")
     private String name;
 
     @Size(max = 80, message = "项目名称长度不能超过80个字符")
     @Schema(description = "项目名称")
     private String projectName;
 
-    @NotBlank(message = "蓝图编码不能为空")
-    @Size(max = 32, message = "蓝图编码长度不能超过32个字符")
-    @Schema(description = "蓝图编码")
+    @NotBlank(message = "SCM编码不能为空")
+    @Size(max = 32, message = "SCM编码长度不能超过32个字符")
+    @Schema(description = "SCM编码")
     private String code;
 
     @NotBlank(message = "SCM仓库地址不能为空")
@@ -53,17 +52,13 @@ public class AddOutBlueprintDto implements DtoCustomValidator{
     @Schema(description = "SCM分支")
     private String scmBranch;
 
-    @NotBlank(message = "基准路径不能为空")
-    @Size(max = 1280, message = "基准路径长度不能超过1280个字符")
-    @Schema(description = "基准路径")
-    private String scmBasePath;
-
-    @Size(max = 500, message = "蓝图备注长度不能超过500个字符")
-    @Schema(description = "蓝图备注")
+    @Size(max = 500, message = "SCM备注长度不能超过500个字符")
+    @Schema(description = "SCM备注")
     private String remark;
 
     /**
      * 验证DTO是否合法
+     *
      * @return 错误信息 无错误返回null
      */
     @Override

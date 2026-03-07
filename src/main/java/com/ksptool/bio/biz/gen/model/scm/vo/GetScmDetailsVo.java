@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gen.model.outblueprint.vo;
+package com.ksptool.bio.biz.gen.model.scm.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -6,18 +6,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetOutBlueprintDetailsVo {
+public class GetScmDetailsVo {
 
     @Schema(description = "主键ID")
     private Long id;
 
-    @Schema(description = "蓝图名称")
+    @Schema(description = "SCM名称")
     private String name;
 
     @Schema(description = "项目名称")
     private String projectName;
 
-    @Schema(description = "蓝图编码")
+    @Schema(description = "SCM编码")
     private String code;
 
     @Schema(description = "SCM仓库地址")
@@ -38,10 +38,7 @@ public class GetOutBlueprintDetailsVo {
     @Schema(description = "SCM分支")
     private String scmBranch;
 
-    @Schema(description = "基准路径")
-    private String scmBasePath;
-
-    @Schema(description = "蓝图备注")
+    @Schema(description = "SCM备注")
     private String remark;
 
 }

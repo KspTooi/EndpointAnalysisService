@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.gen.model.outblueprint;
+package com.ksptool.bio.biz.gen.model.scm;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;
@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_out_blueprint")
-public class GenOutBlueprintPo {
+@Table(name = "gen_scm")
+public class ScmPo {
 
     @Column(name = "id", nullable = false, comment = "主键ID")
     @Id
@@ -45,9 +45,6 @@ public class GenOutBlueprintPo {
 
     @Column(name = "scm_branch", nullable = false, length = 80, comment = "SCM分支")
     private String scmBranch;
-
-    @Column(name = "scm_base_path", nullable = false, length = 1280, comment = "基准路径")
-    private String scmBasePath;
 
     @Column(name = "remark", columnDefinition = "TEXT", comment = "蓝图备注")
     private String remark;
