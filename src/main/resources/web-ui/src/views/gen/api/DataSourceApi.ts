@@ -67,6 +67,14 @@ export interface EditDataSourceDto {
   dbSchema: string; // 默认模式 max:80
 }
 
+/**
+ * 表列表VO
+ */
+export interface GetDataSourceTableListVo {
+  tableName: string; // 表名
+  tableComment: string; // 表注释
+}
+
 export default {
   /**
    * 获取数据源表列表
@@ -124,6 +132,17 @@ export default {
    */
   testDataSourceConnection: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/dataSource/testDataSourceConnection", dto);
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 查询数据源表列表
+   */
+  getDataSourceTableList: async (dto: CommonIdDto): Promise<GetDataSourceTableListVo[]> => {
+    const result = await Http.postEntity<Result<GetDataSourceTableListVo[]>>("/dataSource/getDataSourceTableList", dto);
     if (result.code === 0) {
       return result.data;
     }
