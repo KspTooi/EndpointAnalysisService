@@ -27,6 +27,7 @@ import com.ksptool.bio.biz.gen.model.outschema.dto.EditOutSchemaDto;
 import com.ksptool.bio.biz.gen.model.outschema.dto.AddOutSchemaDto;
 import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
 import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
+import org.apache.commons.lang3.StringUtils;
 
 
 
@@ -79,8 +80,8 @@ public class OutSchemaService {
         insertPo = repository.save(insertPo);
 
 
-        //如果输入数据源,则查询数据源
-        if(dto.getDataSourceId() != null){
+        //如果输入数据源和表名,则查询数据源表字段
+        if(dto.getDataSourceId() != null && StringUtils.isNotBlank(dto.getTableName())){
 
             var dataSource = datasourceRepository.findById(dto.getDataSourceId()).orElse(null);
 
@@ -88,7 +89,7 @@ public class OutSchemaService {
                 return "新增成功,但未能从数据源导入原始字段,数据源不存在或无权限访问！";
             }
             
-            var fields = outModelOriginService.getDataSourceTableFields(dataSource);
+            var fields = outModelOriginService.getDataSourceTableFields(dataSource,dto.getTableName());
 
             if(fields == null){
                 return "新增成功,但未能从数据源导入原始字段,查询数据源表字段失败！";
@@ -129,8 +130,8 @@ public class OutSchemaService {
 
         assign(dto, updatePo);
 
-        // 没有配置数据源，直接保存
-        if (dto.getDataSourceId() == null) {
+        // 没有配置数据源或表名，直接保存
+        if (dto.getDataSourceId() == null || StringUtils.isBlank(dto.getTableName())) {
             repository.save(updatePo);
             return "修改成功";
         }
@@ -140,7 +141,7 @@ public class OutSchemaService {
             return "未能同步原始字段,数据源不存在或无权限访问！";
         }
 
-        var latestFields = outModelOriginService.getDataSourceTableFields(dataSource);
+        var latestFields = outModelOriginService.getDataSourceTableFields(dataSource,dto.getTableName());
         if (latestFields == null) {
             return "未能同步原始字段,查询数据源表字段失败！";
         }

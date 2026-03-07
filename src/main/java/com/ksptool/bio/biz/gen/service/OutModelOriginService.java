@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -112,7 +114,7 @@ public class OutModelOriginService {
      * @param dataSource 数据源
      * @return 数据源表字段 获取异常时直接返回null
      */
-    public List<OutModelOriginPo> getDataSourceTableFields(DataSourcePo dataSource) {
+    public List<OutModelOriginPo> getDataSourceTableFields(DataSourcePo dataSource,String tableName) {
 
         var drive = dataSource.getDrive();
         var url = dataSource.getUrl();
@@ -126,19 +128,23 @@ public class OutModelOriginService {
             return null;
         }
 
+        if (tableName == null || tableName.isBlank()) {
+            return null;
+        }
+
         List<OutModelOriginPo> result = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             DatabaseMetaData metaData = conn.getMetaData();
 
             // 查询主键列表
-            java.util.Set<String> pkColumns = new java.util.HashSet<>();
-            try (ResultSet pkRs = metaData.getPrimaryKeys(dbSchema, dbSchema, null)) {
+            Set<String> pkColumns = new HashSet<>();
+            try (ResultSet pkRs = metaData.getPrimaryKeys(dbSchema, dbSchema, tableName)) {
                 while (pkRs.next()) {
                     pkColumns.add(pkRs.getString("COLUMN_NAME"));
                 }
             }
 
-            try (ResultSet rs = metaData.getColumns(dbSchema, dbSchema, "%", "%")) {
+            try (ResultSet rs = metaData.getColumns(dbSchema, dbSchema, tableName, "%")) {
                 int seq = 1;
                 while (rs.next()) {
                     OutModelOriginPo po = new OutModelOriginPo();

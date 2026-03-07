@@ -295,8 +295,8 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          await OutSchemaApi.addOutSchema(addDto);
-          ElMessage.success("新增成功");
+          var message = await OutSchemaApi.addOutSchema(addDto);
+          ElMessage.success(message);
           modalVisible.value = false;
           resetModal();
           reloadCallback();
@@ -331,8 +331,8 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          await OutSchemaApi.editOutSchema(editDto);
-          ElMessage.success("编辑成功");
+          var message = await OutSchemaApi.editOutSchema(editDto);
+          ElMessage.success(message);
           modalVisible.value = false;
           resetModal();
           reloadCallback();
