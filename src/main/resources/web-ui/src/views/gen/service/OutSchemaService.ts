@@ -10,6 +10,12 @@ import type {
 import OutSchemaApi from "@/views/gen/api/OutSchemaApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
+import type { GetDataSourceListVo } from "@/views/gen/api/DataSourceApi";
+import type { GetTymSchemaListVo } from "@/views/gen/api/TymSchemaApi";
+import type { GetScmListVo } from "@/views/gen/api/ScmApi";
+import DataSourceApi from "@/views/gen/api/DataSourceApi";
+import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
+import ScmApi from "@/views/gen/api/ScmApi";
 
 /**
  * 模态框模式类型
@@ -126,6 +132,10 @@ export default {
       remark: "",
     });
 
+    const modalDataSource = ref<GetDataSourceListVo[]>([]);
+    const modalTypeSchema = ref<GetTymSchemaListVo[]>([]);
+    const modalScm = ref<GetScmListVo[]>([]);
+
     /**
      * 表单验证规则
      */
@@ -165,6 +175,20 @@ export default {
      */
     const openModal = async (mode: ModalMode, row: GetOutSchemaListVo | null) => {
       modalMode.value = mode;
+
+      //重新拉取数据源、类型映射方案、SCM列表
+      try {
+        const dataSourceResult = await DataSourceApi.getDataSourceList({ pageNum: 1, pageSize: 10000 });
+        const typeSchemaResult = await TymSchemaApi.getTymSchemaList({ pageNum: 1, pageSize: 10000 });
+        const scmResult = await ScmApi.getScmList({ pageNum: 1, pageSize: 10000 });
+
+        modalDataSource.value = dataSourceResult.data;
+        modalTypeSchema.value = typeSchemaResult.data;
+        modalScm.value = scmResult.data;
+      } catch (error: any) {
+        ElMessage.error("拉取数据源、类型映射方案、SCM列表失败，请稍后重试");
+        return;
+      }
 
       if (mode === "add") {
         modalForm.id = "";
@@ -325,6 +349,9 @@ export default {
       modalMode,
       modalForm,
       modalRules,
+      modalDataSource,
+      modalTypeSchema,
+      modalScm,
       openModal,
       resetModal,
       submitModal,

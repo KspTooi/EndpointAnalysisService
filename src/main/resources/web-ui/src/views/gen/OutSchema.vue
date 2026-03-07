@@ -73,7 +73,7 @@
     <el-dialog
       v-model="modalVisible"
       :title="modalMode === 'edit' ? '编辑输出方案' : '新增输出方案'"
-      width="600px"
+      width="800px"
       :close-on-click-modal="false"
       @close="
         resetModal();
@@ -88,59 +88,150 @@
         label-width="120px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="数据源ID" prop="dataSourceId">
-          <el-input v-model="modalForm.dataSourceId" placeholder="请输入数据源ID" clearable />
-        </el-form-item>
-        <el-form-item label="类型映射方案ID" prop="typeSchemaId">
-          <el-input v-model="modalForm.typeSchemaId" placeholder="请输入类型映射方案ID" clearable />
-        </el-form-item>
-        <el-form-item label="输入SCM ID" prop="inputScmId">
-          <el-input v-model="modalForm.inputScmId" placeholder="请输入输入SCM ID" clearable />
-        </el-form-item>
-        <el-form-item label="输出SCM ID" prop="outputScmId">
-          <el-input v-model="modalForm.outputScmId" placeholder="请输入输出SCM ID" clearable />
-        </el-form-item>
-        <el-form-item label="输出方案名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入输出方案名称" clearable maxlength="32" show-word-limit />
-        </el-form-item>
-        <el-form-item label="模型名称" prop="modelName">
-          <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="数据源表名" prop="tableName">
-          <el-input v-model="modalForm.tableName" placeholder="请输入数据源表名" clearable maxlength="80" show-word-limit />
-        </el-form-item>
-        <el-form-item label="移除表前缀" prop="removeTablePrefix">
+        <el-divider content-position="left">方案基本配置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="方案名称" prop="name">
+              <el-input v-model="modalForm.name" placeholder="请输入输出方案名称" clearable maxlength="32" show-word-limit />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="模型名称" prop="modelName">
+              <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="类型映射方案" prop="typeSchemaId">
+              <el-select
+                v-model="modalForm.typeSchemaId"
+                placeholder="请选择类型映射方案"
+                filterable
+                clearable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in modalTypeSchema"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="`${item.name}（${item.code}）`"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="权限码前缀" prop="permCodePrefix">
+              <el-input
+                v-model="modalForm.permCodePrefix"
+                placeholder="请输入权限码前缀"
+                clearable
+                maxlength="32"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-divider content-position="left">输入配置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="输入数据源" prop="dataSourceId">
+              <el-select
+                v-model="modalForm.dataSourceId"
+                placeholder="请选择输入数据源"
+                filterable
+                clearable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in modalDataSource"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="`${item.name}（${item.code}）`"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="数据源表名" prop="tableName">
+              <el-input v-model="modalForm.tableName" placeholder="请输入数据源表名" clearable maxlength="80" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="从SCM读取" prop="inputScmId">
+              <el-select v-model="modalForm.inputScmId" placeholder="请选择输入SCM" filterable clearable style="width: 100%">
+                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="`${item.name}（${item.code}）`" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="SCM基准路径" prop="baseInput">
+              <el-input
+                v-model="modalForm.baseInput"
+                placeholder="请输入SCM基准路径"
+                clearable
+                maxlength="320"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-divider content-position="left">输出配置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="输出到SCM" prop="outputScmId">
+              <el-select v-model="modalForm.outputScmId" placeholder="请选择输出SCM" filterable clearable style="width: 100%">
+                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="`${item.name}（${item.code}）`" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="SCM基准路径" prop="baseOutput">
+              <el-input
+                v-model="modalForm.baseOutput"
+                placeholder="请输入SCM基准路径"
+                clearable
+                maxlength="320"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="写出策略" prop="policyOverride">
+              <el-select v-model="modalForm.policyOverride" placeholder="请选择写出策略" style="width: 100%">
+                <el-option :value="0" label="不覆盖" />
+                <el-option :value="1" label="覆盖" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="移除表前缀" prop="removeTablePrefix">
+              <el-input
+                v-model="modalForm.removeTablePrefix"
+                placeholder="请输入移除表前缀"
+                clearable
+                maxlength="80"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="方案备注" prop="remark">
           <el-input
-            v-model="modalForm.removeTablePrefix"
-            placeholder="请输入移除表前缀"
+            v-model="modalForm.remark"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入方案备注"
             clearable
-            maxlength="80"
             show-word-limit
+            maxlength="1000"
           />
-        </el-form-item>
-        <el-form-item label="权限码前缀" prop="permCodePrefix">
-          <el-input
-            v-model="modalForm.permCodePrefix"
-            placeholder="请输入权限码前缀"
-            clearable
-            maxlength="32"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item label="写出策略" prop="policyOverride">
-          <el-select v-model="modalForm.policyOverride" placeholder="请选择写出策略" style="width: 100%">
-            <el-option :value="0" label="不覆盖" />
-            <el-option :value="1" label="覆盖" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="输入基准路径" prop="baseInput">
-          <el-input v-model="modalForm.baseInput" placeholder="请输入输入基准路径" clearable maxlength="320" show-word-limit />
-        </el-form-item>
-        <el-form-item label="输出基准路径" prop="baseOutput">
-          <el-input v-model="modalForm.baseOutput" placeholder="请输入输出基准路径" clearable maxlength="320" show-word-limit />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="modalForm.remark" type="textarea" placeholder="请输入备注" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -169,12 +260,25 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const ManagementIcon = markRaw(Management);
 
+//列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutSchemaService.useOutSchemaList();
 
 const modalFormRef = ref<FormInstance>();
 
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  OutSchemaService.useOutSchemaModal(modalFormRef, loadList);
+//模态框打包
+const {
+  modalVisible,
+  modalLoading,
+  modalMode,
+  modalForm,
+  modalRules,
+  modalDataSource,
+  modalTypeSchema,
+  modalScm,
+  openModal,
+  resetModal,
+  submitModal,
+} = OutSchemaService.useOutSchemaModal(modalFormRef, loadList);
 </script>
 
 <style scoped></style>
