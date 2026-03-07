@@ -17,6 +17,7 @@ import com.ksptool.bio.biz.gen.model.outblueprint.dto.GetOutBlueprintListDto;
 import com.ksptool.bio.biz.gen.model.outblueprint.vo.GetOutBlueprintDetailsVo;
 import com.ksptool.bio.biz.gen.model.outblueprint.vo.GetOutBlueprintListVo;
 import com.ksptool.bio.biz.gen.repository.OutBlueprintRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -45,6 +46,7 @@ import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
 
+@Slf4j
 @Service
 public class OutBlueprintService {
 
@@ -134,11 +136,11 @@ public class OutBlueprintService {
                 .orElseThrow(() -> new BizException("测试连接失败,数据不存在或无权限访问."));
 
         //从注册表获取代理配置 FG_PROXY_ENABLE=1时启用代理
-        String proxyEnable = registrySdk.getString(AppRegistry.FG_PROXY_ENABLE.getFullKey(), "0");
-        String proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
+        var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
+        var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
         int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
-        String proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
-        String proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
+        var proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
+        var proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
 
         try {
 
@@ -148,7 +150,7 @@ public class OutBlueprintService {
                     .setRemote(po.getScmUrl())
                     .setTimeout(10); // 设置超时
 
-            boolean useProxy = "1".equals(proxyEnable);
+            boolean useProxy = proxyEnable == 1;
 
             // 根据不同的认证方式进行配置
             if (po.getScmAuthKind() == 1) { //账号密码/Token
@@ -175,9 +177,17 @@ public class OutBlueprintService {
                 }
             }
 
+            //公开
+            if (po.getScmAuthKind() == 0) {
+                lrc.setCredentialsProvider(null);
+                if (useProxy) {
+                    setupHttpProxy(lrc, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
             //执行请求获取远程分支
             Collection<Ref> refs = lrc.call();
-            
+
             //校验远程分支是否存在
             if (refs.isEmpty()) {
                 throw new BizException("连接成功,但远程分支为空");
@@ -186,16 +196,16 @@ public class OutBlueprintService {
             // 兼容处理：用户可能输入 "main" 或 "refs/heads/main"
             String targetBranch = po.getScmBranch();
             String fullBranchPath = targetBranch.startsWith("refs/") ? targetBranch : "refs/heads/" + targetBranch;
-            
+
             boolean branchExists = refs.stream()
-                .anyMatch(ref -> ref.getName().equalsIgnoreCase(fullBranchPath));
+                    .anyMatch(ref -> ref.getName().equalsIgnoreCase(fullBranchPath));
 
             if (!branchExists) {
                 throw new BizException("连接成功,但分支[" + po.getScmBranch() + "]不存在");
             }
 
             //测试成功
-            return Result.success("测试成功 耗时: " + (System.currentTimeMillis() - startTime) + "ms",null);
+            return Result.success("测试成功 耗时: " + (System.currentTimeMillis() - startTime) + "ms", null);
 
         } catch (GitAPIException e) {
             throw new BizException("Git 连接失败: " + e.getMessage());
@@ -209,6 +219,7 @@ public class OutBlueprintService {
      * 为 HTTP/HTTPS 连接配置代理
      */
     private void setupHttpProxy(LsRemoteCommand command, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+        log.info("当前HTTP已启用代理配置: proxyHost: {}, proxyPort: {}", proxyHost, proxyPort);
         HttpConnectionFactory factory = new JDKHttpConnectionFactory() {
             @Override
             public HttpConnection create(URL url) throws IOException {
@@ -246,6 +257,7 @@ public class OutBlueprintService {
      * 为 SSH 连接配置认证，可选启用 HTTP 代理穿透
      */
     private void setupSshAuthentication(LsRemoteCommand command, String privateKey, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+        log.info("当前SSH已启用代理配置: proxyHost: {}, proxyPort: {}", proxyHost, proxyPort);
         SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
             @Override
             protected void configure(OpenSshConfig.Host host, Session session) {
