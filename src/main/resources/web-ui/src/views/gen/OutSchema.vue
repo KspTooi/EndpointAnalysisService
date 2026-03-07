@@ -36,7 +36,7 @@
         <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="" :icon="ManagementIcon"> 模型设计 </el-button>
+            <el-button link type="primary" size="small" @click="openModelDesignModal(scope.row)" :icon="ManagementIcon"> 模型设计 </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
@@ -68,6 +68,9 @@
         />
       </template>
     </StdListAreaTable>
+
+    <!-- 模型设计模态框 -->
+    <ModelDesignModal ref="modelDesignRef" @on-close="loadList" />
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
@@ -278,11 +281,13 @@ import { ref, markRaw } from "vue";
 import { Edit, Delete, Management, MagicStick } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import OutSchemaService from "@/views/gen/service/OutSchemaService";
+import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/gen/components/DataSourceTableBrowser.vue";
+import ModelDesignModal from "@/views/gen/components/ModelDesignModal.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -293,6 +298,12 @@ const MagicStickIcon = markRaw(MagicStick);
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutSchemaService.useOutSchemaList();
 
 const modalFormRef = ref<FormInstance>();
+
+const modelDesignRef = ref<InstanceType<typeof ModelDesignModal>>();
+
+const openModelDesignModal = (row: GetOutSchemaListVo) => {
+  modelDesignRef.value?.openModal(row);
+};
 
 //模态框打包
 const {
