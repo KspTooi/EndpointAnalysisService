@@ -42,7 +42,6 @@ public class EditOutSchemaDto {
     @Schema(description = "数据源表名")
     private String tableName;
 
-    @NotBlank(message = "移除表前缀不能为空")
     @Size(max = 80, message = "移除表前缀不能超过80个字符")
     @Schema(description = "移除表前缀")
     private String removeTablePrefix;

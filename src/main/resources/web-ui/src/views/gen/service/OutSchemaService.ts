@@ -150,7 +150,7 @@ export default {
       ],
       tableName: [{ max: 80, message: "数据源表名不能超过80个字符", trigger: "blur" }],
       removeTablePrefix: [
-        { required: true, message: "请输入移除表前缀", trigger: "blur" },
+        { required: false, message: "请输入移除表前缀", trigger: "blur" },
         { max: 80, message: "移除表前缀不能超过80个字符", trigger: "blur" },
       ],
       permCodePrefix: [

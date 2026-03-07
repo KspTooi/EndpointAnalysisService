@@ -40,7 +40,7 @@ public class OutSchemaPo {
     @Column(name = "table_name", length = 80, comment = "数据源表名")
     private String tableName;
 
-    @Column(name = "remove_table_prefix", nullable = false, length = 80, comment = "移除表前缀")
+    @Column(name = "remove_table_prefix", length = 80, comment = "移除表前缀")
     private String removeTablePrefix;
 
     @Column(name = "perm_code_prefix", nullable = false, length = 32, comment = "权限码前缀")
