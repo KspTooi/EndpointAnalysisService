@@ -1,16 +1,15 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  GetTymSchemaListDto,
-  GetTymSchemaListVo,
-  GetTymSchemaDetailsVo,
-  AddTymSchemaDto,
-  EditTymSchemaDto,
-} from "@/views/gen/api/TymSchemaApi";
-import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
+  GetTymSchemaFieldListDto,
+  GetTymSchemaFieldListVo,
+  GetTymSchemaFieldDetailsVo,
+  AddTymSchemaFieldDto,
+  EditTymSchemaFieldDto,
+} from "@/views/gen/api/TymSchemaFieldApi";
+import TymSchemaFieldApi from "@/views/gen/api/TymSchemaFieldApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
-import type { GetTymSchemaFieldDetailsVo } from "../api/TymSchemaFieldApi";
 
 /**
  * 模态框模式类型
@@ -19,19 +18,16 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 类型映射方案表列表管理
+   * 类型映射方案字段表列表管理
    */
-  useTymSchemaList() {
-    const listForm = ref<GetTymSchemaListDto>({
+  useTymSchemaFieldList(typeSchemaId: Ref<string>) {
+    const listForm = ref<GetTymSchemaFieldListDto>({
       pageNum: 1,
       pageSize: 20,
-      id: "",
-      name: "",
-      code: "",
-      mapTarget: "",
+      typeSchemaId: typeSchemaId.value,
     });
 
-    const listData = ref<GetTymSchemaListVo[]>([]);
+    const listData = ref<GetTymSchemaFieldListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -40,7 +36,8 @@ export default {
      */
     const loadList = async () => {
       listLoading.value = true;
-      const result = await TymSchemaApi.getTymSchemaList(listForm.value);
+      listForm.value.typeSchemaId = typeSchemaId.value;
+      const result = await TymSchemaFieldApi.getTymSchemaFieldList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -60,17 +57,14 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
-      listForm.value.id = "";
-      listForm.value.name = "";
-      listForm.value.code = "";
-      listForm.value.mapTarget = "";
+      listForm.value.typeSchemaId = typeSchemaId.value;
       loadList();
     };
 
     /**
      * 删除记录
      */
-    const removeList = async (row: GetTymSchemaListVo) => {
+    const removeList = async (row: GetTymSchemaFieldListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -82,7 +76,7 @@ export default {
       }
 
       try {
-        await TymSchemaApi.removeTymSchema({ id: row.id });
+        await TymSchemaFieldApi.removeTymSchemaField({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -91,7 +85,7 @@ export default {
     };
 
     onMounted(async () => {
-      await loadList();
+      //await loadList();
     });
 
     return {
@@ -108,47 +102,24 @@ export default {
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  useTymSchemaModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useTymSchemaFieldModal(modalFormRef: Ref<FormInstance | undefined>, typeSchemaId: Ref<string>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetTymSchemaDetailsVo>({
+    const modalForm = reactive<GetTymSchemaFieldDetailsVo>({
       id: "",
-      name: "",
-      code: "",
-      mapSource: "",
-      mapTarget: "",
-      typeCount: 0,
-      defaultType: "",
+      typeSchemaId: typeSchemaId.value,
+      source: "",
+      target: "",
       seq: 0,
-      remark: "",
-      createTime: "",
     });
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
-      name: [
-        { required: true, message: "请输入方案名称", trigger: "blur" },
-        { max: 32, message: "方案名称长度不能超过32个字符", trigger: "blur" },
-      ],
-      code: [
-        { required: true, message: "请输入方案编码", trigger: "blur" },
-        { max: 32, message: "方案编码长度不能超过32个字符", trigger: "blur" },
-      ],
-      mapSource: [
-        { required: true, message: "请输入映射源", trigger: "blur" },
-        { max: 32, message: "映射源长度不能超过32个字符", trigger: "blur" },
-      ],
-      mapTarget: [
-        { required: true, message: "请输入映射目标", trigger: "blur" },
-        { max: 32, message: "映射目标长度不能超过32个字符", trigger: "blur" },
-      ],
-      defaultType: [
-        { required: true, message: "请输入默认类型", trigger: "blur" },
-        { max: 80, message: "默认类型长度不能超过80个字符", trigger: "blur" },
-      ],
+      source: [{ required: true, message: "请输入匹配源类型", trigger: "blur" }],
+      target: [{ required: true, message: "请输入匹配目标类型", trigger: "blur" }],
       seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
     };
 
@@ -157,20 +128,15 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetTymSchemaListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetTymSchemaFieldListVo | null) => {
       modalMode.value = mode;
 
       if (mode === "add") {
         modalForm.id = "";
-        modalForm.name = "";
-        modalForm.code = "";
-        modalForm.mapSource = "";
-        modalForm.mapTarget = "";
-        modalForm.typeCount = 0;
-        modalForm.defaultType = "";
+        modalForm.typeSchemaId = typeSchemaId.value;
+        modalForm.source = "";
+        modalForm.target = "";
         modalForm.seq = 0;
-        modalForm.remark = "";
-        modalForm.createTime = "";
         modalVisible.value = true;
         return;
       }
@@ -182,17 +148,12 @@ export default {
         }
 
         try {
-          const details = await TymSchemaApi.getTymSchemaDetails({ id: row.id });
+          const details = await TymSchemaFieldApi.getTymSchemaFieldDetails({ id: row.id });
           modalForm.id = details.id;
-          modalForm.name = details.name;
-          modalForm.code = details.code;
-          modalForm.mapSource = details.mapSource;
-          modalForm.mapTarget = details.mapTarget;
-          modalForm.typeCount = details.typeCount;
-          modalForm.defaultType = details.defaultType;
+          modalForm.typeSchemaId = typeSchemaId.value;
+          modalForm.source = details.source;
+          modalForm.target = details.target;
           modalForm.seq = details.seq;
-          modalForm.remark = details.remark;
-          modalForm.createTime = details.createTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -209,15 +170,10 @@ export default {
       }
       modalFormRef.value.resetFields();
       modalForm.id = "";
-      modalForm.name = "";
-      modalForm.code = "";
-      modalForm.mapSource = "";
-      modalForm.mapTarget = "";
-      modalForm.typeCount = 0;
-      modalForm.defaultType = "";
+      modalForm.typeSchemaId = typeSchemaId.value;
+      modalForm.source = "";
+      modalForm.target = "";
       modalForm.seq = 0;
-      modalForm.remark = "";
-      modalForm.createTime = "";
     };
 
     /**
@@ -238,16 +194,13 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: AddTymSchemaDto = {
-            name: modalForm.name,
-            code: modalForm.code,
-            mapSource: modalForm.mapSource,
-            mapTarget: modalForm.mapTarget,
-            defaultType: modalForm.defaultType,
+          const addDto: AddTymSchemaFieldDto = {
+            typeSchemaId: typeSchemaId.value,
+            source: modalForm.source,
+            target: modalForm.target,
             seq: modalForm.seq,
-            remark: modalForm.remark,
           };
-          await TymSchemaApi.addTymSchema(addDto);
+          await TymSchemaFieldApi.addTymSchemaField(addDto);
           ElMessage.success("新增成功");
           modalVisible.value = false;
           resetModal();
@@ -267,17 +220,13 @@ export default {
         }
 
         try {
-          const editDto: EditTymSchemaDto = {
+          const editDto: EditTymSchemaFieldDto = {
             id: modalForm.id,
-            name: modalForm.name,
-            code: modalForm.code,
-            mapSource: modalForm.mapSource,
-            mapTarget: modalForm.mapTarget,
-            defaultType: modalForm.defaultType,
+            source: modalForm.source,
+            target: modalForm.target,
             seq: modalForm.seq,
-            remark: modalForm.remark,
           };
-          await TymSchemaApi.editTymSchema(editDto);
+          await TymSchemaFieldApi.editTymSchemaField(editDto);
           ElMessage.success("编辑成功");
           modalVisible.value = false;
           resetModal();

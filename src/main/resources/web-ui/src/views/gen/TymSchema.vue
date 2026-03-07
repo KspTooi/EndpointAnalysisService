@@ -31,11 +31,11 @@
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column prop="name" label="方案名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="方案编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="mapSource" label="映射源" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="mapTarget" label="映射目标" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="typeCount" label="类型数量" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="defaultType" label="默认类型" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="seq" label="排序" min-width="120" show-overflow-tooltip>
+        <el-table-column prop="mapSource" label="映射源" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="mapTarget" label="映射目标" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="typeCount" label="类型数量" min-width="80" show-overflow-tooltip />
+        <el-table-column prop="defaultType" label="默认类型" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="seq" label="排序" min-width="65" show-overflow-tooltip>
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
@@ -48,8 +48,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
+            <el-button link type="primary" size="small" @click="openSchemaFieldModal(scope.row.id)" :icon="EditIcon">
+              管理方案
+            </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button>
@@ -81,6 +84,9 @@
         />
       </template>
     </StdListAreaTable>
+
+    <!-- 方案字段管理模态框 -->
+    <TymSchemaField ref="schemaFieldRef" />
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
@@ -146,6 +152,7 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
 import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import TymSchemaField from "@/views/gen/TymSchemaField.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -160,6 +167,13 @@ const modalFormRef = ref<FormInstance>();
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   TymSchemaService.useTymSchemaModal(modalFormRef, loadList);
+
+//方案字段管理模态框引用
+const schemaFieldRef = ref<InstanceType<typeof TymSchemaField>>();
+
+const openSchemaFieldModal = (typeSchemaId: string) => {
+  schemaFieldRef.value?.openModal(typeSchemaId);
+};
 </script>
 
 <style scoped></style>

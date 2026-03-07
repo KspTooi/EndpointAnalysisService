@@ -16,10 +16,6 @@ public class EditTymSchemaFieldDto {
     @Schema(description = "主键ID")
     private Long id;
 
-    @NotNull(message = "类型映射方案ID不能为空")
-    @Schema(description = "类型映射方案ID")
-    private Long typeSchemaId;
-
     @NotBlank(message = "匹配源类型不能为空")
     @Size(max = 80, min = 1, message = "匹配源类型长度必须在1-80个字符之间")
     @Schema(description = "匹配源类型")
