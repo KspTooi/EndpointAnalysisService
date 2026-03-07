@@ -24,6 +24,7 @@ export default {
     const listForm = ref<GetOutModelPolyListDto>({
       pageNum: 1,
       pageSize: 20,
+      id: "",
       outputSchemaId: "",
       outputModelOriginId: "",
       name: "",
@@ -66,6 +67,7 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
+      listForm.value.id = "";
       listForm.value.outputSchemaId = "";
       listForm.value.outputModelOriginId = "";
       listForm.value.name = "";
@@ -138,10 +140,6 @@ export default {
       policyView: 0,
       placeholder: "",
       seq: 0,
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
     });
 
     /**
@@ -181,10 +179,6 @@ export default {
         modalForm.policyView = 0;
         modalForm.placeholder = "";
         modalForm.seq = 0;
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
         modalVisible.value = true;
         return;
       }
@@ -209,10 +203,6 @@ export default {
           modalForm.policyView = details.policyView;
           modalForm.placeholder = details.placeholder;
           modalForm.seq = details.seq;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -240,10 +230,6 @@ export default {
       modalForm.policyView = 0;
       modalForm.placeholder = "";
       modalForm.seq = 0;
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
     };
 
     /**

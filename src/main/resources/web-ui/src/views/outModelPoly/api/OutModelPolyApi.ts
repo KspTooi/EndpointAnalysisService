@@ -8,6 +8,7 @@ import type Result from "@/commons/entity/Result.ts";
  * 查询列表DTO
  */
 export interface GetOutModelPolyListDto extends PageQuery {
+  id?: string; // 主键ID
   outputSchemaId?: string; // 输出方案ID
   outputModelOriginId?: string; // 原始字段ID
   name?: string; // 聚合字段名
@@ -37,10 +38,6 @@ export interface GetOutModelPolyListVo {
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   placeholder: string; // placeholder
   seq: number; // 聚合排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**
@@ -59,10 +56,6 @@ export interface GetOutModelPolyDetailsVo {
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   placeholder: string; // placeholder
   seq: number; // 聚合排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**

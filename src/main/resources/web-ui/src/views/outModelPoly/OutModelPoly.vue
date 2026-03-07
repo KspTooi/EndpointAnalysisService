@@ -4,6 +4,9 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
+          <el-form-item label="主键ID">
+            <el-input v-model="listForm.id" placeholder="输入主键ID" clearable />
+          </el-form-item>
           <el-form-item label="输出方案ID">
             <el-input v-model="listForm.outputSchemaId" placeholder="输入输出方案ID" clearable />
           </el-form-item>
@@ -65,8 +68,6 @@
         <el-table-column prop="policyView" label="聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" min-width="120" show-overflow-tooltip />
         <el-table-column prop="placeholder" label="placeholder" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="聚合排序" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -127,13 +128,13 @@
           <el-input v-model="modalForm.outputModelOriginId" placeholder="请输入原始字段ID" clearable />
         </el-form-item>
         <el-form-item label="聚合字段名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入聚合字段名" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入聚合字段名" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="聚合数据类型" prop="kind">
-          <el-input v-model="modalForm.kind" placeholder="请输入聚合数据类型" clearable />
+          <el-input v-model="modalForm.kind" placeholder="请输入聚合数据类型" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="聚合长度" prop="length">
-          <el-input v-model="modalForm.length" placeholder="请输入聚合长度" clearable />
+          <el-input v-model="modalForm.length" placeholder="请输入聚合长度" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="聚合必填 0:否 1:是" prop="require">
           <el-input v-model.number="modalForm.require" placeholder="请输入聚合必填 0:否 1:是" clearable />
@@ -148,7 +149,7 @@
           <el-input v-model.number="modalForm.policyView" placeholder="请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT" clearable />
         </el-form-item>
         <el-form-item label="placeholder" prop="placeholder">
-          <el-input v-model="modalForm.placeholder" placeholder="请输入placeholder" clearable />
+          <el-input v-model="modalForm.placeholder" placeholder="请输入placeholder" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="聚合排序" prop="seq">
           <el-input v-model.number="modalForm.seq" placeholder="请输入聚合排序" clearable />

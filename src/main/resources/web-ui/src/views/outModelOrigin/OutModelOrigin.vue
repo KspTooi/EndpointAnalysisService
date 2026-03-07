@@ -4,6 +4,9 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
+          <el-form-item label="主键ID">
+            <el-input v-model="listForm.id" placeholder="输入主键ID" clearable />
+          </el-form-item>
           <el-form-item label="输出方案ID">
             <el-input v-model="listForm.outputSchemaId" placeholder="输入输出方案ID" clearable />
           </el-form-item>
@@ -16,8 +19,8 @@
           <el-form-item label="原始长度">
             <el-input v-model="listForm.length" placeholder="输入原始长度" clearable />
           </el-form-item>
-          <el-form-item label="原始必填 0:否 1:是">
-            <el-input v-model.number="listForm.require" placeholder="输入原始必填 0:否 1:是" clearable />
+          <el-form-item label="原始必填">
+            <el-input v-model.number="listForm.require" placeholder="0:否 1:是" clearable />
           </el-form-item>
           <el-form-item label="原始备注">
             <el-input v-model="listForm.remark" placeholder="输入原始备注" clearable />
@@ -46,11 +49,9 @@
         <el-table-column prop="name" label="原始字段名" min-width="120" show-overflow-tooltip />
         <el-table-column prop="kind" label="原始数据类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="length" label="原始长度" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="require" label="原始必填 0:否 1:是" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="require" label="原始必填" min-width="100" show-overflow-tooltip />
         <el-table-column prop="remark" label="原始备注" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="seq" label="原始排序" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="updateTime" label="更新时间" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="seq" label="原始排序" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -101,26 +102,26 @@
         ref="modalFormRef"
         :model="modalForm"
         :rules="modalRules"
-        label-width="100px"
+        label-width="110px"
         :validate-on-rule-change="false"
       >
         <el-form-item label="输出方案ID" prop="outputSchemaId">
           <el-input v-model="modalForm.outputSchemaId" placeholder="请输入输出方案ID" clearable />
         </el-form-item>
         <el-form-item label="原始字段名" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入原始字段名" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入原始字段名" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="原始数据类型" prop="kind">
-          <el-input v-model="modalForm.kind" placeholder="请输入原始数据类型" clearable />
+          <el-input v-model="modalForm.kind" placeholder="请输入原始数据类型" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="原始长度" prop="length">
-          <el-input v-model="modalForm.length" placeholder="请输入原始长度" clearable />
+          <el-input v-model="modalForm.length" placeholder="请输入原始长度" clearable maxlength="255" show-word-limit />
         </el-form-item>
-        <el-form-item label="原始必填 0:否 1:是" prop="require">
-          <el-input v-model.number="modalForm.require" placeholder="请输入原始必填 0:否 1:是" clearable />
+        <el-form-item label="原始必填" prop="require">
+          <el-input v-model.number="modalForm.require" placeholder="0:否 1:是" clearable />
         </el-form-item>
         <el-form-item label="原始备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入原始备注" clearable />
+          <el-input v-model="modalForm.remark" placeholder="请输入原始备注" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="原始排序" prop="seq">
           <el-input v-model.number="modalForm.seq" placeholder="请输入原始排序" clearable />

@@ -8,6 +8,7 @@ import type Result from "@/commons/entity/Result.ts";
  * 查询列表DTO
  */
 export interface GetOutModelOriginListDto extends PageQuery {
+  id?: string; // 主键ID
   outputSchemaId?: string; // 输出方案ID
   name?: string; // 原始字段名
   kind?: string; // 原始数据类型
@@ -29,10 +30,6 @@ export interface GetOutModelOriginListVo {
   require: number; // 原始必填 0:否 1:是
   remark: string; // 原始备注
   seq: number; // 原始排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**
@@ -47,10 +44,6 @@ export interface GetOutModelOriginDetailsVo {
   require: number; // 原始必填 0:否 1:是
   remark: string; // 原始备注
   seq: number; // 原始排序
-  createTime: string; // 创建时间
-  creatorId: string; // 创建人ID
-  updateTime: string; // 更新时间
-  updaterId: string; // 更新人ID
 }
 
 /**

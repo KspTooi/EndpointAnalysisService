@@ -24,6 +24,7 @@ export default {
     const listForm = ref<GetOutModelOriginListDto>({
       pageNum: 1,
       pageSize: 20,
+      id: "",
       outputSchemaId: "",
       name: "",
       kind: "",
@@ -62,6 +63,7 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
+      listForm.value.id = "";
       listForm.value.outputSchemaId = "";
       listForm.value.name = "";
       listForm.value.kind = "";
@@ -126,10 +128,6 @@ export default {
       require: 0,
       remark: "",
       seq: 0,
-      createTime: "",
-      creatorId: "",
-      updateTime: "",
-      updaterId: "",
     });
 
     /**
@@ -137,9 +135,17 @@ export default {
      */
     const modalRules: FormRules = {
       outputSchemaId: [{ required: true, message: "请输入输出方案ID", trigger: "blur" }],
-      name: [{ required: true, message: "请输入原始字段名", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入原始数据类型", trigger: "blur" }],
+      name: [
+        { required: true, message: "请输入原始字段名", trigger: "blur" },
+        { max: 255, message: "原始字段名长度不能超过255", trigger: "blur" },
+      ],
+      kind: [
+        { required: true, message: "请输入原始数据类型", trigger: "blur" },
+        { max: 255, message: "原始数据类型长度不能超过255", trigger: "blur" },
+      ],
+      length: [{ max: 255, message: "原始长度不能超过255", trigger: "blur" }],
       require: [{ required: true, message: "请输入原始必填 0:否 1:是", trigger: "blur" }],
+      remark: [{ max: 255, message: "原始备注长度不能超过255", trigger: "blur" }],
       seq: [{ required: true, message: "请输入原始排序", trigger: "blur" }],
     };
 
@@ -160,10 +166,6 @@ export default {
         modalForm.require = 0;
         modalForm.remark = "";
         modalForm.seq = 0;
-        modalForm.createTime = "";
-        modalForm.creatorId = "";
-        modalForm.updateTime = "";
-        modalForm.updaterId = "";
         modalVisible.value = true;
         return;
       }
@@ -184,10 +186,6 @@ export default {
           modalForm.require = details.require;
           modalForm.remark = details.remark;
           modalForm.seq = details.seq;
-          modalForm.createTime = details.createTime;
-          modalForm.creatorId = details.creatorId;
-          modalForm.updateTime = details.updateTime;
-          modalForm.updaterId = details.updaterId;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -211,10 +209,6 @@ export default {
       modalForm.require = 0;
       modalForm.remark = "";
       modalForm.seq = 0;
-      modalForm.createTime = "";
-      modalForm.creatorId = "";
-      modalForm.updateTime = "";
-      modalForm.updaterId = "";
     };
 
     /**
