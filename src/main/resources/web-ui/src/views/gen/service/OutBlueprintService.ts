@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
+import { computed, onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetOutBlueprintListDto,
@@ -125,18 +125,25 @@ export default {
     });
 
     /**
-     * 表单验证规则
+     * 表单验证规则（根据 scmAuthKind 动态生成）
      */
-    const modalRules: FormRules = {
-      name: [{ required: true, message: "请输入蓝图名称", trigger: "blur", max: 32 }],
-      projectName: [{ required: false, trigger: "blur", max: 80 }],
-      code: [{ required: true, message: "请输入蓝图编码", trigger: "blur", max: 32 }],
-      scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur", max: 1000 }],
-      scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
-      scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur", max: 80 }],
-      scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur", max: 1280 }],
-      remark: [{ required: false, trigger: "blur", max: 500 }],
-    };
+    const modalRules = computed<FormRules>(() => {
+      const needUsernamePassword = modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3;
+      const needPk = modalForm.scmAuthKind === 2;
+      return {
+        name: [{ required: true, message: "请输入蓝图名称", trigger: "blur", max: 32 }],
+        projectName: [{ required: false, trigger: "blur", max: 80 }],
+        code: [{ required: true, message: "请输入蓝图编码", trigger: "blur", max: 32 }],
+        scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur", max: 1000 }],
+        scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
+        scmUsername: needUsernamePassword ? [{ required: true, message: "请输入SCM用户名", trigger: "blur" }] : [],
+        scmPassword: needUsernamePassword ? [{ required: true, message: "请输入SCM密码", trigger: "blur" }] : [],
+        scmPk: needPk ? [{ required: true, message: "请输入SSH KEY", trigger: "blur" }] : [],
+        scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur", max: 80 }],
+        scmBasePath: [{ required: true, message: "请输入基准路径", trigger: "blur", max: 1280 }],
+        remark: [{ required: false, trigger: "blur", max: 500 }],
+      };
+    });
 
     /**
      * 打开模态框

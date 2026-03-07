@@ -34,7 +34,7 @@ export interface GetOutBlueprintDetailsVo {
   projectName: string; // 项目名称
   code: string; // 蓝图编码
   scmUrl: string; // SCM仓库地址
-  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY
+  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY
@@ -51,7 +51,7 @@ export interface AddOutBlueprintDto {
   projectName: string; // 项目名称
   code: string; // 蓝图编码
   scmUrl: string; // SCM仓库地址
-  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY
+  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY
@@ -69,7 +69,7 @@ export interface EditOutBlueprintDto {
   projectName: string; // 项目名称
   code: string; // 蓝图编码
   scmUrl: string; // SCM仓库地址
-  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY
+  scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
   scmPassword: string; // SCM密码
   scmPk: string; // SSH KEY

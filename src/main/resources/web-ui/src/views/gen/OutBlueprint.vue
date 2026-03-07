@@ -29,12 +29,11 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="蓝图名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="projectName" label="项目名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="蓝图编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="scmUrl" label="SCM仓库地址" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
@@ -86,7 +85,7 @@
         :model="modalForm"
         :rules="modalRules"
         label-width="120px"
-        :validate-on-rule-change="false"
+        :validate-on-rule-change="true"
       >
         <el-form-item label="蓝图名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入蓝图名称" clearable maxlength="32" show-word-limit />
@@ -97,6 +96,11 @@
         <el-form-item label="蓝图编码" prop="code">
           <el-input v-model="modalForm.code" placeholder="请输入蓝图编码" clearable maxlength="32" show-word-limit />
         </el-form-item>
+        <el-form-item label="SCM类型">
+          <el-select model-value="git" disabled style="width: 100%">
+            <el-option label="Git" value="git" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="SCM仓库地址" prop="scmUrl">
           <el-input v-model="modalForm.scmUrl" placeholder="请输入SCM仓库地址" clearable maxlength="1000" show-word-limit />
         </el-form-item>
@@ -105,15 +109,21 @@
             <el-option label="公开" :value="0" />
             <el-option label="账号密码" :value="1" />
             <el-option label="SSH KEY" :value="2" />
+            <el-option label="PAT" :value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="SCM用户名" prop="scmUsername">
+        <el-form-item v-if="modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3" label="SCM用户名" prop="scmUsername">
           <el-input v-model="modalForm.scmUsername" placeholder="请输入SCM用户名" clearable />
         </el-form-item>
-        <el-form-item label="SCM密码" prop="scmPassword">
-          <el-input v-model="modalForm.scmPassword" placeholder="请输入SCM密码" clearable show-password />
+        <el-form-item v-if="modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3" label="SCM密码" prop="scmPassword">
+          <el-input
+            v-model="modalForm.scmPassword"
+            :placeholder="modalForm.scmAuthKind === 3 ? '请输入PAT令牌' : '请输入SCM密码'"
+            clearable
+            show-password
+          />
         </el-form-item>
-        <el-form-item label="SSH KEY" prop="scmPk">
+        <el-form-item v-if="modalForm.scmAuthKind === 2" label="SSH KEY" prop="scmPk">
           <el-input v-model="modalForm.scmPk" placeholder="请输入SSH KEY" type="textarea" :rows="3" />
         </el-form-item>
         <el-form-item label="SCM分支" prop="scmBranch">
@@ -123,7 +133,14 @@
           <el-input v-model="modalForm.scmBasePath" placeholder="请输入基准路径" clearable maxlength="1280" show-word-limit />
         </el-form-item>
         <el-form-item label="蓝图备注" prop="remark">
-          <el-input v-model="modalForm.remark" placeholder="请输入蓝图备注" type="textarea" :rows="3" maxlength="500" show-word-limit />
+          <el-input
+            v-model="modalForm.remark"
+            placeholder="请输入蓝图备注"
+            type="textarea"
+            :rows="3"
+            maxlength="500"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <template #footer>
