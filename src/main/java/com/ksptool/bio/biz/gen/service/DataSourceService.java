@@ -10,6 +10,7 @@ import com.ksptool.bio.biz.gen.model.datsource.dto.EditDataSourceDto;
 import com.ksptool.bio.biz.gen.model.datsource.dto.GetDataSourceListDto;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceDetailsVo;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceListVo;
+import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceTableListVo;
 import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -152,6 +152,40 @@ public class DataSourceService {
         }
 
         return Result.success("成功连接数据库 耗时: " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    /**
+     * 查询数据源中的所有表名和注释
+     * @param dto 查询参数
+     * @return 表列表
+     * @throws BizException
+     */
+    public List<GetDataSourceTableListVo> getDataSourceTableList(CommonIdDto dto) throws BizException {
+        DataSourcePo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("查询失败,数据不存在或无权限访问."));
+
+        try {
+            Class.forName(po.getDrive());
+        } catch (ClassNotFoundException e) {
+            throw new BizException("查询失败,JDBC驱动不存在.");
+        }
+
+        List<GetDataSourceTableListVo> result = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(po.getUrl(), po.getUsername(), po.getPassword())) {
+            DatabaseMetaData metaData = conn.getMetaData();
+            try (ResultSet rs = metaData.getTables(po.getDbSchema(), po.getDbSchema(), "%", new String[]{"TABLE"})) {
+                while (rs.next()) {
+                    GetDataSourceTableListVo vo = new GetDataSourceTableListVo();
+                    vo.setTableName(rs.getString("TABLE_NAME"));
+                    vo.setTableComment(rs.getString("REMARKS"));
+                    result.add(vo);
+                }
+            }
+        } catch (SQLException e) {
+            throw new BizException("查询失败,连接失败: " + e.getMessage());
+        }
+
+        return result;
     }
 
 

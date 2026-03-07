@@ -3,11 +3,13 @@ package com.ksptool.bio.biz.gen.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import java.util.List;
 import com.ksptool.bio.biz.gen.model.datsource.dto.AddDataSourceDto;
 import com.ksptool.bio.biz.gen.model.datsource.dto.EditDataSourceDto;
 import com.ksptool.bio.biz.gen.model.datsource.dto.GetDataSourceListDto;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceDetailsVo;
 import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceListVo;
+import com.ksptool.bio.biz.gen.model.datsource.vo.GetDataSourceTableListVo;
 import com.ksptool.bio.biz.gen.service.DataSourceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -70,6 +72,12 @@ public class DataSourceController {
     @PostMapping("/testDataSourceConnection")
     public Result<String> testDataSourceConnection(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return dataSourceService.testDataSourceConnection(dto);
+    }
+
+    @Operation(summary = "查询数据源表列表")
+    @PostMapping("/getDataSourceTableList")
+    public Result<List<GetDataSourceTableListVo>> getDataSourceTableList(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(dataSourceService.getDataSourceTableList(dto));
     }
 
 }

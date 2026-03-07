@@ -32,6 +32,13 @@ export default class GenRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/gen/Scm.vue"),
         meta: { breadcrumb: "SCM管理" },
       }),
+      RouteEntryPo.build({
+        biz: "gen",
+        path: "out-schema-manager",
+        name: "out-schema-manager",
+        component: () => import("@/views/gen/OutSchema.vue"),
+        meta: { breadcrumb: "输出方案管理" },
+      }),
     ];
   }
 }
