@@ -97,6 +97,15 @@ export default {
       await loadList();
     });
 
+    /**
+     * 执行输出方案
+     */
+    const executeOutSchema = async (row: GetOutSchemaListVo) => {
+      await OutSchemaApi.executeOutSchema({ id: row.id });
+      ElMessage.success("执行成功");
+      await loadList();
+    };
+
     return {
       listForm,
       listData,
@@ -105,6 +114,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      executeOutSchema,
     };
   },
 

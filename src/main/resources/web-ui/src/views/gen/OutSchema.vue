@@ -41,9 +41,14 @@
         <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModelDesignModal(scope.row)" :icon="ManagementIcon"> 模型设计 </el-button>
+            <el-button link type="primary" size="small" @click="openModelDesignModal(scope.row)" :icon="ManagementIcon">
+              模型设计
+            </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
+            </el-button>
+            <el-button link type="success" size="small" @click="executeOutSchema(scope.row)" :icon="ManagementIcon">
+              执行
             </el-button>
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
@@ -300,7 +305,8 @@ const ManagementIcon = markRaw(Management);
 const MagicStickIcon = markRaw(MagicStick);
 
 //列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = OutSchemaService.useOutSchemaList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOutSchema } =
+  OutSchemaService.useOutSchemaList();
 
 const modalFormRef = ref<FormInstance>();
 

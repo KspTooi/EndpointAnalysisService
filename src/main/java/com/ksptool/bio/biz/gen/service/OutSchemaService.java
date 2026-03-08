@@ -10,6 +10,9 @@ import static com.ksptool.entities.Entities.assign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +21,12 @@ import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
+import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
 import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.gen.model.scm.ScmPo;
+import com.ksptool.bio.biz.gen.repository.ScmRepository;
 import com.ksptool.bio.biz.gen.model.outschema.dto.GetOutSchemaListDto;
 import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaDetailsVo;
 import com.ksptool.bio.biz.gen.model.outschema.dto.EditOutSchemaDto;
@@ -28,9 +34,10 @@ import com.ksptool.bio.biz.gen.model.outschema.dto.AddOutSchemaDto;
 import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
 import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
 import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 
-
+@Slf4j
 @Service
 public class OutSchemaService {
 
@@ -46,6 +53,14 @@ public class OutSchemaService {
     @Autowired
     private OutModelOriginRepository outModelOriginRepository;
 
+    @Autowired
+    private ScmRepository scmRepository;
+
+    @Autowired
+    private AttachService attachService;
+
+    @Autowired
+    private ScmService scmService;
     /**
      * 查询输出方案列表
      *
@@ -215,4 +230,43 @@ public class OutSchemaService {
         repository.deleteById(dto.getId());
     }
 
+    /**
+     * 执行输出方案
+     *
+     * @param dto 执行参数
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void executeOutSchema(CommonIdDto dto) throws BizException {
+
+        //查询输出方案
+        OutSchemaPo outSchemaPo = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
+
+        //查询输入与输出SCM
+        ScmPo inputScmPo = scmRepository.findById(outSchemaPo.getInputScmId())
+                .orElseThrow(() -> new BizException("执行输出方案失败,输入SCM不存在或无权限访问."));
+                
+        ScmPo outputScmPo = scmRepository.findById(outSchemaPo.getOutputScmId())
+                .orElseThrow(() -> new BizException("执行输出方案失败,输出SCM不存在或无权限访问."));
+
+        //准备工作空间
+        var workSpaceName = "gen_workspace_"+outSchemaPo.getName();
+        var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
+
+        //不存在创建
+        if(!Files.exists(workSpacePath)){
+            try {
+                Files.createDirectories(workSpacePath);
+            } catch (IOException e) {
+                log.error("创建工作空间失败: {} 路径: {}", e.getMessage(), workSpacePath.toString(), e);
+                throw new BizException("创建工作空间失败: " + e.getMessage());
+            }
+        }
+
+        //从iScm拉取蓝图文件
+        scmService.pullFromScm(inputScmPo, workSpacePath.toString());
+
+
+    }
 }

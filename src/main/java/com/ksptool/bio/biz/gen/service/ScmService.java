@@ -20,6 +20,7 @@ import com.ksptool.bio.biz.gen.repository.ScmRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.SshSessionFactory;
@@ -37,6 +38,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.Collection;
@@ -218,7 +220,7 @@ public class ScmService {
     /**
      * 为 HTTP/HTTPS 连接配置代理
      */
-    private void setupHttpProxy(LsRemoteCommand command, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+    private void setupHttpProxy(TransportCommand<?, ?> command, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
         log.info("当前HTTP已启用代理配置: proxyHost: {}, proxyPort: {}", proxyHost, proxyPort);
         HttpConnectionFactory factory = new JDKHttpConnectionFactory() {
             @Override
@@ -228,6 +230,7 @@ public class ScmService {
 
             @Override
             public HttpConnection create(URL url, Proxy proxy) throws IOException {
+                // 强制通过配置中的代理访问远程仓库
                 Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
                 HttpConnection conn = super.create(url, httpProxy);
                 // 若代理需要认证
@@ -256,13 +259,14 @@ public class ScmService {
     /**
      * 为 SSH 连接配置认证，可选启用 HTTP 代理穿透
      */
-    private void setupSshAuthentication(LsRemoteCommand command, String privateKey, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+    private void setupSshAuthentication(TransportCommand<?, ?> command, String privateKey, String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
         log.info("当前SSH已启用代理配置: proxyHost: {}, proxyPort: {}", proxyHost, proxyPort);
         SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
             @Override
             protected void configure(OpenSshConfig.Host host, Session session) {
                 session.setConfig("StrictHostKeyChecking", "no");
                 if (proxyHost != null && proxyPort > 0) {
+                    // SSH 请求通过 HTTP 代理隧道转发
                     ProxyHTTP proxy = new ProxyHTTP(proxyHost, proxyPort);
                     if (!"?".equals(proxyUsername) && !"?".equals(proxyPassword)) {
                         proxy.setUserPasswd(proxyUsername, proxyPassword);
@@ -286,5 +290,103 @@ public class ScmService {
             }
         });
     }
+
+
+    /**
+     * 从SCM拉取代码到本地目录
+     * 若目录不存在则执行 clone，否则执行 pull
+     *
+     * @param scmPo    SCM配置
+     * @param basePath 本地工作目录
+     * @throws BizException 业务异常
+     */
+    public void pullFromScm(ScmPo scmPo, String basePath) throws BizException {
+        var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
+        var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
+        int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
+        var proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
+        var proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
+        boolean useProxy = proxyEnable == 1;
+
+        File localDir = new File(basePath);
+
+        try {
+            if (localDir.exists() && new File(localDir, ".git").exists()) {
+                // 已存在仓库时直接拉取远程分支
+                log.info("pullFromScm: pull 目录={}", basePath);
+                try (Git git = Git.open(localDir)) {
+                    var pullCmd = git.pull()
+                            .setRemoteBranchName(scmPo.getScmBranch())
+                            .setTimeout(30);
+
+                    // 公开仓库不带凭证，仅按需挂代理
+                    if (scmPo.getScmAuthKind() == 0) {
+                        pullCmd.setCredentialsProvider(null);
+                        if (useProxy) {
+                            setupHttpProxy(pullCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                        }
+                    }
+
+                    // 账号密码和 PAT 统一走 HTTP 凭证
+                    if (scmPo.getScmAuthKind() == 1 || scmPo.getScmAuthKind() == 3) {
+                        pullCmd.setCredentialsProvider(
+                                new UsernamePasswordCredentialsProvider(scmPo.getScmUsername(), scmPo.getScmPassword()));
+                        if (useProxy) {
+                            setupHttpProxy(pullCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                        }
+                    }
+
+                    if (scmPo.getScmAuthKind() == 2) {
+                        setupSshAuthentication(pullCmd, scmPo.getScmPk(),
+                                useProxy ? proxyHost : null, useProxy ? proxyPort : -1,
+                                proxyUsername, proxyPassword);
+                    }
+
+                    pullCmd.call();
+                }
+                return;
+            }
+
+            // 本地目录尚未初始化仓库时执行 clone
+            log.info("pullFromScm: clone 目录={} url={}", basePath, scmPo.getScmUrl());
+            var cloneCmd = Git.cloneRepository()
+                    .setURI(scmPo.getScmUrl())
+                    .setDirectory(localDir)
+                    .setBranch(scmPo.getScmBranch())
+                    .setTimeout(30);
+
+            // 公开仓库不带凭证，仅按需挂代理
+            if (scmPo.getScmAuthKind() == 0) {
+                cloneCmd.setCredentialsProvider(null);
+                if (useProxy) {
+                    setupHttpProxy(cloneCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
+            // 账号密码和 PAT 统一走 HTTP 凭证
+            if (scmPo.getScmAuthKind() == 1 || scmPo.getScmAuthKind() == 3) {
+                cloneCmd.setCredentialsProvider(
+                        new UsernamePasswordCredentialsProvider(scmPo.getScmUsername(), scmPo.getScmPassword()));
+                if (useProxy) {
+                    setupHttpProxy(cloneCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
+            if (scmPo.getScmAuthKind() == 2) {
+                setupSshAuthentication(cloneCmd, scmPo.getScmPk(),
+                        useProxy ? proxyHost : null, useProxy ? proxyPort : -1,
+                        proxyUsername, proxyPassword);
+            }
+
+            try (Git ignored = cloneCmd.call()) {
+                // clone 完成后 Git 实例可关闭
+            }
+        } catch (GitAPIException e) {
+            throw new BizException("Git 操作失败: " + e.getMessage());
+        } catch (IOException e) {
+            throw new BizException("本地目录访问失败: " + e.getMessage());
+        }
+    }
+
 
 }

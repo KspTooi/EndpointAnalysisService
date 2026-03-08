@@ -2,10 +2,9 @@ package com.ksptool.bio.biz.gen.common.assemblybp.projector;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ksptool.assembly.blueprint.entity.blueprint.PolyBlueprint;
-import com.ksptool.assembly.blueprint.entity.field.PolyTable;
-import com.ksptool.assembly.blueprint.projector.Projector;
-import com.ksptool.assembly.text.PreparedPrompt;
+import com.ksptool.bio.biz.gen.common.assemblybp.entity.blueprint.PolyBlueprint;
+import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.PolyTable;
+import com.ksptool.text.PreparedPrompt;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

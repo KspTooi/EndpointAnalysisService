@@ -135,4 +135,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 执行输出方案
+   */
+  executeOutSchema: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/outSchema/executeOutSchema", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
 };
