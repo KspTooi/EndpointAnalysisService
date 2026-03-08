@@ -20,7 +20,7 @@ export default {
   /**
    * 按输出方案ID过滤的列表管理
    */
-  useOutModelPolyListBySchema(outputSchemaId: Ref<string>) {
+  useOutModelPolyList(outputSchemaId: Ref<string>) {
     const listForm = ref<GetOutModelPolyListDto>({
       pageNum: 1,
       pageSize: 20,
@@ -89,11 +89,7 @@ export default {
   /**
    * 按输出方案ID固定的模态框管理
    */
-  useOutModelPolyModalBySchema(
-    modalFormRef: Ref<FormInstance | undefined>,
-    outputSchemaId: Ref<string>,
-    reloadCallback: () => void,
-  ) {
+  useOutModelPolyModal(modalFormRef: Ref<FormInstance | undefined>, outputSchemaId: Ref<string>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");

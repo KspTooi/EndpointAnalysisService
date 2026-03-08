@@ -207,7 +207,13 @@
           />
         </el-form-item>
         <el-form-item label="placeholder" prop="placeholder">
-          <el-input v-model="polyModalForm.placeholder" placeholder="请输入placeholder" clearable maxlength="80" show-word-limit />
+          <el-input
+            v-model="polyModalForm.placeholder"
+            placeholder="请输入placeholder"
+            clearable
+            maxlength="80"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="聚合排序" prop="seq">
           <el-input v-model.number="polyModalForm.seq" placeholder="请输入聚合排序" clearable />
@@ -263,7 +269,7 @@ const {
   listLoading: originListLoading,
   loadList: loadOriginList,
   removeList: removeOriginList,
-} = OutModelOriginService.useOutModelOriginListBySchema(outputSchemaId);
+} = OutModelOriginService.useOutModelOriginList(outputSchemaId);
 
 // ==================== 原始模型模态框 ====================
 
@@ -278,7 +284,7 @@ const {
   openModal: openOriginModal,
   resetModal: resetOriginModal,
   submitModal: submitOriginModal,
-} = OutModelOriginService.useOutModelOriginModalBySchema(originModalFormRef, outputSchemaId, loadOriginList);
+} = OutModelOriginService.useOutModelOriginModal(originModalFormRef, outputSchemaId, loadOriginList);
 
 // ==================== 聚合模型列表 ====================
 
@@ -289,7 +295,7 @@ const {
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
-} = OutModelPolyService.useOutModelPolyListBySchema(outputSchemaId);
+} = OutModelPolyService.useOutModelPolyList(outputSchemaId);
 
 // ==================== 聚合模型模态框 ====================
 
@@ -304,7 +310,7 @@ const {
   openModal: openPolyModal,
   resetModal: resetPolyModal,
   submitModal: submitPolyModal,
-} = OutModelPolyService.useOutModelPolyModalBySchema(polyModalFormRef, outputSchemaId, loadPolyList);
+} = OutModelPolyService.useOutModelPolyModal(polyModalFormRef, outputSchemaId, loadPolyList);
 
 // ==================== 对外暴露 ====================
 
