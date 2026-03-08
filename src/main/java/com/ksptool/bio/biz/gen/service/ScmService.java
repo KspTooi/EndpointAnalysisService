@@ -317,6 +317,10 @@ public class ScmService {
                 // 已存在仓库时直接拉取远程分支
                 log.info("pullFromScm: pull 目录={}", basePath);
                 try (Git git = Git.open(localDir)) {
+                    // 丢弃本地所有未提交变更，避免 pull 时产生冲突
+                    git.checkout().setAllPaths(true).call();
+                    git.clean().setForce(true).setCleanDirectories(true).call();
+
                     var pullCmd = git.pull()
                             .setRemoteBranchName(scmPo.getScmBranch())
                             .setTimeout(30);
