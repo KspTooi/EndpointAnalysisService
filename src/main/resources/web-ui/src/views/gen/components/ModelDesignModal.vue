@@ -25,6 +25,7 @@
       <el-tab-pane label="聚合模型" name="poly" style="height: 100%; display: flex; flex-direction: column">
         <div style="display: flex; flex-direction: column; height: 540px">
           <StdListAreaAction class="flex gap-2">
+            <el-button type="warning" @click="syncPolyFromOrigin">从原始模型同步</el-button>
             <el-button type="success" @click="openPolyModal('add', null)">新增聚合字段</el-button>
           </StdListAreaAction>
 
@@ -171,6 +172,7 @@ const {
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
+  syncFromOrigin: syncPolyFromOrigin,
 } = OutModelPolyService.useOutModelPolyList(outputSchemaId);
 
 // ==================== 聚合模型模态框 ====================

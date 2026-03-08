@@ -44,6 +44,26 @@ export default {
       listLoading.value = false;
     };
 
+    const syncFromOrigin = async () => {
+      try {
+        await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch (error) {
+        return;
+      }
+
+      try {
+        await OutModelPolyApi.syncFromOriginBySchema({ id: outputSchemaId.value });
+        ElMessage.success("同步成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     const removeList = async (row: GetOutModelPolyListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
@@ -69,6 +89,7 @@ export default {
       listLoading,
       loadList,
       removeList,
+      syncFromOrigin,
     };
   },
 

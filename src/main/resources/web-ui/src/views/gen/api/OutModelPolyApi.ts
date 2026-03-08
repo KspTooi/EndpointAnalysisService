@@ -132,4 +132,15 @@ export default {
     }
     throw new Error(result.message);
   },
+
+  /**
+   * 从原始模型同步聚合模型（输出方案ID）
+   */
+  syncFromOriginBySchema: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/outModelPoly/syncFromOriginBySchema", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
 };
