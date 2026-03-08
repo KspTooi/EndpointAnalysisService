@@ -23,7 +23,7 @@ public interface ${ptstn}Repository extends JpaRepository<${ptstn}Po, Long>{
     #end
     #end
 #end
-    ORDER BY u.updateTime DESC
+    ORDER BY u.createTime DESC
     """)
     Page<${ptstn}Po> get${ptstn}List(@Param("po") ${ptstn}Po po, Pageable pageable);
 }
