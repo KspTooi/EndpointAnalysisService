@@ -18,106 +18,7 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 输出方案聚合模型表列表管理
-   */
-  useOutModelPolyList() {
-    const listForm = ref<GetOutModelPolyListDto>({
-      pageNum: 1,
-      pageSize: 20,
-      id: "",
-      outputSchemaId: "",
-      outputModelOriginId: "",
-      name: "",
-      kind: "",
-      length: "",
-      require: null,
-      policyCrudJson: "",
-      policyQuery: null,
-      policyView: null,
-      placeholder: "",
-      seq: null,
-    });
-
-    const listData = ref<GetOutModelPolyListVo[]>([]);
-    const listTotal = ref(0);
-    const listLoading = ref(false);
-
-    /**
-     * 加载列表
-     */
-    const loadList = async () => {
-      listLoading.value = true;
-      const result = await OutModelPolyApi.getOutModelPolyList(listForm.value);
-
-      if (Result.isSuccess(result)) {
-        listData.value = result.data;
-        listTotal.value = result.total;
-      }
-
-      if (Result.isError(result)) {
-        ElMessage.error(result.message);
-      }
-
-      listLoading.value = false;
-    };
-
-    /**
-     * 重置查询
-     */
-    const resetList = () => {
-      listForm.value.pageNum = 1;
-      listForm.value.pageSize = 20;
-      listForm.value.id = "";
-      listForm.value.outputSchemaId = "";
-      listForm.value.outputModelOriginId = "";
-      listForm.value.name = "";
-      listForm.value.kind = "";
-      listForm.value.length = "";
-      listForm.value.require = null;
-      listForm.value.policyCrudJson = "";
-      listForm.value.policyQuery = null;
-      listForm.value.policyView = null;
-      listForm.value.placeholder = "";
-      listForm.value.seq = null;
-      loadList();
-    };
-
-    /**
-     * 删除记录
-     */
-    const removeList = async (row: GetOutModelPolyListVo) => {
-      try {
-        await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        });
-      } catch (error) {
-        return;
-      }
-
-      try {
-        await OutModelPolyApi.removeOutModelPoly({ id: row.id });
-        ElMessage.success("删除成功");
-        await loadList();
-      } catch (error: any) {
-        ElMessage.error(error.message);
-      }
-    };
-
-    return {
-      listForm,
-      listData,
-      listTotal,
-      listLoading,
-      loadList,
-      resetList,
-      removeList,
-    };
-  },
-
-  /**
-   * 按输出方案ID过滤的列表管理（用于模态框内嵌场景）
+   * 按输出方案ID过滤的列表管理
    */
   useOutModelPolyListBySchema(outputSchemaId: Ref<string>) {
     const listForm = ref<GetOutModelPolyListDto>({
@@ -130,9 +31,6 @@ export default {
     const listTotal = ref(0);
     const listLoading = ref(false);
 
-    /**
-     * 加载列表
-     */
     const loadList = async () => {
       listLoading.value = true;
       listForm.value.outputSchemaId = outputSchemaId.value;
@@ -150,9 +48,6 @@ export default {
       listLoading.value = false;
     };
 
-    /**
-     * 重置查询
-     */
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
@@ -160,9 +55,6 @@ export default {
       loadList();
     };
 
-    /**
-     * 删除记录
-     */
     const removeList = async (row: GetOutModelPolyListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
@@ -195,210 +87,7 @@ export default {
   },
 
   /**
-   * 模态框管理（统一处理新增和编辑）
-   */
-  useOutModelPolyModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
-    const modalVisible = ref(false);
-    const modalLoading = ref(false);
-    const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetOutModelPolyDetailsVo>({
-      id: "",
-      outputSchemaId: "",
-      outputModelOriginId: "",
-      name: "",
-      kind: "",
-      length: "",
-      require: 0,
-      policyCrudJson: "",
-      policyQuery: 0,
-      policyView: 0,
-      placeholder: "",
-      seq: 0,
-    });
-
-    /**
-     * 表单验证规则
-     */
-    const modalRules: FormRules = {
-      outputSchemaId: [{ required: true, message: "请输入输出方案ID", trigger: "blur" }],
-      outputModelOriginId: [{ required: true, message: "请输入原始字段ID", trigger: "blur" }],
-      name: [{ required: true, message: "请输入聚合字段名", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入聚合数据类型", trigger: "blur" }],
-      require: [{ required: true, message: "请输入聚合必填 0:否 1:是", trigger: "blur" }],
-      policyCrudJson: [{ required: true, message: "请输入聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW", trigger: "blur" }],
-      policyQuery: [{ required: true, message: "请输入聚合查询策略 0:等于 1:模糊", trigger: "blur" }],
-      policyView: [
-        { required: true, message: "请输入聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT", trigger: "blur" },
-      ],
-      placeholder: [{ required: true, message: "请输入placeholder", trigger: "blur" }],
-      seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
-    };
-
-    /**
-     * 打开模态框
-     * @param mode 模式: 'add' | 'edit'
-     * @param row 编辑时传入的行数据
-     */
-    const openModal = async (mode: ModalMode, row: GetOutModelPolyListVo | null) => {
-      modalMode.value = mode;
-
-      if (mode === "add") {
-        modalForm.id = "";
-        modalForm.outputSchemaId = "";
-        modalForm.outputModelOriginId = "";
-        modalForm.name = "";
-        modalForm.kind = "";
-        modalForm.length = "";
-        modalForm.require = 0;
-        modalForm.policyCrudJson = "";
-        modalForm.policyQuery = 0;
-        modalForm.policyView = 0;
-        modalForm.placeholder = "";
-        modalForm.seq = 0;
-        modalVisible.value = true;
-        return;
-      }
-
-      if (mode === "edit") {
-        if (!row) {
-          ElMessage.error("未选择要编辑的数据");
-          return;
-        }
-
-        try {
-          const details = await OutModelPolyApi.getOutModelPolyDetails({ id: row.id });
-          modalForm.id = details.id;
-          modalForm.outputSchemaId = details.outputSchemaId;
-          modalForm.outputModelOriginId = details.outputModelOriginId;
-          modalForm.name = details.name;
-          modalForm.kind = details.kind;
-          modalForm.length = details.length;
-          modalForm.require = details.require;
-          modalForm.policyCrudJson = details.policyCrudJson;
-          modalForm.policyQuery = details.policyQuery;
-          modalForm.policyView = details.policyView;
-          modalForm.placeholder = details.placeholder;
-          modalForm.seq = details.seq;
-          modalVisible.value = true;
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
-      }
-    };
-
-    /**
-     * 重置模态框
-     */
-    const resetModal = () => {
-      if (!modalFormRef.value) {
-        return;
-      }
-      modalFormRef.value.resetFields();
-      modalForm.id = "";
-      modalForm.outputSchemaId = "";
-      modalForm.outputModelOriginId = "";
-      modalForm.name = "";
-      modalForm.kind = "";
-      modalForm.length = "";
-      modalForm.require = 0;
-      modalForm.policyCrudJson = "";
-      modalForm.policyQuery = 0;
-      modalForm.policyView = 0;
-      modalForm.placeholder = "";
-      modalForm.seq = 0;
-    };
-
-    /**
-     * 提交模态框
-     */
-    const submitModal = async () => {
-      if (!modalFormRef.value) {
-        return;
-      }
-
-      try {
-        await modalFormRef.value.validate();
-      } catch (error) {
-        return;
-      }
-
-      modalLoading.value = true;
-
-      if (modalMode.value === "add") {
-        try {
-          const addDto: AddOutModelPolyDto = {
-            outputSchemaId: modalForm.outputSchemaId,
-            outputModelOriginId: modalForm.outputModelOriginId,
-            name: modalForm.name,
-            kind: modalForm.kind,
-            length: modalForm.length,
-            require: modalForm.require,
-            policyCrudJson: modalForm.policyCrudJson,
-            policyQuery: modalForm.policyQuery,
-            policyView: modalForm.policyView,
-            placeholder: modalForm.placeholder,
-            seq: modalForm.seq,
-          };
-          await OutModelPolyApi.addOutModelPoly(addDto);
-          ElMessage.success("新增成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
-        modalLoading.value = false;
-        return;
-      }
-
-      if (modalMode.value === "edit") {
-        if (!modalForm.id) {
-          ElMessage.error("缺少ID参数");
-          modalLoading.value = false;
-          return;
-        }
-
-        try {
-          const editDto: EditOutModelPolyDto = {
-            id: modalForm.id,
-            outputSchemaId: modalForm.outputSchemaId,
-            outputModelOriginId: modalForm.outputModelOriginId,
-            name: modalForm.name,
-            kind: modalForm.kind,
-            length: modalForm.length,
-            require: modalForm.require,
-            policyCrudJson: modalForm.policyCrudJson,
-            policyQuery: modalForm.policyQuery,
-            policyView: modalForm.policyView,
-            placeholder: modalForm.placeholder,
-            seq: modalForm.seq,
-          };
-          await OutModelPolyApi.editOutModelPoly(editDto);
-          ElMessage.success("编辑成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
-        modalLoading.value = false;
-      }
-    };
-
-    return {
-      modalVisible,
-      modalLoading,
-      modalMode,
-      modalForm,
-      modalRules,
-      openModal,
-      resetModal,
-      submitModal,
-    };
-  },
-
-  /**
-   * 按输出方案ID固定的模态框管理（用于模态框内嵌场景）
+   * 按输出方案ID固定的模态框管理
    */
   useOutModelPolyModalBySchema(
     modalFormRef: Ref<FormInstance | undefined>,
@@ -435,9 +124,6 @@ export default {
       seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
     };
 
-    /**
-     * 打开模态框
-     */
     const openModal = async (mode: ModalMode, row: GetOutModelPolyListVo | null) => {
       modalMode.value = mode;
 
@@ -483,9 +169,6 @@ export default {
       }
     };
 
-    /**
-     * 重置模态框
-     */
     const resetModal = () => {
       if (!modalFormRef.value) {
         return;
@@ -505,9 +188,6 @@ export default {
       modalForm.seq = 0;
     };
 
-    /**
-     * 提交模态框
-     */
     const submitModal = async () => {
       if (!modalFormRef.value) {
         return;
