@@ -23,6 +23,8 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.transport.TransportHttp;
@@ -381,6 +383,86 @@ public class ScmService {
             try (Git ignored = cloneCmd.call()) {
                 // clone 完成后 Git 实例可关闭
             }
+        } catch (GitAPIException e) {
+            throw new BizException("Git 操作失败: " + e.getMessage());
+        } catch (IOException e) {
+            throw new BizException("本地目录访问失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 将本地目录推送到SCM(这会自动add并commit并push)
+     *
+     * @param scmPo    SCM配置
+     * @param basePath 本地工作目录
+     * @throws BizException 业务异常
+     */
+    public void pushToScm(ScmPo scmPo, String basePath) throws BizException {
+        var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
+        var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
+        int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
+        var proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
+        var proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
+        boolean useProxy = proxyEnable == 1;
+
+        File localDir = new File(basePath);
+
+        if (!localDir.exists() || !new File(localDir, ".git").exists()) {
+            throw new BizException("本地目录不存在或不是 Git 仓库: " + basePath);
+        }
+
+        try (Git git = Git.open(localDir)) {
+
+            // 确保 remote origin 指向配置中的 URL
+            StoredConfig config = git.getRepository().getConfig();
+            config.setString("remote", "origin", "url", scmPo.getScmUrl());
+            config.save();
+
+            // 将工作区所有变更加入暂存区
+            git.add().addFilepattern(".").call();
+
+            // 若无可提交内容则跳过 commit 和 push
+            var status = git.status().call();
+            if (status.isClean()) {
+                log.info("pushToScm: 工作区无变更，跳过提交 目录={}", basePath);
+                return;
+            }
+
+            git.commit()
+                    .setMessage("BioCode代码生成器自动提交")
+                    .call();
+
+            log.info("pushToScm: push 目录={} url={}", basePath, scmPo.getScmUrl());
+            var pushCmd = git.push()
+                    .setRemote("origin")
+                    .setRefSpecs(new RefSpec("refs/heads/" + scmPo.getScmBranch() + ":refs/heads/" + scmPo.getScmBranch()))
+                    .setTimeout(30);
+
+            // 公开仓库不带凭证，仅按需挂代理
+            if (scmPo.getScmAuthKind() == 0) {
+                pushCmd.setCredentialsProvider(null);
+                if (useProxy) {
+                    setupHttpProxy(pushCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
+            // 账号密码和 PAT 统一走 HTTP 凭证
+            if (scmPo.getScmAuthKind() == 1 || scmPo.getScmAuthKind() == 3) {
+                pushCmd.setCredentialsProvider(
+                        new UsernamePasswordCredentialsProvider(scmPo.getScmUsername(), scmPo.getScmPassword()));
+                if (useProxy) {
+                    setupHttpProxy(pushCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
+            if (scmPo.getScmAuthKind() == 2) {
+                setupSshAuthentication(pushCmd, scmPo.getScmPk(),
+                        useProxy ? proxyHost : null, useProxy ? proxyPort : -1,
+                        proxyUsername, proxyPassword);
+            }
+
+            pushCmd.call();
+
         } catch (GitAPIException e) {
             throw new BizException("Git 操作失败: " + e.getMessage());
         } catch (IOException e) {

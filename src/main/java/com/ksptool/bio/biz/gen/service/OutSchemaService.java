@@ -413,5 +413,8 @@ public class OutSchemaService {
 
         //执行AssemblyBlueprint流水线
         factory.execute();
+
+        //将输出目录推送到输出SCM
+        scmService.pushToScm(outputScmPo, oPrjPath.toString());
     }
 }
