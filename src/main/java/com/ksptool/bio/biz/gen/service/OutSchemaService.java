@@ -6,6 +6,7 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptool.bio.biz.gen.common.assemblybp.collector.MysqlCollector;
 import com.ksptool.bio.biz.gen.common.assemblybp.collector.VelocityBlueprintCollector;
+import com.ksptool.bio.biz.gen.common.assemblybp.converter.MysqlDynamicPolyConv;
 import com.ksptool.bio.biz.gen.common.assemblybp.converter.MysqlToJavaPolyConverter;
 import com.ksptool.bio.biz.gen.common.assemblybp.converter.PolyConverter;
 import com.ksptool.bio.biz.gen.common.assemblybp.core.AssemblyFactory;
@@ -20,10 +21,14 @@ import com.ksptool.bio.biz.gen.model.outschema.dto.GetOutSchemaListDto;
 import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaDetailsVo;
 import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaListVo;
 import com.ksptool.bio.biz.gen.model.scm.ScmPo;
+import com.ksptool.bio.biz.gen.model.tymschema.TymSchemaPo;
+import com.ksptool.bio.biz.gen.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
 import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
 import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
 import com.ksptool.bio.biz.gen.repository.ScmRepository;
+import com.ksptool.bio.biz.gen.repository.TymSchemaRepository;
+import com.ksptool.bio.biz.gen.repository.TymSchemaFieldRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +75,12 @@ public class OutSchemaService {
 
     @Autowired
     private DataSourceService dataSourceService;
+
+    @Autowired
+    private TymSchemaRepository tymsRepository;
+
+    @Autowired
+    private TymSchemaFieldRepository tymsfRepository;
 
     /**
      * 查询输出方案列表
@@ -264,6 +275,13 @@ public class OutSchemaService {
         DataSourcePo dataSourcePo = datasourceRepository.findById(outSchemaPo.getDataSourceId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据源不存在或无权限访问."));
 
+        //查询类型映射方案
+        TymSchemaPo tymsPo = tymsRepository.findById(outSchemaPo.getTypeSchemaId())
+                .orElseThrow(() -> new BizException("执行输出方案失败,类型映射方案不存在或无权限访问."));
+        
+        //查询类型映射方案字段
+        List<TymSchemaFieldPo> tymsfPos = tymsfRepository.getTymSfByTymSid(tymsPo.getId());
+
         //准备工作空间
         var workSpaceName = "gen_workspace_" + outSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
@@ -309,9 +327,18 @@ public class OutSchemaService {
         coll.setPassword(dataSourcePo.getPassword());
         coll.setDatabase(dataSourcePo.getDbSchema());
 
+
         //创建蓝图采集器、聚合转换器、投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
-        PolyConverter converter = new MysqlToJavaPolyConverter();
+
+        //配置动态聚合转换器
+        MysqlDynamicPolyConv converter = new MysqlDynamicPolyConv(tymsPo.getDefaultType());
+
+        //插入所有tymsf
+        for (var tymsfPo : tymsfPos) {
+            converter.addTypeMap(tymsfPo.getSource(), tymsfPo.getTarget());
+        }
+
         Projector projector = new VelocityProjector();
 
         //创建AssemblyFactory
