@@ -29,6 +29,11 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column label="序号" min-width="60" align="center">
+          <template #default="scope">
+            {{ (listForm.pageNum - 1) * listForm.pageSize + scope.$index + 1 }}
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="输出方案名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="modelName" label="模型名称" min-width="180" show-overflow-tooltip />
         <el-table-column prop="tableName" label="数据源表名" min-width="120" show-overflow-tooltip />

@@ -1,9 +1,16 @@
 <template>
-  <el-dialog v-model="modalVisible" :title="title" fullscreen :close-on-click-modal="false" @close="onClose">
+  <el-dialog v-model="modalVisible" :title="title" fullscreen :close-on-click-modal="false" destroy-on-close @close="onClose">
     <el-tabs v-model="activeTab" type="border-card" class="fullscreen-tabs">
       <!-- 原始模型 TAB -->
-      <el-tab-pane label="原始模型" name="origin">
-        <el-table :data="originListData" stripe v-loading="originListLoading" border class="tab-table">
+      <el-tab-pane label="原始模型" name="origin" lazy>
+        <el-table
+          v-if="activeTab === 'origin'"
+          :data="originListData"
+          stripe
+          v-loading="originListLoading"
+          border
+          class="tab-table"
+        >
           <el-table-column prop="seq" label="序号" min-width="50" show-overflow-tooltip align="center" />
           <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
           <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
@@ -20,64 +27,152 @@
       </el-tab-pane>
 
       <!-- 聚合模型 TAB -->
-      <el-tab-pane label="聚合模型" name="poly">
-        <div class="poly-tab-content">
+      <el-tab-pane label="聚合模型" name="poly" lazy>
+        <div v-if="activeTab === 'poly'" class="poly-tab-content">
           <StdListAreaAction class="flex gap-2">
-            <el-button type="warning" @click="syncPolyFromOrigin">从原始模型同步</el-button>
+            <el-button type="danger" @click="syncPolyFromOrigin">从原始模型同步</el-button>
             <el-button type="success" @click="openPolyAddModal">新增聚合字段</el-button>
           </StdListAreaAction>
 
-          <el-table :data="polyListData" stripe v-loading="polyListLoading" border class="tab-table poly-table">
+          <el-table :data="polyListData" row-key="id" stripe v-loading="polyListLoading" border class="tab-table poly-table">
             <!-- 序号 -->
             <el-table-column prop="seq" label="序号" min-width="70" align="center">
               <template #default="scope">
-                <el-input v-model.number="scope.row.seq" size="small" @blur="submitRow(scope.row)" />
+                <el-input
+                  v-if="isEditingCell(scope.row.id, 'seq')"
+                  v-model.number="scope.row.seq"
+                  size="small"
+                  @blur="submitCell(scope.row, 'seq')"
+                />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'seq')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'seq')"
+                >
+                  {{ scope.row.seq ?? "-" }}
+                </div>
               </template>
             </el-table-column>
 
             <!-- 聚合字段名 -->
             <el-table-column prop="name" label="聚合字段名" min-width="150">
               <template #default="scope">
-                <el-input v-model="scope.row.name" size="small" @blur="submitRow(scope.row)" />
+                <el-input
+                  v-if="isEditingCell(scope.row.id, 'name')"
+                  v-model="scope.row.name"
+                  size="small"
+                  @blur="submitCell(scope.row, 'name')"
+                />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'name')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'name')"
+                >
+                  {{ scope.row.name || "-" }}
+                </div>
+              </template>
+            </el-table-column>
+
+            <!-- 备注 -->
+            <el-table-column prop="remark" label="备注" min-width="150">
+              <template #default="scope">
+                <el-input
+                  v-if="isEditingCell(scope.row.id, 'remark')"
+                  v-model="scope.row.remark"
+                  size="small"
+                  @blur="submitCell(scope.row, 'remark')"
+                />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'remark')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'remark')"
+                >
+                  {{ scope.row.remark || "-" }}
+                </div>
               </template>
             </el-table-column>
 
             <!-- 数据类型 -->
             <el-table-column prop="kind" label="数据类型" min-width="120">
               <template #default="scope">
-                <el-input v-model="scope.row.kind" size="small" @blur="submitRow(scope.row)" />
+                <el-input
+                  v-if="isEditingCell(scope.row.id, 'kind')"
+                  v-model="scope.row.kind"
+                  size="small"
+                  @blur="submitCell(scope.row, 'kind')"
+                />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'kind')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'kind')"
+                >
+                  {{ scope.row.kind || "-" }}
+                </div>
               </template>
             </el-table-column>
 
             <!-- 长度 -->
             <el-table-column prop="length" label="长度" min-width="80">
               <template #default="scope">
-                <el-input v-model="scope.row.length" size="small" @blur="submitRow(scope.row)" />
+                <el-input
+                  v-if="isEditingCell(scope.row.id, 'length')"
+                  v-model="scope.row.length"
+                  size="small"
+                  @blur="submitCell(scope.row, 'length')"
+                />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'length')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'length')"
+                >
+                  {{ scope.row.length || "-" }}
+                </div>
               </template>
             </el-table-column>
 
             <!-- 必填 -->
-            <el-table-column prop="require" label="必填" min-width="60" align="center">
+            <el-table-column prop="require" label="必填" min-width="50" align="center">
               <template #default="scope">
-                <el-checkbox
-                  :model-value="scope.row.require === 1"
-                  @change="(val: boolean) => commitField(scope.row, 'require', val ? 1 : 0)"
-                />
+                <div class="editable-cell editable-cell-center" @click="toggleRequire(scope.row)">
+                  <span :class="scope.row.require === 1 ? 'text-danger' : 'text-success'">
+                    {{ formatRequire(scope.row.require) }}
+                  </span>
+                </div>
               </template>
             </el-table-column>
 
             <!-- 可见性策略 -->
-            <el-table-column prop="policyCrudJson" label="可见性策略" min-width="220">
+            <el-table-column prop="policyCrudJson" label="可见性策略" min-width="120">
               <template #default="scope">
-                <el-checkbox-group
-                  :model-value="scope.row.policyCrudJson"
-                  @change="(val: string[]) => commitField(scope.row, 'policyCrudJson', val)"
+                <el-select
+                  v-if="isEditingCell(scope.row.id, 'policyCrudJson')"
+                  v-model="scope.row.policyCrudJson"
+                  multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+                  size="small"
+                  @visible-change="(visible: boolean) => onPolicyCrudVisibleChange(scope.row, visible)"
                 >
-                  <el-checkbox value="ADD" label="新增" />
-                  <el-checkbox value="EDIT" label="编辑" />
-                  <el-checkbox value="LQ" label="列查" />
-                  <el-checkbox value="LW" label="列显" />
-                </el-checkbox-group>
+                  <el-option value="ADD" label="新增" />
+                  <el-option value="EDIT" label="编辑" />
+                  <el-option value="LQ" label="列查" />
+                  <el-option value="LW" label="列显" />
+                </el-select>
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'policyCrudJson')"
+                  class="editable-cell editable-cell-inline"
+                  @click="activateCell(scope.row.id, 'policyCrudJson')"
+                >
+                  <span
+                    v-for="key in POLICY_CRUD_ORDER"
+                    :key="key"
+                    :style="{
+                      color: scope.row.policyCrudJson?.includes(key) ? POLICY_CRUD_COLOR_MAP[key] : '#c0c4cc',
+                      fontWeight: 500,
+                    }"
+                    >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
+                  >
+                </div>
               </template>
             </el-table-column>
 
@@ -85,13 +180,21 @@
             <el-table-column prop="policyQuery" label="查询策略" min-width="110">
               <template #default="scope">
                 <el-select
+                  v-if="isEditingCell(scope.row.id, 'policyQuery')"
                   :model-value="scope.row.policyQuery"
                   size="small"
-                  @change="(val: number) => commitField(scope.row, 'policyQuery', val)"
+                  @change="(val: number) => submitField(scope.row, 'policyQuery', val)"
                 >
                   <el-option :value="0" label="等于" />
                   <el-option :value="1" label="模糊" />
                 </el-select>
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'policyQuery')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'policyQuery')"
+                >
+                  {{ formatPolicyQuery(scope.row.policyQuery) }}
+                </div>
               </template>
             </el-table-column>
 
@@ -99,9 +202,10 @@
             <el-table-column prop="policyView" label="显示策略" min-width="120">
               <template #default="scope">
                 <el-select
+                  v-if="isEditingCell(scope.row.id, 'policyView')"
                   :model-value="scope.row.policyView"
                   size="small"
-                  @change="(val: number) => commitField(scope.row, 'policyView', val)"
+                  @change="(val: number) => submitField(scope.row, 'policyView', val)"
                 >
                   <el-option :value="0" label="文本框" />
                   <el-option :value="1" label="文本域" />
@@ -111,13 +215,13 @@
                   <el-option :value="5" label="LD" />
                   <el-option :value="6" label="LDT" />
                 </el-select>
-              </template>
-            </el-table-column>
-
-            <!-- 备注 -->
-            <el-table-column prop="remark" label="备注" min-width="150">
-              <template #default="scope">
-                <el-input v-model="scope.row.remark" size="small" @blur="submitRow(scope.row)" />
+                <div
+                  v-if="!isEditingCell(scope.row.id, 'policyView')"
+                  class="editable-cell"
+                  @click="activateCell(scope.row.id, 'policyView')"
+                >
+                  {{ formatPolicyView(scope.row.policyView) }}
+                </div>
               </template>
             </el-table-column>
 
@@ -217,17 +321,46 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import OutModelOriginService from "@/views/gen/service/OutModelOriginService";
 import OutModelPolyService from "@/views/gen/service/OutModelPolyService";
 import OutModelPolyApi from "@/views/gen/api/OutModelPolyApi";
-import type { AddOutModelPolyDto } from "@/views/gen/api/OutModelPolyApi";
+import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/gen/api/OutModelPolyApi";
 import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
 
 const DeleteIcon = markRaw(Delete);
 
 const ACTIVE_TAB_KEY = "ModelDesignModal_activeTab";
+const POLICY_CRUD_LABEL_MAP: Record<string, string> = {
+  ADD: "新增",
+  EDIT: "编辑",
+  LQ: "列查",
+  LW: "列显",
+};
+const POLICY_CRUD_COLOR_MAP: Record<string, string> = {
+  ADD: "#41b7cc",
+  EDIT: "#41b7cc",
+  LQ: "#41b7cc",
+  LW: "#41b7cc",
+};
+const POLICY_CRUD_ORDER = ["ADD", "EDIT", "LQ", "LW"] as const;
+const POLICY_QUERY_LABEL_MAP: Record<number, string> = {
+  0: "等于",
+  1: "模糊",
+};
+const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
+  0: "文本框",
+  1: "文本域",
+  2: "下拉",
+  3: "单选",
+  4: "多选",
+  5: "LD",
+  6: "LDT",
+};
 
 const modalVisible = ref(false);
 const activeTab = ref(localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin");
 const outputSchemaId = ref("");
 const outSchemaVo = ref<GetOutSchemaListVo | null>(null);
+const originLoaded = ref(false);
+const polyLoaded = ref(false);
+const editingCellKey = ref("");
 
 const emit = defineEmits<{
   (e: "on-close"): void;
@@ -260,7 +393,7 @@ const {
 
 // ==================== 单元格内联编辑 ====================
 
-const { submitRow, commitField } = OutModelPolyService.useCellEdit(loadPolyList);
+const { submitRow, commitField } = OutModelPolyService.useCellEdit();
 
 // ==================== 新增模态框 ====================
 
@@ -343,11 +476,83 @@ const submitPolyAdd = async () => {
   polyAddLoading.value = false;
 };
 
-watch(activeTab, (val) => localStorage.setItem(ACTIVE_TAB_KEY, val));
+const buildCellKey = (rowId: string, field: string) => `${rowId}_${field}`;
+
+const activateCell = (rowId: string, field: string) => {
+  editingCellKey.value = buildCellKey(rowId, field);
+};
+
+const clearEditingCell = () => {
+  editingCellKey.value = "";
+};
+
+const isEditingCell = (rowId: string, field: string) => editingCellKey.value === buildCellKey(rowId, field);
+
+const submitCell = async (row: GetOutModelPolyListVo, field: string) => {
+  const success = await submitRow(row);
+  if (!success) return;
+  if (!isEditingCell(row.id, field)) return;
+  clearEditingCell();
+  if (field === "seq") {
+    await loadPolyList();
+  }
+};
+
+const submitField = async (row: GetOutModelPolyListVo, field: string, value: any) => {
+  const success = await commitField(row, field, value);
+  if (!success) return;
+  clearEditingCell();
+};
+
+const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean) => {
+  if (visible) return;
+  await submitCell(row, "policyCrudJson");
+};
+
+const toggleRequire = async (row: GetOutModelPolyListVo) => {
+  const nextValue = row.require === 1 ? 0 : 1;
+  await submitField(row, "require", nextValue);
+};
+
+const formatRequire = (value: number) => {
+  if (value === 1) return "是";
+  return "否";
+};
+
+const formatPolicyCrud = (value: string[]) => {
+  if (!value?.length) return "-";
+  return value.map((item) => POLICY_CRUD_LABEL_MAP[item] ?? item).join(" / ");
+};
+
+const formatPolicyQuery = (value: number) => POLICY_QUERY_LABEL_MAP[value] ?? "-";
+
+const formatPolicyView = (value: number) => POLICY_VIEW_LABEL_MAP[value] ?? "-";
+
+const ensureActiveTabLoaded = async (force = false) => {
+  if (activeTab.value === "origin") {
+    if (originLoaded.value && !force) return;
+    await loadOriginList();
+    originLoaded.value = true;
+    return;
+  }
+
+  if (activeTab.value !== "poly") return;
+  if (polyLoaded.value && !force) return;
+  await loadPolyList();
+  polyLoaded.value = true;
+};
+
+watch(activeTab, async (val) => {
+  localStorage.setItem(ACTIVE_TAB_KEY, val);
+  clearEditingCell();
+  if (!modalVisible.value) return;
+  await ensureActiveTabLoaded();
+});
 
 // ==================== 对外暴露 ====================
 
 const onClose = () => {
+  clearEditingCell();
   emit("on-close");
 };
 
@@ -355,9 +560,12 @@ defineExpose({
   openModal: async (row: GetOutSchemaListVo) => {
     outSchemaVo.value = row;
     outputSchemaId.value = row.id;
+    originLoaded.value = false;
+    polyLoaded.value = false;
+    clearEditingCell();
     activeTab.value = localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin";
     modalVisible.value = true;
-    await Promise.all([loadOriginList(), loadPolyList()]);
+    await ensureActiveTabLoaded(true);
   },
 });
 </script>
@@ -374,7 +582,7 @@ defineExpose({
 }
 
 .tab-table {
-  height: calc(100vh - 55px - 41px - 24px);
+  height: calc(100vh - 80px - 41px - 24px);
 }
 
 .poly-tab-content {
@@ -383,6 +591,33 @@ defineExpose({
 }
 
 .poly-table {
-  height: calc(100vh - 55px - 41px - 46px - 24px) !important;
+  height: calc(100vh - 80px - 41px - 46px - 24px) !important;
+}
+
+.editable-cell {
+  min-height: 24px;
+  line-height: 24px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.editable-cell-center {
+  text-align: center;
+}
+
+.editable-cell-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.text-danger {
+  color: #f56c6c;
+  font-weight: 500;
+}
+
+.text-success {
+  color: #67c23a;
+  font-weight: 500;
 }
 </style>

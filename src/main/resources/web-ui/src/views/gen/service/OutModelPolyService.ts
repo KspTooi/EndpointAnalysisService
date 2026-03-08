@@ -84,31 +84,34 @@ export default {
   /**
    * 表格行内编辑提交
    */
-  useCellEdit(reloadCallback: () => Promise<void>) {
+  useCellEdit() {
+    const buildEditDto = (row: GetOutModelPolyListVo): EditOutModelPolyDto => ({
+      id: row.id,
+      outputSchemaId: row.outputSchemaId,
+      outputModelOriginId: row.outputModelOriginId,
+      name: row.name,
+      kind: row.kind,
+      length: row.length,
+      require: row.require,
+      policyCrudJson: row.policyCrudJson,
+      policyQuery: row.policyQuery,
+      policyView: row.policyView,
+      remark: row.remark,
+      seq: row.seq,
+    });
+
     /**
      * 提交整行当前值到后端（文本类 input blur 时调用）
      */
     const submitRow = async (row: GetOutModelPolyListVo) => {
-      const editDto: EditOutModelPolyDto = {
-        id: row.id,
-        outputSchemaId: row.outputSchemaId,
-        outputModelOriginId: row.outputModelOriginId,
-        name: row.name,
-        kind: row.kind,
-        length: row.length,
-        require: row.require,
-        policyCrudJson: row.policyCrudJson,
-        policyQuery: row.policyQuery,
-        policyView: row.policyView,
-        remark: row.remark,
-        seq: row.seq,
-      };
+      const editDto = buildEditDto(row);
 
       try {
         await OutModelPolyApi.editOutModelPoly(editDto);
-        await reloadCallback();
+        return true;
       } catch (error: any) {
         ElMessage.error(error.message);
+        return false;
       }
     };
 
@@ -116,29 +119,19 @@ export default {
      * 提交指定字段新值（checkbox / select change 时调用）
      */
     const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any) => {
-      if (JSON.stringify(newValue) === JSON.stringify((row as any)[field])) return;
+      const oldValue = (row as any)[field];
+      if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
 
-      const editDto: EditOutModelPolyDto = {
-        id: row.id,
-        outputSchemaId: row.outputSchemaId,
-        outputModelOriginId: row.outputModelOriginId,
-        name: row.name,
-        kind: row.kind,
-        length: row.length,
-        require: row.require,
-        policyCrudJson: row.policyCrudJson,
-        policyQuery: row.policyQuery,
-        policyView: row.policyView,
-        remark: row.remark,
-        seq: row.seq,
-        [field]: newValue,
-      };
+      (row as any)[field] = newValue;
+      const editDto = buildEditDto(row);
 
       try {
         await OutModelPolyApi.editOutModelPoly(editDto);
-        await reloadCallback();
+        return true;
       } catch (error: any) {
+        (row as any)[field] = oldValue;
         ElMessage.error(error.message);
+        return false;
       }
     };
 
