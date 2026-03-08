@@ -1,14 +1,35 @@
 package com.ksptool.bio.biz.gen.service;
 
-import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.exception.BizException;
-
-import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
-
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.core.service.AttachService;
+import com.ksptool.bio.biz.gen.common.assemblybp.collector.MysqlCollector;
+import com.ksptool.bio.biz.gen.common.assemblybp.collector.VelocityBlueprintCollector;
+import com.ksptool.bio.biz.gen.common.assemblybp.converter.MysqlToJavaPolyConverter;
+import com.ksptool.bio.biz.gen.common.assemblybp.converter.PolyConverter;
+import com.ksptool.bio.biz.gen.common.assemblybp.core.AssemblyFactory;
+import com.ksptool.bio.biz.gen.common.assemblybp.projector.Projector;
+import com.ksptool.bio.biz.gen.common.assemblybp.projector.VelocityProjector;
+import com.ksptool.bio.biz.gen.model.datsource.DataSourcePo;
+import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
+import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
+import com.ksptool.bio.biz.gen.model.outschema.dto.AddOutSchemaDto;
+import com.ksptool.bio.biz.gen.model.outschema.dto.EditOutSchemaDto;
+import com.ksptool.bio.biz.gen.model.outschema.dto.GetOutSchemaListDto;
+import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaDetailsVo;
+import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.gen.model.scm.ScmPo;
+import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
+import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
+import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
+import com.ksptool.bio.biz.gen.repository.ScmRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,23 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
-import com.ksptool.bio.biz.core.service.AttachService;
-import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
-import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
-import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaListVo;
-import com.ksptool.bio.biz.gen.model.scm.ScmPo;
-import com.ksptool.bio.biz.gen.repository.ScmRepository;
-import com.ksptool.bio.biz.gen.model.outschema.dto.GetOutSchemaListDto;
-import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaDetailsVo;
-import com.ksptool.bio.biz.gen.model.outschema.dto.EditOutSchemaDto;
-import com.ksptool.bio.biz.gen.model.outschema.dto.AddOutSchemaDto;
-import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
-import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
-import org.apache.commons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.assign;
 
 
 @Slf4j
@@ -61,6 +67,10 @@ public class OutSchemaService {
 
     @Autowired
     private ScmService scmService;
+
+    @Autowired
+    private DataSourceService dataSourceService;
+
     /**
      * 查询输出方案列表
      *
@@ -96,29 +106,29 @@ public class OutSchemaService {
 
 
         //如果输入数据源和表名,则查询数据源表字段
-        if(dto.getDataSourceId() != null && StringUtils.isNotBlank(dto.getTableName())){
+        if (dto.getDataSourceId() != null && StringUtils.isNotBlank(dto.getTableName())) {
 
             var dataSource = datasourceRepository.findById(dto.getDataSourceId()).orElse(null);
 
-            if(dataSource == null){
+            if (dataSource == null) {
                 return "新增成功,但未能从数据源导入原始字段,数据源不存在或无权限访问！";
             }
-            
-            var fields = outModelOriginService.getDataSourceTableFields(dataSource,dto.getTableName());
 
-            if(fields == null){
+            var fields = outModelOriginService.getDataSourceTableFields(dataSource, dto.getTableName());
+
+            if (fields == null) {
                 return "新增成功,但未能从数据源导入原始字段,查询数据源表字段失败！";
             }
 
             var insertFields = new ArrayList<OutModelOriginPo>();
 
             int seq = 1;
-            for(var field : fields){
+            for (var field : fields) {
                 field.setOutputSchemaId(insertPo.getId());
                 field.setSeq(seq++);
                 insertFields.add(field);
             }
-            
+
             //批量保存原始字段
             outModelOriginRepository.saveAll(insertFields);
 
@@ -126,7 +136,7 @@ public class OutSchemaService {
             insertPo.setFieldCountOrigin(insertFields.size());
             repository.save(insertPo);
 
-            return "新增成功,已从数据源导入"+insertFields.size()+"个原始字段！";
+            return "新增成功,已从数据源导入" + insertFields.size() + "个原始字段！";
         }
 
         return "新增成功,未导入任何原始字段！";
@@ -156,7 +166,7 @@ public class OutSchemaService {
             return "未能同步原始字段,数据源不存在或无权限访问！";
         }
 
-        var latestFields = outModelOriginService.getDataSourceTableFields(dataSource,dto.getTableName());
+        var latestFields = outModelOriginService.getDataSourceTableFields(dataSource, dto.getTableName());
         if (latestFields == null) {
             return "未能同步原始字段,查询数据源表字段失败！";
         }
@@ -199,7 +209,7 @@ public class OutSchemaService {
         updatePo.setFieldCountOrigin(newCount);
         repository.save(updatePo);
 
-        return "修改成功,新增"+toInsert.size()+"个原始字段,删除"+toDelete.size()+"个原始字段！";
+        return "修改成功,新增" + toInsert.size() + "个原始字段,删除" + toDelete.size() + "个原始字段！";
     }
 
     /**
@@ -246,16 +256,22 @@ public class OutSchemaService {
         //查询输入与输出SCM
         ScmPo inputScmPo = scmRepository.findById(outSchemaPo.getInputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输入SCM不存在或无权限访问."));
-                
+
         ScmPo outputScmPo = scmRepository.findById(outSchemaPo.getOutputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输出SCM不存在或无权限访问."));
 
+        //查询数据源
+        DataSourcePo dataSourcePo = datasourceRepository.findById(outSchemaPo.getDataSourceId())
+                .orElseThrow(() -> new BizException("执行输出方案失败,数据源不存在或无权限访问."));
+
         //准备工作空间
-        var workSpaceName = "gen_workspace_"+outSchemaPo.getName();
+        var workSpaceName = "gen_workspace_" + outSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
+        var workSpaceInputPath = workSpacePath.resolve("input");
+        var workSpaceOutputPath = workSpacePath.resolve("output");
 
         //不存在创建
-        if(!Files.exists(workSpacePath)){
+        if (!Files.exists(workSpacePath)) {
             try {
                 Files.createDirectories(workSpacePath);
             } catch (IOException e) {
@@ -264,9 +280,63 @@ public class OutSchemaService {
             }
         }
 
-        //从iScm拉取蓝图文件
-        scmService.pullFromScm(inputScmPo, workSpacePath.toString());
+        //先检出两个SCM
+        scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
+        scmService.pullFromScm(outputScmPo, workSpaceOutputPath.toString());
 
+        var iAppendPath = outSchemaPo.getBaseInput().trim();
+        var oAppendPath = outSchemaPo.getBaseOutput().trim();
+
+        //绝对路径转换为相对路径
+        if (iAppendPath.startsWith("/")) {
+            iAppendPath = iAppendPath.substring(1);
+        }
+
+        if (oAppendPath.startsWith("/")) {
+            oAppendPath = oAppendPath.substring(1);
+        }
+
+        //蓝图输入路径
+        var iBpPath = workSpaceInputPath.resolve(iAppendPath);
+
+        //投影输出路径
+        var oPrjPath = workSpaceOutputPath.resolve(oAppendPath);
+
+        //配置AssemblyBlueprint 直接创建Mysql采集器(这里复用"输出方案"中绑定的"数据源")
+        MysqlCollector coll = new MysqlCollector();
+        coll.setUrl(dataSourcePo.getUrl());
+        coll.setUsername(dataSourcePo.getUsername());
+        coll.setPassword(dataSourcePo.getPassword());
+        coll.setDatabase(dataSourcePo.getDbSchema());
+
+        //创建蓝图采集器、聚合转换器、投影仪
+        VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
+        PolyConverter converter = new MysqlToJavaPolyConverter();
+        Projector projector = new VelocityProjector();
+
+        //创建AssemblyFactory
+        AssemblyFactory factory = new AssemblyFactory();
+        factory.setCollector(coll);
+        factory.setCollector(blueprintCollector);
+        factory.setConverter(converter);
+        factory.setProjector(projector);
+
+        //启用投影参数日志
+        projector.enableProjectorMap(true);
+
+        //设置输入和输出路径(使用绝对路径)
+        factory.setInputBasePath(iBpPath.toString());
+        factory.setOutputBasePath(oPrjPath.toString());
+
+        //选择要收集的表
+        factory.selectTables(outSchemaPo.getTableName());
+
+        //需移除的表前缀
+        factory.removeTablePrefixes(outSchemaPo.getRemoveTablePrefix());
+        factory.setOverwriteEnabled(true);
+
+        //执行AssemblyBlueprint流水线
+        factory.execute();
 
     }
 }
