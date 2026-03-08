@@ -22,13 +22,10 @@ export default {
    */
   useOutModelPolyList(outputSchemaId: Ref<string>) {
     const listForm = ref<GetOutModelPolyListDto>({
-      pageNum: 1,
-      pageSize: 20,
       outputSchemaId: outputSchemaId.value,
     });
 
     const listData = ref<GetOutModelPolyListVo[]>([]);
-    const listTotal = ref(0);
     const listLoading = ref(false);
 
     const loadList = async () => {
@@ -38,7 +35,6 @@ export default {
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
-        listTotal.value = result.total;
       }
 
       if (Result.isError(result)) {
@@ -46,13 +42,6 @@ export default {
       }
 
       listLoading.value = false;
-    };
-
-    const resetList = () => {
-      listForm.value.pageNum = 1;
-      listForm.value.pageSize = 20;
-      listForm.value.outputSchemaId = outputSchemaId.value;
-      loadList();
     };
 
     const removeList = async (row: GetOutModelPolyListVo) => {
@@ -76,12 +65,9 @@ export default {
     };
 
     return {
-      listForm,
       listData,
-      listTotal,
       listLoading,
       loadList,
-      resetList,
       removeList,
     };
   },

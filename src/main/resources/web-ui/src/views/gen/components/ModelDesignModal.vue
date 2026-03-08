@@ -4,53 +4,14 @@
       <!-- 原始模型 TAB -->
       <el-tab-pane label="原始模型" name="origin" style="height: 100%; display: flex; flex-direction: column">
         <div style="display: flex; flex-direction: column; height: 540px">
-          <StdListAreaAction class="flex gap-2">
-            <el-button type="success" @click="openOriginModal('add', null)">新增原始字段</el-button>
-          </StdListAreaAction>
-
-          <StdListAreaTable style="flex: 1">
-            <el-table :data="originListData" stripe v-loading="originListLoading" border height="100%">
-              <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
-              <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
-              <el-table-column prop="require" label="必填" min-width="70" show-overflow-tooltip />
-              <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="seq" label="排序" min-width="70" show-overflow-tooltip />
-              <el-table-column label="操作" fixed="right" min-width="120" align="center">
-                <template #default="scope">
-                  <el-button link type="primary" size="small" @click="openOriginModal('edit', scope.row)" :icon="EditIcon">
-                    编辑
-                  </el-button>
-                  <el-button link type="danger" size="small" @click="removeOriginList(scope.row)" :icon="DeleteIcon">
-                    删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-
-            <template #pagination>
-              <el-pagination
-                v-model:current-page="originListForm.pageNum"
-                v-model:page-size="originListForm.pageSize"
-                :page-sizes="[10, 20, 50, 100]"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="originListTotal"
-                @size-change="
-                  (val: number) => {
-                    originListForm.pageSize = val;
-                    loadOriginList();
-                  }
-                "
-                @current-change="
-                  (val: number) => {
-                    originListForm.pageNum = val;
-                    loadOriginList();
-                  }
-                "
-                background
-              />
-            </template>
-          </StdListAreaTable>
+          <el-table :data="originListData" stripe v-loading="originListLoading" border height="100%">
+            <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
+            <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
+            <el-table-column prop="require" label="必填" min-width="70" show-overflow-tooltip />
+            <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="seq" label="排序" min-width="70" show-overflow-tooltip />
+          </el-table>
         </div>
       </el-tab-pane>
 
@@ -83,81 +44,10 @@
                 </template>
               </el-table-column>
             </el-table>
-
-            <template #pagination>
-              <el-pagination
-                v-model:current-page="polyListForm.pageNum"
-                v-model:page-size="polyListForm.pageSize"
-                :page-sizes="[10, 20, 50, 100]"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="polyListTotal"
-                @size-change="
-                  (val: number) => {
-                    polyListForm.pageSize = val;
-                    loadPolyList();
-                  }
-                "
-                @current-change="
-                  (val: number) => {
-                    polyListForm.pageNum = val;
-                    loadPolyList();
-                  }
-                "
-                background
-              />
-            </template>
           </StdListAreaTable>
         </div>
       </el-tab-pane>
     </el-tabs>
-
-    <!-- 原始模型 新增/编辑模态框 -->
-    <el-dialog
-      v-model="originModalVisible"
-      :title="originModalMode === 'edit' ? '编辑原始字段' : '新增原始字段'"
-      width="600px"
-      :close-on-click-modal="false"
-      @close="
-        resetOriginModal();
-        loadOriginList();
-      "
-    >
-      <el-form
-        v-if="originModalVisible"
-        ref="originModalFormRef"
-        :model="originModalForm"
-        :rules="originModalRules"
-        label-width="110px"
-        :validate-on-rule-change="false"
-      >
-        <el-form-item label="原始字段名" prop="name">
-          <el-input v-model="originModalForm.name" placeholder="请输入原始字段名" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="原始数据类型" prop="kind">
-          <el-input v-model="originModalForm.kind" placeholder="请输入原始数据类型" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="原始长度" prop="length">
-          <el-input v-model="originModalForm.length" placeholder="请输入原始长度" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="原始必填" prop="require">
-          <el-input v-model.number="originModalForm.require" placeholder="0:否 1:是" clearable />
-        </el-form-item>
-        <el-form-item label="原始备注" prop="remark">
-          <el-input v-model="originModalForm.remark" placeholder="请输入原始备注" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="原始排序" prop="seq">
-          <el-input v-model.number="originModalForm.seq" placeholder="请输入原始排序" clearable />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="originModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitOriginModal" :loading="originModalLoading">
-            {{ originModalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
 
     <!-- 聚合模型 新增/编辑模态框 -->
     <el-dialog
@@ -263,35 +153,15 @@ const title = computed(() => {
 // ==================== 原始模型列表 ====================
 
 const {
-  listForm: originListForm,
   listData: originListData,
-  listTotal: originListTotal,
   listLoading: originListLoading,
   loadList: loadOriginList,
-  removeList: removeOriginList,
 } = OutModelOriginService.useOutModelOriginList(outputSchemaId);
-
-// ==================== 原始模型模态框 ====================
-
-const originModalFormRef = ref<FormInstance>();
-
-const {
-  modalVisible: originModalVisible,
-  modalLoading: originModalLoading,
-  modalMode: originModalMode,
-  modalForm: originModalForm,
-  modalRules: originModalRules,
-  openModal: openOriginModal,
-  resetModal: resetOriginModal,
-  submitModal: submitOriginModal,
-} = OutModelOriginService.useOutModelOriginModal(originModalFormRef, outputSchemaId, loadOriginList);
 
 // ==================== 聚合模型列表 ====================
 
 const {
-  listForm: polyListForm,
   listData: polyListData,
-  listTotal: polyListTotal,
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
