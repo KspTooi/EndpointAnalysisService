@@ -10,6 +10,7 @@ import static com.ksptool.entities.Entities.assign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +22,14 @@ import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.OutModelPolyPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.vo.GetOutModelPolyListVo;
 import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
+import com.ksptool.bio.biz.gen.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.gen.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.GetOutModelPolyListDto;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.vo.GetOutModelPolyDetailsVo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.EditOutModelPolyDto;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.AddOutModelPolyDto;
 import com.ksptool.bio.biz.gen.repository.TymSchemaFieldRepository;
+import com.ksptool.bio.biz.gen.repository.TymSchemaRepository;
 import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
 
 @Service
@@ -37,6 +40,9 @@ public class OutModelPolyService {
 
     @Autowired
     private OutModelOriginRepository omoRepository;
+
+    @Autowired
+    private TymSchemaRepository tymSchemaRepository;
 
     @Autowired
     private TymSchemaFieldRepository tymSfRepository;
@@ -142,13 +148,47 @@ public class OutModelPolyService {
         //获取类型映射方案ID
         var tymSid = outSchemaPo.getTypeSchemaId();
 
+        //获取类型映射方案
+        var tymsPo = tymSchemaRepository.findById(tymSid).orElseThrow(() -> new BizException("类型映射方案不存在"));
+
         //查找输出方案下全部的原始模型
-        List<OutModelOriginPo> omoPos = omoRepository.getOmoByOutputSchemaId(outSchemaPo.getId());
+        var omoPos = omoRepository.getOmoByOutputSchemaId(outSchemaPo.getId());
 
         //查找输出方案下绑定的全部映射方案
-        List<TymSchemaFieldPo> tymSfPos = tymSfRepository.getTymSfByTymSid(tymSid);
+        var tymSfPos = tymSfRepository.getTymSfByTymSid(tymSid);
 
-        
+        //聚合模型
+        var ompPos = new ArrayList<OutModelPolyPo>();
+ 
+        //遍历原始模型
+        for (var omoPo : omoPos) {
+
+            //查找原始模型匹配的映射方案
+            TymSchemaFieldPo mat = null;
+            var targetType = tymsPo.getDefaultType();
+
+            for (var tymSfPo : tymSfPos) {
+                if (tymSfPo.getSource().equals(omoPo.getKind())) {
+                    mat = tymSfPo;
+                    break;
+                }
+            }
+
+            //组装聚合模型
+            var ompPo = new OutModelPolyPo();
+            ompPo.setOutputSchemaId(outSchemaPo.getId());
+            ompPo.setOutputModelOriginId(omoPo.getId());
+            ompPo.setName(omoPo.getRemark());
+            ompPo.setKind(targetType);
+            ompPo.setLength(omoPo.getLength());
+            ompPo.setRequire(omoPo.getRequire());
+            //ompPo.setPolicyCrudJson(omoPo.getPolicyCrudJson());
+            //ompPo.setPolicyQuery(omoPo.getPolicyQuery());
+            //ompPo.setPolicyView(omoPo.getPolicyView());
+            //ompPo.setPlaceholder(omoPo.getPlaceholder());
+            ompPo.setSeq(omoPo.getSeq());
+            ompPos.add(ompPo);
+        }
 
 
     }

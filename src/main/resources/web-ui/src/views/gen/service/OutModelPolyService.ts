@@ -90,7 +90,7 @@ export default {
       policyCrudJson: "",
       policyQuery: 0,
       policyView: 0,
-      placeholder: "",
+      remark: "",
       seq: 0,
     });
 
@@ -102,7 +102,7 @@ export default {
       policyCrudJson: [{ required: true, message: "请输入聚合可见性策略", trigger: "blur" }],
       policyQuery: [{ required: true, message: "请输入聚合查询策略", trigger: "blur" }],
       policyView: [{ required: true, message: "请输入聚合显示策略", trigger: "blur" }],
-      placeholder: [{ required: true, message: "请输入placeholder", trigger: "blur" }],
+      remark: [{ required: true, message: "请输入聚合字段备注", trigger: "blur" }],
       seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
     };
 
@@ -120,7 +120,7 @@ export default {
         modalForm.policyCrudJson = "";
         modalForm.policyQuery = 0;
         modalForm.policyView = 0;
-        modalForm.placeholder = "";
+        modalForm.remark = "";
         modalForm.seq = 0;
         modalVisible.value = true;
         return;
@@ -143,7 +143,7 @@ export default {
         modalForm.policyCrudJson = details.policyCrudJson;
         modalForm.policyQuery = details.policyQuery;
         modalForm.policyView = details.policyView;
-        modalForm.placeholder = details.placeholder;
+        modalForm.remark = details.remark;
         modalForm.seq = details.seq;
         modalVisible.value = true;
       } catch (error: any) {
@@ -166,7 +166,7 @@ export default {
       modalForm.policyCrudJson = "";
       modalForm.policyQuery = 0;
       modalForm.policyView = 0;
-      modalForm.placeholder = "";
+      modalForm.remark = "";
       modalForm.seq = 0;
     };
 
@@ -195,7 +195,7 @@ export default {
             policyCrudJson: modalForm.policyCrudJson,
             policyQuery: modalForm.policyQuery,
             policyView: modalForm.policyView,
-            placeholder: modalForm.placeholder,
+            remark: modalForm.remark,
             seq: modalForm.seq,
           };
           await OutModelPolyApi.addOutModelPoly(addDto);
@@ -228,7 +228,7 @@ export default {
           policyCrudJson: modalForm.policyCrudJson,
           policyQuery: modalForm.policyQuery,
           policyView: modalForm.policyView,
-          placeholder: modalForm.placeholder,
+          remark: modalForm.remark,
           seq: modalForm.seq,
         };
         await OutModelPolyApi.editOutModelPoly(editDto);

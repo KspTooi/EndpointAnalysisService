@@ -24,7 +24,7 @@ export interface GetOutModelPolyListVo {
   policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  placeholder: string; // placeholder
+  remark: string; // 聚合字段备注
   seq: number; // 聚合排序
 }
 
@@ -42,7 +42,7 @@ export interface GetOutModelPolyDetailsVo {
   policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  placeholder: string; // placeholder
+  remark: string; // 聚合字段备注
   seq: number; // 聚合排序
 }
 
@@ -59,7 +59,7 @@ export interface AddOutModelPolyDto {
   policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  placeholder: string; // placeholder
+  remark: string; // 聚合字段备注
   seq: number; // 聚合排序
 }
 
@@ -77,7 +77,7 @@ export interface EditOutModelPolyDto {
   policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  placeholder: string; // placeholder
+  remark: string; // 聚合字段备注
   seq: number; // 聚合排序
 }
 

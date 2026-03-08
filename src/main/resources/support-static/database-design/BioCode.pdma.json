@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-3-8 06:59:55",
+  "updatedTime": "2026-3-8 23:40:59",
   "dbConns": [],
   "profile": {
     "default": {
@@ -31521,14 +31521,14 @@
           "id": "ABB65F2F-615B-439D-BE8E-A9FC113A9E05"
         },
         {
-          "defKey": "placeholder",
-          "defName": "placeholder",
+          "defKey": "remark",
+          "defName": "聚合字段备注",
           "comment": "",
           "type": "",
           "len": "",
           "scale": "",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,

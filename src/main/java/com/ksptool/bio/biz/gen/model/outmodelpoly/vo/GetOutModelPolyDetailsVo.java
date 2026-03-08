@@ -38,8 +38,8 @@ public class GetOutModelPolyDetailsVo {
     @Schema(description = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
-    @Schema(description = "placeholder")
-    private String placeholder;
+    @Schema(description = "聚合字段备注")
+    private String remark;
 
     @Schema(description = "聚合排序")
     private Integer seq;

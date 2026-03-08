@@ -44,7 +44,7 @@
               <el-table-column prop="policyCrudJson" label="可见性策略" min-width="150" show-overflow-tooltip />
               <el-table-column prop="policyQuery" label="查询策略" min-width="80" show-overflow-tooltip />
               <el-table-column prop="policyView" label="显示策略" min-width="80" show-overflow-tooltip />
-              <el-table-column prop="placeholder" label="placeholder" min-width="120" show-overflow-tooltip />
+              <el-table-column prop="remark" label="聚合字段备注" min-width="120" show-overflow-tooltip />
               <el-table-column label="操作" fixed="right" min-width="120" align="center">
                 <template #default="scope">
                   <el-button link type="primary" size="small" @click="openPolyModal('edit', scope.row)" :icon="EditIcon">
@@ -108,14 +108,8 @@
             clearable
           />
         </el-form-item>
-        <el-form-item label="placeholder" prop="placeholder">
-          <el-input
-            v-model="polyModalForm.placeholder"
-            placeholder="请输入placeholder"
-            clearable
-            maxlength="80"
-            show-word-limit
-          />
+        <el-form-item label="聚合字段备注" prop="remark">
+          <el-input v-model="polyModalForm.remark" placeholder="请输入聚合字段备注" clearable maxlength="80" show-word-limit />
         </el-form-item>
         <el-form-item label="聚合排序" prop="seq">
           <el-input v-model.number="polyModalForm.seq" placeholder="请输入聚合排序" clearable />

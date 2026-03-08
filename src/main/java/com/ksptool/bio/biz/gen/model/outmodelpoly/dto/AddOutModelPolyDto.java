@@ -53,10 +53,10 @@ public class AddOutModelPolyDto {
     @Schema(description = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
-    @NotBlank(message = "placeholder不能为空")
-    @Size(max = 80, message = "placeholder长度不能超过80")
-    @Schema(description = "placeholder")
-    private String placeholder;
+    @NotBlank(message = "聚合字段备注不能为空")
+    @Size(max = 80, message = "聚合字段备注长度不能超过80")
+    @Schema(description = "聚合字段备注")
+    private String remark;
 
     @NotNull(message = "聚合排序不能为空")
     @Schema(description = "聚合排序")

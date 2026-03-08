@@ -46,8 +46,8 @@ public class OutModelPolyPo {
     @Column(name = "policy_view", nullable = false, columnDefinition = "TINYINT", comment = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
-    @Column(name = "placeholder", nullable = false, length = 80, comment = "placeholder")
-    private String placeholder;
+    @Column(name = "remark", nullable = false, length = 80, comment = "聚合字段备注")
+    private String remark;
 
     @Column(name = "seq", nullable = false, comment = "聚合排序")
     private Integer seq;
