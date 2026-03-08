@@ -15,8 +15,8 @@ import ${import};
 public class Get${ptstn}ListDto extends PageQuery {
 
     #foreach ($field in $fields)
-
         #if(${field.omp_lq})##只有omp_lq=true的字段才允许查询
+
             #if(${field.comment} != "")##如果有注释就增加Swagger注解
     @Schema(description="${field.comment}")
             #end

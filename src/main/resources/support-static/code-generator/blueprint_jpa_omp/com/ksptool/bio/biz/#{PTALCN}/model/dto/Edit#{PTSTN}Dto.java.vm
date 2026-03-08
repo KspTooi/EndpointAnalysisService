@@ -14,8 +14,8 @@ import ${import};
 public class Edit${ptstn}Dto {
 
     #foreach ($field in $fields)
-
         #if(${field.omp_edit})##只有omp_edit=true的字段才允许编辑
+
             #if(${field.omp_require} == 1 && ${field.omp_require} == "String")##如果是必填String 加注解
     @NotBlank(message = "${field.comment}不能为空")
             #end

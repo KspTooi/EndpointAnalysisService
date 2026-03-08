@@ -15,12 +15,10 @@ public class Get${ptstn}DetailsVo{
 
     #foreach ($field in $fields)
 
-
         #if(${field.comment} != "")##如果有注释就增加Swagger注解
     @Schema(description="${field.comment}")
         #end
     private ${field.type} ${field.pfscn};
-
     #end
 
 }

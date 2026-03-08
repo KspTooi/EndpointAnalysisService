@@ -17,8 +17,8 @@ import ${import};
 public class Add${ptstn}Dto {
 
     #foreach ($field in $fields)
-
         #if(${field.omp_add})##只有omp_add=true的字段才放到GetXXXXListDto中
+
             #if(${field.omp_require} == 1 && ${field.omp_require} == "String")##如果是必填String 加注解
     @NotBlank(message = "${field.comment}不能为空")
             #end
