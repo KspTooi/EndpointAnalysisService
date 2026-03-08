@@ -161,6 +161,9 @@ public class OutModelPolyService {
         //聚合模型
         var ompPos = new ArrayList<OutModelPolyPo>();
  
+        //先清空输出方案下全部的聚合模型
+        repository.clearByOutputSchemaId(outSchemaPo.getId());
+
         //遍历原始模型
         for (var omoPo : omoPos) {
 

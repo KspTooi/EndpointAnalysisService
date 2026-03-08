@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, computed } from "vue";
+import { ref, markRaw, computed, watch } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -141,8 +141,10 @@ import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
+const ACTIVE_TAB_KEY = "ModelDesignModal_activeTab";
+
 const modalVisible = ref(false);
-const activeTab = ref("origin");
+const activeTab = ref(localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin");
 const outputSchemaId = ref("");
 const outSchemaVo = ref<GetOutSchemaListVo | null>(null);
 
@@ -190,6 +192,8 @@ const {
   submitModal: submitPolyModal,
 } = OutModelPolyService.useOutModelPolyModal(polyModalFormRef, outputSchemaId, loadPolyList);
 
+watch(activeTab, (val) => localStorage.setItem(ACTIVE_TAB_KEY, val));
+
 // ==================== 对外暴露 ====================
 
 const onClose = () => {
@@ -200,7 +204,7 @@ defineExpose({
   openModal: async (row: GetOutSchemaListVo) => {
     outSchemaVo.value = row;
     outputSchemaId.value = row.id;
-    activeTab.value = "origin";
+    activeTab.value = localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin";
     modalVisible.value = true;
     await Promise.all([loadOriginList(), loadPolyList()]);
   },

@@ -2,6 +2,7 @@ package com.ksptool.bio.biz.gen.repository;
 
 import com.ksptool.bio.biz.gen.model.outmodelpoly.OutModelPolyPo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,15 @@ public interface OutModelPolyRepository extends JpaRepository<OutModelPolyPo, Lo
             ORDER BY u.seq ASC
             """)
     List<OutModelPolyPo> getOutModelPolyList(@Param("po") OutModelPolyPo po);
+
+    /**
+     * 清空输出方案聚合模型
+     * @param outputSchemaId 输出方案ID
+     * @return 删除条
+     */
+    @Query("""
+        DELETE FROM OutModelPolyPo u WHERE u.outputSchemaId = :outputSchemaId
+        """)
+    @Modifying
+    int clearByOutputSchemaId(@Param("outputSchemaId") Long outputSchemaId);
 }
