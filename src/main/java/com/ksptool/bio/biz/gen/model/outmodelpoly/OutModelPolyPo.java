@@ -6,13 +6,14 @@ import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
-import java.util.Set;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -41,7 +42,7 @@ public class OutModelPolyPo {
     @Column(name = "length", length = 255, comment = "聚合长度")
     private String length;
 
-    @Column(name = "require", nullable = false, columnDefinition = "TINYINT", comment = "聚合必填 0:否 1:是")
+    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "聚合必填 0:否 1:是")
     private Integer require;
 
     @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "聚合可见性策略 ADD、EDIT、LQ、LW")
