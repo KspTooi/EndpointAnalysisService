@@ -21,25 +21,7 @@ export interface GetOutModelPolyListVo {
   kind: string; // 聚合数据类型
   length: string; // 聚合长度
   require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
-  policyQuery: number; // 聚合查询策略 0:等于 1:模糊
-  policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  remark: string; // 聚合字段备注
-  seq: number; // 聚合排序
-}
-
-/**
- * 详情VO
- */
-export interface GetOutModelPolyDetailsVo {
-  id: string; // 主键ID
-  outputSchemaId: string; // 输出方案ID
-  outputModelOriginId: string; // 原始字段ID
-  name: string; // 聚合字段名
-  kind: string; // 聚合数据类型
-  length: string; // 聚合长度
-  require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyCrudJson: string[]; // 聚合可见性策略 ADD、EDIT、LQ、LW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   remark: string; // 聚合字段备注
@@ -56,7 +38,7 @@ export interface AddOutModelPolyDto {
   kind: string; // 聚合数据类型
   length: string; // 聚合长度
   require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyCrudJson: string[]; // 聚合可见性策略 ADD、EDIT、LQ、LW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   remark: string; // 聚合字段备注
@@ -74,7 +56,7 @@ export interface EditOutModelPolyDto {
   kind: string; // 聚合数据类型
   length: string; // 聚合长度
   require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string; // 聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyCrudJson: string[]; // 聚合可见性策略 ADD、EDIT、LQ、LW
   policyQuery: number; // 聚合查询策略 0:等于 1:模糊
   policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   remark: string; // 聚合字段备注
@@ -87,17 +69,6 @@ export default {
    */
   getOutModelPolyList: async (dto: GetOutModelPolyListDto): Promise<PageResult<GetOutModelPolyListVo>> => {
     return await Http.postEntity<PageResult<GetOutModelPolyListVo>>("/outModelPoly/getOutModelPolyList", dto);
-  },
-
-  /**
-   * 获取输出方案聚合模型详情
-   */
-  getOutModelPolyDetails: async (dto: CommonIdDto): Promise<GetOutModelPolyDetailsVo> => {
-    const result = await Http.postEntity<Result<GetOutModelPolyDetailsVo>>("/outModelPoly/getOutModelPolyDetails", dto);
-    if (result.code === 0) {
-      return result.data;
-    }
-    throw new Error(result.message);
   },
 
   /**

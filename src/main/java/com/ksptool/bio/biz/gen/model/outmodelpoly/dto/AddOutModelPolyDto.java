@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.Set;
+
 import org.hibernate.validator.constraints.Range;
 
 @Getter
@@ -40,8 +43,8 @@ public class AddOutModelPolyDto {
     private Integer require;
 
     @NotBlank(message = "聚合可见性策略不能为空")
-    @Schema(description = "聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
-    private String policyCrudJson;
+    @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
+    private Set<String> policyCrudJson;
 
     @NotNull(message = "聚合查询策略不能为空")
     @Range(min = 0, max = 1, message = "聚合查询策略值只能为0或1")

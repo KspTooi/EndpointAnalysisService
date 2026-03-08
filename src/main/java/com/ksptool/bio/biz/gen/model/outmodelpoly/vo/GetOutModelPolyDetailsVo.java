@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.Set;
+
 @Getter
 @Setter
 public class GetOutModelPolyDetailsVo {
@@ -29,8 +31,8 @@ public class GetOutModelPolyDetailsVo {
     @Schema(description = "聚合必填 0:否 1:是")
     private Integer require;
 
-    @Schema(description = "聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
-    private String policyCrudJson;
+    @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
+    private Set<String> policyCrudJson;
 
     @Schema(description = "聚合查询策略 0:等于 1:模糊")
     private Integer policyQuery;
