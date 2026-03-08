@@ -88,7 +88,7 @@ export default {
   /**
    * 表格行内单元格编辑
    */
-  useCellEdit() {
+  useCellEdit(reloadCallback: () => Promise<void>) {
     const editingCell = ref<{ rowId: string; field: string } | null>(null);
     const editingValue = ref<any>(null);
 
@@ -116,8 +116,6 @@ export default {
 
       if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
 
-      (row as any)[field] = newValue;
-
       const editDto: EditOutModelPolyDto = {
         id: row.id,
         outputSchemaId: row.outputSchemaId,
@@ -131,24 +129,22 @@ export default {
         policyView: row.policyView,
         remark: row.remark,
         seq: row.seq,
+        [field]: newValue,
       };
 
       try {
         await OutModelPolyApi.editOutModelPoly(editDto);
+        await reloadCallback();
       } catch (error: any) {
-        (row as any)[field] = oldValue;
         ElMessage.error(error.message);
       }
     };
 
     /**
-     * 直接修改行字段并立即提交（用于 checkbox / select 等 change 事件）
+     * 直接提交指定字段新值（用于 checkbox / select 等 change 事件）
      */
     const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any) => {
-      const oldValue = (row as any)[field];
-      if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
-
-      (row as any)[field] = newValue;
+      if (JSON.stringify(newValue) === JSON.stringify((row as any)[field])) return;
 
       const editDto: EditOutModelPolyDto = {
         id: row.id,
@@ -163,12 +159,13 @@ export default {
         policyView: row.policyView,
         remark: row.remark,
         seq: row.seq,
+        [field]: newValue,
       };
 
       try {
         await OutModelPolyApi.editOutModelPoly(editDto);
+        await reloadCallback();
       } catch (error: any) {
-        (row as any)[field] = oldValue;
         ElMessage.error(error.message);
       }
     };

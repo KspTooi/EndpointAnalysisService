@@ -306,7 +306,7 @@ const {
 // ==================== 单元格内联编辑 ====================
 
 const { editingValue, startEdit, cancelEdit, isEditing, submitEdit, commitField } =
-  OutModelPolyService.useCellEdit();
+  OutModelPolyService.useCellEdit(loadPolyList);
 
 // ==================== 新增模态框 ====================
 
