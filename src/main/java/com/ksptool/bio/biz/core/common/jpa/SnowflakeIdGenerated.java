@@ -25,5 +25,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @IdGeneratorType(SnowflakeIdGenerator.class) // 指向生成器实现类
 @Retention(RUNTIME)
 @Target({FIELD, METHOD})
-public @interface SnowflakeGenerated {
+public @interface SnowflakeIdGenerated {
 }
