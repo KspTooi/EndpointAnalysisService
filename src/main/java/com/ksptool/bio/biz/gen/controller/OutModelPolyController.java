@@ -65,4 +65,11 @@ public class OutModelPolyController {
         return Result.success("操作成功");
     }
 
+    @Operation(summary = "从原始模型同步聚合模型(输出方案ID)")
+    @PostMapping("/syncFromOriginBySchema")
+    public Result<String> syncFromOrigin(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        outModelPolyService.syncFromOriginBySchema(dto);
+        return Result.success("同步成功");
+    }
+
 }

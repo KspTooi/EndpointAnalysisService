@@ -14,20 +14,35 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
+
+import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
 import com.ksptool.bio.biz.gen.repository.OutModelPolyRepository;
+import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.OutModelPolyPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.vo.GetOutModelPolyListVo;
+import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
+import com.ksptool.bio.biz.gen.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.GetOutModelPolyListDto;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.vo.GetOutModelPolyDetailsVo;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.EditOutModelPolyDto;
 import com.ksptool.bio.biz.gen.model.outmodelpoly.dto.AddOutModelPolyDto;
-
+import com.ksptool.bio.biz.gen.repository.TymSchemaFieldRepository;
+import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
 
 @Service
 public class OutModelPolyService {
 
     @Autowired
     private OutModelPolyRepository repository;
+
+    @Autowired
+    private OutModelOriginRepository omoRepository;
+
+    @Autowired
+    private TymSchemaFieldRepository tymSfRepository;
+
+    @Autowired
+    private OutSchemaRepository outSchemaRepository;
 
     /**
      * 查询聚合模型列表
@@ -100,6 +115,42 @@ public class OutModelPolyService {
             return;
         }
         repository.deleteById(dto.getId());
+    }
+
+    /**
+     * 从原始模型同步聚合模型(输出方案ID)
+     *
+     * @param dto 同步参数
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void syncFromOriginBySchema(CommonIdDto dto) throws BizException {
+
+        //先查询输出方案
+        OutSchemaPo outSchemaPo = outSchemaRepository.findById(dto.getId()).orElseThrow(() -> new BizException("输出方案不存在"));
+
+        //检查输出方案是否具有类型映射方案
+        if (outSchemaPo.getTypeSchemaId() == null) {
+            throw new BizException("输出方案未绑定类型映射方案,请先绑定类型映射方案");
+        }
+
+        //检查输出方案是否具有原始模型
+        if (omoRepository.getOmoByOutputSchemaId(outSchemaPo.getId()).isEmpty()) {
+            throw new BizException("输出方案下没有原始模型");
+        }
+
+        //获取类型映射方案ID
+        var tymSid = outSchemaPo.getTypeSchemaId();
+
+        //查找输出方案下全部的原始模型
+        List<OutModelOriginPo> omoPos = omoRepository.getOmoByOutputSchemaId(outSchemaPo.getId());
+
+        //查找输出方案下绑定的全部映射方案
+        List<TymSchemaFieldPo> tymSfPos = tymSfRepository.getTymSfByTymSid(tymSid);
+
+        
+
+
     }
 
 }
