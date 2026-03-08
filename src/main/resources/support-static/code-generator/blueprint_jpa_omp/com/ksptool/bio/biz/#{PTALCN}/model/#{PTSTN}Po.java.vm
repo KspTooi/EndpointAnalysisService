@@ -1,0 +1,64 @@
+package com.ksptool.bio.biz.${ptalcn}.model;
+
+import com.ksptool.assembly.entity.exception.AuthException;
+import java.time.LocalDateTime;
+import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.commons.utils.IdWorker;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+#foreach ($import in $imports)
+import ${import};
+#end
+
+@Getter
+@Setter
+@Entity
+@Table(name = "${ptuln}")
+@EntityListeners(AuditingEntityListener.class)
+public class ${ptstn}Po {
+
+    #foreach ($field in $fields)
+    #if(${field.primaryKey})##如果字段是主键
+    @Id
+    @SnowflakeIdGenerated
+    @Column(name = "${field.pfuln}"#if(${field.comment} != ''), comment = "${field.comment}"#end)
+    private ${field.type} ${field.pfscn};
+
+    #end
+        #if(!${field.primaryKey})##如果字段不是主键
+            #if(${field.pfscn} == "createTime")##添加创建时间注解
+    @CreatedDate
+            #end
+            #if(${field.pfscn} == "creatorId")##添加创建人注解
+    @CreatedBy
+            #end
+            #if(${field.pfscn} == "updateTime")##添加更新时间注解
+    @LastModifiedDate
+            #end
+            #if(${field.pfscn} == "updaterId")##添加更新人注解
+    @LastModifiedBy
+            #end
+    @Column(name = "${field.pfuln}"#if(${field.required} == false), nullable = true#end#if(${field.comment} != ''), comment = "${field.comment}"#end)
+    private ${field.type} ${field.pfscn};
+
+        #end
+    #end
+
+    @PrePersist
+    private void onCreate() throws AuthException {
+
+
+    }
+
+    @PreUpdate
+    private void onUpdate() throws AuthException {
+
+    }
+}

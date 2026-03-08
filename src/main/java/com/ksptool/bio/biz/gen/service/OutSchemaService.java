@@ -6,12 +6,12 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptool.bio.biz.gen.common.assemblybp.collector.MysqlCollector;
 import com.ksptool.bio.biz.gen.common.assemblybp.collector.VelocityBlueprintCollector;
-import com.ksptool.bio.biz.gen.common.assemblybp.converter.MysqlDynamicPolyConv;
-import com.ksptool.bio.biz.gen.common.assemblybp.converter.MysqlToJavaPolyConverter;
-import com.ksptool.bio.biz.gen.common.assemblybp.converter.PolyConverter;
+import com.ksptool.bio.biz.gen.common.assemblybp.converter.StaticPolyConv;
 import com.ksptool.bio.biz.gen.common.assemblybp.core.AssemblyFactory;
+import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.PolyField;
 import com.ksptool.bio.biz.gen.common.assemblybp.projector.Projector;
 import com.ksptool.bio.biz.gen.common.assemblybp.projector.VelocityProjector;
+import com.ksptool.bio.biz.gen.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.gen.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import com.ksptool.bio.biz.gen.model.outschema.OutSchemaPo;
@@ -23,12 +23,7 @@ import com.ksptool.bio.biz.gen.model.outschema.vo.GetOutSchemaListVo;
 import com.ksptool.bio.biz.gen.model.scm.ScmPo;
 import com.ksptool.bio.biz.gen.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.gen.model.tymschemafield.TymSchemaFieldPo;
-import com.ksptool.bio.biz.gen.repository.DataSourceRepository;
-import com.ksptool.bio.biz.gen.repository.OutModelOriginRepository;
-import com.ksptool.bio.biz.gen.repository.OutSchemaRepository;
-import com.ksptool.bio.biz.gen.repository.ScmRepository;
-import com.ksptool.bio.biz.gen.repository.TymSchemaRepository;
-import com.ksptool.bio.biz.gen.repository.TymSchemaFieldRepository;
+import com.ksptool.bio.biz.gen.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,13 +69,13 @@ public class OutSchemaService {
     private ScmService scmService;
 
     @Autowired
-    private DataSourceService dataSourceService;
-
-    @Autowired
     private TymSchemaRepository tymsRepository;
 
     @Autowired
     private TymSchemaFieldRepository tymsfRepository;
+
+    @Autowired
+    private OutModelPolyRepository outModelPolyRepository;
 
     /**
      * 查询输出方案列表
@@ -264,6 +259,13 @@ public class OutSchemaService {
         OutSchemaPo outSchemaPo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
 
+        //查询聚合模型
+        var ompPos = outModelPolyRepository.getByOutputSchemaId(outSchemaPo.getId());
+
+        if (ompPos == null || ompPos.isEmpty()) {
+            throw new BizException("执行输出方案失败,输出方案下没有聚合模型,请先创建聚合模型.");
+        }
+
         //查询输入与输出SCM
         ScmPo inputScmPo = scmRepository.findById(outSchemaPo.getInputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输入SCM不存在或无权限访问."));
@@ -278,7 +280,7 @@ public class OutSchemaService {
         //查询类型映射方案
         TymSchemaPo tymsPo = tymsRepository.findById(outSchemaPo.getTypeSchemaId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,类型映射方案不存在或无权限访问."));
-        
+
         //查询类型映射方案字段
         List<TymSchemaFieldPo> tymsfPos = tymsfRepository.getTymSfByTymSid(tymsPo.getId());
 
@@ -331,14 +333,59 @@ public class OutSchemaService {
         //创建蓝图采集器、聚合转换器、投影仪
         VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
 
-        //配置动态聚合转换器
-        MysqlDynamicPolyConv converter = new MysqlDynamicPolyConv(tymsPo.getDefaultType());
+        //使用静态字段的聚合转换器以织入自定义的聚合模型
+        StaticPolyConv converter = new StaticPolyConv();
 
-        //插入所有tymsf
-        for (var tymsfPo : tymsfPos) {
-            converter.addTypeMap(tymsfPo.getSource(), tymsfPo.getTarget());
+        //插入所有ompPos为polyField
+        for (var ompPo : ompPos) {
+            var pf = new PolyField();
+
+            //设置标准名称 omo中是下划线命名,需要转换为大驼峰命名
+            pf.setStdName(NamesTool.toPascalCase(ompPo.getName()));
+            pf.setType(ompPo.getKind());
+            pf.setComment(ompPo.getRemark());
+
+            //处理必填 0:否 1:是
+            pf.setRequired(false);
+
+            if (ompPo.getRequire() == 1) {
+                pf.setRequired(true);
+            }
+
+            pf.setSeq(ompPo.getSeq());
+
+            //向PF中注入OMP专有的附加字段
+            pf.put("omp_length", ompPo.getLength());
+            pf.put("omp_require", ompPo.getRequire());
+
+            //处理PCJ 如果PCJ中有ADD EDIT LQ LW 则设置为true,否则设置为false
+            pf.put("omp_add", false);
+            pf.put("omp_edit", false);
+            pf.put("omp_lq", false);
+            pf.put("omp_lw", false);
+
+            if (ompPo.getPolicyCrudJson().contains("ADD")) {
+                pf.put("omp_add", true);
+            }
+            if (ompPo.getPolicyCrudJson().contains("EDIT")) {
+                pf.put("omp_edit", true);
+            }
+            if (ompPo.getPolicyCrudJson().contains("LQ")) {
+                pf.put("omp_lq", true);
+            }
+            if (ompPo.getPolicyCrudJson().contains("LW")) {
+                pf.put("omp_lw", true);
+            }
+
+            //处理PQ
+            pf.put("omp_pq", ompPo.getPolicyQuery());
+
+            //处理PV
+            pf.put("omp_pv", ompPo.getPolicyView());
+            converter.addStaticField(pf);
         }
 
+        //配置投影仪
         Projector projector = new VelocityProjector();
 
         //创建AssemblyFactory
@@ -362,8 +409,9 @@ public class OutSchemaService {
         factory.removeTablePrefixes(outSchemaPo.getRemoveTablePrefix());
         factory.setOverwriteEnabled(true);
 
+        factory.putGlobalVar("modelName", outSchemaPo.getModelName());
+
         //执行AssemblyBlueprint流水线
         factory.execute();
-
     }
 }

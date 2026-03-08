@@ -12,12 +12,15 @@ import ${import};
 @Getter
 @Setter
 public class Get${ptstn}DetailsVo{
+
     #foreach ($field in $fields)
 
-    #if(${field.comment} != "")
+        #if(${field.omp_edit})##只有omp_edit=true的字段才允许查详情
+            #if(${field.comment} != "")##如果有注释就增加Swagger注解
     @Schema(description="${field.comment}")
-    #end
+            #end
     private ${field.type} ${field.pfscn};
+        #end
     #end
 
 }

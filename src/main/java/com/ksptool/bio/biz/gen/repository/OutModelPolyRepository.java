@@ -29,4 +29,14 @@ public interface OutModelPolyRepository extends JpaRepository<OutModelPolyPo, Lo
         """)
     @Modifying
     int clearByOutputSchemaId(@Param("outputSchemaId") Long outputSchemaId);
+
+    /**
+     * 查询输出方案绑定的全部聚合模型
+     * @param outputSchemaId 输出方案ID
+     * @return 输出方案绑定的全部聚合模型
+     */
+    @Query("""
+        SELECT u FROM OutModelPolyPo u WHERE u.outputSchemaId = :outputSchemaId ORDER BY u.seq ASC
+        """)
+    List<OutModelPolyPo> getByOutputSchemaId(@Param("outputSchemaId") Long outputSchemaId);
 }

@@ -23,7 +23,7 @@ import com.ksptool.bio.biz.${ptalcn}.model.vo.Get${ptstn}DetailsVo;
 
 @RestController
 @RequestMapping("/${ptscn}")
-@Tag(name = "${ptscn}", description = "${comment}")
+@Tag(name = "${global.modelName}", description = "${global.modelName}")
 @Slf4j
 public class ${ptstn}Controller {
 
@@ -31,26 +31,26 @@ public class ${ptstn}Controller {
     private ${ptstn}Service ${ptscn}Service;
 
     @PostMapping("/get${ptstn}List")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询${global.modelName}列表")
     public PageResult<Get${ptstn}ListVo> get${ptstn}List(@RequestBody @Valid Get${ptstn}ListDto dto) throws Exception{
         return ${ptscn}Service.get${ptstn}List(dto);
     }
 
-    @Operation(summary ="新增")
+    @Operation(summary ="新增${global.modelName}")
     @PostMapping("/add${ptstn}")
     public Result<String> add${ptstn}(@RequestBody @Valid Add${ptstn}Dto dto) throws Exception{
 		${ptscn}Service.add${ptstn}(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary ="编辑")
+    @Operation(summary ="编辑${global.modelName}")
     @PostMapping("/edit${ptstn}")
     public Result<String> edit${ptstn}(@RequestBody @Valid Edit${ptstn}Dto dto) throws Exception{
 		${ptscn}Service.edit${ptstn}(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @Operation(summary ="查询${global.modelName}详情")
     @PostMapping("/get${ptstn}Details")
     public Result<Get${ptstn}DetailsVo> get${ptstn}Details(@RequestBody @Valid CommonIdDto dto) throws Exception{
         Get${ptstn}DetailsVo details = ${ptscn}Service.get${ptstn}Details(dto);
@@ -60,7 +60,7 @@ public class ${ptstn}Controller {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary ="删除${global.modelName}")
     @PostMapping("/remove${ptstn}")
     public Result<String> remove${ptstn}(@RequestBody @Valid CommonIdDto dto) throws Exception{
         ${ptscn}Service.remove${ptstn}(dto);

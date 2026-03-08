@@ -318,6 +318,14 @@ public class VelocityProjector implements Projector {
                 fieldMap.put("required", field.isRequired());
                 fieldMap.put("primaryKey", field.isPrimaryKey());
                 fieldMap.put("seq", field.getSeq());
+
+                //插入附加字段
+                if (field.getAppendFields() != null) {
+                    for (Map.Entry<String, Object> entry : field.getAppendFields().entrySet()) {
+                        fieldMap.put(entry.getKey(), entry.getValue());
+                    }
+                }
+
                 fields.add(fieldMap);
             }
             map.put("fields", fields);

@@ -7,6 +7,8 @@ import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.PolyField;
 import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.PolyTable;
 import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.RawField;
 import com.ksptool.bio.biz.gen.common.assemblybp.entity.field.RawTable;
+import com.ksptool.bio.biz.gen.common.assemblybp.utils.NamesTool;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,41 +19,33 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * MySQL 到 TypeScript 的聚合转换器
+ * 静态字段的聚合转换器
  */
-public class MysqlDynamicPolyConv implements PolyConverter {
+public class StaticPolyConv implements PolyConverter {
 
-    // MySQL类型到动态类型的映射
-    private final Map<String, String> TYPE_MAP = new HashMap<>();
-
-    //兜底映射
-    private final String defaultType;
-
-    private static final Logger logger = LoggerFactory.getLogger(MysqlDynamicPolyConv.class);
+    private static final Logger logger = LoggerFactory.getLogger(StaticPolyConv.class);
 
     private List<String> tablePrefixes = new ArrayList<>();
     private List<String> fieldPrefixes = new ArrayList<>();
 
-    public MysqlDynamicPolyConv(String defaultType) {
-        this.defaultType = defaultType;
+    //静态字段
+    private List<PolyField> staticFields = new ArrayList<>();
+
+    public StaticPolyConv() {
     }
 
-    /**
-     * 添加类型映射
-     * @param mysqlType MySQL类型
-     * @param polyType 动态类型
-     */
-    public void addTypeMap(String mysqlType, String polyType) {
-        TYPE_MAP.put(mysqlType, polyType);
-    }
 
     /**
-     * 移除类型映射
-     * @param mysqlType MySQL类型
+     * 添加静态字段
+     * @param polyField 静态字段
      */
-    public void removeTypeMap(String mysqlType) {
-        TYPE_MAP.remove(mysqlType);
+    public void addStaticField(PolyField polyField) {
+        if (polyField == null){
+            return;
+        }
+        staticFields.add(polyField);
     }
+
 
     @Override
     public PolyTable toPolyTable(RawTable rawTable) {
@@ -66,13 +60,22 @@ public class MysqlDynamicPolyConv implements PolyConverter {
         polyTable.setComment(rawTable.getComment());
 
         // 处理字段
-        List<PolyField> polyFields = new ArrayList<>();
-        if (rawTable.getFields() != null) {
-            for (RawField rawField : rawTable.getFields()) {
-                polyFields.add(toPolyField(rawField));
+        polyTable.setFields(staticFields);
+
+        //匹配主键 如果数据库里面的主键与静态字段的主键一致,则设置为主键
+        for(var rawField : rawTable.getFields()){
+
+            if(rawField.isPrimaryKey()){
+                //遍历staticFields,如果名称一致,则设置为主键
+                for(var staticField : staticFields){
+                    if(staticField.getStdName().equalsIgnoreCase(NamesTool.toPascalCase(rawField.getName()))){
+                        staticField.setPrimaryKey(true);
+                        break;
+                    }
+                }
             }
+
         }
-        polyTable.setFields(polyFields);
 
         // 前端通常不需要像Java那样复杂的Import管理，这里留空或按需添加
         polyTable.setImports(new ArrayList<>());
@@ -92,7 +95,7 @@ public class MysqlDynamicPolyConv implements PolyConverter {
         //polyField.setPfscn(fieldName); // 设置小驼峰名称供模板使用
 
         // 类型转换
-        polyField.setType(toDynamicType(rawField.getType()));
+        //polyField.setType(toDynamicType(rawField.getType()));
         polyField.setComment(rawField.getComment());
         polyField.setRequired(rawField.isRequired());
         polyField.setPrimaryKey(rawField.isPrimaryKey());
@@ -127,20 +130,6 @@ public class MysqlDynamicPolyConv implements PolyConverter {
     @Override
     public void removeFieldPrefixes(String... prefixes) {
         if (prefixes != null) this.fieldPrefixes = Arrays.asList(prefixes);
-    }
-
-    // --- 辅助方法 ---
-
-    private String toDynamicType(String mysqlType) {
-
-        if (StringUtils.isBlank(mysqlType)){
-            return defaultType;
-        }
-
-        String type = mysqlType.toUpperCase().trim();
-        // 提取基本类型 (去除长度等，如 VARCHAR(32) -> VARCHAR)
-        String baseType = type.split("\\(")[0];
-        return TYPE_MAP.getOrDefault(baseType, defaultType);
     }
 
     private String removeTablePrefixes(String name) {

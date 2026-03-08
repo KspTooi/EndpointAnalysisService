@@ -3,10 +3,13 @@ package com.ksptool.bio.biz.gen.common.assemblybp.entity.field;
 import com.ksptool.bio.biz.gen.common.assemblybp.utils.StdName;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
-public class PolyField {
+public class PolyField{
 
     //对应的原始字段
     @Setter
@@ -43,6 +46,9 @@ public class PolyField {
     @Setter
     private int seq;
 
+    //附加字段
+    private Map<String, Object> appendFields;
+
     public void setStdName(String stdName) {
         if (StringUtils.isBlank(stdName)) {
             this.stdName = stdName;
@@ -63,6 +69,18 @@ public class PolyField {
         this.pfuln = stdNameObj.toUnderLineName();
         this.pfalcn = stdNameObj.toLowerCase();
         this.pfaucn = stdNameObj.toUpperCase();
+    }
+
+    /**
+     * 向附加字段中添加字段
+     * @param key 字段名称
+     * @param value 字段值
+     */
+    public void put(String key, Object value) {
+        if (appendFields == null) {
+            appendFields = new HashMap<>();
+        }
+        appendFields.put(key, value);
     }
 
 }
