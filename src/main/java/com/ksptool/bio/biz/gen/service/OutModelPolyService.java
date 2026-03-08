@@ -187,7 +187,7 @@ public class OutModelPolyService {
             var ompPo = new OutModelPolyPo();
             ompPo.setOutputSchemaId(outSchemaPo.getId());
             ompPo.setOutputModelOriginId(omoPo.getId());
-            ompPo.setName(omoPo.getRemark());
+            ompPo.setName(omoPo.getName());
             ompPo.setKind(targetType);
             ompPo.setLength(omoPo.getLength());
             ompPo.setRequire(omoPo.getRequire());
