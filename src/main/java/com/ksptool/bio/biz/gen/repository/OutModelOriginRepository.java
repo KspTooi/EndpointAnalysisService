@@ -2,10 +2,9 @@ package com.ksptool.bio.biz.gen.repository;
 
 import com.ksptool.bio.biz.gen.model.outmodelorigin.OutModelOriginPo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo
 
     /**
      * 查询输出方案原始字段
+     *
      * @param outputSchemaId 输出方案ID
      * @return 输出方案原始字段
      */
@@ -27,6 +27,7 @@ public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo
 
     /**
      * 查询输出方案原始字段列表
+     *
      * @param po 查询参数
      * @return 输出方案原始字段列表
      */
@@ -36,5 +37,5 @@ public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo
             (:#{#po.outputSchemaId} IS NULL OR u.outputSchemaId  = :#{#po.outputSchemaId} )
             ORDER BY u.seq ASC
             """)
-    Page<OutModelOriginPo> getOutModelOriginList(@Param("po") OutModelOriginPo po);
+    List<OutModelOriginPo> getOutModelOriginList(@Param("po") OutModelOriginPo po);
 }

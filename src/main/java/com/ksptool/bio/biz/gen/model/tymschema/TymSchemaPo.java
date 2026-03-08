@@ -1,21 +1,26 @@
 package com.ksptool.bio.biz.gen.model.tymschema;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.bio.biz.auth.service.SessionService;
-import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "gen_tym_schema")
+@EntityListeners(AuditingEntityListener.class)
 public class TymSchemaPo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
@@ -43,45 +48,30 @@ public class TymSchemaPo {
     @Column(name = "remark", columnDefinition = "TEXT", comment = "备注")
     private String remark;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
+    @LastModifiedBy
     @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
 
 
     @PrePersist
     private void onCreate() throws AuthException {
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
 
-        LocalDateTime now = LocalDateTime.now();
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
-        if (this.updateTime == null) {
-            this.updateTime = this.createTime;
-        }
-        if (this.creatorId == null) {
-            this.creatorId = SessionService.session().getUserId();
-        }
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
     }
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        this.updateTime = LocalDateTime.now();
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
+
     }
 }

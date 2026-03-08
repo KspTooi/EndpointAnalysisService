@@ -45,13 +45,13 @@ public class OutModelOriginService {
         OutModelOriginPo query = new OutModelOriginPo();
         assign(dto, query);
 
-        Page<OutModelOriginPo> page = repository.getOutModelOriginList(query);
-        if (page.isEmpty()) {
+        List<OutModelOriginPo> list = repository.getOutModelOriginList(query);
+        if (list.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<GetOutModelOriginListVo> vos = as(page.getContent(), GetOutModelOriginListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        List<GetOutModelOriginListVo> vos = as(list, GetOutModelOriginListVo.class);
+        return PageResult.success(vos, list.size());
     }
 
     /**

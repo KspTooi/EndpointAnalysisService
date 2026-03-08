@@ -60,13 +60,13 @@ public class OutModelPolyService {
         OutModelPolyPo query = new OutModelPolyPo();
         assign(dto, query);
 
-        Page<OutModelPolyPo> page = repository.getOutModelPolyList(query);
-        if (page.isEmpty()) {
+        List<OutModelPolyPo> list = repository.getOutModelPolyList(query);
+        if (list.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<GetOutModelPolyListVo> vos = as(page.getContent(), GetOutModelPolyListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        List<GetOutModelPolyListVo> vos = as(list, GetOutModelPolyListVo.class);
+        return PageResult.success(vos, list.size());
     }
 
     /**
