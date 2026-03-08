@@ -45,7 +45,7 @@ public class EditOutModelPolyDto {
     @Schema(description = "聚合必填 0:否 1:是")
     private Integer require;
 
-    @NotBlank(message = "聚合可见性策略不能为空")
+    @NotNull(message = "聚合可见性策略不能为空")
     @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
     private Set<String> policyCrudJson;
 
