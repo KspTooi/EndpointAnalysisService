@@ -2,12 +2,14 @@ package com.ksptool.bio.biz.gen.model.outmodelpoly;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.jpa.ListStringConv;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,7 +40,8 @@ public class OutModelPolyPo {
     private Integer require;
 
     @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "聚合可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
-    private String policyCrudJson;
+    @Convert(converter = ListStringConv.class)
+    private List<String> policyCrudJson;
 
     @Column(name = "policy_query", nullable = false, columnDefinition = "TINYINT", comment = "聚合查询策略 0:等于 1:模糊")
     private Integer policyQuery;
