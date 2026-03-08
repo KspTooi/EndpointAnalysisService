@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -174,6 +175,11 @@ public class OutModelPolyService {
                 }
             }
 
+            //如果匹配到tymSf 则使用tymSf的target类型
+            if (mat != null) {
+                targetType = mat.getTarget();
+            }
+
             //组装聚合模型
             var ompPo = new OutModelPolyPo();
             ompPo.setOutputSchemaId(outSchemaPo.getId());
@@ -182,15 +188,16 @@ public class OutModelPolyService {
             ompPo.setKind(targetType);
             ompPo.setLength(omoPo.getLength());
             ompPo.setRequire(omoPo.getRequire());
-            //ompPo.setPolicyCrudJson(omoPo.getPolicyCrudJson());
-            //ompPo.setPolicyQuery(omoPo.getPolicyQuery());
-            //ompPo.setPolicyView(omoPo.getPolicyView());
-            //ompPo.setPlaceholder(omoPo.getPlaceholder());
+            ompPo.setPolicyCrudJson(Set.of("ADD", "EDIT", "LQ", "LW"));
+            ompPo.setPolicyQuery(0); //0:等于 1:模糊
+            ompPo.setPolicyView(0); //0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+            ompPo.setRemark(omoPo.getRemark());
             ompPo.setSeq(omoPo.getSeq());
             ompPos.add(ompPo);
         }
 
-
+        //批量保存聚合模型
+        repository.saveAll(ompPos);
     }
 
 }

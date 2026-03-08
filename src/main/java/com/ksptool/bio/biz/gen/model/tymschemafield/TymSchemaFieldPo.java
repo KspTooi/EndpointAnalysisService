@@ -18,7 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Table(name = "gen_tym_schema_field")
 @EntityListeners(AuditingEntityListener.class)
 public class TymSchemaFieldPo {
-
+    
     @Id
     @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "主键ID")
