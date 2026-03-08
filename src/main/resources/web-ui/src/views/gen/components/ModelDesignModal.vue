@@ -1,12 +1,35 @@
 <template>
-  <el-dialog v-model="modalVisible" :title="title" width="1200px" :close-on-click-modal="false" @close="onClose">
-    <el-tabs v-model="activeTab" type="border-card" style="height: 600px">
+  <el-dialog v-model="modalVisible" :title="title" fullscreen :close-on-click-modal="false" @close="onClose">
+    <el-tabs v-model="activeTab" type="border-card" class="fullscreen-tabs">
       <!-- 原始模型 TAB -->
-      <el-tab-pane label="原始模型" name="origin" style="height: 100%; display: flex; flex-direction: column">
-        <div style="display: flex; flex-direction: column; height: 540px">
-          <el-table :data="originListData" stripe v-loading="originListLoading" border height="100%">
+      <el-tab-pane label="原始模型" name="origin">
+        <el-table :data="originListData" stripe v-loading="originListLoading" border class="tab-table">
+          <el-table-column prop="seq" label="序号" min-width="50" show-overflow-tooltip align="center" />
+          <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
+          <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
+          <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
+          <el-table-column prop="require" label="必填" min-width="50" align="center">
+            <template #default="scope">
+              <span :style="{ color: scope.row.require === 1 ? '#f56c6c' : '#67c23a', fontWeight: 500 }">
+                {{ scope.row.require === 1 ? "是" : "否" }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
+        </el-table>
+      </el-tab-pane>
+
+      <!-- 聚合模型 TAB -->
+      <el-tab-pane label="聚合模型" name="poly">
+        <div class="poly-tab-content">
+          <StdListAreaAction class="flex gap-2">
+            <el-button type="warning" @click="syncPolyFromOrigin">从原始模型同步</el-button>
+            <el-button type="success" @click="openPolyModal('add', null)">新增聚合字段</el-button>
+          </StdListAreaAction>
+
+          <el-table :data="polyListData" stripe v-loading="polyListLoading" border class="tab-table poly-table">
             <el-table-column prop="seq" label="序号" min-width="50" show-overflow-tooltip align="center" />
-            <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="name" label="聚合字段名" min-width="150" show-overflow-tooltip />
             <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
             <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
             <el-table-column prop="require" label="必填" min-width="50" align="center">
@@ -16,48 +39,21 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="policyCrudJson" label="可见性策略" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="policyQuery" label="查询策略" min-width="80" show-overflow-tooltip />
+            <el-table-column prop="policyView" label="显示策略" min-width="80" show-overflow-tooltip />
+            <el-table-column prop="remark" label="聚合字段备注" min-width="120" show-overflow-tooltip />
+            <el-table-column label="操作" fixed="right" min-width="120" align="center">
+              <template #default="scope">
+                <el-button link type="primary" size="small" @click="openPolyModal('edit', scope.row)" :icon="EditIcon">
+                  编辑
+                </el-button>
+                <el-button link type="danger" size="small" @click="removePolyList(scope.row)" :icon="DeleteIcon">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
-        </div>
-      </el-tab-pane>
-
-      <!-- 聚合模型 TAB -->
-      <el-tab-pane label="聚合模型" name="poly" style="height: 100%; display: flex; flex-direction: column">
-        <div style="display: flex; flex-direction: column; height: 540px">
-          <StdListAreaAction class="flex gap-2">
-            <el-button type="warning" @click="syncPolyFromOrigin">从原始模型同步</el-button>
-            <el-button type="success" @click="openPolyModal('add', null)">新增聚合字段</el-button>
-          </StdListAreaAction>
-
-          <StdListAreaTable style="flex: 1">
-            <el-table :data="polyListData" stripe v-loading="polyListLoading" border height="100%">
-              <el-table-column prop="seq" label="序号" min-width="50" show-overflow-tooltip align="center" />
-              <el-table-column prop="name" label="聚合字段名" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
-              <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
-              <el-table-column prop="require" label="必填" min-width="50" align="center">
-                <template #default="scope">
-                  <span :style="{ color: scope.row.require === 1 ? '#f56c6c' : '#67c23a', fontWeight: 500 }">
-                    {{ scope.row.require === 1 ? "是" : "否" }}
-                  </span>
-                </template>
-              </el-table-column>
-              <el-table-column prop="policyCrudJson" label="可见性策略" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="policyQuery" label="查询策略" min-width="80" show-overflow-tooltip />
-              <el-table-column prop="policyView" label="显示策略" min-width="80" show-overflow-tooltip />
-              <el-table-column prop="remark" label="聚合字段备注" min-width="120" show-overflow-tooltip />
-              <el-table-column label="操作" fixed="right" min-width="120" align="center">
-                <template #default="scope">
-                  <el-button link type="primary" size="small" @click="openPolyModal('edit', scope.row)" :icon="EditIcon">
-                    编辑
-                  </el-button>
-                  <el-button link type="danger" size="small" @click="removePolyList(scope.row)" :icon="DeleteIcon">
-                    删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </StdListAreaTable>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -133,7 +129,6 @@ import { ref, markRaw, computed, watch } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
-import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import OutModelOriginService from "@/views/gen/service/OutModelOriginService";
 import OutModelPolyService from "@/views/gen/service/OutModelPolyService";
 import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
@@ -211,4 +206,27 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+/*
+  全屏 dialog 标题栏约 55px，tabs 导航栏约 41px，
+  操作按钮行（StdListAreaAction）约 46px，内边距合计约 24px。
+  tab-table: 撑满除 tabs 导航之外的剩余空间
+  poly-table: 再减去操作按钮行高度
+*/
+.fullscreen-tabs {
+  height: calc(100vh - 80px);
+}
+
+.tab-table {
+  height: calc(100vh - 55px - 41px - 24px);
+}
+
+.poly-tab-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.poly-table {
+  height: calc(100vh - 55px - 41px - 46px - 24px) !important;
+}
+</style>
