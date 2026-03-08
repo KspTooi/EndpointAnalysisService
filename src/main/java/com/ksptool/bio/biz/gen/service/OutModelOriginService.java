@@ -45,7 +45,7 @@ public class OutModelOriginService {
         OutModelOriginPo query = new OutModelOriginPo();
         assign(dto, query);
 
-        Page<OutModelOriginPo> page = repository.getOutModelOriginList(query, dto.pageRequest());
+        Page<OutModelOriginPo> page = repository.getOutModelOriginList(query);
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }

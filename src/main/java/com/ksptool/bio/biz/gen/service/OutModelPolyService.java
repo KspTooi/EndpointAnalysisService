@@ -39,7 +39,7 @@ public class OutModelPolyService {
         OutModelPolyPo query = new OutModelPolyPo();
         assign(dto, query);
 
-        Page<OutModelPolyPo> page = repository.getOutModelPolyList(query, dto.pageRequest());
+        Page<OutModelPolyPo> page = repository.getOutModelPolyList(query);
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
