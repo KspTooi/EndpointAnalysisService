@@ -31,64 +31,28 @@
             <!-- 序号 -->
             <el-table-column prop="seq" label="序号" min-width="70" align="center">
               <template #default="scope">
-                <el-input
-                  v-if="isEditing(scope.row.id, 'seq')"
-                  v-model.number="editingValue"
-                  size="small"
-                  autofocus
-                  @blur="submitEdit(scope.row)"
-                  @keyup.enter="submitEdit(scope.row)"
-                  @keyup.esc="cancelEdit"
-                />
-                <span v-else class="cell-text" @click="startEdit(scope.row, 'seq')">{{ scope.row.seq }}</span>
+                <el-input v-model.number="scope.row.seq" size="small" @blur="submitRow(scope.row)" />
               </template>
             </el-table-column>
 
             <!-- 聚合字段名 -->
             <el-table-column prop="name" label="聚合字段名" min-width="150">
               <template #default="scope">
-                <el-input
-                  v-if="isEditing(scope.row.id, 'name')"
-                  v-model="editingValue"
-                  size="small"
-                  autofocus
-                  @blur="submitEdit(scope.row)"
-                  @keyup.enter="submitEdit(scope.row)"
-                  @keyup.esc="cancelEdit"
-                />
-                <span v-else class="cell-text" @click="startEdit(scope.row, 'name')">{{ scope.row.name }}</span>
+                <el-input v-model="scope.row.name" size="small" @blur="submitRow(scope.row)" />
               </template>
             </el-table-column>
 
             <!-- 数据类型 -->
             <el-table-column prop="kind" label="数据类型" min-width="120">
               <template #default="scope">
-                <el-input
-                  v-if="isEditing(scope.row.id, 'kind')"
-                  v-model="editingValue"
-                  size="small"
-                  autofocus
-                  @blur="submitEdit(scope.row)"
-                  @keyup.enter="submitEdit(scope.row)"
-                  @keyup.esc="cancelEdit"
-                />
-                <span v-else class="cell-text" @click="startEdit(scope.row, 'kind')">{{ scope.row.kind }}</span>
+                <el-input v-model="scope.row.kind" size="small" @blur="submitRow(scope.row)" />
               </template>
             </el-table-column>
 
             <!-- 长度 -->
             <el-table-column prop="length" label="长度" min-width="80">
               <template #default="scope">
-                <el-input
-                  v-if="isEditing(scope.row.id, 'length')"
-                  v-model="editingValue"
-                  size="small"
-                  autofocus
-                  @blur="submitEdit(scope.row)"
-                  @keyup.enter="submitEdit(scope.row)"
-                  @keyup.esc="cancelEdit"
-                />
-                <span v-else class="cell-text" @click="startEdit(scope.row, 'length')">{{ scope.row.length }}</span>
+                <el-input v-model="scope.row.length" size="small" @blur="submitRow(scope.row)" />
               </template>
             </el-table-column>
 
@@ -109,10 +73,10 @@
                   :model-value="scope.row.policyCrudJson"
                   @change="(val: string[]) => commitField(scope.row, 'policyCrudJson', val)"
                 >
-                  <el-checkbox value="ADD" label="ADD" />
-                  <el-checkbox value="EDIT" label="EDIT" />
-                  <el-checkbox value="LQ" label="LQ" />
-                  <el-checkbox value="LW" label="LW" />
+                  <el-checkbox value="ADD" label="新增" />
+                  <el-checkbox value="EDIT" label="编辑" />
+                  <el-checkbox value="LQ" label="列查" />
+                  <el-checkbox value="LW" label="列显" />
                 </el-checkbox-group>
               </template>
             </el-table-column>
@@ -153,16 +117,7 @@
             <!-- 备注 -->
             <el-table-column prop="remark" label="备注" min-width="150">
               <template #default="scope">
-                <el-input
-                  v-if="isEditing(scope.row.id, 'remark')"
-                  v-model="editingValue"
-                  size="small"
-                  autofocus
-                  @blur="submitEdit(scope.row)"
-                  @keyup.enter="submitEdit(scope.row)"
-                  @keyup.esc="cancelEdit"
-                />
-                <span v-else class="cell-text" @click="startEdit(scope.row, 'remark')">{{ scope.row.remark }}</span>
+                <el-input v-model="scope.row.remark" size="small" @blur="submitRow(scope.row)" />
               </template>
             </el-table-column>
 
@@ -305,8 +260,7 @@ const {
 
 // ==================== 单元格内联编辑 ====================
 
-const { editingValue, startEdit, cancelEdit, isEditing, submitEdit, commitField } =
-  OutModelPolyService.useCellEdit(loadPolyList);
+const { submitRow, commitField } = OutModelPolyService.useCellEdit(loadPolyList);
 
 // ==================== 新增模态框 ====================
 
@@ -430,17 +384,5 @@ defineExpose({
 
 .poly-table {
   height: calc(100vh - 55px - 41px - 46px - 24px) !important;
-}
-
-.cell-text {
-  display: block;
-  cursor: pointer;
-  min-height: 20px;
-  border-radius: 3px;
-  padding: 0 2px;
-}
-
-.cell-text:hover {
-  background-color: var(--el-fill-color-light);
 }
 </style>

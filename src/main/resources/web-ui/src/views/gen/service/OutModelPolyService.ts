@@ -1,9 +1,5 @@
 import { ref, type Ref } from "vue";
-import type {
-  GetOutModelPolyListDto,
-  GetOutModelPolyListVo,
-  EditOutModelPolyDto,
-} from "@/views/gen/api/OutModelPolyApi";
+import type { GetOutModelPolyListDto, GetOutModelPolyListVo, EditOutModelPolyDto } from "@/views/gen/api/OutModelPolyApi";
 import OutModelPolyApi from "@/views/gen/api/OutModelPolyApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -21,7 +17,7 @@ export default {
     const listLoading = ref(false);
 
     const loadList = async () => {
-      listLoading.value = true;
+      listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
       const result = await OutModelPolyApi.getOutModelPolyList(listForm.value);
 
@@ -86,36 +82,13 @@ export default {
   },
 
   /**
-   * 表格行内单元格编辑
+   * 表格行内编辑提交
    */
   useCellEdit(reloadCallback: () => Promise<void>) {
-    const editingCell = ref<{ rowId: string; field: string } | null>(null);
-    const editingValue = ref<any>(null);
-
-    const startEdit = (row: GetOutModelPolyListVo, field: string) => {
-      editingCell.value = { rowId: row.id, field };
-      editingValue.value = (row as any)[field];
-    };
-
-    const cancelEdit = () => {
-      editingCell.value = null;
-      editingValue.value = null;
-    };
-
-    const isEditing = (rowId: string, field: string) => {
-      return editingCell.value?.rowId === rowId && editingCell.value?.field === field;
-    };
-
-    const submitEdit = async (row: GetOutModelPolyListVo) => {
-      if (!editingCell.value) return;
-      const field = editingCell.value.field;
-      const oldValue = (row as any)[field];
-      const newValue = editingValue.value;
-
-      cancelEdit();
-
-      if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
-
+    /**
+     * 提交整行当前值到后端（文本类 input blur 时调用）
+     */
+    const submitRow = async (row: GetOutModelPolyListVo) => {
       const editDto: EditOutModelPolyDto = {
         id: row.id,
         outputSchemaId: row.outputSchemaId,
@@ -129,7 +102,6 @@ export default {
         policyView: row.policyView,
         remark: row.remark,
         seq: row.seq,
-        [field]: newValue,
       };
 
       try {
@@ -141,7 +113,7 @@ export default {
     };
 
     /**
-     * 直接提交指定字段新值（用于 checkbox / select 等 change 事件）
+     * 提交指定字段新值（checkbox / select change 时调用）
      */
     const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any) => {
       if (JSON.stringify(newValue) === JSON.stringify((row as any)[field])) return;
@@ -171,12 +143,7 @@ export default {
     };
 
     return {
-      editingCell,
-      editingValue,
-      startEdit,
-      cancelEdit,
-      isEditing,
-      submitEdit,
+      submitRow,
       commitField,
     };
   },
