@@ -415,6 +415,6 @@ public class OutSchemaService {
         factory.execute();
 
         //将输出目录推送到输出SCM
-        scmService.pushToScm(outputScmPo, oPrjPath.toString());
+        scmService.pushToScm(outputScmPo, workSpaceOutputPath.toString());
     }
 }
