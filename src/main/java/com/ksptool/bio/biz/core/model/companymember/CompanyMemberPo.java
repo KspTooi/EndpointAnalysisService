@@ -7,12 +7,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_company_member", uniqueConstraints = {
         @UniqueConstraint(name = "uk_company_user", columnNames = {"company_id", "user_id", "deleted_time"})
 })
@@ -21,7 +27,7 @@ import java.time.LocalDateTime;
 public class CompanyMemberPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeIdGenerated
     @Column(name = "id", comment = "记录ID")
     private Long id;
 
@@ -36,6 +42,7 @@ public class CompanyMemberPo {
     @Column(name = "role", columnDefinition = "tinyint", comment = "职务 0:CEO 1:成员")
     private Integer role;
 
+    @CreatedDate
     @Column(name = "joined_time", nullable = false, comment = "加入时间")
     private LocalDateTime joinedTime;
 
@@ -44,9 +51,12 @@ public class CompanyMemberPo {
 
     @PrePersist
     private void onCreate() {
-        if (this.joinedTime == null) {
-            this.joinedTime = LocalDateTime.now();
-        }
+
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+
     }
 
 }
