@@ -26,12 +26,22 @@ import org.springframework.security.web.context.NullSecurityContextRepository;
 @Slf4j
 public class SecurityConfig {
 
+    
+    /**
+     * USAF过滤器 这个过滤器会获取请求中的Token并重建安全上下文
+     */
     @Autowired
     private UserSessionAuthFilter usaf;
 
+    /**
+     * 认证失败和权限不足的处理(统一返回JSON格式)
+     */
     @Autowired
     private JsonAuthEntryPoint jaep;
 
+    /**
+     * 动态全局白名单管理器 这个管理器会检查请求是否在白名单中
+     */
     @Autowired
     private DynamicGlobalWhiteManager dgwm;
 
@@ -50,7 +60,7 @@ public class SecurityConfig {
 
         //关闭Session
         hs.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        //不使用 HttpSession 持久化 SecurityContext（每次请求由 token -> core_user_session 重建认证上下文）
+        //不使用 HttpSession 持久化 SecurityContext（每次请求由 token -> USAF 重建认证上下文）
         hs.securityContext(securityContext -> securityContext.securityContextRepository(new NullSecurityContextRepository()));
 
         //禁用 SavedRequest（默认会把原始请求缓存到 session）
@@ -67,7 +77,7 @@ public class SecurityConfig {
 
         //配置接口权限规则 使用DGWM进行权限管理
         hs.authorizeHttpRequests(auth -> auth
-            .anyRequest().access(dgwm)
+                .anyRequest().access(dgwm)
         );
 
         //配置认证失败和权限不足的处理(统一返回JSON格式)
@@ -77,7 +87,7 @@ public class SecurityConfig {
         );
 
         //添加自定义过滤器
-        //这个过滤器会解析并验证用户会话（依赖 sessionId -> core_user_session 重建认证上下文），确保每次请求都能获取到有效的用户会话
+        //USAF过滤器会解析并验证用户会话（依赖 sessionId -> core_user_session 重建认证上下文），确保每次请求都能获取到有效的用户会话
         hs.addFilterBefore(usaf, UsernamePasswordAuthenticationFilter.class);
 
         return hs.build();
