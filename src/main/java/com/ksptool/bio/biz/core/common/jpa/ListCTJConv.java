@@ -24,7 +24,7 @@ public class ListCTJConv implements AttributeConverter<List<CustomizeTagJson>, S
      */
     @Override
     public String convertToDatabaseColumn(List<CustomizeTagJson> strings) {
-        //这里使用Assembly的工具类来将List<CustomizeTagJson>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将List<CustomizeTagJson>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
         return toJson(strings);
     }
 
@@ -33,7 +33,7 @@ public class ListCTJConv implements AttributeConverter<List<CustomizeTagJson>, S
      */
     @Override
     public List<CustomizeTagJson> convertToEntityAttribute(String s) {
-        //这里使用Assembly的工具类来将JSON字符串转换回List<CustomizeTagJson>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将JSON字符串转换回List<CustomizeTagJson>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
         return fromJsonArray(s, CustomizeTagJson.class);
     }
 }

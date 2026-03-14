@@ -24,7 +24,7 @@ public class SetStringConv implements AttributeConverter<Set<String>, String> {
      */
     @Override
     public String convertToDatabaseColumn(Set<String> strings) {
-        //这里使用Assembly的工具类来将List<String>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将List<String>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
         return toJson(strings);
     }
 
@@ -33,7 +33,7 @@ public class SetStringConv implements AttributeConverter<Set<String>, String> {
      */
     @Override
     public Set<String> convertToEntityAttribute(String s) {
-        //这里使用Assembly的工具类来将JSON字符串转换回Set<String>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将JSON字符串转换回Set<String>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
         Set<String> strings = new HashSet<>();
         strings.addAll(fromJsonArray(s, String.class));
         return strings;

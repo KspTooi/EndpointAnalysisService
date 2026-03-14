@@ -24,7 +24,7 @@ public class ListEFAJConv implements AttributeConverter<List<ExtendedFileAttachJ
      */
     @Override
     public String convertToDatabaseColumn(List<ExtendedFileAttachJson> strings) {
-        //这里使用Assembly的工具类来将List<ExtendedFileAttachJson>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将List<ExtendedFileAttachJson>类型转换为JSON字符串(如有需要可以替换为Gson、Jackson等其他JSON库)
         return toJson(strings);
     }
 
@@ -33,7 +33,7 @@ public class ListEFAJConv implements AttributeConverter<List<ExtendedFileAttachJ
      */
     @Override
     public List<ExtendedFileAttachJson> convertToEntityAttribute(String s) {
-        //这里使用Assembly的工具类来将JSON字符串转换回List<ExtendedFileAttachJson>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
+        // 这里使用Assembly的工具类来将JSON字符串转换回List<ExtendedFileAttachJson>类型(如有需要可以替换为Gson、Jackson等其他JSON库)
         return fromJsonArray(s, ExtendedFileAttachJson.class);
     }
 }
