@@ -6,8 +6,8 @@ import type {
   GetScmDetailsVo,
   AddScmDto,
   EditScmDto,
-} from "@/views/gen/api/ScmApi";
-import ScmApi from "@/views/gen/api/ScmApi";
+} from "@/views/assembly/api/ScmApi";
+import ScmApi from "@/views/assembly/api/ScmApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

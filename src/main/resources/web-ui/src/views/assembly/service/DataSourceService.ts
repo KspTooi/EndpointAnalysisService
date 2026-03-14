@@ -6,8 +6,8 @@ import type {
   GetDataSourceDetailsVo,
   AddDataSourceDto,
   EditDataSourceDto,
-} from "@/views/gen/api/DataSourceApi.ts";
-import DataSourceApi from "@/views/gen/api/DataSourceApi.ts";
+} from "@/views/assembly/api/DataSourceApi.ts";
+import DataSourceApi from "@/views/assembly/api/DataSourceApi.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 

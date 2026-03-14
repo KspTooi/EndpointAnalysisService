@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import type { GetDataSourceTableListVo } from "../api/DataSourceApi";
-import DataSourceApi from "@/views/gen/api/DataSourceApi";
+import DataSourceApi from "@/views/assembly/api/DataSourceApi";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const tableName = defineModel<string>({ required: true, default: "" });

@@ -6,8 +6,8 @@ import type {
   GetTymSchemaDetailsVo,
   AddTymSchemaDto,
   EditTymSchemaDto,
-} from "@/views/gen/api/TymSchemaApi";
-import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
+} from "@/views/assembly/api/TymSchemaApi";
+import TymSchemaApi from "@/views/assembly/api/TymSchemaApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { GetTymSchemaFieldDetailsVo } from "../api/TymSchemaFieldApi";

@@ -152,7 +152,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete, Connection } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import DataSourceService from "@/views/gen/service/DataSourceService.ts";
+import DataSourceService from "@/views/assembly/service/DataSourceService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";

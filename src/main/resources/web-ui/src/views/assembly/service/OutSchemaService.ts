@@ -6,16 +6,16 @@ import type {
   GetOutSchemaDetailsVo,
   AddOutSchemaDto,
   EditOutSchemaDto,
-} from "@/views/gen/api/OutSchemaApi";
-import OutSchemaApi from "@/views/gen/api/OutSchemaApi";
+} from "@/views/assembly/api/OutSchemaApi";
+import OutSchemaApi from "@/views/assembly/api/OutSchemaApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
-import type { GetDataSourceListVo } from "@/views/gen/api/DataSourceApi";
-import type { GetTymSchemaListVo } from "@/views/gen/api/TymSchemaApi";
-import type { GetScmListVo } from "@/views/gen/api/ScmApi";
-import DataSourceApi from "@/views/gen/api/DataSourceApi";
-import TymSchemaApi from "@/views/gen/api/TymSchemaApi";
-import ScmApi from "@/views/gen/api/ScmApi";
+import type { GetDataSourceListVo } from "@/views/assembly/api/DataSourceApi";
+import type { GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
+import type { GetScmListVo } from "@/views/assembly/api/ScmApi";
+import DataSourceApi from "@/views/assembly/api/DataSourceApi";
+import TymSchemaApi from "@/views/assembly/api/TymSchemaApi";
+import ScmApi from "@/views/assembly/api/ScmApi";
 
 /**
  * 模态框模式类型

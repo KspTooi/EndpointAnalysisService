@@ -290,14 +290,14 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete, Management, MagicStick } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutSchemaService from "@/views/gen/service/OutSchemaService";
-import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
+import OutSchemaService from "@/views/assembly/service/OutSchemaService";
+import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import DataSourceTableBrowser from "@/views/gen/components/DataSourceTableBrowser.vue";
-import ModelDesignModal from "@/views/gen/components/ModelDesignModal.vue";
+import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
+import ModelDesignModal from "@/views/assembly/components/ModelDesignModal.vue";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);

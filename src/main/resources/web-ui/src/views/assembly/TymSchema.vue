@@ -150,14 +150,14 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import TymSchemaService from "@/views/gen/service/TymSchemaService";
+import TymSchemaService from "@/views/assembly/service/TymSchemaService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import TymSchemaApi, { type GetTymSchemaListVo } from "@/views/gen/api/TymSchemaApi";
+import TymSchemaApi, { type GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
 import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
-import TymSchemaField from "@/views/gen/TymSchemaField.vue";
+import TymSchemaField from "@/views/assembly/TymSchemaField.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

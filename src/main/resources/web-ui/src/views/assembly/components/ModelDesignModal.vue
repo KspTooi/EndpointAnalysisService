@@ -318,11 +318,11 @@ import { markRaw } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
-import OutModelOriginService from "@/views/gen/service/OutModelOriginService";
-import OutModelPolyService from "@/views/gen/service/OutModelPolyService";
-import OutModelPolyApi from "@/views/gen/api/OutModelPolyApi";
-import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/gen/api/OutModelPolyApi";
-import type { GetOutSchemaListVo } from "@/views/gen/api/OutSchemaApi";
+import OutModelOriginService from "@/views/assembly/service/OutModelOriginService";
+import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
+import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
+import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
+import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 
 const DeleteIcon = markRaw(Delete);
 
