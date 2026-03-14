@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/scm")
-@Tag(name = "SCM管理", description = "SCM管理")
+@Tag(name = "代码装配-SCM管理", description = "SCM管理")
 @Slf4j
 public class ScmController {
 

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/dataSource")
-@Tag(name = "数据源管理", description = "数据源管理")
+@Tag(name = "代码装配-数据源管理", description = "数据源管理")
 @Slf4j
 public class DataSourceController {
 

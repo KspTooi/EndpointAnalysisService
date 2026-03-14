@@ -14,7 +14,7 @@ import com.ksptool.bio.biz.assembly.model.outmodelorigin.vo.GetOutModelOriginLis
 
 @RestController
 @RequestMapping("/outModelOrigin")
-@Tag(name = "输出方案原始模型管理", description = "输出方案原始模型管理")
+@Tag(name = "代码装配-输出方案原始模型管理", description = "输出方案原始模型管理")
 @Slf4j
 public class OutModelOriginController {
 

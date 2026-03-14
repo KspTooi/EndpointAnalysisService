@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/outSchema")
-@Tag(name = "输出方案管理", description = "输出方案管理")
+@Tag(name = "代码装配-输出方案管理", description = "输出方案管理")
 @Slf4j
 public class OutSchemaController {
 

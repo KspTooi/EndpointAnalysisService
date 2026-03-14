@@ -21,7 +21,7 @@ import com.ksptool.bio.biz.assembly.model.outmodelpoly.vo.GetOutModelPolyDetails
 
 @RestController
 @RequestMapping("/outModelPoly")
-@Tag(name = "输出方案聚合模型管理", description = "输出方案聚合模型管理")
+@Tag(name = "代码装配-输出方案聚合模型管理", description = "输出方案聚合模型管理")
 @Slf4j
 public class OutModelPolyController {
 
