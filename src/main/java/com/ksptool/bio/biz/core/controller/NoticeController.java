@@ -36,6 +36,12 @@ public class NoticeController {
     @PostMapping("/getNoticeList")
     @Operation(summary = "查询消息通知列表")
     public PageResult<GetNoticeListVo> getNoticeList(@RequestBody @Valid GetNoticeListDto dto) throws Exception {
+
+        //如果用户查询系统消息 则设置查询条件为null(系统消息为null)
+        if(StringUtils.isNotBlank(dto.getSenderName()) && dto.getSenderName().equals("系统")){
+            dto.setSenderName(null);
+        }
+
         return noticeService.getNoticeList(dto);
     }
 

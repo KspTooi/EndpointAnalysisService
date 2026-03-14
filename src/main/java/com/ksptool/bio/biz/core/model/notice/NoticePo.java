@@ -1,20 +1,23 @@
 package com.ksptool.bio.biz.core.model.notice;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.ksptool.bio.commons.utils.IdWorker;
 
 import java.time.LocalDateTime;
-
+import org.springframework.data.annotation.CreatedDate;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_notice")
 public class NoticePo {
 
-    @Column(name = "id", nullable = false, comment = "主键ID")
     @Id
+    @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
     @Column(name = "title", length = 32, nullable = false, comment = "标题")
@@ -50,20 +53,19 @@ public class NoticePo {
     @Column(name = "params", columnDefinition = "JSON", nullable = true, comment = "动态参数 (JSON格式)")
     private String params;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
     @PrePersist
     private void onCreate() {
 
-        if (this.id == null) {
+        if(this.id == null){
             this.id = IdWorker.nextId();
         }
 
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
+        if(this.createTime == null){
+            this.createTime = LocalDateTime.now();
         }
 
     }

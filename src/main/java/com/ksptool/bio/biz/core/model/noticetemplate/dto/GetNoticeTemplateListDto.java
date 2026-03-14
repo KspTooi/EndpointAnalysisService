@@ -23,6 +23,9 @@ public class GetNoticeTemplateListDto extends PageQuery {
 
     @Schema(description = "状态: 0启用, 1禁用")
     private Integer status;
+    
+    @Schema(description = "备注")
+    private String remark;
 
 }
 

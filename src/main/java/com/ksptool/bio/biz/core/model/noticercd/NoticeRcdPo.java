@@ -6,19 +6,27 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+
 
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_notice_rcd")
 @SQLDelete(sql = "UPDATE core_notice_rcd SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
 public class NoticeRcdPo {
 
-    @Column(name = "id", nullable = false, comment = "主键ID")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
     @Column(name = "notice_id", nullable = false, comment = "关联通知ID")
@@ -30,6 +38,7 @@ public class NoticeRcdPo {
     @Column(name = "read_time", comment = "读取时间 (NULL代表未读)")
     private LocalDateTime readTime;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "下发时间")
     private LocalDateTime createTime;
 
@@ -40,15 +49,6 @@ public class NoticeRcdPo {
     @PrePersist
     private void onCreate() {
 
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
 
     }
 
