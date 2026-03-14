@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.ksptool.bio.commons.utils.IdWorker;
-
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
+
 @Getter
 @Setter
 @Entity
@@ -17,6 +16,7 @@ import org.springframework.data.annotation.CreatedDate;
 public class NoticePo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
@@ -59,14 +59,6 @@ public class NoticePo {
 
     @PrePersist
     private void onCreate() {
-
-        if(this.id == null){
-            this.id = IdWorker.nextId();
-        }
-
-        if(this.createTime == null){
-            this.createTime = LocalDateTime.now();
-        }
 
     }
 
