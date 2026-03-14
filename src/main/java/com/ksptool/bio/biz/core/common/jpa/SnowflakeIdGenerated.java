@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * 注意: 这个注解仅用于SpringDataJPA的ID字段。
  * <p>
- * 如果你们在其他地方手工设置了PO中的ID字段，那么这个注解不会生效，最终以手工设置的ID为准。
+ * ----请注意 使用这个注解时，请勿在新增时手动设置ID字段，否则会导致数据新增失败！
  */
 @IdGeneratorType(SnowflakeIdGenerator.class) // 指向生成器实现类
 @Retention(RUNTIME)
