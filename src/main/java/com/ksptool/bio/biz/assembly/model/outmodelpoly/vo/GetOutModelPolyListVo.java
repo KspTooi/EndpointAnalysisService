@@ -1,0 +1,51 @@
+package com.ksptool.bio.biz.assembly.model.outmodelpoly.vo;
+
+import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Getter
+@Setter
+public class GetOutModelPolyListVo {
+
+    @Schema(description = "主键ID")
+    private Long id;
+
+    @Schema(description = "输出方案ID")
+    private Long outputSchemaId;
+
+    @Schema(description = "原始字段ID")
+    private Long outputModelOriginId;
+
+    @Schema(description = "聚合字段名")
+    private String name;
+
+    @Schema(description = "聚合数据类型")
+    private String kind;
+
+    @Schema(description = "聚合长度")
+    private String length;
+
+    @Schema(description = "聚合必填 0:否 1:是")
+    private Integer require;
+
+    @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
+    private Set<String> policyCrudJson;
+
+    @Schema(description = "聚合查询策略 0:等于 1:模糊")
+    private Integer policyQuery;
+
+    @Schema(description = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
+    private Integer policyView;
+
+    @Schema(description = "聚合字段备注")
+    private String remark;
+
+    @Schema(description = "聚合排序")
+    private Integer seq;
+
+
+}
+
