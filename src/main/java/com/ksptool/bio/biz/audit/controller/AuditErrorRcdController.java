@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/auditErrorRcd")
-@Tag(name = "系统错误记录管理", description = "系统错误记录管理")
+@Tag(name = "auditErrorRcd", description = "系统错误记录")
 @Slf4j
 public class AuditErrorRcdController {
 

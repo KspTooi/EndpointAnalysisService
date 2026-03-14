@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.audit.modal.auditerrorrcd;
 
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,14 +8,19 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "audit_error_rcd")
 public class AuditErrorRcdPo {
 
-    @Column(name = "id", comment = "错误ID")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", comment = "错误ID")
     private Long id;
 
     @Column(name = "error_code", nullable = false, length = 32, comment = "错误代码")
@@ -38,23 +44,13 @@ public class AuditErrorRcdPo {
     @Column(name = "error_stack_trace", nullable = true, comment = "完整堆栈信息")
     private String errorStackTrace;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
 
     @PrePersist
     private void onCreate() {
-
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
 
 
     }

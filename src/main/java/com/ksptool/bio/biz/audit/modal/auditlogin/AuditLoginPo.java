@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.audit.modal.auditlogin;
 
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,14 +8,19 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "audit_login_rcd")
 public class AuditLoginPo {
 
-    @Column(name = "id", comment = "登录日志主键")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", comment = "登录日志主键")
     private Long id;
 
     @Column(name = "user_id", comment = "用户ID")
@@ -44,22 +50,13 @@ public class AuditLoginPo {
     @Column(name = "message", nullable = false, length = 255, comment = "提示消息")
     private String message;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
 
     @PrePersist
     private void onCreate() {
-
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
 
 
     }
