@@ -1,5 +1,9 @@
 package com.ksptool.bio.biz.core.service;
 
+import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageQuery;
+import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.notice.NoticePo;
 import com.ksptool.bio.biz.core.model.notice.dto.AddNoticeDto;
@@ -11,18 +15,16 @@ import com.ksptool.bio.biz.core.model.noticercd.NoticeRcdPo;
 import com.ksptool.bio.biz.core.repository.NoticeRcdRepository;
 import com.ksptool.bio.biz.core.repository.NoticeRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.assembly.entity.exception.BizException;
-import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.assembly.entity.web.PageQuery;
-import com.ksptool.assembly.entity.web.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -74,15 +76,15 @@ public class NoticeService {
         var aud = SessionService.sessionWithNullable();
 
         //如果是系统自动发 或者定时任务发 这里拿不到AUD
-        if(aud == null){
+        if (aud == null) {
             insertPo.setSenderId(-1L);
             insertPo.setSenderName("系统");
         }
 
         //如果拿得到AUD 则设置发送人ID和发送人姓名
-        if(aud != null){
+        if (aud != null) {
             insertPo.setSenderId(aud.getId());
-            insertPo.setSenderName(aud.getNickname());
+            insertPo.setSenderName(aud.getUsername());
         }
 
         //保存消息
