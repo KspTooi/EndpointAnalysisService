@@ -1,0 +1,2 @@
+ALTER TABLE `auth_group` MODIFY COLUMN `name` VARCHAR(80) NOT NULL COMMENT '组名称，如：管理员组、开发者组等' AFTER `code`;
+ALTER TABLE `auth_group` MODIFY COLUMN `code` VARCHAR(80) NOT NULL COMMENT '组标识，如：admin、developer等' AFTER `id`;

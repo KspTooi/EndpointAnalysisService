@@ -1,33 +1,41 @@
 package com.ksptool.bio.biz.auth.model.group;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+
 
 /**
  * 用户组实体类
  * 用于管理系统中的用户组信息，对用户进行分组并分配权限
  */
 
-@Entity
-@Table(name = "auth_group")
+
 @Getter
 @Setter
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "auth_group")
 public class GroupPo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "组ID")
     private Long id;
 
-    @Column(name = "code", length = 32, nullable = false, comment = "组标识，如：admin、developer等")
+    @Column(name = "code", length = 80, nullable = false, comment = "组标识，如：admin、developer等")
     private String code;
 
-    @Column(name = "name", length = 32, nullable = false, comment = "组名称，如：管理员组、开发者组等")
+    @Column(name = "name", length = 80, nullable = false, comment = "组名称，如：管理员组、开发者组等")
     private String name;
 
     @Column(name = "remark", columnDefinition = "TEXT", comment = "组描述")
@@ -45,15 +53,19 @@ public class GroupPo {
     @Column(name = "is_system", columnDefinition = "TINYINT", nullable = false, comment = "系统内置组 0:否 1:是")
     private Integer isSystem;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
+    @LastModifiedBy
     @Column(name = "updater_id", nullable = false, comment = "修改人ID")
     private Long updaterId;
 
@@ -61,9 +73,6 @@ public class GroupPo {
     @PrePersist
     private void onCreate() throws AuthException {
 
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
 
         if (this.status == null) {
             this.status = 1; // 默认启用
@@ -81,32 +90,11 @@ public class GroupPo {
             this.rowScope = 0; // 默认数据范围：全部
         }
 
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
-
-        if (this.creatorId == null) {
-            this.creatorId = SessionService.session().getUserId();
-        }
-
-        if (this.updateTime == null) {
-            this.updateTime = now;
-        }
-
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
 
     }
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        this.updateTime = LocalDateTime.now();
 
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
     }
 } 

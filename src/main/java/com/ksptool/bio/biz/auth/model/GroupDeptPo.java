@@ -2,15 +2,18 @@ package com.ksptool.bio.biz.auth.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table(name = "auth_group_dept", comment = "GD表")
+
 @Getter
 @Setter
 @IdClass(GroupDeptPo.Pk.class)
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "auth_group_dept", comment = "GD表")
 public class GroupDeptPo {
 
     @Id
@@ -21,14 +24,18 @@ public class GroupDeptPo {
     @Column(name = "dept_id", nullable = false, comment = "部ID")
     private Long deptId;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
     @PrePersist
     private void onCreate() {
-        if (this.createTime == null) {
-            this.createTime = LocalDateTime.now();
-        }
+
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+
     }
 
     /**

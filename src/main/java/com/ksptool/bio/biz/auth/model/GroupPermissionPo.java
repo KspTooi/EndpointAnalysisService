@@ -5,11 +5,13 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Entity
-@Table(name = "auth_group_permission", comment = "权限组关联表")
+
+
 @Getter
 @Setter
 @IdClass(GroupPermissionPo.Pk.class)
+@Entity
+@Table(name = "auth_group_permission", comment = "权限组关联表")
 public class GroupPermissionPo {
 
     @Id
