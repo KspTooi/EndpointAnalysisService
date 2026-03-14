@@ -36,7 +36,7 @@ public class OrgPo {
     @Column(name = "parent_id", comment = "上级组织ID NULL顶级组织")
     private Long parentId;
 
-    @Column(name = "org_path_ids", length = 1024, comment = "从顶级组织到当前组织的ID列表 以,分割")
+    @Column(name = "org_path_ids",nullable = false, length = 1024, comment = "从顶级组织到当前组织的ID列表 以,分割")
     private String orgPathIds;
 
     @Column(name = "kind", nullable = false, columnDefinition = "tinyint", comment = "0:部门 1:企业")

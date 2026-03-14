@@ -174,4 +174,17 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
             )
             """)
     List<OrgPo> getChildDeptsByDeptId(@Param("deptId") Long deptId);
+
+    /**
+     * 根据父级ID查询组织
+     *
+     * @param parentId 父级ID
+     * @return 组织
+     */
+    @Query("""
+            SELECT d FROM OrgPo d
+            WHERE d.parentId = :parentId
+            ORDER BY d.seq ASC
+            """)
+    List<OrgPo> getByParentId(@Param("parentId") Long parentId);
 }

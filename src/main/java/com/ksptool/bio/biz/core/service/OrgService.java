@@ -106,95 +106,99 @@ public class OrgService {
     /**
      * 新增组织机构
      *
-     * @param dto
+     * @param dto 新增组织机构参数
+     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
     public void addOrg(AddOrgDto dto) throws BizException {
 
-        OrgPo parentPo = null;
+        //是否是租户新增
+        var isRootAdd = false;
+        var isSubOrgAdd = false;
 
-        if (dto.getParentId() != null) {
-
-            parentPo = repository.findById(dto.getParentId())
-                    .orElseThrow(() -> new BizException("无法处理新增请求,父级组织不存在."));
-
-            //父级组织下只能添加部门
-            if (dto.getKind() != 0) {
-                throw new BizException("无法处理新增请求,父级组织下只能添加部门.");
-            }
-
+        //判断现在是在新增租户还是新增租户下的子机构 0:部门 1:企业(租户)
+        if (dto.getKind() == 1) {
+            isRootAdd = true;
         }
 
-        //处理企业新增 0:部门 1:企业
-        if (dto.getKind() == 1) {
+        if (dto.getKind() == 0) {
+            isSubOrgAdd = true;
+        }
 
-            //校验企业名称是否唯一
+        //先处理租户新增
+        if (isRootAdd) {
+
+            //租户不能有父级
+            if (dto.getParentId() != null) {
+                throw new BizException("无法处理新增请求,租户不能有父级.");
+            }
+
+            //校验租户名称是否唯一
             if (repository.countRootByName(dto.getName()) > 0) {
                 throw new BizException("无法处理新增请求,企业名称 [" + dto.getName() + "] 已存在.");
             }
 
-            OrgPo addPo = as(dto, OrgPo.class);
+            //复制基本信息
+            var addPo = as(dto, OrgPo.class);
             addPo.setRootId(-1L);
-
-            //保存以获取ID
-            OrgPo orgPo = repository.saveAndFlush(addPo);
-            orgPo.setRootId(orgPo.getId());
             addPo.setParentId(null);
+            addPo.setOrgPathIds("");
+
+            //先保存租户 以获取回填的ID
+            addPo = repository.saveAndFlush(addPo);
+
+            //后处理
+            addPo.setRootId(addPo.getId());
+            addPo.setOrgPathIds(addPo.getId().toString());
             repository.saveAndFlush(addPo);
             return;
         }
 
-        //处理部门新增
-        if (parentPo == null) {
-            throw new BizException("无法处理新增请求,部门必须有上级组织.");
-        }
+        //接下来处理所有非租户的普通机构新增
+        if (isSubOrgAdd) {
 
-        //校验部门名称是否唯一
-        if (repository.countDeptByNameAndParentId(dto.getName(), parentPo.getId()) > 0) {
-            throw new BizException("无法处理新增请求,上级组织 [" + parentPo.getName() + "] 下已有同名部门 [" + dto.getName() + "].");
-        }
-
-        var addPo = as(dto, OrgPo.class);
-        //addPo.setId(IdWorker.nextId());
-        addPo.setRootId(parentPo.getRootId());
-        addPo.setParentId(parentPo.getId());
-
-
-        //如果有主管则需要处理主管(查询该公司下的主管)
-        if (dto.getPrincipalId() != null) {
-
-            UserPo userPo = userRepository.findById(dto.getPrincipalId())
-                    .orElseThrow(() -> new BizException("无法处理新增请求,主管不存在."));
-
-            if (userPo == null) {
-                throw new BizException("无法处理新增请求,主管不存在或不属于该组织!");
+            //普通机构必须有父级
+            if (dto.getParentId() == null) {
+                throw new BizException("无法处理新增请求,普通子机构必须有父级.");
             }
 
-            addPo.setPrincipalId(userPo.getId());
-            addPo.setPrincipalName(userPo.getUsername());
-        }
+            //查询父级组织
+            var parentPo = repository.findById(dto.getParentId())
+                    .orElseThrow(() -> new BizException("无法处理新增请求,父级组织不存在. ID: " + dto.getParentId()));
 
-        //处理组织路径ID
-        var pathIds = new ArrayList<String>();
-        pathIds.add(String.valueOf(addPo.getId()));
+            //校验子机构名称是否唯一
+            if (repository.countDeptByNameAndParentId(dto.getName(), parentPo.getId()) > 0) {
+                throw new BizException("无法处理新增请求,上级组织 [" + parentPo.getName() + "] 下已有同名子机构 [" + dto.getName() + "].");
+            }
 
-        var parentId = addPo.getParentId();
-        while (parentId != null) {
-            var parent = repository.findById(parentId)
-                    .orElseThrow(() -> new BizException("无法处理新增请求,父级组织不存在,导致组织路径ID处理失败."));
-            pathIds.add(String.valueOf(parent.getId()));
-            parentId = parent.getParentId();
-        }
+            //复制基本信息
+            var addPo = as(dto, OrgPo.class);
+            addPo.setRootId(parentPo.getRootId());
+            addPo.setParentId(parentPo.getId());
+            addPo.setOrgPathIds("");
 
-        Collections.reverse(pathIds);
-        addPo.setOrgPathIds(String.join(",", pathIds));
-        repository.save(addPo);
+            //如果有主管则需要处理主管(查询该子机构所在公司下的主管)
+            if (dto.getPrincipalId() != null) {
 
-        //如果是部门新增，则给该企业/租户下的全部在线用户加版本
-        if (parentPo != null) {
-            //给该企业/租户下的全部在线用户加版本
+                UserPo userPo = userRepository.findById(dto.getPrincipalId())
+                        .orElseThrow(() -> new BizException("无法处理新增请求,主管不存在."));
+
+                addPo.setPrincipalId(userPo.getId());
+                addPo.setPrincipalName(userPo.getUsername());
+            }
+
+            //先保存子机构以获取回填的ID
+            addPo = repository.saveAndFlush(addPo);
+
+            //后处理路径(这里直接获取上级节点的路径，并在末尾拼接当前节点的ID)
+            var orgPathIds = parentPo.getOrgPathIds() + "," + addPo.getId().toString();
+            addPo.setOrgPathIds(orgPathIds);
+            repository.saveAndFlush(addPo);
+
+            //所有非租户的普通机构新增完成后，给该企业/租户下的全部在线用户加版本
             userService.increaseDvByRootId(parentPo.getRootId());
         }
+
     }
 
     /**
@@ -209,68 +213,86 @@ public class OrgService {
         OrgPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在."));
 
+        //是否是租户编辑
+        var isRootEdit = false;
+        var isSubOrgEdit = false;
 
-        OrgPo parentPo = null;
+        //判断现在是在编辑租户还是编辑租户下的子机构 0:部门 1:企业(租户)
+        if (updatePo.getKind() == 1) {
+            isRootEdit = true;
+        }
 
-        if (dto.getParentId() != null) {
-            parentPo = repository.findById(dto.getParentId())
-                    .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在."));
+        if (updatePo.getKind() == 0) {
+            isSubOrgEdit = true;
+        }
+
+        //先处理租户编辑
+        if (isRootEdit) {
+
+            //租户不能有父级
+            if (dto.getParentId() != null) {
+                throw new BizException("无法处理编辑请求,租户不能有父级.");
+            }
+
+            //租户不能填写主管ID
+            if (dto.getPrincipalId() != null) {
+                throw new BizException("无法处理编辑请求,租户不能填写主管ID.");
+            }
+
+            //校验租户名称是否唯一
+            if (repository.countRootByNameExcludeId(dto.getName(), updatePo.getId()) > 0) {
+                throw new BizException("无法处理编辑请求,企业名称 [" + dto.getName() + "] 已存在.");
+            }
+
+            //复制基本信息
+            assign(dto, updatePo);
+
+            //处理路径
+            updatePo.setOrgPathIds(updatePo.getId().toString());
+
+            //保存租户
+            repository.saveAndFlush(updatePo);
+            return;
+        }
+
+        //接下来处理所有非租户的普通机构编辑
+        if (isSubOrgEdit) {
+
+            //普通机构必须有父级
+            if (dto.getParentId() == null) {
+                throw new BizException("无法处理编辑请求,普通子机构必须有父级.");
+            }
+
+            //查询父级组织
+            var parentPo = repository.findById(dto.getParentId())
+                    .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在. ID: " + dto.getParentId()));
 
             //父级组织不能是自身
             if (Objects.equals(updatePo.getId(), parentPo.getId())) {
                 throw new BizException("无法处理编辑请求,父级组织不能是自身.");
             }
 
-            //父级组织下只能添加部门
-            if (updatePo.getKind() != 0) {
-                throw new BizException("无法处理编辑请求,父级组织下只能添加部门.");
+            //子机构不能跨租户移动
+            if (!Objects.equals(updatePo.getRootId(), parentPo.getRootId())) {
+                throw new BizException("无法处理编辑请求,子机构不能跨租户移动.");
             }
 
-            //父级组织的父级不能修改为自身下级
-
-        }
-
-        //0:部门 1:企业
-        if (updatePo.getKind() == 1) {
-
-            //校验企业名称是否唯一
-            if (repository.countRootByNameExcludeId(dto.getName(), updatePo.getId()) > 0) {
-                throw new BizException("无法处理编辑请求,企业名称 [" + dto.getName() + "] 已存在.");
+            //校验名称是否唯一
+            if (repository.countDeptByNameAndParentIdExcludeId(dto.getName(), parentPo.getId(), updatePo.getId()) > 0) {
+                throw new BizException("无法处理编辑请求,上级组织 [" + parentPo.getName() + "] 下已有同名子机构 [" + dto.getName() + "].");
             }
 
-            if (dto.getPrincipalId() != null) {
-                throw new BizException("无法处理编辑请求,企业不允许填主管ID.");
+            //校验父级组织不能是当前组织的子孙节点
+            var currentIdFlag = "," + updatePo.getId() + ",";
+            var parentPathIds = "," + parentPo.getOrgPathIds() + ",";
+            if (parentPathIds.contains(currentIdFlag)) {
+                throw new BizException("无法处理编辑请求,父级组织不能是当前组织的子孙节点.");
             }
 
-            assign(dto, updatePo);
-            updatePo.setParentId(null);
+            //处理主管 先删除原主管
             updatePo.setPrincipalId(null);
             updatePo.setPrincipalName(null);
-        }
 
-        //处理部门
-        if (updatePo.getKind() == 0) {
-
-            if (parentPo == null) {
-                throw new BizException("无法处理编辑请求,部门必须有父级组织.");
-            }
-
-            //校验部门名称是否唯一
-            if (repository.countDeptByNameAndParentIdExcludeId(dto.getName(), parentPo.getId(), updatePo.getId()) > 0) {
-                throw new BizException("无法处理编辑请求,上级组织 [" + parentPo.getName() + "] 下已有同名部门 [" + dto.getName() + "].");
-            }
-
-            //部门无法跨组织移动
-            if (!Objects.equals(updatePo.getRootId(), parentPo.getRootId())) {
-                throw new BizException("无法处理编辑请求,部门无法跨组织移动.");
-            }
-
-            //获取旧的组织路径ID
-            var oldPath = updatePo.getOrgPathIds();
-
-            assign(dto, updatePo);
-
-            //处理主管
             if (dto.getPrincipalId() != null) {
                 UserPo userPo = userRepository.findById(dto.getPrincipalId())
                         .orElseThrow(() -> new BizException("无法处理编辑请求,主管不存在."));
@@ -278,60 +300,46 @@ public class OrgService {
                 updatePo.setPrincipalName(userPo.getUsername());
             }
 
-            //处理组织路径ID
-            var pathIds = new ArrayList<String>();
-            pathIds.add(String.valueOf(updatePo.getId()));
+            //处理子机构自身路径 先向上找直到Root为止 以此构建一个BasePathIds
+            var basePathIds = new ArrayList<String>();
+            basePathIds.add(updatePo.getId().toString());
 
-            var parentId = updatePo.getParentId();
+            var parentId = parentPo.getId();
+
             while (parentId != null) {
                 var parent = repository.findById(parentId)
-                        .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在,导致组织路径ID处理失败."));
-                pathIds.add(String.valueOf(parent.getId()));
-                parentId = parent.getParentId();
-            }
+                        .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在."));
 
-            Collections.reverse(pathIds);
-            updatePo.setOrgPathIds(String.join(",", pathIds));
-
-            var newPath = updatePo.getOrgPathIds();
-
-            //如果组织路径ID发生变化，则需要批量更新该组织下的全部子孙组织的组织路径ID
-            if (!Objects.equals(oldPath, newPath)) {
-
-                //查询该组织下的全部子孙组织
-                var subtree = repository.getChildDeptsByDeptId(updatePo.getId());
-
-                var oldPrefix = oldPath + ",";
-                var newPrefix = newPath + ",";
-
-                for (var po : subtree) {
-                    if (Objects.equals(po.getId(), updatePo.getId())) {
-                        continue;
-                    }
-
-                    var childPath = po.getOrgPathIds();
-                    if (childPath == null) {
-                        throw new BizException("组织路径ID为空,无法更新子孙节点.");
-                    }
-
-                    if (!childPath.startsWith(oldPrefix)) {
-                        throw new BizException("组织路径ID前缀不匹配,无法更新子孙节点.");
-                    }
-
-                    var suffix = childPath.substring(oldPrefix.length());
-                    po.setOrgPathIds(newPrefix + suffix);
+                basePathIds.add(parent.getId().toString());
+                
+                //如果父级是NULL，则停止向上查找
+                if (parent.getParentId() == null) {
+                    break;
                 }
 
-                //批量更新该组织下的全部子孙组织的组织路径ID
-                repository.saveAll(subtree);
+                parentId = parent.getParentId();
             }
+            //反转数组 因为向上查找时是反向的
+            Collections.reverse(basePathIds);
 
+            updatePo.setOrgPathIds(String.join(",", basePathIds));
+
+            //递归处理子孙机构 需要重建这个机构以及这个机构下的全部子孙机构的组织路径ID(orgPathIds) 这里为了安全起见直接通过递归重建这个企业下全部子孙机构的orgPathIds
+            var updatedPos = new ArrayList<OrgPo>();
+            rebuildOrgPathIds(updatePo, basePathIds, updatedPos);
+            //保存所有更新后的机构
+            repository.saveAll(updatedPos);
+
+            //复制基础信息
+            assign(dto, updatePo);
+
+            //保存当前修改的机构
+            repository.save(updatePo);
+
+            //给该企业/租户下的全部在线用户加版本
+            userService.increaseDvByRootId(updatePo.getRootId());
         }
 
-        repository.save(updatePo);
-
-        //给该企业/租户下的全部在线用户加版本
-        userService.increaseDvByRootId(updatePo.getRootId());
     }
 
     /**
@@ -374,6 +382,40 @@ public class OrgService {
             }
 
             repository.delete(po);
+        }
+
+    }
+
+
+    /**
+     * 递归重建组织路径ID
+     *
+     * @param po          当前机构
+     * @param basePathIds 基础路径ID列表
+     * @param updatedPos  更新后的机构列表
+     */
+    public void rebuildOrgPathIds(OrgPo po, List<String> basePathIds, List<OrgPo> updatedPos) {
+
+        var currentBasePath = String.join(",", basePathIds);
+
+        //查询当前机构下的子机构
+        var subtree = repository.getByParentId(po.getId());
+
+        if (subtree.isEmpty()) {
+            return;
+        }
+
+        //处理每个子机构
+        for (var childPo : subtree) {
+
+            //构建新的基础路径ID列表
+            var newBasePathIds = new ArrayList<String>();
+            newBasePathIds.addAll(basePathIds);
+            newBasePathIds.add(childPo.getId().toString());
+            rebuildOrgPathIds(childPo, newBasePathIds, updatedPos);
+
+            childPo.setOrgPathIds(currentBasePath + "," + childPo.getId().toString());
+            updatedPos.add(childPo);
         }
 
     }
