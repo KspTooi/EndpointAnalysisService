@@ -64,6 +64,18 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="排序" prop="seq" width="120">
+          <template #default="scope">
+            <ComSeqFixer
+              :id="scope.row.id"
+              :seqField="'seq'"
+              :getDetailApi="getGroupDetailForSeq"
+              :editApi="editGroupSeq"
+              :displayValue="scope.row.seq"
+              :onSuccess="loadList"
+            />
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
@@ -252,11 +264,13 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import type { GetGroupListVo } from "@/views/auth/api/GroupApi.ts";
+import type { GetGroupListVo, EditGroupDto } from "@/views/auth/api/GroupApi.ts";
+import AdminGroupApi from "@/views/auth/api/GroupApi.ts";
 import UserGroupService from "@/views/auth/service/UserGroupService.ts";
 import UserGpModal from "@/views/auth/components/UserGpModal.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import OrgManagerService from "../core/service/OrgManagerService";
 
 const EditIcon = markRaw(Edit);
@@ -307,6 +321,34 @@ const openPermissionEditModal = openPermModal;
  * 选中的列表项
  */
 const listSelected = ref<GetGroupListVo[]>([]);
+
+/**
+ * 获取组详情（供 ComSeqFixer 使用）
+ */
+const getGroupDetailForSeq = async (id: string) => {
+  return await AdminGroupApi.getGroupDetails({ id });
+};
+
+/**
+ * 编辑组排序（供 ComSeqFixer 使用）
+ */
+const editGroupSeq = async (id: string, dto: any) => {
+  const editDto: EditGroupDto = {
+    id: dto.id,
+    code: dto.code,
+    name: dto.name,
+    remark: dto.remark,
+    status: dto.status,
+    seq: dto.seq,
+    rowScope: dto.rowScope,
+    deptIds: dto.deptIds ?? [],
+    permissionIds: dto.permissions ? dto.permissions.filter((p: any) => p.has === 0).map((p: any) => p.id) : [],
+  };
+  const result = await AdminGroupApi.editGroup(editDto);
+  if (result.code !== 0) {
+    throw new Error(result.message);
+  }
+};
 </script>
 
 <style scoped>

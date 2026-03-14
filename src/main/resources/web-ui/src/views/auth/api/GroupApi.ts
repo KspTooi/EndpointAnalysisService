@@ -24,6 +24,7 @@ export interface GetGroupListVo {
   permissionCount: number; // 权限节点数量
   isSystem: number; // 系统内置组 0:否 1:是
   status: number; // 组状态：0-禁用，1-启用
+  seq: number; // 排序号
   createTime: string; // 创建时间
 }
 
