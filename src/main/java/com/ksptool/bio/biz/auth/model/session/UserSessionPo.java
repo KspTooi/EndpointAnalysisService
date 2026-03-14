@@ -1,11 +1,15 @@
 package com.ksptool.bio.biz.auth.model.session;
 
 import com.ksptool.bio.biz.auth.common.aop.RowScopePo;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import com.ksptool.bio.biz.core.model.user.UserPo;
-import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -13,13 +17,16 @@ import java.util.UUID;
 
 import static com.ksptool.entities.Entities.toJson;
 
-@Entity
-@Table(name = "auth_user_session", comment = "用户会话")
+
 @Getter
 @Setter
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "auth_user_session", comment = "用户会话")
 public class UserSessionPo extends RowScopePo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", comment = "会话ID")
     private Long id;
 
@@ -62,12 +69,15 @@ public class UserSessionPo extends RowScopePo {
     @Column(name = "expires_at", nullable = false, comment = "过期时间")
     private LocalDateTime expiresAt;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, updatable = false, comment = "创建者ID")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
@@ -112,23 +122,6 @@ public class UserSessionPo extends RowScopePo {
         this.expiresAt = LocalDateTime.now().plusSeconds(expiresInSeconds);
     }
 
-
-    @PrePersist
-    public void prePersist() {
-
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-        createTime = LocalDateTime.now();
-        updateTime = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updateTime = LocalDateTime.now();
-    }
-
     /**
      * 判断会话是否已过期
      *
@@ -137,5 +130,18 @@ public class UserSessionPo extends RowScopePo {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }
+
+
+    @PrePersist
+    private void onCreate() {
+
+
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+
+    }
+
 
 }

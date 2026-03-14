@@ -13,7 +13,6 @@ import com.ksptool.bio.biz.core.model.org.OrgPo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.bio.commons.utils.SHA256;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -272,7 +271,7 @@ public class SessionService {
         }
 
         //存入数据库
-        newSession.setId(IdWorker.nextId());
+        newSession.setId(null);
         newSession.setUsername(aud.getUsername());
         newSession.setUserId(aud.getId());
         newSession.setSessionId(hashedSessionId);

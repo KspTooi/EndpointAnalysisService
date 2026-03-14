@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.auth.model.permission;
 
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;
@@ -10,19 +11,28 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+
 /**
  * 权限实体类
  * 用于管理系统中的权限节点信息
  * 采用平级设计，权限标识使用 : 分隔表示层级
  * 例如：system:user:view, system:user:edit
  */
-@Entity
-@Table(name = "auth_permission", comment = "权限码表")
+
 @Getter
 @Setter
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "auth_permission", comment = "权限码表")
 public class PermissionPo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", comment = "权限ID")
     private Long id;
 
@@ -41,56 +51,38 @@ public class PermissionPo {
     @Column(name = "is_system", nullable = false, columnDefinition = "TINYINT", comment = "系统内置权限 0:否 1:是")
     private Integer isSystem = 0;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, updatable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, updatable = false, comment = "创建人")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", nullable = false, comment = "修改时间")
     private LocalDateTime updateTime;
 
+    @LastModifiedBy
     @Column(name = "updater_id", nullable = false, comment = "修改人")
     private Long updaterId;
 
     @PrePersist
-    public void prePersist() throws AuthException {
+    private void onCreate() throws AuthException {
 
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
 
         if (seq == null) {
             seq = 0;
         }
 
-        LocalDateTime now = LocalDateTime.now();
 
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
-        if (this.updateTime == null) {
-            this.updateTime = now;
-        }
-
-        if (this.creatorId == null) {
-            this.creatorId = SessionService.session().getUserId();
-        }
-
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
 
     }
 
     @PreUpdate
-    public void preUpdate() throws AuthException {
+    private void onUpdate() throws AuthException {
 
-        this.updateTime = LocalDateTime.now();
 
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
     }
 
     /**
