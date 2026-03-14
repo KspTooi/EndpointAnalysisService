@@ -1,20 +1,25 @@
 package com.ksptool.bio.biz.qt.model.qttaskrcd;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+import org.springframework.data.annotation.CreatedDate;
+
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "qt_task_rcd")
 public class QtTaskRcdPo {
 
-    @Column(name = "id", nullable = false, comment = "调度日志ID")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", nullable = false, comment = "调度日志ID")
     private Long id;
 
     @Column(name = "task_id", nullable = false, comment = "任务ID")
@@ -47,23 +52,13 @@ public class QtTaskRcdPo {
     @Column(name = "cost_time", comment = "耗时(MS)")
     private Integer costTime;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
 
     @PrePersist
     private void onCreate() {
-
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
 
 
     }

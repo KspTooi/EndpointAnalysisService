@@ -29,7 +29,7 @@ import java.util.List;
 @PrintLog
 @RestController
 @RequestMapping("/qtTask")
-@Tag(name = "任务调度管理", description = "任务调度管理")
+@Tag(name = "任务调度", description = "任务调度模块")
 @Slf4j
 public class QtTaskController {
 
