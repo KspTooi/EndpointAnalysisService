@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_out_schema")
+@Table(name = "assembly_out_schema")
 @EntityListeners(AuditingEntityListener.class)
 public class OutSchemaPo {
 

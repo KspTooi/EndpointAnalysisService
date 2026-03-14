@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_scm")
+@Table(name = "assembly_scm")
 @EntityListeners(AuditingEntityListener.class)
 public class ScmPo {
 

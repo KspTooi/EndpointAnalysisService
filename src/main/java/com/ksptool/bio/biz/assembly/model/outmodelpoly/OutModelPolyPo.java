@@ -18,7 +18,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_out_model_poly")
+@Table(name = "assembly_out_model_poly")
 @EntityListeners(AuditingEntityListener.class)
 public class OutModelPolyPo {
 

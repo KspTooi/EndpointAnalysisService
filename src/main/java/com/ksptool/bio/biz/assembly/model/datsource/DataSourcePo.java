@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_data_source")
+@Table(name = "assembly_data_source")
 @EntityListeners(AuditingEntityListener.class)
 public class DataSourcePo {
 

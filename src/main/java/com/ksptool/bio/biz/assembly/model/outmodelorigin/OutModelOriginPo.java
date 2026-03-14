@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_out_model_origin")
+@Table(name = "assembly_out_model_origin")
 @EntityListeners(AuditingEntityListener.class)
 public class OutModelOriginPo {
 

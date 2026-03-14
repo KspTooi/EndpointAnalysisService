@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_tym_schema")
+@Table(name = "assembly_tym_schema")
 @EntityListeners(AuditingEntityListener.class)
 public class TymSchemaPo {
 

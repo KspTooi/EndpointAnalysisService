@@ -17,7 +17,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "gen_tym_schema_field")
+@Table(name = "assembly_tym_schema_field")
 @EntityListeners(AuditingEntityListener.class)
 public class TymSchemaFieldPo {
 
