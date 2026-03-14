@@ -68,6 +68,7 @@ public interface GroupRepository extends JpaRepository<GroupPo, Long>, JpaSpecif
                 CAST((SELECT COUNT(gp) FROM GroupPermissionPo gp WHERE gp.groupId = g.id) AS integer),
                 g.isSystem,
                 g.status,
+                g.seq,
                 g.createTime
             )
             FROM GroupPo g

@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.auth.model.group.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class GetGroupListVo {
 
     // 组ID
@@ -29,20 +31,11 @@ public class GetGroupListVo {
 
     // 组状态：0-禁用，1-启用
     private Integer status;
+    
+    // 排序号
+    private Integer seq;
 
     // 创建时间
     private LocalDateTime createTime;
 
-
-    public GetGroupListVo(Long id, String code, String name, Integer memberCount, Integer permissionCount,
-                          Integer isSystem, Integer status, LocalDateTime createTime) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.memberCount = memberCount;
-        this.permissionCount = permissionCount;
-        this.isSystem = isSystem;
-        this.status = status;
-        this.createTime = createTime;
-    }
 }
