@@ -58,6 +58,8 @@ public class DynamicGlobalWhiteManager implements AuthorizationManager<RequestAu
         basic.add("/auth/genCaptcha"); //验证码端点
         basic.add("/auth/check"); //验证码端点
         basic.add("/v3/api-docs"); //OpenApi 端点
+        basic.add("/static/**");
+        basic.add("/druid/**"); //Druid监控页面
 
         //构建集成部署白名单
         if (isIntegratedDeploy()) {
@@ -72,6 +74,8 @@ public class DynamicGlobalWhiteManager implements AuthorizationManager<RequestAu
             integratedDeploy.add("/js/**"); //静态资源
             integratedDeploy.add("/css/**"); //静态资源
             integratedDeploy.add("/assets/**"); //静态资源
+            integratedDeploy.add("/static/**"); //静态资源
+
         }
 
         //将基础白名单和集成部署白名单转换为PPRM并添加到白名单列表中
