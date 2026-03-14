@@ -1,28 +1,38 @@
 package com.ksptool.bio.biz.core.model.attach;
 
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ksptool.bio.biz.auth.service.SessionService.session;
-
-
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_attach")
 public class AttachPo {
 
-    @Column(name = "id", comment = "主键ID")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", comment = "主键ID")
     private Long id;
+
+    @Column(name = "root_id", nullable = false, comment = "所属企业ID")
+    private Long rootId;
+
+    @Column(name = "dept_id", nullable = false, comment = "所属部门ID")
+    private Long deptId;
 
     @Column(name = "name", length = 128, nullable = false, comment = "文件名")
     private String name;
@@ -45,15 +55,17 @@ public class AttachPo {
     @Column(name = "receive_size", nullable = false, comment = "已接收大小")
     private Long receiveSize;
 
-    @Column(name = "status", length = 1, nullable = false, comment = "状态 0:预检文件 1:区块不完整 2:校验中 3:有效")
+    @Column(name = "status", columnDefinition = "tinyint", nullable = false, comment = "状态 0:预检文件 1:区块不完整 2:校验中 3:有效")
     private Integer status;
 
     @Column(name = "verify_time", comment = "校验时间")
     private LocalDateTime verifyTime;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
@@ -77,16 +89,18 @@ public class AttachPo {
     }
 
     @PrePersist
-    public void prePersist() throws AuthException {
+    private void onCreate() throws AuthException {
 
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
+        var session = SessionService.session();
+
+        if (this.rootId == null) {
+            this.rootId = session.getRootId();
         }
 
-        createTime = LocalDateTime.now();
-        if (this.creatorId == null) {
-            this.creatorId = session().getUserId();
+        if (this.deptId == null) {
+            this.deptId = session.getDeptId();
         }
+
     }
 
 

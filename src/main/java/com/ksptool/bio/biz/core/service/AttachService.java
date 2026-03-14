@@ -1,19 +1,26 @@
 package com.ksptool.bio.biz.core.service;
 
 
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
 import com.ksptool.bio.biz.core.model.attach.dto.PreCheckAttachDto;
 import com.ksptool.bio.biz.core.model.attach.vo.ApplyChunkVo;
+import com.ksptool.bio.biz.core.model.attach.vo.DirectUploadVo;
 import com.ksptool.bio.biz.core.model.attach.vo.PreCheckAttachVo;
 import com.ksptool.bio.biz.core.repository.AttachChunkRepository;
 import com.ksptool.bio.biz.core.repository.AttachRepository;
-import com.ksptool.bio.commons.utils.IdWorker;
-import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.bio.commons.config.AttachConfig;
+import com.ksptool.bio.commons.utils.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,16 +49,13 @@ import java.util.*;
 public class AttachService {
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-
+    private final Tika tika = new Tika();
     @Autowired
     private AttachRepository repository;
-
     @Autowired
     private AttachChunkRepository chunkRepository;
-
     @Autowired
     private AttachConfig attachConfig;
-
     @Autowired
     @Lazy
     private AttachService self;
@@ -103,6 +109,68 @@ public class AttachService {
 
         return name.substring(lastDotIndex + 1);
     }
+
+    /**
+     * 零散文件上传
+     *
+     * @param file 文件
+     * @return 上传结果
+     * @throws BizException 上传失败
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public DirectUploadVo directUpload(MultipartFile file, String kind) throws BizException {
+
+        if (file == null || file.isEmpty()) {
+            throw new BizException("文件不能为空");
+        }
+
+        if (StringUtils.isBlank(kind)) {
+            throw new BizException("业务代码不能为空");
+        }
+
+        var aId = uploadAttach(file, kind);
+        var attach = repository.findById(aId).orElseThrow(() -> new BizException("附件不存在"));
+        var vo = new DirectUploadVo();
+        vo.setId(attach.getId());
+        vo.setName(attach.getName());
+        vo.setTotalSize(attach.getTotalSize());
+        vo.setKind(attach.getKind());
+        vo.setPath(attach.getPath());
+        vo.setStatus(attach.getStatus());
+        vo.setCreateTime(attach.getCreateTime());
+        return vo;
+    }
+
+    /**
+     * 预览附件
+     *
+     * @param path 文件路径
+     * @return 附件预览
+     * @throws BizException 预览附件失败
+     */
+    public ResponseEntity<Resource> directPreview(String path) throws Exception {
+
+        if (StringUtils.isBlank(path)) {
+            throw new BizException("文件路径不能为空");
+        }
+
+        var absolutePath = getAttachLocalPath(Paths.get(path));
+
+        if (!Files.exists(absolutePath)) {
+            throw new BizException("文件不存在");
+        }
+
+        var resource = new FileSystemResource(absolutePath);
+
+        //探测Mine类型
+        var mimeType = tika.detect(resource.getFile());
+        var filename = URLEncoder.encode(path, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + filename)
+                .contentType(MediaType.parseMediaType(mimeType))
+                .body(resource);
+    }
+
 
     /**
      * 上传附件
@@ -191,7 +259,6 @@ public class AttachService {
             }
 
             var po = new AttachPo();
-            po.setId(IdWorker.nextId());
             po.setName(filename);
             po.setKind(kind);
             po.setSuffix(suffix);
