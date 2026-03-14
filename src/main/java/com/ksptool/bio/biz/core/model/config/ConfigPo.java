@@ -3,18 +3,24 @@ package com.ksptool.bio.biz.core.model.config;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import jakarta.persistence.*;
 import lombok.Data;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_config", comment = "配置表", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "config_key"}, name = "uk_config")
 })
 public class ConfigPo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeIdGenerated
     @Column(name = "id", comment = "主键ID")
     private Long id;
 
@@ -31,20 +37,19 @@ public class ConfigPo {
     @Column(name = "description", length = 200, comment = "配置描述")
     private String description;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
     @PrePersist
-    public void prePersist() {
-        createTime = LocalDateTime.now();
-        updateTime = LocalDateTime.now();
+    private void onCreate() {
     }
 
     @PreUpdate
-    public void preUpdate() {
-        updateTime = LocalDateTime.now();
+    private void onUpdate() {
     }
 } 
