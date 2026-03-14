@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EditOrgDto {
+public class EditOrgDto{
 
     @NotNull(message = "主键id不能为空")
     @Schema(description = "主键id")

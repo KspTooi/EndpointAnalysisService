@@ -48,11 +48,6 @@ public class OrgController {
     @PostMapping("/addOrg")
     public Result<String> addOrg(@RequestBody @Valid AddOrgDto dto) throws Exception {
 
-        //验证输入参数
-        if (dto.validate() != null) {
-            return Result.error(dto.validate());
-        }
-
         orgService.addOrg(dto);
 
         //给该企业/租户下的全部在线用户加版本

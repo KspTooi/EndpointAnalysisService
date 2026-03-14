@@ -7,9 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
+
 @Getter
 @Setter
-public class AddOrgDto {
+public class AddOrgDto implements DtoCustomValidator{
 
     @Schema(description = "上级组织ID NULL顶级组织")
     private Long parentId;
@@ -36,6 +38,7 @@ public class AddOrgDto {
      *
      * @return
      */
+    @Override
     public String validate() {
 
         //企业不允许填写主管ID
