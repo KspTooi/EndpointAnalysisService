@@ -8,10 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
-
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import static com.ksptool.bio.biz.auth.service.SessionService.session;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 
 /**
  * ${tableComment}
@@ -22,6 +26,7 @@ import static com.ksptool.bio.biz.auth.service.SessionService.session;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_excel_template", indexes = {
         @Index(name = "uk_code_delete_time", columnList = "code,delete_time", unique = true)
 })
@@ -30,6 +35,7 @@ import static com.ksptool.bio.biz.auth.service.SessionService.session;
 public class ExcelTemplatePo {
 
     @Id
+    @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "模板ID")
     private Long id;
 
@@ -48,15 +54,19 @@ public class ExcelTemplatePo {
     @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "状态 0:启用 1:禁用")
     private Integer status;
 
+    @CreatedDate
     @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", nullable = false, comment = "创建人ID")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", nullable = false, comment = "更新时间")
     private LocalDateTime updateTime;
 
+    @LastModifiedBy
     @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
 
@@ -65,31 +75,13 @@ public class ExcelTemplatePo {
 
     @PrePersist
     private void onCreate() throws AuthException {
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
 
-        LocalDateTime now = LocalDateTime.now();
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
-        if (this.updateTime == null) {
-            this.updateTime = this.createTime;
-        }
-
-        if (this.creatorId == null) {
-            this.creatorId = session().getUserId();
-        }
-        if (this.updaterId == null) {
-            this.updaterId = session().getUserId();
-        }
     }
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        this.updateTime = LocalDateTime.now();
-        if (this.updaterId == null) {
-            this.updaterId = session().getUserId();
-        }
+
     }
+
+
 }

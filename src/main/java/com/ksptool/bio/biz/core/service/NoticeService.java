@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.core.service;
 
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.model.notice.NoticePo;
 import com.ksptool.bio.biz.core.model.notice.dto.AddNoticeDto;
 import com.ksptool.bio.biz.core.model.notice.dto.EditNoticeDto;
@@ -10,7 +11,6 @@ import com.ksptool.bio.biz.core.model.noticercd.NoticeRcdPo;
 import com.ksptool.bio.biz.core.repository.NoticeRcdRepository;
 import com.ksptool.bio.biz.core.repository.NoticeRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.bio.commons.utils.IdWorker;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageQuery;
@@ -21,11 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
@@ -70,13 +67,29 @@ public class NoticeService {
     @Transactional(rollbackFor = Exception.class)
     public void addNotice(AddNoticeDto dto) {
 
-        var noticeId = IdWorker.nextId();
-
-        //直接添加消息
+        //先保存消息，这样才能回填ID
         var insertPo = as(dto, NoticePo.class);
-        insertPo.setId(noticeId);
-        insertPo.setCreateTime(LocalDateTime.now());
-        repository.save(insertPo);
+
+        //但是在保存消息之前，还需要获取当前是谁在发消息
+        var aud = SessionService.sessionWithNullable();
+
+        //如果是系统自动发 或者定时任务发 这里拿不到AUD
+        if(aud == null){
+            insertPo.setSenderId(-1L);
+            insertPo.setSenderName("系统");
+        }
+
+        //如果拿得到AUD 则设置发送人ID和发送人姓名
+        if(aud != null){
+            insertPo.setSenderId(aud.getId());
+            insertPo.setSenderName(aud.getNickname());
+        }
+
+        //保存消息
+        insertPo = repository.save(insertPo);
+
+        //获取回填ID
+        var noticeId = insertPo.getId();
 
         var insertRcdPos = new ArrayList<NoticeRcdPo>();
 

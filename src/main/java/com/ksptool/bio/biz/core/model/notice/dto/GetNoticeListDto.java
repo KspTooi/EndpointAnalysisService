@@ -1,13 +1,15 @@
 package com.ksptool.bio.biz.core.model.notice.dto;
 
 import com.ksptool.assembly.entity.web.PageQuery;
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GetNoticeListDto extends PageQuery {
+public class GetNoticeListDto extends PageQuery{
 
     @Schema(description = "标题")
     private String title;

@@ -15,7 +15,6 @@ import com.ksptool.bio.biz.core.model.org.vo.GetOrgTreeVo;
 import com.ksptool.bio.biz.core.model.user.UserPo;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
 import com.ksptool.bio.biz.core.repository.UserRepository;
-import com.ksptool.bio.commons.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -134,10 +133,12 @@ public class OrgService {
                 throw new BizException("无法处理新增请求,企业名称 [" + dto.getName() + "] 已存在.");
             }
 
-            var id = IdWorker.nextId();
             OrgPo addPo = as(dto, OrgPo.class);
-            addPo.setId(id);
-            addPo.setRootId(id);
+            addPo.setRootId(-1L);
+
+            //保存以获取ID
+            OrgPo orgPo = repository.saveAndFlush(addPo);
+            orgPo.setRootId(orgPo.getId());
             addPo.setParentId(null);
             repository.saveAndFlush(addPo);
             return;
@@ -154,7 +155,7 @@ public class OrgService {
         }
 
         var addPo = as(dto, OrgPo.class);
-        addPo.setId(IdWorker.nextId());
+        //addPo.setId(IdWorker.nextId());
         addPo.setRootId(parentPo.getRootId());
         addPo.setParentId(parentPo.getId());
 
@@ -280,7 +281,7 @@ public class OrgService {
             //处理组织路径ID
             var pathIds = new ArrayList<String>();
             pathIds.add(String.valueOf(updatePo.getId()));
-            
+
             var parentId = updatePo.getParentId();
             while (parentId != null) {
                 var parent = repository.findById(parentId)
@@ -288,15 +289,15 @@ public class OrgService {
                 pathIds.add(String.valueOf(parent.getId()));
                 parentId = parent.getParentId();
             }
-            
+
             Collections.reverse(pathIds);
             updatePo.setOrgPathIds(String.join(",", pathIds));
 
             var newPath = updatePo.getOrgPathIds();
 
             //如果组织路径ID发生变化，则需要批量更新该组织下的全部子孙组织的组织路径ID
-            if(!Objects.equals(oldPath, newPath)){
-                
+            if (!Objects.equals(oldPath, newPath)) {
+
                 //查询该组织下的全部子孙组织
                 var subtree = repository.getChildDeptsByDeptId(updatePo.getId());
 
@@ -307,16 +308,16 @@ public class OrgService {
                     if (Objects.equals(po.getId(), updatePo.getId())) {
                         continue;
                     }
-                
+
                     var childPath = po.getOrgPathIds();
                     if (childPath == null) {
                         throw new BizException("组织路径ID为空,无法更新子孙节点.");
                     }
-                
+
                     if (!childPath.startsWith(oldPrefix)) {
                         throw new BizException("组织路径ID前缀不匹配,无法更新子孙节点.");
                     }
-                
+
                     var suffix = childPath.substring(oldPrefix.length());
                     po.setOrgPathIds(newPrefix + suffix);
                 }

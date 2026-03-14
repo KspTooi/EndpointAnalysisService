@@ -8,13 +8,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.ksptool.bio.biz.auth.service.SessionService.session;
-
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 /**
  * 资源
  *
@@ -24,11 +28,13 @@ import static com.ksptool.bio.biz.auth.service.SessionService.session;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "core_resource")
 public class ResourcePo {
 
-    @Column(name = "id", comment = "主键id")
     @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", comment = "主键id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,15 +77,19 @@ public class ResourcePo {
     @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
+    @CreatedDate
     @Column(name = "create_time", comment = "创建时间")
     private LocalDateTime createTime;
 
+    @CreatedBy
     @Column(name = "creator_id", comment = "创建人ID")
     private Long creatorId;
 
+    @LastModifiedDate
     @Column(name = "update_time", comment = "更新时间")
     private LocalDateTime updateTime;
 
+    @LastModifiedBy
     @Column(name = "updater_id", comment = "更新人ID")
     private Long updaterId;
 
@@ -87,32 +97,10 @@ public class ResourcePo {
     @PrePersist
     private void onCreate() throws AuthException {
 
-        if (this.id == null) {
-            this.id = IdWorker.nextId();
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        if (this.createTime == null) {
-            this.createTime = now;
-        }
-        if (this.updateTime == null) {
-            this.updateTime = this.createTime;
-        }
-
-        if (this.creatorId == null) {
-            this.creatorId = session().getUserId();
-        }
-        if (this.updaterId == null) {
-            this.updaterId = session().getUserId();
-        }
     }
 
     @PreUpdate
     private void onUpdate() throws AuthException {
-        this.updateTime = LocalDateTime.now();
-        if (this.updaterId == null) {
-            this.updaterId = session().getUserId();
-        }
     }
 
 
