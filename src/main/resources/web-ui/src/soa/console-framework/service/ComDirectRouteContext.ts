@@ -1,3 +1,73 @@
+/**
+ * CDRC(Com Direct Route Context) 直接路由上下文系统
+ *
+ * 一、用途
+ * 用于在两个页面之间进行“带上下文的直接跳转”。
+ * 它解决的不是普通路由跳转，而是下面这一类场景：
+ * 1. 来源页跳转到目标页时，需要携带一个较复杂的对象。
+ * 2. 目标页刷新后，仍然需要恢复这份上下文。
+ * 3. 目标页回到来源页时，还需要把一份回传数据带回去。
+ * 4. 标签页模式下，目标页标签需要记录完整查询参数，避免刷新或再次激活时丢失CDRC状态。
+ *
+ * 二、设计思路
+ * 1. 跳转时不把完整上下文直接塞进URL，而是先写入 sessionStorage。
+ * 2. URL 中只放少量CDRC标识参数：
+ *    - cdrc-source: 来源页路径
+ *    - cdrc-source-name: 来源页名称
+ *    - cdrc-redirect-id: 本次跳转上下文ID
+ *    - cdrc-return-id: 回源上下文ID
+ * 3. 目标页进入后，通过 cdrc-redirect-id 从 sessionStorage 取出 send/return 上下文。
+ * 4. 目标页执行回源时，将原目标上下文转成回源上下文，并通过 cdrc-return-id 带回来源页。
+ * 5. 来源页进入后，通过 cdrc-return-id 读取回源上下文。
+ *
+ * 三、上下文生命周期
+ * 1. cdrc-context:
+ *    目标页上下文。
+ *    用于“来源页 -> 目标页”的 send 数据传递。
+ *    它支持目标页刷新恢复，所以不会在首次读取后立即删除。
+ * 2. cdrc-return:
+ *    回源页上下文。
+ *    用于“目标页 -> 来源页”的 return 数据传递。
+ *    它是一次性的，来源页读取成功后会立即删除。
+ * 3. TTL:
+ *    两类上下文都会附带过期时间，超过TTL后自动失效并清理，避免 sessionStorage 长期堆积脏数据。
+ *
+ * 四、标签页同步原理
+ * 由于本项目存在标签页机制，普通路由跳转后，标签页中保存的 path 可能不包含 CDRC 查询参数。
+ * 目标页一旦刷新，若标签记录的 path 不完整，就可能丢失 cdrc-redirect-id。
+ * 因此在目标页识别到自己是 CDRC 页面后，会把“当前完整路由 + query”回写到当前标签页 path 中。
+ * 这样标签页刷新、重新激活时，仍然可以恢复到完整的 CDRC 地址。
+ *
+ * 五、使用方式
+ * 来源页：
+ * 1. 调用 useDirectRouteContext()。
+ * 2. 使用 cdrcRedirect(nameOrPath, sendQuery, returnQuery) 跳转到目标页。
+ * 3. sendQuery 为发给目标页的数据，returnQuery 为目标页回源时要返还给来源页的数据模板或上下文。
+ *
+ * 目标页：
+ * 1. 调用 useDirectRouteContext()。
+ * 2. 使用 getCdrcQuery() 获取来源页传入的数据。
+ * 3. 使用 cdrcReturn() 回源。
+ * 4. 如果目标页不是通过CDRC进入，getCdrcQuery() 获取失败时会自动尝试回源。
+ *
+ * 来源页回源后：
+ * 1. 调用 getCdrcReturnQuery() 获取目标页回传的数据。
+ *
+ * 六、典型调用示例
+ * 来源页：
+ * const { cdrcRedirect, getCdrcReturnQuery } = ComDirectRouteContext.useDirectRouteContext();
+ * cdrcRedirect("out-model-origin-manager", scope.row, { pageNum: 1, pageSize: 20 });
+ *
+ * 目标页：
+ * const { getCdrcQuery, cdrcReturn } = ComDirectRouteContext.useDirectRouteContext();
+ * const query = getCdrcQuery();
+ *
+ * 七、注意事项
+ * 1. CDRC 适合传递页面工作上下文，不适合替代长期状态管理。
+ * 2. send/return 建议传递可序列化对象，不要传函数、类实例等不可稳定序列化的数据。
+ * 3. 当前实现依赖 sessionStorage，因此只在当前浏览器会话内有效。
+ * 4. 如果调用方需要区分“未通过CDRC进入”和“CDRC上下文已失效”，应结合 cdrcCanReturn 与 getCdrcQuery() 的结果一起判断。
+ */
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter, type RouteRecordNameGeneric } from "vue-router";
 import { useTabStore, type Tab } from "@/store/TabHolder";
@@ -325,13 +395,17 @@ export default {
 
     /**
      * 获取CDRC查询参数
+     * @param autoReturn 是否自动回源 如果为true，则当CDRC上下文失效时执行自动回源
+     * @returns CDRC查询参数 如果CDRC上下文失效且未开启自动回源，则返回null
      */
-    const getCdrcQuery = () => {
+    const getCdrcQuery = (autoReturn: boolean = true) => {
       //如果CDRC上下文不存在，则自动回退
       if (!cdrcQuery) {
-        cdrcReturn();
-        ElMessage.error("CDRC上下文获取失败,自动回源到来源路由!");
-        return;
+        if (autoReturn) {
+          cdrcReturn();
+          ElMessage.error("CDRC上下文获取失败,自动回源到来源路由!");
+        }
+        return null;
       }
 
       return cdrcQuery;
