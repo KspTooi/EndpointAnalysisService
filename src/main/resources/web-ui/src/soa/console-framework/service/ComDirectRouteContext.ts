@@ -166,7 +166,7 @@ function resolveCdrcContext(prefix: string, cdrcContextId: string): CDRCContext 
       }
 
       //如果CDRC上下文里面send 和 return都为空，则认为CDRC上下文已经失效，删除SessionStorage中的CDRC上下文
-      if (!cdrcContext.send && !cdrcContext.return) {
+      if (cdrcContext.send == null && cdrcContext.return == null) {
         removeCdrcContext(prefix, cdrcContextId);
         return null;
       }
@@ -329,10 +329,10 @@ export default {
         send: null,
       };
 
-      if (sendQuery) {
+      if (sendQuery != null) {
         cdrcContext.send = sendQuery;
       }
-      if (returnQuery) {
+      if (returnQuery != null) {
         cdrcContext.return = returnQuery;
       }
 
@@ -400,7 +400,7 @@ export default {
      */
     const getCdrcQuery = (autoReturn: boolean = true) => {
       //如果CDRC上下文不存在，则自动回退
-      if (!cdrcQuery) {
+      if (cdrcQuery == null) {
         if (autoReturn) {
           cdrcReturn();
           ElMessage.error("CDRC上下文获取失败,自动回源到来源路由!");
