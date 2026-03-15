@@ -2,11 +2,16 @@ package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ksptool.text.PreparedPrompt;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -107,11 +112,87 @@ public class QbeVelocityEngine {
         modelMap.put("model", model);
         modelMap.put("global", globalVars);
 
+        Map<String, String> params = new HashMap<>();
+        params.put("QMSTN", model.getQmstn());
+        params.put("QMSCN", model.getQmscn());
+        params.put("QMBCN", model.getQmbcn());
+        params.put("QMULN", model.getQmuln());
+        params.put("QMALCN", model.getQmalcn());
+        params.put("QMAUCN", model.getQmaucn());
+
+
         //渲染蓝图
         for (QbeBlueprint blueprint : blueprints) {
+
+            //先解析蓝图输出路径和输出名
+            PreparedPrompt pathPrompt = PreparedPrompt.prepare(blueprint.getRelativePathWithPlaceholder());
+            pathPrompt.setParameters(params);
+            String resolvedRelativePath = pathPrompt.execute(false);
+
+            PreparedPrompt fileNamePrompt = PreparedPrompt.prepare(blueprint.getFileNameWithPlaceholder());
+            fileNamePrompt.setParameters(params);
+            String resolvedFileName = fileNamePrompt.execute(false);
+
+            if (resolvedFileName.endsWith(".vm")) {
+                resolvedFileName = resolvedFileName.substring(0, resolvedFileName.length() - 3);
+            }
+
+            Path resolvedRelativePathObj = Paths.get(resolvedRelativePath);
+            Path resolvedDir = resolvedRelativePathObj.getParent();
+            if (resolvedDir == null) {
+                resolvedDir = Paths.get("");
+            }
+
+            Path outputFilePath = Paths.get(outputBasePath).resolve(resolvedDir).resolve(resolvedFileName).normalize();
+
+            if (!outputFilePath.startsWith(Paths.get(outputBasePath))) {
+                throw new RuntimeException("输出路径超出基准目录范围：" + outputFilePath);
+            }
+
             String templateContent = blueprint.getTemplateContent();
-            String renderedContent = renderTemplate(templateContent, modelMap);
-            blueprint.setRenderedContent(renderedContent);
+            if (StringUtils.isBlank(templateContent)) {
+                log.warn("蓝图模板内容为空，跳过处理");
+                return;
+            }
+
+            //渲染模板 先把modelMap放进VC
+            VelocityContext vc = new VelocityContext();
+            for (Map.Entry<String, Object> entry : modelMap.entrySet()) {
+                vc.put(entry.getKey(), entry.getValue());
+            }
+
+            //放全局变量进VC
+            var globalMap = new HashMap<String, Object>();
+            globalMap.put("global", globalVars);
+            vc.put("global", globalMap);
+
+            StringWriter writer = new StringWriter();
+            boolean success = Velocity.evaluate(vc, writer, "template", templateContent);
+            if (!success) {
+                throw new RuntimeException("无法渲染模板，蓝图：" + blueprint.getFileName());
+            }
+            String renderedContent = writer.toString();
+
+            //写入文件
+            try {
+                Files.createDirectories(outputFilePath.getParent());
+                if (Files.exists(outputFilePath)) {
+                    if (overwriteEnabled) {
+                        log.info("文件已存在，覆盖文件：{}", outputFilePath);
+                        Files.writeString(outputFilePath, renderedContent);
+                        log.info("已覆盖文件：{}", outputFilePath);
+                    }
+                    if (!overwriteEnabled) {
+                        log.warn("文件已存在，跳过处理：{}", outputFilePath);
+                        return;
+                    }
+                }
+                Files.writeString(outputFilePath, renderedContent);
+                log.info("已写入文件：{}", outputFilePath);
+            } catch (IOException e) {
+                throw new RuntimeException("无法写入文件：" + outputFilePath, e);
+            }
+
         }
     }
 
