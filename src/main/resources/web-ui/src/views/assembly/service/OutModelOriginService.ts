@@ -1,28 +1,33 @@
-import { ref, type Ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
 import type { GetOutModelOriginListDto, GetOutModelOriginListVo } from "@/views/assembly/api/OutModelOriginApi";
 import OutModelOriginApi from "@/views/assembly/api/OutModelOriginApi";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage } from "element-plus";
+import type { GetOutSchemaListVo } from "../api/OutSchemaApi";
 
 export default {
   /**
-   * 按输出方案ID过滤的列表管理
+   * 输出方案原始模型表列表管理
    */
-  useOutModelOriginList(outputSchemaId: Ref<string>) {
+  useOutModelOriginList(outputSchema: GetOutSchemaListVo, cdrcReturn: () => void) {
     const listForm = ref<GetOutModelOriginListDto>({
-      outputSchemaId: outputSchemaId.value,
+      outputSchemaId: null,
     });
 
     const listData = ref<GetOutModelOriginListVo[]>([]);
+    const listTotal = ref(0);
     const listLoading = ref(false);
 
+    /**
+     * 加载列表
+     */
     const loadList = async () => {
       listLoading.value = true;
-      listForm.value.outputSchemaId = outputSchemaId.value;
       const result = await OutModelOriginApi.getOutModelOriginList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
+        listTotal.value = result.total;
       }
 
       if (Result.isError(result)) {
@@ -32,8 +37,21 @@ export default {
       listLoading.value = false;
     };
 
+    onMounted(async () => {
+      //如果输出方案无效 则回退
+      if (!outputSchema) {
+        cdrcReturn();
+        return;
+      }
+
+      //设置输出方案ID
+      listForm.value.outputSchemaId = outputSchema.id;
+      await loadList();
+    });
+
     return {
       listData,
+      listTotal,
       listLoading,
       loadList,
     };

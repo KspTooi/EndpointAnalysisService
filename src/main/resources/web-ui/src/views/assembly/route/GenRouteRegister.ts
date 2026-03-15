@@ -12,32 +12,39 @@ export default class GenRouteRegister extends GenricRouteRegister {
   public doRegister(): RouteEntryPo[] {
     return [
       RouteEntryPo.build({
-        biz: "gen",
+        biz: "assembly",
         path: "data-source-manager",
         name: "data-source-manager",
         component: () => import("@/views/assembly/DataSource.vue"),
         meta: { breadcrumb: "数据源管理" },
       }),
       RouteEntryPo.build({
-        biz: "gen",
+        biz: "assembly",
         path: "ty-schema-manager",
         name: "ty-schema-manager",
         component: () => import("@/views/assembly/TymSchema.vue"),
         meta: { breadcrumb: "类型映射方案管理" },
       }),
       RouteEntryPo.build({
-        biz: "gen",
+        biz: "assembly",
         path: "scm-manager",
         name: "scm-manager",
         component: () => import("@/views/assembly/Scm.vue"),
         meta: { breadcrumb: "SCM管理" },
       }),
       RouteEntryPo.build({
-        biz: "gen",
+        biz: "assembly",
         path: "out-schema-manager",
         name: "out-schema-manager",
         component: () => import("@/views/assembly/OutSchema.vue"),
         meta: { breadcrumb: "输出方案管理" },
+      }),
+      RouteEntryPo.build({
+        biz: "assembly",
+        path: "out-model-origin-manager",
+        name: "out-model-origin-manager",
+        component: () => import("@/views/assembly/OutModelOrigin.vue"),
+        meta: { breadcrumb: "输出方案原始模型管理" },
       }),
     ];
   }

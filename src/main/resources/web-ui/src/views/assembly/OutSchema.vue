@@ -39,10 +39,19 @@
         <el-table-column prop="tableName" label="数据源表名" min-width="120" show-overflow-tooltip />
         <el-table-column prop="fieldCountOrigin" label="字段数(原始)" min-width="110" show-overflow-tooltip />
         <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column label="操作" fixed="right" min-width="240">
           <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="cdrcRedirect('out-model-origin-manager', scope.row)"
+              :icon="ViewIcon"
+            >
+              查看原始模型
+            </el-button>
             <el-button link type="primary" size="small" @click="openModelDesignModal(scope.row)" :icon="ManagementIcon">
-              模型设计
+              设计聚合模型
             </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
@@ -288,7 +297,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete, Management, MagicStick } from "@element-plus/icons-vue";
+import { Edit, Delete, Management, MagicStick, View } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import OutSchemaService from "@/views/assembly/service/OutSchemaService";
 import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
@@ -298,15 +307,20 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
 import ModelDesignModal from "@/views/assembly/components/ModelDesignModal.vue";
+import ComDirectRouteContext from "@/soa/console-framework/service/ComDirectRouteContext.ts";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const ManagementIcon = markRaw(Management);
 const MagicStickIcon = markRaw(MagicStick);
+const ViewIcon = markRaw(View);
 
 //列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOutSchema } =
   OutSchemaService.useOutSchemaList();
+
+//使用CDRC打包上下文
+const { cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
 
 const modalFormRef = ref<FormInstance>();
 

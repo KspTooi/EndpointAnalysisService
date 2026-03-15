@@ -1,31 +1,6 @@
 <template>
   <el-dialog v-model="modalVisible" :title="title" fullscreen :close-on-click-modal="false" destroy-on-close @close="onClose">
     <el-tabs v-model="activeTab" type="border-card" class="fullscreen-tabs">
-      <!-- 原始模型 TAB -->
-      <el-tab-pane label="原始模型" name="origin" lazy>
-        <el-table
-          v-if="activeTab === 'origin'"
-          :data="originListData"
-          stripe
-          v-loading="originListLoading"
-          border
-          class="tab-table"
-        >
-          <el-table-column prop="seq" label="序号" min-width="50" show-overflow-tooltip align="center" />
-          <el-table-column prop="name" label="原始字段名" min-width="150" show-overflow-tooltip />
-          <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="length" label="长度" min-width="80" show-overflow-tooltip />
-          <el-table-column prop="require" label="必填" min-width="50" align="center">
-            <template #default="scope">
-              <span :style="{ color: scope.row.require === 1 ? '#f56c6c' : '#67c23a', fontWeight: 500 }">
-                {{ scope.row.require === 1 ? "是" : "否" }}
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
-        </el-table>
-      </el-tab-pane>
-
       <!-- 聚合模型 TAB -->
       <el-tab-pane label="聚合模型" name="poly" lazy>
         <div v-if="activeTab === 'poly'" class="poly-tab-content">
@@ -318,7 +293,6 @@ import { markRaw } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
-import OutModelOriginService from "@/views/assembly/service/OutModelOriginService";
 import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
 import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
 import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
@@ -355,10 +329,9 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
 };
 
 const modalVisible = ref(false);
-const activeTab = ref(localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin");
+const activeTab = ref(localStorage.getItem(ACTIVE_TAB_KEY) ?? "poly");
 const outputSchemaId = ref("");
 const outSchemaVo = ref<GetOutSchemaListVo | null>(null);
-const originLoaded = ref(false);
 const polyLoaded = ref(false);
 const editingCellKey = ref("");
 
@@ -372,14 +345,6 @@ const title = computed(() => {
   }
   return "模型设计";
 });
-
-// ==================== 原始模型列表 ====================
-
-const {
-  listData: originListData,
-  listLoading: originListLoading,
-  loadList: loadOriginList,
-} = OutModelOriginService.useOutModelOriginList(outputSchemaId);
 
 // ==================== 聚合模型列表 ====================
 
@@ -529,13 +494,6 @@ const formatPolicyQuery = (value: number) => POLICY_QUERY_LABEL_MAP[value] ?? "-
 const formatPolicyView = (value: number) => POLICY_VIEW_LABEL_MAP[value] ?? "-";
 
 const ensureActiveTabLoaded = async (force = false) => {
-  if (activeTab.value === "origin") {
-    if (originLoaded.value && !force) return;
-    await loadOriginList();
-    originLoaded.value = true;
-    return;
-  }
-
   if (activeTab.value !== "poly") return;
   if (polyLoaded.value && !force) return;
   await loadPolyList();
@@ -560,10 +518,9 @@ defineExpose({
   openModal: async (row: GetOutSchemaListVo) => {
     outSchemaVo.value = row;
     outputSchemaId.value = row.id;
-    originLoaded.value = false;
     polyLoaded.value = false;
     clearEditingCell();
-    activeTab.value = localStorage.getItem(ACTIVE_TAB_KEY) ?? "origin";
+    activeTab.value = localStorage.getItem(ACTIVE_TAB_KEY) ?? "poly";
     modalVisible.value = true;
     await ensureActiveTabLoaded(true);
   },
