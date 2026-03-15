@@ -31,7 +31,7 @@ public class GetOutModelPolyListVo {
     @Schema(description = "聚合必填 0:否 1:是")
     private Integer require;
 
-    @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
+    @Schema(description = "聚合可见性策略 AD、ED、DV、LD、LV")
     private Set<String> policyCrudJson;
 
     @Schema(description = "聚合查询策略 0:等于 1:模糊")

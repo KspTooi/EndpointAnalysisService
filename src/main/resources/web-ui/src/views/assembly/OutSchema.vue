@@ -50,8 +50,14 @@
             >
               查看原始模型
             </el-button>
-            <el-button link type="primary" size="small" @click="openModelDesignModal(scope.row)" :icon="ManagementIcon">
-              设计聚合模型
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="cdrcRedirect('out-model-poly-manager', scope.row)"
+              :icon="ManagementIcon"
+            >
+              设计方案
             </el-button>
             <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
@@ -87,9 +93,6 @@
         />
       </template>
     </StdListAreaTable>
-
-    <!-- 模型设计模态框 -->
-    <ModelDesignModal ref="modelDesignRef" @on-close="loadList" />
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
@@ -300,13 +303,11 @@ import { ref, markRaw } from "vue";
 import { Edit, Delete, Management, MagicStick, View } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import OutSchemaService from "@/views/assembly/service/OutSchemaService";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
-import ModelDesignModal from "@/views/assembly/components/ModelDesignModal.vue";
 import ComDirectRouteContext from "@/soa/console-framework/service/ComDirectRouteContext.ts";
 
 const EditIcon = markRaw(Edit);
@@ -323,12 +324,6 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
 const { cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
 
 const modalFormRef = ref<FormInstance>();
-
-const modelDesignRef = ref<InstanceType<typeof ModelDesignModal>>();
-
-const openModelDesignModal = (row: GetOutSchemaListVo) => {
-  modelDesignRef.value?.openModal(row);
-};
 
 //模态框打包
 const {

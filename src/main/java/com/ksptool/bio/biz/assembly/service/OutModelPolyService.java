@@ -188,7 +188,7 @@ public class OutModelPolyService {
             ompPo.setKind(targetType);
             ompPo.setLength(omoPo.getLength());
             ompPo.setRequire(omoPo.getRequire());
-            ompPo.setPolicyCrudJson(Set.of("ADD", "EDIT", "LQ", "LW"));
+            ompPo.setPolicyCrudJson(Set.of("AD", "ED", "DV", "LD", "LV"));
             ompPo.setPolicyQuery(0); //0:等于 1:模糊
             ompPo.setPolicyView(0); //0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
             ompPo.setRemark(omoPo.getRemark());
