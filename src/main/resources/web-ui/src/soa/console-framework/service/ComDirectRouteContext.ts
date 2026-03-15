@@ -1,6 +1,6 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter, type RouteRecordNameGeneric } from "vue-router";
-import { useTabStore } from "@/store/TabHolder";
+import { useTabStore, type Tab } from "@/store/TabHolder";
 import { ElMessage } from "element-plus";
 
 /** CDRC上下文前缀 */
@@ -205,6 +205,24 @@ export default {
       }
     }
 
+    //如果现在正在CDRC目标页，则将当前标签页设置为CDRC目标页
+    if (cdrcRedirectId) {
+      //查找当前活动的标签页
+      const currentActiveTab = tabStore.tabs.find((tab) => tab.id === tabStore.activeTabId);
+      if (currentActiveTab) {
+        //获取当前的路由地址和查询参数
+        const currentRoute = router.currentRoute.value;
+        const currentRouteQuery = currentRoute.query;
+
+        //将当前的路由地址和查询参数拼接起来
+        const currentRoutePath =
+          currentRoute.path + "?" + new URLSearchParams(currentRouteQuery as Record<string, string>).toString();
+
+        //更新当前标签页的地址
+        tabStore.updateCurrentTabPath(currentRoutePath);
+      }
+    }
+
     /**
      * 跳转
      * @param nameOrPath 路由的名称或路径
@@ -292,6 +310,9 @@ export default {
         //放入CDRC回退上下文
         putCdrcContext(CDRC_RETURN_CONTEXT_PREFIX, cdrcRedirectId, cdrcContext);
       }
+
+      //更新当前标签页的地址
+      tabStore.updateCurrentTabPath(cdrcSource);
 
       //跳转到源路由并携带返回参数
       router.push({
