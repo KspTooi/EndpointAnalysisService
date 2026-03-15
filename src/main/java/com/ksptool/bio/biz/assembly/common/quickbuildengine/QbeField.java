@@ -1,6 +1,5 @@
-package com.ksptool.bio.biz.assembly.common.assemblybp.entity.field;
+package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
-import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class PolyField {
-
-    //对应的原始字段
-    @Setter
-    private RawField rawField;
+@Setter
+public class QbeField {
 
     //字段标准化名称(pfstn) ex: UserName
     private String stdName;

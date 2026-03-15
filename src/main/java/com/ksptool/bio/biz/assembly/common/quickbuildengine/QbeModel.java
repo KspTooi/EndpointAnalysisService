@@ -1,29 +1,17 @@
-package com.ksptool.bio.biz.assembly.common.assemblybp.entity.field;
+package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
-import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
+import com.ksptool.bio.biz.assembly.common.assemblybp.entity.field.PolyField;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * 聚合表实体类
- * 用于存储聚合表的元数据
- * 包括表的名称、字段列表、排序号、导入列表等
- * 用于生成聚合表的代码
- * 用于生成聚合表的SQL
- * 用于生成聚合表的XML
- * 用于生成聚合表的JSON
- * 用于生成聚合表的YAML
- * 用于生成聚合表的PROPERTIES
- */
 @Getter
-public class PolyTable {
-
-    //对应原始表
-    @Setter
-    private RawTable rawTable;
+@Setter
+public class QbeModel {
 
     //表标准化名称(ptstn) ex: LocalUserAccount
     private String stdName;
@@ -44,13 +32,12 @@ public class PolyTable {
     @Setter
     private List<PolyField> fields;
 
+    //附加字段
+    private Map<String, Object> appendFields;
+
     //排序号
     @Setter
     private int seq;
-
-    //导入列表
-    @Setter
-    private List<PolyImport> imports;
 
     public void setStdName(String stdName) {
         if (StringUtils.isBlank(stdName)) {
@@ -72,6 +59,19 @@ public class PolyTable {
         this.ptuln = stdNameObj.toUnderLineName();
         this.ptalcn = stdNameObj.toLowerCase();
         this.ptaucn = stdNameObj.toUpperCase();
+    }
+
+    /**
+     * 向附加字段中添加字段
+     *
+     * @param key   字段名称
+     * @param value 字段值
+     */
+    public void put(String key, Object value) {
+        if (appendFields == null) {
+            appendFields = new HashMap<>();
+        }
+        appendFields.put(key, value);
     }
 
 }

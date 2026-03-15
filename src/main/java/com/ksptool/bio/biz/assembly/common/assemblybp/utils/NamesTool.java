@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.assembly.common.assemblybp.utils;
 
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
 import org.apache.commons.lang3.StringUtils;
 
 /**

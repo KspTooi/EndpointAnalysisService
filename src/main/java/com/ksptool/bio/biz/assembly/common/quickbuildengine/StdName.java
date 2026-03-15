@@ -1,5 +1,7 @@
-package com.ksptool.bio.biz.assembly.common.assemblybp.utils;
+package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
+import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -18,8 +20,15 @@ import org.apache.commons.lang3.StringUtils;
  * - {@link #ofLowerCase(String)} - 从全小写转换
  * - {@link #ofUpperCase(String)} - 从全大写转换
  */
+@Getter
 public class StdName {
 
+    /**
+     * -- GETTER --
+     * 获取标准名称的字符串值
+     *
+     * @return 标准名称字符串，如：UserName
+     */
     private final String value;
 
     private StdName(String value) {
@@ -126,15 +135,6 @@ public class StdName {
         }
         String stdName = NamesTool.capitalize(upperCase.toLowerCase());
         return new StdName(stdName);
-    }
-
-    /**
-     * 获取标准名称的字符串值
-     *
-     * @return 标准名称字符串，如：UserName
-     */
-    public String getValue() {
-        return value;
     }
 
     /**
