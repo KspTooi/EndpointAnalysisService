@@ -18,9 +18,9 @@ import java.util.stream.Stream;
 public class QbeBlueprintReader {
 
     /**
-     * 基准路径
+     * 蓝图仓库路径
      */
-    private Path basePath;
+    private Path repositoryPath;
 
     /**
      * 蓝图扩展名
@@ -31,16 +31,18 @@ public class QbeBlueprintReader {
 
     /**
      * 构造函数
+     * @param repositoryPath 蓝图仓库路径
+     * @throws IllegalArgumentException 蓝图仓库路径不存在或不是目录
      */
-    public QbeBlueprintReader(String basePath) {
-        this.basePath = Paths.get(basePath);
+    public QbeBlueprintReader(String repositoryPath) {
+        this.repositoryPath = Paths.get(repositoryPath);
 
-        if (!Files.exists(this.basePath)) {
-            throw new IllegalArgumentException("基准路径不存在：" + basePath);
+        if (!Files.exists(this.repositoryPath)) {
+            throw new IllegalArgumentException("蓝图仓库路径不存在：" + repositoryPath);
         }
 
-        if (!Files.isDirectory(this.basePath)) {
-            throw new IllegalArgumentException("基准路径不是目录：" + basePath);
+        if (!Files.isDirectory(this.repositoryPath)) {
+            throw new IllegalArgumentException("蓝图仓库路径不是目录：" + repositoryPath);
         }
 
     }
@@ -53,11 +55,11 @@ public class QbeBlueprintReader {
      */
     public List<QbeBlueprint> readBlueprint() throws IOException {
 
-        log.info("开始读取蓝图，基准路径：{}，扩展名：{}", basePath, blueprintExtension);
+        log.info("开始读取蓝图，蓝图仓库路径：{}，扩展名：{}", repositoryPath, blueprintExtension);
 
         var blueprints = new ArrayList<QbeBlueprint>();
 
-        try (Stream<Path> paths = Files.walk(basePath)) {
+        try (Stream<Path> paths = Files.walk(repositoryPath)) {
             List<Path> matchedPaths = paths.filter(Files::isRegularFile)
                     .filter(this::matchesExtension)
                     .toList();
@@ -114,10 +116,10 @@ public class QbeBlueprintReader {
 
         //设置绝对路径和基准路径
         blueprint.setAbsoluteFilePath(path.toAbsolutePath().toString());
-        blueprint.setBasePath(basePath.toAbsolutePath().toString());
+        blueprint.setBasePath(repositoryPath.toAbsolutePath().toString());
 
         //设置相对路径
-        Path relativePath = basePath.relativize(path);
+        Path relativePath = repositoryPath.relativize(path);
         blueprint.setRelativeFilePath(relativePath.toString());
 
         // 将相对路径和文件名中的反斜杠统一为正斜杠，便于模板解析

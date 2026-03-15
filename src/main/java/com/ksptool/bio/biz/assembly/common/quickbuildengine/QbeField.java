@@ -11,20 +11,24 @@ import java.util.Map;
 @Setter
 public class QbeField {
 
-    //字段标准化名称(pfstn) ex: UserName
-    private String stdName;
+    //字段原始名称(qfpon) ex: user_id
+    private String qfpon;
 
     //用于简写字段名称
-    private String pfstn; //字段标准化名称(pfstn) ex: UserName
-    private String pfscn; //字段小驼峰名称(pfscn) ex: userName
-    private String pfbcn; //字段大驼峰名称(pfbcn) ex: UserName
-    private String pfuln; //字段下划线名称(pfuln) ex: user_name
-    private String pfalcn; //字段全小写名称(pfalcn) ex: username
-    private String pfaucn; //字段全大写名称(pfaucn) ex: USERNAME
+    private String qfstn; //字段标准化名称(qfstn) ex: UserId
+    private String qfscn; //字段小驼峰名称(qfscn) ex: userId
+    private String qfbcn; //字段大驼峰名称(qfbcn) ex: UserId
+    private String qfuln; //字段下划线名称(qfuln) ex: user_id
+    private String qfalcn; //字段全小写名称(qfalcn) ex: userid
+    private String qfaucn; //字段全大写名称(qfaucn) ex: USERID
 
     //字段类型
     @Setter
     private String type;
+
+    //字段长度
+    @Setter
+    private int length;
 
     //字段注释
     @Setter
@@ -42,29 +46,31 @@ public class QbeField {
     @Setter
     private int seq;
 
+    //字段支持的操作
+    private boolean listQuery = true;
+    private boolean listView = true;
+    private boolean add = true;
+    private boolean edit = true;
+    private boolean details = true;
+
+
     //附加字段
-    private Map<String, Object> appendFields;
+    private Map<String, Object> ext;
+
 
     public void setStdName(String stdName) {
-        if (StringUtils.isBlank(stdName)) {
-            this.stdName = stdName;
-            this.pfstn = stdName;
-            this.pfscn = "";
-            this.pfbcn = "";
-            this.pfuln = "";
-            this.pfalcn = "";
-            this.pfaucn = "";
-            return;
+        if (StringUtils.isBlank(qfpon)) {
+            throw new IllegalArgumentException("字段原始名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(stdName);
-        this.stdName = stdNameObj.getValue();
-        this.pfstn = stdNameObj.getValue();
-        this.pfbcn = stdNameObj.getValue();
-        this.pfscn = stdNameObj.toSmallCamelCase();
-        this.pfuln = stdNameObj.toUnderLineName();
-        this.pfalcn = stdNameObj.toLowerCase();
-        this.pfaucn = stdNameObj.toUpperCase();
+        StdName stdNameObj = StdName.of(qfpon);
+        this.qfpon = stdName;
+        this.qfstn = stdNameObj.getValue();
+        this.qfbcn = stdNameObj.getValue();
+        this.qfscn = stdNameObj.toSmallCamelCase();
+        this.qfuln = stdNameObj.toUnderLineName();
+        this.qfalcn = stdNameObj.toLowerCase();
+        this.qfaucn = stdNameObj.toUpperCase();
     }
 
     /**
@@ -74,10 +80,10 @@ public class QbeField {
      * @param value 字段值
      */
     public void put(String key, Object value) {
-        if (appendFields == null) {
-            appendFields = new HashMap<>();
+        if (ext == null) {
+            ext = new HashMap<>();
         }
-        appendFields.put(key, value);
+        ext.put(key, value);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
-import com.ksptool.bio.biz.assembly.common.assemblybp.entity.field.PolyField;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -9,20 +8,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Getter
 @Setter
 public class QbeModel {
 
-    //表标准化名称(ptstn) ex: LocalUserAccount
-    private String stdName;
+    //表原始名称(pon) ex: local_user_account
+    private String qmpon;
 
     //用于简写表名称
-    private String ptstn; //表标准化名称(ptstn) ex: LocalUserAccount
-    private String ptscn; //表小驼峰名称(ptscn) ex: localUserAccount
-    private String ptbcn; //表大驼峰名称(ptbcn) ex: LocalUserAccount
-    private String ptuln; //表下划线名称(ptuln) ex: local_user_account
-    private String ptalcn; //表全小写名称(ptalcn) ex: localuseraccount
-    private String ptaucn; //表全大写名称(ptaucn) ex: LOCALUSERACCOUNT
+    private String qmstn; //表标准化名称(qmstn) ex: LocalUserAccount
+    private String qmscn; //表小驼峰名称(qmscn) ex: localUserAccount
+    private String qmbcn; //表大驼峰名称(qmbcn) ex: LocalUserAccount
+    private String qmuln; //表下划线名称(qmuln) ex: local_user_account
+    private String qmalcn; //表全小写名称(qmalcn) ex: localuseraccount
+    private String qmaucn; //表全大写名称(qmaucn) ex: LOCALUSERACCOUNT
 
     //表注释
     @Setter
@@ -30,35 +30,29 @@ public class QbeModel {
 
     //字段列表
     @Setter
-    private List<PolyField> fields;
+    private List<QbeField> fields;
 
     //附加字段
-    private Map<String, Object> appendFields;
+    private Map<String, Object> ext;
 
     //排序号
     @Setter
     private int seq;
 
-    public void setStdName(String stdName) {
-        if (StringUtils.isBlank(stdName)) {
-            this.stdName = stdName;
-            this.ptstn = stdName;
-            this.ptscn = "";
-            this.ptbcn = "";
-            this.ptuln = "";
-            this.ptalcn = "";
-            this.ptaucn = "";
-            return;
+    public void setPon(String pon) {
+
+        if (StringUtils.isBlank(pon)) {
+            throw new IllegalArgumentException("表原始名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(stdName);
-        this.stdName = stdNameObj.getValue();
-        this.ptstn = stdNameObj.getValue();
-        this.ptbcn = stdNameObj.getValue();
-        this.ptscn = stdNameObj.toSmallCamelCase();
-        this.ptuln = stdNameObj.toUnderLineName();
-        this.ptalcn = stdNameObj.toLowerCase();
-        this.ptaucn = stdNameObj.toUpperCase();
+        StdName stdNameObj = StdName.of(pon);
+        this.qmpon = pon;
+        this.qmstn = stdNameObj.getValue();
+        this.qmbcn = stdNameObj.getValue();
+        this.qmscn = stdNameObj.toSmallCamelCase();
+        this.qmuln = stdNameObj.toUnderLineName();
+        this.qmalcn = stdNameObj.toLowerCase();
+        this.qmaucn = stdNameObj.toUpperCase();
     }
 
     /**
@@ -68,10 +62,10 @@ public class QbeModel {
      * @param value 字段值
      */
     public void put(String key, Object value) {
-        if (appendFields == null) {
-            appendFields = new HashMap<>();
+        if (ext == null) {
+            ext = new HashMap<>();
         }
-        appendFields.put(key, value);
+        ext.put(key, value);
     }
 
 }

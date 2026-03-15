@@ -16,7 +16,7 @@ public class QbeBlueprint {
     //相对路径(相对于基准路径)
     private String relativeFilePath;
 
-    //基准路径
+    //基准路径(蓝图仓库路径)
     private String basePath;
 
     //模板内容(从.vm文件读取)
