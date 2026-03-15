@@ -45,9 +45,7 @@ export const useTabStore = defineStore("tabStore", () => {
   };
 
   // 持久化只存非固定标签，加载时将fixedTabs插入头部
-  const savedDynamicTabs = loadFromStorage<Tab[]>(STORAGE_KEY_TABS, []).filter(
-    (t) => !fixedTabIds.has(t.id)
-  );
+  const savedDynamicTabs = loadFromStorage<Tab[]>(STORAGE_KEY_TABS, []).filter((t) => !fixedTabIds.has(t.id));
   const tabs = ref<Tab[]>([...fixedTabs, ...savedDynamicTabs]);
   const activeTabId = ref<string | null>(loadFromStorage(STORAGE_KEY_ACTIVE_TAB, null));
   const refreshCounter = ref(0);
@@ -183,6 +181,17 @@ export const useTabStore = defineStore("tabStore", () => {
     setActiveTab(tabs.value[index - 1].id);
   };
 
+  /**
+   * 更新当前标签页的地址
+   * @param path 地址
+   */
+  const updateCurrentTabPath = (path: string) => {
+    const currentTab = tabs.value.find((t) => t.id === activeTabId.value);
+    if (currentTab) {
+      currentTab.path = path;
+    }
+  };
+
   return {
     tabs,
     activeTabId,
@@ -195,5 +204,6 @@ export const useTabStore = defineStore("tabStore", () => {
     setTabs,
     refreshActiveView,
     activeOf,
+    updateCurrentTabPath,
   };
 });
