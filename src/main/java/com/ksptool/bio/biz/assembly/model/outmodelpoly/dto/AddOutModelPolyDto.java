@@ -43,7 +43,7 @@ public class AddOutModelPolyDto {
     private Integer require;
 
     @NotNull(message = "聚合可见性策略不能为空")
-    @Schema(description = "聚合可见性策略 AD、ED、DV、LD、LV")
+    @Schema(description = "聚合可见性策略 ADD、EDIT、DETAILS、LIST_DTO、LIST_VO")
     private Set<String> policyCrudJson;
 
     @NotNull(message = "聚合查询策略不能为空")
@@ -55,6 +55,11 @@ public class AddOutModelPolyDto {
     @Range(min = 0, max = 6, message = "聚合显示策略值范围为0-6")
     @Schema(description = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
+
+    @NotNull(message = "是否主键不能为空")
+    @Range(min = 0, max = 1, message = "是否主键值只能为0或1")
+    @Schema(description = "是否主键 0:否 1:是")
+    private Integer pk;
 
     @NotBlank(message = "聚合字段备注不能为空")
     @Size(max = 80, message = "聚合字段备注长度不能超过80")

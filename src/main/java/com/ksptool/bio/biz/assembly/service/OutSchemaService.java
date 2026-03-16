@@ -247,6 +247,20 @@ public class OutSchemaService {
     }
 
     /**
+     * 预览方案参数
+     *
+     * @param dto 预览参数
+     * @throws BizException 业务异常
+     */
+    public void previewOutSchemaParams(CommonIdDto dto) throws BizException {
+        OutSchemaPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("预览方案参数失败,数据不存在或无权限访问."));
+
+        
+            
+    }
+
+    /**
      * 执行输出方案
      *
      * @param dto 执行参数

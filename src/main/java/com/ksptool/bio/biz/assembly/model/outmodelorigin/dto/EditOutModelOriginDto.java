@@ -39,6 +39,11 @@ public class EditOutModelOriginDto {
     @Schema(description = "原始必填 0:否 1:是")
     private Integer require;
 
+    @NotNull(message = "是否主键不能为空")
+    @Range(min = 0, max = 1, message = "是否主键值只能为0或1")
+    @Schema(description = "是否主键 0:否 1:是")
+    private Integer pk;
+
     @Size(max = 255, message = "原始备注长度不能超过255")
     @Schema(description = "原始备注")
     private String remark;

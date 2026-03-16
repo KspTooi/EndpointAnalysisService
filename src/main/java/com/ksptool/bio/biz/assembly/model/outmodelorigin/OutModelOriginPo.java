@@ -44,6 +44,9 @@ public class OutModelOriginPo {
     @Column(name = "remark", length = 255, comment = "原始备注")
     private String remark;
 
+    @Column(name = "pk", nullable = false, columnDefinition = "TINYINT", comment = "是否主键 0:否 1:是")
+    private Integer pk;
+
     @Column(name = "seq", nullable = false, comment = "原始排序")
     private Integer seq;
 

@@ -29,6 +29,9 @@ public class GetOutModelOriginDetailsVo {
     @Schema(description = "原始备注")
     private String remark;
 
+    @Schema(description = "是否主键 0:否 1:是")
+    private Integer pk;
+
     @Schema(description = "原始排序")
     private Integer seq;
 

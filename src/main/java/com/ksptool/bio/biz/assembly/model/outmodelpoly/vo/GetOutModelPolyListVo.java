@@ -40,6 +40,9 @@ public class GetOutModelPolyListVo {
     @Schema(description = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
+    @Schema(description = "是否主键 0:否 1:是")
+    private Integer pk;
+
     @Schema(description = "聚合字段备注")
     private String remark;
 

@@ -66,6 +66,13 @@ public class OutSchemaController {
         return Result.success("操作成功");
     }
 
+    @Operation(summary = "预览方案参数")
+    @PostMapping("/previewOutSchemaParams")
+    public Result<String> sortOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        outSchemaService.previewOutSchemaParams(dto);
+        return Result.success("操作成功");
+    }
+
     @Operation(summary = "执行输出方案")
     @PostMapping("/executeOutSchema")
     public Result<String> executeOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
