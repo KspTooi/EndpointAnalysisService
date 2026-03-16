@@ -87,6 +87,7 @@ public class QbeVelocityEngine {
         log.info("设置输出基准路径(绝对路径)：{}", this.outputBasePath);
     }
 
+
     /**
      * 渲染蓝图
      *
@@ -106,12 +107,6 @@ public class QbeVelocityEngine {
             throw new IllegalArgumentException("输出基准路径不能为空!");
         }
 
-        Map<String, Object> modelMap = new HashMap<>();
-
-        //将模型和全局变量添加到模型映射中
-        modelMap.put("model", model);
-        modelMap.put("global", globalVars);
-
         Map<String, String> params = new HashMap<>();
         params.put("QMSTN", model.getQmstn());
         params.put("QMSCN", model.getQmscn());
@@ -119,7 +114,6 @@ public class QbeVelocityEngine {
         params.put("QMULN", model.getQmuln());
         params.put("QMALCN", model.getQmalcn());
         params.put("QMAUCN", model.getQmaucn());
-
 
         //渲染蓝图
         for (QbeBlueprint blueprint : blueprints) {
@@ -155,30 +149,24 @@ public class QbeVelocityEngine {
                 return;
             }
 
-            //渲染模板 先把modelMap放进VC
-            VelocityContext vc = new VelocityContext();
-            for (Map.Entry<String, Object> entry : modelMap.entrySet()) {
-                vc.put(entry.getKey(), entry.getValue());
-            }
-
-            //放全局变量进VC
-            var globalMap = new HashMap<String, Object>();
-            globalMap.put("global", globalVars);
-            vc.put("global", globalMap);
-
             StringWriter writer = new StringWriter();
+
+            //构建VelocityContext
+            VelocityContext vc = buildVc(model, globalVars);
+
+            //渲染模板
             boolean success = Velocity.evaluate(vc, writer, "template", templateContent);
             if (!success) {
                 throw new RuntimeException("无法渲染模板，蓝图：" + blueprint.getFileName());
             }
             String renderedContent = writer.toString();
-
             //写入文件
             try {
                 Files.createDirectories(outputFilePath.getParent());
                 if (Files.exists(outputFilePath)) {
                     if (overwriteEnabled) {
                         log.info("文件已存在，覆盖文件：{}", outputFilePath);
+
                         Files.writeString(outputFilePath, renderedContent);
                         log.info("已覆盖文件：{}", outputFilePath);
                     }
@@ -194,6 +182,22 @@ public class QbeVelocityEngine {
             }
 
         }
+    }
+
+    /**
+     * 构建VelocityContext
+     *
+     * @param model      模型
+     * @param GlobalVars 全局变量
+     * @return VelocityContext 包含模型和全局变量的VelocityContext
+     */
+    public VelocityContext buildVc(QbeModel model, Map<String, String> GlobalVars) {
+
+        //渲染模板 先把modelMap放进VC
+        VelocityContext vc = new VelocityContext();
+        vc.put("model", model);
+        vc.put("global", GlobalVars);
+        return vc;
     }
 
 }
