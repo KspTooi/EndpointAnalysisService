@@ -27,7 +27,7 @@ public interface TymSchemaRepository extends JpaRepository<TymSchemaPo, Long> {
             AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
-            ORDER BY u.createTime DESC
+            ORDER BY u.seq ASC,u.createTime DESC
             """)
     Page<TymSchemaPo> getTymSchemaList(@Param("po") TymSchemaPo po, Pageable pageable);
 }
