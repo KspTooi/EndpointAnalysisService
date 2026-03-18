@@ -41,6 +41,7 @@
         @selection-change="(val: GetAuditLoginListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="username" label="用户名" min-width="120" />
         <el-table-column label="登录方式" min-width="120">
           <template #default="scope">

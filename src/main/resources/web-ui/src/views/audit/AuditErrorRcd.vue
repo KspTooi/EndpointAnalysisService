@@ -68,6 +68,7 @@
         @selection-change="(val: GetAuditErrorRcdListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="45" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="errorCode" label="错误代码" min-width="50" show-overflow-tooltip />
         <el-table-column prop="requestUri" label="请求地址" min-width="120" show-overflow-tooltip />
 
@@ -143,12 +144,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="操作人ID" prop="userId">
-                <el-input
-                  v-model="modalForm.userId"
-                  :readonly="modalMode === 'view'"
-                  placeholder="请输入操作人ID"
-                  clearable
-                />
+                <el-input v-model="modalForm.userId" :readonly="modalMode === 'view'" placeholder="请输入操作人ID" clearable />
               </el-form-item>
             </el-col>
             <el-col :span="12">
