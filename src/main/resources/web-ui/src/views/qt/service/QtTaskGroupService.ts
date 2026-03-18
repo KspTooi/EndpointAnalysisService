@@ -51,7 +51,7 @@ export default {
       }
 
       listLoading.value = false;
-      
+
       // 持久化查询条件
       QueryPersistService.persistQuery("qt-task-group", listForm.value);
     };
@@ -64,10 +64,10 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.remark = "";
-      
+
       // 清除持久化的查询条件
       QueryPersistService.clearQuery("qt-task-group");
-      
+
       loadList();
     };
 
@@ -265,7 +265,7 @@ export default {
           };
           await QtTaskGroupApi.addQtTaskGroup(addDto);
           ElMessage.success("新增成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           resetModal();
           reloadCallback();
         } catch (error: any) {
@@ -290,7 +290,7 @@ export default {
           };
           await QtTaskGroupApi.editQtTaskGroup(editDto);
           ElMessage.success("编辑成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           //resetModal();
           reloadCallback();
         } catch (error: any) {

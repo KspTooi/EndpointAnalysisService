@@ -45,6 +45,7 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip>
           <template #default="scope">
             <span class="text-gray-400 text-sm" v-if="!scope.row.groupName"> 未配置 </span>

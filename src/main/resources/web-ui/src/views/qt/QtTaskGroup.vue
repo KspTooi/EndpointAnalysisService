@@ -37,6 +37,7 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="45" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="分组名" min-width="150" show-overflow-tooltip />
         <el-table-column prop="remark" label="分组备注" min-width="200" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />

@@ -35,6 +35,7 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="taskName" label="任务名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="调用目标" min-width="200" show-overflow-tooltip />
