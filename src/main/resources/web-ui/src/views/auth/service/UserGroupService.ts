@@ -4,7 +4,7 @@ import AdminGroupApi, {
   type GetGroupListDto,
   type GetGroupListVo,
   type GroupPermissionDefinitionVo,
-  type   GetGroupDetailsVo,
+  type GetGroupDetailsVo,
   type AddGroupDto,
   type EditGroupDto,
 } from "@/views/auth/api/GroupApi.ts";
@@ -325,6 +325,7 @@ export default {
           const result = await AdminGroupApi.addGroup(addDto);
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
+            modalVisible.value = false;
             await resetModal();
           }
           if (Result.isError(result)) {
@@ -348,6 +349,7 @@ export default {
           const result = await AdminGroupApi.editGroup(editDto);
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
+            modalVisible.value = false;
           }
           if (Result.isError(result)) {
             ElMessage.error(result.message);
