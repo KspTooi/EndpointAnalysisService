@@ -42,6 +42,7 @@
         @selection-change="(val: GetPostListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column
           type="index"
           label="岗位序号"

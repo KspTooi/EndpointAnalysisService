@@ -61,6 +61,7 @@
               @selection-change="onSelectionChange"
             >
               <el-table-column type="selection" width="40" />
+              <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
               <el-table-column prop="nkey" label="Key" min-width="150" show-overflow-tooltip />
               <el-table-column prop="label" label="标签" min-width="150" show-overflow-tooltip />
               <el-table-column label="数据类型" width="100">

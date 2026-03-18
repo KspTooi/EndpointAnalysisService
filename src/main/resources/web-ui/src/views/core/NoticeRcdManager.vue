@@ -53,6 +53,7 @@
         @selection-change="(val: GetUserNoticeRcdListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="45" align="center" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="种类" width="100">
           <template #default="scope">
@@ -180,8 +181,7 @@ const ViewIcon = markRaw(View);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, listSelected, loadList, resetList } =
-  NoticeRcdService.useNoticeRcdList();
+const { listForm, listData, listTotal, listLoading, listSelected, loadList, resetList } = NoticeRcdService.useNoticeRcdList();
 
 // 模态框打包
 const { modalVisible, modalLoading, detailsData, openModal, closeModal } = NoticeRcdService.useNoticeRcdModal();
@@ -197,8 +197,6 @@ const { remove, removeBatch } = NoticeRcdService.useNoticeRcdCrud({
     loadList();
   },
 });
-
-
 
 /**
  * 跳转到关联页面

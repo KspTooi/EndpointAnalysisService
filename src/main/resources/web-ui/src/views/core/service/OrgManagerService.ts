@@ -248,6 +248,7 @@ export default {
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
             resetModal();
+            modalVisible.value = false;
           }
           if (Result.isError(result)) {
             ElMessage.error(result.message);
@@ -266,6 +267,7 @@ export default {
           const result = await OrgApi.editOrg(editDto);
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
+            modalVisible.value = false;
           }
           if (Result.isError(result)) {
             ElMessage.error(result.message);
@@ -278,7 +280,6 @@ export default {
       } finally {
         modalLoading.value = false;
       }
-
       await loadList();
     };
 

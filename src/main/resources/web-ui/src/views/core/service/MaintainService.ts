@@ -7,7 +7,6 @@ import { EventHolder } from "@/store/EventHolder.ts";
 
 export default {
   useMaintainOperation: () => {
-
     const globalLoading = ref(false);
     const eventHolder = EventHolder();
 
@@ -20,7 +19,8 @@ export default {
         bgColor: "rgba(64, 158, 255, 0.1)",
         iconColor: "#409EFF",
         key: "permissions",
-        warning: "危险操作警告：\n此操作将执行双向同步，可能会产生破坏性变更：\n1. 自动将代码中新增的权限写入数据库。\n2. **永久删除**数据库中已废弃的系统权限码。\n3. **强制解除**所有用户组与这些废弃权限的关联关系。\n\n请确保您了解此操作的后果，是否继续？",
+        warning:
+          "危险操作警告：\n此操作将执行双向同步，可能会产生破坏性变更：\n1. 自动将代码中新增的权限写入数据库。\n2. **永久删除**数据库中已废弃的系统权限码。\n3. **强制解除**所有用户组与这些废弃权限的关联关系。\n\n请确保您了解此操作的后果，是否继续？",
         action: async () => await MaintainApi.validatePermissions(),
       },
       {
@@ -86,7 +86,8 @@ export default {
         bgColor: "rgba(255, 152, 0, 0.1)",
         iconColor: "#ff9800",
         key: "database",
-        warning: "危险操作警告：\n此操作将执行数据库迁移脚本，可能会产生以下影响：\n1. **修改数据库表结构**（新增/删除/修改表或字段）。\n2. **可能影响现有数据**（取决于具体迁移脚本内容）。\n3. 执行期间请**不要重启服务或中断操作**。\n\n**强烈建议：执行前先备份数据库！**\n\n是否确定要继续？",
+        warning:
+          "危险操作警告：\n此操作将执行数据库迁移脚本，可能会产生以下影响：\n1. **修改数据库表结构**（新增/删除/修改表或字段）。\n2. **可能影响现有数据**（取决于具体迁移脚本内容）。\n3. 执行期间请**不要重启服务或中断操作**。\n\n**强烈建议：执行前先备份数据库！**\n\n是否确定要继续？",
         action: async () => await MaintainApi.upgradeDatabase(),
       },
     ];
@@ -96,7 +97,6 @@ export default {
      * @param operation 维护操作
      */
     const executeOperation = async (operation: MaintainOperation) => {
-
       // 如果正在执行其他操作，直接返回
       if (globalLoading.value) return;
 
@@ -111,11 +111,15 @@ export default {
           const vo = result as any;
           const detailHtml = `
             <div style="font-size: 14px; line-height: 1.6; max-width: 400px;">
-              ${vo.message ? `
+              ${
+                vo.message
+                  ? `
                 <div style="margin-bottom: 12px; padding: 12px; background: #f4f4f5; border-left: 4px solid #909399; color: #606266; font-size: 13px; word-break: break-all;">
                   ${vo.message}
                 </div>
-              ` : '<p style="margin-bottom: 10px;">操作已完成，变动详情如下：</p>'}
+              `
+                  : '<p style="margin-bottom: 10px;">操作已完成，变动详情如下：</p>'
+              }
               
               <div style="padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #ebeef5;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -128,7 +132,7 @@ export default {
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                   <span style="color: #606266;">当前存量：</span>
-                  <span style="color: #409EFF; font-weight: bold;">${vo.existCount ?? '-'}</span>
+                  <span style="color: #409EFF; font-weight: bold;">${vo.existCount ?? "-"}</span>
                 </div>
               </div>
             </div>
@@ -150,9 +154,7 @@ export default {
 
       // 危险操作处理（带 Loading 的确认框）
       if (operation.warning) {
-        const message = operation.warning
-          .replace(/\n/g, '<br/>')
-          .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        const message = operation.warning.replace(/\n/g, "<br/>").replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
 
         try {
           await ElMessageBox.confirm(message, "危险操作确认", {
@@ -161,9 +163,9 @@ export default {
             type: "warning",
             dangerouslyUseHTMLString: true,
             beforeClose: async (action, instance, done) => {
-              if (action === 'confirm') {
+              if (action === "confirm") {
                 instance.confirmButtonLoading = true;
-                instance.confirmButtonText = '执行中...';
+                instance.confirmButtonText = "执行中...";
                 globalLoading.value = true;
 
                 try {
@@ -181,7 +183,7 @@ export default {
               } else {
                 done();
               }
-            }
+            },
           });
         } catch (e) {
           // 用户取消

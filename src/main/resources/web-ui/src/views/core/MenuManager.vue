@@ -66,6 +66,7 @@
         ref="listTableRef"
         height="100%"
       >
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
             <div class="inline-flex items-center gap-2">

@@ -240,7 +240,7 @@ export default {
           };
           await PostApi.addPost(addDto);
           ElMessage.success("新增成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           resetModal();
           reloadCallback();
         } catch (error: any) {
@@ -268,7 +268,7 @@ export default {
           };
           await PostApi.editPost(editDto);
           ElMessage.success("编辑成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           //resetModal();
           reloadCallback();
         } catch (error: any) {

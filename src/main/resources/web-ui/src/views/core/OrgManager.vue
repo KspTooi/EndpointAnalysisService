@@ -39,6 +39,7 @@
         default-expand-all
         height="100%"
       >
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="组织机构名称" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="类型" min-width="100">
           <template #default="scope">

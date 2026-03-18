@@ -261,7 +261,7 @@ export default {
           };
           await RegistryApi.addRegistry(addDto);
           ElMessage.success("新增成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           onRefresh();
           resetModal(true);
         }
@@ -280,7 +280,7 @@ export default {
           };
           await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改成功");
-          //modalVisible.value = false;
+          modalVisible.value = false;
           onRefresh();
         }
       } catch (error: any) {

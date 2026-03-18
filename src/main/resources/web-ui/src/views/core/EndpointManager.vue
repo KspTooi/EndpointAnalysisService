@@ -54,6 +54,7 @@
 
     <template #table>
       <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="端点名称" prop="name" />
         <el-table-column label="端点路径" prop="path" show-overflow-tooltip />
         <el-table-column label="所需权限" show-overflow-tooltip>

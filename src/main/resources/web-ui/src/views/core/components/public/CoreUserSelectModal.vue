@@ -224,6 +224,13 @@ const initSelection = () => {
         restoreMultipleSelection();
       });
     }
+  } else if (props.defaultSelected && typeof props.defaultSelected === "string") {
+    //单选也需要高亮选中
+    const user = listData.value.find((item) => item.id === props.defaultSelected);
+    if (user) {
+      selectedUser.value = user;
+      tableRef.value?.setCurrentRow(user);
+    }
   }
 };
 

@@ -313,6 +313,7 @@ export default {
           const parentId = modalForm.parentId;
           modalForm.parentId = parentId;
           resetModal();
+          modalVisible.value = false;
         }
 
         if (modalMode.value === "edit") {
@@ -322,6 +323,7 @@ export default {
           }
           await MenuApi.editMenu(modalForm);
           ElMessage.success("操作成功");
+          modalVisible.value = false;
         }
       } catch (error: any) {
         ElMessage.error(error.message);

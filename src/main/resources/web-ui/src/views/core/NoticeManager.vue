@@ -62,6 +62,7 @@
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="title" label="标题" min-width="128" show-overflow-tooltip />
         <el-table-column prop="kind" label="种类" width="100">
           <template #default="scope">
@@ -136,7 +137,6 @@
       <CoreOrgDeptSelectModal
         v-model="deptSelectVisible"
         :default-selected="modalForm.targetIds"
-          
         title="选择接收部门"
         multiple
         @confirm="onDeptSelect"

@@ -80,20 +80,18 @@
 
       <div v-if="wizardResult" class="wizard-result-box">
         <div class="wizard-result-item" v-for="(line, i) in wizardResult.changesContent" :key="i">
-          <el-icon color="#009688" style="flex-shrink:0"><Right /></el-icon>
+          <el-icon color="#009688" style="flex-shrink: 0"><Right /></el-icon>
           <span>{{ line }}</span>
         </div>
       </div>
 
       <div class="wizard-reload-tip">
-        <el-icon color="#E6A23C" style="flex-shrink:0"><WarningFilled /></el-icon>
+        <el-icon color="#E6A23C" style="flex-shrink: 0"><WarningFilled /></el-icon>
         <span>请刷新页面并重新登录以使配置生效</span>
       </div>
 
       <div class="wizard-actions">
-        <el-button type="primary" size="large" class="wizard-start-btn" @click="reloadPage">
-          刷新页面
-        </el-button>
+        <el-button type="primary" size="large" class="wizard-start-btn" @click="reloadPage"> 刷新页面 </el-button>
       </div>
     </div>
 
@@ -105,9 +103,7 @@
       <h1 class="wizard-title">执行失败</h1>
       <p class="wizard-error-msg">{{ wizardError }}</p>
       <div class="wizard-actions">
-        <el-button size="large" class="wizard-start-btn" @click="wizardStep = 'welcome'">
-          重新尝试
-        </el-button>
+        <el-button size="large" class="wizard-start-btn" @click="wizardStep = 'welcome'"> 重新尝试 </el-button>
       </div>
     </div>
   </div>
@@ -117,22 +113,30 @@
 import MaintainService from "@/views/core/service/MaintainService.ts";
 import MaintainApi, { type ExecuteInstallWizardVo } from "@/views/core/api/MaintainApi.ts";
 import { ref, onMounted } from "vue";
-import { Setting, CircleCheck, VideoPlay, CircleCheckFilled, CircleCloseFilled, Right, WarningFilled } from "@element-plus/icons-vue";
+import {
+  Setting,
+  CircleCheck,
+  VideoPlay,
+  CircleCheckFilled,
+  CircleCloseFilled,
+  Right,
+  WarningFilled,
+} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 const isInstallWizardMode = ref(false);
 
 // 向导步骤: welcome | running | complete | error
-const wizardStep = ref<'welcome' | 'running' | 'complete' | 'error'>('welcome');
+const wizardStep = ref<"welcome" | "running" | "complete" | "error">("welcome");
 const wizardResult = ref<ExecuteInstallWizardVo | null>(null);
-const wizardError = ref('');
+const wizardError = ref("");
 
 const wizardStepDescs = [
-  '修复系统注册表（补全缺失的内置配置项）',
-  '升级数据库（执行待执行的迁移脚本）',
-  '校验系统内置权限码（新增/移除已变更的权限）',
-  '校验系统内置用户组（修复管理员组）',
-  '校验系统内置账号（修复 admin 账号）',
+  "修复系统注册表（补全缺失的内置配置项）",
+  "升级数据库（执行待执行的迁移脚本）",
+  "校验系统内置权限码（新增/移除已变更的权限）",
+  "校验系统内置用户组（修复管理员组）",
+  "校验系统内置账号（修复 admin 账号）",
 ];
 
 onMounted(async () => {
@@ -148,13 +152,13 @@ onMounted(async () => {
  * 开始执行安装向导
  */
 const startWizard = async () => {
-  wizardStep.value = 'running';
+  wizardStep.value = "running";
   try {
     wizardResult.value = await MaintainApi.executeInstallWizard();
-    wizardStep.value = 'complete';
+    wizardStep.value = "complete";
   } catch (error: any) {
-    wizardError.value = error.message || '安装向导执行失败，请重试。';
-    wizardStep.value = 'error';
+    wizardError.value = error.message || "安装向导执行失败，请重试。";
+    wizardStep.value = "error";
     ElMessage.error(wizardError.value);
   }
 };
@@ -399,7 +403,9 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .wizard-running-title {
@@ -444,7 +450,7 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #E6A23C;
+  color: #e6a23c;
   background: rgba(230, 162, 60, 0.08);
   border: 1px solid rgba(230, 162, 60, 0.3);
   padding: 10px 14px;
@@ -454,7 +460,7 @@ const { loading, maintainOperations, executeOperation } = MaintainService.useMai
 
 .wizard-error-msg {
   font-size: 13px;
-  color: #F56C6C;
+  color: #f56c6c;
   margin: 0 0 32px 0;
   line-height: 1.6;
   word-break: break-all;

@@ -260,13 +260,15 @@ export default {
           };
           await NoticeApi.addNotice(addDto);
           ElMessage.success("新增成功");
-          //modalVisible.value = false;
+
           resetModal();
           reloadCallback();
+          modalVisible.value = false;
         } catch (error: any) {
           ElMessage.error(error.message);
         }
         modalLoading.value = false;
+
         return;
       }
 
@@ -288,9 +290,10 @@ export default {
           };
           await NoticeApi.editNotice(editDto);
           ElMessage.success("修改成功");
-          //modalVisible.value = false;
+
           //resetModal();
           reloadCallback();
+          modalVisible.value = false;
         } catch (error: any) {
           ElMessage.error(error.message);
         }

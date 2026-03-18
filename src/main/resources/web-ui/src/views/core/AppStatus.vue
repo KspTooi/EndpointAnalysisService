@@ -163,6 +163,7 @@
                 </div>
               </template>
               <el-table :data="sysData.diskInfo" size="small" border stripe class="custom-table">
+                <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
                 <el-table-column prop="dirName" label="挂载点" min-width="100" />
                 <el-table-column prop="fileSystem" label="文件系统" min-width="80" />
                 <el-table-column label="总容量" min-width="90">

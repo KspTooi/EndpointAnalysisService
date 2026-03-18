@@ -56,6 +56,7 @@
     <!-- 列表表格区域 -->
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="模板名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="code" label="唯一编码" min-width="150" show-overflow-tooltip />
         <el-table-column prop="status" label="状态" width="80" align="center">

@@ -198,6 +198,7 @@ export default {
           await RegistryApi.addRegistry(addDto);
           resetModal();
           ElMessage.success("新增节点成功");
+          modalVisible.value = false;
         }
 
         if (modalMode.value === "edit") {
@@ -213,9 +214,9 @@ export default {
           };
           await RegistryApi.editRegistry(editDto);
           ElMessage.success("修改节点成功");
+          modalVisible.value = false;
         }
 
-        //modalVisible.value = false;
         onRefresh(); // 刷新外部树数据
       } catch (error: any) {
         ElMessage.error(error.message || "提交失败");

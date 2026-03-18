@@ -30,6 +30,7 @@
 
     <template #table>
       <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="团队名称" prop="name" show-overflow-tooltip />
         <el-table-column label="团队描述" prop="description" show-overflow-tooltip />
         <el-table-column label="创始人" prop="founderName" width="120" />

@@ -32,6 +32,7 @@
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column
           prop="configKey"
           label="配置键"
@@ -101,61 +102,61 @@
     </template>
   </StdListLayout>
 
-    <!-- 配置编辑/新增模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑配置' : '添加配置'"
-      width="500px"
-      :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
+  <!-- 配置编辑/新增模态框 -->
+  <el-dialog
+    v-model="modalVisible"
+    :title="modalMode === 'edit' ? '编辑配置' : '添加配置'"
+    width="500px"
+    :close-on-click-modal="false"
+    @close="
+      resetModal();
+      loadList();
+    "
+  >
+    <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">
+      提示：新建配置项时，所有者默认为当前用户，无法指定为他人。
+    </div>
+    <el-form
+      v-if="modalVisible"
+      ref="modalFormRef"
+      :model="modalForm"
+      :rules="modalRules"
+      label-width="100px"
+      :validate-on-rule-change="false"
     >
-      <div v-if="modalMode === 'add'" style="color: #909399; font-size: 13px; margin-bottom: 10px">
-        提示：新建配置项时，所有者默认为当前用户，无法指定为他人。
-      </div>
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
-        <!-- 编辑时显示的只读信息 -->
-        <template v-if="modalMode === 'edit'">
-          <el-form-item label="创建时间">
-            <el-input v-model="modalForm.createTime" disabled />
-          </el-form-item>
-          <el-form-item label="修改时间">
-            <el-input v-model="modalForm.updateTime" disabled />
-          </el-form-item>
-          <el-form-item label="所有者名称">
-            <el-input v-model="modalForm.userName" disabled />
-          </el-form-item>
-        </template>
-
-        <!-- 可编辑字段 -->
-        <el-form-item label="配置键" prop="configKey">
-          <el-input v-model="modalForm.configKey" placeholder="请输入配置键" :disabled="modalMode === 'edit'" />
+      <!-- 编辑时显示的只读信息 -->
+      <template v-if="modalMode === 'edit'">
+        <el-form-item label="创建时间">
+          <el-input v-model="modalForm.createTime" disabled />
         </el-form-item>
-        <el-form-item label="配置值" prop="configValue">
-          <el-input v-model="modalForm.configValue" type="textarea" :rows="3" placeholder="请输入配置值" />
+        <el-form-item label="修改时间">
+          <el-input v-model="modalForm.updateTime" disabled />
         </el-form-item>
-        <el-form-item label="配置描述" prop="description">
-          <el-input v-model="modalForm.description" type="textarea" :rows="3" placeholder="请输入配置描述" />
+        <el-form-item label="所有者名称">
+          <el-input v-model="modalForm.userName" disabled />
         </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
       </template>
-    </el-dialog>
+
+      <!-- 可编辑字段 -->
+      <el-form-item label="配置键" prop="configKey">
+        <el-input v-model="modalForm.configKey" placeholder="请输入配置键" :disabled="modalMode === 'edit'" />
+      </el-form-item>
+      <el-form-item label="配置值" prop="configValue">
+        <el-input v-model="modalForm.configValue" type="textarea" :rows="3" placeholder="请输入配置值" />
+      </el-form-item>
+      <el-form-item label="配置描述" prop="description">
+        <el-input v-model="modalForm.description" type="textarea" :rows="3" placeholder="请输入配置描述" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="modalVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          {{ modalMode === "add" ? "创建" : "保存" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">

@@ -17,6 +17,9 @@
                 <el-form-item label="用户名">
                   <el-input v-model="listForm.username" placeholder="输入用户名" clearable />
                 </el-form-item>
+                <el-form-item label="用户昵称">
+                  <el-input v-model="listForm.nickname" placeholder="输入用户昵称" clearable />
+                </el-form-item>
                 <el-form-item label="状态">
                   <el-select v-model="listForm.status" placeholder="选择状态" clearable style="width: 180px">
                     <el-option label="正常" :value="0" />
@@ -62,6 +65,7 @@
               height="100%"
             >
               <el-table-column type="selection" width="40" />
+              <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
               <el-table-column prop="username" label="用户名" min-width="150" />
               <el-table-column prop="nickname" label="昵称" min-width="150" />
               <el-table-column label="性别" min-width="100">

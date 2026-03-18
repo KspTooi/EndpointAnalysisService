@@ -61,6 +61,7 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.username = "";
       listForm.value.status = null;
+      listForm.value.nickname = "";
       QueryPersistService.clearQuery("user-manager");
       loadList(orgId ?? null);
     };
@@ -333,6 +334,7 @@ export default {
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
             resetModal();
+            modalVisible.value = false;
           }
           if (Result.isError(result)) {
             ElMessage.error(result.message);
@@ -358,6 +360,7 @@ export default {
           const result = await AdminUserApi.editUser(editDto);
           if (Result.isSuccess(result)) {
             ElMessage.success("操作成功");
+            modalVisible.value = false;
           }
           if (Result.isError(result)) {
             ElMessage.error(result.message);

@@ -49,6 +49,7 @@
         @selection-change="(val: GetExcelTemplateListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column
           prop="name"
           label="模板名称"
@@ -128,112 +129,112 @@
     </template>
   </StdListLayout>
 
-    <!-- 上传模板对话框 -->
-    <el-dialog
-      v-model="uploadDialogVisible"
-      title="上传Excel模板"
-      width="600px"
-      :close-on-click-modal="false"
-      destroy-on-close
-      @close="resetUploadDialog"
-      class="upload-dialog"
-    >
-      <div class="upload-rules-container">
-        <el-alert title="上传规则说明" type="info" :closable="false" show-icon>
-          <template #default>
-            <div class="rule-list">
-              <div class="rule-item">
-                <span class="rule-label">命名规则：</span>
-                <span class="rule-value">模板名称-唯一标识符.xlsx</span>
-              </div>
-              <div class="rule-item">
-                <span class="rule-label">示例名称：</span>
-                <span class="rule-value">销售报表-salesReport.xlsx</span>
-              </div>
-              <div class="rule-tip">
-                <el-icon><InfoFilled /></el-icon>
-                <span>唯一标识符仅限字母、数字和下划线，单次限50个文件。</span>
-              </div>
-              <div class="rule-warning">
-                <el-icon><WarningFilled /></el-icon>
-                <span>重要：相同标识的模板将被新文件直接覆盖。</span>
-              </div>
+  <!-- 上传模板对话框 -->
+  <el-dialog
+    v-model="uploadDialogVisible"
+    title="上传Excel模板"
+    width="600px"
+    :close-on-click-modal="false"
+    destroy-on-close
+    @close="resetUploadDialog"
+    class="upload-dialog"
+  >
+    <div class="upload-rules-container">
+      <el-alert title="上传规则说明" type="info" :closable="false" show-icon>
+        <template #default>
+          <div class="rule-list">
+            <div class="rule-item">
+              <span class="rule-label">命名规则：</span>
+              <span class="rule-value">模板名称-唯一标识符.xlsx</span>
             </div>
-          </template>
-        </el-alert>
-      </div>
-
-      <div class="upload-area">
-        <el-upload
-          ref="uploadRef"
-          :auto-upload="false"
-          :on-change="onFileChange"
-          :file-list="fileList"
-          :disabled="uploadLoading"
-          accept=".xlsx"
-          multiple
-          drag
-        >
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-          <div class="el-upload__text">将文件拖到此处，或 <em>点击选择</em></div>
-          <template #tip>
-            <div v-if="uploadLoading" class="upload-progress-tip">
-              <el-icon class="is-loading"><Loading /></el-icon>
-              <span>正在处理并上传模板，请耐心等待...</span>
+            <div class="rule-item">
+              <span class="rule-label">示例名称：</span>
+              <span class="rule-value">销售报表-salesReport.xlsx</span>
             </div>
-          </template>
-        </el-upload>
-      </div>
+            <div class="rule-tip">
+              <el-icon><InfoFilled /></el-icon>
+              <span>唯一标识符仅限字母、数字和下划线，单次限50个文件。</span>
+            </div>
+            <div class="rule-warning">
+              <el-icon><WarningFilled /></el-icon>
+              <span>重要：相同标识的模板将被新文件直接覆盖。</span>
+            </div>
+          </div>
+        </template>
+      </el-alert>
+    </div>
 
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="uploadDialogVisible = false" :disabled="uploadLoading">取消</el-button>
-          <el-button type="primary" @click="submitUpload()" :loading="uploadLoading" :disabled="fileList.length === 0">
-            上传 {{ fileList.length > 0 ? `(${fileList.length})` : "" }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- 编辑模板对话框 -->
-    <el-dialog
-      v-model="editDialogVisible"
-      title="编辑Excel模板"
-      width="500px"
-      :close-on-click-modal="false"
-      @close="resetEditDialog"
-    >
-      <el-form
-        v-if="editDialogVisible"
-        ref="editFormRef"
-        :model="editForm"
-        :rules="editRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
+    <div class="upload-area">
+      <el-upload
+        ref="uploadRef"
+        :auto-upload="false"
+        :on-change="onFileChange"
+        :file-list="fileList"
+        :disabled="uploadLoading"
+        accept=".xlsx"
+        multiple
+        drag
       >
-        <el-form-item label="模板名称" prop="name">
-          <el-input v-model="editForm.name" placeholder="请输入模板名称" />
-        </el-form-item>
-        <el-form-item label="模板标识" prop="code">
-          <el-input v-model="editForm.code" placeholder="请输入模板标识" />
-        </el-form-item>
-        <el-form-item label="模板备注" prop="remark">
-          <el-input v-model="editForm.remark" type="textarea" :rows="3" placeholder="请输入模板备注" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="editForm.status">
-            <el-radio :value="0">启用</el-radio>
-            <el-radio :value="1">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitEdit" :loading="editLoading"> 保存 </el-button>
-        </div>
-      </template>
-    </el-dialog>
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">将文件拖到此处，或 <em>点击选择</em></div>
+        <template #tip>
+          <div v-if="uploadLoading" class="upload-progress-tip">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>正在处理并上传模板，请耐心等待...</span>
+          </div>
+        </template>
+      </el-upload>
+    </div>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="uploadDialogVisible = false" :disabled="uploadLoading">取消</el-button>
+        <el-button type="primary" @click="submitUpload()" :loading="uploadLoading" :disabled="fileList.length === 0">
+          上传 {{ fileList.length > 0 ? `(${fileList.length})` : "" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+  <!-- 编辑模板对话框 -->
+  <el-dialog
+    v-model="editDialogVisible"
+    title="编辑Excel模板"
+    width="500px"
+    :close-on-click-modal="false"
+    @close="resetEditDialog"
+  >
+    <el-form
+      v-if="editDialogVisible"
+      ref="editFormRef"
+      :model="editForm"
+      :rules="editRules"
+      label-width="100px"
+      :validate-on-rule-change="false"
+    >
+      <el-form-item label="模板名称" prop="name">
+        <el-input v-model="editForm.name" placeholder="请输入模板名称" />
+      </el-form-item>
+      <el-form-item label="模板标识" prop="code">
+        <el-input v-model="editForm.code" placeholder="请输入模板标识" />
+      </el-form-item>
+      <el-form-item label="模板备注" prop="remark">
+        <el-input v-model="editForm.remark" type="textarea" :rows="3" placeholder="请输入模板备注" />
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <el-radio-group v-model="editForm.status">
+          <el-radio :value="0">启用</el-radio>
+          <el-radio :value="1">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitEdit" :loading="editLoading"> 保存 </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">

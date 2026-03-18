@@ -52,6 +52,7 @@
 
     <template #table>
       <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="用户名称" prop="username" show-overflow-tooltip />
         <el-table-column label="职务" prop="role" width="100" align="center">
           <template #default="scope">
