@@ -1,13 +1,10 @@
-package com.ksptool.bio.commons.config;
+package com.ksptool.bio.biz.core.common.config.jackson;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.*;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.ser.std.ToStringSerializer;
 
@@ -26,7 +23,6 @@ import java.util.TimeZone;
 public class JacksonConfig {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @Bean
     public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
@@ -41,43 +37,20 @@ public class JacksonConfig {
             //创建自定义模块
             SimpleModule simpleModule = new SimpleModule();
 
-            // 处理精度丢失：Long/BigInteger -> String
+            //添加传出方向(Vo)的格式化器
             simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
             simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
             simpleModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
+            simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
 
-            // 处理时间格式
-            simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-            simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+
+            //添加传入方向(Dto)的格式化器
+            simpleModule.addDeserializer(LocalDateTime.class, new JacksonLdtInputConv());
 
             //将模块注册到 Builder
             builder.addModule(simpleModule);
         };
     }
 
-    /**
-     * LocalDateTime序列化器
-     */
-    public static class LocalDateTimeSerializer extends ValueSerializer<LocalDateTime> {
-        @Override
-        public void serialize(LocalDateTime value, JsonGenerator gen, SerializationContext serializers) throws JacksonException {
-            if (value != null) {
-                gen.writeString(value.format(DATE_TIME_FORMATTER));
-            }
-        }
-    }
 
-    /**
-     * LocalDateTime反序列化器
-     */
-    public static class LocalDateTimeDeserializer extends ValueDeserializer<LocalDateTime> {
-        @Override
-        public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
-            String value = p.getValueAsString();
-            if (StringUtils.isBlank(value)) {
-                return null;
-            }
-            return LocalDateTime.parse(value, DATE_TIME_FORMATTER);
-        }
-    }
 }
