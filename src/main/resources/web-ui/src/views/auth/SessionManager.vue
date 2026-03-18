@@ -26,6 +26,7 @@
 
     <template #table>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="rsMax" label="数据权限(RS)等级" min-width="150">
           <template #default="scope">

@@ -48,6 +48,7 @@
         @selection-change="(val: GetPermissionListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column
           prop="code"
           label="权限代码"
@@ -132,77 +133,77 @@
     </template>
   </StdListLayout>
 
-    <!-- 权限编辑/新增模态框 -->
-    <el-dialog
-      v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑权限节点' : '添加权限节点'"
-      width="500px"
-      :close-on-click-modal="false"
-      @close="
-        resetModal();
-        loadList();
-      "
+  <!-- 权限编辑/新增模态框 -->
+  <el-dialog
+    v-model="modalVisible"
+    :title="modalMode === 'edit' ? '编辑权限节点' : '添加权限节点'"
+    width="500px"
+    :close-on-click-modal="false"
+    @close="
+      resetModal();
+      loadList();
+    "
+  >
+    <el-form
+      v-if="modalVisible"
+      ref="modalFormRef"
+      :model="modalForm"
+      :rules="modalRules"
+      label-width="100px"
+      :validate-on-rule-change="false"
     >
-      <el-form
-        v-if="modalVisible"
-        ref="modalFormRef"
-        :model="modalForm"
-        :rules="modalRules"
-        label-width="100px"
-        :validate-on-rule-change="false"
-      >
-        <!-- 编辑时显示的只读信息 -->
-        <template v-if="modalMode === 'edit'">
-          <el-form-item label="创建时间">
-            <el-input v-model="modalForm.createTime" disabled />
-          </el-form-item>
-          <el-form-item label="修改时间">
-            <el-input v-model="modalForm.updateTime" disabled />
-          </el-form-item>
-          <el-form-item label="系统权限">
-            <el-tag :type="modalForm.isSystem === 1 ? 'warning' : 'info'">
-              {{ modalForm.isSystem === 1 ? "是" : "否" }}
-            </el-tag>
-          </el-form-item>
-        </template>
-
-        <!-- 可编辑字段 -->
-        <el-form-item label="权限代码" prop="code">
-          <el-input
-            v-model="modalForm.code"
-            :disabled="modalMode === 'edit' && modalForm.isSystem === 1"
-            :placeholder="modalMode === 'edit' && modalForm.isSystem === 1 ? '系统权限不可修改代码' : '请输入权限代码'"
-          />
+      <!-- 编辑时显示的只读信息 -->
+      <template v-if="modalMode === 'edit'">
+        <el-form-item label="创建时间">
+          <el-input v-model="modalForm.createTime" disabled />
         </el-form-item>
-        <el-form-item label="权限名称" prop="name">
-          <el-input
-            v-model="modalForm.name"
-            :disabled="modalMode === 'edit' && modalForm.isSystem === 1"
-            :placeholder="modalMode === 'edit' && modalForm.isSystem === 1 ? '系统权限不可修改名称' : '请输入权限名称'"
-          />
+        <el-form-item label="修改时间">
+          <el-input v-model="modalForm.updateTime" disabled />
         </el-form-item>
-        <el-form-item label="权限描述" prop="remark">
-          <el-input v-model="modalForm.remark" type="textarea" :rows="3" placeholder="请输入权限描述" />
+        <el-form-item label="系统权限">
+          <el-tag :type="modalForm.isSystem === 1 ? 'warning' : 'info'">
+            {{ modalForm.isSystem === 1 ? "是" : "否" }}
+          </el-tag>
         </el-form-item>
-        <el-form-item label="排序号" prop="seq">
-          <el-input-number v-model="modalForm.seq" :min="0" :max="9999" />
-        </el-form-item>
-        <el-form-item label="系统权限" prop="isSystem" v-if="modalMode === 'add'">
-          <el-radio-group v-model="modalForm.isSystem">
-            <el-radio :value="0">否</el-radio>
-            <el-radio :value="1">是</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
-            {{ modalMode === "add" ? "创建" : "保存" }}
-          </el-button>
-        </div>
       </template>
-    </el-dialog>
+
+      <!-- 可编辑字段 -->
+      <el-form-item label="权限代码" prop="code">
+        <el-input
+          v-model="modalForm.code"
+          :disabled="modalMode === 'edit' && modalForm.isSystem === 1"
+          :placeholder="modalMode === 'edit' && modalForm.isSystem === 1 ? '系统权限不可修改代码' : '请输入权限代码'"
+        />
+      </el-form-item>
+      <el-form-item label="权限名称" prop="name">
+        <el-input
+          v-model="modalForm.name"
+          :disabled="modalMode === 'edit' && modalForm.isSystem === 1"
+          :placeholder="modalMode === 'edit' && modalForm.isSystem === 1 ? '系统权限不可修改名称' : '请输入权限名称'"
+        />
+      </el-form-item>
+      <el-form-item label="权限描述" prop="remark">
+        <el-input v-model="modalForm.remark" type="textarea" :rows="3" placeholder="请输入权限描述" />
+      </el-form-item>
+      <el-form-item label="排序号" prop="seq">
+        <el-input-number v-model="modalForm.seq" :min="0" :max="9999" />
+      </el-form-item>
+      <el-form-item label="系统权限" prop="isSystem" v-if="modalMode === 'add'">
+        <el-radio-group v-model="modalForm.isSystem">
+          <el-radio :value="0">否</el-radio>
+          <el-radio :value="1">是</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="modalVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          {{ modalMode === "add" ? "创建" : "保存" }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">

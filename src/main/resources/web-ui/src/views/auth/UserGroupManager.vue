@@ -10,6 +10,12 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
+            <el-form-item label="用户组状态" label-for="query-keyword">
+              <el-select v-model="listForm.status" placeholder="请选择用户组状态" id="query-status" class="w-full">
+                <el-option :value="1" label="启用" />
+                <el-option :value="0" label="禁用" />
+              </el-select>
+            </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
@@ -46,6 +52,7 @@
         @selection-change="(val: GetGroupListVo[]) => (listSelected = val)"
       >
         <el-table-column type="selection" width="40" />
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="用户组名称" min-width="120" />
         <el-table-column prop="code" label="用户组标识" min-width="120" />
         <el-table-column prop="memberCount" label="成员数量" min-width="100" />
