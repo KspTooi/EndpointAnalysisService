@@ -83,7 +83,7 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useC
 const authStore = UserAuthService.AuthStore();
 
 const appVersion = computed(() => {
-  var userInfo = authStore.getUserInfo;
+  const userInfo = authStore.getUserInfo;
 
   if (!userInfo) {
     return "未知";

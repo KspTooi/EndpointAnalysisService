@@ -1,14 +1,25 @@
 import { Result } from "@/commons/model/Result.ts";
 import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import MenuApi from "@/views/core/api/MenuApi.ts";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ElMessage } from "element-plus";
-import { computed, ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { useRoute } from "vue-router";
+import { useTabStore } from "@/store/TabHolder.ts";
+
+const fallbackMc = {
+  id: "fallback-maintenance-center",
+  name: "维护中心(备用)",
+  path: "/core/application-maintain",
+  icon: "Setting",
+  children: [],
+};
 
 export default {
   /**
    * 使用菜单存储
+   * 菜单储存管理全局状态和逻辑操作（它本身不知道“路由”是什么，也不知道“路径”是什么）
+   * 它只负责管理菜单树和菜单展开状态，不负责菜单的加载和过滤等业务逻辑
    */
   useMenuStore() {
     const menuStore = defineStore("menuStore", {
@@ -18,6 +29,9 @@ export default {
 
         //菜单展开数据(记录哪些菜单是展开的)
         menuOpened: [] as string[],
+
+        //菜单树加载状态
+        loading: false,
       }),
 
       //持久化菜单展开数据
@@ -29,16 +43,9 @@ export default {
       getters: {
         getMenuTree: (state) => state.menuTree,
         getMenuOpened: (state) => state.menuOpened,
+        getLoading: (state) => state.loading,
       },
-      actions: {
-        /**
-         * 设置菜单树
-         * @param menuTree 菜单树数据
-         */
-        setMenuTree(menuTree: GetUserMenuTreeVo[]) {
-          this.menuTree = menuTree;
-        },
-      },
+      actions: {},
     });
 
     return menuStore();
@@ -46,58 +53,63 @@ export default {
 
   /**
    * 使用菜单服务
+   * 菜单服务作为业务胶水层，负责把 Vue Router (useRoute())、计算属性 (computed) 和 Pinia 状态 (menuStore) 组合在一起提供给组件。
    */
   useMenuService() {
-    //先获取菜单存储
+    //先获取菜单储存
     const menuStore = this.useMenuStore();
+
+    //获取tabStore
+    const tabStore = useTabStore();
 
     //获取路由
     const route = useRoute();
 
-    //加载菜单树是否正在加载
-    const loading = ref(false);
+    //解构菜单储存以便在服务里面返回给组件
+    const { menuTree, menuOpened, loading } = storeToRefs(menuStore);
 
     /**
-     * 加载菜单树到菜单存储
+     * 从后端重新加载菜单树
      */
-    const loadMenuTree = async () => {
-      loading.value = true;
+    const loadMenus = async (): Promise<void> => {
+      menuStore.loading = true;
       try {
         const result = await MenuApi.getUserMenuTree();
         if (Result.isSuccess(result)) {
-          menuStore.setMenuTree(result.data);
+          menuStore.menuTree = result.data;
         }
-      } catch (error: any) {
+      } catch (error) {
         ElMessage.error(error.message);
       } finally {
-        console.log("加载菜单树完成");
-        loading.value = false;
+        menuStore.loading = false;
       }
     };
 
     /**
-     * 展开菜单
-     * @param path 路径
-     */
-    const expandMenu = (menuId: string) => {
-      menuStore.menuOpened.push(menuId);
-    };
-
-    /**
-     * 折叠菜单
+     * 展开/折叠菜单
      * @param menuId 菜单ID
+     * @param open 是否展开
      */
-    const collapseMenu = (menuId: string) => {
-      menuStore.menuOpened.splice(menuStore.menuOpened.indexOf(menuId), 1);
+    const expandMenu = (menuId: string, open: boolean): void => {
+      if (open) {
+        menuOpened.value.push(menuId);
+        return;
+      }
+
+      if (menuOpened.value.includes(menuId)) {
+        menuOpened.value.splice(menuOpened.value.indexOf(menuId), 1);
+        return;
+      }
     };
 
     /**
-     * 根据路径获取菜单
+     * 根据路径获取菜单对象
      * @param path 路径
+     * @param nodes 菜单树数据
      * @returns 菜单对象GetUserMenuTreeVo | null:未找到
      */
     const getMenuByPath = (path: string, nodes?: GetUserMenuTreeVo[]): GetUserMenuTreeVo | null => {
-      const list = nodes ?? menuStore.getMenuTree;
+      const list = nodes ?? menuTree.value;
       for (const node of list) {
         if (node.menuPath === path) {
           return node;
@@ -110,6 +122,15 @@ export default {
         }
       }
       return null;
+    };
+
+    /**
+     * 根据路径获取菜单ID
+     * @param path 路径
+     * @returns 菜单ID | null:未找到
+     */
+    const getMenuIdByPath = (path: string): string => {
+      return getMenuByPath(path)?.id ?? null;
     };
 
     /**
@@ -131,37 +152,68 @@ export default {
     };
 
     /**
-     * 根据路由路径计算当前活动菜单ID
-     */
-    const getMenuIdByPath = (items: GetUserMenuTreeVo[], path: string): any => {
-      for (const item of items) {
-        if (item.menuPath === path) {
-          return item.id;
-        }
-        if (item.children?.length) {
-          const foundId = getMenuIdByPath(item.children, path);
-          if (foundId) return foundId;
-        }
-      }
-      return "";
-    };
-
-    /**
      * 当前活动菜单ID
      */
     const activeMenuId = computed(() => {
-      return getMenuIdByPath(menuStore.getMenuTree, route.path);
+      return getMenuIdByPath(route.path);
     });
 
+    /**
+     * 打开菜单并跳转路由
+     * @param menuId 菜单ID
+     */
+    const openMenu = (item: GetUserMenuTreeVo): void => {
+      //如果菜单类型不是菜单项类型，则不处理
+      if (item.menuKind !== 1) {
+        return;
+      }
+
+      //如果菜单路径为空，则不处理
+      if (!item.menuPath) {
+        return;
+      }
+
+      //使用tabStore添加新标签
+      tabStore.addTab({
+        id: item.id,
+        title: item.name,
+        path: item.menuPath,
+      });
+    };
+
     return {
+      //菜单树
+      menuTree,
+
+      //菜单加载状态
       loading,
-      loadMenuTree,
-      getMenuByPath,
-      filterDirectoryMenu,
-      filterItemMenu,
-      expandMenu,
-      collapseMenu,
+
+      //菜单展开状态
+      menuOpened,
+
+      //当前活动菜单ID
       activeMenuId,
+
+      //加载菜单树
+      loadMenus,
+
+      //展开菜单
+      expandMenu,
+
+      //打开菜单并跳转路由
+      openMenu,
+
+      //过滤目录类型菜单
+      filterDirectoryMenu,
+
+      //过滤菜单项类型菜单
+      filterItemMenu,
+
+      //根据路径获取菜单对象
+      getMenuByPath,
+
+      //根据路径获取菜单ID
+      getMenuIdByPath,
     };
   },
 };
