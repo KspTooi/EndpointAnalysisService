@@ -22,6 +22,7 @@ export default interface Result<T> {
   data: T;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Result {
   /**
    * 判断结果是否成功
