@@ -163,33 +163,33 @@ export default {
               return;
             }
             if (!value) {
-              callback(new Error("请输入登录账号"));
+              callback(new Error("请输入用户名"));
               return;
             }
             if (!/^[a-zA-Z0-9_]{4,20}$/.test(value)) {
-              callback(new Error("登录账号只能包含4-20位字母、数字和下划线"));
+              callback(new Error("用户名只能包含4-20位字母、数字和下划线"));
               return;
             }
             callback();
           },
         },
       ],
-      nickname: [{ max: 50, message: "用户姓名长度不能超过50个字符", trigger: "blur" }],
+      nickname: [{ max: 50, message: "昵称长度不能超过50个字符", trigger: "blur" }],
       password: [
         {
           trigger: "blur",
           validator: (rule: any, value: string, callback: Function) => {
             const password = modalFormPassword.value;
             if (modalMode.value === "add" && !password) {
-              callback(new Error("请输入登录密码"));
+              callback(new Error("请输入密码"));
               return;
             }
             if (password && password.length > 128) {
-              callback(new Error("登录密码长度不能超过128个字符"));
+              callback(new Error("密码长度不能超过128个字符"));
               return;
             }
             if (password && password.length < 6) {
-              callback(new Error("登录密码长度不能少于6位"));
+              callback(new Error("密码长度不能少于6位"));
               return;
             }
             callback();
