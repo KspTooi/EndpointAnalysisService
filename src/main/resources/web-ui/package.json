@@ -28,6 +28,7 @@
     "marked": "^15.0.7",
     "monaco-editor-vue3": "^0.1.10",
     "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "pnpm": "^10.14.0",
     "splitpanes": "^4.0.4",
     "vanilla-jsoneditor": "^3.8.0",
