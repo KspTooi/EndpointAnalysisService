@@ -3,7 +3,6 @@ import { useTabStore } from "@/store/TabHolder.ts";
 import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 import { useRoute, useRouter } from "vue-router";
 
-
 export default {
   /**
    * 框架快捷键服务
@@ -66,9 +65,11 @@ export default {
       }
 
       // 遍历匹配的路由记录
-      route.matched.forEach((record, index) => {
+      route.matched.forEach((record, index): void => {
         // 如果已经添加了首页，并且当前记录是根路径，则跳过
-        if (record.path === "/" && revisedBreadcrumbs.length > 0 && revisedBreadcrumbs[0].to === "/") return;
+        if (record.path === "/" && revisedBreadcrumbs.length > 0 && revisedBreadcrumbs[0].to === "/") {
+          return;
+        }
 
         const meta = record.meta;
         let title = "";
@@ -82,6 +83,7 @@ export default {
           title = breadcrumbMeta;
         }
 
+        //处理 meta.breadcrumb 对象
         if (breadcrumbMeta && typeof breadcrumbMeta === "object") {
           if (breadcrumbMeta.title) {
             title = breadcrumbMeta.title;
@@ -119,7 +121,7 @@ export default {
     /**
      * 切换菜单状态
      */
-    const toggleMenu = () => {
+    const toggleMenu = (): void => {
       isMenuCollapse.value = !isMenuCollapse.value;
       localStorage.setItem("isMenuCollapse", isMenuCollapse.value.toString());
     };
