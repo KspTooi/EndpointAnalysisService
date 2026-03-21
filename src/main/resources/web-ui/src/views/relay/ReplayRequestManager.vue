@@ -1,8 +1,6 @@
 <template>
-  <div class="list-container">
-    <!-- 查询表单 -->
-    <div class="query-form">
-      <QueryPersistTip />
+  <StdListLayout show-persist-tip>
+    <template #query>
       <el-form :model="listForm">
         <el-row>
           <el-col :span="5" :offset="1">
@@ -12,44 +10,38 @@
                 v-model="listForm.originRequestId"
                 placeholder="请输入原始请求ID"
                 clearable
-                style="width: 200px"
-              /> </el-form-item
-          ></el-col>
+              />
+            </el-form-item>
+          </el-col>
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="3" :offset="3">
-            <el-button type="primary" @click="loadOriginRequestList" :disabled="listLoading">查询</el-button>
-            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+            <el-form-item>
+              <el-button type="primary" @click="loadOriginRequestList" :disabled="listLoading">查询</el-button>
+              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-    </div>
+    </template>
 
-    <div class="action-buttons">
+    <template #actions>
       <el-button type="success" @click="executeReplay" :disabled="executeLoading">
-        <span v-show="!executeLoading">执行重放</span>
-        <span v-show="executeLoading">正在处理</span>
+        {{ executeLoading ? "正在处理" : "执行重放" }}
       </el-button>
-    </div>
+    </template>
 
-    <!-- 空状态提示 -->
-    <div class="empty-state" v-if="originRequestList.length === 0 && !listLoading">
-      <el-empty description="请输入原始请求ID进行查询">
-        <el-button type="primary" @click="originRequestIdInput?.focus()">开始查询</el-button>
-      </el-empty>
-    </div>
-
-    <div class="request-area" v-if="originRequestList.length > 0">
-      <div
-        class="origin-request-title"
-        style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #006aac"
-        v-if="originRequestList.length > 0"
-      >
-        原始请求ID: {{ listForm.originRequestId }}
+    <template #table>
+      <div v-if="originRequestList.length === 0" class="empty-state">
+        <el-empty description="请输入原始请求ID进行查询">
+          <el-button type="primary" @click="originRequestIdInput?.focus()">开始查询</el-button>
+        </el-empty>
       </div>
-      <!-- 原始请求列表 -->
-      <div class="origin-request-table">
-        <el-table :data="originRequestList" v-loading="listLoading" border>
+
+      <div v-else class="request-area">
+        <div class="section-title origin-title">原始请求ID: {{ listForm.originRequestId }}</div>
+
+        <el-table :data="originRequestList" v-loading="listLoading" border class="mb-4">
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -61,20 +53,7 @@
           </el-table-column>
           <el-table-column prop="method" label="方法" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.method === 'DELETE'
-                      ? '#E74C3C'
-                      : scope.row.method === 'GET'
-                        ? '#3498DB'
-                        : scope.row.method === 'POST'
-                          ? '#2ECC71'
-                          : scope.row.method === 'PUT'
-                            ? '#F1C40F'
-                            : '#95A5A6',
-                }"
-              >
+              <span :style="{ color: methodColor(scope.row.method) }">
                 {{ scope.row.method.toUpperCase() }}
               </span>
             </template>
@@ -83,50 +62,19 @@
           <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.status === 0
-                      ? '#2ECC71'
-                      : scope.row.status === 1
-                        ? '#E74C3C'
-                        : scope.row.status === 2
-                          ? '#F1C40F'
-                          : '#95A5A6',
-                }"
-              >
-                {{
-                  scope.row.status === 0
-                    ? "正常"
-                    : scope.row.status === 1
-                      ? "HTTP失败"
-                      : scope.row.status === 2
-                        ? "业务失败"
-                        : "连接超时"
-                }}
+              <span :style="{ color: statusColor(scope.row.status) }">
+                {{ statusText(scope.row.status) }}
               </span>
             </template>
           </el-table-column>
           <el-table-column prop="statusCode" label="HTTP" min-width="35" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.statusCode >= 200 && scope.row.statusCode < 300
-                      ? '#2ECC71'
-                      : scope.row.statusCode >= 300 && scope.row.statusCode < 400
-                        ? '#F1C40F'
-                        : scope.row.statusCode >= 400 && scope.row.statusCode < 500
-                          ? '#E74C3C'
-                          : '#95A5A6',
-                }"
-              >
+              <span :style="{ color: httpCodeColor(scope.row.statusCode) }">
                 {{ scope.row.statusCode }}
               </span>
             </template>
           </el-table-column>
           <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
-
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
               <el-button link type="primary" size="small" @click="openOriginViewModal(scope.row)" :icon="ViewIcon">
@@ -135,18 +83,10 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
 
-      <div
-        class="replay-request-title"
-        style="margin-top: 20px; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #009175"
-      >
-        重放请求列表
-      </div>
+        <div class="section-title replay-title">重放请求列表</div>
 
-      <!-- 回放请求列表 -->
-      <div class="replay-request-table">
-        <el-table :data="listData" stripe v-loading="listLoading" border>
+        <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -158,20 +98,7 @@
           </el-table-column>
           <el-table-column prop="method" label="方法" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.method === 'DELETE'
-                      ? '#E74C3C'
-                      : scope.row.method === 'GET'
-                        ? '#3498DB'
-                        : scope.row.method === 'POST'
-                          ? '#2ECC71'
-                          : scope.row.method === 'PUT'
-                            ? '#F1C40F'
-                            : '#95A5A6',
-                }"
-              >
+              <span :style="{ color: methodColor(scope.row.method) }">
                 {{ scope.row.method.toUpperCase() }}
               </span>
             </template>
@@ -180,50 +107,19 @@
           <el-table-column prop="source" label="来源" min-width="60" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" min-width="50" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.status === 0
-                      ? '#2ECC71'
-                      : scope.row.status === 1
-                        ? '#E74C3C'
-                        : scope.row.status === 2
-                          ? '#F1C40F'
-                          : '#95A5A6',
-                }"
-              >
-                {{
-                  scope.row.status === 0
-                    ? "正常"
-                    : scope.row.status === 1
-                      ? "HTTP失败"
-                      : scope.row.status === 2
-                        ? "业务失败"
-                        : "连接超时"
-                }}
+              <span :style="{ color: statusColor(scope.row.status) }">
+                {{ statusText(scope.row.status) }}
               </span>
             </template>
           </el-table-column>
           <el-table-column prop="statusCode" label="HTTP" min-width="35" show-overflow-tooltip>
             <template #default="scope">
-              <span
-                :style="{
-                  color:
-                    scope.row.statusCode >= 200 && scope.row.statusCode < 300
-                      ? '#2ECC71'
-                      : scope.row.statusCode >= 300 && scope.row.statusCode < 400
-                        ? '#F1C40F'
-                        : scope.row.statusCode >= 400 && scope.row.statusCode < 500
-                          ? '#E74C3C'
-                          : '#95A5A6',
-                }"
-              >
+              <span :style="{ color: httpCodeColor(scope.row.statusCode) }">
                 {{ scope.row.statusCode }}
               </span>
             </template>
           </el-table-column>
           <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
-
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
               <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon">
@@ -232,35 +128,37 @@
             </template>
           </el-table-column>
         </el-table>
-
-        <!-- 分页 -->
-        <div class="pagination-container">
-          <el-pagination
-            v-model:current-page="listForm.pageNum"
-            v-model:page-size="listForm.pageSize"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="listTotal"
-            @size-change="
-              (val: number) => {
-                listForm.pageSize = val;
-                loadList();
-              }
-            "
-            @current-change="
-              (val: number) => {
-                listForm.pageNum = val;
-                loadList();
-              }
-            "
-            background
-          />
-        </div>
       </div>
-    </div>
+    </template>
 
-    <RequestPreviewModal ref="requestPreviewModalRef" />
-  </div>
+    <template #pagination>
+      <el-pagination
+        v-if="originRequestList.length > 0"
+        v-model:current-page="listForm.pageNum"
+        v-model:page-size="listForm.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="listTotal"
+        @size-change="
+          (val: number) => {
+            listForm.pageSize = val;
+            loadList();
+          }
+        "
+        @current-change="
+          (val: number) => {
+            listForm.pageNum = val;
+            loadList();
+          }
+        "
+        background
+      />
+    </template>
+
+    <template #modal>
+      <RequestPreviewModal ref="requestPreviewModalRef" />
+    </template>
+  </StdListLayout>
 </template>
 
 <script setup lang="ts">
@@ -268,7 +166,6 @@ import { reactive, ref, onMounted, markRaw } from "vue";
 import type {
   GetReplayRequestListDto,
   GetReplayRequestListVo,
-  GetReplayRequestDetailsVo,
   GetOriginRequestVo,
 } from "@/views/relay/api/ReplayRequestApi.ts";
 import ReplayRequestApi from "@/views/relay/api/ReplayRequestApi.ts";
@@ -278,11 +175,10 @@ import RequestApi from "@/views/relay/api/RequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
+import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
-// 图标常量
 const ViewIcon = markRaw(View);
 
-// 列表相关变量
 const listForm = reactive<GetReplayRequestListDto>({
   originRequestId: null,
   relayServerId: null,
@@ -299,17 +195,41 @@ const listData = ref<GetReplayRequestListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-// 原始请求列表相关变量
 const originRequestList = ref<GetOriginRequestVo[]>([]);
 const originRequestIdInput = ref();
 
-// 模态框相关
 const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
-
-// 执行重放加载状态
 const executeLoading = ref(false);
 
-// 加载列表
+const methodColor = (method: string) => {
+  if (method === "DELETE") return "#E74C3C";
+  if (method === "GET") return "#3498DB";
+  if (method === "POST") return "#2ECC71";
+  if (method === "PUT") return "#F1C40F";
+  return "#95A5A6";
+};
+
+const statusColor = (status: number) => {
+  if (status === 0) return "#2ECC71";
+  if (status === 1) return "#E74C3C";
+  if (status === 2) return "#F1C40F";
+  return "#95A5A6";
+};
+
+const statusText = (status: number) => {
+  if (status === 0) return "正常";
+  if (status === 1) return "HTTP失败";
+  if (status === 2) return "业务失败";
+  return "连接超时";
+};
+
+const httpCodeColor = (code: number) => {
+  if (code >= 200 && code < 300) return "#2ECC71";
+  if (code >= 300 && code < 400) return "#F1C40F";
+  if (code >= 400 && code < 500) return "#E74C3C";
+  return "#95A5A6";
+};
+
 const loadList = async () => {
   listLoading.value = true;
   try {
@@ -324,7 +244,6 @@ const loadList = async () => {
   }
 };
 
-// 加载原始请求列表
 const loadOriginRequestList = async () => {
   listLoading.value = true;
   try {
@@ -340,7 +259,6 @@ const loadOriginRequestList = async () => {
   }
 };
 
-// 重置查询条件
 const resetList = () => {
   listForm.originRequestId = null;
   listForm.requestId = null;
@@ -357,7 +275,6 @@ const resetList = () => {
   listForm.pageSize = 20;
 };
 
-// 执行重放
 const executeReplay = async () => {
   try {
     executeLoading.value = true;
@@ -373,14 +290,14 @@ const executeReplay = async () => {
   }
 };
 
-// 生命周期
 onMounted(() => {
   const originRequestId = localStorage.getItem("originRequestId");
-  if (originRequestId) {
-    listForm.originRequestId = originRequestId;
-    loadOriginRequestList();
-    loadList();
+  if (!originRequestId) {
+    return;
   }
+  listForm.originRequestId = originRequestId;
+  loadOriginRequestList();
+  loadList();
 });
 
 const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
@@ -391,10 +308,8 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
     const parsed = JSON.parse(headers);
     if (typeof parsed === "object" && parsed !== null) {
       if (Array.isArray(parsed)) {
-        // 如果已经是HttpHeaderVo[]格式
         return parsed;
       }
-      // 如果是 {k:v, k2:v2} 格式
       return Object.entries(parsed).map(([k, v]) => ({ k, v: String(v) }));
     }
   } catch (e) {
@@ -403,7 +318,6 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
   return [];
 };
 
-// 打开原始请求预览模态框
 const openOriginViewModal = async (row: GetOriginRequestVo) => {
   try {
     const res = await RequestApi.getRequestDetails(row.id.toString());
@@ -433,10 +347,8 @@ const openOriginViewModal = async (row: GetOriginRequestVo) => {
   }
 };
 
-// 打开预览请求模态框
 const openViewModal = async (row: GetReplayRequestListVo) => {
   try {
-    //获取请求数据
     const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString());
     const previewData: RequestPreviewVo = {
       id: res.id.toString(),
@@ -494,103 +406,36 @@ const copyText = async (text: string) => {
     ElMessage.error("复制失败");
   }
 };
-
-const formatJson = (data: unknown): string => {
-  if (data === null || data === undefined) return "";
-  if (typeof data === "string") {
-    const trimmed = data.trim();
-    if (!trimmed) return "";
-    try {
-      const parsed = JSON.parse(trimmed);
-      return JSON.stringify(parsed, null, 2);
-    } catch (_) {
-      return data;
-    }
-  }
-  try {
-    return JSON.stringify(data, null, 2);
-  } catch (_) {
-    return String(data);
-  }
-};
 </script>
 
 <style scoped>
-.list-container {
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-}
-
-.action-buttons {
-  margin-bottom: 15px;
-  border-top: 2px dashed var(--el-border-color);
-  padding-top: 15px;
-}
-
 .empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 40px 0;
-  text-align: center;
 }
 
-.replay-request-table {
-  margin-bottom: 20px;
+.request-area {
   width: 100%;
-  overflow-x: auto;
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
+.section-title {
   margin-top: 20px;
-  width: 100%;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.copy-icon {
-  cursor: pointer;
+.origin-title {
+  color: #006aac;
 }
 
-/* 垂直居中对话框并在小屏自适应高度 */
-:deep(.centered-dialog) {
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 70vh;
-  max-height: 70vh;
-  display: flex;
-  flex-direction: column;
+.replay-title {
+  color: #009175;
 }
 
-/* 内容区滚动以防止超出屏幕 */
-:deep(.centered-dialog .el-dialog__body) {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* 表单充满对话框，便于内部滚动控制 */
-:deep(.centered-dialog .el-form) {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-}
-
-/* Tabs 使用列布局，头部固定，内容区自适应 */
-:deep(.centered-dialog .el-tabs) {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* 仅内容区滚动 */
-:deep(.centered-dialog .el-tabs__content) {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
+.mb-4 {
+  margin-bottom: 16px;
 }
 </style>
