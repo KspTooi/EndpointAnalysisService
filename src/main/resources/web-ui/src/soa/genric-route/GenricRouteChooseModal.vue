@@ -124,7 +124,7 @@ watch(modalVisible, (visible) => {
   });
 });
 
-const applySingleSelection = (row: RouteEntryPo | null) => {
+const applySingleSelection = (row: RouteEntryPo | null): void => {
   if (!tableRef.value) {
     selectedRoute.value = row;
     return;
@@ -146,7 +146,7 @@ const applySingleSelection = (row: RouteEntryPo | null) => {
   syncingSelection.value = false;
 };
 
-const onSelectionChange = (rows: RouteEntryPo[]) => {
+const onSelectionChange = (rows: RouteEntryPo[]): void => {
   if (syncingSelection.value) {
     return;
   }
@@ -169,7 +169,7 @@ const onSelectionChange = (rows: RouteEntryPo[]) => {
   applySingleSelection(lastRow);
 };
 
-const onSelectAll = (rows: RouteEntryPo[]) => {
+const onSelectAll = (rows: RouteEntryPo[]): void => {
   if (syncingSelection.value) {
     return;
   }
@@ -190,7 +190,7 @@ const onSelectAll = (rows: RouteEntryPo[]) => {
   });
 };
 
-const onRowClick = (row: RouteEntryPo) => {
+const onRowClick = (row: RouteEntryPo): void => {
   if (syncingSelection.value) {
     return;
   }
@@ -210,7 +210,7 @@ const onRowClick = (row: RouteEntryPo) => {
 /**
  * 确认选择（支持双向绑定）
  */
-const confirmSelect = () => {
+const confirmSelect = (): void => {
   if (!selectedRoute.value) {
     return;
   }
@@ -221,7 +221,7 @@ const confirmSelect = () => {
 /**
  * 取消选择（支持双向绑定）
  */
-const cancelSelect = () => {
+const cancelSelect = (): void => {
   serviceCancelSelect();
 };
 
