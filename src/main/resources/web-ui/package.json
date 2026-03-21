@@ -15,7 +15,11 @@
     "//build-only": "这是真正的构建指令。它不管你的类型对不对，直接把源码丢进 Rollup 的粉碎机，吐出压缩后的 JS/CSS。它是**“唯结果论者”**。",
     "build-only": "vite build",
     "//type-check": "运行TS的类型检查。它专门负责挑刺。它不生成任何文件，只负责告诉你：你的类型定义又写烂了。",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "//lint": "代码审判日。ESLint 会逐行扫描你写的每一行 .vue/.ts/.js，把你那些'能跑就行'的骚操作全部揪出来挂在墙上示众。只看不改，适合自我反省用。",
+    "lint": "eslint . --ext .vue,.ts,.js",
+    "//lint:fix": "ESLint 的慈悲模式。发现问题后它会亲自动手替你擦屁股——能自动修复的它修复，修不了的它留给你，顺便鄙视你一眼。",
+    "lint:fix": "eslint . --ext .vue,.ts,.js --fix"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
