@@ -231,6 +231,27 @@ function putCdrcContext(prefix: string, cdrcRedirectId: string, cdrcContext: CDR
   sessionStorage.setItem(prefix + "_" + cdrcRedirectId, JSON.stringify(cdrcCache));
 }
 
+/**
+ * 根据名称或路径获取路由对象
+ * @param nameOrPath 路由的名称或路径
+ * @return null:无法找到对应的路由 否则返回路由对象
+ */
+function getRouteByNameOrPath(nameOrPath: string) {
+  const router = useRouter();
+
+  //查找Vue路由里面是否有匹配的名称
+  const hasFindName = router.getRoutes().find((route) => route.name === nameOrPath);
+  const hasFindPath = router.getRoutes().find((route) => route.path === nameOrPath);
+
+  if (hasFindName) {
+    return hasFindName;
+  }
+  if (hasFindPath) {
+    return hasFindPath;
+  }
+  return null;
+}
+
 export default {
   /**
    * 使用直接路由上下文
@@ -294,12 +315,34 @@ export default {
     }
 
     /**
-     * 跳转
+     * 跳转并关联到标签页(打开新标签页,若标签页已存在则直接激活)
      * @param nameOrPath 路由的名称或路径
      * @param sendQuery 需发送的查询参数
      * @param returnQuery 从目标返回时会携带的查询参数
      */
-    const cdrcRedirect = (nameOrPath: string, sendQuery?: any, returnQuery?: any) => {
+    const cdrcRedirectWithTab = (nameOrPath: string, sendQuery?: any, returnQuery?: any, tabTitle?: string) => {
+      const route = getRouteByNameOrPath(nameOrPath);
+
+      if (!route) {
+        console.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        ElMessage.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        return false;
+      }
+
+      //如果标签页标题为空 使用路由的标题
+      if (tabTitle) {
+        tabTitle = route.meta.title as string;
+      }
+    };
+
+    /**
+     * 直接跳转
+     * @param nameOrPath 路由的名称或路径
+     * @param sendQuery 需发送的查询参数
+     * @param returnQuery 从目标返回时会携带的查询参数
+     * @returns 是否跳转成功 true:成功 false:失败
+     */
+    const cdrcRedirect = (nameOrPath: string, sendQuery?: any, returnQuery?: any): boolean => {
       //查找Vue路由里面是否有匹配的名称
       const hasFindName = router.getRoutes().find((route) => route.name === nameOrPath);
       const hasFindPath = router.getRoutes().find((route) => route.path === nameOrPath);
@@ -307,7 +350,7 @@ export default {
       if (!hasFindName && !hasFindPath) {
         console.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
         ElMessage.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
-        return;
+        return false;
       }
 
       //查询当前标签的name
@@ -317,7 +360,7 @@ export default {
       if (!currentTab) {
         console.error("无法使用CDRC跳转，当前激活标签的name不存在!");
         ElMessage.error("无法使用CDRC跳转，无法找到当前激活的标签!");
-        return;
+        return false;
       }
 
       //获取一个唯一的CDRC跳转ID
@@ -361,6 +404,8 @@ export default {
           },
         });
       }
+
+      return true;
     };
 
     /**

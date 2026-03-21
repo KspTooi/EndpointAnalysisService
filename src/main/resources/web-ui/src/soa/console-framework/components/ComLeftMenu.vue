@@ -14,154 +14,132 @@
 
       <!-- 菜单区域 -->
       <el-menu
-        :default-active="activeItemId"
-        :default-openeds="openedMenus"
+        v-loading="menuService.loading"
+        :default-active="menuService.activeMenuId.value"
+        :default-openeds="menuStore.getMenuOpened"
         class="panel-menu"
-        @open="onMenuOpen"
-        @close="onMenuClose"
+        @open="menuService.expandMenu"
+        @close="menuService.collapseMenu"
         :unique-opened="false"
       >
-        <!-- Fallback for Maintenance Center -->
-        <el-menu-item v-if="!hasMaintainCenter" index="fallback-maintenance-center" @click="goToMaintainCenter">
+        <!-- 备用维护中心菜单 -->
+        <el-menu-item v-if="!hasMaintainCenter" index="fallback-maintenance-center">
           <el-icon>
             <component :is="getIconComponent('Setting')" />
           </el-icon>
           <span>维护中心(备用)</span>
         </el-menu-item>
 
-        <template v-for="item in filteredItems" :key="item.id">
-          <!-- 目录类型 -->
-          <el-sub-menu v-show="item.menuKind === 0 && item.children?.length" :index="item.id as any">
-            <template #title>
-              <el-icon>
-                <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
-              </el-icon>
-              <span>{{ item.name }}</span>
-            </template>
-            <template v-for="child in filterChildren(item.children)" :key="child.id">
-              <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="onMenuItemClick(child)">
-                <el-icon>
-                  <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
-                </el-icon>
-                <span>{{ child.name }}</span>
-              </el-menu-item>
-            </template>
-          </el-sub-menu>
-
-          <!-- 菜单类型 -->
-          <el-menu-item v-show="item.menuKind === 1" :index="item.id" @click="onMenuItemClick(item)">
+        <!-- 菜单项 一级菜单 目录类型 -->
+        <el-sub-menu v-for="item in menuService.filterDirectoryMenu(menuStore.getMenuTree)" :key="item.id" :index="item.id">
+          <template #title>
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
             <span>{{ item.name }}</span>
+          </template>
+
+          <!-- 菜单项 二级菜单 目录类型 -->
+          <el-sub-menu v-for="child in menuService.filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
+            <template #title>
+              <el-icon>
+                <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+              </el-icon>
+              <span>{{ child.name }}</span>
+            </template>
+            <!-- 三级菜单 目录类型 -->
+            <el-sub-menu
+              v-for="grandChild in menuService.filterDirectoryMenu(child.children)"
+              :key="grandChild.id"
+              :index="grandChild.id"
+            >
+              <template #title>
+                <el-icon>
+                  <component :is="getIconComponent(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+                </el-icon>
+                <span>{{ grandChild.name }}</span>
+              </template>
+            </el-sub-menu>
+            <!-- 三级菜单 菜单项类型 -->
+            <el-menu-item
+              v-for="grandChild in menuService.filterItemMenu(child.children)"
+              :key="grandChild.id"
+              :index="grandChild.id"
+              @click="onMenuItemClick(grandChild)"
+            >
+              <el-icon>
+                <component :is="getIconComponent(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+              </el-icon>
+              <span>{{ grandChild.name }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <!-- 菜单项 二级菜单 菜单项类型 -->
+          <el-menu-item
+            v-for="child in menuService.filterItemMenu(item.children)"
+            :key="child.id"
+            :index="child.id"
+            @click="onMenuItemClick(child)"
+          >
+            <el-icon>
+              <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+            </el-icon>
+            <span>{{ child.name }}</span>
           </el-menu-item>
-        </template>
+        </el-sub-menu>
+
+        <!-- 菜单项 一级菜单 菜单项类型 -->
+        <el-menu-item
+          v-for="item in menuService.filterItemMenu(menuStore.getMenuTree)"
+          :key="item.id"
+          :index="item.id"
+          @click="onMenuItemClick(item)"
+        >
+          <el-icon>
+            <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
+          </el-icon>
+          <span>{{ item.name }}</span>
+        </el-menu-item>
       </el-menu>
     </div>
   </el-aside>
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed, markRaw, h } from "vue";
+import { ref, inject, computed, markRaw, h, onMounted } from "vue";
 import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElAside } from "element-plus";
-import { useRouter } from "vue-router";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import { useTabStore } from "@/store/TabHolder";
 import logoUrl from "@/assets/EAS_CROWN.png";
+import ComMenuService from "@/soa/console-framework/service/ComMenuService";
 
-const router = useRouter();
 const tabStore = useTabStore();
+
+// 使用菜单存储服务
+const menuStore = ComMenuService.useMenuStore();
+
+// 使用菜单服务
+const menuService = ComMenuService.useMenuService();
+
+// 初始化菜单展开状态
+onMounted(() => {
+  menuService.loadMenuTree();
+});
 
 // 使用 markRaw 包装所有图标组件
 const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
 
 // 定义组件props
 const props = defineProps<{
-  items: GetUserMenuTreeVo[];
-  activeItemId?: string;
-  title?: string;
+  title?: string; //标题
   version?: string;
 }>();
 
-const hasMaintainCenter = computed(() => {
-  const searchPath = "/core/application-maintain";
-  const getItemByPath = (items: GetUserMenuTreeVo[]): boolean => {
-    for (const item of items) {
-      if (item.menuPath === searchPath) {
-        return true;
-      }
-      if (item.children && item.children.length > 0) {
-        if (getItemByPath(item.children)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-  return getItemByPath(props.items);
-});
-
-const goToMaintainCenter = () => {
-  router.push("/core/application-maintain");
-};
-
-const STORAGE_KEY = "admin_menu_opened_state";
-
-// 初始化菜单展开状态
-const getInitialOpenedMenus = (): string[] => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch (error) {
-    console.error("Failed to load menu state:", error);
-  }
-  return [];
-};
-
-// 菜单展开状态
-const openedMenus = ref<string[]>(getInitialOpenedMenus());
-
-// 保存展开状态到 localStorage
-const saveOpenedMenus = () => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(openedMenus.value));
-  } catch (error) {
-    console.error("Failed to save menu state:", error);
-  }
-};
-
-// 处理菜单打开
-const onMenuOpen = (index: string) => {
-  if (!openedMenus.value.includes(index)) {
-    openedMenus.value.push(index);
-    saveOpenedMenus();
-  }
-};
-
-// 处理菜单关闭
-const onMenuClose = (index: string) => {
-  const idx = openedMenus.value.indexOf(index);
-  if (idx > -1) {
-    openedMenus.value.splice(idx, 1);
-    saveOpenedMenus();
-  }
-};
-
-// 过滤掉按钮类型的菜单
-const filteredItems = computed(() => {
-  return props.items.filter((item) => item.menuKind !== 2);
-});
-
-// 过滤子菜单中的按钮
-const filterChildren = (children: GetUserMenuTreeVo[] | undefined) => {
-  if (!children) return [];
-  return children.filter((child) => child.menuKind !== 2);
-};
+//当前菜单是否包含维护中心菜单
+const hasMaintainCenter = computed(() => menuService.getMenuByPath("/core/application-maintain") !== null);
 
 // 缓存动态生成的图标组件，避免重复创建导致重渲染
 const iconCache = new Map<string, Component>();
@@ -176,7 +154,7 @@ const getIconComponent = (iconName: string | Component | undefined) => {
       if (iconCache.has(iconName)) {
         return iconCache.get(iconName);
       }
-      
+
       const component = markRaw(() => h(Icon, { icon: iconName, width: 16, height: 16 }));
       iconCache.set(iconName, component);
       return component;
@@ -304,7 +282,9 @@ const onMenuItemClick = (item: GetUserMenuTreeVo) => {
   height: 42px;
   line-height: 42px;
   /* 移除 transform 过渡 */
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
   position: relative;
 }
 
