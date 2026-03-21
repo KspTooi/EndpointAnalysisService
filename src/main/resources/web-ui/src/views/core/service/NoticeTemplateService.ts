@@ -134,7 +134,10 @@ export default {
         { required: true, message: "模板唯一编码不能为空", trigger: "blur" },
         { max: 32, message: "模板唯一编码长度不能超过32个字符", trigger: "blur" },
       ],
-      content: [{ required: true, message: "模板内容不能为空", trigger: "blur" }],
+      content: [
+        { required: true, message: "模板内容不能为空", trigger: "blur" },
+        { max: 10000, message: "模板内容长度不能超过1万字", trigger: "blur" },
+      ],
       status: [
         { required: true, message: "状态不能为空", trigger: "blur" },
         { type: "number", min: 0, max: 1, message: "状态只能在0-1之间", trigger: "blur" },

@@ -5,6 +5,7 @@ import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 import { EventHolder } from "@/store/EventHolder";
 import QueryPersistService from "@/service/QueryPersistService";
+import ComMenuService from "@/soa/console-framework/service/ComMenuService";
 
 export default {
   /**
@@ -12,6 +13,9 @@ export default {
    * @param listTableRef 列表表格引用
    */
   useMenuList(listTableRef: Ref<TableInstance>) {
+    //先加载菜单服务
+    const { loadMenuTree } = ComMenuService.useMenuService();
+
     const listForm = ref<GetMenuTreeDto>({
       name: "",
       menuKind: null,
@@ -69,8 +73,10 @@ export default {
 
       try {
         await MenuApi.removeMenu({ id });
-        EventHolder().requestReloadLeftMenu();
         await loadList();
+
+        //通知左侧菜单重新加载
+        loadMenuTree();
       } catch (error: any) {
         ElMessage.error(error.message);
         return;
@@ -148,6 +154,9 @@ export default {
     fullMenuTree: Ref<GetMenuTreeVo[]>,
     loadFullMenuTree: () => Promise<void>
   ) {
+    //先加载菜单服务
+    const { loadMenuTree } = ComMenuService.useMenuService();
+
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit" | "add-item">("add"); //add:添加,edit:编辑,add-item:新增子项
@@ -334,7 +343,7 @@ export default {
       }
 
       //通知左侧菜单重新加载
-      EventHolder().requestReloadLeftMenu();
+      loadMenuTree();
     };
 
     /**

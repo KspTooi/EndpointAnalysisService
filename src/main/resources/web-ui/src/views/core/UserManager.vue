@@ -14,11 +14,11 @@
           <StdListAreaQuery show-persist-tip>
             <el-form :model="listForm" inline class="flex justify-between">
               <div>
-                <el-form-item label="用户名">
-                  <el-input v-model="listForm.username" placeholder="输入用户名" clearable />
+                <el-form-item label="登录账号">
+                  <el-input v-model="listForm.username" placeholder="输入登录账号" clearable />
                 </el-form-item>
-                <el-form-item label="用户昵称">
-                  <el-input v-model="listForm.nickname" placeholder="输入用户昵称" clearable />
+                <el-form-item label="用户姓名">
+                  <el-input v-model="listForm.nickname" placeholder="输入用户姓名" clearable />
                 </el-form-item>
                 <el-form-item label="状态">
                   <el-select v-model="listForm.status" placeholder="选择状态" clearable style="width: 180px">
@@ -66,8 +66,8 @@
             >
               <el-table-column type="selection" width="40" />
               <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
-              <el-table-column prop="username" label="用户名" min-width="150" />
-              <el-table-column prop="nickname" label="昵称" min-width="150" />
+              <el-table-column prop="username" label="登录账号" min-width="150" />
+              <el-table-column prop="nickname" label="用户姓名" min-width="150" />
               <el-table-column label="性别" min-width="100">
                 <template #default="scope">
                   <span v-if="scope.row.gender === 0">男</span>
@@ -175,10 +175,10 @@
         label-width="100px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="modalForm.username" :disabled="modalMode === 'edit'" placeholder="请输入用户名" />
+        <el-form-item label="登录账号" prop="username">
+          <el-input v-model="modalForm.username" :disabled="modalMode === 'edit'" placeholder="请输入登录账号" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="登录密码" prop="password">
           <el-input
             v-model="modalFormPassword"
             type="password"
@@ -187,8 +187,8 @@
           />
           <div v-if="modalMode === 'edit'" class="form-tip">不修改密码请留空</div>
         </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="modalForm.nickname" placeholder="请输入昵称" />
+        <el-form-item label="用户姓名" prop="nickname">
+          <el-input v-model="modalForm.nickname" placeholder="请输入用户姓名" />
         </el-form-item>
         <el-form-item label="所属部门" prop="deptId">
           <el-tree-select
@@ -305,7 +305,7 @@ const {
   resetModal,
   submitModal,
   orgTreeOptions,
-} = UserManagerService.useUserModal(modalFormRef, _loadList);
+} = UserManagerService.useUserModal(modalFormRef, _loadList, orgId);
 
 // 部门选择器逻辑
 const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();

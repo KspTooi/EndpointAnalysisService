@@ -110,8 +110,9 @@ export default {
    * 用户模态框打包
    * @param modalFormRef 模态框表单引用
    * @param loadList 列表加载函数
+   * @param orgId 组织ID
    */
-  useUserModal(modalFormRef: Ref<FormInstance>, loadList: () => void) {
+  useUserModal(modalFormRef: Ref<FormInstance>, loadList: () => void, orgId: Ref<string | null>) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit">("add");
@@ -162,33 +163,33 @@ export default {
               return;
             }
             if (!value) {
-              callback(new Error("请输入用户名"));
+              callback(new Error("请输入登录账号"));
               return;
             }
             if (!/^[a-zA-Z0-9_]{4,20}$/.test(value)) {
-              callback(new Error("用户名只能包含4-20位字母、数字和下划线"));
+              callback(new Error("登录账号只能包含4-20位字母、数字和下划线"));
               return;
             }
             callback();
           },
         },
       ],
-      nickname: [{ max: 50, message: "昵称长度不能超过50个字符", trigger: "blur" }],
+      nickname: [{ max: 50, message: "用户姓名长度不能超过50个字符", trigger: "blur" }],
       password: [
         {
           trigger: "blur",
           validator: (rule: any, value: string, callback: Function) => {
             const password = modalFormPassword.value;
             if (modalMode.value === "add" && !password) {
-              callback(new Error("请输入密码"));
+              callback(new Error("请输入登录密码"));
               return;
             }
             if (password && password.length > 128) {
-              callback(new Error("密码长度不能超过128个字符"));
+              callback(new Error("登录密码长度不能超过128个字符"));
               return;
             }
             if (password && password.length < 6) {
-              callback(new Error("密码长度不能少于6位"));
+              callback(new Error("登录密码长度不能少于6位"));
               return;
             }
             callback();
@@ -202,7 +203,26 @@ export default {
       gender: [{ required: true, message: "请选择性别", trigger: "change" }],
       phone: [{ max: 64, message: "手机号长度不能超过64个字符", trigger: "blur" }],
     };
-
+    /**
+     * 查找组织架构树中的组织项
+     * @param orgTreeOptions 组织架构树
+     * @param orgId 组织ID
+     * @returns 组织项
+     */
+    const findOrgItem = (orgTreeOptions: any[], orgId: string | null) => {
+      for (let i = 0; i < orgTreeOptions.length; i++) {
+        if (orgTreeOptions[i].id === orgId) {
+          return orgTreeOptions[i];
+        }
+        if (orgTreeOptions[i].children) {
+          const item = findOrgItem(orgTreeOptions[i].children, orgId);
+          if (item) {
+            return item;
+          }
+        }
+      }
+      return null;
+    };
     /**
      * 打开模态框
      * @param mode 模式
@@ -260,6 +280,15 @@ export default {
         // 新增模式，获取用户组列表
         const groups = await GroupApi.getGroupList({ pageNum: 1, pageSize: 100000, status: 1 });
         groupOptions.value = [];
+        //侧边栏如果选中组织，则新增默认选中组织
+        if (orgTreeOptions.value.length > 0) {
+          const org = findOrgItem(orgTreeOptions.value, orgId?.value);
+
+          if (org?.kind === 0 && orgId?.value) {
+            modalForm.deptId = orgId?.value;
+          }
+        }
+
         groups.data.forEach((group) => {
           //禁用组不显示
           if (group.status === 0) {

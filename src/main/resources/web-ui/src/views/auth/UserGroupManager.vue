@@ -187,7 +187,7 @@
               />
             </el-form-item>
             <el-form-item label="排序号" prop="seq">
-              <el-input-number v-model="modalForm.seq" :min="0" class="w-full" />
+              <el-input-number v-model="modalForm.seq" :min="0" :max="655350" class="w-full" />
             </el-form-item>
             <el-form-item label="用户组状态" prop="status" label-for="group-status">
               <el-radio-group v-model="modalForm.status" id="group-status">

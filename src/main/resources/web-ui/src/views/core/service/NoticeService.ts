@@ -206,6 +206,7 @@ export default {
           modalForm.content = details.content || "";
           modalForm.priority = details.priority;
           modalForm.category = details.category || "";
+          modalForm.targetKind = details.targetKind;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);

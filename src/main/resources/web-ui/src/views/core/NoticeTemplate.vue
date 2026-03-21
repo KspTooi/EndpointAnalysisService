@@ -129,7 +129,15 @@
             <el-input v-model="modalForm.code" placeholder="请输入业务调用唯一编码" maxlength="32" show-word-limit clearable />
           </el-form-item>
           <el-form-item label="模板内容" prop="content">
-            <el-input v-model="modalForm.content" type="textarea" :rows="4" placeholder="请输入模板内容 (含占位符)" clearable />
+            <el-input
+              v-model="modalForm.content"
+              type="textarea"
+              :rows="4"
+              maxlength="10000"
+              show-word-limit
+              placeholder="请输入模板内容 (含占位符)"
+              clearable
+            />
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-radio-group v-model="modalForm.status" placeholder="请选择状态" class="w-full">

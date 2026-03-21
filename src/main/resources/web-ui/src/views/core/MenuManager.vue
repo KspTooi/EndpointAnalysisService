@@ -264,6 +264,7 @@ import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
 import MenuApi from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/entity/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import ComMenuService from "@/soa/console-framework/service/ComMenuService";
 
 const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
 
@@ -310,6 +311,9 @@ const {
   submitModal,
 } = MenuManagerService.useMenuModal(modalFormRef, loadList, fullMenuTree, loadFullMenuTree);
 
+//先加载菜单服务
+const { loadMenuTree } = ComMenuService.useMenuService();
+
 const getMenuDetail = async (id: string) => {
   const result = await MenuApi.getMenuDetails({ id });
   if (!Result.isSuccess(result)) {
@@ -323,6 +327,8 @@ const editMenuSeq = async (id: string, dto: any) => {
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);
   }
+  //通知左侧菜单重新加载
+  loadMenuTree();
 };
 </script>
 

@@ -41,6 +41,7 @@ export interface GetNoticeDetailsVo {
   content: string; // 通知内容
   priority: number; // 优先级: 0:低 1:中 2:高
   category: string; // 业务类型/分类
+  targetKind: number; // 接收对象类型 0:全员 1:指定部门 2:指定用户
   senderId: number; // 发送人ID (NULL为系统)
   senderName: string; // 发送人姓名
   forward: string; // 跳转URL/路由地址

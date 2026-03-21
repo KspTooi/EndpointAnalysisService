@@ -10,7 +10,7 @@ import type Result from "@/commons/entity/Result.ts";
 export interface GetNoticeTemplateListDto extends PageQuery {
   name?: string; // 模板名称
   code?: string; // 模板唯一编码 (业务调用用)
-  content?: string; // 模板内容 (含占位符)
+  content?: string; // 模板内容 (含占位符, 最大1万字)
   status?: number; // 状态: 0启用, 1禁用
   remark?: string; // 备注
 }
@@ -35,7 +35,7 @@ export interface GetNoticeTemplateDetailsVo {
   id: string; // 主键ID
   name: string; // 模板名称
   code: string; // 模板唯一编码 (业务调用用)
-  content: string; // 模板内容 (含占位符)
+  content: string; // 模板内容 (含占位符, 最大1万字)
   status: number; // 状态: 0启用, 1禁用
   remark: string; // 备注
 }
@@ -46,7 +46,7 @@ export interface GetNoticeTemplateDetailsVo {
 export interface AddNoticeTemplateDto {
   name: string; // 模板名称
   code: string; // 模板唯一编码 (业务调用用)
-  content: string; // 模板内容 (含占位符)
+  content: string; // 模板内容 (含占位符, 最大1万字)
   status: number; // 状态: 0启用, 1禁用
   remark: string; // 备注
 }
@@ -58,7 +58,7 @@ export interface EditNoticeTemplateDto {
   id: string; // 主键ID
   name: string; // 模板名称
   code: string; // 模板唯一编码 (业务调用用)
-  content: string; // 模板内容 (含占位符)
+  content: string; // 模板内容 (含占位符, 最大1万字)
   status: number; // 状态: 0启用, 1禁用
   remark: string; // 备注
 }
