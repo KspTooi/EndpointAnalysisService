@@ -2,9 +2,8 @@ import type Result from "@/commons/model/Result.ts";
 import axios, { type AxiosInstance } from "axios";
 import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
 import UserAuthService from "@/views/auth/service/UserAuthService";
-import { ElMessage, ElMessageBox } from "element-plus";
 
-var vueRouter = GenricRouteService.getVueRouter();
+const vueRouter = GenricRouteService.getVueRouter();
 
 // 创建axios实例
 const axiosInstance = axios.create({
@@ -38,7 +37,7 @@ axiosInstance.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  (error: any): Promise<never> => {
     console.log("----------------- ERROR -----------------", error.response);
 
     //处理Http403状态码
@@ -118,6 +117,7 @@ export default {
   async postRaw<T>(url: string, body: any): Promise<Result<T>> {
     try {
       // 过滤空字符串参数，不应影响原始对象
+      //eslint-disable-next-line no-restricted-syntax
       const filteredBody = { ...body }; // 创建body的副本
       Object.keys(filteredBody).forEach((key) => {
         if (filteredBody[key] === "") {
@@ -209,7 +209,7 @@ export default {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("请求失败或数据无效");
+      throw new Error("请求失败或数据无效", { cause: error });
     }
   },
 };
