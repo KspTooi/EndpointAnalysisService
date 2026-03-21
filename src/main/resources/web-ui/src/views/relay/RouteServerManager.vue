@@ -22,7 +22,7 @@
             <el-form-item>
               <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
               <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
+              <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -179,7 +179,7 @@ import { reactive, ref, onMounted, markRaw } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";
 import type { GetRouteServerDetailsVo, GetRouteServerListDto, GetRouteServerListVo } from "@/views/relay/api/RouteServerApi.ts";
 import RouteServerApi from "@/views/relay/api/RouteServerApi.ts";
-import ExpandButton from "@/components/common/ExpandButton.vue";
+import StdExpandButton from "@/soa/std-series/StdExpandButton.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 图标常量

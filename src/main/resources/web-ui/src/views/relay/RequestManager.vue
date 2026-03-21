@@ -25,7 +25,7 @@
             <el-form-item>
               <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
               <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
+              <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -271,7 +271,7 @@ import UserRequestApi from "@/views/rdbg/api/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
-import ExpandButton from "@/components/common/ExpandButton.vue";
+import StdExpandButton from "@/soa/std-series/StdExpandButton.vue";
 import type { GetRelayServerListVo } from "@/views/relay/api/RelayServerApi.ts";
 import RelayServerApi from "@/views/relay/api/RelayServerApi.ts";
 import { Result } from "@/commons/model/Result.ts";

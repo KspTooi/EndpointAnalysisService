@@ -26,7 +26,7 @@
             <el-form-item>
               <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
               <el-button @click="resetList" :disabled="listLoading">重置</el-button>
-              <ExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
+              <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -175,7 +175,7 @@ import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import NoticeTemplateService from "@/views/core/service/NoticeTemplateService.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
-import ExpandButton from "@/components/common/ExpandButton.vue";
+import StdExpandButton from "@/soa/std-series/StdExpandButton.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);

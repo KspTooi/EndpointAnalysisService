@@ -406,7 +406,6 @@ import {
   QuestionFilled,
 } from "@element-plus/icons-vue";
 import QueryPersistService from "@/commons/service/QueryPersistService.ts";
-import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
