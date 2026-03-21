@@ -15,20 +15,20 @@ export default {
     const isFocused = ref(false);
 
     //内部事件处理函数
-    const onFocus = () => {
+    const onFocus = (): void => {
       isFocused.value = true;
     };
 
-    const onBlur = () => {
+    const onBlur = (): void => {
       isFocused.value = false;
     };
 
     //手动控制方法
-    const setFocus = () => {
+    const setFocus = (): void => {
       elementRef.value?.focus();
     };
 
-    const clearFocus = () => {
+    const clearFocus = (): void => {
       elementRef.value?.blur();
     };
 
