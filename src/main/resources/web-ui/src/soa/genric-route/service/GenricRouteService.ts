@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, useRoute, useRouter, type Router } from "vue-router";
+import { createRouter, createWebHashHistory, type Router } from "vue-router";
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
@@ -91,7 +91,7 @@ export default {
      * 初始化路由服务
      * @param app 应用实例
      */
-    const initialize = (app: App) => {
+    const initialize = (app: App): void => {
       if (hasInitialized) {
         return;
       }
@@ -117,7 +117,11 @@ export default {
       app.use(vueRouter);
     };
 
-    const addRoute = (entry: RouteEntryPo | GenricRouteRegister) => {
+    /**
+     * 添加路由
+     * @param entry 路由条目或路由注册器
+     */
+    const addRoute = (entry: RouteEntryPo | GenricRouteRegister): void => {
       //如果是路由注册器 则注册到路由注册器列表
       if (entry instanceof GenricRouteRegister) {
         routeRegistries.value.push(entry);
@@ -185,7 +189,7 @@ export default {
      * 批量注册路由
      * @param entries 路由条目数组
      */
-    const addRoutes = (entries: RouteEntryPo[]) => {
+    const addRoutes = (entries: RouteEntryPo[]): void => {
       entries.forEach((entry) => addRoute(entry));
     };
 
@@ -193,7 +197,7 @@ export default {
      * 删除路由
      * @param name 路由名称
      */
-    const removeRoute = (name: string) => {
+    const removeRoute = (name: string): void => {
       vueRouter.removeRoute(name);
       routes.value = routes.value.filter((route) => route.name !== name);
     };

@@ -69,7 +69,7 @@ export default {
     /**
      * 确认选择
      */
-    const confirmSelect = () => {
+    const confirmSelect = (): void => {
       if (!selectedRoute.value) {
         return;
       }
@@ -79,7 +79,7 @@ export default {
     /**
      * 取消选择
      */
-    const cancelSelect = () => {
+    const cancelSelect = (): void => {
       selectedRoute.value = null;
       modalVisible.value = false;
     };

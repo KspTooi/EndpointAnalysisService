@@ -51,6 +51,9 @@ export default defineConfigWithVueTs(
     //ignores: ["**/legacy/**/*.ts"],
 
     rules: {
+      //允许使用单行标签内容换行，这没有必要限制
+      "vue/singleline-html-element-content-newline": "off",
+
       //允许使用单行属性，这没有必要限制
       "vue/max-attributes-per-line": "off",
 
