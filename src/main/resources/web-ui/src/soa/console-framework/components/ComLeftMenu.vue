@@ -14,12 +14,12 @@
 
       <!-- 菜单区域 -->
       <el-menu
-        v-loading="menuService.loading"
-        :default-active="menuService.activeMenuId.value"
+        v-loading="loading"
+        :default-active="activeMenuId"
         :default-openeds="menuStore.getMenuOpened"
         class="panel-menu"
-        @open="menuService.expandMenu"
-        @close="menuService.collapseMenu"
+        @open="expandMenu"
+        @close="collapseMenu"
         :unique-opened="false"
       >
         <!-- 备用维护中心菜单 -->
@@ -31,7 +31,7 @@
         </el-menu-item>
 
         <!-- 菜单项 一级菜单 目录类型 -->
-        <el-sub-menu v-for="item in menuService.filterDirectoryMenu(menuStore.getMenuTree)" :key="item.id" :index="item.id">
+        <el-sub-menu v-for="item in filterDirectoryMenu(menuStore.getMenuTree)" :key="item.id" :index="item.id">
           <template #title>
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
@@ -40,7 +40,7 @@
           </template>
 
           <!-- 菜单项 二级菜单 目录类型 -->
-          <el-sub-menu v-for="child in menuService.filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
+          <el-sub-menu v-for="child in filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
             <template #title>
               <el-icon>
                 <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
@@ -48,11 +48,7 @@
               <span>{{ child.name }}</span>
             </template>
             <!-- 三级菜单 目录类型 -->
-            <el-sub-menu
-              v-for="grandChild in menuService.filterDirectoryMenu(child.children)"
-              :key="grandChild.id"
-              :index="grandChild.id"
-            >
+            <el-sub-menu v-for="grandChild in filterDirectoryMenu(child.children)" :key="grandChild.id" :index="grandChild.id">
               <template #title>
                 <el-icon>
                   <component :is="getIconComponent(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
@@ -62,7 +58,7 @@
             </el-sub-menu>
             <!-- 三级菜单 菜单项类型 -->
             <el-menu-item
-              v-for="grandChild in menuService.filterItemMenu(child.children)"
+              v-for="grandChild in filterItemMenu(child.children)"
               :key="grandChild.id"
               :index="grandChild.id"
               @click="onMenuItemClick(grandChild)"
@@ -76,7 +72,7 @@
 
           <!-- 菜单项 二级菜单 菜单项类型 -->
           <el-menu-item
-            v-for="child in menuService.filterItemMenu(item.children)"
+            v-for="child in filterItemMenu(item.children)"
             :key="child.id"
             :index="child.id"
             @click="onMenuItemClick(child)"
@@ -90,7 +86,7 @@
 
         <!-- 菜单项 一级菜单 菜单项类型 -->
         <el-menu-item
-          v-for="item in menuService.filterItemMenu(menuStore.getMenuTree)"
+          v-for="item in filterItemMenu(menuStore.getMenuTree)"
           :key="item.id"
           :index="item.id"
           @click="onMenuItemClick(item)"
@@ -122,11 +118,12 @@ const tabStore = useTabStore();
 const menuStore = ComMenuService.useMenuStore();
 
 // 使用菜单服务
-const menuService = ComMenuService.useMenuService();
+const { loading, loadMenuTree, getMenuByPath, filterDirectoryMenu, filterItemMenu, expandMenu, collapseMenu, activeMenuId } =
+  ComMenuService.useMenuService();
 
 // 初始化菜单展开状态
 onMounted(() => {
-  menuService.loadMenuTree();
+  loadMenuTree();
 });
 
 // 使用 markRaw 包装所有图标组件
@@ -139,7 +136,7 @@ const props = defineProps<{
 }>();
 
 //当前菜单是否包含维护中心菜单
-const hasMaintainCenter = computed(() => menuService.getMenuByPath("/core/application-maintain") !== null);
+const hasMaintainCenter = computed(() => getMenuByPath("/core/application-maintain") !== null);
 
 // 缓存动态生成的图标组件，避免重复创建导致重渲染
 const iconCache = new Map<string, Component>();
