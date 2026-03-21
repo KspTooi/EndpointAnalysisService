@@ -6,8 +6,6 @@ import { ElMessage } from "element-plus";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
-const MENU_OPENED_SK = "menu_opened";
-
 export default {
   /**
    * 使用菜单存储
@@ -22,23 +20,15 @@ export default {
         menuOpened: [] as string[],
       }),
 
+      //持久化菜单展开数据
+      persist: {
+        key: "menu_opened",
+        pick: ["menuOpened"],
+      },
+
       getters: {
         getMenuTree: (state) => state.menuTree,
-        getMenuOpened: (state) => {
-          //如果菜单展开数据为空，则尝试从localStorage中加载
-          if (state.menuOpened.length === 0) {
-            try {
-              const saved = localStorage.getItem(MENU_OPENED_SK);
-              if (saved) {
-                state.menuOpened = JSON.parse(saved);
-              }
-            } catch (error) {
-              console.error("Failed to load menu opened:", error);
-            }
-          }
-
-          return state.menuOpened;
-        },
+        getMenuOpened: (state) => state.menuOpened,
       },
       actions: {
         /**
@@ -47,38 +37,6 @@ export default {
          */
         setMenuTree(menuTree: GetUserMenuTreeVo[]) {
           this.menuTree = menuTree;
-        },
-        /**
-         * 设置菜单展开数据
-         * @param menuOpened 菜单展开数据
-         */
-        setMenuOpened(menuOpened: string[]) {
-          this.menuOpened = menuOpened;
-
-          //持久化到localStorage
-          localStorage.setItem(MENU_OPENED_SK, JSON.stringify(menuOpened));
-        },
-
-        /**
-         * 展开菜单
-         * @param menuId 菜单ID
-         */
-        expandMenu(menuId: string) {
-          if (!this.getMenuOpened.includes(menuId)) {
-            this.getMenuOpened.push(menuId);
-            localStorage.setItem(MENU_OPENED_SK, JSON.stringify(this.getMenuOpened));
-          }
-        },
-
-        /**
-         * 折叠菜单
-         * @param menuId 菜单ID
-         */
-        collapseMenu(menuId: string) {
-          if (this.getMenuOpened.includes(menuId)) {
-            this.getMenuOpened.splice(this.getMenuOpened.indexOf(menuId), 1);
-            localStorage.setItem(MENU_OPENED_SK, JSON.stringify(this.getMenuOpened));
-          }
         },
       },
     });
@@ -122,7 +80,7 @@ export default {
      * @param path 路径
      */
     const expandMenu = (menuId: string) => {
-      menuStore.expandMenu(menuId);
+      menuStore.menuOpened.push(menuId);
     };
 
     /**
@@ -130,7 +88,7 @@ export default {
      * @param menuId 菜单ID
      */
     const collapseMenu = (menuId: string) => {
-      menuStore.collapseMenu(menuId);
+      menuStore.menuOpened.splice(menuStore.menuOpened.indexOf(menuId), 1);
     };
 
     /**
