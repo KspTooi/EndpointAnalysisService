@@ -1,5 +1,37 @@
 import { onMounted, onUnmounted, type Ref } from "vue";
 
+//Ctrl 键对应的按键映射
+const ctrlKeyMap: Record<string, keyof HotkeyActions> = {
+  a: "ctrl_a",
+  c: "ctrl_c",
+  v: "ctrl_v",
+  x: "ctrl_x",
+  s: "ctrl_s",
+  "1": "ctrl_1",
+  "2": "ctrl_2",
+  "3": "ctrl_3",
+  "4": "ctrl_4",
+  "5": "ctrl_5",
+  "6": "ctrl_6",
+  "7": "ctrl_7",
+  "8": "ctrl_8",
+  "9": "ctrl_9",
+  "0": "ctrl_0",
+};
+
+//单键对应的按键映射
+const singleKeyMap: Record<string, { action: keyof HotkeyActions; preventDefault?: boolean }> = {
+  delete: { action: "delete" },
+  f2: { action: "f2" },
+  enter: { action: "enter" },
+  escape: { action: "esc" },
+  tab: { action: "tab" },
+  shift: { action: "shift", preventDefault: false },
+  control: { action: "ctrl", preventDefault: false },
+  meta: { action: "ctrl", preventDefault: false },
+  backspace: { action: "backspace" },
+};
+
 /**
  * 快捷键动作接口
  * 调用方只需传入需要覆盖的按键
@@ -73,7 +105,7 @@ export default {
      * @param action 对应的回调函数
      * @param preventDefault 是否阻止默认事件 (默认 true)
      */
-    const trigger = (e: KeyboardEvent, action: (() => void) | undefined, preventDefault = true) => {
+    const trigger = (e: KeyboardEvent, action: (() => void) | undefined, preventDefault = true): boolean => {
       if (typeof action === "function") {
         if (preventDefault) {
           e.preventDefault();
@@ -87,7 +119,7 @@ export default {
     /**
      * 按键按下事件
      */
-    const onKeydown = (e: KeyboardEvent) => {
+    const onKeydown = (e: KeyboardEvent): void => {
       if (!active.value) {
         return;
       }
@@ -114,66 +146,15 @@ export default {
       // --- 组合键处理 (Ctrl / Command + Key) ---
 
       if (isCtrl) {
+        //先把按下的按键转换为小写
         const _key = key.toLowerCase();
 
-        if (_key === "a") {
-          trigger(e, actions.ctrl_a);
-          return;
-        }
-        if (_key === "c") {
-          trigger(e, actions.ctrl_c);
-          return;
-        }
-        if (_key === "v") {
-          trigger(e, actions.ctrl_v);
-          return;
-        }
-        if (_key === "x") {
-          trigger(e, actions.ctrl_x);
-          return;
-        }
-        if (_key === "s") {
-          trigger(e, actions.ctrl_s);
-          return;
-        }
-        if (_key === "1") {
-          trigger(e, actions.ctrl_1);
-          return;
-        }
-        if (_key === "2") {
-          trigger(e, actions.ctrl_2);
-          return;
-        }
-        if (_key === "3") {
-          trigger(e, actions.ctrl_3);
-          return;
-        }
-        if (_key === "4") {
-          trigger(e, actions.ctrl_4);
-          return;
-        }
-        if (_key === "5") {
-          trigger(e, actions.ctrl_5);
-          return;
-        }
-        if (_key === "6") {
-          trigger(e, actions.ctrl_6);
-          return;
-        }
-        if (_key === "7") {
-          trigger(e, actions.ctrl_7);
-          return;
-        }
-        if (_key === "8") {
-          trigger(e, actions.ctrl_8);
-          return;
-        }
-        if (_key === "9") {
-          trigger(e, actions.ctrl_9);
-          return;
-        }
-        if (_key === "0") {
-          trigger(e, actions.ctrl_0);
+        //查找在组合映射表中是否存在
+        const action = ctrlKeyMap[_key];
+
+        //执行对应的回调函数
+        if (action) {
+          trigger(e, actions[action]);
           return;
         }
 
@@ -185,40 +166,11 @@ export default {
       // --- 单键处理 ---
       const _key = key.toLowerCase();
 
-      if (_key === "delete") {
-        trigger(e, actions.delete);
-        return;
-      }
-      if (_key === "f2") {
-        trigger(e, actions.f2);
-        return;
-      }
-      if (_key === "enter") {
-        trigger(e, actions.enter);
-        return;
-      }
-      if (_key === "escape") {
-        trigger(e, actions.esc);
-        return;
-      }
-      if (_key === "tab") {
-        trigger(e, actions.tab);
-        return;
-      }
-      if (_key === "shift") {
-        trigger(e, actions.shift, false);
-        return;
-      }
-      if (_key === "control") {
-        trigger(e, actions.ctrl, false);
-        return;
-      }
-      if (_key === "meta") {
-        trigger(e, actions.ctrl, false);
-        return;
-      }
-      if (_key === "backspace") {
-        trigger(e, actions.backspace);
+      //查找在单键映射表中是否存在
+      const singleAction = singleKeyMap[_key];
+
+      if (singleAction) {
+        trigger(e, actions[singleAction.action], singleAction.preventDefault);
         return;
       }
     };
