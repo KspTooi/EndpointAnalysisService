@@ -251,7 +251,7 @@ import "splitpanes/dist/splitpanes.css";
 import UserManagerService from "@/views/core/service/UserManagerService.ts";
 import OrgTree from "@/views/core/components/OrgTree.vue";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
-import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";

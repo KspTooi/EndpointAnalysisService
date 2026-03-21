@@ -8,7 +8,7 @@ import type {
   EditScmDto,
 } from "@/views/assembly/api/ScmApi";
 import ScmApi from "@/views/assembly/api/ScmApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**

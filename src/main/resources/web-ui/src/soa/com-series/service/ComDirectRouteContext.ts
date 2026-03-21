@@ -70,7 +70,7 @@
  */
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter, type RouteRecordNameGeneric } from "vue-router";
-import { useTabStore, type Tab } from "@/store/TabHolder";
+import { useTabStore, type Tab } from "@/store/TabHolder.ts";
 import { ElMessage } from "element-plus";
 
 /** CDRC上下文前缀 */
@@ -315,25 +315,12 @@ export default {
     }
 
     /**
-     * 跳转并关联到标签页(打开新标签页,若标签页已存在则直接激活)
+     * 跳转到一个已有的菜单项并携带一次性上下文
      * @param nameOrPath 路由的名称或路径
      * @param sendQuery 需发送的查询参数
      * @param returnQuery 从目标返回时会携带的查询参数
      */
-    const cdrcRedirectWithTab = (nameOrPath: string, sendQuery?: any, returnQuery?: any, tabTitle?: string) => {
-      const route = getRouteByNameOrPath(nameOrPath);
-
-      if (!route) {
-        console.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
-        ElMessage.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
-        return false;
-      }
-
-      //如果标签页标题为空 使用路由的标题
-      if (tabTitle) {
-        tabTitle = route.meta.title as string;
-      }
-    };
+    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any) => {};
 
     /**
      * 直接跳转

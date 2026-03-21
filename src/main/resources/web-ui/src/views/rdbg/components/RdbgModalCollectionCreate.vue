@@ -41,8 +41,8 @@ import { computed, nextTick, reactive, ref } from "vue";
 import type { AddCollectionDto } from "@/views/rdbg/api/CollectionApi";
 import { ElMessage, type FormInstance } from "element-plus";
 import CollectionApi from "@/views/rdbg/api/CollectionApi";
-import { Result } from "@/commons/entity/Result";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
+import { Result } from "@/commons/model/Result.ts";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 
 const emit = defineEmits<{
   (e: "on-success"): void;

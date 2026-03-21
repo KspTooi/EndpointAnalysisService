@@ -88,10 +88,10 @@
 import { computed, onMounted, ref } from "vue";
 import { ElAvatar, ElTag, ElIcon, ElButton, ElMessage, ElMessageBox, ElPopover } from "element-plus";
 import { Message, Phone, User, Operation, Key, Calendar, Clock, SwitchButton } from "@element-plus/icons-vue";
-import type { GetCurrentUserProfile } from "@/soa/console-framework/api/AuthApi";
-import AuthApi from "@/soa/console-framework/api/AuthApi";
-import ComPasswordReset from "@/soa/console-framework/components/ComPasswordReset.vue";
-import UserAuthService from "@/views/auth/service/UserAuthService";
+import type { GetCurrentUserProfile } from "@/soa/com-series/api/AuthApi.ts";
+import AuthApi from "@/soa/com-series/api/AuthApi.ts";
+import ComPasswordReset from "@/soa/com-series/sfc_private/ComPasswordReset.vue";
+import UserAuthService from "@/views/auth/service/UserAuthService.ts";
 
 const authStore = UserAuthService.AuthStore();
 

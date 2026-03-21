@@ -1,6 +1,6 @@
-import { Result } from "@/commons/entity/Result";
-import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi";
-import MenuApi from "@/views/core/api/MenuApi";
+import { Result } from "@/commons/model/Result.ts";
+import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
+import MenuApi from "@/views/core/api/MenuApi.ts";
 import { defineStore } from "pinia";
 import { ElMessage } from "element-plus";
 import { computed, ref } from "vue";

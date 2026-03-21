@@ -10,9 +10,9 @@ import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveApi from "@/views/drive/api/DriveApi";
 import { ElMessage } from "element-plus";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { useTabStore } from "@/store/TabHolder";
-import FileCategoryService, { EntryCategory } from "@/service/FileCategoryService";
+import FileCategoryService, { EntryCategory } from "@/commons/service/FileCategoryService.ts";
 import type DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 import Http from "@/commons/Http";
 

@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 import type { GetOutModelPolyListDto, GetOutModelPolyListVo, EditOutModelPolyDto } from "@/views/assembly/api/OutModelPolyApi";
 import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {

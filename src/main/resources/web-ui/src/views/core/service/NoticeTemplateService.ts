@@ -8,7 +8,7 @@ import type {
   EditNoticeTemplateDto,
 } from "@/views/core/api/NoticeTemplateApi.ts";
 import NoticeTemplateApi from "@/views/core/api/NoticeTemplateApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**

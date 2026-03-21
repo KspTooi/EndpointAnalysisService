@@ -98,7 +98,7 @@ import { Download, UploadFilled, Document } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import ExcelTemplateApi from "@/views/core/api/ExcelTemplateApi.ts";
 import Http from "@/commons/Http.ts";
-import type Result from "@/commons/entity/Result.ts";
+import type Result from "@/commons/model/Result.ts";
 
 const props = defineProps<{
   url: string;

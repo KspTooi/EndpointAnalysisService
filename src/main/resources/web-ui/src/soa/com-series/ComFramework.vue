@@ -4,8 +4,6 @@
       <!-- 桌面版侧边栏 -->
       <component
         :is="isMenuCollapse ? ComLeftMenuShort : ComLeftMenu"
-        :items="menuTree"
-        :active-item-id="activeMenuId"
         title="EAS服务管理控制台"
         :version="`版本:${appVersion}`"
       />
@@ -65,13 +63,13 @@ import { useRoute, useRouter } from "vue-router";
 import { useTabStore } from "@/store/TabHolder.ts";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
-import ComFrameworkService from "@/soa/console-framework/service/ComFrameworkService.ts";
-import ComMultiTab from "@/soa/console-framework/components/ComMultiTab.vue";
-import ComLeftMenu from "@/soa/console-framework/components/ComLeftMenu.vue";
-import ComUserProfile from "@/soa/console-framework/components/ComUserProfile.vue";
-import ComLeftMenuShort from "@/soa/console-framework/components/ComLeftMenuShort.vue";
+import ComFrameworkService from "@/soa/com-series/service/ComFrameworkService.ts";
+import ComMultiTab from "@/soa/com-series/sfc_private/ComMultiTab.vue";
+import ComLeftMenu from "@/soa/com-series/sfc_private/ComLeftMenu.vue";
+import ComUserProfile from "@/soa/com-series/sfc_private/ComUserProfile.vue";
+import ComLeftMenuShort from "@/soa/com-series/sfc_private/ComLeftMenuShort.vue";
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
-import UserAuthService from "@/views/auth/service/UserAuthService";
+import UserAuthService from "@/views/auth/service/UserAuthService.ts";
 
 const router = useRouter();
 const route = useRoute();
@@ -80,7 +78,7 @@ const { refreshCounter } = storeToRefs(tabStore);
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 
 ComFrameworkService.useComTabHotkey();
-const { isMenuCollapse, toggleMenu, autoBreadcrumbs, menuTree, activeMenuId } = ComFrameworkService.useComFramework();
+const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useComFramework();
 
 const authStore = UserAuthService.AuthStore();
 

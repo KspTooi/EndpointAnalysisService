@@ -277,7 +277,7 @@ import UserGroupService from "@/views/auth/service/UserGroupService.ts";
 import UserGpModal from "@/views/auth/components/UserGpModal.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import OrgManagerService from "../core/service/OrgManagerService";
 
 const EditIcon = markRaw(Edit);

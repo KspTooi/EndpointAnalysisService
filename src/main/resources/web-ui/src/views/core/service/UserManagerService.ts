@@ -9,9 +9,9 @@ import type {
   BatchEditUserDto,
 } from "@/views/core/api/UserApi.ts";
 import AdminUserApi from "@/views/core/api/UserApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import QueryPersistService from "@/service/QueryPersistService";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import GroupApi from "@/views/auth/api/GroupApi.ts";
 import OrgApi, { type GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 

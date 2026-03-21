@@ -7,9 +7,9 @@ import type {
   EditEpStdWordDto,
 } from "@/views/document/api/EpStdWordApi.ts";
 import EpStdWordApi from "@/views/document/api/EpStdWordApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 
 export default {
   /**

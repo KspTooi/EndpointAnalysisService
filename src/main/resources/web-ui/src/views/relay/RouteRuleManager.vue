@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, watch, markRaw, onMounted } from "vue";
 import { Delete, View } from "@element-plus/icons-vue";

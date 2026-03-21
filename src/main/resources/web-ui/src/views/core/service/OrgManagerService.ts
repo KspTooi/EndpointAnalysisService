@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { GetOrgTreeVo, GetOrgDetailsVo, AddOrgDto, EditOrgDto } from "@/views/core/api/OrgApi.ts";
 import OrgApi from "@/views/core/api/OrgApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 
 export default {

@@ -7,7 +7,7 @@ import AdminPermissionApi, {
   type AddPermissionDto,
   type EditPermissionDto,
 } from "@/views/auth/api/PermissionApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 
 export default {
   /**

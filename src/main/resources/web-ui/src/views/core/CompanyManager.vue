@@ -151,7 +151,7 @@ import type {
   ResignCeoDto,
 } from "@/views/core/api/CompanyApi.ts";
 import CompanyApi from "@/views/core/api/CompanyApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref } from "vue";
 import { Delete as DeleteIcon, View as ViewIcon, SwitchButton, Refresh } from "@element-plus/icons-vue";

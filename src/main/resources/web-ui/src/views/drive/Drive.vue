@@ -89,9 +89,9 @@ import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfir
 import DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 import type { EntryPo, GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "@/views/drive/service/DriveService";
-import ElementFocusService from "@/service/ElmentFocusService";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
-import type Result from "@/commons/entity/Result";
+import ElementFocusService from "@/commons/service/ElmentFocusService.ts";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
+import type Result from "@/commons/model/Result.ts";
 import { useRouter } from "vue-router";
 const router = useRouter();
 

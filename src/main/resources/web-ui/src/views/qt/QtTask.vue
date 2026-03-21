@@ -442,8 +442,8 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import QtTaskGroupService from "@/views/qt/service/QtTaskGroupService";
 import CronCalculatorModal from "@/views/qt/components/public/CronCalculatorModal.vue";
-import ComCronFixer from "@/soa/console-framework/ComCronFixer.vue";
-import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import ComCronFixer from "@/soa/com-series/ComCronFixer.vue";
+import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
 
 // 使用markRaw包装图标组件
 const UploadIcon = markRaw(Upload);

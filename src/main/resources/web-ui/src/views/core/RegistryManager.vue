@@ -206,7 +206,7 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
 import { ElMessage } from "element-plus";
 
 // 静态图标引用 (使用 markRaw 避免响应式开销)

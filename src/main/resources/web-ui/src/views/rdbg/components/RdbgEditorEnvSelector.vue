@@ -23,7 +23,7 @@ import { ref, onMounted, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { CircleCheck } from "@element-plus/icons-vue";
 import UserRequestEnvApi, { type GetUserRequestEnvListVo } from "@/views/rdbg/api/UserRequestEnvApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 
 const selectedEnvId = ref<string | null>(null);
 const envList = ref<GetUserRequestEnvListVo[]>([]);

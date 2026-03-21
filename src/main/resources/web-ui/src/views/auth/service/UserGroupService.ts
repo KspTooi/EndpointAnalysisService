@@ -9,7 +9,7 @@ import AdminGroupApi, {
   type EditGroupDto,
 } from "@/views/auth/api/GroupApi.ts";
 import AdminPermissionApi from "@/views/auth/api/PermissionApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 export default {

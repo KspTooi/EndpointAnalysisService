@@ -8,7 +8,7 @@ import type {
   GetGroupDetailsVo,
 } from "@/views/auth/api/GroupApi.ts";
 import GroupApi from "@/views/auth/api/GroupApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 
 export default {
   /**

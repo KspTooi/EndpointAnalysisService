@@ -8,7 +8,7 @@ import type {
   EditExampleDto,
 } from "@/soa/template/api/ExampleApi.ts";
 import ExampleApi from "@/soa/template/api/ExampleApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**

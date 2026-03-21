@@ -25,11 +25,11 @@
 
 <script setup lang="ts">
 import DriveApi from "@/views/drive/api/DriveApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { reactive, ref, watch, nextTick } from "vue";
 import type { GetEntryListItemVo, RenameEntryDto } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 import { DriveStore } from "@/views/drive/service/DriveStore";
 const emit = defineEmits<{
   (e: "success"): void;

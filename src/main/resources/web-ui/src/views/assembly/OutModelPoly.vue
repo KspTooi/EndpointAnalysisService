@@ -299,7 +299,7 @@ import { ElMessage } from "element-plus";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import ComDirectRouteContext from "@/soa/console-framework/service/ComDirectRouteContext.ts";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
 import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
 import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";

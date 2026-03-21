@@ -40,7 +40,7 @@
 import type { GetUserRequestEnvListDto, GetUserRequestEnvListVo } from "@/views/rdbg/api/UserRequestEnvApi.ts";
 import { reactive, ref, computed, watch } from "vue";
 import UserRequestEnvApi from "@/views/rdbg/api/UserRequestEnvApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit, Plus } from "@element-plus/icons-vue";
 import { RequestEnvSideListHolder } from "@/store/RequestEnvSideListHolder.ts";

@@ -1,7 +1,7 @@
 import { computed, onMounted, ref, watch, type Ref } from "vue";
 import type { GetCollectionDetailsVo, GetCollectionTreeVo } from "@/views/rdbg/api/CollectionApi";
 import CollectionApi from "@/views/rdbg/api/CollectionApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { useRdbgStore } from "@/views/rdbg/service/RdbgStore";
 import { ElMessage } from "element-plus";
 

@@ -1,5 +1,5 @@
 import Http from "@/commons/Http.ts";
-import type Result from "@/commons/entity/Result.ts";
+import type Result from "@/commons/model/Result.ts";
 
 export interface MaintainUpdateVo {
   existCount: number; // 已存在的数量

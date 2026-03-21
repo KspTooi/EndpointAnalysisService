@@ -102,15 +102,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed, markRaw, h, onMounted } from "vue";
+import { computed, markRaw, h, onMounted } from "vue";
 import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElAside } from "element-plus";
 import type { Component } from "vue";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import { useTabStore } from "@/store/TabHolder";
+import { useTabStore } from "@/store/TabHolder.ts";
 import logoUrl from "@/assets/EAS_CROWN.png";
-import ComMenuService from "@/soa/console-framework/service/ComMenuService";
+import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
 
 const tabStore = useTabStore();
 

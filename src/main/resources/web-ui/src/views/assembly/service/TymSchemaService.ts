@@ -8,7 +8,7 @@ import type {
   EditTymSchemaDto,
 } from "@/views/assembly/api/TymSchemaApi";
 import TymSchemaApi from "@/views/assembly/api/TymSchemaApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { GetTymSchemaFieldDetailsVo } from "../api/TymSchemaFieldApi";
 

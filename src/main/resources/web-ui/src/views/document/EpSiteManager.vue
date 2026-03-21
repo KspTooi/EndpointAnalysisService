@@ -255,9 +255,9 @@ import { Edit, Delete, View, Hide, CopyDocument, Download, Upload } from "@eleme
 import type { FormInstance } from "element-plus";
 import EpSiteService from "@/views/document/service/EpSiteService.ts";
 import EpSiteApi, { type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
-import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
-import { Result } from "@/commons/entity/Result";
+import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
+import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 使用markRaw包装图标组件

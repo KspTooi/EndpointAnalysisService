@@ -1,4 +1,4 @@
-import type Result from "@/commons/entity/Result.ts";
+import type Result from "@/commons/model/Result.ts";
 import axios, { type AxiosInstance } from "axios";
 import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
 import UserAuthService from "@/views/auth/service/UserAuthService";

@@ -114,7 +114,7 @@ import type {
   FireCompanyMemberDto,
 } from "@/views/core/api/CompanyMemberApi.ts";
 import CompanyMemberApi from "@/views/core/api/CompanyMemberApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";

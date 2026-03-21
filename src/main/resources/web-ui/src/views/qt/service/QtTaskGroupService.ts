@@ -8,9 +8,9 @@ import type {
   EditQtTaskGroupDto,
 } from "@/views/qt/api/QtTaskGroupApi.ts";
 import QtTaskGroupApi from "@/views/qt/api/QtTaskGroupApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
-import QueryPersistService from "@/service/QueryPersistService.ts";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 
 /**
  * 模态框模式类型

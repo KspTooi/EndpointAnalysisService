@@ -64,9 +64,9 @@ import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Close, Delete, Folder, Document, WarningFilled } from "@element-plus/icons-vue";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import type { EntryPo } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/service/GenricHotkeyService";
+import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 import { DriveStore } from "@/views/drive/service/DriveStore";
 
 const emit = defineEmits<{

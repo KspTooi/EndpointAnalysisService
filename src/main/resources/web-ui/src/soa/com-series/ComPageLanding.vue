@@ -138,10 +138,10 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { Bell, Monitor, StarFilled, Clock, ChatDotRound } from "@element-plus/icons-vue";
-import Http from "@/commons/Http";
-import { useTabStore } from "@/store/TabHolder";
-import UserAuthService from "@/views/auth/service/UserAuthService";
-import NoticeRcdService from "@/views/core/service/NoticeRcdService";
+import Http from "@/commons/Http.ts";
+import { useTabStore } from "@/store/TabHolder.ts";
+import UserAuthService from "@/views/auth/service/UserAuthService.ts";
+import NoticeRcdService from "@/views/core/service/NoticeRcdService.ts";
 
 const tabStore = useTabStore();
 const apiUrl = Http.getApiUrl();

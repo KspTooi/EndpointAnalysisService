@@ -76,7 +76,7 @@ import { ElMessage } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
 import UserAuthService from "@/views/auth/service/UserAuthService";
 import type { UserLoginDto } from "./api/AuthApi";
-import ComTacCaptchaDialog from "@/soa/console-framework/components/ComTacCaptchaDialog.vue";
+import ComTacCaptchaDialog from "@/soa/com-series/sfc_private/ComTacCaptchaDialog.vue";
 
 const router = useRouter();
 const { login } = UserAuthService.useUserAuth();

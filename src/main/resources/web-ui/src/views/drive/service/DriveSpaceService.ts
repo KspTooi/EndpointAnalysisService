@@ -10,7 +10,7 @@ import type {
   EditDriveSpaceMembersDto,
 } from "@/views/drive/api/DriveSpaceApi.ts";
 import DriveSpaceApi from "@/views/drive/api/DriveSpaceApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 import type { GetUserListVo } from "@/views/core/api/UserApi.ts";

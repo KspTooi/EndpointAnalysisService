@@ -1,5 +1,5 @@
 import Http from "@/commons/Http.ts";
-import type PageResult from "@/commons/entity/PageResult.ts";
+import type PageResult from "@/commons/model/PageResult.ts";
 
 /**
  * 查询列表DTO

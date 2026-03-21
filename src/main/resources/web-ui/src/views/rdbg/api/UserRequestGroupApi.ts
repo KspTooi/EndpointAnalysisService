@@ -1,7 +1,7 @@
-import type Result from "@/commons/entity/Result.ts";
+import type Result from "@/commons/model/Result.ts";
 import Http from "@/commons/Http.ts";
 import type { GetSimpleFilterListVo } from "@/views/rdbg/api/SimpleFilterApi.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
 
 export interface AddUserRequestGroupDto {
   parentId: number | null; //父级ID 为空表示根节点

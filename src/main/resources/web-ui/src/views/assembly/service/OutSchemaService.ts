@@ -8,7 +8,7 @@ import type {
   EditOutSchemaDto,
 } from "@/views/assembly/api/OutSchemaApi";
 import OutSchemaApi from "@/views/assembly/api/OutSchemaApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { GetDataSourceListVo } from "@/views/assembly/api/DataSourceApi";
 import type { GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";

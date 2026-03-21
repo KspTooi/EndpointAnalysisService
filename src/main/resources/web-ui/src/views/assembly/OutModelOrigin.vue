@@ -48,7 +48,7 @@ import OutModelOriginService from "@/views/assembly/service/OutModelOriginServic
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import ComDirectRouteContext from "@/soa/console-framework/service/ComDirectRouteContext.ts";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 
 //使用CDRC打包上下文

@@ -1,5 +1,5 @@
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
-import type Result from "@/commons/entity/Result";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
+import type Result from "@/commons/model/Result.ts";
 import Http from "@/commons/Http";
 
 export interface GetCollectionTreeVo {

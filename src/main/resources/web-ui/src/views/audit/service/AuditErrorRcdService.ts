@@ -6,7 +6,7 @@ import type {
   GetAuditErrorRcdDetailsVo,
 } from "@/views/audit/api/AuditErrorRcdApi.ts";
 import AuditErrorRcdApi from "@/views/audit/api/AuditErrorRcdApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**

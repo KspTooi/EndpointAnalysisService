@@ -308,7 +308,7 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
-import ComDirectRouteContext from "@/soa/console-framework/service/ComDirectRouteContext.ts";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);

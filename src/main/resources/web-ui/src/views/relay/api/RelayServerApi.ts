@@ -1,8 +1,8 @@
-import type PageQuery from "@/commons/entity/PageQuery.ts";
+import type PageQuery from "@/commons/model/PageQuery.ts";
 import Http from "@/commons/Http.ts";
-import type RestPageableView from "@/commons/entity/RestPageableView.ts";
-import type Result from "@/commons/entity/Result.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type RestPageableView from "@/commons/model/RestPageableView.ts";
+import type Result from "@/commons/model/Result.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
 
 export interface GetRelayServerListDto extends PageQuery {
   name: string | null; //中继服务器名称

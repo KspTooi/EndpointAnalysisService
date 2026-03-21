@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import ComFramework from "@/soa/console-framework/ComFramework.vue";
+import ComFramework from "@/soa/com-series/ComFramework.vue";
 
 const route = useRoute();
 

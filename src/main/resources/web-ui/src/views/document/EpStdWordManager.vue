@@ -167,7 +167,7 @@ import { Edit, Delete, ArrowDown, Download, Upload } from "@element-plus/icons-v
 import type { FormInstance } from "element-plus";
 import EpStdWordService from "@/views/document/service/EpStdWordService.ts";
 import EpStdWordApi, { type GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
-import ImportWizardModal from "@/soa/console-framework/ImportWizardModal.vue";
+import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 使用markRaw包装图标组件

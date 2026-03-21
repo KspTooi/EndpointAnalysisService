@@ -389,7 +389,7 @@
 <script setup lang="ts">
 import type { GetEndpointDetailsVo, GetEndpointTreeDto, GetEndpointTreeVo } from "@/views/core/api/EndpointApi.ts";
 import EndpointApi from "@/views/core/api/EndpointApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, computed, onMounted } from "vue";
 import {
@@ -405,9 +405,9 @@ import {
   Refresh,
   QuestionFilled,
 } from "@element-plus/icons-vue";
-import QueryPersistService from "@/service/QueryPersistService";
+import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetEndpointTreeDto>({

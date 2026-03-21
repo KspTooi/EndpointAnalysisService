@@ -104,7 +104,7 @@ import type { FormInstance } from "element-plus";
 import TymSchemaFieldService from "@/views/assembly/service/TymSchemaFieldService";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import TymSchemaFieldApi from "@/views/assembly/api/TymSchemaFieldApi";
 import type { GetTymSchemaListVo } from "./api/TymSchemaApi";
 

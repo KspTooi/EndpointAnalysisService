@@ -172,7 +172,7 @@ import ConfigApi, {
   type AddConfigDto,
   type EditConfigDto,
 } from "@/views/core/api/ConfigApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetConfigListDto>({

@@ -2,10 +2,10 @@ import { createRouter, createWebHashHistory, useRoute, useRouter, type Router } 
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder";
-import RouteNotFound from "@/soa/route-not-found/RouteNotFound.vue";
-import NoPermission from "@/soa/no-permission/NoPermission.vue";
+import ComPage404 from "@/soa/com-series/ComPage404.vue";
+import ComPage401 from "@/soa/com-series/ComPage401.vue";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
-import Index from "@/soa/index/SoaIndex.vue";
+import ComPageLanding from "@/soa/com-series/ComPageLanding.vue";
 
 //是否已初始化
 let hasInitialized = false;
@@ -25,13 +25,13 @@ const vueRouter = createRouter({
     {
       path: "/index",
       name: "index",
-      component: Index,
+      component: ComPageLanding,
       meta: {},
     },
     {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
-      component: RouteNotFound,
+      component: ComPage404,
       meta: {
         layout: "blank",
       },
@@ -39,7 +39,7 @@ const vueRouter = createRouter({
     {
       path: "/no-permission",
       name: "no-permission",
-      component: NoPermission,
+      component: ComPage401,
       meta: {
         layout: "blank",
       },

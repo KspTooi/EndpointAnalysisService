@@ -156,7 +156,7 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import TymSchemaApi, { type GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import TymSchemaField from "@/views/assembly/TymSchemaField.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理

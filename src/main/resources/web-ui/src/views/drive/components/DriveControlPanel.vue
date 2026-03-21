@@ -106,7 +106,7 @@ import { Search, Upload, Coin, Box } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import DriveApi from "@/views/drive/api/DriveApi.ts";
-import type Result from "@/commons/entity/Result.ts";
+import type Result from "@/commons/model/Result.ts";
 import type { GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveControlPanelPaths from "@/views/drive/components/DriveControlPanelPaths.vue";

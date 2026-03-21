@@ -260,11 +260,11 @@ import { Icon } from "@iconify/vue";
 import QueryPersistTip from "@/components/common/QueryPersistTip.vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
-import ComSeqFixer from "@/soa/console-framework/ComSeqFixer.vue";
+import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import MenuApi from "@/views/core/api/MenuApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
-import ComMenuService from "@/soa/console-framework/service/ComMenuService";
+import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
 
 const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
 

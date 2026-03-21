@@ -1,6 +1,6 @@
 import Http from "@/commons/Http.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
-import type PageQuery from "@/commons/entity/PageQuery.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
+import type PageQuery from "@/commons/model/PageQuery.ts";
 
 export interface GetEntryListDto extends PageQuery {
   driveSpaceId: string; //云盘空间ID

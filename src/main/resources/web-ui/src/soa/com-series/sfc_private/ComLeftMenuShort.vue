@@ -59,7 +59,7 @@ import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { Component } from "vue";
 import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import { useTabStore } from "@/store/TabHolder";
+import { useTabStore } from "@/store/TabHolder.ts";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
 const tabStore = useTabStore();

@@ -248,7 +248,7 @@ import ExcelTemplateApi, {
   type GetExcelTemplateListVo,
   type EditExcelTemplateDto,
 } from "@/views/core/api/ExcelTemplateApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const listForm = reactive<GetExcelTemplateListDto>({

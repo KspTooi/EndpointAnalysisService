@@ -151,7 +151,7 @@ import AdminSessionApi, {
   type GetSessionListDto,
   type GetSessionListVo,
 } from "@/views/auth/api/SessionApi.ts";
-import { Result } from "@/commons/entity/Result.ts";
+import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 const ViewIcon = markRaw(View);

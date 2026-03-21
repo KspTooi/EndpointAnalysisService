@@ -1,7 +1,7 @@
 import { onMounted, ref, type Ref } from "vue";
 import type { GetOutModelOriginListDto, GetOutModelOriginListVo } from "@/views/assembly/api/OutModelOriginApi";
 import OutModelOriginApi from "@/views/assembly/api/OutModelOriginApi";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage } from "element-plus";
 import type { GetOutSchemaListVo } from "../api/OutSchemaApi";
 

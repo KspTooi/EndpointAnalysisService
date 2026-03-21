@@ -6,7 +6,7 @@ import RegistryApi, {
   type EditRegistryDto,
   type GetRegistryDetailsVo,
 } from "@/views/core/api/RegistryApi";
-import type CommonIdDto from "@/commons/entity/CommonIdDto";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 
 /**
