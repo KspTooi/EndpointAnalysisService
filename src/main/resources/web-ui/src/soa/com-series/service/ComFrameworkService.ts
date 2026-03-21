@@ -1,11 +1,8 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useTabStore } from "@/store/TabHolder.ts";
 import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 import { useRoute, useRouter } from "vue-router";
-import MenuApi, { type GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import { Result } from "@/commons/model/Result.ts";
-import { ElMessage } from "element-plus";
-import { EventHolder } from "@/store/EventHolder.ts";
+
 
 export default {
   /**

@@ -3,12 +3,14 @@ import type { MaintainOperation } from "../api/MaintainApi";
 import MaintainApi from "../api/MaintainApi";
 import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu, Upload, Tools } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { EventHolder } from "@/store/EventHolder.ts";
+import ComMenuService from "@/soa/com-series/service/ComMenuService";
 
 export default {
   useMaintainOperation: () => {
     const globalLoading = ref(false);
-    const eventHolder = EventHolder();
+
+    //先加载菜单服务
+    const { loadMenuTree } = ComMenuService.useMenuService();
 
     const maintainOperations: MaintainOperation[] = [
       {
@@ -54,7 +56,7 @@ export default {
         warning: "警告：此操作将把所有菜单恢复为出厂默认设置，您自定义的菜单调整都将丢失！是否确定要继续？",
         action: async () => await MaintainApi.resetMenus(),
         onComplete: () => {
-          eventHolder.requestReloadLeftMenu();
+          loadMenuTree();
         },
       },
       {
