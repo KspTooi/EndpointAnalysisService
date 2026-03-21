@@ -219,7 +219,7 @@
         <el-input v-model="modalForm.description" placeholder="请输入菜单描述" clearable />
       </el-form-item>
       <el-form-item :label="modalFormLabel + '图标'" prop="menuIcon" v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1">
-        <IconPicker v-model="modalForm.menuIcon" />
+        <StdIconPicker v-model="modalForm.menuIcon" />
       </el-form-item>
       <el-form-item label="查询参数" prop="menuQueryParam" v-if="modalForm.menuKind == 1">
         <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
@@ -255,7 +255,7 @@ import {
   InfoFilled,
   Edit as EditIcon,
 } from "@element-plus/icons-vue";
-import IconPicker from "@/components/common/IconPicker.vue";
+import StdIconPicker from "@/soa/std-series/StdIconPicker.vue";
 import { Icon } from "@iconify/vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
