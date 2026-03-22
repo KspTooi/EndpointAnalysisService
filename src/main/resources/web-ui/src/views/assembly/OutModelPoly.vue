@@ -355,19 +355,19 @@ const editingCellKey = ref("");
 
 const { submitRow, commitField } = OutModelPolyService.useCellEdit();
 
-const buildCellKey = (rowId: string, field: string) => `${rowId}_${field}`;
+const buildCellKey = (rowId: string, field: string): string => `${rowId}_${field}`;
 
-const activateCell = (rowId: string, field: string) => {
+const activateCell = (rowId: string, field: string): void => {
   editingCellKey.value = buildCellKey(rowId, field);
 };
 
-const clearEditingCell = () => {
+const clearEditingCell = (): void => {
   editingCellKey.value = "";
 };
 
-const isEditingCell = (rowId: string, field: string) => editingCellKey.value === buildCellKey(rowId, field);
+const isEditingCell = (rowId: string, field: string): boolean => editingCellKey.value === buildCellKey(rowId, field);
 
-const submitCell = async (row: GetOutModelPolyListVo, field: string) => {
+const submitCell = async (row: GetOutModelPolyListVo, field: string): Promise<void> => {
   const success = await submitRow(row);
   if (!success) {
     return;
@@ -381,7 +381,7 @@ const submitCell = async (row: GetOutModelPolyListVo, field: string) => {
   }
 };
 
-const submitField = async (row: GetOutModelPolyListVo, field: string, value: any) => {
+const submitField = async (row: GetOutModelPolyListVo, field: string, value: any): Promise<void> => {
   const success = await commitField(row, field, value);
   if (!success) {
     return;
@@ -389,20 +389,20 @@ const submitField = async (row: GetOutModelPolyListVo, field: string, value: any
   clearEditingCell();
 };
 
-const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean) => {
+const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean): Promise<void> => {
   if (visible) {
     return;
   }
   await submitCell(row, "policyCrudJson");
 };
 
-const toggleRequire = async (row: GetOutModelPolyListVo) => {
+const toggleRequire = async (row: GetOutModelPolyListVo): Promise<void> => {
   const nextValue = row.require === 1 ? 0 : 1;
   await submitField(row, "require", nextValue);
 };
 
-const formatPolicyQuery = (value: number) => POLICY_QUERY_LABEL_MAP[value] ?? "-";
-const formatPolicyView = (value: number) => POLICY_VIEW_LABEL_MAP[value] ?? "-";
+const formatPolicyQuery = (value: number): string => POLICY_QUERY_LABEL_MAP[value] ?? "-";
+const formatPolicyView = (value: number): string => POLICY_VIEW_LABEL_MAP[value] ?? "-";
 
 // ==================== 新增模态框 ====================
 
@@ -443,7 +443,7 @@ const polyAddRules: FormRules = {
   seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
 };
 
-const openPolyAddModal = () => {
+const openPolyAddModal = (): void => {
   polyAddForm.outputSchemaId = outputSchemaId.value;
   polyAddForm.outputModelOriginId = "";
   polyAddForm.name = "";
@@ -458,18 +458,18 @@ const openPolyAddModal = () => {
   polyAddModalVisible.value = true;
 };
 
-const resetPolyAddModal = () => {
+const resetPolyAddModal = (): void => {
   polyAddFormRef.value?.resetFields();
 };
 
-const submitPolyAdd = async () => {
+const submitPolyAdd = async (): Promise<void> => {
   if (!polyAddFormRef.value) {
     return;
   }
 
   try {
     await polyAddFormRef.value.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
