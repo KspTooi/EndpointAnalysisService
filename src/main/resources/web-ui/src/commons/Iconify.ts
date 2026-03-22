@@ -8,7 +8,7 @@ import carbonIcons from "@iconify/json/json/carbon.json";
 import lineMdIcons from "@iconify/json/json/line-md.json";
 
 // 注册图标集到 Iconify
-export function setupIconify() {
+export function setupIconify(): void {
   addCollection(epIcons);
   addCollection(mdiIcons);
   addCollection(biIcons);
