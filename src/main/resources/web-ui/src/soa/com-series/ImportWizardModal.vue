@@ -83,8 +83,8 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="visible = false" :disabled="importing">取消导入</el-button>
-        <el-button type="primary" @click="onImport" :loading="importing" :disabled="!selectedFile" class="submit-btn">
+        <el-button :disabled="importing" @click="visible = false">取消导入</el-button>
+        <el-button class="submit-btn" type="primary" :loading="importing" :disabled="!selectedFile" @click="onImport">
           {{ importing ? "正在导入数据，请耐心等待..." : "确认无误,开始导入" }}
         </el-button>
       </div>
@@ -119,12 +119,12 @@ const uploadRef = ref();
 // 可选的附加参数(将会随文件一起上传)
 const params = ref<any>(null);
 
-const clearSelectedFile = () => {
+const clearSelectedFile = (): void => {
   selectedFile.value = null;
   fileList.value = [];
 };
 
-const tryReadFileHead = async (raw: File) => {
+const tryReadFileHead = async (raw: File): Promise<boolean> => {
   if (!raw) {
     return false;
   }
@@ -142,7 +142,7 @@ const tryReadFileHead = async (raw: File) => {
  * 打开导入向导
  * @param _params 可选的附加参数(将会随文件一起上传)
  */
-const openModal = (_params?: any) => {
+const openModal = (_params?: any): void => {
   visible.value = true;
   selectedFile.value = null;
   fileList.value = [];
@@ -150,7 +150,7 @@ const openModal = (_params?: any) => {
   params.value = _params;
 };
 
-const onDownload = async () => {
+const onDownload = async (): Promise<void> => {
   if (!props.templateCode) {
     ElMessage.warning("未配置模板编码");
     return;
@@ -163,7 +163,7 @@ const onDownload = async () => {
   }
 };
 
-const onFileChange = (file: any) => {
+const onFileChange = (file: any): void => {
   if (!file || !file.raw) {
     clearSelectedFile();
     ElMessage.warning("文件已失效，请重新选择");
@@ -173,17 +173,17 @@ const onFileChange = (file: any) => {
   fileList.value = [file];
 };
 
-const onFileRemove = () => {
+const onFileRemove = (): void => {
   clearSelectedFile();
 };
 
-const onExceed = (files: any) => {
-  uploadRef.value!.clearFiles();
+const onExceed = (files: any): void => {
+  uploadRef.value?.clearFiles();
   const file = files[0];
-  uploadRef.value!.handleStart(file);
+  uploadRef.value?.handleStart(file);
 };
 
-const onImport = async () => {
+const onImport = async (): Promise<void> => {
   const raw = selectedFile.value?.raw as File | undefined;
 
   if (!raw) {

@@ -33,11 +33,11 @@ const router = useRouter();
 
 const requestedPath = computed(() => route.path);
 
-const goBack = () => {
+const goBack = (): void => {
   router.back();
 };
 
-const goHome = () => {
+const goHome = (): void => {
   router.push("/index");
 };
 </script>
