@@ -187,7 +187,7 @@ export default {
       //使用tabStore添加新标签
       openTab({
         id: item.id,
-        icon: null,
+        icon: item.menuIcon,
         title: item.name,
         path: item.menuPath,
       });

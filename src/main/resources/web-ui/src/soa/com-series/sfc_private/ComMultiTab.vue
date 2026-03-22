@@ -14,7 +14,7 @@
           @contextmenu.prevent="openContextMenu($event, tab)"
         >
           <el-icon v-show="tab.icon">
-            <component :is="resolveIcon(tab.icon ?? '')" />
+            <component :is="resolveIcon(tab.icon)" />
           </el-icon>
           <span class="tab-title">{{ tab.title }}</span>
           <el-icon v-if="tab.closable !== false && tabs.length > 1" class="close-icon" @click.stop="onTabClose(tab.id)">
