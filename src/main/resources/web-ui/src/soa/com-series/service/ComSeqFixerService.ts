@@ -25,7 +25,7 @@ export default {
     const popoverVisible = ref(false);
     const detailData = ref<any>(null);
 
-    const onBeforeShow = async () => {
+    const onBeforeShow = async (): Promise<void> => {
       loading.value = true;
       try {
         const res = await getDetailApi(id);
@@ -42,7 +42,7 @@ export default {
       }
     };
 
-    const onConfirm = async () => {
+    const onConfirm = async (): Promise<void> => {
       loading.value = true;
       try {
         const dto: any = { ...detailData.value };
@@ -61,7 +61,7 @@ export default {
       }
     };
 
-    const onCancel = () => {
+    const onCancel = (): void => {
       popoverVisible.value = false;
     };
 
