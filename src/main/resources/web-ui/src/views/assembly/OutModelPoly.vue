@@ -27,7 +27,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="polyListData" v-loading="polyListLoading" row-key="id" stripe border height="100%">
+      <el-table v-loading="polyListLoading" :data="polyListData" row-key="id" stripe border height="100%">
         <!-- 序号 -->
         <el-table-column prop="seq" label="序号" min-width="70" align="center">
           <template #default="scope">
@@ -152,7 +152,8 @@
                   color: scope.row.policyCrudJson?.includes(key) ? POLICY_CRUD_COLOR_MAP[key] : '#c0c4cc',
                   fontWeight: 500,
                 }"
-              >{{ POLICY_CRUD_LABEL_MAP[key] }}</span>
+                >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
+              >
             </div>
           </template>
         </el-table-column>

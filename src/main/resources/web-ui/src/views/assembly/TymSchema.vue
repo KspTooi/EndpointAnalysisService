@@ -28,7 +28,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column label="序号" min-width="60" align="center">
           <template #default="scope">
             {{ (listForm.pageNum - 1) * listForm.pageSize + scope.$index + 1 }}
@@ -180,7 +180,7 @@ const schemaFieldRef = ref<InstanceType<typeof TymSchemaField>>();
  * 打开方案字段管理模态框
  * @param row 行数据
  */
-const openSchemaFieldModal = (row: GetTymSchemaListVo) => {
+const openSchemaFieldModal = (row: GetTymSchemaListVo): void => {
   schemaFieldRef.value?.openModal(row);
 };
 </script>

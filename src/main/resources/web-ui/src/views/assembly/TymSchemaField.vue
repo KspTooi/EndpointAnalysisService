@@ -7,7 +7,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable style="height: 500px">
-      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column prop="source" label="匹配源类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="匹配目标类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" min-width="65" show-overflow-tooltip>
@@ -127,7 +127,8 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, removeList } = TymSchemaFieldService.useTymSchemaFieldList(typeSchemaId);
+const { listForm, listData, listTotal, listLoading, loadList, removeList } =
+  TymSchemaFieldService.useTymSchemaFieldList(typeSchemaId);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

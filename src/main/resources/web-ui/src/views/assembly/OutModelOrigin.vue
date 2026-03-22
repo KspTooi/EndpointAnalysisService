@@ -25,7 +25,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
         <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
@@ -56,7 +56,7 @@ const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRou
 
 const schemaInfo = getCdrcQuery() as GetOutSchemaListVo;
 
-const { listData, listTotal, listLoading, loadList } = OutModelOriginService.useOutModelOriginList(schemaInfo, cdrcReturn);
+const { listData, listLoading } = OutModelOriginService.useOutModelOriginList(schemaInfo, cdrcReturn);
 </script>
 
 <style scoped>
