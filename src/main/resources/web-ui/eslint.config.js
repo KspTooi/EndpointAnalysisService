@@ -52,17 +52,12 @@ export default defineConfigWithVueTs(
     //ignores: ["**/legacy/**/*.ts"],
 
     rules: {
-      //Vue 组件的 HTML 闭合标签需要换行，这没有必要限制
+      //关闭Vue自带的一些规则(因为这与prettier的格式化冲突)
       "vue/html-closing-bracket-newline": "off",
-
-      //允许使用单行标签内容换行，这没有必要限制
       "vue/singleline-html-element-content-newline": "off",
-
-      //允许使用单行属性，这没有必要限制
       "vue/max-attributes-per-line": "off",
-
-      //允许使用自闭合标签，这没有必要限制
       "vue/html-self-closing": "off",
+      "vue/html-indent": "off",
 
       //允许使用 console 因为 console 在开发时非常有用，可通过工具在编译时统一删除控制台打印日志。
       "no-console": "off",
