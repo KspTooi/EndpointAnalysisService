@@ -8,47 +8,24 @@
     append-to-body
     class="change-password-dialog"
   >
-    <el-form
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-position="top"
-      class="compact-form"
-    >
+    <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="compact-form">
       <el-form-item label="旧密码" prop="oldPassword">
-        <el-input
-          v-model="form.oldPassword"
-          type="password"
-          placeholder="请输入原有的登录密码"
-          show-password
-        />
+        <el-input v-model="form.oldPassword" type="password" placeholder="请输入原有的登录密码" show-password />
       </el-form-item>
 
       <el-form-item label="新密码" prop="newPassword">
-        <el-input
-          v-model="form.newPassword"
-          type="password"
-          placeholder="请输入新的登录密码"
-          show-password
-        />
+        <el-input v-model="form.newPassword" type="password" placeholder="请输入新的登录密码" show-password />
       </el-form-item>
 
       <el-form-item label="确认新密码" prop="confirmPassword">
-        <el-input
-          v-model="form.confirmPassword"
-          type="password"
-          placeholder="请再次输入新密码"
-          show-password
-        />
+        <el-input v-model="form.confirmPassword" type="password" placeholder="请再次输入新密码" show-password />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="onSubmit" :loading="loading">
-          确认修改
-        </el-button>
+        <el-button type="primary" @click="onSubmit" :loading="loading"> 确认修改 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -70,7 +47,7 @@ const form = reactive({
   confirmPassword: "",
 });
 
-const validateConfirmPassword = (rule: any, value: any, callback: any) => {
+const validateConfirmPassword = (rule: any, value: any, callback: any): void => {
   if (value === "") {
     callback(new Error("请再次输入新密码"));
     return;
@@ -91,7 +68,7 @@ const rules = reactive<FormRules>({
   confirmPassword: [{ validator: validateConfirmPassword, trigger: "blur" }],
 });
 
-const openModal = () => {
+const openModal = (): void => {
   visible.value = true;
   loading.value = false;
   form.oldPassword = "";
@@ -102,7 +79,7 @@ const openModal = () => {
   }
 };
 
-const onSubmit = async () => {
+const onSubmit = async (): Promise<void> => {
   if (!formRef.value) {
     return;
   }
