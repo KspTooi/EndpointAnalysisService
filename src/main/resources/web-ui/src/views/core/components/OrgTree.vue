@@ -11,7 +11,7 @@
       />
     </div>
 
-    <div class="tree-wrapper">
+    <el-scrollbar class="tree-wrapper">
       <div v-if="showHeader && !multiple" class="all-org-node" :class="{ 'is-active': isAllSelected }" @click="onSelectAll">
         <el-icon class="node-icon"><OfficeBuildingIcon /></el-icon>
         <span class="node-label">全部公司</span>
@@ -39,7 +39,7 @@
           </span>
         </template>
       </el-tree>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -180,7 +180,7 @@ defineExpose({
 
 .tree-wrapper {
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
 }
 
 .custom-tree {

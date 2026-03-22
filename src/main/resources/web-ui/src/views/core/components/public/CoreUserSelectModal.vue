@@ -12,7 +12,7 @@
     <div v-loading="listLoading" class="modal-body">
       <splitpanes class="custom-theme">
         <pane size="20" min-size="10" max-size="40">
-          <div class="mt-2 px-1">
+          <div class="pt-2 px-1" style="height: 100%; box-sizing: border-box;">
             <OrgTree :show-header="true" @on-select="onSelectOrg" />
           </div>
         </pane>
