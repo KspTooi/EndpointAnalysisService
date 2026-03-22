@@ -11,7 +11,7 @@ const containerRef = ref<HTMLElement | null>(null);
 // 计算图片源地址
 const imgSrc = computed(() => {
   const sign = route.query.sign as string;
-  if (!sign) return "";
+  if (!sign) {return "";}
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
@@ -32,7 +32,7 @@ const { scale, showIndicator, onWheel, resetScale } = DriveRendererService.useRe
  * 将图片移动到容器中心
  */
 const moveToCenter = () => {
-  if (!containerRef.value || !imgRef.value) return;
+  if (!containerRef.value || !imgRef.value) {return;}
 
   const containerRect = containerRef.value.getBoundingClientRect();
   const imgRect = imgRef.value.getBoundingClientRect();
@@ -79,8 +79,8 @@ const onReset = () => {
 </script>
 
 <template>
-  <div class="preview-container" @wheel="onWheel" ref="containerRef">
-    <div class="image-wrapper" v-if="imgSrc">
+  <div ref="containerRef" class="preview-container" @wheel="onWheel">
+    <div v-if="imgSrc" class="image-wrapper">
       <img
         ref="imgRef"
         :src="imgSrc"
@@ -103,7 +103,7 @@ const onReset = () => {
     <div v-show="showIndicator" class="zoom-indicator">{{ Math.round(scale * 100) }}%</div>
 
     <div class="control-bar">
-      <div class="control-btn" @click="onReset" title="复位">
+      <div class="control-btn" title="复位" @click="onReset">
         <el-icon><RefreshLeft /></el-icon>
       </div>
     </div>

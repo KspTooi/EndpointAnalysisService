@@ -152,8 +152,7 @@
                   color: scope.row.policyCrudJson?.includes(key) ? POLICY_CRUD_COLOR_MAP[key] : '#c0c4cc',
                   fontWeight: 500,
                 }"
-                >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
-              >
+              >{{ POLICY_CRUD_LABEL_MAP[key] }}</span>
             </div>
           </template>
         </el-table-column>
@@ -369,8 +368,8 @@ const isEditingCell = (rowId: string, field: string) => editingCellKey.value ===
 
 const submitCell = async (row: GetOutModelPolyListVo, field: string) => {
   const success = await submitRow(row);
-  if (!success) return;
-  if (!isEditingCell(row.id, field)) return;
+  if (!success) {return;}
+  if (!isEditingCell(row.id, field)) {return;}
   clearEditingCell();
   if (field === "seq") {
     await loadPolyList();
@@ -379,12 +378,12 @@ const submitCell = async (row: GetOutModelPolyListVo, field: string) => {
 
 const submitField = async (row: GetOutModelPolyListVo, field: string, value: any) => {
   const success = await commitField(row, field, value);
-  if (!success) return;
+  if (!success) {return;}
   clearEditingCell();
 };
 
 const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean) => {
-  if (visible) return;
+  if (visible) {return;}
   await submitCell(row, "policyCrudJson");
 };
 
@@ -455,7 +454,7 @@ const resetPolyAddModal = () => {
 };
 
 const submitPolyAdd = async () => {
-  if (!polyAddFormRef.value) return;
+  if (!polyAddFormRef.value) {return;}
 
   try {
     await polyAddFormRef.value.validate();

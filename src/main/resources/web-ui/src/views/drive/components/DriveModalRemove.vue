@@ -5,7 +5,7 @@
         <!-- 标题栏 -->
         <div class="dialog-header">
           <span class="dialog-title">删除确认</span>
-          <button class="dialog-close" @click="onCancel" :disabled="loading">
+          <button class="dialog-close" :disabled="loading" @click="onCancel">
             <el-icon><Close /></el-icon>
           </button>
         </div>
@@ -51,8 +51,8 @@
 
         <!-- 按钮区域 -->
         <div class="dialog-footer">
-          <el-button @click="onCancel" :disabled="loading">取消</el-button>
-          <el-button type="danger" @click="onConfirm" :loading="loading" :disabled="loading">确定删除</el-button>
+          <el-button :disabled="loading" @click="onCancel">取消</el-button>
+          <el-button type="danger" :loading="loading" :disabled="loading" @click="onConfirm">确定删除</el-button>
         </div>
       </div>
     </div>

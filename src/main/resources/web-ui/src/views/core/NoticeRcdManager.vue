@@ -24,8 +24,8 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList()" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList()">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -35,9 +35,9 @@
     <template #actions>
       <el-button
         type="danger"
-        @click="removeBatch(listSelected.map((i) => i.id))"
         :disabled="listSelected.length === 0"
         :loading="listLoading"
+        @click="removeBatch(listSelected.map((i) => i.id))"
       >
         删除选中消息
       </el-button>
@@ -45,9 +45,9 @@
 
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         height="100%"
         @selection-change="(val: GetUserNoticeRcdListVo[]) => (listSelected = val)"
@@ -83,8 +83,8 @@
         <el-table-column prop="createTime" label="接收时间" width="180" />
         <el-table-column label="操作" fixed="right" width="150" align="center">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal(scope.row.id)" :icon="ViewIcon"> 查看 </el-button>
-            <el-button link type="danger" size="small" @click="remove(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal(scope.row.id)"> 查看 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="remove(scope.row.id)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -97,6 +97,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -109,13 +110,12 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
     <template #modal>
       <!-- 消息详情模态框 -->
-      <el-dialog v-model="modalVisible" title="消息详情" width="600px" @close="closeModal" :close-on-click-modal="false">
+      <el-dialog v-model="modalVisible" title="消息详情" width="600px" :close-on-click-modal="false" @close="closeModal">
         <div v-loading="modalLoading" class="min-h-[200px] select-text">
           <template v-if="detailsData">
             <!-- 标题和标签 -->

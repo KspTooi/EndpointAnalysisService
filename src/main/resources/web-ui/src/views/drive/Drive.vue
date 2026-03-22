@@ -1,5 +1,5 @@
 <template>
-  <div class="no-active-company" v-if="noSpaceAvailable" style="width: 100%">
+  <div v-if="noSpaceAvailable" class="no-active-company" style="width: 100%">
     <el-empty>
       <template #description>
         <div class="empty-description">
@@ -11,7 +11,7 @@
     </el-empty>
   </div>
 
-  <div class="list-container no-outline" ref="containerRef" v-if="!noSpaceAvailable">
+  <div v-if="!noSpaceAvailable" ref="containerRef" class="list-container no-outline">
     <!-- 控制面板 -->
     <DriveControlPanel
       :entry-count="entryTotal"
@@ -24,16 +24,16 @@
     <!-- {{ isFocused }} -->
 
     <!-- 文件选择器 -->
-    <DriveFileSelector ref="fileSelectorRef" @on-file-selected="onFileSelected" :max-select="1000">
+    <DriveFileSelector ref="fileSelectorRef" :max-select="1000" @on-file-selected="onFileSelected">
       <!-- 条目列表 -->
       <DriveEntryGrid
+        ref="entryGridRef"
         :keyword="entryKeyword"
         @on-directory-change="onGridDirectoryChange"
         @on-entries-loaded="onGridLoad"
         @on-entry-dblclick="enterOrOpenFile"
         @on-entry-drag="dragMove"
         @on-entry-contextmenu="onEntryContextmenu"
-        ref="entryGridRef"
       />
     </DriveFileSelector>
 

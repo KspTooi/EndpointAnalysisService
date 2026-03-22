@@ -95,9 +95,9 @@
                 <el-descriptions-item label="系统负载 (1m)">{{ latestStatus?.load1 ?? "N/A" }}</el-descriptions-item>
                 <el-descriptions-item label="物理内存总量">{{ formatBytes(latestStatus?.memoryTotal) }}</el-descriptions-item>
                 <el-descriptions-item label="交换区总量">{{ formatBytes(latestStatus?.swapTotal) }}</el-descriptions-item>
-                <el-descriptions-item label="交换区使用率"
-                  >{{ latestStatus?.swapUsage?.toFixed(1) ?? 0 }}%</el-descriptions-item
-                >
+                <el-descriptions-item label="交换区使用率">
+                  {{ latestStatus?.swapUsage?.toFixed(1) ?? 0 }}%
+                </el-descriptions-item>
               </el-descriptions>
             </el-card>
           </div>
@@ -131,7 +131,7 @@
             </el-card>
 
             <!-- Java 虚拟机信息 (从原 Tab 3 合并) -->
-            <el-card v-loading="sysLoading" shadow="never" class="system-info-card" v-if="sysData">
+            <el-card v-if="sysData" v-loading="sysLoading" shadow="never" class="system-info-card">
               <template #header>
                 <div class="card-header">
                   <span class="title-with-icon">
@@ -153,7 +153,7 @@
               </el-descriptions>
             </el-card>
 
-            <el-card v-loading="sysLoading" shadow="never" class="system-info-card" v-if="sysData">
+            <el-card v-if="sysData" v-loading="sysLoading" shadow="never" class="system-info-card">
               <template #header>
                 <div class="card-header">
                   <span class="title-with-icon">
@@ -187,7 +187,7 @@
               </el-table>
             </el-card>
 
-            <el-card v-loading="sysLoading" shadow="never" class="system-info-card" v-if="sysData">
+            <el-card v-if="sysData" v-loading="sysLoading" shadow="never" class="system-info-card">
               <template #header>
                 <div class="card-header">
                   <span class="title-with-icon">
@@ -253,7 +253,7 @@ const {
 
 // GetRtStatusVo 的 memoryTotal/swapTotal 单位为 MB，直接套用 formatBytes 前需换算为 bytes
 const formatBytes = (mb: number | undefined | null): string => {
-  if (mb == null) return "0 B";
+  if (mb == null) {return "0 B";}
   return formatSysBytes(mb * 1024 * 1024);
 };
 </script>

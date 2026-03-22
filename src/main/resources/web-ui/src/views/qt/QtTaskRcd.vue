@@ -20,8 +20,8 @@
           </el-form-item>
         </div>
         <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-          <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+          <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+          <el-button :disabled="listLoading" @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
     </StdListAreaQuery>
@@ -33,7 +33,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="40" />
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="taskName" label="任务名称" min-width="150" show-overflow-tooltip />
@@ -52,8 +52,8 @@
         <el-table-column prop="costTime" label="耗时(MS)" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="150">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 查看 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal(scope.row)"> 查看 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,6 +65,7 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listTotal"
+          background
           @size-change="
             (val: number) => {
               listForm.pageSize = val;
@@ -77,7 +78,6 @@
               loadList();
             }
           "
-          background
         />
       </template>
     </StdListAreaTable>
@@ -90,7 +90,7 @@
       :close-on-click-modal="false"
       @close="resetModal()"
     >
-      <el-descriptions v-if="modalVisible" :column="2" border v-loading="modalLoading">
+      <el-descriptions v-if="modalVisible" v-loading="modalLoading" :column="2" border>
         <el-descriptions-item label="任务名称" :span="2">{{ modalForm.taskName }}</el-descriptions-item>
         <el-descriptions-item label="任务分组" :span="2">{{ modalForm.groupName }}</el-descriptions-item>
         <el-descriptions-item label="调用目标" :span="2">{{ modalForm.target }}</el-descriptions-item>

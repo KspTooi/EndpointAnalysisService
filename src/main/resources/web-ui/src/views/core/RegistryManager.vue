@@ -22,7 +22,7 @@
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-dropdown split-button type="primary" @click="onSearch" :disabled="listLoading || !currentKeyPath">
+                <el-dropdown split-button type="primary" :disabled="listLoading || !currentKeyPath" @click="onSearch">
                   查询
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -30,7 +30,7 @@
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-                <el-button @click="resetList(currentKeyPath)" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
+                <el-button :disabled="listLoading" style="margin-left: 12px" @click="resetList(currentKeyPath)">重置</el-button>
               </el-form-item>
             </el-form>
           </StdListAreaQuery>
@@ -39,23 +39,24 @@
             <el-button type="success" :disabled="!currentKeyPath" @click="openModal('add', null, currentNodeId)">
               新增条目
             </el-button>
-            <el-button type="danger" :disabled="!currentKeyPath || listSelected.length === 0" @click="removeListBatch"
-              >删除选中项</el-button
-            >
+            <el-button type="danger" :disabled="!currentKeyPath || listSelected.length === 0" @click="removeListBatch">
+              删除选中项
+            </el-button>
             <el-button
               type="primary"
               :disabled="!currentKeyPath"
-              @click="importWizardRef?.openModal({ keyPath: currentKeyPath })"
               :icon="UploadIcon"
-              >导入条目</el-button
+              @click="importWizardRef?.openModal({ keyPath: currentKeyPath })"
             >
+              导入条目
+            </el-button>
           </StdListAreaAction>
 
           <StdListAreaTable>
             <el-table
+              v-loading="listLoading"
               :data="listData"
               stripe
-              v-loading="listLoading"
               border
               height="100%"
               @selection-change="onSelectionChange"
@@ -66,10 +67,10 @@
               <el-table-column prop="label" label="标签" min-width="150" show-overflow-tooltip />
               <el-table-column label="数据类型" width="100">
                 <template #default="scope">
-                  <el-tag size="small" v-if="scope.row.nvalueKind === 0">字符串</el-tag>
-                  <el-tag size="small" v-if="scope.row.nvalueKind === 1" type="success">整数</el-tag>
-                  <el-tag size="small" v-if="scope.row.nvalueKind === 2" type="warning">浮点</el-tag>
-                  <el-tag size="small" v-if="scope.row.nvalueKind === 3" type="info">日期</el-tag>
+                  <el-tag v-if="scope.row.nvalueKind === 0" size="small">字符串</el-tag>
+                  <el-tag v-if="scope.row.nvalueKind === 1" size="small" type="success">整数</el-tag>
+                  <el-tag v-if="scope.row.nvalueKind === 2" size="small" type="warning">浮点</el-tag>
+                  <el-tag v-if="scope.row.nvalueKind === 3" size="small" type="info">日期</el-tag>
                 </template>
               </el-table-column>
               <el-table-column prop="nvalue" label="数据值" min-width="200" show-overflow-tooltip />
@@ -84,10 +85,10 @@
               <el-table-column prop="createTime" label="创建时间" min-width="170" />
               <el-table-column label="操作" fixed="right" width="140">
                 <template #default="scope">
-                  <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+                  <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
                     编辑
                   </el-button>
-                  <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon">
+                  <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)">
                     删除
                   </el-button>
                 </template>
@@ -101,6 +102,7 @@
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="listTotal"
+                background
                 @size-change="
                   (val: number) => {
                     listForm.pageSize = val;
@@ -113,7 +115,6 @@
                     loadList(currentKeyPath);
                   }
                 "
-                background
               />
             </template>
           </StdListAreaTable>
@@ -125,7 +126,7 @@
     <ImportWizardModal
       ref="importWizardRef"
       url="/registry/importRegistry"
-      templateCode="core_registry"
+      template-code="core_registry"
       @on-success="loadList(currentKeyPath)"
       @on-close="loadList(currentKeyPath)"
     />
@@ -184,7 +185,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>

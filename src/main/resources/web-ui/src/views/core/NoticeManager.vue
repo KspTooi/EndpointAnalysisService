@@ -28,8 +28,8 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
               <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
@@ -61,7 +61,7 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="title" label="标题" min-width="128" show-overflow-tooltip />
         <el-table-column prop="kind" label="种类" width="100">
@@ -100,10 +100,10 @@
         <el-table-column prop="createTime" label="创建时间" width="200" />
         <el-table-column label="操作" fixed="right" width="150" align="center">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -116,6 +116,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -128,7 +129,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -203,13 +203,13 @@
 
           <el-form-item v-if="modalForm.targetKind === 1 && modalMode === 'add'" label="选择接收部门" prop="targetIds">
             <div class="flex items-center gap-4 text-cyan-600 ml-4">
-              <el-button type="primary" @click="deptSelectVisible = true" size="small">选择接收部门</el-button>
+              <el-button type="primary" size="small" @click="deptSelectVisible = true">选择接收部门</el-button>
               <span>已选择 {{ modalForm.targetIds.length }} 个部门</span>
             </div>
           </el-form-item>
           <el-form-item v-if="modalForm.targetKind === 2 && modalMode === 'add'" label="选择接收用户" prop="targetIds">
             <div class="flex items-center gap-4 text-cyan-600 ml-4">
-              <el-button type="primary" @click="userSelectVisible = true" size="small">选择接收用户</el-button>
+              <el-button type="primary" size="small" @click="userSelectVisible = true">选择接收用户</el-button>
               <span>已选择 {{ modalForm.targetIds.length }} 位用户</span>
             </div>
           </el-form-item>
@@ -217,7 +217,7 @@
         <template #footer>
           <div class="dialog-footer">
             <el-button @click="modalVisible = false">取消</el-button>
-            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            <el-button type="primary" :loading="modalLoading" @click="submitModal">
               {{ modalMode === "add" ? "创建" : "保存" }}
             </el-button>
           </div>

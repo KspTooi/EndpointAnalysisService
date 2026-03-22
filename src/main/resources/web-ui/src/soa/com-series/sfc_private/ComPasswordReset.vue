@@ -25,7 +25,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="onSubmit" :loading="loading"> 确认修改 </el-button>
+        <el-button type="primary" :loading="loading" @click="onSubmit"> 确认修改 </el-button>
       </div>
     </template>
   </el-dialog>

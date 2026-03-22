@@ -23,8 +23,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -33,16 +33,16 @@
 
     <template #actions>
       <el-button type="success" @click="openUploadDialog">上传模板</el-button>
-      <el-button type="danger" @click="removeTemplateBatch" :disabled="listSelected.length === 0" :loading="listLoading">
+      <el-button type="danger" :disabled="listSelected.length === 0" :loading="listLoading" @click="removeTemplateBatch">
         删除选中项
       </el-button>
     </template>
 
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         row-key="id"
         height="100%"
@@ -93,11 +93,11 @@
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openEditModal(scope.row)" :icon="EditIcon"> 编辑 </el-button>
-            <el-button link type="success" size="small" @click="downloadTemplate(scope.row.code)" :icon="DownloadIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openEditModal(scope.row)"> 编辑 </el-button>
+            <el-button link type="success" size="small" :icon="DownloadIcon" @click="downloadTemplate(scope.row.code)">
               下载
             </el-button>
-            <el-button link type="danger" size="small" @click="removeTemplate(scope.row.id)" :icon="DeleteIcon">
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeTemplate(scope.row.id)">
               删除
             </el-button>
           </template>
@@ -112,6 +112,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -124,7 +125,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -136,8 +136,8 @@
     width="600px"
     :close-on-click-modal="false"
     destroy-on-close
-    @close="resetUploadDialog"
     class="upload-dialog"
+    @close="resetUploadDialog"
   >
     <div class="upload-rules-container">
       <el-alert title="上传规则说明" type="info" :closable="false" show-icon>
@@ -188,8 +188,8 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="uploadDialogVisible = false" :disabled="uploadLoading">取消</el-button>
-        <el-button type="primary" @click="submitUpload()" :loading="uploadLoading" :disabled="fileList.length === 0">
+        <el-button :disabled="uploadLoading" @click="uploadDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="uploadLoading" :disabled="fileList.length === 0" @click="submitUpload()">
           上传 {{ fileList.length > 0 ? `(${fileList.length})` : "" }}
         </el-button>
       </div>
@@ -231,7 +231,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitEdit" :loading="editLoading"> 保存 </el-button>
+        <el-button type="primary" :loading="editLoading" @click="submitEdit"> 保存 </el-button>
       </div>
     </template>
   </el-dialog>

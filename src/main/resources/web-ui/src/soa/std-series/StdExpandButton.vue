@@ -1,5 +1,5 @@
 <template>
-  <el-button link type="primary" @click="toggle" :disabled="disabled">
+  <el-button link type="primary" :disabled="disabled" @click="toggle">
     {{ isExpanded ? "收起" : "展开" }}
     <el-icon class="el-icon--right">
       <arrow-up v-if="isExpanded" />

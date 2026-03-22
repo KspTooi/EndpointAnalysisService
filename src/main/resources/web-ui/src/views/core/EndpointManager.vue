@@ -39,8 +39,8 @@
           <el-col :span="5" :offset="1"> </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -53,7 +53,7 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
+      <el-table v-loading="listLoading" :data="listData" border row-key="id" default-expand-all height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="端点名称" prop="name" />
         <el-table-column label="端点路径" prop="path" show-overflow-tooltip />
@@ -75,11 +75,11 @@
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
-              :seqField="'seq'"
-              :getDetailApi="getEndpointDetail"
-              :editApi="editEndpointSeq"
-              :displayValue="scope.row.seq"
-              :onSuccess="loadList"
+              :seq-field="'seq'"
+              :get-detail-api="getEndpointDetail"
+              :edit-api="editEndpointSeq"
+              :display-value="scope.row.seq"
+              :on-success="loadList"
             />
           </template>
         </el-table-column>
@@ -93,19 +93,19 @@
         <el-table-column label="操作" fixed="right" width="230">
           <template #default="scope">
             <div class="inline-flex justify-end items-center gap-2 w-full">
-              <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
+              <el-button link type="success" size="small" :icon="PlusIcon" @click="openModal('add-item', scope.row)">
                 新增子端点
               </el-button>
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('edit', scope.row)">
                 编辑
               </el-button>
               <el-button
                 link
                 type="danger"
                 size="small"
-                @click="removeList(scope.row.id)"
                 :icon="DeleteIcon"
                 :disabled="scope.row.children && scope.row.children.length > 0"
+                @click="removeList(scope.row.id)"
               >
                 删除
               </el-button>
@@ -159,8 +159,7 @@
               content="支持AntPathMatcher路径匹配。? 匹配一个字符, * 匹配零个或多个字符, ** 匹配路径中的零个或多个目录。例如: /user/**"
               placement="top"
             >
-              <el-icon class="align-middle ml-1"><InfoFilled /></el-icon> </el-tooltip
-            >端点路径
+              <el-icon class="align-middle ml-1"><InfoFilled /></el-icon> </el-tooltip>端点路径
           </span>
         </template>
         <el-input v-model="modalForm.path" placeholder="请输入端点路径" clearable />
@@ -178,7 +177,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">关闭</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>
@@ -279,8 +278,7 @@
               <p class="m-0 font-bold text-orange-500">⚠️ 特殊情况处理：</p>
               <ul class="mt-2 mb-0 leading-relaxed">
                 <li>
-                  <strong>端点未配置：</strong
-                  >如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问
+                  <strong>端点未配置：</strong>如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问
                 </li>
                 <li><strong>权限为*：</strong>如果端点的权限字段设置为"*"，表示该接口无需权限验证，所有用户都可以访问</li>
                 <li><strong>多个匹配：</strong>如果多个端点都匹配请求路径，系统会选择最精确的匹配规则</li>

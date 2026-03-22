@@ -28,7 +28,7 @@
           </el-col>
           <el-col :span="4" :offset="2">
             <el-form-item>
-              <el-dropdown split-button type="primary" @click="loadList" :disabled="listLoading">
+              <el-dropdown split-button type="primary" :disabled="listLoading" @click="loadList">
                 查询
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -36,7 +36,7 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-              <el-button @click="resetList" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
+              <el-button :disabled="listLoading" style="margin-left: 12px" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -47,20 +47,20 @@
       <el-button type="success" @click="openModal('add', null)">新增站点</el-button>
       <el-button
         type="danger"
-        @click="() => removeListBatch(listSelected)"
         :disabled="listSelected.length === 0"
         :loading="listLoading"
+        @click="() => removeListBatch(listSelected)"
       >
         删除选中项
       </el-button>
-      <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入站点</el-button>
+      <el-button type="primary" :icon="UploadIcon" @click="importWizardRef?.openModal()">导入站点</el-button>
     </template>
 
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         height="100%"
         @selection-change="(val: GetEpSiteListVo[]) => (listSelected = val)"
@@ -109,18 +109,18 @@
                 link
                 type="primary"
                 size="small"
-                @click="togglePasswordVisibility(scope.row.id)"
                 :icon="passwordVisibleMap[scope.row.id] ? HideIcon : ViewIcon"
+                @click="togglePasswordVisibility(scope.row.id)"
               />
               <div
+                v-if="passwordVisibleMap[scope.row.id]"
                 class="copyable-cell"
                 @click="copyToClipboard(scope.row.password, '密码')"
-                v-if="passwordVisibleMap[scope.row.id]"
               >
                 <el-icon class="copy-icon"><CopyIcon /></el-icon>
                 <span>{{ scope.row.password }}</span>
               </div>
-              <div class="copyable-cell" @click="copyToClipboard(scope.row.password, '密码')" v-else>
+              <div v-else class="copyable-cell" @click="copyToClipboard(scope.row.password, '密码')">
                 <el-icon class="copy-icon"><CopyIcon /></el-icon>
                 <span>••••••••</span>
               </div>
@@ -132,22 +132,22 @@
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
-              :seqField="'seq'"
-              :getDetailApi="getEpSiteDetail"
-              :editApi="editEpSiteSeq"
-              :displayValue="scope.row.seq"
-              :onSuccess="loadList"
+              :seq-field="'seq'"
+              :get-detail-api="getEpSiteDetail"
+              :edit-api="editEpSiteSeq"
+              :display-value="scope.row.seq"
+              :on-success="loadList"
             />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="copySiteInfo(scope.row)" :icon="CopyIcon"> 复制 </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="CopyIcon" @click="copySiteInfo(scope.row)"> 复制 </el-button>
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row.id)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -160,6 +160,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -172,7 +173,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -232,7 +232,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>
@@ -243,7 +243,7 @@
   <ImportWizardModal
     ref="importWizardRef"
     url="/epSite/importEpSite"
-    templateCode="ep_site"
+    template-code="ep_site"
     @on-success="loadList"
     @on-close="loadList"
   />

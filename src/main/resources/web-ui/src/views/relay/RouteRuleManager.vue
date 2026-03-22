@@ -23,8 +23,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -36,14 +36,16 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
+      <el-table v-loading="listLoading" :data="listData" border row-key="id" default-expand-all height="100%">
         <el-table-column label="路由规则名" prop="name" width="220" show-overflow-tooltip />
         <el-table-column label="目标服务器" prop="routeServerName" width="180" show-overflow-tooltip />
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">{{
-              scope.row.matchType === 0 ? "全部" : "IP地址"
-            }}</el-tag>
+            <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">
+              {{
+                scope.row.matchType === 0 ? "全部" : "IP地址"
+              }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="匹配键" prop="matchKey" width="100" show-overflow-tooltip>
@@ -68,16 +70,16 @@
         <el-table-column label="更新时间" prop="updateTime" width="200" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
             <el-button
               link
               type="danger"
               size="small"
-              @click="removeList(scope.row.id)"
               :icon="DeleteIcon"
               :disabled="scope.row.children && scope.row.children.length > 0"
+              @click="removeList(scope.row.id)"
             >
               删除
             </el-button>
@@ -93,6 +95,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -105,7 +108,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -138,15 +140,15 @@
               <el-option label="IP地址" :value="1" />
             </el-select>
           </el-form-item>
-          <el-form-item label="匹配键" prop="matchKey" v-if="modalForm.matchType == 2">
+          <el-form-item v-if="modalForm.matchType == 2" label="匹配键" prop="matchKey">
             <el-input v-model="modalForm.matchKey" placeholder="请输入匹配键" />
           </el-form-item>
-          <el-form-item label="匹配操作" prop="matchOperator" v-if="modalForm.matchType != 0">
+          <el-form-item v-if="modalForm.matchType != 0" label="匹配操作" prop="matchOperator">
             <el-select v-model="modalForm.matchOperator" placeholder="请选择匹配操作">
               <el-option label="等于" :value="0" />
             </el-select>
           </el-form-item>
-          <el-form-item label="匹配值" prop="matchValue" v-if="modalForm.matchType != 0">
+          <el-form-item v-if="modalForm.matchType != 0" label="匹配值" prop="matchValue">
             <el-input v-model="modalForm.matchValue" placeholder="请输入匹配值" />
           </el-form-item>
           <el-form-item label="目标服务器" prop="routeServerId">
@@ -163,7 +165,7 @@
         <template #footer>
           <div class="dialog-footer">
             <el-button @click="modalVisible = false">取消</el-button>
-            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            <el-button type="primary" :loading="modalLoading" @click="submitModal">
               {{ modalMode === "add" ? "创建" : "保存" }}
             </el-button>
           </div>

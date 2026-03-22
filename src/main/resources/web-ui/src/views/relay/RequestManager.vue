@@ -23,8 +23,8 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
               <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
@@ -89,7 +89,7 @@
       <div v-if="!listForm.relayServerId" class="empty-state">
         <el-empty description="请先选择中继服务器" />
       </div>
-      <el-table v-else :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table v-else v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
           <template #default="scope">
             <el-tooltip content="点击复制" placement="top">
@@ -170,16 +170,16 @@
 
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openViewModal(scope.row)">
               预览请求
             </el-button>
             <el-button
               link
               type="success"
               size="small"
-              @click="goToReplay(scope.row)"
               :icon="RightIcon"
               style="margin-left: 8px"
+              @click="goToReplay(scope.row)"
             >
               转到重放
             </el-button>
@@ -187,9 +187,9 @@
               link
               type="primary"
               size="small"
-              @click="saveRequest(scope.row)"
               :icon="SaveIcon"
               style="margin-left: 8px"
+              @click="saveRequest(scope.row)"
             >
               保存
             </el-button>
@@ -207,6 +207,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -219,7 +220,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -250,7 +250,7 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="saveDialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="confirmSaveRequest" :loading="saveSubmitLoading"> 保存 </el-button>
+            <el-button type="primary" :loading="saveSubmitLoading" @click="confirmSaveRequest"> 保存 </el-button>
           </span>
         </template>
       </el-dialog>

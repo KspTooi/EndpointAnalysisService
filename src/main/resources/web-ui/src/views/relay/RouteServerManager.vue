@@ -20,8 +20,8 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
               <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
@@ -49,15 +49,15 @@
 
     <template #actions>
       <el-button type="success" @click="openModal('add', null)">创建服务器</el-button>
-      <el-button type="danger" @click="removeListBatch" :disabled="listSelected.length === 0" :loading="listLoading">
+      <el-button type="danger" :disabled="listSelected.length === 0" :loading="listLoading" @click="removeListBatch">
         删除选中项
       </el-button>
     </template>
 
     <template #table>
       <el-table
-        :data="listData"
         v-loading="listLoading"
+        :data="listData"
         border
         row-key="id"
         default-expand-all
@@ -71,24 +71,26 @@
         <el-table-column label="备注" prop="remark" show-overflow-tooltip />
         <el-table-column label="服务器状态" prop="status" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{
-              scope.row.status === 1 ? "启用" : "禁用"
-            }}</el-tag>
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
+              {{
+                scope.row.status === 1 ? "启用" : "禁用"
+              }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="更新时间" prop="updateTime" width="180" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
             <el-button
               link
               type="danger"
               size="small"
-              @click="removeList(scope.row.id)"
               :icon="DeleteIcon"
               :disabled="scope.row.children && scope.row.children.length > 0"
+              @click="removeList(scope.row.id)"
             >
               删除
             </el-button>
@@ -104,6 +106,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -116,7 +119,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -162,7 +164,7 @@
         <template #footer>
           <div class="dialog-footer">
             <el-button @click="modalVisible = false">取消</el-button>
-            <el-button type="primary" @click="submitModal" :loading="modalLoading">
+            <el-button type="primary" :loading="modalLoading" @click="submitModal">
               {{ modalMode === "add" ? "创建" : "保存" }}
             </el-button>
           </div>

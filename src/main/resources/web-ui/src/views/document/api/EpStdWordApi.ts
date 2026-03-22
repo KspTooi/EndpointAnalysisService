@@ -63,7 +63,7 @@ export default {
    * 获取标准词详情
    */
   getEpStdWordDetails: async (dto: CommonIdDto): Promise<GetEpStdWordDetailsVo> => {
-    var result = await Http.postEntity<Result<GetEpStdWordDetailsVo>>("/epStdWord/getEpStdWordDetails", dto);
+    const result = await Http.postEntity<Result<GetEpStdWordDetailsVo>>("/epStdWord/getEpStdWordDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -74,7 +74,7 @@ export default {
    * 添加标准词
    */
   addEpStdWord: async (dto: AddEpStdWordDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epStdWord/addEpStdWord", dto);
+    const result = await Http.postEntity<Result<string>>("/epStdWord/addEpStdWord", dto);
     if (result.code == 0) {
       return result.message;
     }
@@ -85,7 +85,7 @@ export default {
    * 编辑标准词
    */
   editEpStdWord: async (dto: EditEpStdWordDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epStdWord/editEpStdWord", dto);
+    const result = await Http.postEntity<Result<string>>("/epStdWord/editEpStdWord", dto);
     if (result.code == 0) {
       return result.message;
     }
@@ -96,7 +96,7 @@ export default {
    * 删除标准词
    */
   removeEpStdWord: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epStdWord/removeEpStdWord", dto);
+    const result = await Http.postEntity<Result<string>>("/epStdWord/removeEpStdWord", dto);
     if (result.code == 0) {
       return result.message;
     }

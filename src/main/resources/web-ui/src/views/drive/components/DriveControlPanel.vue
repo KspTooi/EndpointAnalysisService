@@ -41,10 +41,10 @@
           v-model="keyword"
           placeholder="在团队云盘中搜索..."
           clearable
+          class="search-input"
           @clear="onSearch"
           @keyup.enter="onSearch"
           @input="onSearchInput"
-          class="search-input"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
@@ -66,9 +66,7 @@
             </template>
             <div class="drive-info-display">
               <el-icon><Coin /></el-icon>
-              <span class="drive-info-text"
-                >{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span
-              >
+              <span class="drive-info-text">{{ formatSize(driveInfo.usedCapacity) }} / {{ formatSize(driveInfo.totalCapacity) }}</span>
               <el-progress
                 :percentage="usagePercentage"
                 :stroke-width="4"
@@ -81,11 +79,9 @@
         </div>
 
         <div class="action-section">
-          <el-button type="success" @click="onViewUploadQueue" class="action-btn">
+          <el-button type="success" class="action-btn" @click="onViewUploadQueue">
             <el-icon><Upload /></el-icon>
-            <span
-              >查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span
-            >
+            <span>查看文件上传队列<span v-show="uploadCount > 0">({{ uploadCount }})</span></span>
           </el-button>
         </div>
       </div>
@@ -152,19 +148,19 @@ const onSpaceChange = (id: string) => {
 };
 
 const roleLabel = (role: number): string => {
-  if (role === 0) return "主管理员";
-  if (role === 1) return "行政管理员";
-  if (role === 2) return "编辑者";
-  if (role === 3) return "查看者";
-  if (role === -1) return "超级权限";
+  if (role === 0) {return "主管理员";}
+  if (role === 1) {return "行政管理员";}
+  if (role === 2) {return "编辑者";}
+  if (role === 3) {return "查看者";}
+  if (role === -1) {return "超级权限";}
   return "";
 };
 
 const roleClass = (role: number): string => {
-  if (role === 0) return "role-danger";
-  if (role === 1) return "role-primary";
-  if (role === 2) return "role-success";
-  if (role === -1) return "role-success";
+  if (role === 0) {return "role-danger";}
+  if (role === 1) {return "role-primary";}
+  if (role === 2) {return "role-success";}
+  if (role === -1) {return "role-success";}
   return "role-info";
 };
 

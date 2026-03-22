@@ -407,7 +407,7 @@ export default {
       //计算实际被拖拽的文件列表 (处理多选)
       let dragEntries: EntryPo[] = [];
 
-      let hasMultiDrag = selectedIds.value.size > 1 && selectedIds.value.has(draggedEntry.value.id);
+      const hasMultiDrag = selectedIds.value.size > 1 && selectedIds.value.has(draggedEntry.value.id);
 
       //如果拖拽的是选中集合里的某一项,则移动所有选中的项
       if (hasMultiDrag) {

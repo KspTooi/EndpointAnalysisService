@@ -43,8 +43,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -58,12 +58,12 @@
 
     <template #table>
       <el-table
-        :data="listData"
+        ref="listTableRef"
         v-loading="listLoading"
+        :data="listData"
         border
         row-key="id"
         default-expand-all
-        ref="listTableRef"
         height="100%"
       >
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
@@ -108,11 +108,11 @@
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
-              :seqField="'seq'"
-              :getDetailApi="getMenuDetail"
-              :editApi="editMenuSeq"
-              :displayValue="scope.row.seq"
-              :onSuccess="loadList"
+              :seq-field="'seq'"
+              :get-detail-api="getMenuDetail"
+              :edit-api="editMenuSeq"
+              :display-value="scope.row.seq"
+              :on-success="loadList"
             />
           </template>
         </el-table-column>
@@ -132,22 +132,22 @@
                 link
                 type="success"
                 size="small"
-                @click="openModal('add-item', scope.row)"
                 :icon="PlusIcon"
+                @click="openModal('add-item', scope.row)"
               >
                 新增子项
               </el-button>
 
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+              <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
                 编辑
               </el-button>
               <el-button
                 link
                 type="danger"
                 size="small"
-                @click="removeList(scope.row.id)"
                 :icon="DeleteIcon"
                 :disabled="scope.row.children && scope.row.children.length > 0"
+                @click="removeList(scope.row.id)"
               >
                 删除
               </el-button>
@@ -159,7 +159,7 @@
   </StdListLayout>
 
   <!-- 选择路由模态框 -->
-  <GenricRouteChooseModal v-model="modalForm.menuPath" v-model:searchKeyword="grcmQuery" ref="grcmRef" />
+  <GenricRouteChooseModal ref="grcmRef" v-model="modalForm.menuPath" v-model:search-keyword="grcmQuery" />
 
   <!-- 菜单编辑模态框 -->
   <el-dialog
@@ -202,26 +202,26 @@
       <el-form-item :label="modalFormLabel + '名称'" prop="name">
         <el-input v-model="modalForm.name" placeholder="请输入菜单名称" clearable />
       </el-form-item>
-      <el-form-item label="按钮ID" prop="menuBtnId" v-if="modalForm.menuKind == 2">
+      <el-form-item v-if="modalForm.menuKind == 2" label="按钮ID" prop="menuBtnId">
         <el-input v-model="modalForm.menuBtnId" placeholder="请输入按钮ID" clearable />
       </el-form-item>
-      <el-form-item :label="modalFormLabel + '路径'" prop="menuPath" v-if="modalForm.menuKind == 1">
+      <el-form-item v-if="modalForm.menuKind == 1" :label="modalFormLabel + '路径'" prop="menuPath">
         <el-input v-model="modalForm.menuPath" placeholder="请输入菜单路径" clearable>
           <template #append>
             <el-button @click="openGRCM">选择路由</el-button>
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="所需权限" prop="permission" v-if="modalForm.menuKind == 1 || modalForm.menuKind == 2">
+      <el-form-item v-if="modalForm.menuKind == 1 || modalForm.menuKind == 2" label="所需权限" prop="permission">
         <el-input v-model="modalForm.permission" placeholder="请输入所需权限" clearable />
       </el-form-item>
       <el-form-item :label="modalFormLabel + '描述'" prop="description">
         <el-input v-model="modalForm.description" placeholder="请输入菜单描述" clearable />
       </el-form-item>
-      <el-form-item :label="modalFormLabel + '图标'" prop="menuIcon" v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1">
+      <el-form-item v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1" :label="modalFormLabel + '图标'" prop="menuIcon">
         <StdIconPicker v-model="modalForm.menuIcon" />
       </el-form-item>
-      <el-form-item label="查询参数" prop="menuQueryParam" v-if="modalForm.menuKind == 1">
+      <el-form-item v-if="modalForm.menuKind == 1" label="查询参数" prop="menuQueryParam">
         <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
       </el-form-item>
       <el-form-item label="状态" prop="menuHidden">
@@ -237,7 +237,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">关闭</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>

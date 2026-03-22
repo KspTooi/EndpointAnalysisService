@@ -163,8 +163,9 @@
                     :disabled="!modalForm.tableName"
                     :icon="MagicStickIcon"
                     @click="modalForm.permCodePrefix = modalForm.tableName.toLowerCase().replace(/_/g, ':')"
-                    >推断</el-button
                   >
+                    推断
+                  </el-button>
                 </template>
               </el-input>
             </el-form-item>
@@ -267,8 +268,9 @@
                         modalForm.removeTablePrefix = parts.length > 1 ? parts[0] + '_' : '';
                       }
                     "
-                    >推断</el-button
                   >
+                    推断
+                  </el-button>
                 </template>
               </el-input>
             </el-form-item>

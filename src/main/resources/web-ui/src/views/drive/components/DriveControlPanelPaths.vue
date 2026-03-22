@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>();
 
 const onPathClick = (path: GetEntryListPathVo, index: number) => {
-  if (index === props.paths.length - 1) return;
+  if (index === props.paths.length - 1) {return;}
   emit("on-path-change", path);
 };
 </script>

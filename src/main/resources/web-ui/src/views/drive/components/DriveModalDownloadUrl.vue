@@ -31,7 +31,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="closeModal">关闭</el-button>
-        <el-button type="primary" @click="copyUrl" ref="copyBtnRef">
+        <el-button ref="copyBtnRef" type="primary" @click="copyUrl">
           <el-icon class="el-icon--left"><CopyDocument /></el-icon>
           一键复制
         </el-button>
@@ -78,7 +78,7 @@ const closeModal = () => {
  * 复制链接到剪贴板
  */
 const copyUrl = async () => {
-  if (!downloadUrl.value) return;
+  if (!downloadUrl.value) {return;}
 
   try {
     await navigator.clipboard.writeText(downloadUrl.value);

@@ -1,10 +1,10 @@
 <template>
-  <div ref="gridRef" class="list-grid" v-loading="listLoading" @contextmenu.prevent="onGridRightClick" @mousedown="onMouseDown">
+  <div ref="gridRef" v-loading="listLoading" class="list-grid" @contextmenu.prevent="onGridRightClick" @mousedown="onMouseDown">
     <!-- 上级目录 -->
     <DriveEntryItem
       v-if="hasParentDir"
       :type="1"
-      :currentDir="currentDir"
+      :current-dir="currentDir"
       @on-click="onEntryClick"
       @on-dblclick="enterDirectory"
       @on-contextmenu="onContextmenu"
@@ -15,9 +15,9 @@
     <DriveEntryItem
       v-for="item in listData"
       :key="item.id"
-      :entry="item"
-      :currentDir="currentDir"
       :ref="(el) => setEntryRef(item.id, el)"
+      :entry="item"
+      :current-dir="currentDir"
       :class="{ selected: selectedIds.has(item.id) }"
       @on-click="onEntryClick"
       @on-dblclick="onEntryDoubleClick"
@@ -27,7 +27,7 @@
       @on-drag-drop="onDrop"
     />
 
-    <el-empty description="此处没有任何物品" v-if="listTotal === 0" style="width: 100%; height: 100%; user-select: none" />
+    <el-empty v-if="listTotal === 0" description="此处没有任何物品" style="width: 100%; height: 100%; user-select: none" />
 
     <!-- 框选矩形 -->
     <div

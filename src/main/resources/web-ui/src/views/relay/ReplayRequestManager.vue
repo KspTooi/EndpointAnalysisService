@@ -17,8 +17,8 @@
           <el-col :span="5" :offset="1"></el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadOriginRequestList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadOriginRequestList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -26,7 +26,7 @@
     </template>
 
     <template #actions>
-      <el-button type="success" @click="executeReplay" :disabled="executeLoading">
+      <el-button type="success" :disabled="executeLoading" @click="executeReplay">
         {{ executeLoading ? "正在处理" : "执行重放" }}
       </el-button>
     </template>
@@ -41,7 +41,7 @@
       <div v-else class="request-area">
         <div class="section-title origin-title">原始请求ID: {{ listForm.originRequestId }}</div>
 
-        <el-table :data="originRequestList" v-loading="listLoading" border class="mb-4">
+        <el-table v-loading="listLoading" :data="originRequestList" border class="mb-4">
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -77,7 +77,7 @@
           <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="openOriginViewModal(scope.row)" :icon="ViewIcon">
+              <el-button link type="primary" size="small" :icon="ViewIcon" @click="openOriginViewModal(scope.row)">
                 预览请求
               </el-button>
             </template>
@@ -86,7 +86,7 @@
 
         <div class="section-title replay-title">重放请求列表</div>
 
-        <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
           <el-table-column prop="requestId" label="请求ID" min-width="150" show-overflow-tooltip>
             <template #default="scope">
               <el-tooltip content="点击复制" placement="top">
@@ -122,7 +122,7 @@
           <el-table-column prop="requestTime" label="请求时间" show-overflow-tooltip />
           <el-table-column label="操作" fixed="right" min-width="100">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="openViewModal(scope.row)" :icon="ViewIcon">
+              <el-button link type="primary" size="small" :icon="ViewIcon" @click="openViewModal(scope.row)">
                 预览请求
               </el-button>
             </template>
@@ -139,6 +139,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -151,7 +152,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -202,31 +202,31 @@ const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
 const executeLoading = ref(false);
 
 const methodColor = (method: string) => {
-  if (method === "DELETE") return "#E74C3C";
-  if (method === "GET") return "#3498DB";
-  if (method === "POST") return "#2ECC71";
-  if (method === "PUT") return "#F1C40F";
+  if (method === "DELETE") {return "#E74C3C";}
+  if (method === "GET") {return "#3498DB";}
+  if (method === "POST") {return "#2ECC71";}
+  if (method === "PUT") {return "#F1C40F";}
   return "#95A5A6";
 };
 
 const statusColor = (status: number) => {
-  if (status === 0) return "#2ECC71";
-  if (status === 1) return "#E74C3C";
-  if (status === 2) return "#F1C40F";
+  if (status === 0) {return "#2ECC71";}
+  if (status === 1) {return "#E74C3C";}
+  if (status === 2) {return "#F1C40F";}
   return "#95A5A6";
 };
 
 const statusText = (status: number) => {
-  if (status === 0) return "正常";
-  if (status === 1) return "HTTP失败";
-  if (status === 2) return "业务失败";
+  if (status === 0) {return "正常";}
+  if (status === 1) {return "HTTP失败";}
+  if (status === 2) {return "业务失败";}
   return "连接超时";
 };
 
 const httpCodeColor = (code: number) => {
-  if (code >= 200 && code < 300) return "#2ECC71";
-  if (code >= 300 && code < 400) return "#F1C40F";
-  if (code >= 400 && code < 500) return "#E74C3C";
+  if (code >= 200 && code < 300) {return "#2ECC71";}
+  if (code >= 300 && code < 400) {return "#F1C40F";}
+  if (code >= 400 && code < 500) {return "#E74C3C";}
   return "#95A5A6";
 };
 

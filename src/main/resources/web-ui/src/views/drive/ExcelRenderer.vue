@@ -1,16 +1,16 @@
 <template>
-  <div class="preview-container" v-loading="loading">
+  <div v-loading="loading" class="preview-container">
     <vue-office-excel v-if="isXlsx" :src="fileUrl" :options="excelOptions" @rendered="onRendered" @error="onError" />
 
     <div
-      @wheel.capture="onWheel"
       v-else-if="xlsHtml"
       class="xls-container"
-      v-html="xlsHtml"
       :style="{
         transform: `scale(${scale})`,
         transformOrigin: '0 0',
       }"
+      @wheel.capture="onWheel"
+      v-html="xlsHtml"
     ></div>
 
     <div v-else-if="!loading && !fileUrl" class="empty-tip">无法获取文件链接</div>
@@ -42,7 +42,7 @@ const isXlsx = computed(() => {
 
 const fileUrl = computed(() => {
   const sign = route.query.sign as string;
-  if (!sign) return "";
+  if (!sign) {return "";}
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
@@ -89,7 +89,7 @@ const excelOptions = {
 };
 
 const loadXlsFile = async () => {
-  if (!fileUrl.value) return;
+  if (!fileUrl.value) {return;}
 
   loading.value = true;
   try {

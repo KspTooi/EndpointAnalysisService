@@ -1,6 +1,6 @@
 <template>
   <!-- 正常维护中心 -->
-  <el-scrollbar class="maintain-scrollbar-wrapper w-full" v-show="!isInstallWizardMode">
+  <el-scrollbar v-show="!isInstallWizardMode" class="maintain-scrollbar-wrapper w-full">
     <div class="maintain-admin-portal">
       <header class="portal-header">
         <h1 class="portal-title">系统核心维护中心</h1>
@@ -48,7 +48,7 @@
       <p class="wizard-subtitle">检测到系统需要初始化或升级，向导将自动完成以下操作：</p>
 
       <div class="wizard-steps-preview">
-        <div class="step-item" v-for="(step, i) in wizardStepDescs" :key="i">
+        <div v-for="(step, i) in wizardStepDescs" :key="i" class="step-item">
           <el-icon class="step-icon" color="#009688"><CircleCheck /></el-icon>
           <span>{{ step }}</span>
         </div>
@@ -79,7 +79,7 @@
       <h1 class="wizard-title">安装向导已完成</h1>
 
       <div v-if="wizardResult" class="wizard-result-box">
-        <div class="wizard-result-item" v-for="(line, i) in wizardResult.changesContent" :key="i">
+        <div v-for="(line, i) in wizardResult.changesContent" :key="i" class="wizard-result-item">
           <el-icon color="#009688" style="flex-shrink: 0"><Right /></el-icon>
           <span>{{ line }}</span>
         </div>

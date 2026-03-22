@@ -21,7 +21,7 @@
           </el-form-item>
         </div>
         <el-form-item>
-          <el-dropdown split-button type="primary" @click="loadList" :disabled="listLoading">
+          <el-dropdown split-button type="primary" :disabled="listLoading" @click="loadList">
             查询
             <template #dropdown>
               <el-dropdown-menu>
@@ -29,7 +29,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button @click="resetList" :disabled="listLoading" style="margin-left: 12px">重置</el-button>
+          <el-button :disabled="listLoading" style="margin-left: 12px" @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
     </StdListAreaQuery>
@@ -38,17 +38,17 @@
     <StdListAreaAction>
       <el-button type="success" @click="openModal('add', null)">新增任务调度</el-button>
       <el-button type="danger" :disabled="listSelected.length === 0" @click="removeListBatch">删除选中项</el-button>
-      <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon">导入任务</el-button>
+      <el-button type="primary" :icon="UploadIcon" @click="importWizardRef?.openModal()">导入任务</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%" @selection-change="onSelectionChange">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%" @selection-change="onSelectionChange">
         <el-table-column type="selection" width="40" />
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="groupName" label="任务分组" min-width="120" show-overflow-tooltip>
           <template #default="scope">
-            <span class="text-gray-400 text-sm" v-if="!scope.row.groupName"> 未配置 </span>
+            <span v-if="!scope.row.groupName" class="text-gray-400 text-sm"> 未配置 </span>
             <span v-else>{{ scope.row.groupName }} </span>
           </template>
         </el-table-column>
@@ -100,14 +100,14 @@
               link
               type="primary"
               size="small"
-              @click="execOpenModal(scope.row)"
               icon="Refresh"
               :disabled="scope.row.status !== 0"
+              @click="execOpenModal(scope.row)"
             >
               运行
             </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" icon="Edit"> 编辑 </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" icon="Delete"> 删除 </el-button>
+            <el-button link type="primary" size="small" icon="Edit" @click="openModal('edit', scope.row)"> 编辑 </el-button>
+            <el-button link type="danger" size="small" icon="Delete" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -119,6 +119,7 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listTotal"
+          background
           @size-change="
             (val: number) => {
               listForm.pageSize = val;
@@ -131,20 +132,19 @@
               loadList();
             }
           "
-          background
         />
       </template>
     </StdListAreaTable>
 
     <!-- 立即执行任务模态框 -->
     <el-dialog
+      ref="execModalFormRef"
       v-model="execModalVisible"
       :title="`正在准备调度任务: ${execRowData?.name}`"
       width="600px"
       :close-on-click-modal="false"
-      @close="execModalVisible = false"
       :loading="execModalLoading"
-      ref="execModalFormRef"
+      @close="execModalVisible = false"
     >
       <div v-if="execRowData" class="mb-4 p-3 bg-gray-50 rounded border border-gray-100">
         <div class="flex items-center mb-2">
@@ -168,7 +168,7 @@
         <el-form-item label="一次性参数 (JSON)" prop="targetParam">
           <el-input
             v-model="execModalForm.targetParam"
-            placeholder='请输入 JSON 格式参数，例如: {"key": "value"}'
+            placeholder="请输入 JSON 格式参数，例如: {&quot;key&quot;: &quot;value&quot;}"
             clearable
             type="textarea"
             :rows="6"
@@ -178,7 +178,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="execModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="execSubmitModal" :loading="execModalLoading" icon="CaretRight">
+          <el-button type="primary" :loading="execModalLoading" icon="CaretRight" @click="execSubmitModal">
             立即执行
           </el-button>
         </div>
@@ -229,7 +229,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="请求方法" prop="reqMethod" v-if="modalForm.kind === 1">
+            <el-form-item v-if="modalForm.kind === 1" label="请求方法" prop="reqMethod">
               <el-select v-model="modalForm.reqMethod" placeholder="请选择请求方法" clearable style="width: 100%">
                 <el-option label="GET" value="GET" />
                 <el-option label="POST" value="POST" />
@@ -256,11 +256,11 @@
               <el-select
                 v-if="modalForm.kind === 0"
                 v-model="modalForm.target"
+                v-loading="localBeanListLoading"
                 placeholder="请选择本地任务Bean"
                 clearable
                 style="width: 100%"
                 filterable
-                v-loading="localBeanListLoading"
               >
                 <el-option v-for="item in localBeanListData" :key="item.name" :label="item.name" :value="item.name">
                   <span>{{ item.name }}</span>
@@ -328,8 +328,7 @@
                 <el-option label="全部执行(补跑全部)" :value="2">
                   <span>全部执行</span>
                   <span class="text-gray-400 text-sm ml-2 text-xs">
-                    <span class="text-red-500 font-bold">! </span>补跑全部;不建议使用</span
-                  >
+                    <span class="text-red-500 font-bold">! </span>补跑全部;不建议使用</span>
                 </el-option>
               </el-select>
             </el-form-item>
@@ -407,7 +406,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
@@ -415,13 +414,13 @@
     </el-dialog>
 
     <!-- Cron 计算器 -->
-    <CronCalculatorModal ref="cronCalculatorRef" @onConfirm="(cron) => (modalForm.cron = cron || '')" />
+    <CronCalculatorModal ref="cronCalculatorRef" @on-confirm="(cron) => (modalForm.cron = cron || '')" />
 
     <!-- 导入向导 -->
     <ImportWizardModal
       ref="importWizardRef"
       url="/qtTask/importQtTask"
-      templateCode="qt_task"
+      template-code="qt_task"
       @on-success="loadList"
       @on-close="loadList"
     />
@@ -516,7 +515,7 @@ const {
 // --- Cron 预览逻辑 ---
 const cronDescription = computed(() => {
   const cron = modalForm.cron;
-  if (!cron) return "未输入表达式";
+  if (!cron) {return "未输入表达式";}
   try {
     return cronstrue.toString(cron, { locale: "zh_CN" });
   } catch (e) {
@@ -526,7 +525,7 @@ const cronDescription = computed(() => {
 
 const nextRunTimes = computed(() => {
   const cron = modalForm.cron;
-  if (!cron) return [];
+  if (!cron) {return [];}
   try {
     const interval = CronExpressionParser.parse(cron, { tz: "Asia/Shanghai" });
     const times = [];

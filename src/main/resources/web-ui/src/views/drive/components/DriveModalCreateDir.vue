@@ -8,7 +8,7 @@
     @opened="onDialogOpened"
   >
     <div class="modal-content">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="文件夹名称" prop="name">
           <el-input
             ref="nameInputRef"
@@ -24,7 +24,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="closeModal">取消</el-button>
-        <el-button type="primary" @click="onSubmit" :loading="submitLoading">确定</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="onSubmit">确定</el-button>
       </div>
     </template>
   </el-dialog>

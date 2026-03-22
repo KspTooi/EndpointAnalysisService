@@ -166,9 +166,9 @@ const finalCron = computed(() => {
   // 频率模式逻辑
   if (StringUtils.equals(mainMode.value, "interval")) {
     const val = config.intervalValue;
-    if (StringUtils.equals(config.intervalUnit, "second")) return `0/${val} * * * * ?`;
-    if (StringUtils.equals(config.intervalUnit, "minute")) return `0 0/${val} * * * ?`;
-    if (StringUtils.equals(config.intervalUnit, "hour")) return `0 0 0/${val} * * ?`;
+    if (StringUtils.equals(config.intervalUnit, "second")) {return `0/${val} * * * * ?`;}
+    if (StringUtils.equals(config.intervalUnit, "minute")) {return `0 0/${val} * * * ?`;}
+    if (StringUtils.equals(config.intervalUnit, "hour")) {return `0 0 0/${val} * * ?`;}
   }
 
   // 定时模式逻辑
@@ -192,7 +192,7 @@ const finalCron = computed(() => {
 
 // Cron 描述
 const cronDescription = computed(() => {
-  if (!finalCron.value) return "无效的表达式";
+  if (!finalCron.value) {return "无效的表达式";}
   try {
     return cronstrue.toString(finalCron.value, { locale: "zh_CN" });
   } catch (e) {
@@ -220,22 +220,22 @@ const formatDateTime = (date: Date) => {
 };
 
 const normalizeToDate = (value: unknown) => {
-  if (value instanceof Date) return value;
+  if (value instanceof Date) {return value;}
   const maybe: any = value;
-  if (maybe?.toDate && typeof maybe.toDate === "function") return maybe.toDate();
-  if (maybe?.getTime && typeof maybe.getTime === "function") return new Date(maybe.getTime());
+  if (maybe?.toDate && typeof maybe.toDate === "function") {return maybe.toDate();}
+  if (maybe?.getTime && typeof maybe.getTime === "function") {return new Date(maybe.getTime());}
   return null;
 };
 
 // 最近执行时间
 const nextRunTimes = computed(() => {
-  if (!finalCron.value) return [];
+  if (!finalCron.value) {return [];}
   try {
     const interval = parseCron(finalCron.value);
     const times = [];
     for (let i = 0; i < 6; i++) {
       const nextDate = normalizeToDate(interval.next());
-      if (!nextDate) break;
+      if (!nextDate) {break;}
       times.push(formatDateTime(nextDate));
     }
     return times;
@@ -246,7 +246,7 @@ const nextRunTimes = computed(() => {
 
 const openModal = (cron?: string) => {
   visible.value = true;
-  if (!cron) return;
+  if (!cron) {return;}
 
   try {
     customCron.value = cron;

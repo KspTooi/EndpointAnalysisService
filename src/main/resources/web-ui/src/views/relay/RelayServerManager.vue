@@ -14,8 +14,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="8" :offset="4" style="display: flex; justify-content: flex-end">
-            <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-            <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+            <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+            <el-button :disabled="listLoading" @click="resetList">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -26,15 +26,15 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" default-expand-all height="100%">
+      <el-table v-loading="listLoading" :data="listData" border row-key="id" default-expand-all height="100%">
         <el-table-column label="通道名称" prop="name" />
         <el-table-column label="主机" prop="host" />
         <el-table-column label="桥接目标" prop="forwardUrl" show-overflow-tooltip>
           <template #default="scope">
             <span v-show="scope.row.forwardType === 0"> {{ scope.row.forwardUrl }} </span>
-            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)"
-              >已配置路由策略</el-button
-            >
+            <el-button v-show="scope.row.forwardType === 1" link type="primary" @click="showRouteStateModal(scope.row)">
+              已配置路由策略
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column label="自动运行" prop="autoStart" width="90" align="center">
@@ -50,26 +50,26 @@
             <span v-show="scope.row.status === 2" style="color: #67c23a"> 运行中 </span>
             <span v-show="scope.row.status === 3" style="color: #f56c6c"> 启动失败 </span>
             <el-button
+              v-show="scope.row.status === 1 || scope.row.status === 3"
               style="margin-left: 0"
               inline
               link
               type="primary"
               size="small"
-              v-show="scope.row.status === 1 || scope.row.status === 3"
-              @click="startRelayServer(scope.row)"
               :icon="CaretTopIcon"
+              @click="startRelayServer(scope.row)"
             >
               启动
             </el-button>
             <el-button
+              v-show="scope.row.status === 2"
               style="margin-left: 0"
               inline
               link
               type="primary"
               size="small"
-              v-show="scope.row.status === 2"
-              @click="stopRelayServer(scope.row)"
               :icon="CaretBottomIcon"
+              @click="stopRelayServer(scope.row)"
             >
               停止
             </el-button>
@@ -78,10 +78,10 @@
         <el-table-column label="创建时间" prop="createTime" />
         <el-table-column label="操作" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -94,6 +94,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -106,14 +107,13 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
 
   <!-- 路由状态模态框 -->
   <el-dialog v-model="routeStateModalVisible" title="路由状态" width="700px" :close-on-click-modal="false">
-    <el-table :data="routeStateData" v-loading="routeStateLoading" border>
+    <el-table v-loading="routeStateLoading" :data="routeStateData" border>
       <el-table-column label="目标主机" prop="targetHost" />
       <el-table-column label="目标端口" prop="targetPort" width="100" />
       <el-table-column label="请求数量" prop="hitCount" width="120" />
@@ -132,7 +132,7 @@
     </el-table>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="refreshRouteState" :loading="routeStateLoading">刷新</el-button>
+        <el-button :loading="routeStateLoading" @click="refreshRouteState">刷新</el-button>
         <el-button type="primary" @click="resetAllBreaker">复位所有</el-button>
         <el-button @click="routeStateModalVisible = false">关闭</el-button>
       </div>
@@ -173,7 +173,7 @@
           <el-option label="路由" :value="1" />
         </el-select>
       </el-form-item>
-      <el-form-item label="路由规则" prop="routeRules" v-show="modalForm.forwardType === 1">
+      <el-form-item v-show="modalForm.forwardType === 1" label="路由规则" prop="routeRules">
         <el-select
           v-model="modalForm.routeRules"
           placeholder="请选择路由规则"
@@ -194,7 +194,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="路由权重" v-show="modalForm.forwardType === 1">
+      <el-form-item v-show="modalForm.forwardType === 1" label="路由权重">
         <el-table :data="modalForm.routeRules" style="width: 100%" max-height="250" border size="small">
           <el-table-column prop="routeRuleName" label="路由规则名称" width="180" />
           <el-table-column label="权重">
@@ -205,7 +205,7 @@
         </el-table>
       </el-form-item>
 
-      <el-form-item label="桥接目标URL" prop="forwardUrl" v-show="modalForm.forwardType === 0">
+      <el-form-item v-show="modalForm.forwardType === 0" label="桥接目标URL" prop="forwardUrl">
         <el-input v-model="modalForm.forwardUrl" placeholder="https://www.baidu.com" />
       </el-form-item>
       <el-form-item label="自动运行" prop="autoStart">
@@ -232,7 +232,7 @@
           </div>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="重定向覆写URL" prop="overrideRedirectUrl" v-show="modalForm.overrideRedirect === 1">
+      <el-form-item v-show="modalForm.overrideRedirect === 1" label="重定向覆写URL" prop="overrideRedirectUrl">
         <el-input
           v-model="modalForm.overrideRedirectUrl"
           placeholder="例如：https://example.com/after-login 或 https://example.com/home"
@@ -247,7 +247,7 @@
           </div>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="请求ID头名称" prop="requestIdHeaderName" v-show="modalForm.requestIdStrategy === 1">
+      <el-form-item v-show="modalForm.requestIdStrategy === 1" label="请求ID头名称" prop="requestIdHeaderName">
         <el-input v-model="modalForm.requestIdHeaderName" placeholder="例如：X-Request-ID 或 Request-ID" />
       </el-form-item>
       <el-form-item label="业务错误策略" prop="bizErrorStrategy">
@@ -259,17 +259,17 @@
           </div>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="业务错误码字段" prop="bizErrorCodeField" v-show="modalForm.bizErrorStrategy === 1">
+      <el-form-item v-show="modalForm.bizErrorStrategy === 1" label="业务错误码字段" prop="bizErrorCodeField">
         <el-input v-model="modalForm.bizErrorCodeField" placeholder="例如：$.code 或 $.result.errorCode" />
       </el-form-item>
-      <el-form-item label="业务成功码值" prop="bizSuccessCodeValue" v-show="modalForm.bizErrorStrategy === 1">
+      <el-form-item v-show="modalForm.bizErrorStrategy === 1" label="业务成功码值" prop="bizSuccessCodeValue">
         <el-input v-model="modalForm.bizSuccessCodeValue" placeholder="例如：0 或 success" />
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>

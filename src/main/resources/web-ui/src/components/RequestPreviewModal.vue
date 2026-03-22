@@ -158,7 +158,7 @@
                   <el-descriptions-item label="响应时间" :span="2">
                     {{ formData.responseTime || "-" }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="重定向URL" :span="2" v-if="formData.redirectUrl">
+                  <el-descriptions-item v-if="formData.redirectUrl" label="重定向URL" :span="2">
                     <el-text class="url-text">{{ formData.redirectUrl }}</el-text>
                   </el-descriptions-item>
                 </el-descriptions>

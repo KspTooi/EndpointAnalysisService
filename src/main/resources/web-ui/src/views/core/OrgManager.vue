@@ -16,8 +16,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -31,9 +31,9 @@
     <template #table>
       <el-table
         ref="listTableRef"
+        v-loading="listLoading"
         :data="filteredData"
         stripe
-        v-loading="listLoading"
         border
         row-key="id"
         default-expand-all
@@ -52,23 +52,23 @@
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
-              :seqField="'seq'"
-              :getDetailApi="getOrgDetail"
-              :editApi="editOrgSeq"
-              :displayValue="scope.row.seq"
-              :onSuccess="loadList"
+              :seq-field="'seq'"
+              :get-detail-api="getOrgDetail"
+              :edit-api="editOrgSeq"
+              :display-value="scope.row.seq"
+              :on-success="loadList"
             />
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
-            <el-button link type="success" size="small" @click="openModal('add-item', scope.row)" :icon="PlusIcon">
+            <el-button link type="success" size="small" :icon="PlusIcon" @click="openModal('add-item', scope.row)">
               新增子级
             </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row.id)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row.id)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -104,14 +104,14 @@
         <el-input v-model="modalForm.name" :placeholder="'请输入' + modalKindName + '名称'" />
       </el-form-item>
 
-      <el-form-item :label="modalKindName + '类型'" prop="kind" v-if="modalMode !== 'edit'">
+      <el-form-item v-if="modalMode !== 'edit'" :label="modalKindName + '类型'" prop="kind">
         <el-radio-group v-model="modalForm.kind" :disabled="modalMode === 'add-item'">
           <el-radio :value="1">企业</el-radio>
           <el-radio :value="0">部门</el-radio>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="上级组织" prop="parentId" v-show="modalKind == 0">
+      <el-form-item v-show="modalKind == 0" label="上级组织" prop="parentId">
         <el-tree-select
           v-model="modalForm.parentId"
           :data="filterTreeSelectData"
@@ -134,7 +134,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : modalMode === "add-item" ? "创建" : "保存" }}
         </el-button>
       </div>
@@ -200,7 +200,7 @@ const filterTreeSelectData = computed(() => {
     const currentRootId = modalForm.rootId;
     const currentId = modalForm.id;
 
-    for (let item of treeSelectData.value) {
+    for (const item of treeSelectData.value) {
       if (item.value !== currentRootId) {
         item.disabled = true;
       }

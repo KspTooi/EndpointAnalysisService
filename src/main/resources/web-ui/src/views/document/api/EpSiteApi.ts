@@ -66,7 +66,7 @@ export default {
    * 获取站点详情
    */
   getEpSiteDetails: async (dto: CommonIdDto): Promise<GetEpSiteDetailsVo> => {
-    var result = await Http.postEntity<Result<GetEpSiteDetailsVo>>("/epSite/getEpSiteDetails", dto);
+    const result = await Http.postEntity<Result<GetEpSiteDetailsVo>>("/epSite/getEpSiteDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -77,7 +77,7 @@ export default {
    * 添加站点
    */
   addEpSite: async (dto: AddEpSiteDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epSite/addEpSite", dto);
+    const result = await Http.postEntity<Result<string>>("/epSite/addEpSite", dto);
     if (result.code == 0) {
       return result.message;
     }
@@ -88,7 +88,7 @@ export default {
    * 编辑站点
    */
   editEpSite: async (dto: EditEpSiteDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epSite/editEpSite", dto);
+    const result = await Http.postEntity<Result<string>>("/epSite/editEpSite", dto);
     if (result.code == 0) {
       return result.message;
     }
@@ -99,7 +99,7 @@ export default {
    * 删除站点
    */
   removeEpSite: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/epSite/removeEpSite", dto);
+    const result = await Http.postEntity<Result<string>>("/epSite/removeEpSite", dto);
     if (result.code == 0) {
       return result.message;
     }

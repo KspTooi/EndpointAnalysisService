@@ -5,8 +5,8 @@
     width="580px"
     :close-on-click-modal="false"
     destroy-on-close
-    @close="emit('on-close')"
     class="import-wizard-dialog"
+    @close="emit('on-close')"
   >
     <!-- 步骤引导区：采用系统主题色，紧凑直角风格 -->
     <div class="guide-steps">

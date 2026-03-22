@@ -1,5 +1,5 @@
 <template>
-  <div class="no-active-company" v-if="noActiveCompany" style="width: 100%">
+  <div v-if="noActiveCompany" class="no-active-company" style="width: 100%">
     <el-empty description="暂无激活的团队">
       <template #description>
         <div class="empty-description">
@@ -38,8 +38,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -51,7 +51,7 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
+      <el-table v-loading="listLoading" :data="listData" border row-key="id" height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="用户名称" prop="username" show-overflow-tooltip />
         <el-table-column label="职务" prop="role" width="100" align="center">
@@ -68,8 +68,8 @@
               link
               type="danger"
               size="small"
-              @click="onFireMember(scope.row)"
               :icon="DeleteIcon"
+              @click="onFireMember(scope.row)"
             >
               开除
             </el-button>
@@ -85,6 +85,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -97,7 +98,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>

@@ -16,8 +16,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -29,7 +29,7 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" v-loading="listLoading" border row-key="id" height="100%">
+      <el-table v-loading="listLoading" :data="listData" border row-key="id" height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column label="团队名称" prop="name" show-overflow-tooltip />
         <el-table-column label="团队描述" prop="description" show-overflow-tooltip />
@@ -46,12 +46,12 @@
                 link
                 type="success"
                 size="small"
-                @click="activateCompany(scope.row.id)"
                 :icon="Refresh"
+                @click="activateCompany(scope.row.id)"
               >
                 激活
               </el-button>
-              <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="ViewIcon">
+              <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('edit', scope.row)">
                 编辑
               </el-button>
               <el-button
@@ -59,12 +59,12 @@
                 link
                 type="danger"
                 size="small"
-                @click="openResignCeoModal(scope.row)"
                 :icon="SwitchButton"
+                @click="openResignCeoModal(scope.row)"
               >
                 辞去CEO职位
               </el-button>
-              <el-button link type="danger" size="small" @click="leaveCompany(scope.row.id)" :icon="SwitchButton">
+              <el-button link type="danger" size="small" :icon="SwitchButton" @click="leaveCompany(scope.row.id)">
                 退出
               </el-button>
               <!-- <el-button link type="danger" size="small" @click="removeCompany(scope.row.id)" :icon="DeleteIcon">删除</el-button> -->
@@ -81,6 +81,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -93,7 +94,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -124,7 +124,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">关闭</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>

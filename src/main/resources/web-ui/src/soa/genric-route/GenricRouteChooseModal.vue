@@ -47,7 +47,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="cancelSelect">退出</el-button>
-        <el-button type="primary" @click="confirmSelect" :disabled="!selectedRoute">选择指定</el-button>
+        <el-button type="primary" :disabled="!selectedRoute" @click="confirmSelect">选择指定</el-button>
       </div>
     </template>
   </el-dialog>

@@ -16,7 +16,7 @@ const route = useRoute();
 // 计算下载链接
 const fileUrl = computed(() => {
   const sign = route.query.sign as string;
-  if (!sign) return "";
+  if (!sign) {return "";}
   // 直接使用您后端的下载接口，组件会自动下载并解析
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });

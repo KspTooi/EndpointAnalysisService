@@ -28,20 +28,20 @@
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-button type="primary" @click="loadList(orgId)" :disabled="listLoading">查询</el-button>
-                <el-button @click="resetList(orgId)" :disabled="listLoading">重置</el-button>
+                <el-button type="primary" :disabled="listLoading" @click="loadList(orgId)">查询</el-button>
+                <el-button :disabled="listLoading" @click="resetList(orgId)">重置</el-button>
               </el-form-item>
             </el-form>
           </StdListAreaQuery>
 
           <StdListAreaAction class="flex gap-3">
-            <el-button type="success" @click="openModal('add', null)" v-hasCode="['core:user:add']">创建用户</el-button>
+            <el-button v-hasCode="['core:user:add']" type="success" @click="openModal('add', null)">创建用户</el-button>
             <el-dropdown @command="onBatchAction">
-              <el-button type="primary" :disabled="!canBatchAction" v-hasCode="['core:user:batch_edit']">
+              <el-button v-hasCode="['core:user:batch_edit']" type="primary" :disabled="!canBatchAction">
                 批量操作<template v-if="canBatchAction">({{ batchCount }})</template>
                 <el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
-              <template #dropdown v-if="canBatchAction">
+              <template v-if="canBatchAction" #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="enable" icon="Check">批量启用</el-dropdown-item>
                   <el-dropdown-item command="disable" icon="Close">批量封禁</el-dropdown-item>
@@ -50,19 +50,19 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-            <el-button type="primary" @click="importWizardRef?.openModal()" :icon="UploadIcon" v-hasCode="['core:user:import']"
-              >导入用户</el-button
-            >
+            <el-button v-hasCode="['core:user:import']" type="primary" :icon="UploadIcon" @click="importWizardRef?.openModal()">
+              导入用户
+            </el-button>
           </StdListAreaAction>
 
           <StdListAreaTable>
             <el-table
+              v-loading="listLoading"
               :data="listData"
               stripe
-              v-loading="listLoading"
               border
-              @selection-change="onSelectionChange"
               height="100%"
+              @selection-change="onSelectionChange"
             >
               <el-table-column type="selection" width="40" />
               <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
@@ -100,16 +100,16 @@
               <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
               <el-table-column label="操作" fixed="right" min-width="180">
                 <template #default="scope">
-                  <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+                  <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
                     编辑
                   </el-button>
                   <el-button
                     link
                     type="danger"
                     size="small"
-                    @click="removeList(scope.row)"
                     :disabled="scope.row.isSystem === 1"
                     :icon="DeleteIcon"
+                    @click="removeList(scope.row)"
                   >
                     删除
                   </el-button>
@@ -124,6 +124,7 @@
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="listTotal"
+                background
                 @size-change="
                   (val: number) => {
                     listForm.pageSize = val;
@@ -136,7 +137,6 @@
                     loadList(orgId);
                   }
                 "
-                background
               />
             </template>
           </StdListAreaTable>
@@ -148,7 +148,7 @@
     <ImportWizardModal
       ref="importWizardRef"
       url="/user/importUser"
-      templateCode="core_user"
+      template-code="core_user"
       @on-success="loadList"
       @on-close="loadList"
     />
@@ -220,7 +220,7 @@
             <el-radio :label="1">封禁</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="系统用户" v-if="modalMode === 'edit'">
+        <el-form-item v-if="modalMode === 'edit'" label="系统用户">
           <el-tag v-if="modalForm.isSystem === 1" type="warning">是</el-tag>
           <span v-if="modalForm.isSystem === 0">否</span>
         </el-form-item>
@@ -233,7 +233,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading" v-hasCode="['core:user:edit']">
+          <el-button v-hasCode="['core:user:edit']" type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
