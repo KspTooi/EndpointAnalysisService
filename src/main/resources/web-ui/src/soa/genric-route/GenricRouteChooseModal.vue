@@ -18,11 +18,11 @@
           border
           highlight-current-row
           :row-key="buildRowKey"
+          :row-style="{ cursor: 'pointer' }"
+          height="400"
           @selection-change="onSelectionChange"
           @select-all="onSelectAll"
           @row-click="onRowClick"
-          height="400"
-          :row-style="{ cursor: 'pointer' }"
         >
           <el-table-column type="selection" width="40" />
           <el-table-column label="业务域" prop="biz" width="100" show-overflow-tooltip>

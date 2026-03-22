@@ -19,7 +19,7 @@ withDefaults(
 
 const emit = defineEmits(["on-click"]);
 
-const onClick = () => {
+const onClick = (): void => {
   emit("on-click");
 };
 </script>

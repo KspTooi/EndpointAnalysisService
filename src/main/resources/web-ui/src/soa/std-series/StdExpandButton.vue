@@ -26,7 +26,7 @@ const persistenceKey = `expand-state-${route.name as string}`;
 
 const isExpanded = ref(props.modelValue);
 
-const toggle = () => {
+const toggle = (): void => {
   isExpanded.value = !isExpanded.value;
   emit("update:modelValue", isExpanded.value);
   QueryPersistService.persistQuery(persistenceKey, { expanded: isExpanded.value });

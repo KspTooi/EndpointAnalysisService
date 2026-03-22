@@ -2,8 +2,8 @@
   <div class="oper-time-edit">
     <div class="oper-time-edit__item">
       <el-date-picker
-        class="w-full! min-w-0!"
         v-model="rangeStartValue"
+        class="w-full! min-w-0!"
         type="datetime"
         :placeholder="startPlaceholder"
         :value-format="valueFormat"
@@ -16,8 +16,8 @@
     <span class="oper-time-edit__separator">{{ rangeSeparator }}</span>
     <div class="oper-time-edit__item">
       <el-date-picker
-        class="w-full! min-w-0!"
         v-model="rangeEndValue"
+        class="w-full! min-w-0!"
         type="datetime"
         :placeholder="endPlaceholder"
         :value-format="valueFormat"
@@ -81,7 +81,9 @@ let isSyncingInner = false; //是否正在同步到父组件
  * 监听开始日期和结束日期变化
  */
 watch([() => rangeStart.value, () => rangeEnd.value], ([start, end]) => {
-  if (isSyncingInner) return;
+  if (isSyncingInner) {
+    return;
+  }
   innerRangeStart.value = start;
   innerRangeEnd.value = end;
 });
@@ -89,7 +91,7 @@ watch([() => rangeStart.value, () => rangeEnd.value], ([start, end]) => {
 /**
  * 同步开始日期和结束日期到父组件
  */
-function syncRangeToParent() {
+function syncRangeToParent(): void {
   //将内部开始日期和结束日期同步到父组件
   isSyncingInner = true;
   if (!innerRangeStart.value || !innerRangeEnd.value) {
@@ -118,7 +120,9 @@ const rangeStartValue = computed({
       syncRangeToParent();
       return;
     }
-    if (innerRangeEnd.value && new Date(val).getTime() > new Date(innerRangeEnd.value).getTime()) return;
+    if (innerRangeEnd.value && new Date(val).getTime() > new Date(innerRangeEnd.value).getTime()) {
+      return;
+    }
     innerRangeStart.value = val;
     if (!innerRangeEnd.value) {
       syncRangeToParent();
@@ -139,7 +143,9 @@ const rangeEndValue = computed({
       syncRangeToParent();
       return;
     }
-    if (innerRangeStart.value && new Date(val).getTime() < new Date(innerRangeStart.value).getTime()) return;
+    if (innerRangeStart.value && new Date(val).getTime() < new Date(innerRangeStart.value).getTime()) {
+      return;
+    }
     innerRangeEnd.value = val;
     if (!innerRangeStart.value) {
       syncRangeToParent();
@@ -150,30 +156,42 @@ const rangeEndValue = computed({
 });
 
 const startValidateMessage = computed(() => {
-  if (!innerRangeEnd.value) return "";
-  if (innerRangeStart.value) return "";
+  if (!innerRangeEnd.value) {
+    return "";
+  }
+  if (innerRangeStart.value) {
+    return "";
+  }
   return "请选择开始时间";
 });
 
 const endValidateMessage = computed(() => {
-  if (!innerRangeStart.value) return "";
-  if (innerRangeEnd.value) return "";
+  if (!innerRangeStart.value) {
+    return "";
+  }
+  if (innerRangeEnd.value) {
+    return "";
+  }
   return "请选择结束时间";
 });
 
 /**
  * 开始时间不能晚于结束时间
  */
-function disableStartDate(date: Date) {
-  if (!innerRangeEnd.value) return false;
+function disableStartDate(date: Date): boolean {
+  if (!innerRangeEnd.value) {
+    return false;
+  }
   return date.getTime() > new Date(innerRangeEnd.value).getTime();
 }
 
 /**
  * 结束时间不能早于开始时间
  */
-function disableEndDate(date: Date) {
-  if (!innerRangeStart.value) return false;
+function disableEndDate(date: Date): boolean {
+  if (!innerRangeStart.value) {
+    return false;
+  }
   return date.getTime() < new Date(innerRangeStart.value).getTime();
 }
 </script>

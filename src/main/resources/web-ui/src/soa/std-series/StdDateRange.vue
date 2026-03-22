@@ -56,7 +56,9 @@ const rangeEnd = defineModel<string>("rangeEnd", { default: "" });
  * 日期范围
  */
 const dateRange = computed(() => {
-  if (!rangeStart.value && !rangeEnd.value) return null;
+  if (!rangeStart.value && !rangeEnd.value) {
+    return null;
+  }
   return [rangeStart.value, rangeEnd.value];
 });
 
@@ -64,7 +66,7 @@ const dateRange = computed(() => {
  * 日期范围变化时触发
  * @param val 日期范围
  */
-function onChange(val: [string, string] | null) {
+function onChange(val: [string, string] | null): void {
   rangeStart.value = val?.[0] ?? "";
   rangeEnd.value = val?.[1] ?? "";
 }

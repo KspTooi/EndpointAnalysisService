@@ -2,7 +2,7 @@
   <StdListContainer>
     <!-- 文档说明 -->
     <StdListAreaQuery v-if="$slots.query" :show-persist-tip="showPersistTip" :has-tutorial="hasTutorial">
-      <template #tutorial v-if="$slots.tutorial">
+      <template v-if="$slots.tutorial" #tutorial>
         <slot name="tutorial"></slot>
       </template>
       <slot name="query"></slot>
@@ -18,7 +18,7 @@
       <slot name="table"></slot>
 
       <!-- 分页 -->
-      <template #pagination v-if="$slots.pagination">
+      <template v-if="$slots.pagination" #pagination>
         <slot name="pagination"></slot>
       </template>
     </StdListAreaTable>

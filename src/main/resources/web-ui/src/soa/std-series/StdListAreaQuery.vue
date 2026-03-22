@@ -4,8 +4,8 @@
       <StdIndicatorQueryPersist v-if="showPersistTip" />
       <StdIndicatorTutorial
         v-if="hasTutorial"
-        @click="showTutorialContent = !showTutorialContent"
         :active="showTutorialContent"
+        @click="showTutorialContent = !showTutorialContent"
       />
     </div>
     <div v-if="hasTutorial && showTutorialContent" class="std-query-tutorial-content">
