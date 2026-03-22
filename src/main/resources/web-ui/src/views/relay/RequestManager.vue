@@ -183,7 +183,7 @@
             >
               转到重放
             </el-button>
-            <el-button
+            <!-- <el-button
               link
               type="primary"
               size="small"
@@ -192,7 +192,7 @@
               @click="saveRequest(scope.row)"
             >
               保存
-            </el-button>
+            </el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -250,7 +250,7 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="saveDialogVisible = false">取消</el-button>
-            <el-button type="primary" :loading="saveSubmitLoading" @click="confirmSaveRequest"> 保存 </el-button>
+            <!-- <el-button type="primary" :loading="saveSubmitLoading" @click="confirmSaveRequest"> 保存 </el-button> -->
           </span>
         </template>
       </el-dialog>
@@ -267,7 +267,6 @@ import { DocumentCopy, View, Right } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 import QueryPersistService from "@/commons/service/QueryPersistService.ts";
-import UserRequestApi from "@/views/rdbg/api/UserRequestApi.ts";
 import RequestPreviewModal from "@/components/RequestPreviewModal.vue";
 import type { RequestPreviewVo } from "@/components/RequestPreviewModal.vue";
 import type { HttpHeaderVo } from "@/views/rdbg/api/UserRequestLogApi.ts";
@@ -360,7 +359,7 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
 };
 
 // 加载列表
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   if (!listForm.relayServerId) {
     ElMessage.warning("请先选择中继服务器");
     return;
@@ -388,7 +387,7 @@ const loadList = async () => {
 };
 
 // 重置查询条件
-const resetList = () => {
+const resetList = (): void => {
   listForm.requestId = null;
   listForm.method = null;
   listForm.url = null;
@@ -410,7 +409,7 @@ const resetList = () => {
 };
 
 // 加载中继服务器列表
-const loadRelayServerList = async () => {
+const loadRelayServerList = async (): Promise<void> => {
   const res = await RelayServerApi.getRelayServerList({
     pageNum: 1,
     pageSize: 100000,
@@ -423,7 +422,7 @@ const loadRelayServerList = async () => {
 };
 
 // 打开预览请求模态框
-const openViewModal = async (row: GetRequestListVo) => {
+const openViewModal = async (row: GetRequestListVo): Promise<void> => {
   try {
     //获取请求数据
     const res = await RequestApi.getRequestDetails(row.id.toString());
@@ -455,40 +454,15 @@ const openViewModal = async (row: GetRequestListVo) => {
 };
 
 // 保存请求
-const saveRequest = (row: GetRequestListVo | GetRequestDetailsVo) => {
+const saveRequest = (row: GetRequestListVo | GetRequestDetailsVo): void => {
   saveForm.requestId = row.id.toString();
   saveForm.url = row.url;
   saveForm.name = row.url;
   saveDialogVisible.value = true;
 };
 
-// 确认保存请求
-const confirmSaveRequest = async () => {
-  if (!saveFormRef.value) {
-    return;
-  }
-
-  try {
-    await saveFormRef.value.validate();
-    saveSubmitLoading.value = true;
-
-    await UserRequestApi.saveAsUserRequest({
-      requestId: saveForm.requestId,
-      name: saveForm.name,
-    });
-
-    ElMessage.success("保存成功");
-    saveDialogVisible.value = false;
-    loadList();
-  } catch (error) {
-    console.error("保存失败:", error);
-  } finally {
-    saveSubmitLoading.value = false;
-  }
-};
-
 // 复制文本
-const copyText = async (text: string) => {
+const copyText = async (text: string): Promise<void> => {
   if (!text) {
     ElMessage.warning("内容为空，无法复制");
     return;
@@ -513,13 +487,13 @@ const copyText = async (text: string) => {
       return;
     }
     ElMessage.error("复制失败");
-  } catch (e) {
+  } catch {
     ElMessage.error("复制失败");
   }
 };
 
 // 跳转到重放页面
-const goToReplay = (row: GetRequestListVo) => {
+const goToReplay = (row: GetRequestListVo): void => {
   localStorage.setItem("originRequestId", row.requestId);
   router.push({ name: "replay-request-manager" });
   ElMessage.success("已跳转到重放请求页面");

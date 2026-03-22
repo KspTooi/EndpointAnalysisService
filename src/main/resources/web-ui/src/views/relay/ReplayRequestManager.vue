@@ -201,7 +201,7 @@ const originRequestIdInput = ref();
 const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
 const executeLoading = ref(false);
 
-const methodColor = (method: string) => {
+const methodColor = (method: string): string => {
   if (method === "DELETE") {
     return "#E74C3C";
   }
@@ -217,7 +217,7 @@ const methodColor = (method: string) => {
   return "#95A5A6";
 };
 
-const statusColor = (status: number) => {
+const statusColor = (status: number): string => {
   if (status === 0) {
     return "#2ECC71";
   }
@@ -230,7 +230,7 @@ const statusColor = (status: number) => {
   return "#95A5A6";
 };
 
-const statusText = (status: number) => {
+const statusText = (status: number): string => {
   if (status === 0) {
     return "正常";
   }
@@ -243,7 +243,7 @@ const statusText = (status: number) => {
   return "连接超时";
 };
 
-const httpCodeColor = (code: number) => {
+const httpCodeColor = (code: number): string => {
   if (code >= 200 && code < 300) {
     return "#2ECC71";
   }
@@ -256,7 +256,7 @@ const httpCodeColor = (code: number) => {
   return "#95A5A6";
 };
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   try {
     const res = await ReplayRequestApi.getReplayRequestList(listForm);
@@ -270,7 +270,7 @@ const loadList = async () => {
   }
 };
 
-const loadOriginRequestList = async () => {
+const loadOriginRequestList = async (): Promise<void> => {
   listLoading.value = true;
   try {
     localStorage.setItem("originRequestId", listForm.originRequestId || "");
@@ -285,7 +285,7 @@ const loadOriginRequestList = async () => {
   }
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.originRequestId = null;
   listForm.requestId = null;
   listForm.method = null;
@@ -301,7 +301,7 @@ const resetList = () => {
   listForm.pageSize = 20;
 };
 
-const executeReplay = async () => {
+const executeReplay = async (): Promise<void> => {
   try {
     executeLoading.value = true;
     await ReplayRequestApi.replayRequest(listForm.originRequestId || "");
@@ -338,13 +338,13 @@ const parseHeadersFromString = (headers: string): HttpHeaderVo[] => {
       }
       return Object.entries(parsed).map(([k, v]) => ({ k, v: String(v) }));
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn("无法将标头解析为JSON，将返回空数组", headers, e);
   }
   return [];
 };
 
-const openOriginViewModal = async (row: GetOriginRequestVo) => {
+const openOriginViewModal = async (row: GetOriginRequestVo): Promise<void> => {
   try {
     const res = await RequestApi.getRequestDetails(row.id.toString());
     const previewData: RequestPreviewVo = {
@@ -368,12 +368,12 @@ const openOriginViewModal = async (row: GetOriginRequestVo) => {
       responseTime: res.responseTime,
     };
     requestPreviewModalRef.value?.openPreview(previewData);
-  } catch (error) {
+  } catch {
     ElMessage.error("获取原始请求详情失败");
   }
 };
 
-const openViewModal = async (row: GetReplayRequestListVo) => {
+const openViewModal = async (row: GetReplayRequestListVo): Promise<void> => {
   try {
     const res = await ReplayRequestApi.getReplayRequestDetails(row.id.toString());
     const previewData: RequestPreviewVo = {
@@ -403,7 +403,7 @@ const openViewModal = async (row: GetReplayRequestListVo) => {
   }
 };
 
-const copyText = async (text: string) => {
+const copyText = async (text: string): Promise<void> => {
   if (!text) {
     ElMessage.warning("内容为空，无法复制");
     return;
@@ -428,7 +428,7 @@ const copyText = async (text: string) => {
       return;
     }
     ElMessage.error("复制失败");
-  } catch (e) {
+  } catch {
     ElMessage.error("复制失败");
   }
 };
