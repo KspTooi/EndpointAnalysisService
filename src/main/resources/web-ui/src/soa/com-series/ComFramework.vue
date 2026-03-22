@@ -40,13 +40,13 @@
         <el-main class="admin-content">
           <div class="content-wrapper">
             <!-- 路由视图 -->
-            <router-view v-slot="{ Component, route }">
+            <router-view v-slot="{ Component, route: routeSlot }">
               <transition name="fade" mode="out-in">
-                <div :key="route.name || route.path">
-                  <keep-alive v-if="route.meta.keepAlive">
-                    <component :is="Component" :key="route.name || route.path" />
+                <div :key="routeSlot.name || routeSlot.path">
+                  <keep-alive v-if="routeSlot.meta.keepAlive">
+                    <component :is="Component" :key="routeSlot.name || routeSlot.path" />
                   </keep-alive>
-                  <component :is="Component" v-if="!route.meta.keepAlive" :key="viewKey" />
+                  <component :is="Component" v-if="!routeSlot.meta.keepAlive" :key="viewKey" />
                 </div>
               </transition>
             </router-view>
@@ -58,11 +58,10 @@
 </template>
 
 <script setup lang="ts">
-import { ElBreadcrumb, ElBreadcrumbItem, ElContainer, ElHeader, ElMain, ElMessage, ElIcon } from "element-plus";
-import { useRoute, useRouter } from "vue-router";
-import { useTabStore } from "@/store/TabHolder.ts";
-import { storeToRefs } from "pinia";
-import { computed, ref, watch } from "vue";
+import { ElBreadcrumb, ElBreadcrumbItem, ElContainer, ElHeader, ElMain } from "element-plus";
+import { useRoute } from "vue-router";
+import { computed } from "vue";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 import ComFrameworkService from "@/soa/com-series/service/ComFrameworkService.ts";
 import ComMultiTab from "@/soa/com-series/sfc_private/ComMultiTab.vue";
 import ComLeftMenu from "@/soa/com-series/sfc_private/ComLeftMenu.vue";
@@ -71,26 +70,25 @@ import ComLeftMenuShort from "@/soa/com-series/sfc_private/ComLeftMenuShort.vue"
 import CoreUserNoticeDropMenu from "@/views/core/components/public/CoreUserNoticeDropMenu.vue";
 import UserAuthService from "@/views/auth/service/UserAuthService.ts";
 
-const router = useRouter();
 const route = useRoute();
-const tabStore = useTabStore();
-const { refreshCounter } = storeToRefs(tabStore);
+
+//获取标签服务（含路由同步）
+const { refreshCounter } = ComTabService.useRouterTabService();
+
+//viewKey随路径或刷新计数器变化，用于强制重建非keep-alive页面组件
 const viewKey = computed(() => `${route.fullPath}__${refreshCounter.value}`);
 
+//初始化框架快捷键服务 这是为了CTRL+1~9 快速切换标签
 ComFrameworkService.useComTabHotkey();
+
+//获取框架服务(这包含菜单折叠、菜单展开、面包屑导航等)
 const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useComFramework();
 
+//获取用户信息
 const authStore = UserAuthService.AuthStore();
 
-const appVersion = computed(() => {
-  const userInfo = authStore.getUserInfo;
-
-  if (!userInfo) {
-    return "未知";
-  }
-
-  return userInfo.appVersion;
-});
+//获取应用版本
+const appVersion = computed(() => authStore.getUserInfo.appVersion);
 </script>
 
 <style scoped>

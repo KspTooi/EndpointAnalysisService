@@ -139,40 +139,57 @@
 import { computed, onMounted } from "vue";
 import { Bell, Monitor, StarFilled, Clock, ChatDotRound } from "@element-plus/icons-vue";
 import Http from "@/commons/Http.ts";
-import { useTabStore } from "@/store/TabHolder.ts";
 import UserAuthService from "@/views/auth/service/UserAuthService.ts";
 import NoticeRcdService from "@/views/core/service/NoticeRcdService.ts";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
-const tabStore = useTabStore();
 const apiUrl = Http.getApiUrl();
 
 const authStore = UserAuthService.AuthStore();
 const userInfo = computed(() => authStore.getUserInfo);
 
+const { openTab } = ComTabService.useTabService();
+
 const displayName = computed(() => {
-  if (userInfo.value?.nickname) return userInfo.value.nickname;
-  if (userInfo.value?.username) return userInfo.value.username;
+  if (userInfo.value?.nickname) {
+    return userInfo.value.nickname;
+  }
+  if (userInfo.value?.username) {
+    return userInfo.value.username;
+  }
   return "用户";
 });
 
 const userDept = computed(() => {
   const root = userInfo.value?.rootName || "";
   const dept = userInfo.value?.deptName || "";
-  if (root && dept) return `${root} / ${dept}`;
-  if (root) return root;
-  if (dept) return dept;
+  if (root && dept) {
+    return `${root} / ${dept}`;
+  }
+  if (root) {
+    return root;
+  }
+  if (dept) {
+    return dept;
+  }
   return "";
 });
 
 const userLastLogin = computed(() => {
-  if (!userInfo.value?.lastLoginTime) return "";
+  if (!userInfo.value?.lastLoginTime) {
+    return "";
+  }
   return userInfo.value.lastLoginTime;
 });
 
 const greeting = computed(() => {
   const hour = new Date().getHours();
-  if (hour < 11) return "早上好";
-  if (hour < 18) return "下午好";
+  if (hour < 11) {
+    return "早上好";
+  }
+  if (hour < 18) {
+    return "下午好";
+  }
   return "晚上好";
 });
 
@@ -191,17 +208,19 @@ const { listData: noticeList, listLoading: noticeLoading, loadList: loadNoticeLi
  */
 const { modalVisible, modalLoading, detailsData, closeModal } = NoticeRcdService.useNoticeRcdModal();
 
-const openMessageCenter = () => {
-  tabStore.addTab({
+const openMessageCenter = (): void => {
+  openTab({
     id: "notice-rcd",
+    icon: null,
     title: "个人消息中心",
     path: "/core/notice-rcd",
   });
 };
 
-const openAppStatus = () => {
-  tabStore.addTab({
+const openAppStatus = (): void => {
+  openTab({
     id: "app-status",
+    icon: null,
     title: "系统探针",
     path: "/core/app-status",
   });
