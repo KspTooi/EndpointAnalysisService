@@ -25,7 +25,14 @@
                   </el-tag>
                 </div>
                 <div class="json-container">
-                  <vue-json-pretty :data="parseJsonSafe(formData.requestBody)" :show-line="true" :show-length="true" :deep="99" :show-double-quotes="true" class="json-viewer" />
+                  <vue-json-pretty
+                    :data="parseJsonSafe(formData.requestBody)"
+                    :show-line="true"
+                    :show-length="true"
+                    :deep="99"
+                    :show-double-quotes="true"
+                    class="json-viewer"
+                  />
                 </div>
               </div>
 
@@ -44,7 +51,14 @@
                   </div>
                 </div>
                 <div class="json-container">
-                  <vue-json-pretty :data="parseJsonSafe(formData.responseBody)" :show-line="true" :show-length="true" :deep="99" :show-double-quotes="true" class="json-viewer" />
+                  <vue-json-pretty
+                    :data="parseJsonSafe(formData.responseBody)"
+                    :show-line="true"
+                    :show-length="true"
+                    :deep="99"
+                    :show-double-quotes="true"
+                    class="json-viewer"
+                  />
                 </div>
               </div>
             </div>
@@ -208,7 +222,7 @@ const formData = ref<RequestPreviewVo>({
   responseTime: null,
 });
 
-const parseJsonSafe = (json: string | null) => {
+const parseJsonSafe = (json: string | null): any => {
   if (!json) {
     return null;
   }
@@ -220,75 +234,93 @@ const parseJsonSafe = (json: string | null) => {
   }
 };
 
-const getStatusType = (statusCode: number | null) => {
-  if (!statusCode) return "";
+const getStatusType = (statusCode: number | null): string => {
+  if (!statusCode) {
+    return "";
+  }
 
-  if (statusCode >= 200 && statusCode < 300) return "success";
-  if (statusCode >= 300 && statusCode < 400) return "warning";
-  if (statusCode >= 400 && statusCode < 500) return "danger";
-  if (statusCode >= 500) return "danger";
+  if (statusCode >= 200 && statusCode < 300) {
+    return "success";
+  }
+  if (statusCode >= 300 && statusCode < 400) {
+    return "warning";
+  }
+  if (statusCode >= 400 && statusCode < 500) {
+    return "danger";
+  }
+  if (statusCode >= 500) {
+    return "danger";
+  }
   return "info";
 };
 
-const getMethodType = (method: string | null) => {
-  if (!method) return "";
-
-  switch (method.toUpperCase()) {
-    case "GET":
-      return "success";
-    case "POST":
-      return "primary";
-    case "PUT":
-      return "warning";
-    case "DELETE":
-      return "danger";
-    case "PATCH":
-      return "info";
-    default:
-      return "";
+const getMethodType = (method: string | null): string => {
+  if (!method) {
+    return "";
   }
+
+  if (method.toUpperCase() === "GET") {
+    return "success";
+  }
+  if (method.toUpperCase() === "POST") {
+    return "primary";
+  }
+  if (method.toUpperCase() === "PUT") {
+    return "warning";
+  }
+  if (method.toUpperCase() === "DELETE") {
+    return "danger";
+  }
+  if (method.toUpperCase() === "PATCH") {
+    return "info";
+  }
+  return "";
 };
 
-const getStatusText = (status: number | null) => {
-  switch (status) {
-    case 0:
-      return "正常";
-    case 1:
-      return "HTTP失败";
-    case 2:
-      return "业务失败";
-    case 3:
-      return "连接超时";
-    default:
-      return "未知";
+const getStatusText = (status: number | null): string => {
+  if (status === 0) {
+    return "正常";
   }
+  if (status === 1) {
+    return "HTTP失败";
+  }
+  if (status === 2) {
+    return "业务失败";
+  }
+  if (status === 3) {
+    return "连接超时";
+  }
+  return "未知";
 };
 
-const getStatusTagType = (status: number | null) => {
-  switch (status) {
-    case 0:
-      return "success";
-    case 1:
-    case 2:
-      return "danger";
-    case 3:
-      return "warning";
-    default:
-      return "info";
+const getStatusTagType = (status: number | null): string => {
+  if (status === 0) {
+    return "success";
   }
+  if (status === 1) {
+    return "danger";
+  }
+  if (status === 2) {
+    return "warning";
+  }
+  return "info";
 };
 
-const formatBytes = (bytes: number | null) => {
-  if (!bytes) return "-";
+const formatBytes = (bytes: number | null): string => {
+  if (!bytes) {
+    return "-";
+  }
 
   const sizes = ["B", "KB", "MB", "GB"];
-  if (bytes === 0) return "0 B";
+  if (bytes === 0) {
+    return "0 B";
+  }
 
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
 };
 
-const openPreview = (vo: RequestPreviewVo) => {
+const openPreview = (vo: RequestPreviewVo): void => {
   formData.value = vo;
   dialogVisible.value = true;
 };
