@@ -1,15 +1,9 @@
 <template>
-  <el-popover
-    placement="bottom"
-    trigger="hover"
-    :width="300"
-    :hide-after="50"
-    popper-class="com-cron-fixer-popover"
-  >
+  <el-popover placement="bottom" trigger="hover" :width="300" :hide-after="50" popper-class="com-cron-fixer-popover">
     <template #reference>
       <div class="cron-trigger">
         <el-icon class="cron-icon"><Clock /></el-icon>
-        <span class="cron-display-text">{{ displayValue || cron || '-' }}</span>
+        <span class="cron-display-text">{{ displayValue || cron || "-" }}</span>
       </div>
     </template>
 
@@ -17,7 +11,7 @@
       <div class="info-section">
         <div class="section-title">Cron 表达式</div>
         <div class="section-content">
-          <code class="cron-code">{{ cron || '未设置' }}</code>
+          <code class="cron-code">{{ cron || "未设置" }}</code>
         </div>
       </div>
 
@@ -58,11 +52,11 @@ const cronDescription = computed(() => {
   if (!props.cron) {
     return "未提供 Cron 表达式";
   }
-  
+
   try {
     // 使用 cronstrue 进行中文语义化转换
     return cronstrue.toString(props.cron, { locale: "zh_CN" });
-  } catch (e) {
+  } catch {
     return "解析失败：非法的 Cron 格式";
   }
 });
@@ -77,35 +71,35 @@ const nextRunTimes = computed(() => {
     // 使用 cron-parser 解析表达式，指定上海时区
     const interval = CronExpressionParser.parse(props.cron, { tz: "Asia/Shanghai" });
     const results: string[] = [];
-    
+
     for (let i = 0; i < 5; i++) {
       const next = interval.next();
-      
+
       // 这里的 normalization 逻辑确保获取到标准的 Date 对象
       let date: Date | null = null;
       if (next instanceof Date) {
         date = next;
       }
-      
+
       // 避免使用 else，通过判断 date 是否已赋值来继续尝试
       if (!date && (next as any)?.toDate) {
         date = (next as any).toDate();
       }
-      
+
       if (!date && (next as any)?.getTime) {
         date = new Date((next as any).getTime());
       }
-      
+
       // 如果最终还是没拿到日期则中断
       if (!date) {
         break;
       }
-      
+
       results.push(formatDate(date));
     }
-    
+
     return results;
-  } catch (e) {
+  } catch {
     // 捕获解析错误，返回空列表
     return [];
   }
@@ -114,8 +108,8 @@ const nextRunTimes = computed(() => {
 /**
  * 格式化日期为 YYYY-MM-DD HH:mm:ss
  */
-const formatDate = (date: Date) => {
-  const pad = (n: number) => String(n).padStart(2, "0");
+const formatDate = (date: Date): string => {
+  const pad = (n: number): string => String(n).padStart(2, "0");
   const y = date.getFullYear();
   const m = pad(date.getMonth() + 1);
   const d = pad(date.getDate());
