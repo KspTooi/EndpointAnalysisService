@@ -245,7 +245,7 @@ const modalRules = {
 };
 
 // 加载列表
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await RouteServerApi.getRouteServerList(listForm);
 
@@ -262,7 +262,7 @@ const loadList = async () => {
 };
 
 // 重置查询条件
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.name = null;
@@ -274,14 +274,14 @@ const resetList = () => {
 };
 
 // 删除单条记录
-const removeList = async (id: string) => {
+const removeList = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -302,14 +302,14 @@ const removeList = async (id: string) => {
 };
 
 // 批量删除
-const removeListBatch = async () => {
+const removeListBatch = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该服务器吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -330,7 +330,7 @@ const removeListBatch = async () => {
 };
 
 // 打开模态框
-const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null) => {
+const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null): Promise<void> => {
   modalMode.value = mode;
   resetModal();
 
@@ -358,7 +358,7 @@ const openModal = async (mode: "add" | "edit", row: GetRouteServerListVo | null)
 };
 
 // 重置模态框表单
-const resetModal = () => {
+const resetModal = (): void => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.host = "";
@@ -368,10 +368,10 @@ const resetModal = () => {
 };
 
 // 提交模态框表单
-const submitModal = async () => {
+const submitModal = async (): Promise<void> => {
   try {
     await modalFormRef?.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 

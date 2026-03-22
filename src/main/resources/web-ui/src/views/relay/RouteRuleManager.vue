@@ -205,7 +205,7 @@ const listTotal = ref(0);
 const listLoading = ref(false);
 
 // 加载列表
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await RouteRuleApi.getRouteRuleList(listForm);
 
@@ -222,7 +222,7 @@ const loadList = async () => {
 };
 
 // 重置查询条件
-const resetList = () => {
+const resetList = (): void => {
   listForm.name = null;
   listForm.matchType = null;
   listForm.matchValue = null;
@@ -232,14 +232,14 @@ const resetList = () => {
 };
 
 // 删除单条记录
-const removeList = async (id: string) => {
+const removeList = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该路由规则吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -299,7 +299,7 @@ const modalRules = {
 };
 
 // 打开模态框
-const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) => {
+const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null): Promise<void> => {
   modalMode.value = mode;
   resetModal();
 
@@ -330,7 +330,7 @@ const openModal = async (mode: "add" | "edit", row: GetRouteRuleListVo | null) =
 };
 
 // 重置模态框表单
-const resetModal = () => {
+const resetModal = (): void => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.matchType = 0;
@@ -343,10 +343,10 @@ const resetModal = () => {
 };
 
 // 提交模态框表单
-const submitModal = async () => {
+const submitModal = async (): Promise<void> => {
   try {
     await modalFormRef?.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -377,7 +377,7 @@ const submitModal = async () => {
 const routeServerList = ref<GetRouteServerListVo[]>([]);
 
 // 加载目标服务器列表
-const loadRouteServerList = async () => {
+const loadRouteServerList = async (): Promise<void> => {
   const result = await RouteServerApi.getRouteServerList({
     pageNum: 1,
     pageSize: 100000,
