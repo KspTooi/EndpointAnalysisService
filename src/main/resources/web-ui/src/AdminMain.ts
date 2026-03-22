@@ -7,7 +7,6 @@ import ElementPlus from "element-plus";
 import "@/styles/element-theme.scss";
 import "@/assets/tailwind.css";
 // 导入中文语言包
-// @ts-ignore
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
 // 导入Element Plus图标并进行全局注册

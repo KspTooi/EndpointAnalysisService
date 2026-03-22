@@ -1,4 +1,4 @@
-import type { Reactive, Ref } from "vue";
+import type { Reactive } from "vue";
 
 export default {
   /**
@@ -8,13 +8,17 @@ export default {
    * @returns void
    */
   persistQuery(prefix: string, query: Reactive<any>): void {
-    for (let key in query) {
+    for (const key in query) {
       const value = query[key];
+
+      //如果值不为空，则持久化
       if (value !== null && value !== undefined && value !== "") {
         localStorage.setItem(prefix + "_" + key, value + "");
-      } else {
-        localStorage.removeItem(prefix + "_" + key);
+        continue;
       }
+
+      //如果值为空，则清除
+      localStorage.removeItem(prefix + "_" + key);
     }
   },
 
@@ -25,7 +29,7 @@ export default {
    * @returns void
    */
   loadQuery(prefix: string, query: Reactive<any>): void {
-    for (let key in query) {
+    for (const key in query) {
       const value = localStorage.getItem(prefix + "_" + key);
       if (value !== null) {
         if (typeof query[key] === "number") {
