@@ -31,7 +31,7 @@
         "
       >
         <!-- 备用维护中心菜单 -->
-        <el-menu-item
+        <!-- <el-menu-item
           v-if="!hasMaintainCenter"
           index="fallback-maintenance-center"
           @click="openMenu(getMenuByPath('/core/application-maintain'))"
@@ -40,7 +40,7 @@
             <component :is="getIconComponent('Setting')" />
           </el-icon>
           <span>维护中心(备用)</span>
-        </el-menu-item>
+        </el-menu-item> -->
 
         <!-- 菜单项 一级菜单 目录类型 -->
         <el-sub-menu v-for="item in filterDirectoryMenu(menuTree)" :key="item.id" :index="item.id">

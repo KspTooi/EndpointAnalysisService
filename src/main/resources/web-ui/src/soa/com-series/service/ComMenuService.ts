@@ -7,11 +7,12 @@ import { computed, ref, type Ref } from "vue";
 import { useRoute } from "vue-router";
 import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
-const fallbackMc = {
+const fallbackMc: GetUserMenuTreeVo = {
   id: "fallback-maintenance-center",
   name: "维护中心(备用)",
-  path: "/core/application-maintain",
-  icon: "Setting",
+  menuPath: "/core/application-maintain",
+  menuIcon: "Setting",
+  menuKind: 1,
   children: [],
 };
 
@@ -73,6 +74,7 @@ export default {
      */
     const loadMenus = async (): Promise<void> => {
       menuStore.loading = true;
+
       try {
         const result = await MenuApi.getUserMenuTree();
         if (Result.isSuccess(result)) {
@@ -82,6 +84,15 @@ export default {
         ElMessage.error(error.message);
       } finally {
         menuStore.loading = false;
+      }
+
+      //检查菜单树里面是否有维护中心
+      const mcMenu = getMenuByPath("/core/application-maintain");
+
+      //如果维护中心菜单不存在，则在菜单树的第一位添加一个备用的维护中心菜单
+      if (mcMenu == null) {
+        console.log("添加备用维护中心菜单", fallbackMc);
+        menuStore.menuTree.push(fallbackMc);
       }
     };
 
