@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-3-8 23:40:59",
+  "updatedTime": "2026-3-23 05:40:56",
   "dbConns": [],
   "profile": {
     "default": {
@@ -28752,7 +28752,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_dat_source",
+      "defKey": "assembly_data_source",
       "defName": "数据源表",
       "comment": "",
       "properties": {
@@ -29141,7 +29141,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_tym_schema",
+      "defKey": "assembly_tym_schema",
       "defName": "类型映射方案表",
       "comment": "",
       "properties": {
@@ -29530,7 +29530,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_tym_schema_field",
+      "defKey": "assembly_tym_schema_field",
       "defName": "类型映射方案字段表",
       "comment": "",
       "properties": {
@@ -29847,7 +29847,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_scm",
+      "defKey": "assembly_scm",
       "defName": "SCM表",
       "comment": "",
       "properties": {
@@ -30272,7 +30272,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_out_schema",
+      "defKey": "assembly_out_schema",
       "defName": "输出方案表",
       "comment": "",
       "properties": {
@@ -30787,7 +30787,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_out_model_origin",
+      "defKey": "assembly_out_model_origin",
       "defName": "输出方案原始模型表",
       "comment": "",
       "properties": {
@@ -31158,7 +31158,7 @@
           "codeRoot": ""
         }
       },
-      "defKey": "gen_out_model_poly",
+      "defKey": "assembly_out_model_poly",
       "defName": "输出方案聚合模型表",
       "comment": "",
       "properties": {
