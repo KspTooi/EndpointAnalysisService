@@ -38,14 +38,14 @@ export default {
     /**
      * 切换密码显示/隐藏
      */
-    const togglePasswordVisibility = (id: string) => {
+    const togglePasswordVisibility = (id: string): void => {
       passwordVisibleMap.value[id] = !passwordVisibleMap.value[id];
     };
 
     /**
      * 加载站点列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await EpSiteApi.getEpSiteList(listForm.value);
 
@@ -65,7 +65,7 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.id = null;
@@ -82,14 +82,14 @@ export default {
     /**
      * 删除站点
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该站点吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -105,7 +105,7 @@ export default {
     /**
      * 批量删除站点
      */
-    const removeListBatch = async (selectedItems: GetEpSiteListVo[]) => {
+    const removeListBatch = async (selectedItems: GetEpSiteListVo[]): Promise<void> => {
       if (selectedItems.length === 0) {
         ElMessage.warning("请选择要删除的站点");
         return;
@@ -117,7 +117,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -161,7 +161,7 @@ export default {
       return;
     }
 
-    const copy = async () => {
+    const copy = async (): Promise<void> => {
       try {
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
@@ -185,12 +185,12 @@ export default {
           } else {
             ElMessage.error("复制失败，请手动复制");
           }
-        } catch (err) {
+        } catch {
           ElMessage.error("复制失败，请手动复制");
         } finally {
           document.body.removeChild(textArea);
         }
-      } catch (err) {
+      } catch {
         ElMessage.error("复制失败，请手动复制");
       }
     };
@@ -234,7 +234,7 @@ export default {
      * @param mode 模式
      * @param row 当前行
      */
-    const openModal = async (mode: "add" | "edit", row: GetEpSiteListVo | null) => {
+    const openModal = async (mode: "add" | "edit", row: GetEpSiteListVo | null): Promise<void> => {
       modalMode.value = mode;
       resetModal();
 
@@ -261,7 +261,7 @@ export default {
     /**
      * 重置模态框表单
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.name = "";
       modalForm.address = null;
@@ -278,11 +278,11 @@ export default {
     /**
      * 提交模态框表单
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       //先校验表单
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 

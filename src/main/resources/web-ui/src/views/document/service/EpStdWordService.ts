@@ -33,7 +33,7 @@ export default {
     /**
      * 加载标准词列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await EpStdWordApi.getEpStdWordList(listForm.value);
 
@@ -53,7 +53,7 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.sourceName = null;
@@ -68,14 +68,14 @@ export default {
     /**
      * 删除标准词
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该标准词吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -91,7 +91,7 @@ export default {
     /**
      * 批量删除标准词
      */
-    const removeListBatch = async (selectedItems: GetEpStdWordListVo[]) => {
+    const removeListBatch = async (selectedItems: GetEpStdWordListVo[]): Promise<void> => {
       if (selectedItems.length === 0) {
         ElMessage.warning("请选择要删除的标准词");
         return;
@@ -103,7 +103,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -140,7 +140,7 @@ export default {
    * @param modalFormRef 模态框表单引用
    * @param loadList 列表加载函数
    */
-  useEpStdWordModal(modalFormRef: Ref<FormInstance>, loadList: () => void) {
+  useEpStdWordModal(modalFormRef: Ref<FormInstance>, loadList: () => Promise<void>) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit">("add");
@@ -172,7 +172,7 @@ export default {
      * @param mode 模式
      * @param row 当前行
      */
-    const openModal = async (mode: "add" | "edit", row: GetEpStdWordListVo | null) => {
+    const openModal = async (mode: "add" | "edit", row: GetEpStdWordListVo | null): Promise<void> => {
       modalMode.value = mode;
       resetModal();
 
@@ -198,7 +198,7 @@ export default {
     /**
      * 重置模态框表单
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.sourceName = "";
       modalForm.sourceNameFull = null;
@@ -214,11 +214,11 @@ export default {
     /**
      * 提交模态框表单
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       //先校验表单
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
