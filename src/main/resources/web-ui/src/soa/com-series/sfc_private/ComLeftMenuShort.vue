@@ -24,7 +24,7 @@
         >
           <template #title>
             <el-icon>
-              <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
+              <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
             <span class="menu-name">{{ item.name }}</span>
           </template>
@@ -33,7 +33,7 @@
           <el-sub-menu v-for="child in filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
             <template #title>
               <el-icon>
-                <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+                <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
               </el-icon>
               <span>{{ child.name }}</span>
             </template>
@@ -45,7 +45,7 @@
               @click="openMenu(grandChild)"
             >
               <el-icon>
-                <component :is="getIconComponent(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+                <component :is="resolveIcon(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
               </el-icon>
               <span>{{ grandChild.name }}</span>
             </el-menu-item>
@@ -59,7 +59,7 @@
             @click="openMenu(child)"
           >
             <el-icon>
-              <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+              <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
             </el-icon>
             <span>{{ child.name }}</span>
           </el-menu-item>
@@ -68,7 +68,7 @@
         <!-- 菜单项 一级菜单 菜单项类型 -->
         <el-menu-item v-for="item in filterItemMenu(menuTree)" :key="item.id" :index="item.id" @click="openMenu(item)">
           <el-icon>
-            <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
+            <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
           </el-icon>
           <span class="menu-name">{{ item.name }}</span>
           <template #title>{{ item.name }}</template>
@@ -79,13 +79,11 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw, h, onMounted } from "vue";
+import { onMounted } from "vue";
 import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElAside } from "element-plus";
-import * as ElementPlusIcons from "@element-plus/icons-vue";
-import { Icon } from "@iconify/vue";
-import type { Component } from "vue";
 import logoUrl from "@/assets/EAS_CROWN.png";
 import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
+import ComIconService from "@/soa/com-series/service/ComIconService.ts";
 
 // 使用菜单服务
 const { menuTree, loading, activeMenuId, loadMenus, openMenu, filterDirectoryMenu, filterItemMenu } =
@@ -96,36 +94,7 @@ onMounted(() => {
   loadMenus();
 });
 
-// 使用 markRaw 包装所有图标组件
-const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
-
-// 缓存动态生成的图标组件，避免重复创建导致重渲染
-const iconCache = new Map<string, Component>();
-
-// 获取图标组件
-const getIconComponent = (iconName: string | Component | undefined): Component | null => {
-  if (!iconName) {
-    return null;
-  }
-
-  if (typeof iconName === "string") {
-    if (iconName.includes(":")) {
-      if (iconCache.has(iconName)) {
-        return iconCache.get(iconName);
-      }
-
-      const component = markRaw(() => h(Icon, { icon: iconName, width: 18, height: 18 }));
-      iconCache.set(iconName, component);
-      return component;
-    }
-
-    if (iconName in icons) {
-      return icons[iconName];
-    }
-  }
-
-  return iconName as Component;
-};
+const { resolveIcon } = ComIconService.useIconService();
 
 // 定义事件
 const emit = defineEmits<{
