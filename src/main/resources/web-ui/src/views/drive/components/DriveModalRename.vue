@@ -54,7 +54,7 @@ const rules = reactive<FormRules>({
   ],
 });
 
-const openModal = (entry: GetEntryListItemVo) => {
+const openModal = (entry: GetEntryListItemVo): void => {
   if (!entry) {
     return;
   }
@@ -66,25 +66,25 @@ const openModal = (entry: GetEntryListItemVo) => {
   modalVisible.value = true;
 };
 
-const onDialogOpened = () => {
+const onDialogOpened = (): void => {
   nameInputRef.value?.focus();
   nextTick(() => {
     nameInputRef.value?.select();
   });
 };
 
-const resetModal = () => {
+const resetModal = (): void => {
   formRef.value?.resetFields();
   form.name = "";
   form.entryId = "";
   submitLoading.value = false;
 };
 
-const closeModal = () => {
+const closeModal = (): void => {
   modalVisible.value = false;
 };
 
-const onSubmit = async () => {
+const onSubmit = async (): Promise<void> => {
   if (!formRef.value) {
     return;
   }

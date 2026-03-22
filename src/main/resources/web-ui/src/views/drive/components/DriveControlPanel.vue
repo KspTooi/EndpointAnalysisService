@@ -111,8 +111,10 @@ import type { GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/Drive
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveControlPanelPaths from "@/views/drive/components/DriveControlPanelPaths.vue";
 import DriveSpaceService from "@/views/drive/service/DriveSpaceService.ts";
+import type { GetDriveSpaceListVo } from "@/views/drive/api/DriveSpaceApi.ts";
 
 //定义props
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = withDefaults(
   defineProps<{
     entryCount?: number; //当前文件夹中的条目数量
@@ -146,7 +148,7 @@ const selectedSpaceId = ref<string>(driveStore.currentDriveSpace?.id ?? "");
 /**
  * 云盘空间切换
  */
-const onSpaceChange = (id: string) => {
+const onSpaceChange = (id: string): void => {
   const space = spaceList.value.find((s) => s.id === id) ?? null;
   driveStore.setCurrentDriveSpace(space);
 };
@@ -199,7 +201,7 @@ watch(
  * 选择任何一个有效空间
  * @param list 空间列表
  */
-const selectOneSpace = (list) => {
+const selectOneSpace = (list: GetDriveSpaceListVo[]): void => {
   if (!list.length) {
     //清除已失效的持久化数据
     if (selectedSpaceId.value) {
@@ -273,7 +275,7 @@ const formatSize = (bytes: string | number | null | undefined): string => {
   return Math.round((numBytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 };
 
-const loadDriveInfo = async () => {
+const loadDriveInfo = async (): Promise<void> => {
   const result = await DriveApi.getDriveInfo({ driveSpaceId: DriveStore().getCurrentDriveSpace.id });
   emit("refresh-drive-info", result);
   if (result.code === 0) {
@@ -281,7 +283,7 @@ const loadDriveInfo = async () => {
   }
 };
 
-const onRefreshDriveInfo = async () => {
+const onRefreshDriveInfo = async (): Promise<void> => {
   const result = await DriveApi.getDriveInfo({ driveSpaceId: DriveStore().getCurrentDriveSpace.id });
   emit("refresh-drive-info", result);
   if (result.code === 0) {
@@ -292,11 +294,11 @@ const onRefreshDriveInfo = async () => {
   ElMessage.error("刷新云盘信息失败");
 };
 
-const onSearch = () => {
+const onSearch = (): void => {
   emit("on-search", keyword.value);
 };
 
-const onSearchInput = () => {
+const onSearchInput = (): void => {
   if (searchTimer) {
     clearTimeout(searchTimer);
   }
@@ -306,11 +308,11 @@ const onSearchInput = () => {
   }, 500);
 };
 
-const onViewUploadQueue = () => {
+const onViewUploadQueue = (): void => {
   emit("open-upload-queue");
 };
 
-const onPathClick = (path: GetEntryListPathVo | null) => {
+const onPathClick = (path: GetEntryListPathVo | null): void => {
   emit("on-path-change", path as any);
 };
 

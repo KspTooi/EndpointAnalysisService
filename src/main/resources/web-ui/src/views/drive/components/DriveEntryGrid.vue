@@ -44,12 +44,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, reactive, watch, type Ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import DriveEntryItem from "@/views/drive/components/DriveEntryItem.vue";
 import DriveEntryGridService from "@/views/drive/service/DriveEntryGridService.ts";
-import type { CurrentDirPo, EntryPo, GetEntryListDto } from "@/views/drive/api/DriveTypes.ts";
-import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
-import ElmentFocusService from "@/commons/service/ElmentFocusService.ts";
+import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
 
 const props = defineProps<{
   //搜索关键词
@@ -86,8 +84,10 @@ const { hasParentDir, currentDir, listQuery, listData, listTotal, listLoading, l
   DriveEntryGridService.useEntryList(emit);
 
 //鼠标框选和点选打包
-const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown, clearSelection } =
-  DriveEntryGridService.useEntrySelection(gridRef, entryRefs);
+const { selectEntry, hasSelecting, selectBox, selectedIds, onMouseDown } = DriveEntryGridService.useEntrySelection(
+  gridRef,
+  entryRefs
+);
 
 //鼠标拖拽打包
 const { onDragStart, onDragOver, onDrop } = DriveEntryGridService.useEntryDrag(listData, selectedIds, emit);
@@ -99,7 +99,7 @@ const {
   backspace: backParentDirectory,
 } = DriveEntryGridService.useDirectoryNavigation(listQuery, selectedIds, listLoad);
 
-const setEntryRef = (id: string, el: any) => {
+const setEntryRef = (id: string, el: any): void => {
   if (!el) {
     entryRefs.value.delete(id);
     return;
@@ -113,7 +113,7 @@ const setEntryRef = (id: string, el: any) => {
  * 条目被单击
  * @param entry 条目对象
  */
-const onEntryClick = (entry: EntryPo) => {
+const onEntryClick = (entry: EntryPo): void => {
   selectEntry(entry);
   emit("on-entry-click", entry);
 };
@@ -122,7 +122,7 @@ const onEntryClick = (entry: EntryPo) => {
  * 条目被双击
  * @param entry 条目对象
  */
-const onEntryDoubleClick = (entry: EntryPo) => {
+const onEntryDoubleClick = (entry: EntryPo): void => {
   if (entry.kind === 1) {
     enterDirectory(entry, currentDir.value);
     return;
@@ -135,7 +135,7 @@ const onEntryDoubleClick = (entry: EntryPo) => {
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onContextmenu = (entry: EntryPo, event: MouseEvent) => {
+const onContextmenu = (entry: EntryPo, event: MouseEvent): void => {
   //如果选了多个且当前右键的也在其中，保持多选状态
   if (selectedIds.value.size > 1 && entry.id && selectedIds.value.has(entry.id)) {
     const selectedEntries = listData.value.filter((item) => selectedIds.value.has(item.id));
@@ -151,7 +151,7 @@ const onContextmenu = (entry: EntryPo, event: MouseEvent) => {
  * 右键点击容器中没有元素的空白区
  * @param event 鼠标事件
  */
-const onGridRightClick = (event: MouseEvent) => {
+const onGridRightClick = (event: MouseEvent): void => {
   emit("on-entry-contextmenu", [], event);
 };
 

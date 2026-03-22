@@ -55,10 +55,9 @@
 </template>
 
 <script setup lang="ts">
-import { Folder, Document, Picture, VideoCamera, Headset } from "@element-plus/icons-vue";
+import { Folder, Document } from "@element-plus/icons-vue";
 import { computed } from "vue";
 import FileUtils from "@/commons/FileUtils.ts";
-import { ElMessage } from "element-plus";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes.ts";
 import FileCategoryService, { EntryCategory } from "@/commons/service/FileCategoryService.ts";
 
@@ -78,6 +77,7 @@ const props = withDefaults(
   }>(),
   {
     type: 0,
+    entry: null,
   }
 );
 
@@ -103,7 +103,7 @@ const { fileCategory } = FileCategoryService.useFileCategory(props.entry?.attach
  * 条目被单击
  * @param entry 条目对象
  */
-const onClick = () => {
+const onClick = (): void => {
   emit("on-click", props.entry);
 };
 
@@ -111,7 +111,7 @@ const onClick = () => {
  * 条目被双击
  * @param entry 条目对象
  */
-const onDoubleClick = () => {
+const onDoubleClick = (): void => {
   //如果当前是上级目录 则构造一个虚拟的PO
   if (props.type === 1) {
     const parentDirPo: EntryPo = {
@@ -137,7 +137,7 @@ const onDoubleClick = () => {
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onContextmenu = (event: MouseEvent) => {
+const onContextmenu = (event: MouseEvent): void => {
   emit("on-contextmenu", props.entry, event);
 };
 
@@ -146,7 +146,7 @@ const onContextmenu = (event: MouseEvent) => {
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onDragStart = (event: DragEvent) => {
+const onDragStart = (event: DragEvent): void => {
   emit("on-drag-start", props.entry, event);
 };
 
@@ -155,7 +155,7 @@ const onDragStart = (event: DragEvent) => {
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onDragOver = (event: DragEvent) => {
+const onDragOver = (event: DragEvent): void => {
   emit("on-drag-over", props.entry, event);
 };
 
@@ -164,7 +164,7 @@ const onDragOver = (event: DragEvent) => {
  * @param entry 条目对象
  * @param event 鼠标事件
  */
-const onDrop = (event: DragEvent) => {
+const onDrop = (event: DragEvent): void => {
   //如果当前是上级目录 则构造一个虚拟的PO
   if (props.type === 1) {
     emit("on-drag-drop", null, props.currentDir, event);

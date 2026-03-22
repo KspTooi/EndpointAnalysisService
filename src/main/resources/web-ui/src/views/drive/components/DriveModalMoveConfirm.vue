@@ -44,7 +44,7 @@ const openModal = (names: string[]): Promise<number> => {
   });
 };
 
-const onOverwrite = () => {
+const onOverwrite = (): void => {
   const action = 0;
   modalVisible.value = false;
   if (resolvePromise) {
@@ -53,7 +53,7 @@ const onOverwrite = () => {
   }
 };
 
-const onSkip = () => {
+const onSkip = (): void => {
   const action = 1;
   modalVisible.value = false;
   if (resolvePromise) {
@@ -62,7 +62,7 @@ const onSkip = () => {
   }
 };
 
-const onCancel = () => {
+const onCancel = (): void => {
   const action = -1;
   modalVisible.value = false;
   if (resolvePromise) {

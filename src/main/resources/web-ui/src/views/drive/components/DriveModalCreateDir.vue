@@ -67,7 +67,7 @@ const rules = reactive<FormRules>({
   ],
 });
 
-const openModal = () => {
+const openModal = (): void => {
   //如果当前没有空间则不进行任何操作
   if (DriveStore().getCurrentDriveSpace == null) {
     ElMessage.error("请先选择一个云盘空间");
@@ -78,11 +78,11 @@ const openModal = () => {
   modalVisible.value = true;
 };
 
-const onDialogOpened = () => {
+const onDialogOpened = (): void => {
   nameInputRef.value?.focus();
 };
 
-const resetModal = () => {
+const resetModal = (): void => {
   formRef.value?.resetFields();
   form.driveSpaceId = DriveStore().getCurrentDriveSpace.id;
   form.name = "";
@@ -92,11 +92,11 @@ const resetModal = () => {
   submitLoading.value = false;
 };
 
-const closeModal = () => {
+const closeModal = (): void => {
   modalVisible.value = false;
 };
 
-const onSubmit = async () => {
+const onSubmit = async (): Promise<void> => {
   console.log("onSubmit", formRef.value);
 
   if (!formRef.value) {
@@ -142,7 +142,7 @@ defineExpose({
   openModal,
 });
 
-watch(modalVisible, (val) => {
+watch(modalVisible, (val: boolean): void => {
   if (val) {
     nextTick(() => {
       const overlay = document.querySelector(".el-overlay");

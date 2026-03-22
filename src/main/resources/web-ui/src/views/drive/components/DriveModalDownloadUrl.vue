@@ -43,17 +43,16 @@
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
 import { ElMessage } from "element-plus";
-import { CopyDocument, InfoFilled } from "@element-plus/icons-vue";
+import { CopyDocument } from "@element-plus/icons-vue";
 
 const modalVisible = ref(false);
 const downloadUrl = ref("");
-const copyBtnRef = ref();
 
 /**
  * 打开模态框
  * @param url 下载链接
  */
-const openModal = (url: string) => {
+const openModal = (url: string): void => {
   downloadUrl.value = url;
   modalVisible.value = true;
 
@@ -70,14 +69,14 @@ const openModal = (url: string) => {
 /**
  * 关闭模态框
  */
-const closeModal = () => {
+const closeModal = (): void => {
   modalVisible.value = false;
 };
 
 /**
  * 复制链接到剪贴板
  */
-const copyUrl = async () => {
+const copyUrl = async (): Promise<void> => {
   if (!downloadUrl.value) {
     return;
   }
@@ -86,7 +85,7 @@ const copyUrl = async () => {
     await navigator.clipboard.writeText(downloadUrl.value);
     ElMessage.success("下载链接已复制到剪贴板");
     closeModal();
-  } catch (err) {
+  } catch {
     // 降级处理：手动选择
     const input = document.querySelector("#copy-target textarea") as HTMLTextAreaElement;
     if (input) {
@@ -103,7 +102,7 @@ const copyUrl = async () => {
 /**
  * 输入框获得焦点时自动全选
  */
-const onInputFocus = (e: FocusEvent) => {
+const onInputFocus = (e: FocusEvent): void => {
   const target = e.target as HTMLTextAreaElement;
   target.select();
 };

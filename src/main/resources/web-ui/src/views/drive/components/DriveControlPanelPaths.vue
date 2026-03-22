@@ -24,7 +24,7 @@ const emit = defineEmits<{
   (e: "on-path-change", path: GetEntryListPathVo): void;
 }>();
 
-const onPathClick = (path: GetEntryListPathVo, index: number) => {
+const onPathClick = (path: GetEntryListPathVo, index: number): void => {
   if (index === props.paths.length - 1) {
     return;
   }

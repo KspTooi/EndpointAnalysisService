@@ -90,7 +90,7 @@ const openConfirm = (pos: EntryPo[]): Promise<boolean> => {
   });
 };
 
-const onConfirm = async () => {
+const onConfirm = async (): Promise<void> => {
   if (loading.value) {
     return;
   }
@@ -126,7 +126,7 @@ const onConfirm = async () => {
   loading.value = false;
 };
 
-const onCancel = () => {
+const onCancel = (): void => {
   if (loading.value) {
     return;
   }

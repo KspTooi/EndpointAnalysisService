@@ -37,11 +37,11 @@ let dragCounter = 0;
 /**
  * 打开文件选择器
  */
-const openSelector = () => {
+const openSelector = (): void => {
   fileInputRef.value?.click();
 };
 
-const onFileInputChange = (event: Event) => {
+const onFileInputChange = (event: Event): void => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files);
@@ -53,27 +53,27 @@ const onFileInputChange = (event: Event) => {
   input.value = "";
 };
 
-const onDragEnter = (event: DragEvent) => {
+const onDragEnter = (event: DragEvent): void => {
   dragCounter++;
   if (event.dataTransfer?.types.includes("Files")) {
     isDragOver.value = true;
   }
 };
 
-const onDragOver = (event: DragEvent) => {
+const onDragOver = (event: DragEvent): void => {
   if (event.dataTransfer?.types.includes("Files")) {
     event.dataTransfer.dropEffect = "copy";
   }
 };
 
-const onDragLeave = (event: DragEvent) => {
+const onDragLeave = (event: DragEvent): void => {
   dragCounter--;
   if (dragCounter === 0) {
     isDragOver.value = false;
   }
 };
 
-const onDrop = (event: DragEvent) => {
+const onDrop = (event: DragEvent): void => {
   dragCounter = 0;
   isDragOver.value = false;
 

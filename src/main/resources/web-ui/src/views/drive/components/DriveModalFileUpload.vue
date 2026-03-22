@@ -68,7 +68,7 @@ const currentIndex = ref(-1);
 const isCancelled = ref(false);
 const hashWorker = ref<Worker | null>(null);
 
-const toUploadQueue = (files: File | File[], parentId?: string | null) => {
+const toUploadQueue = (files: File | File[], parentId?: string | null): void => {
   const targetParentId = parentId !== undefined ? parentId : props.defaultParentId || null;
 
   const fileArray = Array.isArray(files) ? files : [files];
@@ -92,7 +92,7 @@ const toUploadQueue = (files: File | File[], parentId?: string | null) => {
   }
 };
 
-const onCancelAll = () => {
+const onCancelAll = (): void => {
   isCancelled.value = true;
   uploading.value = false;
   uploadQueue.value.forEach((item) => {
@@ -105,7 +105,7 @@ const onCancelAll = () => {
   ElMessage.info("已取消全部上传");
 };
 
-const processQueue = async () => {
+const processQueue = async (): Promise<void> => {
   if (uploading.value) {
     return;
   }
@@ -130,7 +130,7 @@ const processQueue = async () => {
   }
 };
 
-const uploadFile = async (item: UploadQueueItem) => {
+const uploadFile = async (item: UploadQueueItem): Promise<void> => {
   item.status = "uploading";
   item.progress = 0;
   item.statusText = "正在计算哈希...";
@@ -225,7 +225,7 @@ const uploadFile = async (item: UploadQueueItem) => {
   }
 };
 
-const removeFromQueue = (item: UploadQueueItem) => {
+const removeFromQueue = (item: UploadQueueItem): void => {
   const index = uploadQueue.value.indexOf(item);
   if (index === -1) {
     return;
@@ -245,7 +245,7 @@ const computeSHA256 = async (file: File, onProgress?: (progress: number) => void
   const worker = getHashWorker();
 
   return new Promise((resolve, reject) => {
-    const messageHandler = (e: MessageEvent) => {
+    const messageHandler = (e: MessageEvent): void => {
       const { type, progress, hash, error } = e.data;
 
       if (type === "progress" && progress !== undefined) {
@@ -290,7 +290,7 @@ const uploadChunk = async (preCheckId: string, chunkId: number, chunk: Blob): Pr
   return null;
 };
 
-const createEntry = async (file: File, attachId: string, parentId: string | null) => {
+const createEntry = async (file: File, attachId: string, parentId: string | null): Promise<void> => {
   const addEntryDto: AddEntryDto = {
     driveSpaceId: DriveStore().getCurrentDriveSpace.id,
     parentId: parentId,
@@ -324,7 +324,7 @@ onUnmounted(() => {
 
 defineExpose({
   toUploadQueue,
-  openModal: () => {
+  openModal: (): void => {
     modalVisible.value = true;
   },
 });
