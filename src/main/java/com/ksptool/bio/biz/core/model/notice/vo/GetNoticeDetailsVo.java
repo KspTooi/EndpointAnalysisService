@@ -34,6 +34,9 @@ public class GetNoticeDetailsVo {
     @Schema(description = "发送人姓名")
     private String senderName;
 
+    @Schema(description = "接收对象类型 0:全员 1:指定部门 2:指定用户")
+    private Integer targetKind;
+
     @Schema(description = "跳转URL/路由地址")
     private String forward;
 
