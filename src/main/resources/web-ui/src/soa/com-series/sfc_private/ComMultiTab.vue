@@ -13,6 +13,9 @@
           @click="onTabClick(tab.id)"
           @contextmenu.prevent="openContextMenu($event, tab)"
         >
+          <el-icon>
+            <component :is="resolveIcon(tab.icon ?? '')" />
+          </el-icon>
           <span class="tab-title">{{ tab.title }}</span>
           <el-icon v-if="tab.closable !== false && tabs.length > 1" class="close-icon" @click.stop="onTabClose(tab.id)">
             <Close />
@@ -41,6 +44,9 @@ import draggable from "vuedraggable";
 import { ElIcon } from "element-plus";
 import { Refresh, Close } from "@element-plus/icons-vue";
 import ComTabService, { type Tab } from "@/soa/com-series/service/ComTabService.ts";
+import ComIconService from "@/soa/com-series/service/ComIconService.ts";
+//使用图标服务
+const { resolveIcon } = ComIconService.useIconService();
 
 const draggableRef = ref<any>(null);
 
