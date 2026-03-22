@@ -17,10 +17,11 @@ import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescri
  * 的次数远比被编写的次数多。写代码时多花的那几秒钟"展开写清楚"，能为未来每一次阅读节省
  * 数分钟的理解成本。这就是这套规则存在的意义：帮助你更快地完成从"能写"到"写得好"的跨越。
  *
- * 关于限制对象扩展运算符（...）：
+ * 关于对象扩展运算符（...）：
  * { ...userInput, ...defaultConfig } 这样的写法虽然简洁，但会将来源对象的所有属性隐式地
  * 合并到目标中。如果来源对象意外携带了多余字段（如 isAdmin: true），排查由此产生的覆盖问题
  * 成本较高。显式逐一赋值虽然代码更长，但每个字段的来源和去向都一目了然。
+ * 此规则为警告级别，在必要场景下允许使用，但请优先考虑显式赋值。
  *
  * 关于 AI 协作编程：
  * 在 AI 辅助编程日益普及的今天，显式代码风格还带来了一个额外的重要优势——它对 AI 极其友好。
@@ -127,11 +128,6 @@ export default defineConfigWithVueTs(
       "no-restricted-syntax": [
         "error",
         {
-          selector: "ObjectExpression > SpreadElement",
-          message:
-            "请勿在对象中使用扩展运算符(...)。扩展运算符会隐式引入未知属性，使数据流向变得不透明。请逐一显式列出需要传递的属性，确保每个字段都在掌控之中。",
-        },
-        {
           selector: "IfStatement > IfStatement.alternate",
           message:
             "请避免 else-if 嵌套。嵌套的条件分支会使控制流变得复杂且难以追踪。建议使用卫语句（Guard Clauses）：不满足前置条件时提前 return，使主逻辑保持在最浅层级。",
@@ -162,6 +158,19 @@ export default defineConfigWithVueTs(
           message:
             "请避免 map/filter 链式调用。每次链式调用都会创建中间数组，多次链式会产生不必要的内存开销。如有两个以上的操作，建议合并到一个 for 循环中，将复杂度从 O(2n) 降至 O(n)。",
         }, */
+      ],
+    },
+  },
+  {
+    //对象展开运算符降级为警告，允许在必要场景下使用
+    rules: {
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "ObjectExpression > SpreadElement",
+          message:
+            "建议避免在对象中使用扩展运算符(...)。扩展运算符会隐式引入未知属性，使数据流向变得不透明。如非必要，请逐一显式列出需要传递的属性，确保每个字段都在掌控之中。",
+        },
       ],
     },
   },
