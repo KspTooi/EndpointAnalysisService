@@ -2,14 +2,14 @@ import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { GetOrgTreeVo, GetOrgDetailsVo, AddOrgDto, EditOrgDto } from "@/views/core/api/OrgApi.ts";
 import OrgApi from "@/views/core/api/OrgApi.ts";
 import { Result } from "@/commons/model/Result.ts";
-import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
+import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 
 export default {
   /**
    * 组织机构树打包
    * @param listTableRef 列表表格引用
    */
-  useOrgTree(listTableRef: Ref<TableInstance>) {
+  useOrgTree() {
     const queryForm = reactive({
       name: "",
     });
@@ -35,11 +35,27 @@ export default {
           const filteredChildren = node.children ? filterTree(node.children) : [];
 
           if (matchesName) {
-            return { ...node, children: filteredChildren };
+            return {
+              id: node.id,
+              rootId: node.rootId,
+              parentId: node.parentId,
+              kind: node.kind,
+              name: node.name,
+              seq: node.seq,
+              children: filteredChildren,
+            };
           }
 
           if (filteredChildren.length > 0) {
-            return { ...node, children: filteredChildren };
+            return {
+              id: node.id,
+              rootId: node.rootId,
+              parentId: node.parentId,
+              kind: node.kind,
+              name: node.name,
+              seq: node.seq,
+              children: filteredChildren,
+            };
           }
 
           return null;
@@ -68,7 +84,7 @@ export default {
     /**
      * 加载组织机构树
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       try {
         const result = await OrgApi.getOrgTree({ name: queryForm.name });
@@ -82,28 +98,28 @@ export default {
     /**
      * 前端筛选
      */
-    const filterData = () => {
+    const filterData = (): void => {
       // 前端筛选，不需要重新加载数据
     };
 
     /**
      * 重置查询条件
      */
-    const resetQuery = () => {
+    const resetQuery = (): void => {
       queryForm.name = "";
     };
 
     /**
      * 删除组织机构
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该组织机构吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -140,7 +156,7 @@ export default {
    * @param loadList 列表加载函数
    * @param treeSelectData 树形选择器数据
    */
-  useOrgModal(modalFormRef: Ref<FormInstance>, loadList: () => void, treeSelectData: Ref<any[]>) {
+  useOrgModal(modalFormRef: Ref<FormInstance>, loadList: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<"add" | "edit" | "add-item">("add");
@@ -170,7 +186,7 @@ export default {
      * @param mode 模式
      * @param row 当前行
      */
-    const openModal = async (mode: "add" | "edit" | "add-item", row: GetOrgTreeVo | null) => {
+    const openModal = async (mode: "add" | "edit" | "add-item", row: GetOrgTreeVo | null): Promise<void> => {
       modalMode.value = mode;
       resetModal();
 
@@ -208,7 +224,7 @@ export default {
     /**
      * 重置模态框表单
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.parentId = null;
       modalForm.kind = 0;
@@ -224,11 +240,11 @@ export default {
     /**
      * 提交模态框表单
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       //先校验表单
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -298,7 +314,7 @@ export default {
      */
     watch(
       () => modalForm.kind,
-      (newVal) => {
+      (newVal): void => {
         if (newVal == 1) {
           modalForm.parentId = null;
         }

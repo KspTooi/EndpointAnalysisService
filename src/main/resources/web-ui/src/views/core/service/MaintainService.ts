@@ -1,7 +1,7 @@
 import { ref } from "vue";
-import type { MaintainOperation } from "../api/MaintainApi";
-import MaintainApi from "../api/MaintainApi";
-import { Lock, User, Setting, UserFilled, Cpu, Menu as IconMenu, Upload, Tools } from "@element-plus/icons-vue";
+import type { MaintainOperation } from "@/views/core/api/MaintainApi.ts";
+import MaintainApi from "@/views/core/api/MaintainApi.ts";
+import { Lock, User, UserFilled, Cpu, Menu as IconMenu, Upload, Tools } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import ComMenuService from "@/soa/com-series/service/ComMenuService";
 
@@ -10,7 +10,7 @@ export default {
     const globalLoading = ref(false);
 
     //先加载菜单服务
-    const { loadMenuTree } = ComMenuService.useMenuService();
+    const { loadMenus } = ComMenuService.useMenuService();
 
     const maintainOperations: MaintainOperation[] = [
       {
@@ -56,7 +56,7 @@ export default {
         warning: "警告：此操作将把所有菜单恢复为出厂默认设置，您自定义的菜单调整都将丢失！是否确定要继续？",
         action: async () => await MaintainApi.resetMenus(),
         onComplete: () => {
-          loadMenuTree();
+          loadMenus();
         },
       },
       {
@@ -98,12 +98,14 @@ export default {
      * 执行维护操作
      * @param operation 维护操作
      */
-    const executeOperation = async (operation: MaintainOperation) => {
+    const executeOperation = async (operation: MaintainOperation): Promise<void> => {
       // 如果正在执行其他操作，直接返回
-      if (globalLoading.value) return;
+      if (globalLoading.value) {
+        return;
+      }
 
       // 结果处理函数
-      const handleResult = async (result: any) => {
+      const handleResult = async (result: any): Promise<void> => {
         if (operation.onComplete) {
           operation.onComplete();
         }
@@ -187,7 +189,7 @@ export default {
               }
             },
           });
-        } catch (e) {
+        } catch {
           // 用户取消
         }
         return;

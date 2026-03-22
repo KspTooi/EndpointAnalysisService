@@ -1,8 +1,7 @@
+<template>
+  <div class="menu-route-select-modal-placeholder" />
+</template>
 
-
-<template></template>
-
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped></style>

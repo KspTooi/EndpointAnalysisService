@@ -4,8 +4,8 @@
     title="公司成员列表"
     width="800px"
     :close-on-click-modal="false"
-    @close="onClose"
     class="modal-centered"
+    @close="onClose"
   >
     <!-- 查询表单 -->
     <div class="query-form">
@@ -26,8 +26,8 @@
           </el-col>
           <el-col :span="props.role !== undefined ? 16 : 8">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -37,13 +37,13 @@
     <!-- 成员列表 -->
     <div class="member-table">
       <el-table
-        :data="listData"
         v-loading="listLoading"
+        :data="listData"
         border
         row-key="id"
-        @row-click="onRowClick"
         :row-class-name="allowSelect ? 'selectable-row' : ''"
         highlight-current-row
+        @row-click="onRowClick"
       >
         <el-table-column label="用户名称" prop="username" show-overflow-tooltip />
         <el-table-column label="职务" prop="role" width="100" align="center">
@@ -103,6 +103,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   allowSelect: false,
+  role: undefined,
 });
 
 const emit = defineEmits<Emits>();
@@ -163,7 +164,7 @@ watch(visible, (newVal) => {
   emit("update:modelValue", newVal);
 });
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   if (!queryForm.companyId) {
     return;
   }
@@ -188,7 +189,7 @@ const loadList = async () => {
   }
 };
 
-const resetQuery = () => {
+const resetQuery = (): void => {
   queryForm.pageNum = 1;
   queryForm.pageSize = 20;
   queryForm.username = null;
@@ -200,7 +201,7 @@ const resetQuery = () => {
   loadList();
 };
 
-const onRowClick = (row: GetCompanyMemberListVo) => {
+const onRowClick = (row: GetCompanyMemberListVo): void => {
   if (props.allowSelect) {
     onSelect(row);
   }
@@ -208,7 +209,7 @@ const onRowClick = (row: GetCompanyMemberListVo) => {
 
 const selecting = ref(false);
 
-const onSelect = (member: GetCompanyMemberListVo) => {
+const onSelect = (member: GetCompanyMemberListVo): void => {
   if (!props.allowSelect) {
     return;
   }
@@ -220,7 +221,7 @@ const onSelect = (member: GetCompanyMemberListVo) => {
   onClose();
 };
 
-const onClose = () => {
+const onClose = (): void => {
   visible.value = false;
   selecting.value = false;
   resetQuery();

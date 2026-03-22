@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--el-bg-color)] box-border overflow-hidden">
+  <div v-loading="loading" class="flex flex-col h-full bg-[var(--el-bg-color)] box-border overflow-hidden">
     <!-- 搜索栏 -->
     <div class="px-2 mb-2 flex-shrink-0">
       <el-input
@@ -7,9 +7,9 @@
         placeholder="搜索注册表节点"
         clearable
         :prefix-icon="SearchIcon"
-        @input="onFilterInput"
         size="small"
         class="custom-input"
+        @input="onFilterInput"
       />
     </div>
 
@@ -44,10 +44,10 @@
           node-key="id"
           highlight-current
           default-expand-all
-          @node-click="onNodeClick"
           class="custom-tree"
+          @node-click="onNodeClick"
         >
-          <template #default="{ node, data }">
+          <template #default="{ data }">
             <span class="custom-tree-node group flex-1 flex items-center justify-between pr-2 text-[13px]">
               <div class="flex items-center">
                 <el-icon class="mr-1.5 text-[14px]">
@@ -55,7 +55,7 @@
                 </el-icon>
                 <div class="flex gap-1 items-center">
                   <span class="text-[var(--el-text-color-regular)]">{{ data.nkey }}</span>
-                  <span class="text-[var(--el-text-color-regular)] text-[12px]" v-if="data.label">({{ data.label }})</span>
+                  <span v-if="data.label" class="text-[var(--el-text-color-regular)] text-[12px]">({{ data.label }})</span>
                 </div>
               </div>
               <div class="hidden group-hover:flex items-center text-[20px] font-bold gap-0.5">
@@ -118,7 +118,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
@@ -149,7 +149,7 @@ const emit = defineEmits<{
 }>();
 
 // 组件属性
-const props = withDefaults(
+withDefaults(
   defineProps<{
     showHeader?: boolean; // 是否显示“全部节点”顶栏
   }>(),
@@ -170,7 +170,7 @@ const currentSelectedKey = ref<string | number | null>(null); // 当前树内选
 const { treeData, loading, filterText, loadTreeData, onSelectNode, removeNode } = RegistryNodeTreeService.useRegistryNodeTree();
 
 // 辅助方法：用于刷新后重新加载
-const _loadTreeData = () => loadTreeData();
+const _loadTreeData = (): Promise<void> => loadTreeData();
 
 // 核心业务 Hook：节点模态框逻辑
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal, resetModal } =
@@ -186,7 +186,7 @@ const defaultProps = {
  * 处理“全部注册表节点”点击事件
  * 清空树选中状态，通知父组件加载全部数据
  */
-const onSelectAll = () => {
+const onSelectAll = (): void => {
   isAllSelected.value = true;
   currentSelectedKey.value = null;
   treeRef.value?.setCurrentKey(null);
@@ -197,7 +197,7 @@ const onSelectAll = () => {
 /**
  * 实时过滤搜索输入
  */
-const onFilterInput = (val: string) => {
+const onFilterInput = (val: string): void => {
   treeRef.value?.filter(val);
 };
 
@@ -205,15 +205,17 @@ const onFilterInput = (val: string) => {
  * Element Plus 树搜索逻辑
  * 支持按 Key 或 Label 模糊搜索
  */
-const filterNode = (value: string, data: GetRegistryNodeTreeVo) => {
-  if (!value) return true;
+const filterNode = (value: string, data: GetRegistryNodeTreeVo): boolean => {
+  if (!value) {
+    return true;
+  }
   return (data.nkey || "").includes(value) || (data.label || "").includes(value);
 };
 
 /**
  * 处理常规树节点点击事件
  */
-const onNodeClick = (data: GetRegistryNodeTreeVo) => {
+const onNodeClick = (data: GetRegistryNodeTreeVo): void => {
   isAllSelected.value = false;
   currentSelectedKey.value = data.id;
   emit("on-select", data);

@@ -38,7 +38,7 @@ export default {
      * 加载当前选中路径下的条目列表
      * @param path 可选覆盖路径，若不传则使用 keyPath.value
      */
-    const loadList = async (path?: string | null) => {
+    const loadList = async (path?: string | null): Promise<void> => {
       const targetPath = path ?? keyPath.value;
       if (!targetPath) {
         // 如果没有选中任何节点，清空列表
@@ -63,7 +63,7 @@ export default {
      * 重置查询并重新加载
      * @param path 可选重置的路径
      */
-    const resetList = (path?: string | null) => {
+    const resetList = (path?: string | null): void => {
       listForm.value = {
         keyPath: path ?? keyPath.value ?? "",
         pageNum: 1,
@@ -78,7 +78,7 @@ export default {
      * 删除指定条目记录
      * @param row 待删除的行数据
      */
-    const removeList = async (row: GetRegistryEntryListVo) => {
+    const removeList = async (row: GetRegistryEntryListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm(`确定要删除条目 [${row.nkey}] 吗？`, "提示", {
           type: "warning",
@@ -100,14 +100,14 @@ export default {
     /**
      * 删除选中项
      */
-    const removeListBatch = async () => {
+    const removeListBatch = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm(`确定要删除选中的 ${listSelected.value.length} 项吗？`, "提示", {
           type: "warning",
           confirmButtonText: "确定",
           cancelButtonText: "取消",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -121,7 +121,7 @@ export default {
       }
     };
 
-    const onSelectionChange = (rows: GetRegistryEntryListVo[]) => {
+    const onSelectionChange = (rows: GetRegistryEntryListVo[]): void => {
       listSelected.value = rows;
     };
 
@@ -169,7 +169,7 @@ export default {
       nkey: [
         { required: true, message: "请输入节点Key", trigger: "blur" },
         { max: 128, message: "Key长度不能超过128个字符", trigger: "blur" },
-        { pattern: /^[a-zA-Z0-9_\-]+$/, message: "Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
+        { pattern: /^[a-zA-Z0-9_-]+$/, message: "Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
       ],
       nvalue: [
         { required: true, message: "请输入节点值", trigger: "blur" },
@@ -183,7 +183,7 @@ export default {
     /**
      * 重置模态框数据
      */
-    const resetModal = (excludeParent: boolean = false) => {
+    const resetModal = (excludeParent: boolean = false): void => {
       modalForm.id = "";
       if (!excludeParent) {
         modalForm.parentId = undefined;
@@ -209,7 +209,11 @@ export default {
      * @param row 编辑时的原始数据
      * @param parentId 新增所属的父节点 ID
      */
-    const openModal = (mode: "add" | "edit", row: GetRegistryEntryListVo | null = null, parentId: string | null = null) => {
+    const openModal = (
+      mode: "add" | "edit",
+      row: GetRegistryEntryListVo | null = null,
+      parentId: string | null = null
+    ): void => {
       modalMode.value = mode;
       resetModal();
 
@@ -238,7 +242,7 @@ export default {
     /**
      * 执行表单提交过程
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!formRef.value) {
         return;
       }

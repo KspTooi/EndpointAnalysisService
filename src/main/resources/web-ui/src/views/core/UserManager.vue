@@ -282,12 +282,12 @@ const onSelectOrg = (org: GetOrgTreeVo | null) => {
 const orgId = ref<string | null>(null);
 
 // 列表打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList(orgId);
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = UserManagerService.useUserList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
 
-const _loadList = () => {
+const _loadList = (): void => {
   loadList(orgId.value);
 };
 

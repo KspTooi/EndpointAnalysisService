@@ -1,13 +1,13 @@
 <template>
-  <div class="org-tree-container" v-loading="loading">
+  <div v-loading="loading" class="org-tree-container">
     <div class="filter-wrapper pr-2 pl-2">
       <el-input
         v-model="filterText"
         placeholder="搜索机构/部门"
         clearable
         :prefix-icon="SearchIcon"
-        @input="onFilterInput"
         size="small"
+        @input="onFilterInput"
       />
     </div>
 
@@ -26,9 +26,9 @@
         node-key="id"
         highlight-current
         default-expand-all
+        class="custom-tree"
         @node-click="onNodeClick"
         @check="onCheckChange"
-        class="custom-tree"
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node" :class="{ 'is-disabled': isNodeDisabled(data) }">
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, markRaw, onMounted } from "vue";
+import { ref, markRaw, onMounted } from "vue";
 import type { ElTree } from "element-plus";
 import { Search, OfficeBuilding, Management } from "@element-plus/icons-vue";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
@@ -84,7 +84,7 @@ const defaultProps = {
   label: "name",
 };
 
-const onSelectAll = () => {
+const onSelectAll = (): void => {
   isAllSelected.value = true;
   currentSelectedKey.value = null;
   treeRef.value?.setCurrentKey(null);
@@ -92,24 +92,34 @@ const onSelectAll = () => {
   onSelectOrg(null);
 };
 
-const onFilterInput = (val: string) => {
+const onFilterInput = (val: string): void => {
   treeRef.value?.filter(val);
 };
 
-const filterNode = (value: string, data: GetOrgTreeVo) => {
-  if (!value) return true;
+const filterNode = (value: string, data: GetOrgTreeVo): boolean => {
+  if (!value) {
+    return true;
+  }
   return data.name.includes(value);
 };
 
-const isNodeDisabled = (data: GetOrgTreeVo) => {
-  if (props.selectKind === 'all') return false;
-  if (props.selectKind === 'root') return data.kind !== 1;
-  if (props.selectKind === 'dept') return data.kind === 1;
+const isNodeDisabled = (data: GetOrgTreeVo): boolean => {
+  if (props.selectKind === "all") {
+    return false;
+  }
+  if (props.selectKind === "root") {
+    return data.kind !== 1;
+  }
+  if (props.selectKind === "dept") {
+    return data.kind === 1;
+  }
   return false;
 };
 
-const onNodeClick = (data: GetOrgTreeVo) => {
-  if (props.multiple) return;
+const onNodeClick = (data: GetOrgTreeVo): void => {
+  if (props.multiple) {
+    return;
+  }
   if (isNodeDisabled(data)) {
     treeRef.value?.setCurrentKey(currentSelectedKey.value);
     return;
@@ -120,24 +130,26 @@ const onNodeClick = (data: GetOrgTreeVo) => {
   onSelectOrg(data);
 };
 
-const onCheckChange = () => {
-  if (!treeRef.value) return;
+const onCheckChange = (): void => {
+  if (!treeRef.value) {
+    return;
+  }
   const checkedNodes = treeRef.value.getCheckedNodes() as GetOrgTreeVo[];
   emit("on-check", checkedNodes);
 };
 
-const reset = () => {
+const reset = (): void => {
   onSelectAll();
   if (props.multiple && treeRef.value) {
     treeRef.value.setCheckedKeys([]);
   }
 };
 
-const getCheckedNodes = () => {
+const getCheckedNodes = (): GetOrgTreeVo[] | undefined => {
   return treeRef.value?.getCheckedNodes() as GetOrgTreeVo[];
 };
 
-const setCheckedKeys = (keys: string[]) => {
+const setCheckedKeys = (keys: string[]): void => {
   treeRef.value?.setCheckedKeys(keys);
 };
 

@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
+import { computed, onMounted, reactive, ref, type Ref } from "vue";
 import type {
   GetUserDetailsVo,
   GetUserListDto,
@@ -19,7 +19,7 @@ export default {
   /**
    * 用户列表打包
    */
-  useUserList(orgId: Ref<string | null>) {
+  useUserList() {
     const listForm = ref<GetUserListDto>({
       pageNum: 1,
       pageSize: 20,
@@ -35,7 +35,7 @@ export default {
     /**
      * 加载用户列表
      */
-    const loadList = async (orgId?: string | null) => {
+    const loadList = async (orgId?: string | null): Promise<void> => {
       listForm.value.orgId = orgId ?? null;
       listLoading.value = true;
       const result = await AdminUserApi.getUserList(listForm.value);
@@ -56,7 +56,7 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = (orgId?: string | null) => {
+    const resetList = (orgId?: string | null): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.username = "";
@@ -69,14 +69,14 @@ export default {
     /**
      * 删除用户
      */
-    const removeList = async (user: GetUserListVo) => {
+    const removeList = async (user: GetUserListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该用户吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -143,8 +143,14 @@ export default {
     const processOrgTreeData = (treeData: GetOrgTreeVo[]): any[] => {
       return treeData.map((node) => {
         const processedNode: any = {
-          ...node,
-          disabled: node.kind === 1, // kind === 1 表示企业，禁用选择
+          id: node.id,
+          rootId: node.rootId,
+          parentId: node.parentId,
+          kind: node.kind,
+          name: node.name,
+          seq: node.seq,
+          disabled: node.kind === 1,
+          children: node.children,
         };
         if (node.children && node.children.length > 0) {
           processedNode.children = processOrgTreeData(node.children);
@@ -157,7 +163,7 @@ export default {
       username: [
         {
           trigger: "blur",
-          validator: (rule: any, value: string, callback: Function) => {
+          validator: (rule: any, value: string, callback: (error?: string | Error) => void) => {
             if (modalMode.value === "edit") {
               callback();
               return;
@@ -178,7 +184,7 @@ export default {
       password: [
         {
           trigger: "blur",
-          validator: (rule: any, value: string, callback: Function) => {
+          validator: (rule: any, value: string, callback: (error?: string | Error) => void) => {
             const password = modalFormPassword.value;
             if (modalMode.value === "add" && !password) {
               callback(new Error("请输入密码"));
@@ -209,7 +215,7 @@ export default {
      * @param orgId 组织ID
      * @returns 组织项
      */
-    const findOrgItem = (orgTreeOptions: any[], orgId: string | null) => {
+    const findOrgItem = (orgTreeOptions: any[], orgId: string | null): any | null => {
       for (let i = 0; i < orgTreeOptions.length; i++) {
         if (orgTreeOptions[i].id === orgId) {
           return orgTreeOptions[i];
@@ -228,7 +234,7 @@ export default {
      * @param mode 模式
      * @param currentRow 当前行
      */
-    const openModal = async (mode: "add" | "edit", currentRow: GetUserListVo | null) => {
+    const openModal = async (mode: "add" | "edit", currentRow: GetUserListVo | null): Promise<void> => {
       modalMode.value = mode;
       modalCurrentRow.value = currentRow;
       resetModal();
@@ -313,7 +319,7 @@ export default {
     /**
      * 重置模态框表单
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.username = "";
       modalForm.nickname = "";
@@ -335,11 +341,11 @@ export default {
     /**
      * 提交模态框表单
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       //先校验表单
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -432,7 +438,7 @@ export default {
     const selectedRows = ref<GetUserListVo[]>([]);
     const batchCount = ref(0);
 
-    const onSelectionChange = (rows: GetUserListVo[]) => {
+    const onSelectionChange = (rows: GetUserListVo[]): void => {
       selectedRows.value = rows;
       batchCount.value = rows.length;
     };
@@ -441,7 +447,7 @@ export default {
      * 批量操作调度器
      * @param command 操作指令: enable, disable, remove, changeDept
      */
-    const onBatchAction = async (command: string) => {
+    const onBatchAction = async (command: string): Promise<void> => {
       const ids = selectedRows.value.map((row) => row.id);
       if (ids.length === 0) {
         return;

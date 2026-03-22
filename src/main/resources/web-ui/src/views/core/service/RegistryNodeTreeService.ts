@@ -26,14 +26,14 @@ export default {
      * 选择节点事件
      * @param node 被选中的节点，null 表示选择“全部”
      */
-    const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
+    const onSelectNode = (node: GetRegistryNodeTreeVo | null): void => {
       selectedNode.value = node;
     };
 
     /**
      * 调用 API 加载注册表树结构
      */
-    const loadTreeData = async () => {
+    const loadTreeData = async (): Promise<void> => {
       loading.value = true;
       try {
         const data = await RegistryApi.getRegistryNodeTree();
@@ -50,14 +50,14 @@ export default {
      * @param node 待删除的节点对象
      * @param onRefresh 删除成功后的刷新回调
      */
-    const removeNode = async (node: GetRegistryNodeTreeVo, onRefresh: () => void) => {
+    const removeNode = async (node: GetRegistryNodeTreeVo, onRefresh: () => void): Promise<void> => {
       try {
         await ElMessageBox.confirm(`确定要删除节点 [${node.nkey}] 吗？`, "确认删除", {
           confirmButtonText: "确认",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -111,7 +111,7 @@ export default {
       nkey: [
         { required: true, message: "请输入节点Key", trigger: "blur" },
         { max: 128, message: "节点Key长度不能超过128个字符", trigger: "blur" },
-        { pattern: /^[a-zA-Z0-9_\-]+$/, message: "节点Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
+        { pattern: /^[a-zA-Z0-9_-]+$/, message: "节点Key只能包含字母、数字、下划线或中划线", trigger: "blur" },
       ],
       label: [{ max: 32, message: "节点标签长度不能超过32个字符", trigger: "blur" }],
       remark: [{ max: 1000, message: "说明长度不能超过1000个字符", trigger: "blur" }],
@@ -121,7 +121,7 @@ export default {
     /**
      * 重置表单状态
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.parentId = undefined;
       modalForm.kind = 0;
@@ -149,7 +149,7 @@ export default {
       mode: "add" | "edit",
       node: GetRegistryNodeTreeVo | null = null,
       parentNode: GetRegistryNodeTreeVo | null = null
-    ) => {
+    ): void => {
       modalMode.value = mode;
       resetModal();
 
@@ -172,14 +172,14 @@ export default {
     /**
      * 提交表单数据并保存
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!formRef.value) {
         return;
       }
 
       try {
         await formRef.value.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 

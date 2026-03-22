@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown trigger="click" @visible-change="onVisibleChange" class="notice-dropdown">
+  <el-dropdown trigger="click" class="notice-dropdown" @visible-change="onVisibleChange">
     <div class="flex items-center justify-center px-3 h-full w-full cursor-pointer transition-colors hover:bg-black/5">
       <el-badge :value="processedCount" :hidden="count === 0" :max="99">
         <el-icon :size="20" class="text-gray-600">
@@ -49,14 +49,14 @@
 
         <!-- 底部查看全部按钮 -->
         <div class="border-t border-gray-200 px-4 py-3 text-center">
-          <el-button link type="primary" @click="onViewAll" class="w-full">查看全部消息</el-button>
+          <el-button link type="primary" class="w-full" @click="onViewAll">查看全部消息</el-button>
         </div>
       </div>
     </template>
   </el-dropdown>
 
   <!-- 通知详情模态框 -->
-  <el-dialog v-model="modalVisible" title="通知详情" width="600px" @close="closeModal" :close-on-click-modal="false">
+  <el-dialog v-model="modalVisible" title="通知详情" width="600px" :close-on-click-modal="false" @close="closeModal">
     <div v-loading="modalLoading" class="min-h-[200px] select-text">
       <template v-if="detailsData">
         <!-- 标题和标签 -->
@@ -100,14 +100,12 @@
 
 <script setup lang="ts">
 import { onMounted, type Component } from "vue";
-import { useRouter } from "vue-router";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
 import UserNoticeService from "@/views/core/service/NoticeRcdService.ts";
 import type { GetUserNoticeRcdListVo } from "@/views/core/api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
 import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
-const router = useRouter();
 const { openTab } = ComTabService.useTabService();
 
 // 使用 Service 中的逻辑

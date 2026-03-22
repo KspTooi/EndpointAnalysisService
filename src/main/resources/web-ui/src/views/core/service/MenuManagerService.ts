@@ -13,7 +13,7 @@ export default {
    */
   useMenuList(listTableRef: Ref<TableInstance>) {
     //先加载菜单服务
-    const { loadMenuTree } = ComMenuService.useMenuService();
+    const { loadMenus } = ComMenuService.useMenuService();
 
     const listForm = ref<GetMenuTreeDto>({
       name: "",
@@ -29,7 +29,7 @@ export default {
     /**
      * 加载菜单列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await MenuApi.getMenuTree(listForm.value);
 
@@ -48,7 +48,7 @@ export default {
     /**
      * 重置查询条件
      */
-    const resetList = async () => {
+    const resetList = async (): Promise<void> => {
       listForm.value.name = "";
       listForm.value.menuKind = null;
       listForm.value.permission = "";
@@ -59,14 +59,14 @@ export default {
     /**
      * 删除菜单
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该菜单吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -75,7 +75,7 @@ export default {
         await loadList();
 
         //通知左侧菜单重新加载
-        loadMenuTree();
+        loadMenus();
       } catch (error: any) {
         ElMessage.error(error.message);
         return;
@@ -85,7 +85,7 @@ export default {
     /**
      * 展开/收起全部
      */
-    const listExpandToggle = () => {
+    const listExpandToggle = (): void => {
       if (listExpand.value) {
         listExpand.value = false;
         listExpandToggleInner(listData.value, false);
@@ -98,7 +98,7 @@ export default {
     /**
      * 加载不带条件的完整菜单树用于父级选择
      */
-    const loadFullMenuTree = async () => {
+    const loadFullMenuTree = async (): Promise<void> => {
       const result = await MenuApi.getMenuTree({});
       if (Result.isSuccess(result)) {
         fullMenuTree.value = result.data;
@@ -110,7 +110,7 @@ export default {
      * @param data 菜单数据
      * @param expand 是否展开
      */
-    const listExpandToggleInner = (data: GetMenuTreeVo[], expand: boolean) => {
+    const listExpandToggleInner = (data: GetMenuTreeVo[], expand: boolean): void => {
       for (const item of data) {
         listTableRef.value?.toggleRowExpansion(item, expand);
         if (item.children != undefined && item.children.length > 0) {
@@ -154,7 +154,7 @@ export default {
     loadFullMenuTree: () => Promise<void>
   ) {
     //先加载菜单服务
-    const { loadMenuTree } = ComMenuService.useMenuService();
+    const { loadMenus } = ComMenuService.useMenuService();
 
     const modalVisible = ref(false);
     const modalLoading = ref(false);
@@ -218,7 +218,7 @@ export default {
      * @param mode 模式
      * @param currentRow 当前行
      */
-    const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetMenuTreeVo | null) => {
+    const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetMenuTreeVo | null): Promise<void> => {
       // 打开模态框时加载完整菜单树用于选择父级
       await loadFullMenuTree();
 
@@ -281,7 +281,7 @@ export default {
      * 重置模态框表单
      * @param force 硬重置，不保留父级ID、菜单类型
      */
-    const resetModal = (force: boolean = false) => {
+    const resetModal = (force: boolean = false): void => {
       modalForm.id = "";
       modalForm.name = "";
       modalForm.description = "";
@@ -303,11 +303,11 @@ export default {
     /**
      * 提交模态框表单
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       //先校验表单
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -342,7 +342,7 @@ export default {
       }
 
       //通知左侧菜单重新加载
-      loadMenuTree();
+      loadMenus();
     };
 
     /**
@@ -368,21 +368,39 @@ export default {
 
             // 当前是目录，父级只能是目录或根节点
             if (currentMenu.menuKind === 0) {
-              if (item.menuKind === 1) disabled = true;
+              if (item.menuKind === 1) {
+                disabled = true;
+              }
             }
 
             // 当前是菜单，父级只能是目录
             if (currentMenu.menuKind === 1) {
-              if (item.menuKind !== 0) disabled = true;
+              if (item.menuKind !== 0) {
+                disabled = true;
+              }
             }
 
             // 当前是按钮，父级只能是菜单
             if (currentMenu.menuKind === 2) {
-              if (item.menuKind !== 1) disabled = true;
+              if (item.menuKind !== 1) {
+                disabled = true;
+              }
             }
 
             return {
-              ...item,
+              id: item.id,
+              parentId: item.parentId,
+              name: item.name,
+              kind: item.kind,
+              menuKind: item.menuKind,
+              menuPath: item.menuPath,
+              menuQueryParam: item.menuQueryParam,
+              menuIcon: item.menuIcon,
+              menuHidden: item.menuHidden,
+              menuBtnId: item.menuBtnId,
+              permission: item.permission,
+              missingPermission: item.missingPermission,
+              seq: item.seq,
               disabled,
               children: item.children ? filter(item.children) : [],
             };

@@ -161,7 +161,7 @@ const listTableRef = ref<TableInstance>();
 const modalFormRef = ref<FormInstance>();
 
 const { queryForm, listLoading, filteredData, treeSelectData, filterData, resetQuery, removeList, loadList } =
-  OrgManagerService.useOrgTree(listTableRef);
+  OrgManagerService.useOrgTree();
 
 const {
   modalKindName,
@@ -174,7 +174,7 @@ const {
   openModal,
   resetModal,
   submitModal,
-} = OrgManagerService.useOrgModal(modalFormRef, loadList, treeSelectData);
+} = OrgManagerService.useOrgModal(modalFormRef, loadList);
 
 const filterTreeSelectData = computed(() => {
   const disableNode = (tree: any[], id: string): any[] => {

@@ -9,7 +9,7 @@
     class="core-org-dept-select-modal"
     @opened="onOpened"
   >
-    <div class="modal-body" v-loading="loading">
+    <div v-loading="loading" class="modal-body">
       <div class="tree-container">
         <OrgTree
           ref="orgTreeRef"
@@ -54,6 +54,7 @@ const props = withDefaults(
     title: "选择部门",
     width: "450px",
     multiple: false,
+    defaultSelected: undefined,
   }
 );
 
@@ -66,7 +67,7 @@ const emit = defineEmits<{
 const visible = ref(false);
 const loading = ref(false);
 const orgTreeRef = ref();
-const { selectedNode, selectedNodes, onSelect, onCheck } = CoreOrgDeptSelectModalService.useDeptSelect(props.multiple);
+const { selectedNode, selectedNodes, onSelect, onCheck } = CoreOrgDeptSelectModalService.useDeptSelect();
 
 // 计算有效的部门节点数量（过滤掉企业节点 kind === 1）
 const validDeptCount = computed(() => {
@@ -89,7 +90,7 @@ watch(
 /**
  * 弹窗打开后处理逻辑
  */
-const onOpened = async () => {
+const onOpened = async (): Promise<void> => {
   loading.value = true;
   try {
     // 等待树数据加载完成后再初始化选中状态
@@ -132,7 +133,7 @@ const select = async (): Promise<GetOrgTreeVo | GetOrgTreeVo[]> => {
   });
 };
 
-const initSelection = () => {
+const initSelection = (): void => {
   if (!orgTreeRef.value) {
     return;
   }
@@ -159,7 +160,7 @@ const initSelection = () => {
   }
 };
 
-const onConfirm = () => {
+const onConfirm = (): void => {
   let result: GetOrgTreeVo | GetOrgTreeVo[] | null = null;
 
   if (props.multiple) {
@@ -181,9 +182,11 @@ const onConfirm = () => {
   visible.value = false;
 };
 
-const onCancel = () => {
+const onCancel = (): void => {
   visible.value = false;
-  if (promiseReject) promiseReject("cancel");
+  if (promiseReject) {
+    promiseReject("cancel");
+  }
   emit("cancel");
 };
 

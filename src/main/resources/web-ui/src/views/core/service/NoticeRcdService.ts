@@ -17,12 +17,12 @@ export default {
       return count.value > 99 ? 99 + "+" : count.value;
     });
 
-    const loadCount = async () => {
+    const loadCount = async (): Promise<void> => {
       countLoading.value = true;
       try {
         const result = await NoticeRcdApi.getUserNoticeCount();
         count.value = result;
-      } catch (error) {
+      } catch {
         //ElMessage.error(error.message);
       } finally {
         countLoading.value = false;
@@ -55,7 +55,7 @@ export default {
     const listLoading = ref(false);
     const listSelected = ref<GetUserNoticeRcdListVo[]>([]);
 
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
 
       try {
@@ -65,7 +65,7 @@ export default {
           listData.value = result.data;
           listTotal.value = result.total;
         }
-      } catch (error) {
+      } catch {
         //ElMessage.error(error.message);
       } finally {
         listLoading.value = false;
@@ -75,7 +75,7 @@ export default {
     /**
      * 重置查询表单
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.title = undefined;
@@ -123,7 +123,7 @@ export default {
     /**
      * 加载更多数据
      */
-    const loadMore = async () => {
+    const loadMore = async (): Promise<void> => {
       if (disabled.value) {
         return;
       }
@@ -157,7 +157,7 @@ export default {
             }
           }
         }
-      } catch (error) {
+      } catch {
         // ElMessage.error(error.message);
       } finally {
         listLoading.value = false;
@@ -167,7 +167,7 @@ export default {
     /**
      * 重置列表数据
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listData.value = [];
       pageNum.value = 1;
       listTotal.value = 0;
@@ -221,7 +221,7 @@ export default {
     /**
      * 删除通知记录
      */
-    const remove = async (id: string) => {
+    const remove = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定要删除这条通知吗？", "提示", {
           confirmButtonText: "确定",
@@ -247,7 +247,7 @@ export default {
     /**
      * 批量删除通知记录
      */
-    const removeBatch = async (ids: string[]) => {
+    const removeBatch = async (ids: string[]): Promise<void> => {
       if (!ids || ids.length === 0) {
         ElMessage.warning("请选择要删除的消息");
         return;
@@ -278,7 +278,7 @@ export default {
     /**
      * 全部已读
      */
-    const readAll = async () => {
+    const readAll = async (): Promise<void> => {
       try {
         await NoticeRcdApi.readAllUserNoticeRcd();
         ElMessage.success("已全部标记为已读");
@@ -311,7 +311,7 @@ export default {
     /**
      * 打开详情模态框
      */
-    const openModal = async (id: string) => {
+    const openModal = async (id: string): Promise<void> => {
       modalVisible.value = true;
       modalLoading.value = true;
       detailsData.value = null;
@@ -330,7 +330,7 @@ export default {
     /**
      * 关闭详情模态框
      */
-    const closeModal = () => {
+    const closeModal = (): void => {
       modalVisible.value = false;
       detailsData.value = null;
     };

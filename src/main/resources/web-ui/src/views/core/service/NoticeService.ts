@@ -42,7 +42,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await NoticeApi.getNoticeList(listForm.value);
 
@@ -62,7 +62,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.title = "";
@@ -78,14 +78,14 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetNoticeListVo) => {
+    const removeList = async (row: GetNoticeListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -176,7 +176,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetNoticeListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetNoticeListVo | null): Promise<void> => {
       modalMode.value = mode;
 
       if (mode === "add") {
@@ -217,7 +217,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       if (!modalFormRef.value) {
         return;
       }
@@ -235,14 +235,14 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!modalFormRef.value) {
         return;
       }
 
       try {
         await modalFormRef.value.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -305,7 +305,7 @@ export default {
     /**
      * 选择部门
      */
-    const onDeptSelect = (depts: GetOrgTreeVo[]) => {
+    const onDeptSelect = (depts: GetOrgTreeVo[]): void => {
       if (modalForm.targetKind !== 1) {
         return;
       }
@@ -316,7 +316,7 @@ export default {
     /**
      * 选择用户
      */
-    const onUserSelect = (users: GetUserListVo[]) => {
+    const onUserSelect = (users: GetUserListVo[]): void => {
       if (modalForm.targetKind !== 2) {
         return;
       }
@@ -326,7 +326,7 @@ export default {
     //处理接收对象类型变化时清空接收对象ID列表
     watch(
       () => modalForm.targetKind,
-      (newVal) => {
+      (): void => {
         modalForm.targetIds = [];
       }
     );

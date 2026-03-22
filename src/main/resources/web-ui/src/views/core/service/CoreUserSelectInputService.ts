@@ -23,7 +23,7 @@ export default {
     const selectedUser = ref<GetUserListVo | null>(null);
     const displayValue = ref("");
 
-    const loadList = async (orgId?: string | null) => {
+    const loadList = async (orgId?: string | null): Promise<void> => {
       listForm.value.orgId = orgId ?? null;
       listLoading.value = true;
 
@@ -41,7 +41,7 @@ export default {
       listLoading.value = false;
     };
 
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.username = "";
@@ -49,7 +49,7 @@ export default {
       loadList(listForm.value.orgId);
     };
 
-    const loadUserById = async (userId: string) => {
+    const loadUserById = async (userId: string): Promise<GetUserListVo | null> => {
       if (!userId) {
         return null;
       }
@@ -74,7 +74,7 @@ export default {
       return null;
     };
 
-    const loadUsersByIds = async (userIds: string[]) => {
+    const loadUsersByIds = async (userIds: string[]): Promise<GetUserListVo[]> => {
       if (!userIds || userIds.length === 0) {
         return [];
       }

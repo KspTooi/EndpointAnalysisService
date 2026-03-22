@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" title="用户列表" width="900px" :close-on-click-modal="false" @close="onClose" class="modal-centered">
+  <el-dialog v-model="visible" title="用户列表" width="900px" :close-on-click-modal="false" class="modal-centered" @close="onClose">
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="queryForm">
@@ -19,8 +19,8 @@
           </el-col>
           <el-col :span="8">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetQuery" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -30,13 +30,13 @@
     <!-- 用户列表 -->
     <div class="user-table">
       <el-table
-        :data="listData"
         v-loading="listLoading"
+        :data="listData"
         border
         row-key="id"
-        @row-click="onRowClick"
         :row-class-name="allowSelect ? 'selectable-row' : ''"
         highlight-current-row
+        @row-click="onRowClick"
       >
         <el-table-column label="用户名" prop="username" show-overflow-tooltip />
         <el-table-column label="昵称" prop="nickname" show-overflow-tooltip />
@@ -126,7 +126,7 @@ watch(visible, (newVal) => {
   emit("update:modelValue", newVal);
 });
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
 
   try {
@@ -147,7 +147,7 @@ const loadList = async () => {
   }
 };
 
-const resetQuery = () => {
+const resetQuery = (): void => {
   queryForm.pageNum = 1;
   queryForm.pageSize = 20;
   queryForm.username = undefined;
@@ -155,13 +155,13 @@ const resetQuery = () => {
   loadList();
 };
 
-const onRowClick = (row: GetUserListVo) => {
+const onRowClick = (row: GetUserListVo): void => {
   if (props.allowSelect) {
     onSelect(row);
   }
 };
 
-const onSelect = (user: GetUserListVo) => {
+const onSelect = (user: GetUserListVo): void => {
   if (!props.allowSelect) {
     return;
   }
@@ -169,7 +169,7 @@ const onSelect = (user: GetUserListVo) => {
   onClose();
 };
 
-const onClose = () => {
+const onClose = (): void => {
   visible.value = false;
   resetQuery();
 };

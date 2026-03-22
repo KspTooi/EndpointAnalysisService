@@ -1,21 +1,28 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import OrgApi, { type GetOrgTreeVo } from "@/views/core/api/OrgApi";
 
 export default class OrgTreeService {
   /**
    * 组织架构树逻辑
    */
-  public static useOrgTree() {
+  public static useOrgTree(): {
+    treeData: Ref<GetOrgTreeVo[]>;
+    loading: Ref<boolean>;
+    filterText: Ref<string>;
+    loadTreeData: () => Promise<void>;
+    selectedOrg: Ref<GetOrgTreeVo | null>;
+    onSelectOrg: (org: GetOrgTreeVo | null) => void;
+  } {
     const treeData = ref<GetOrgTreeVo[]>([]);
     const loading = ref(false);
     const filterText = ref("");
     const selectedOrg = ref<GetOrgTreeVo | null>(null);
 
-    const onSelectOrg = (org: GetOrgTreeVo | null) => {
+    const onSelectOrg = (org: GetOrgTreeVo | null): void => {
       selectedOrg.value = org;
     };
 
-    const loadTreeData = async () => {
+    const loadTreeData = async (): Promise<void> => {
       loading.value = true;
       try {
         const data = await OrgApi.getOrgTree({ name: filterText.value });

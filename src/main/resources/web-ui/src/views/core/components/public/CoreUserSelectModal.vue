@@ -9,11 +9,11 @@
     class="core-user-select-modal"
     @opened="onOpened"
   >
-    <div class="modal-body" v-loading="listLoading">
+    <div v-loading="listLoading" class="modal-body">
       <splitpanes class="custom-theme">
         <pane size="20" min-size="10" max-size="40">
           <div class="mt-2 px-1">
-            <OrgTree @on-select="onSelectOrg" :show-header="true" />
+            <OrgTree :show-header="true" @on-select="onSelectOrg" />
           </div>
         </pane>
 
@@ -39,8 +39,8 @@
                   <el-col :span="5" :offset="1"> </el-col>
                   <el-col :span="5" :offset="1">
                     <el-form-item>
-                      <el-button type="primary" @click="loadList(selectedOrgId)" :disabled="listLoading">查询</el-button>
-                      <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+                      <el-button type="primary" :disabled="listLoading" @click="loadList(selectedOrgId)">查询</el-button>
+                      <el-button :disabled="listLoading" @click="resetList">重置</el-button>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -49,19 +49,19 @@
 
             <StdListAreaTable>
               <el-table
+                ref="tableRef"
+                v-loading="listLoading"
                 :data="listData"
                 stripe
-                v-loading="listLoading"
                 border
                 :highlight-current-row="!multiple"
+                :row-style="getRowStyle"
+                style="cursor: pointer"
+                row-key="id"
+                height="100%"
                 @current-change="onCurrentChange"
                 @selection-change="onSelectionChange"
                 @row-click="onRowClick"
-                :row-style="getRowStyle"
-                style="cursor: pointer"
-                ref="tableRef"
-                row-key="id"
-                height="100%"
               >
                 <el-table-column v-if="multiple" type="selection" width="55" :reserve-selection="true" />
                 <el-table-column prop="username" label="用户名" min-width="120" />
@@ -97,9 +97,9 @@
                   :page-sizes="[10, 20, 50, 100]"
                   layout="total, sizes, prev, pager, next, jumper"
                   :total="listTotal"
+                  background
                   @size-change="onSizeChange"
                   @current-change="onPageChange"
-                  background
                 />
               </template>
             </StdListAreaTable>
@@ -111,7 +111,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="onCancel">取消</el-button>
-        <el-button type="primary" @click="onConfirm" :disabled="multiple ? selectedUsers.length === 0 : !selectedUser">
+        <el-button type="primary" :disabled="multiple ? selectedUsers.length === 0 : !selectedUser" @click="onConfirm">
           确定{{ multiple && selectedUsers.length > 0 ? `(${selectedUsers.length})` : "" }}
         </el-button>
       </div>
@@ -144,6 +144,7 @@ const props = withDefaults(
     title: "选择用户",
     width: "75%",
     multiple: false,
+    defaultSelected: undefined,
   }
 );
 
@@ -185,7 +186,7 @@ watch(
 /**
  * 弹窗打开后加载数据
  */
-const onOpened = async () => {
+const onOpened = async (): Promise<void> => {
   await loadList(selectedOrgId.value);
   initSelection();
 };
@@ -207,7 +208,7 @@ const select = (): Promise<GetUserListVo | GetUserListVo[]> => {
   });
 };
 
-const initSelection = () => {
+const initSelection = (): void => {
   if (!tableRef.value) {
     return;
   }
@@ -234,7 +235,7 @@ const initSelection = () => {
   }
 };
 
-const restoreMultipleSelection = () => {
+const restoreMultipleSelection = (): void => {
   if (!props.multiple || !tableRef.value) {
     return;
   }
@@ -254,7 +255,7 @@ const restoreMultipleSelection = () => {
   });
 };
 
-const onSelectOrg = (org: GetOrgTreeVo | null) => {
+const onSelectOrg = (org: GetOrgTreeVo | null): void => {
   selectedOrgId.value = org?.id ?? null;
   loadList(selectedOrgId.value).then(() => {
     if (props.multiple) {
@@ -265,19 +266,19 @@ const onSelectOrg = (org: GetOrgTreeVo | null) => {
   });
 };
 
-const onCurrentChange = (row: GetUserListVo | null) => {
+const onCurrentChange = (row: GetUserListVo | null): void => {
   if (!props.multiple) {
     selectedUser.value = row;
   }
 };
 
-const onSelectionChange = (rows: GetUserListVo[]) => {
+const onSelectionChange = (rows: GetUserListVo[]): void => {
   if (props.multiple) {
     selectedUsers.value = rows;
   }
 };
 
-const onRowClick = (row: GetUserListVo) => {
+const onRowClick = (row: GetUserListVo): void => {
   if (!props.multiple) {
     return;
   }
@@ -289,14 +290,14 @@ const onRowClick = (row: GetUserListVo) => {
   tableRef.value.toggleRowSelection(row);
 };
 
-const getRowStyle = ({ row }: { row: GetUserListVo }) => {
+const getRowStyle = ({ row }: { row: GetUserListVo }): Record<string, string> => {
   if (selectedUser.value && selectedUser.value.id === row.id) {
     return { cursor: "pointer" };
   }
   return { cursor: "pointer" };
 };
 
-const onSizeChange = (val: number) => {
+const onSizeChange = (val: number): void => {
   listForm.value.pageSize = val;
   loadList(selectedOrgId.value).then(() => {
     if (props.multiple) {
@@ -307,7 +308,7 @@ const onSizeChange = (val: number) => {
   });
 };
 
-const onPageChange = (val: number) => {
+const onPageChange = (val: number): void => {
   listForm.value.pageNum = val;
   loadList(selectedOrgId.value).then(() => {
     if (props.multiple) {
@@ -318,7 +319,7 @@ const onPageChange = (val: number) => {
   });
 };
 
-const onConfirm = () => {
+const onConfirm = (): void => {
   let result: GetUserListVo | GetUserListVo[] | null = null;
 
   if (props.multiple) {
@@ -339,7 +340,7 @@ const onConfirm = () => {
   visible.value = false;
 };
 
-const onCancel = () => {
+const onCancel = (): void => {
   visible.value = false;
   if (promiseReject) {
     promiseReject("cancel");

@@ -30,7 +30,7 @@ export default {
     const loading = ref(false);
     let timer: any = null;
 
-    const loadData = async () => {
+    const loadData = async (): Promise<void> => {
       if (loading.value) {
         return;
       }
@@ -51,13 +51,13 @@ export default {
       }
     };
 
-    const start = () => {
+    const start = (): void => {
       stop();
       loadData();
       timer = setInterval(loadData, sampleInterval);
     };
 
-    const stop = () => {
+    const stop = (): void => {
       if (timer) {
         clearInterval(timer);
         timer = null;
@@ -79,14 +79,14 @@ export default {
       return null;
     });
 
-    const formatNet = (val: number | undefined) => {
+    const formatNet = (val: number | undefined): string => {
       if (val === undefined) {
         return "0";
       }
       return (val / 1024).toFixed(1);
     };
 
-    const getCpuTagType = (usage: number | undefined) => {
+    const getCpuTagType = (usage: number | undefined): string => {
       if (!usage) {
         return "info";
       }
@@ -99,7 +99,7 @@ export default {
       return "success";
     };
 
-    const getMemTagType = (usage: number | undefined) => {
+    const getMemTagType = (usage: number | undefined): string => {
       if (!usage) {
         return "info";
       }
@@ -114,8 +114,13 @@ export default {
 
     // xAxis.data 在每个 computed 内部单独计算，不嵌套 computed 对象到 option 中
     const cpuOption = computed(() => ({
-      ...baseChartLayout,
-      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      grid: baseChartLayout.grid,
+      tooltip: baseChartLayout.tooltip,
+      xAxis: {
+        type: "category",
+        axisLabel: { show: false },
+        data: data.value.map((item) => item.createTime.split(" ")[1]),
+      },
       yAxis: { type: "value", min: 0, max: 100 },
       series: [
         {
@@ -131,8 +136,13 @@ export default {
     }));
 
     const memOption = computed(() => ({
-      ...baseChartLayout,
-      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      grid: baseChartLayout.grid,
+      tooltip: baseChartLayout.tooltip,
+      xAxis: {
+        type: "category",
+        axisLabel: { show: false },
+        data: data.value.map((item) => item.createTime.split(" ")[1]),
+      },
       yAxis: { type: "value", min: 0, max: 100 },
       series: [
         {
@@ -148,8 +158,13 @@ export default {
     }));
 
     const netOption = computed(() => ({
-      ...baseChartLayout,
-      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      grid: baseChartLayout.grid,
+      tooltip: baseChartLayout.tooltip,
+      xAxis: {
+        type: "category",
+        axisLabel: { show: false },
+        data: data.value.map((item) => item.createTime.split(" ")[1]),
+      },
       yAxis: { type: "value" },
       series: [
         {
@@ -172,8 +187,13 @@ export default {
     }));
 
     const ioOption = computed(() => ({
-      ...baseChartLayout,
-      xAxis: { ...baseChartLayout.xAxis, data: data.value.map((item) => item.createTime.split(" ")[1]) },
+      grid: baseChartLayout.grid,
+      tooltip: baseChartLayout.tooltip,
+      xAxis: {
+        type: "category",
+        axisLabel: { show: false },
+        data: data.value.map((item) => item.createTime.split(" ")[1]),
+      },
       yAxis: { type: "value" },
       series: [
         {
@@ -218,7 +238,7 @@ export default {
     const data = ref<GetSystemInfoVo | null>(null);
     const loading = ref(false);
 
-    const loadData = async () => {
+    const loadData = async (): Promise<void> => {
       if (loading.value) {
         return;
       }
