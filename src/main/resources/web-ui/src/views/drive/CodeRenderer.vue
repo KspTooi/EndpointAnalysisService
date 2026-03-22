@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
-import { DocumentCopy, Loading } from "@element-plus/icons-vue";
+import { DocumentCopy } from "@element-plus/icons-vue";
 import axios from "axios";
 import hljs from "highlight.js";
 // 引入样式，你可以选择其他主题，如 'github', 'vs2015' 等
@@ -30,7 +30,7 @@ const fileUrl = computed(() => {
 });
 
 // 扩展名到语言的简单映射（Highlight.js 通常能自动检测，但手动指定更准确）
-const getLanguageByExt = (filename: string) => {
+const getLanguageByExt = (filename: string): string => {
   const ext = filename.split(".").pop()?.toLowerCase();
   const map: Record<string, string> = {
     js: "javascript",
@@ -59,7 +59,7 @@ const getLanguageByExt = (filename: string) => {
 /**
  * 加载代码内容
  */
-const loadCode = async () => {
+const loadCode = async (): Promise<void> => {
   if (!fileUrl.value) {
     return;
   }
@@ -89,7 +89,7 @@ const loadCode = async () => {
 /**
  * 渲染并高亮代码
  */
-const renderCode = () => {
+const renderCode = (): void => {
   if (!codeContent.value) {
     return;
   }
@@ -112,7 +112,7 @@ const renderCode = () => {
 /**
  * 为代码添加行号结构
  */
-const generateLineNumbers = (html: string) => {
+const generateLineNumbers = (html: string): string => {
   const lines = html.split(/\r\n|\r|\n/);
   // 最后一行如果是空行，通常编辑器不显示行号，但 split 会多出一个空串
   if (lines[lines.length - 1] === "") {
@@ -129,14 +129,14 @@ const generateLineNumbers = (html: string) => {
 /**
  * 复制代码到剪贴板
  */
-const onCopy = async () => {
+const onCopy = async (): Promise<void> => {
   if (!codeContent.value) {
     return;
   }
   try {
     await navigator.clipboard.writeText(codeContent.value);
     ElMessage.success("代码已复制到剪贴板");
-  } catch (err) {
+  } catch {
     ElMessage.error("复制失败");
   }
 };

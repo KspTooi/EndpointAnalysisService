@@ -281,7 +281,7 @@ import type { GetUserListVo } from "@/views/core/api/UserApi.ts";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 
 // bytes 转 MB 显示
-const mbDisplay = (bytes: string) => {
+const mbDisplay = (bytes: string): string => {
   if (!bytes) {
     return "-";
   }
@@ -290,7 +290,7 @@ const mbDisplay = (bytes: string) => {
 };
 
 // 计算配额百分比
-const getQuotaPercentage = (used: string, limit: string) => {
+const getQuotaPercentage = (used: string, limit: string): number => {
   if (!limit || limit === "0") {
     return 0;
   }
@@ -299,7 +299,7 @@ const getQuotaPercentage = (used: string, limit: string) => {
 };
 
 // 根据使用百分比获取进度条颜色
-const getQuotaColor = (used: string, limit: string) => {
+const getQuotaColor = (used: string, limit: string): string => {
   const p = getQuotaPercentage(used, limit);
   if (p >= 90) {
     return "#f56c6c";
@@ -311,7 +311,7 @@ const getQuotaColor = (used: string, limit: string) => {
 };
 
 // 角色文字映射
-const roleLabel = (role: number) => {
+const roleLabel = (role: number): string => {
   if (role === 0) {
     return "主管理员";
   }
@@ -331,7 +331,7 @@ const roleLabel = (role: number) => {
 };
 
 // 角色颜色类映射
-const roleClass = (role: number) => {
+const roleClass = (role: number): string => {
   if (role === 0) {
     return "text-danger";
   }
@@ -348,7 +348,7 @@ const roleClass = (role: number) => {
 };
 
 // 角色权限说明映射
-const roleDescription = (role: number) => {
+const roleDescription = (role: number): string => {
   if (role === 0) {
     return "主管理员：拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。";
   }
@@ -403,7 +403,7 @@ const userSelectModalRef = ref<InstanceType<typeof CoreUserSelectModal>>();
 const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();
 
 // 打开用户选择弹窗
-const openUserSelect = async () => {
+const openUserSelect = async (): Promise<void> => {
   if (!userSelectModalRef.value) {
     return;
   }
@@ -417,7 +417,7 @@ const openUserSelect = async () => {
 };
 
 // 打开部门选择弹窗
-const openDeptSelect = async () => {
+const openDeptSelect = async (): Promise<void> => {
   if (!deptSelectModalRef.value) {
     return;
   }

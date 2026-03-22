@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from "vue";
+import { computed, ref, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { RefreshLeft } from "@element-plus/icons-vue";
 import DriveRendererService from "@/views/drive/service/DriveRendererService";
@@ -18,7 +18,7 @@ const imgSrc = computed(() => {
 });
 
 // 注入拖拽服务
-const { x, y, isDragging, onMouseDown, resetPosition } = DriveRendererService.useRendererDrag();
+const { x, y, isDragging, onMouseDown } = DriveRendererService.useRendererDrag();
 
 // 注入缩放服务
 const { scale, showIndicator, onWheel, resetScale } = DriveRendererService.useRendererScale(
@@ -33,13 +33,13 @@ const { scale, showIndicator, onWheel, resetScale } = DriveRendererService.useRe
 /**
  * 将图片移动到容器中心
  */
-const moveToCenter = () => {
+const moveToCenter = (): void => {
   if (!containerRef.value || !imgRef.value) {
     return;
   }
 
-  const containerRect = containerRef.value.getBoundingClientRect();
-  const imgRect = imgRef.value.getBoundingClientRect();
+  //const containerRect = containerRef.value.getBoundingClientRect();
+  //const imgRect = imgRef.value.getBoundingClientRect();
 
   // 注意：这里要用图片的原始尺寸（未缩放时的尺寸）来计算居中
   // 但 imgRect 是受 scale 影响的。
@@ -61,7 +61,7 @@ const moveToCenter = () => {
 /**
  * 图片加载完成回调
  */
-const onImgLoad = () => {
+const onImgLoad = (): void => {
   // 图片加载后，重置缩放并居中
   resetScale();
   // 必须等待 DOM 更新，确保 offsetWidth 正确
@@ -73,7 +73,7 @@ const onImgLoad = () => {
 /**
  * 手动复位按钮
  */
-const onReset = () => {
+const onReset = (): void => {
   resetScale();
   moveToCenter();
 };

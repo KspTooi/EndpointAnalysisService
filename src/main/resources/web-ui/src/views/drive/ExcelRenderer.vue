@@ -48,11 +48,11 @@ const fileUrl = computed(() => {
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
-const onRendered = () => {
+const onRendered = (): void => {
   loading.value = false;
 };
 
-const onError = (e: any) => {
+const onError = (e: any): void => {
   loading.value = false;
   console.error("XLSX渲染失败:", e);
   ElMessage.error("预览失败，文件可能已损坏");
@@ -90,7 +90,7 @@ const excelOptions = {
   },
 };
 
-const loadXlsFile = async () => {
+const loadXlsFile = async (): Promise<void> => {
   if (!fileUrl.value) {
     return;
   }

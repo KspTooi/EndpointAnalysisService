@@ -23,11 +23,11 @@ const fileUrl = computed(() => {
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
-const onRendered = () => {
+const onRendered = (): void => {
   // 渲染完成回调
 };
 
-const onError = (e: any) => {
+const onError = (e: any): void => {
   console.error("Word渲染失败:", e);
   ElMessage.error("文件预览失败，可能文件已损坏或格式不支持");
 };

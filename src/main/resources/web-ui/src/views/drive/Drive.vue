@@ -87,11 +87,10 @@ import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
 import DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
-import type { EntryPo, GetDriveInfoVo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
+import type { EntryPo, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
 import DriveService from "@/views/drive/service/DriveService";
 import ElementFocusService from "@/commons/service/ElmentFocusService.ts";
 import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
-import type Result from "@/commons/model/Result.ts";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
@@ -198,7 +197,7 @@ GenricHotkeyService.useHotkeyFunction(
  * 进入或打开文件
  * @param entry 条目对象
  */
-const enterOrOpenFile = (entry: EntryPo) => {
+const enterOrOpenFile = (entry: EntryPo): void => {
   //获取当前选中的条目列表
   const selectedEntries = [];
 
@@ -209,7 +208,7 @@ const enterOrOpenFile = (entry: EntryPo) => {
 
   //如果未传入条目 则获取当前选中的条目列表
   if (!entry && entryGridRef.value) {
-    selectedEntries.push(...entryGridRef.value?.getSelectedEntries());
+    selectedEntries.push(...(entryGridRef.value?.getSelectedEntries() || []));
   }
 
   if (selectedEntries.length != 1) {
@@ -231,14 +230,14 @@ const enterOrOpenFile = (entry: EntryPo) => {
  * @param event 鼠标事件
  * @param entries 当前选中的条目列表
  */
-const onEntryContextmenu = (entries: EntryPo[], event: MouseEvent) => {
+const onEntryContextmenu = (entries: EntryPo[], event: MouseEvent): void => {
   rightMenuRef.value?.openRightMenu(event, entries);
 };
 
 /**
  * 文件选择器->文件选择
  */
-const onFileSelected = (files: File[]) => {
+const onFileSelected = (files: File[]): void => {
   ElMessage.info(`正在处理 ${files.length} 个文件`);
   //添加到上传队列
   fileUploadRef.value?.toUploadQueue(files, currentDir.value.id);
@@ -247,7 +246,7 @@ const onFileSelected = (files: File[]) => {
 /**
  * 打开文件上传弹窗
  */
-const openFileUploadModal = () => {
+const openFileUploadModal = (): void => {
   fileUploadRef.value?.openModal();
 };
 
@@ -255,7 +254,7 @@ const openFileUploadModal = () => {
  * 上传队列更新
  * @param queue 上传队列
  */
-const onQueueUpdate = (queue: UploadQueueItem[]) => {
+const onQueueUpdate = (queue: UploadQueueItem[]): void => {
   let count = 0;
   queue.forEach((item) => {
     if (item.status === "uploading" || item.status === "pending") {
@@ -270,7 +269,7 @@ const noSpaceAvailable = ref(false);
 /**
  * 前往空间管理
  */
-const goToCompanySetup = () => {
+const goToCompanySetup = (): void => {
   router.push({
     name: "drive-space",
   });
@@ -280,7 +279,7 @@ const goToCompanySetup = () => {
  * 当前目录路径变更
  * @param paths 当前目录路径
  */
-const onPathChange = (path: GetEntryListPathVo) => {
+const onPathChange = (path: GetEntryListPathVo): void => {
   entryGridRef.value?.redirectDirectory(path.id);
 };
 </script>
