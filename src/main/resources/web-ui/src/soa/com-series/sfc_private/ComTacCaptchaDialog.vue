@@ -38,7 +38,7 @@ const visible = ref(false);
 const tacInstance = ref<any>(null);
 const captchaBindId = `com-tac-captcha-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const destroyTac = () => {
+const destroyTac = (): void => {
   if (tacInstance.value?.destroyWindow) {
     tacInstance.value.destroyWindow();
   }
@@ -46,17 +46,17 @@ const destroyTac = () => {
   tacInstance.value = null;
 };
 
-const closeModal = () => {
+const closeModal = (): void => {
   destroyTac();
   visible.value = false;
 };
 
-const handleDialogClose = () => {
+const handleDialogClose = (): void => {
   destroyTac();
   emit("on-close");
 };
 
-const buildCaptchaConfig = () => {
+const buildCaptchaConfig = (): Record<string, unknown> => {
   return {
     requestCaptchaDataUrl: Http.resolve("/auth/genCaptcha"),
     validCaptchaUrl: Http.resolve("/auth/check"),
@@ -94,7 +94,7 @@ const buildCaptchaConfig = () => {
   };
 };
 
-const initCaptcha = async () => {
+const initCaptcha = async (): Promise<void> => {
   if (!window.initTAC) {
     emit("on-error", "验证码脚本未加载");
     return;
@@ -114,12 +114,12 @@ const initCaptcha = async () => {
       }
     );
     tacInstance.value.init();
-  } catch (_error) {
+  } catch {
     emit("on-error", "验证码初始化失败");
   }
 };
 
-const openModal = async () => {
+const openModal = async (): Promise<void> => {
   visible.value = true;
   await nextTick();
   await initCaptcha();

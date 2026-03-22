@@ -98,7 +98,7 @@ const authStore = UserAuthService.AuthStore();
 const profile = ref<GetCurrentUserProfile | null>(null);
 const changePasswordModalRef = ref();
 
-const loadUserProfile = async () => {
+const loadUserProfile = async (): Promise<void> => {
   try {
     profile.value = await AuthApi.getCurrentUserProfile();
   } catch (error: any) {
@@ -106,7 +106,7 @@ const loadUserProfile = async () => {
   }
 };
 
-const onLogout = async () => {
+const onLogout = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定要注销登录吗？", "提示", {
       confirmButtonText: "确定",
@@ -119,19 +119,21 @@ const onLogout = async () => {
     // 刷新页面或跳转到登录页
     window.location.href = "/login";
   } catch (error) {
-    if (error === "cancel") return;
+    if (error === "cancel") {
+      return;
+    }
     ElMessage.error("注销失败: " + (error as Error).message);
   }
 };
 
-const onChangePassword = () => {
+const onChangePassword = (): void => {
   if (changePasswordModalRef.value) {
     changePasswordModalRef.value.openModal();
   }
 };
 
 const avatarUrl = computed(() => {
-  var token = "";
+  let token = "";
 
   if (authStore.getSessionId) {
     token = authStore.getSessionId;
@@ -144,8 +146,12 @@ const avatarUrl = computed(() => {
 });
 
 const genderText = computed(() => {
-  if (profile.value?.gender === 0) return "男";
-  if (profile.value?.gender === 1) return "女";
+  if (profile.value?.gender === 0) {
+    return "男";
+  }
+  if (profile.value?.gender === 1) {
+    return "女";
+  }
   return "保密";
 });
 
