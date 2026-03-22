@@ -48,9 +48,6 @@ export default defineConfigWithVueTs(
   ...pluginVue.configs["flat/recommended"],
 
   {
-    // 如有需要忽略的目录（如历史遗留代码），可在此配置
-    //ignores: ["**/legacy/**/*.ts"],
-
     rules: {
       //关闭Vue自带的一些规则(因为这与prettier的格式化冲突)
       "vue/html-closing-bracket-newline": "off",
@@ -172,7 +169,9 @@ export default defineConfigWithVueTs(
       ],
     },
   },
+
+  // 忽略目录
   {
-    ignores: ["dist/**", "node_modules/**", "*.d.ts"],
+    ignores: ["dist/**", "node_modules/**", "*.d.ts", "**/public/**/*.ts", "**/public/**/*.js"],
   }
 );
