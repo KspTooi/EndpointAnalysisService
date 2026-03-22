@@ -145,9 +145,6 @@ const props = defineProps<{
   version?: string;
 }>();
 
-//当前菜单是否包含维护中心菜单
-const hasMaintainCenter = computed(() => getMenuByPath("/core/application-maintain") !== null);
-
 // 缓存动态生成的图标组件，避免重复创建导致重渲染
 const iconCache = new Map<string, Component>();
 
