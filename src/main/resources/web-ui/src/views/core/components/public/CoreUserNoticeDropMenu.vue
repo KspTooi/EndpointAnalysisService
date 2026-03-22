@@ -99,16 +99,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, type Component } from "vue";
 import { useRouter } from "vue-router";
 import { Bell, Message, Warning, Promotion, Delete } from "@element-plus/icons-vue";
 import UserNoticeService from "@/views/core/service/NoticeRcdService.ts";
 import type { GetUserNoticeRcdListVo } from "@/views/core/api/NoticeRcdApi";
 import { ElMessage } from "element-plus";
-import { useTabStore } from "@/store/TabHolder.ts";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
 const router = useRouter();
-const tabStore = useTabStore();
+const { openTab } = ComTabService.useTabService();
 
 // 使用 Service 中的逻辑
 const { count, processedCount, loadCount } = UserNoticeService.useNoticeRcdCount();
@@ -127,7 +127,7 @@ const { modalVisible, modalLoading, detailsData, openModal, closeModal } = UserN
 /**
  * 下拉框显示状态变化
  */
-const onVisibleChange = (visible: boolean) => {
+const onVisibleChange = (visible: boolean): void => {
   if (!visible) {
     return;
   }
@@ -139,7 +139,7 @@ const onVisibleChange = (visible: boolean) => {
 /**
  * 获取通知图标
  */
-const getIcon = (kind: number) => {
+const getIcon = (kind: number): Component => {
   if (kind === 0) {
     return Promotion;
   }
@@ -155,7 +155,7 @@ const getIcon = (kind: number) => {
 /**
  * 获取图标样式类
  */
-const getIconClass = (kind: number) => {
+const getIconClass = (kind: number): string => {
   if (kind === 0) {
     return "kind-notice";
   }
@@ -171,7 +171,7 @@ const getIconClass = (kind: number) => {
 /**
  * 点击通知项
  */
-const onRead = (item: GetUserNoticeRcdListVo) => {
+const onRead = (item: GetUserNoticeRcdListVo): void => {
   // 打开详情模态框
   openModal(item.id);
 };
@@ -179,7 +179,7 @@ const onRead = (item: GetUserNoticeRcdListVo) => {
 /**
  * 跳转到关联页面
  */
-const onForward = () => {
+const onForward = (): void => {
   if (!detailsData.value?.forward) {
     return;
   }
@@ -191,9 +191,10 @@ const onForward = () => {
 /**
  * 查看全部消息
  */
-const onViewAll = () => {
-  tabStore.addTab({
+const onViewAll = (): void => {
+  openTab({
     id: "notice-rcd",
+    icon: null,
     title: "个人消息中心",
     path: "/core/notice-rcd",
   });
