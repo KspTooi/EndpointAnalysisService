@@ -13,7 +13,7 @@
           @click="onTabClick(tab.id)"
           @contextmenu.prevent="openContextMenu($event, tab)"
         >
-          <el-icon>
+          <el-icon v-show="tab.icon">
             <component :is="resolveIcon(tab.icon ?? '')" />
           </el-icon>
           <span class="tab-title">{{ tab.title }}</span>
