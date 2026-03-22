@@ -225,12 +225,40 @@ export default {
       return result;
     };
 
+    /**
+     * 根据名称或路径获取路由
+     * 优先匹配名称 其次匹配路径，只要有任意一个匹配成功就返回
+     *
+     * 请注意: 该方法返回的是路由PO对象 而不是Vue路由对象，该项目中的所有Vue路由都需要通过GRS进行注册，(调用GRS的addRoute方法)
+     * 如果你绕过GRS直接操作Vue路由，将无法保证路由的正确性。
+     *
+     * @param nameOrPath 路由名称或路径
+     * @returns 路由条目 如果无对应路由则返回null
+     */
+    const getRouteByNameOrPath = (nameOrPath: string): RouteEntryPo | null => {
+      //先根据名称查找
+      const routeByName = routes.value.find((route) => route.name === nameOrPath);
+      if (routeByName) {
+        return routeByName;
+      }
+
+      //再根据路径查找
+      const routeByPath = routes.value.find((route) => route.path === nameOrPath);
+      if (routeByPath) {
+        return routeByPath;
+      }
+
+      //无匹配路由
+      return null;
+    };
+
     return {
       initialize,
       addRoute,
       addRoutes,
       removeRoute,
       getRoutes,
+      getRouteByNameOrPath,
     };
   },
 };
