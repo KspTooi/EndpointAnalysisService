@@ -27,7 +27,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await AdminPermissionApi.getPermissionList(listForm);
 
@@ -46,7 +46,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.pageNum = 1;
       listForm.pageSize = 20;
       listForm.code = null;
@@ -57,14 +57,14 @@ export default {
     /**
      * 删除项
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该权限吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -80,7 +80,7 @@ export default {
     /**
      * 批量删除
      */
-    const removeListBatch = async (selectedItems: GetPermissionListVo[]) => {
+    const removeListBatch = async (selectedItems: GetPermissionListVo[]): Promise<void> => {
       if (selectedItems.length === 0) {
         ElMessage.warning("请选择要删除的权限节点");
         return;
@@ -92,7 +92,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -146,7 +146,7 @@ export default {
       code: [
         { required: true, message: "请输入权限代码", trigger: "blur" },
         {
-          pattern: /^[a-z]([a-z0-9\-]*[a-z0-9])*(:[a-z]([a-z0-9\-]*[a-z0-9])*)*$/,
+          pattern: /^[a-z]([a-z0-9-]*[a-z0-9])*(:[a-z]([a-z0-9-]*[a-z0-9])*)*$/,
           message: "权限标识格式错误，只允许小写字母、数字、连字符，以及冒号作为分隔符",
           trigger: "blur",
         },
@@ -163,7 +163,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.name = "";
       modalForm.code = "";
@@ -183,7 +183,7 @@ export default {
     /**
      * 打开模态框
      */
-    const openModal = async (mode: "add" | "edit", row: GetPermissionListVo | null) => {
+    const openModal = async (mode: "add" | "edit", row: GetPermissionListVo | null): Promise<void> => {
       modalMode.value = mode;
       resetModal();
 
@@ -212,10 +212,10 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 

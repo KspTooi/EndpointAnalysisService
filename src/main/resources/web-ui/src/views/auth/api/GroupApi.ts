@@ -118,7 +118,7 @@ export default {
    * 获取组详情
    */
   getGroupDetails: async (dto: CommonIdDto): Promise<GetGroupDetailsVo> => {
-    var result = await Http.postEntity<Result<GetGroupDetailsVo>>("/group/getGroupDetails", dto);
+    const result = await Http.postEntity<Result<GetGroupDetailsVo>>("/group/getGroupDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -150,7 +150,7 @@ export default {
    * 获取组权限菜单视图
    */
   getGroupPermissionMenuView: async (dto: GetGroupPermissionMenuViewDto): Promise<GetGroupPermissionMenuViewVo[]> => {
-    var result = await Http.postEntity<Result<GetGroupPermissionMenuViewVo[]>>("/group/getGroupPermissionMenuView", dto);
+    const result = await Http.postEntity<Result<GetGroupPermissionMenuViewVo[]>>("/group/getGroupPermissionMenuView", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -168,7 +168,7 @@ export default {
    * 删除组
    */
   removeGroup: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/group/removeGroup", dto);
+    const result = await Http.postEntity<Result<string>>("/group/removeGroup", dto);
     if (result.code == 0) {
       return result.message;
     }

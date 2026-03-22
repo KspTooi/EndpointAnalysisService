@@ -5,13 +5,13 @@
         <el-row>
           <el-col :span="5" :offset="1">
             <el-form-item label="用户组名称" label-for="query-keyword">
-              <el-input v-model="listForm.keyword" placeholder="输入用户组名称查询" clearable id="query-keyword" />
+              <el-input id="query-keyword" v-model="listForm.keyword" placeholder="输入用户组名称查询" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <!-- 占位，保持布局一致性 -->
             <el-form-item label="用户组状态" label-for="query-keyword">
-              <el-select v-model="listForm.status" placeholder="请选择用户组状态" id="query-status" class="w-full">
+              <el-select id="query-status" v-model="listForm.status" placeholder="请选择用户组状态" class="w-full">
                 <el-option :value="1" label="启用" />
                 <el-option :value="0" label="禁用" />
               </el-select>
@@ -22,8 +22,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -34,9 +34,9 @@
       <el-button type="success" @click="openModal('add', null)">创建用户组</el-button>
       <el-button
         type="danger"
-        @click="removeListBatch(listSelected)"
         :disabled="listSelected.length === 0"
         :loading="listLoading"
+        @click="removeListBatch(listSelected)"
       >
         删除选中项
       </el-button>
@@ -44,9 +44,9 @@
 
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         height="100%"
         @selection-change="(val: GetGroupListVo[]) => (listSelected = val)"
@@ -75,30 +75,30 @@
           <template #default="scope">
             <ComSeqFixer
               :id="scope.row.id"
-              :seqField="'seq'"
-              :getDetailApi="getGroupDetailForSeq"
-              :editApi="editGroupSeq"
-              :displayValue="scope.row.seq"
-              :onSuccess="loadList"
+              :seq-field="'seq'"
+              :get-detail-api="getGroupDetailForSeq"
+              :edit-api="editGroupSeq"
+              :display-value="scope.row.seq"
+              :on-success="loadList"
             />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="primary" size="small" @click="openPermissionEditModal(scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openPermissionEditModal(scope.row)">
               管理权限
             </el-button>
             <el-button
               link
               type="danger"
               size="small"
-              @click="removeList(scope.row.id)"
               :icon="DeleteIcon"
               :disabled="scope.row.isSystem"
+              @click="removeList(scope.row.id)"
             >
               删除
             </el-button>
@@ -114,6 +114,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -126,7 +127,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -172,36 +172,36 @@
             <div class="section-title text-sm font-bold mb-4 pl-2.5">基础信息</div>
             <el-form-item label="用户组标识" prop="code" label-for="group-code">
               <el-input
+                id="group-code"
                 v-model="modalForm.code"
                 :disabled="modalMode === 'edit' && isSystemGroup"
                 :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改标识' : '请输入组标识'"
-                id="group-code"
               />
             </el-form-item>
             <el-form-item label="用户组名称" prop="name" label-for="group-name">
               <el-input
+                id="group-name"
                 v-model="modalForm.name"
                 :disabled="modalMode === 'edit' && isSystemGroup"
                 :placeholder="modalMode === 'edit' && isSystemGroup ? '系统用户组不可修改名称' : '请输入组名称'"
-                id="group-name"
               />
             </el-form-item>
             <el-form-item label="排序号" prop="seq">
               <el-input-number v-model="modalForm.seq" :min="0" :max="655350" class="w-full" />
             </el-form-item>
             <el-form-item label="用户组状态" prop="status" label-for="group-status">
-              <el-radio-group v-model="modalForm.status" id="group-status">
+              <el-radio-group id="group-status" v-model="modalForm.status">
                 <el-radio :value="1">启用</el-radio>
                 <el-radio :value="0">禁用</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="用户组描述" prop="remark" label-for="group-remark">
-              <el-input v-model="modalForm.remark" type="textarea" :rows="2" id="group-remark" placeholder="请输入描述" />
+              <el-input id="group-remark" v-model="modalForm.remark" type="textarea" :rows="2" placeholder="请输入描述" />
             </el-form-item>
 
             <div class="section-title text-sm font-bold mb-4 pl-2.5 mt-5">数据权限</div>
             <el-form-item label="权限范围" prop="rowScope" label-for="group-rowScope">
-              <el-select v-model="modalForm.rowScope" placeholder="请选择数据权限" id="group-rowScope" class="w-full">
+              <el-select id="group-rowScope" v-model="modalForm.rowScope" placeholder="请选择数据权限" class="w-full">
                 <el-option :value="0" label="全部" />
                 <el-option :value="1" label="本公司/租户及以下" />
                 <el-option :value="2" label="本部门及以下" />
@@ -212,7 +212,7 @@
             </el-form-item>
             <el-form-item v-if="modalForm.rowScope === 5" label="指定部门" prop="deptIds">
               <div class="flex items-center">
-                <el-button type="primary" @click="openDeptSelect" size="small">选择部门</el-button>
+                <el-button type="primary" size="small" @click="openDeptSelect">选择部门</el-button>
                 <span class="ml-2 text-gray-500">已选择 {{ modalForm.deptIds?.length || 0 }} 个部门</span>
               </div>
             </el-form-item>
@@ -259,7 +259,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>
@@ -271,14 +271,13 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import type { GetGroupListVo, EditGroupDto } from "@/views/auth/api/GroupApi.ts";
+import type { GetGroupListVo, EditGroupDto, GetGroupDetailsVo } from "@/views/auth/api/GroupApi.ts";
 import AdminGroupApi from "@/views/auth/api/GroupApi.ts";
 import UserGroupService from "@/views/auth/service/UserGroupService.ts";
 import UserGpModal from "@/views/auth/components/UserGpModal.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import OrgManagerService from "../core/service/OrgManagerService";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -332,14 +331,14 @@ const listSelected = ref<GetGroupListVo[]>([]);
 /**
  * 获取组详情（供 ComSeqFixer 使用）
  */
-const getGroupDetailForSeq = async (id: string) => {
+const getGroupDetailForSeq = async (id: string): Promise<GetGroupDetailsVo> => {
   return await AdminGroupApi.getGroupDetails({ id });
 };
 
 /**
  * 编辑组排序（供 ComSeqFixer 使用）
  */
-const editGroupSeq = async (id: string, dto: any) => {
+const editGroupSeq = async (id: string, dto: any): Promise<void> => {
   const editDto: EditGroupDto = {
     id: dto.id,
     code: dto.code,

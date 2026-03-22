@@ -54,7 +54,7 @@ export default {
    * 获取配置详情
    */
   getConfigDetails: async (dto: CommonIdDto): Promise<GetConfigDetailsVo> => {
-    var result = await Http.postEntity<Result<GetConfigDetailsVo>>("/config/getConfigDetails", dto);
+    const result = await Http.postEntity<Result<GetConfigDetailsVo>>("/config/getConfigDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -79,7 +79,7 @@ export default {
    * 删除配置
    */
   removeConfig: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/config/removeConfig", dto);
+    const result = await Http.postEntity<Result<string>>("/config/removeConfig", dto);
     if (result.code == 0) {
       return result.message;
     }

@@ -16,8 +16,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -25,7 +25,7 @@
     </template>
 
     <template #table>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="username" label="用户名" min-width="150" />
         <el-table-column prop="rsMax" label="数据权限(RS)等级" min-width="150">
@@ -49,8 +49,8 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal(scope.row)" :icon="ViewIcon"> 详情 </el-button>
-            <el-button link type="danger" size="small" @click="onCloseSession(scope.row)" :icon="CloseIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal(scope.row)"> 详情 </el-button>
+            <el-button link type="danger" size="small" :icon="CloseIcon" @click="onCloseSession(scope.row)">
               关闭会话
             </el-button>
           </template>
@@ -65,6 +65,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           () => {
             loadList();
@@ -75,7 +76,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -101,7 +101,7 @@
 
       <el-row :gutter="20">
         <!-- 数据权限部门列表 -->
-        <el-col :span="10" v-if="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0">
+        <el-col v-if="currentSessionDetails.rsDeptNames && currentSessionDetails.rsDeptNames.length > 0" :span="10">
           <div class="section-title">允许访问部门(RSAD) ({{ currentSessionDetails.rsDeptNames.length }})</div>
           <el-table :data="currentSessionDetails.rsDeptNames" stripe border max-height="400px" size="small">
             <el-table-column label="部门名称">
@@ -143,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, markRaw, computed } from "vue";
+import { reactive, ref, markRaw, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { View, CloseBold } from "@element-plus/icons-vue";
 import AdminSessionApi, {
@@ -170,15 +170,17 @@ const listLoading = ref(false);
 const modalVisible = ref(false);
 const currentSessionDetails = ref<GetSessionDetailsVo | null>(null);
 const permissionSearchKeyword = ref("");
-const filteredPermissions = computed(() => {
-  if (!currentSessionDetails.value?.permissions) return [];
+const filteredPermissions = computed((): string[] => {
+  if (!currentSessionDetails.value?.permissions) {
+    return [];
+  }
 
   return currentSessionDetails.value.permissions.filter((permission) =>
     permission.toLowerCase().includes(permissionSearchKeyword.value.toLowerCase())
   );
 });
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await AdminSessionApi.getSessionList(listForm);
 
@@ -194,14 +196,14 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.userName = null;
   loadList();
 };
 
-const openModal = async (row: GetSessionListVo) => {
+const openModal = async (row: GetSessionListVo): Promise<void> => {
   listLoading.value = true;
   try {
     const res = await AdminSessionApi.getSessionDetails({ id: row.id });
@@ -215,7 +217,7 @@ const openModal = async (row: GetSessionListVo) => {
   }
 };
 
-const onCloseSession = async (row: GetSessionListVo) => {
+const onCloseSession = async (row: GetSessionListVo): Promise<void> => {
   try {
     await ElMessageBox.confirm(`确定要关闭用户 ${row.username} 的会话吗？`, "警告", {
       confirmButtonText: "确定",

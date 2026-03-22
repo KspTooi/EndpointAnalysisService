@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-model="props.visible"
+    :model-value="props.visible"
     title="管理权限"
     width="1000px"
     :close-on-click-modal="false"
@@ -32,12 +32,12 @@
           </div>
           <div class="list-table">
             <el-table
-              :data="menuViewList.listData.value"
+              ref="listTableRef"
               v-loading="menuViewList.listLoading.value"
+              :data="menuViewList.listData.value"
               border
               row-key="id"
               default-expand-all
-              ref="listTableRef"
               max-height="500"
               height="500"
               :row-class-name="menuViewList.getMenuRowClassName"
@@ -106,13 +106,19 @@
                   <el-button
                     v-else-if="scope.row.hasPermission === 0 || scope.row.hasPermission === 2"
                     type="primary"
-                    @click="grandAndRevoke(scope.row, 0)"
                     link
-                    >授权</el-button
+                    @click="grandAndRevoke(scope.row, 0)"
                   >
-                  <el-button v-else-if="scope.row.hasPermission === 1" type="danger" @click="grandAndRevoke(scope.row, 1)" link
-                    >取消授权</el-button
+                    授权
+                  </el-button>
+                  <el-button
+                    v-else-if="scope.row.hasPermission === 1"
+                    type="danger"
+                    link
+                    @click="grandAndRevoke(scope.row, 1)"
                   >
+                    取消授权
+                  </el-button>
                   <span v-else style="color: #999">未知</span>
                 </template>
               </el-table-column>
@@ -145,11 +151,11 @@
           </div>
           <div class="list-table">
             <el-table
-              :data="nodeViewList.listNodeData.value"
+              ref="listNodeTableRef"
               v-loading="nodeViewList.listNodeLoading.value"
+              :data="nodeViewList.listNodeData.value"
               border
               row-key="id"
-              ref="listNodeTableRef"
               max-height="450"
               height="450"
               @selection-change="(val: GetGroupPermissionNodeVo[]) => (nodeViewList.listNodeSelected.value = val)"
@@ -197,12 +203,22 @@
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <el-button type="primary" @click="grandAndRevoke(scope.row, 0)" link v-if="scope.row.hasPermission === 0"
-                    >授权</el-button
+                  <el-button
+                    v-if="scope.row.hasPermission === 0"
+                    type="primary"
+                    link
+                    @click="grandAndRevoke(scope.row, 0)"
                   >
-                  <el-button type="danger" @click="grandAndRevoke(scope.row, 1)" link v-if="scope.row.hasPermission === 1"
-                    >取消授权</el-button
+                    授权
+                  </el-button>
+                  <el-button
+                    v-if="scope.row.hasPermission === 1"
+                    type="danger"
+                    link
+                    @click="grandAndRevoke(scope.row, 1)"
                   >
+                    取消授权
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -214,6 +230,7 @@
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="nodeViewList.listNodeTotal.value"
+                background
                 @size-change="
                   (val: number) => {
                     nodeViewList.listNodeForm.pageSize = val;
@@ -226,7 +243,6 @@
                     nodeViewList.loadNodeList();
                   }
                 "
-                background
               />
             </div>
           </div>
@@ -268,7 +284,7 @@ const listTableRef = ref<TableInstance>();
 const listNodeTableRef = ref<TableInstance>();
 
 // 根据当前tab加载对应的列表
-const loadListByTab = async () => {
+const loadListByTab = async (): Promise<void> => {
   if (tabState.tab.value === "menu") {
     await menuViewList.loadList();
   }
@@ -298,7 +314,7 @@ const permissionOps = UserGpModalService.useGpPermissionOperations(
 /**
  * 重置模态框
  */
-const resetModal = () => {
+const resetModal = (): void => {
   menuViewList.clearSelection();
   nodeViewList.clearSelection();
   menuViewList.menuFilterKeyword.value = "";
@@ -309,21 +325,24 @@ const resetModal = () => {
 /**
  * 授权或取消授权
  */
-const grandAndRevoke = async (row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo, type: number) => {
+const grandAndRevoke = async (
+  row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo,
+  type: number
+): Promise<void> => {
   await permissionOps.grandAndRevoke(row, type, ElMessage);
 };
 
 /**
  * 批量授权
  */
-const batchGrant = async () => {
+const batchGrant = async (): Promise<void> => {
   await permissionOps.batchGrant(ElMessage);
 };
 
 /**
  * 批量取消授权
  */
-const batchRevoke = async () => {
+const batchRevoke = async (): Promise<void> => {
   await permissionOps.batchRevoke(ElMessage);
 };
 

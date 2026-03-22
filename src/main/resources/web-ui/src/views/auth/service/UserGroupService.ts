@@ -31,7 +31,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       if (listLoading.value) {
         return;
       }
@@ -54,7 +54,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.pageNum = 1;
       listForm.pageSize = 20;
       listForm.keyword = "";
@@ -65,14 +65,14 @@ export default {
     /**
      * 删除项
      */
-    const removeList = async (id: string) => {
+    const removeList = async (id: string): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该用户组吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -88,7 +88,7 @@ export default {
     /**
      * 批量删除
      */
-    const removeListBatch = async (selectedItems: GetGroupListVo[]) => {
+    const removeListBatch = async (selectedItems: GetGroupListVo[]): Promise<void> => {
       if (selectedItems.length === 0) {
         ElMessage.warning("请选择要删除的用户组");
         return;
@@ -100,7 +100,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -208,11 +208,11 @@ export default {
     // 部门选择相关
     const deptSelectModalVisible = ref(false);
 
-    const openDeptSelect = () => {
+    const openDeptSelect = (): void => {
       deptSelectModalVisible.value = true;
     };
 
-    const onDeptSelectConfirm = (depts: GetOrgTreeVo | GetOrgTreeVo[]) => {
+    const onDeptSelectConfirm = (depts: GetOrgTreeVo | GetOrgTreeVo[]): void => {
       if (Array.isArray(depts)) {
         modalForm.deptIds = depts.map((d) => d.id);
         // 触发表单验证，清除错误提示
@@ -225,7 +225,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = async () => {
+    const resetModal = async (): Promise<void> => {
       modalForm.id = "";
       modalForm.code = "";
       modalForm.name = "";
@@ -248,7 +248,7 @@ export default {
             name: p.name,
             has: 0,
           }));
-        } catch (error) {
+        } catch {
           // 静默处理
         }
       }
@@ -265,7 +265,7 @@ export default {
     /**
      * 打开模态框
      */
-    const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null) => {
+    const openModal = async (mode: "add" | "edit", row: GetGroupListVo | null): Promise<void> => {
       modalMode.value = mode;
       await resetModal();
 
@@ -301,10 +301,10 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       try {
         await modalFormRef?.value?.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -366,18 +366,18 @@ export default {
       await loadList();
     };
 
-    const selectAllPermissions = () => {
+    const selectAllPermissions = (): void => {
       selectedPermissionIds.value = filteredPermissions.value.map((p) => p.id);
     };
 
-    const deselectAllPermissions = () => {
+    const deselectAllPermissions = (): void => {
       selectedPermissionIds.value = [];
     };
 
     // 监听 rowScope 变化，触发 deptIds 验证
     watch(
       () => modalForm.rowScope,
-      (newVal) => {
+      (newVal): void => {
         // 如果不是指定部门，清空部门选择
         if (newVal !== 5) {
           modalForm.deptIds = [];
@@ -418,7 +418,7 @@ export default {
     const modalPermissionEditVisible = ref(false);
     const modalPermissionEditRow = ref<GetGroupListVo | null>(null);
 
-    const openPermissionEditModal = (row: GetGroupListVo) => {
+    const openPermissionEditModal = (row: GetGroupListVo): void => {
       modalPermissionEditRow.value = row;
       modalPermissionEditVisible.value = true;
     };

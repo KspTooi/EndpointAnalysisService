@@ -51,7 +51,7 @@ export default {
    * 删除Excel模板
    */
   removeExcelTemplate: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/excelTemplate/removeExcelTemplate", dto);
+    const result = await Http.postEntity<Result<string>>("/excelTemplate/removeExcelTemplate", dto);
     if (result.code == 0) {
       return result.message;
     }

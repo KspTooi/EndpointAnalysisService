@@ -18,8 +18,8 @@
           </el-col>
           <el-col :span="3" :offset="3">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -30,9 +30,9 @@
       <el-button type="success" @click="openModal('add', null)">创建权限节点</el-button>
       <el-button
         type="danger"
-        @click="removeListBatch(listSelected)"
         :disabled="listSelected.length === 0"
         :loading="listLoading"
+        @click="removeListBatch(listSelected)"
       >
         删除选中项
       </el-button>
@@ -40,9 +40,9 @@
 
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         height="100%"
         @selection-change="(val: GetPermissionListVo[]) => (listSelected = val)"
@@ -91,16 +91,16 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
             <el-button
               link
               type="danger"
               size="small"
-              @click="removeList(scope.row.id)"
               :icon="DeleteIcon"
               :disabled="scope.row.isSystem === 1"
+              @click="removeList(scope.row.id)"
             >
               删除
             </el-button>
@@ -116,6 +116,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -128,7 +129,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
   </StdListLayout>
@@ -188,7 +188,7 @@
       <el-form-item label="排序号" prop="seq">
         <el-input-number v-model="modalForm.seq" :min="0" :max="9999" />
       </el-form-item>
-      <el-form-item label="系统权限" prop="isSystem" v-if="modalMode === 'add'">
+      <el-form-item v-if="modalMode === 'add'" label="系统权限" prop="isSystem">
         <el-radio-group v-model="modalForm.isSystem">
           <el-radio :value="0">否</el-radio>
           <el-radio :value="1">是</el-radio>
@@ -198,7 +198,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="modalVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitModal" :loading="modalLoading">
+        <el-button type="primary" :loading="modalLoading" @click="submitModal">
           {{ modalMode === "add" ? "创建" : "保存" }}
         </el-button>
       </div>

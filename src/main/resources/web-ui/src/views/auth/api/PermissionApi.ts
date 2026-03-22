@@ -59,7 +59,7 @@ export default {
    * 获取所有权限定义
    */
   getPermissionDefinition: async (): Promise<GetPermissionDefinitionVo[]> => {
-    var result = await Http.postEntity<Result<GetPermissionDefinitionVo[]>>("/permission/getPermissionDefinition", {});
+    const result = await Http.postEntity<Result<GetPermissionDefinitionVo[]>>("/permission/getPermissionDefinition", {});
     if (result.code == 0) {
       return result.data;
     }
@@ -77,7 +77,7 @@ export default {
    * 获取权限详情
    */
   getPermissionDetails: async (dto: CommonIdDto): Promise<GetPermissionDetailsVo> => {
-    var result = await Http.postEntity<Result<GetPermissionDetailsVo>>("/permission/getPermissionDetails", dto);
+    const result = await Http.postEntity<Result<GetPermissionDetailsVo>>("/permission/getPermissionDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -102,7 +102,7 @@ export default {
    * 删除权限
    */
   removePermission: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/permission/removePermission", dto);
+    const result = await Http.postEntity<Result<string>>("/permission/removePermission", dto);
     if (result.code == 0) {
       return result.message;
     }

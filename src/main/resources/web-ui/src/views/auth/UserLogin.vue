@@ -75,7 +75,7 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
 import UserAuthService from "@/views/auth/service/UserAuthService";
-import type { UserLoginDto } from "./api/AuthApi";
+import type { UserLoginDto } from "@/views/auth/api/AuthApi.ts";
 import ComTacCaptchaDialog from "@/soa/com-series/sfc_private/ComTacCaptchaDialog.vue";
 
 const router = useRouter();
@@ -98,7 +98,7 @@ const captchaDialogRef = ref<any>(null);
 /**
  * 执行登录
  */
-const doLogin = async () => {
+const doLogin = async (): Promise<void> => {
   if (isLoading.value) {
     return;
   }
@@ -116,7 +116,7 @@ const doLogin = async () => {
   }
 };
 
-const openCaptcha = () => {
+const openCaptcha = (): void => {
   if (!captchaDialogRef.value?.openModal) {
     errorMessage.value = "验证码组件未就绪，请刷新页面重试";
     return;
@@ -125,11 +125,11 @@ const openCaptcha = () => {
   captchaDialogRef.value.openModal();
 };
 
-const onCaptchaSuccess = async () => {
+const onCaptchaSuccess = async (): Promise<void> => {
   await doLogin();
 };
 
-const onCaptchaError = (message: string) => {
+const onCaptchaError = (message: string): void => {
   if (!message) {
     errorMessage.value = "验证码初始化失败，请稍后重试";
     return;
@@ -141,7 +141,7 @@ const onCaptchaError = (message: string) => {
 /**
  * 处理登录逻辑
  */
-const onLogin = async () => {
+const onLogin = async (): Promise<void> => {
   errorMessage.value = "";
 
   if (!loginForm.value.username) {
@@ -160,7 +160,7 @@ const onLogin = async () => {
 /**
  * 跳转注册
  */
-const onRegister = () => {
+const onRegister = (): void => {
   router.push({ name: "register" });
 };
 </script>

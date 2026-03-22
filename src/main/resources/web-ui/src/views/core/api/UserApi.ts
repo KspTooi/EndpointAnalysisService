@@ -104,7 +104,7 @@ export default {
    * 获取用户详情
    */
   getUserDetails: async (dto: CommonIdDto): Promise<GetUserDetailsVo> => {
-    var result = await Http.postEntity<Result<GetUserDetailsVo>>("/user/getUserDetails", dto);
+    const result = await Http.postEntity<Result<GetUserDetailsVo>>("/user/getUserDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -136,7 +136,7 @@ export default {
    * 删除用户
    */
   removeUser: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/user/removeUser", dto);
+    const result = await Http.postEntity<Result<string>>("/user/removeUser", dto);
     if (result.code == 0) {
       return result.message;
     }

@@ -48,7 +48,7 @@ export default {
    * 获取组织机构树
    */
   getOrgTree: async (dto: GetOrgTreeDto): Promise<GetOrgTreeVo[]> => {
-    var result = await Http.postEntity<Result<GetOrgTreeVo[]>>("/org/getOrgTree", dto);
+    const result = await Http.postEntity<Result<GetOrgTreeVo[]>>("/org/getOrgTree", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -59,7 +59,7 @@ export default {
    * 获取组织机构详情
    */
   getOrgDetails: async (dto: CommonIdDto): Promise<GetOrgDetailsVo> => {
-    var result = await Http.postEntity<Result<GetOrgDetailsVo>>("/org/getOrgDetails", dto);
+    const result = await Http.postEntity<Result<GetOrgDetailsVo>>("/org/getOrgDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -84,7 +84,7 @@ export default {
    * 删除组织机构
    */
   removeOrg: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/org/removeOrg", dto);
+    const result = await Http.postEntity<Result<string>>("/org/removeOrg", dto);
     if (result.code == 0) {
       return result.message;
     }

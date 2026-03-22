@@ -14,7 +14,7 @@ export default {
   /**
    * 用户组权限模态框tab打包
    */
-  useGpTab(loadListByTab: () => Promise<void>) {
+  useGpTab(_loadListByTab: () => Promise<void>) {
     const tab = ref<"node" | "menu" | "rowScope">("menu");
     return {
       tab,
@@ -59,7 +59,7 @@ export default {
     /**
      * 加载菜单列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await GroupApi.getGroupPermissionMenuView({
         groupId: props.row?.id || "",
@@ -73,7 +73,7 @@ export default {
     /**
      * 重置菜单列表
      */
-    const resetList = () => {
+    const resetList = (): void => {
       menuFilterKeyword.value = "";
       menuFilterHasPermission.value = null;
       loadList();
@@ -107,7 +107,7 @@ export default {
     /**
      * 处理菜单行点击事件
      */
-    const onRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event) => {
+    const onRowClick = (row: GetGroupPermissionMenuViewVo, column: any, event: Event): void => {
       const target = event.target as HTMLElement;
       if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
         return;
@@ -125,7 +125,7 @@ export default {
     /**
      * 清空选择
      */
-    const clearSelection = () => {
+    const clearSelection = (): void => {
       listSelected.value = [];
       listTableRef.value?.clearSelection();
     };
@@ -133,7 +133,7 @@ export default {
     /**
      * 监听筛选关键字变化，清空选择
      */
-    const onFilterKeywordChange = () => {
+    const onFilterKeywordChange = (): void => {
       if (groupDetails.value) {
         nextTick(() => {
           listTableRef.value?.clearSelection();
@@ -183,7 +183,7 @@ export default {
     /**
      * 加载节点列表
      */
-    const loadNodeList = async () => {
+    const loadNodeList = async (): Promise<void> => {
       listNodeLoading.value = true;
       const result = await GroupApi.getGroupPermissionNodeView(listNodeForm);
       listNodeData.value = result.data;
@@ -194,7 +194,7 @@ export default {
     /**
      * 重置节点列表
      */
-    const resetNodeList = () => {
+    const resetNodeList = (): void => {
       listNodeForm.keyword = null;
       listNodeForm.hasPermission = null;
       listNodeForm.pageNum = 1;
@@ -205,7 +205,7 @@ export default {
     /**
      * 处理节点行点击事件
      */
-    const onNodeRowClick = (row: GetGroupPermissionNodeVo, column: any, event: Event) => {
+    const onNodeRowClick = (row: GetGroupPermissionNodeVo, column: any, event: Event): void => {
       const target = event.target as HTMLElement;
       if (target.closest(".el-checkbox") || target.closest(".el-table-column--selection")) {
         return;
@@ -218,7 +218,7 @@ export default {
     /**
      * 清空选择
      */
-    const clearSelection = () => {
+    const clearSelection = (): void => {
       listNodeSelected.value = [];
       listNodeTableRef.value?.clearSelection();
       listNodeSelectedGlobal.value.clear();
@@ -227,7 +227,7 @@ export default {
     /**
      * 更新分组ID
      */
-    const updateGroupId = (groupId: string) => {
+    const updateGroupId = (groupId: string): void => {
       listNodeForm.groupId = groupId;
     };
 
@@ -261,7 +261,7 @@ export default {
      */
     const getSelectedPermissionCodes = (row?: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo): string[] => {
       if (!row) {
-        let permissionCodes: string[] = [];
+        const permissionCodes: string[] = [];
         if (tab.value === "menu") {
           for (const item of menuListSelected.value) {
             //忽略空和*
@@ -323,7 +323,7 @@ export default {
       row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo,
       type: number,
       ElMessage: any
-    ) => {
+    ): Promise<void> => {
       const permissionCodes = getSelectedPermissionCodes(row);
       if (permissionCodes.length === 0) {
         ElMessage.warning("没有可操作的权限");
@@ -343,7 +343,7 @@ export default {
     /**
      * 批量授权
      */
-    const batchGrant = async (ElMessage: any) => {
+    const batchGrant = async (ElMessage: any): Promise<void> => {
       const permissionCodes = getSelectedPermissionCodes();
       const result = await GroupApi.grantAndRevoke({
         groupId: props.row?.id || "",
@@ -359,7 +359,7 @@ export default {
     /**
      * 批量取消授权
      */
-    const batchRevoke = async (ElMessage: any) => {
+    const batchRevoke = async (ElMessage: any): Promise<void> => {
       const permissionCodes = getSelectedPermissionCodes();
       const result = await GroupApi.grantAndRevoke({
         groupId: props.row?.id || "",

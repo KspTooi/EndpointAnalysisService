@@ -38,7 +38,7 @@ export default {
    * 获取会话详情
    */
   getSessionDetails: async (dto: CommonIdDto): Promise<GetSessionDetailsVo> => {
-    var result = await Http.postEntity<Result<GetSessionDetailsVo>>("/session/getSessionDetails", dto);
+    const result = await Http.postEntity<Result<GetSessionDetailsVo>>("/session/getSessionDetails", dto);
     if (result.code == 0) {
       return result.data;
     }
@@ -49,7 +49,7 @@ export default {
    * 关闭会话
    */
   closeSession: async (dto: CommonIdDto): Promise<string> => {
-    var result = await Http.postEntity<Result<string>>("/session/closeSession", dto);
+    const result = await Http.postEntity<Result<string>>("/session/closeSession", dto);
     if (result.code == 0) {
       return result.message;
     }
