@@ -21,8 +21,8 @@
           </el-col>
           <el-col :span="5" :offset="4">
             <el-form-item>
-              <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-              <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+              <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+              <el-button :disabled="listLoading" @click="resetList">重置</el-button>
               <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
@@ -49,9 +49,9 @@
     <template #actions>
       <el-button
         type="danger"
-        @click="() => removeListBatch(listSelected)"
         :disabled="listSelected.length === 0"
         :loading="listLoading"
+        @click="() => removeListBatch(listSelected)"
       >
         删除选中项
       </el-button>
@@ -60,9 +60,9 @@
     <!-- 列表表格区域 -->
     <template #table>
       <el-table
+        v-loading="listLoading"
         :data="listData"
         stripe
-        v-loading="listLoading"
         border
         height="100%"
         @selection-change="(val: GetAuditErrorRcdListVo[]) => (listSelected = val)"
@@ -76,10 +76,10 @@
         <el-table-column prop="createTime" label="发生时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('view', scope.row)" :icon="ViewIcon">
+            <el-button link type="primary" size="small" :icon="ViewIcon" @click="openModal('view', scope.row)">
               查看
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -92,6 +92,7 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="listTotal"
+        background
         @size-change="
           (val: number) => {
             listForm.pageSize = val;
@@ -104,7 +105,6 @@
             loadList();
           }
         "
-        background
       />
     </template>
 
@@ -112,7 +112,7 @@
       <!-- 查看/新增/编辑模态框 -->
       <el-dialog
         v-model="modalVisible"
-        :title="modalMode === 'view' ? '查看系统错误记录' : modalMode === 'edit' ? '编辑系统错误记录' : '新增系统错误记录'"
+        :title="modalDialogTitle"
         width="800px"
         :close-on-click-modal="false"
         @close="loadList()"
@@ -208,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, reactive } from "vue";
+import { ref, markRaw, reactive, computed } from "vue";
 import { View, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import AuditErrorRcdService from "@/views/audit/service/AuditErrorRcdService.ts";
@@ -236,7 +236,17 @@ const listSelected = ref<GetAuditErrorRcdListVo[]>([]);
 const modalFormRef = ref<FormInstance>();
 
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, openModal } = AuditErrorRcdService.useAuditErrorRcdModal(loadList);
+const { modalVisible, modalMode, modalForm, openModal } = AuditErrorRcdService.useAuditErrorRcdModal();
+
+const modalDialogTitle = computed((): string => {
+  if (modalMode.value === "view") {
+    return "查看系统错误记录";
+  }
+  if (modalMode.value === "edit") {
+    return "编辑系统错误记录";
+  }
+  return "新增系统错误记录";
+});
 </script>
 
 <style scoped>

@@ -24,7 +24,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await AuditLoginApi.getAuditLoginList(listForm.value);
 
@@ -44,7 +44,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.username = "";
@@ -56,14 +56,14 @@ export default {
     /**
      * 删除日志
      */
-    const removeList = async (row: GetAuditLoginListVo) => {
+    const removeList = async (row: GetAuditLoginListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条审计日志吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -79,7 +79,7 @@ export default {
     /**
      * 批量删除日志
      */
-    const removeListBatch = async (selectedItems: GetAuditLoginListVo[]) => {
+    const removeListBatch = async (selectedItems: GetAuditLoginListVo[]): Promise<void> => {
       if (selectedItems.length === 0) {
         ElMessage.warning("请选择要删除的审计日志");
         return;
@@ -91,7 +91,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
