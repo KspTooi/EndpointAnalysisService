@@ -72,6 +72,8 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter, type RouteRecordNameGeneric, type RouteRecordRaw } from "vue-router";
 import { ElMessage } from "element-plus";
 import ComTabService from "@/soa/com-series/service/ComTabService.ts";
+import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
+import GenricRouteService from "@/soa/genric-route/service/GenricRouteService";
 
 /** CDRC上下文前缀 */
 const CDRC_CONTEXT_PREFIX = "cdrc-context";
@@ -231,27 +233,6 @@ function putCdrcContext(prefix: string, cdrcRedirectId: string, cdrcContext: CDR
   sessionStorage.setItem(prefix + "_" + cdrcRedirectId, JSON.stringify(cdrcCache));
 }
 
-/**
- * 根据名称或路径获取路由对象
- * @param nameOrPath 路由的名称或路径
- * @return null:无法找到对应的路由 否则返回路由对象
- */
-function getRouteByNameOrPath(nameOrPath: string): RouteRecordRaw | null {
-  const router = useRouter();
-
-  //查找Vue路由里面是否有匹配的名称
-  const hasFindName = router.getRoutes().find((route) => route.name === nameOrPath);
-  const hasFindPath = router.getRoutes().find((route) => route.path === nameOrPath);
-
-  if (hasFindName) {
-    return hasFindName;
-  }
-  if (hasFindPath) {
-    return hasFindPath;
-  }
-  return null;
-}
-
 export default {
   /**
    * 使用直接路由上下文
@@ -259,7 +240,15 @@ export default {
   useDirectRouteContext() {
     const route = useRoute();
     const router = useRouter();
-    const { tabs, activeTabId, getActiveTab, updateTab } = ComTabService.useTabService();
+
+    //获取标签页服务
+    const { getActiveTab, updateTab } = ComTabService.useTabService();
+
+    //获取菜单服务
+    const { getMenuByPath, openMenu } = ComMenuService.useMenuService();
+
+    //获取GRS服务
+    const { getRouteByNameOrPath } = GenricRouteService.useGenricRoute();
 
     //当前CDRC上下文
     let cdrcContext: CDRCContext = null;
@@ -324,9 +313,28 @@ export default {
      * 跳转到一个已有的菜单项并携带一次性上下文
      * @param nameOrPath 路由的名称或路径
      * @param sendQuery 需发送的查询参数
-     * @param returnQuery 从目标返回时会携带的查询参数
      */
-    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any): void => {};
+    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any): void => {
+      //先根据名称或路径获取路由
+      const grsRoute = getRouteByNameOrPath(nameOrPath);
+
+      if (!grsRoute) {
+        console.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        ElMessage.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        return;
+      }
+
+      //然后根据GRS路由获取到菜单项
+      const menuItem = getMenuByPath(grsRoute.path);
+      if (!menuItem) {
+        console.error(`CDRC跳转失败，无法通过路径 ${grsRoute.path} 找到对应的路由!`);
+        ElMessage.error(`CDRC跳转失败，无法通过路径 ${grsRoute.path} 找到对应的路由!`);
+        return;
+      }
+
+      //打开菜单
+      openMenu(menuItem);
+    };
 
     /**
      * 直接跳转
