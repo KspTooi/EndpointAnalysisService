@@ -52,6 +52,9 @@ export default defineConfigWithVueTs(
     //ignores: ["**/legacy/**/*.ts"],
 
     rules: {
+      //Vue 组件的 HTML 闭合标签需要换行，这没有必要限制
+      "vue/html-closing-bracket-newline": "off",
+
       //允许使用单行标签内容换行，这没有必要限制
       "vue/singleline-html-element-content-newline": "off",
 

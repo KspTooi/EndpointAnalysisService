@@ -169,7 +169,7 @@ const listData = ref<GetCurrentUserCompanyListVo[]>([]);
 const listTotal = ref(0);
 const listLoading = ref(false);
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await CompanyApi.getCurrentUserCompanyList(listForm);
 
@@ -185,43 +185,21 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.name = "";
   loadList();
 };
 
-const removeCompany = async (id: string) => {
-  try {
-    await ElMessageBox.confirm("确定删除该团队吗？", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    });
-  } catch (error) {
-    return;
-  }
-
-  try {
-    const result = await CompanyApi.removeCompany({ id });
-    if (Result.isSuccess(result)) {
-      ElMessage.success("删除成功");
-      await loadList();
-    }
-  } catch (error: any) {
-    ElMessage.error(error.message);
-  }
-};
-
-const activateCompany = async (id: string) => {
+const activateCompany = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定激活该团队吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -236,7 +214,7 @@ const activateCompany = async (id: string) => {
   }
 };
 
-const leaveCompany = async (id: string) => {
+const leaveCompany = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `<strong>您确定要退出该团队吗？</strong><br/>
@@ -255,7 +233,7 @@ const leaveCompany = async (id: string) => {
         closeOnClickModal: false,
       }
     );
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -292,7 +270,7 @@ const modalRules = {
   description: [{ max: 200, message: "团队描述长度不能超过200个字符", trigger: "blur" }],
 };
 
-const openModal = async (mode: "add" | "edit", currentRow?: GetCurrentUserCompanyListVo) => {
+const openModal = async (mode: "add" | "edit", currentRow?: GetCurrentUserCompanyListVo): Promise<void> => {
   modalMode.value = mode;
   resetModal();
 
@@ -317,17 +295,17 @@ const openModal = async (mode: "add" | "edit", currentRow?: GetCurrentUserCompan
   modalVisible.value = true;
 };
 
-const resetModal = () => {
+const resetModal = (): void => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.description = "";
 };
 
-const submitModal = async () => {
+const submitModal = async (): Promise<void> => {
   // 先校验表单
   try {
     await modalFormRef.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -357,7 +335,7 @@ const submitModal = async () => {
 const memberModalVisible = ref(false);
 const currentResignCompanyId = ref<string | null>(null);
 
-const openResignCeoModal = async (row: GetCurrentUserCompanyListVo) => {
+const openResignCeoModal = async (row: GetCurrentUserCompanyListVo): Promise<void> => {
   if (!row.id) {
     ElMessage.error("公司ID不能为空");
     return;
@@ -378,7 +356,7 @@ const openResignCeoModal = async (row: GetCurrentUserCompanyListVo) => {
           dangerouslyUseHTMLString: true,
         }
       );
-    } catch (error) {
+    } catch {
       // 用户点击确认，不需要处理
     }
     return;
@@ -388,7 +366,7 @@ const openResignCeoModal = async (row: GetCurrentUserCompanyListVo) => {
   memberModalVisible.value = true;
 };
 
-const onMemberSelected = async (member: GetCompanyMemberListVo) => {
+const onMemberSelected = async (member: GetCompanyMemberListVo): Promise<void> => {
   if (!currentResignCompanyId.value || !member.userId) {
     ElMessage.error("缺少必要参数");
     return;
@@ -401,7 +379,7 @@ const onMemberSelected = async (member: GetCompanyMemberListVo) => {
       type: "warning",
       dangerouslyUseHTMLString: true,
     });
-  } catch (error) {
+  } catch {
     return;
   }
 

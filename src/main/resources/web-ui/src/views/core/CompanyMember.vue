@@ -143,7 +143,7 @@ const noActiveCompany = ref(false); // 没有激活的公司
 /**
  * 加载列表
  */
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
 
   try {
@@ -162,7 +162,7 @@ const loadList = async () => {
       //ElMessage.error(result.message);
       noActiveCompany.value = true;
     }
-  } catch (error: any) {
+  } catch {
     //ElMessage.error(error.message || "加载失败");
     noActiveCompany.value = true;
   } finally {
@@ -170,7 +170,7 @@ const loadList = async () => {
   }
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.username = null;
@@ -178,7 +178,7 @@ const resetList = () => {
   loadList();
 };
 
-const openInviteModal = () => {
+const openInviteModal = (): void => {
   if (!companyId.value) {
     ElMessage.error("公司ID不能为空");
     return;
@@ -186,7 +186,7 @@ const openInviteModal = () => {
   userModalVisible.value = true;
 };
 
-const onUserSelected = async (user: GetUserListVo) => {
+const onUserSelected = async (user: GetUserListVo): Promise<void> => {
   if (!companyId.value || !user.id) {
     ElMessage.error("缺少必要参数");
     return;
@@ -213,7 +213,7 @@ const onUserSelected = async (user: GetUserListVo) => {
   }
 };
 
-const onFireMember = async (member: GetCompanyMemberListVo) => {
+const onFireMember = async (member: GetCompanyMemberListVo): Promise<void> => {
   if (member.role === 0) {
     await ElMessageBox.confirm(
       `CEO作为公司的最高管理者，无法被开除。<br/><br/>如需调整职务，请先进行CEO权限职务交接。`,
@@ -256,7 +256,7 @@ const onFireMember = async (member: GetCompanyMemberListVo) => {
   }
 };
 
-const goToCompanySetup = () => {
+const goToCompanySetup = (): void => {
   router.push({ name: "company-manager" });
 };
 

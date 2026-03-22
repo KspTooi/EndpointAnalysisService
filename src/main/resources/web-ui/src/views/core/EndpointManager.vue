@@ -433,6 +433,7 @@ const endpointTreeForSelect = computed(() => {
       }
 
       return {
+        // eslint-disable-next-line no-restricted-syntax
         ...item,
         disabled,
         children: item.children ? filter(item.children) : [],
@@ -451,14 +452,14 @@ const endpointTreeForSelect = computed(() => {
 });
 
 // 加载完整端点树用于父级选择
-const loadFullEndpointTree = async () => {
+const loadFullEndpointTree = async (): Promise<void> => {
   const result = await EndpointApi.getEndpointTree({});
   if (Result.isSuccess(result)) {
     fullEndpointTree.value = result.data;
   }
 };
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await EndpointApi.getEndpointTree(listForm);
 
@@ -474,21 +475,21 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.name = "";
   listForm.path = "";
   QueryPersistService.clearQuery("endpoint-manager");
   loadList();
 };
 
-const removeList = async (id: string) => {
+const removeList = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该端点吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -503,7 +504,7 @@ const removeList = async (id: string) => {
   }
 };
 
-const clearEndpointCache = async () => {
+const clearEndpointCache = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       "<div style='text-align: left;'>" +
@@ -525,7 +526,7 @@ const clearEndpointCache = async () => {
         autofocus: false,
       }
     );
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -579,7 +580,7 @@ const modalRules = {
   ],
 };
 
-const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetEndpointTreeVo | null) => {
+const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetEndpointTreeVo | null): Promise<void> => {
   modalMode.value = mode;
   modalCurrentRow.value = currentRow;
   resetModal();
@@ -619,7 +620,7 @@ const openModal = async (mode: "add" | "edit" | "add-item", currentRow: GetEndpo
  * 重置模态框表单
  * @param force 硬重置，不保留父级ID
  */
-const resetModal = (force: boolean = false) => {
+const resetModal = (force: boolean = false): void => {
   modalForm.id = "";
   modalForm.name = "";
   modalForm.description = "";
@@ -633,11 +634,11 @@ const resetModal = (force: boolean = false) => {
   }
 };
 
-const submitModal = async () => {
+const submitModal = async (): Promise<void> => {
   //先校验表单
   try {
     await modalFormRef?.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -667,7 +668,7 @@ const submitModal = async () => {
   await loadList();
 };
 
-const getEndpointDetail = async (id: string) => {
+const getEndpointDetail = async (id: string): Promise<GetEndpointDetailsVo> => {
   const result = await EndpointApi.getEndpointDetails({ id });
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);
@@ -675,7 +676,7 @@ const getEndpointDetail = async (id: string) => {
   return result.data;
 };
 
-const editEndpointSeq = async (id: string, dto: any) => {
+const editEndpointSeq = async (id: string, dto: any): Promise<void> => {
   const result = await EndpointApi.editEndpoint(dto);
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);

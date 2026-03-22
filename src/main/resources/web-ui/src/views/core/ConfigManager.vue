@@ -217,7 +217,7 @@ const modalRules = {
   description: [{ max: 200, message: "描述不能超过200个字符", trigger: "blur" }],
 };
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await ConfigApi.getConfigList(listForm);
 
@@ -233,7 +233,7 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.keyword = null;
@@ -241,7 +241,7 @@ const resetList = () => {
   loadList();
 };
 
-const resetModal = () => {
+const resetModal = (): void => {
   modalForm.id = "";
   modalForm.configKey = "";
   modalForm.configValue = "";
@@ -258,7 +258,7 @@ const resetModal = () => {
 
 loadList();
 
-const openModal = async (mode: "add" | "edit", row: GetConfigListVo | null) => {
+const openModal = async (mode: "add" | "edit", row: GetConfigListVo | null): Promise<void> => {
   modalMode.value = mode;
   resetModal();
 
@@ -283,11 +283,11 @@ const openModal = async (mode: "add" | "edit", row: GetConfigListVo | null) => {
   modalVisible.value = true;
 };
 
-const submitModal = async () => {
+const submitModal = async (): Promise<void> => {
   //先校验表单
   try {
     await modalFormRef?.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -337,14 +337,14 @@ const submitModal = async () => {
   await loadList();
 };
 
-const removeList = async (id: string) => {
+const removeList = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该配置吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
