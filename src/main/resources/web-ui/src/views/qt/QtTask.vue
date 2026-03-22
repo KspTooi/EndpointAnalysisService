@@ -430,7 +430,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, markRaw } from "vue";
-import { Calendar, InfoFilled, CaretRight, Upload, Download } from "@element-plus/icons-vue";
+import { Calendar, InfoFilled, Upload, Download } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import cronstrue from "cronstrue/i18n";
 import { CronExpressionParser } from "cron-parser";
@@ -456,7 +456,7 @@ const cronCalculatorRef = ref<InstanceType<typeof CronCalculatorModal>>();
 const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
 // 导出功能
-const onExport = async () => {
+const onExport = async (): Promise<void> => {
   try {
     await QtTaskApi.exportQtTask(listForm.value);
   } catch (e: any) {
@@ -482,7 +482,7 @@ const {
 } = QtTaskService.useQtTaskList();
 
 // 任务分组列表管理打包
-const { listData: groupListData, listForm: groupListForm, loadList: loadGroupList } = QtTaskGroupService.useQtTaskGroupList();
+const { listData: groupListData, listForm: groupListForm } = QtTaskGroupService.useQtTaskGroupList();
 groupListForm.value.pageSize = 10000;
 
 // 模态框表单引用
@@ -521,7 +521,7 @@ const cronDescription = computed(() => {
   }
   try {
     return cronstrue.toString(cron, { locale: "zh_CN" });
-  } catch (e) {
+  } catch {
     return "无效的表达式";
   }
 });
@@ -540,13 +540,13 @@ const nextRunTimes = computed(() => {
       times.push(formatDateTime(date));
     }
     return times;
-  } catch (e) {
+  } catch {
     return [];
   }
 });
 
-const formatDateTime = (date: Date) => {
-  const pad = (n: number) => String(n).padStart(2, "0");
+const formatDateTime = (date: Date): string => {
+  const pad = (n: number): string => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(
     date.getHours()
   )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;

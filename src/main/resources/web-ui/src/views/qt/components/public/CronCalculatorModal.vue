@@ -128,7 +128,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
 import cronstrue from "cronstrue/i18n";
-import { CronExpressionParser } from "cron-parser";
+import { CronExpression, CronExpressionParser } from "cron-parser";
 import { InfoFilled } from "@element-plus/icons-vue";
 
 /**
@@ -203,21 +203,21 @@ const cronDescription = computed(() => {
   }
   try {
     return cronstrue.toString(finalCron.value, { locale: "zh_CN" });
-  } catch (e) {
+  } catch {
     return "无法解析该表达式的含义";
   }
 });
 
-const parseCron = (cron: string) => {
+const parseCron = (cron: string): CronExpression => {
   if (CronExpressionParser?.parse) {
     return CronExpressionParser.parse(cron, { tz: "Asia/Shanghai" });
   }
   throw new Error("cron-parser api not found");
 };
 
-const pad2 = (n: number) => String(n).padStart(2, "0");
+const pad2 = (n: number): string => String(n).padStart(2, "0");
 
-const formatDateTime = (date: Date) => {
+const formatDateTime = (date: Date): string => {
   const yyyy = date.getFullYear();
   const MM = pad2(date.getMonth() + 1);
   const dd = pad2(date.getDate());
@@ -227,7 +227,7 @@ const formatDateTime = (date: Date) => {
   return `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`;
 };
 
-const normalizeToDate = (value: unknown) => {
+const normalizeToDate = (value: unknown): Date | null => {
   if (value instanceof Date) {
     return value;
   }
@@ -257,12 +257,12 @@ const nextRunTimes = computed(() => {
       times.push(formatDateTime(nextDate));
     }
     return times;
-  } catch (e) {
+  } catch {
     return ["无法计算执行时间预览"];
   }
 });
 
-const openModal = (cron?: string) => {
+const openModal = (cron?: string): void => {
   visible.value = true;
   if (!cron) {
     return;
@@ -276,6 +276,7 @@ const openModal = (cron?: string) => {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [s, m, h, dom, mon, dow] = parts;
 
     // 识别频率模式 (0/X 或 */X)
@@ -314,12 +315,12 @@ const openModal = (cron?: string) => {
     }
 
     mainMode.value = "custom";
-  } catch (e) {
+  } catch {
     mainMode.value = "custom";
   }
 };
 
-const onConfirm = () => {
+const onConfirm = (): void => {
   emit("onConfirm", finalCron.value);
   visible.value = false;
 };

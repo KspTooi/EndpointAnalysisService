@@ -1,5 +1,4 @@
-import { onMounted, reactive, ref, type Ref } from "vue";
-import type { FormInstance, FormRules } from "element-plus";
+import { onMounted, reactive, ref } from "vue";
 import type { GetQtTaskRcdListDto, GetQtTaskRcdListVo, GetQtTaskRcdDetailsVo } from "@/views/qt/api/QtTaskRcdApi.ts";
 import QtTaskRcdApi from "@/views/qt/api/QtTaskRcdApi.ts";
 import { Result } from "@/commons/model/Result.ts";
@@ -41,7 +40,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await QtTaskRcdApi.getQtTaskRcdList(listForm.value);
 
@@ -63,7 +62,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.id = "";
@@ -88,14 +87,14 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetQtTaskRcdListVo) => {
+    const removeList = async (row: GetQtTaskRcdListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -111,7 +110,7 @@ export default {
     /**
      * 批量删除选中项
      */
-    const removeListBatch = async () => {
+    const removeListBatch = async (): Promise<void> => {
       if (listSelected.value.length === 0) {
         ElMessage.warning("请先选择要删除的记录");
         return;
@@ -123,7 +122,7 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -140,7 +139,7 @@ export default {
     /**
      * 表格选中项变化事件
      */
-    const onSelectionChange = (rows: GetQtTaskRcdListVo[]) => {
+    const onSelectionChange = (rows: GetQtTaskRcdListVo[]): void => {
       listSelected.value = rows;
     };
 
@@ -189,7 +188,7 @@ export default {
      * 打开模态框（查看模式）
      * @param row 要查看的行数据
      */
-    const openModal = async (row: GetQtTaskRcdListVo) => {
+    const openModal = async (row: GetQtTaskRcdListVo): Promise<void> => {
       modalMode.value = "view";
 
       if (!row) {
@@ -222,7 +221,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       modalForm.id = "";
       modalForm.taskId = "";
       modalForm.taskName = "";

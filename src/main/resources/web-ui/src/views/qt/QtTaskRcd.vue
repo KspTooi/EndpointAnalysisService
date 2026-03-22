@@ -147,7 +147,7 @@ const {
 } = QtTaskRcdService.useQtTaskRcdList();
 
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, openModal, resetModal } = QtTaskRcdService.useQtTaskRcdModal();
+const { modalVisible, modalLoading, modalForm, openModal, resetModal } = QtTaskRcdService.useQtTaskRcdModal();
 </script>
 
 <style scoped></style>
