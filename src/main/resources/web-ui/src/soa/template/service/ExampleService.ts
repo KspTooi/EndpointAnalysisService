@@ -35,7 +35,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await ExampleApi.getExampleList(listForm.value);
 
@@ -54,7 +54,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.name = "";
@@ -65,7 +65,7 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetExampleListVo) => {
+    const removeList = async (row: GetExampleListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -129,7 +129,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetExampleListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetExampleListVo | null): Promise<void> => {
       modalMode.value = mode;
 
       if (mode === "add") {
@@ -167,7 +167,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       if (!modalFormRef.value) {
         return;
       }
@@ -183,7 +183,7 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!modalFormRef.value) {
         return;
       }

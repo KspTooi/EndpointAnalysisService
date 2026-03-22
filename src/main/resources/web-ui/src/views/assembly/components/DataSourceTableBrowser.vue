@@ -12,14 +12,14 @@
       <el-input v-model="keyword" placeholder="搜索表名 / 注释" clearable />
     </div>
     <el-table
-      :data="filteredList"
       v-loading="loading"
+      :data="filteredList"
+      style="cursor: pointer"
       border
       stripe
       highlight-current-row
       height="400px"
       @row-click="onRowClick"
-      style="cursor: pointer"
     >
       <el-table-column prop="tableName" label="表名" min-width="160" show-overflow-tooltip />
       <el-table-column prop="tableComment" label="注释" min-width="200" show-overflow-tooltip />
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import type { GetDataSourceTableListVo } from "../api/DataSourceApi";
+import type { GetDataSourceTableListVo } from "@/views/assembly/api/DataSourceApi";
 import DataSourceApi from "@/views/assembly/api/DataSourceApi";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -53,11 +53,13 @@ const title = computed(() => {
 
 const filteredList = computed(() => {
   const kw = keyword.value.trim().toLowerCase();
-  if (!kw) return tableList.value;
+  if (!kw) {
+    return tableList.value;
+  }
   return tableList.value.filter((t) => t.tableName.toLowerCase().includes(kw) || t.tableComment.toLowerCase().includes(kw));
 });
 
-const loadTables = async () => {
+const loadTables = async (): Promise<void> => {
   loading.value = true;
   tableList.value = [];
   try {
@@ -72,7 +74,7 @@ const loadTables = async () => {
   }
 };
 
-const openBrowser = async () => {
+const openBrowser = async (): Promise<void> => {
   keyword.value = "";
   visible.value = true;
   await loadTables();
@@ -86,7 +88,7 @@ watch(
   }
 );
 
-const onRowClick = (row: GetDataSourceTableListVo) => {
+const onRowClick = (row: GetDataSourceTableListVo): void => {
   tableName.value = row.tableName;
   visible.value = false;
 };
