@@ -3,7 +3,7 @@ import type { GetOutModelOriginListDto, GetOutModelOriginListVo } from "@/views/
 import OutModelOriginApi from "@/views/assembly/api/OutModelOriginApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage } from "element-plus";
-import type { GetOutSchemaListVo } from "../api/OutSchemaApi";
+import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 
 export default {
   /**
