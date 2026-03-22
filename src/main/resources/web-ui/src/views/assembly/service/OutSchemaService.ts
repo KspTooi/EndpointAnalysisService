@@ -1,4 +1,4 @@
-import { onMounted, reactive, ref, watch, type Ref } from "vue";
+import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
   GetOutSchemaListDto,
@@ -42,7 +42,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await OutSchemaApi.getOutSchemaList(listForm.value);
 
@@ -61,7 +61,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.name = "";
@@ -73,14 +73,14 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetOutSchemaListVo) => {
+    const removeList = async (row: GetOutSchemaListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -100,7 +100,7 @@ export default {
     /**
      * 执行输出方案
      */
-    const executeOutSchema = async (row: GetOutSchemaListVo) => {
+    const executeOutSchema = async (row: GetOutSchemaListVo): Promise<void> => {
       await OutSchemaApi.executeOutSchema({ id: row.id });
       ElMessage.success("执行成功");
       await loadList();
@@ -183,7 +183,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetOutSchemaListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetOutSchemaListVo | null): Promise<void> => {
       modalMode.value = mode;
 
       //重新拉取数据源、类型映射方案、SCM列表
@@ -195,7 +195,7 @@ export default {
         modalDataSource.value = dataSourceResult.data;
         modalTypeSchema.value = typeSchemaResult.data;
         modalScm.value = scmResult.data;
-      } catch (error: any) {
+      } catch {
         ElMessage.error("拉取数据源、类型映射方案、SCM列表失败，请稍后重试");
         return;
       }
@@ -251,7 +251,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       if (!modalFormRef.value) {
         return;
       }
@@ -275,14 +275,14 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!modalFormRef.value) {
         return;
       }
 
       try {
         await modalFormRef.value.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -305,7 +305,7 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          var message = await OutSchemaApi.addOutSchema(addDto);
+          const message = await OutSchemaApi.addOutSchema(addDto);
           ElMessage.success(message);
           modalVisible.value = false;
           resetModal();
@@ -341,7 +341,7 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          var message = await OutSchemaApi.editOutSchema(editDto);
+          const message = await OutSchemaApi.editOutSchema(editDto);
           ElMessage.success(message);
           modalVisible.value = false;
           resetModal();

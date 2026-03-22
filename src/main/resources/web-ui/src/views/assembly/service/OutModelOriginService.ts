@@ -21,7 +21,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await OutModelOriginApi.getOutModelOriginList(listForm.value);
 

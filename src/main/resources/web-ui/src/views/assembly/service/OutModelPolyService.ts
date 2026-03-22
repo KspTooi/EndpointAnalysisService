@@ -16,7 +16,7 @@ export default {
     const listData = ref<GetOutModelPolyListVo[]>([]);
     const listLoading = ref(false);
 
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
       const result = await OutModelPolyApi.getOutModelPolyList(listForm.value);
@@ -32,14 +32,14 @@ export default {
       listLoading.value = false;
     };
 
-    const syncFromOrigin = async () => {
+    const syncFromOrigin = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -52,14 +52,14 @@ export default {
       }
     };
 
-    const removeList = async (row: GetOutModelPolyListVo) => {
+    const removeList = async (row: GetOutModelPolyListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -103,7 +103,7 @@ export default {
     /**
      * 提交整行当前值到后端（文本类 input blur 时调用）
      */
-    const submitRow = async (row: GetOutModelPolyListVo) => {
+    const submitRow = async (row: GetOutModelPolyListVo): Promise<boolean> => {
       const editDto = buildEditDto(row);
 
       try {
@@ -118,9 +118,11 @@ export default {
     /**
      * 提交指定字段新值（checkbox / select change 时调用）
      */
-    const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any) => {
+    const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any): Promise<boolean> => {
       const oldValue = (row as any)[field];
-      if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
+      if (JSON.stringify(newValue) === JSON.stringify(oldValue)) {
+        return false;
+      }
 
       (row as any)[field] = newValue;
       const editDto = buildEditDto(row);
