@@ -36,7 +36,7 @@ export default {
 
       //持久化菜单展开数据
       persist: {
-        key: "menu_opened",
+        key: "np_soa_menu_opened",
         pick: ["menuOpened"],
       },
 
