@@ -27,7 +27,7 @@ export default {
    * 获取当前用户信息
    */
   getCurrentUserProfile: async (): Promise<GetCurrentUserProfile> => {
-    var result = await Http.postEntity<Result<GetCurrentUserProfile>>("/profile/getCurrentUserProfile", {});
+    const result = await Http.postEntity<Result<GetCurrentUserProfile>>("/profile/getCurrentUserProfile", {});
     if (result.code == 0) {
       return result.data;
     }
@@ -38,7 +38,7 @@ export default {
    * 用户注销
    */
   logout: async (): Promise<void> => {
-    var result = await Http.postEntity<Result<string>>("/auth/logout", {});
+    const result = await Http.postEntity<Result<string>>("/auth/logout", {});
     if (result.code == 0) {
       return;
     }
@@ -49,13 +49,13 @@ export default {
    * 用户更改密码
    */
   changePassword: async (oldPassword: string, newPassword: string): Promise<void> => {
-    var result = await Http.postEntity<Result<string>>("/profile/changePassword", {
+    const result = await Http.postEntity<Result<string>>("/profile/changePassword", {
       oldPassword: oldPassword,
-      newPassword: newPassword
+      newPassword: newPassword,
     });
     if (result.code == 0) {
       return;
     }
     throw new Error(result.message);
-  }
+  },
 };
