@@ -19,7 +19,7 @@ const loadCurrentDirFromStorage = (): CurrentDirPo => {
   }
   try {
     return JSON.parse(stored);
-  } catch (e) {
+  } catch {
     return {
       id: null,
       name: null,
@@ -49,7 +49,7 @@ const loadCurrentDriveSpaceFromStorage = (): GetDriveSpaceListVo | null => {
   }
   try {
     return JSON.parse(stored);
-  } catch (e) {
+  } catch {
     return null;
   }
 };

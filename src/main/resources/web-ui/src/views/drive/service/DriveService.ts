@@ -1,10 +1,9 @@
-import { onMounted, onUnmounted, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import type { CurrentDirPo, EntryPo } from "@/views/drive/api/DriveTypes";
 import DriveFileSelector from "@/views/drive/components/DriveFileSelector.vue";
 import DriveModalRemove from "@/views/drive/components/DriveModalRemove.vue";
 import DriveModalRename from "@/views/drive/components/DriveModalRename.vue";
 import DriveModalMoveConfirm from "@/views/drive/components/DriveModalMoveConfirm.vue";
-import DriveModalFileUpload, { type UploadQueueItem } from "@/views/drive/components/DriveModalFileUpload.vue";
 import DriveModalCreateDir from "@/views/drive/components/DriveModalCreateDir.vue";
 import DriveEntryGrid from "@/views/drive/components/DriveEntryGrid.vue";
 import { DriveStore } from "@/views/drive/service/DriveStore.ts";
@@ -91,7 +90,7 @@ export default {
     downloadUrlModalRef: Ref<InstanceType<typeof DriveModalDownloadUrl>>
   ) {
     //获取标签页服务
-    const { tabs, getActiveTab, getActiveTabIndex, openTabAt } = ComTabService.useTabService();
+    const { getActiveTabIndex, openTabAt } = ComTabService.useTabService();
 
     return {
       //刷新
@@ -275,6 +274,7 @@ export default {
       },
 
       //剪切
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       cut: (entries: EntryPo[]) => {
         ElMessage.info("不支持剪切功能");
       },
@@ -295,6 +295,7 @@ export default {
       },
 
       //属性
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       properties: (entry: EntryPo) => {
         ElMessage.info("暂不支持属性功能");
       },

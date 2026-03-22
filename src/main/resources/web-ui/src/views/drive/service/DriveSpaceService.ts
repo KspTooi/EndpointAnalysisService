@@ -7,7 +7,6 @@ import type {
   GetDriveSpaceMemberDetailsVo,
   AddDriveSpaceDto,
   EditDriveSpaceDto,
-  EditDriveSpaceMembersDto,
 } from "@/views/drive/api/DriveSpaceApi.ts";
 import DriveSpaceApi from "@/views/drive/api/DriveSpaceApi.ts";
 import { Result } from "@/commons/model/Result.ts";
@@ -31,7 +30,7 @@ export default {
     /**
      * 加载全量云盘空间列表
      */
-    const loadSpaceList = async () => {
+    const loadSpaceList = async (): Promise<void> => {
       spaceLoading.value = true;
       const result = await DriveSpaceApi.getDriveSpaceList({
         pageNum: 1,
@@ -82,7 +81,7 @@ export default {
     /**
      * 加载列表
      */
-    const loadList = async () => {
+    const loadList = async (): Promise<void> => {
       listLoading.value = true;
       const result = await DriveSpaceApi.getDriveSpaceList(listForm.value);
 
@@ -101,7 +100,7 @@ export default {
     /**
      * 重置查询
      */
-    const resetList = () => {
+    const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
       listForm.value.name = "";
@@ -113,14 +112,14 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetDriveSpaceListVo) => {
+    const removeList = async (row: GetDriveSpaceListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -174,10 +173,11 @@ export default {
     /**
      * 重新从接口加载当前空间的成员列表
      */
-    const reloadMembers = async () => {
+    const reloadMembers = async (): Promise<void> => {
       const details = await DriveSpaceApi.getDriveSpaceDetails({ id: modalForm.id });
       modalMembers.value = [];
       for (const m of details.members) {
+        // eslint-disable-next-line no-restricted-syntax
         modalMembers.value.push({ ...m });
       }
     };
@@ -185,7 +185,7 @@ export default {
     /**
      * 将选中的用户批量添加到成员列表（去重，add 模式纯本地；edit 模式调接口后刷新）
      */
-    const addUserMembers = async (users: GetUserListVo[]) => {
+    const addUserMembers = async (users: GetUserListVo[]): Promise<void> => {
       if (modalMode.value === "add") {
         for (const user of users) {
           let exists = false;
@@ -242,7 +242,7 @@ export default {
     /**
      * 将选中的部门批量添加到成员列表（去重，add 模式纯本地；edit 模式调接口后刷新）
      */
-    const addDeptMembers = async (depts: GetOrgTreeVo[]) => {
+    const addDeptMembers = async (depts: GetOrgTreeVo[]): Promise<void> => {
       if (modalMode.value === "add") {
         for (const dept of depts) {
           let exists = false;
@@ -299,7 +299,7 @@ export default {
     /**
      * edit 模式：修改成员角色，调接口后刷新
      */
-    const editUpdateMemberRole = async (member: GetDriveSpaceMemberDetailsVo) => {
+    const editUpdateMemberRole = async (member: GetDriveSpaceMemberDetailsVo): Promise<void> => {
       memberOpLoading.value = true;
       try {
         await DriveSpaceApi.editDriveSpaceMembers({
@@ -320,7 +320,7 @@ export default {
     /**
      * edit 模式：删除成员，二次确认后调接口刷新
      */
-    const editRemoveMember = async (member: GetDriveSpaceMemberDetailsVo) => {
+    const editRemoveMember = async (member: GetDriveSpaceMemberDetailsVo): Promise<void> => {
       try {
         await ElMessageBox.confirm(`确定移除成员「${member.memberName}」吗？`, "提示", {
           confirmButtonText: "确定",
@@ -350,7 +350,7 @@ export default {
     /**
      * add 模式：从成员列表移除一条记录（纯本地）
      */
-    const removeMember = (index: number) => {
+    const removeMember = (index: number): void => {
       modalMembers.value.splice(index, 1);
     };
 
@@ -372,7 +372,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetDriveSpaceListVo | null) => {
+    const openModal = async (mode: ModalMode, row: GetDriveSpaceListVo | null): Promise<void> => {
       modalMode.value = mode;
 
       if (mode === "add") {
@@ -403,6 +403,7 @@ export default {
           // 回填成员列表
           modalMembers.value = [];
           for (const m of details.members) {
+            // eslint-disable-next-line no-restricted-syntax
             modalMembers.value.push({ ...m });
           }
           modalVisible.value = true;
@@ -415,7 +416,7 @@ export default {
     /**
      * 重置模态框
      */
-    const resetModal = () => {
+    const resetModal = (): void => {
       if (!modalFormRef.value) {
         return;
       }
@@ -431,14 +432,14 @@ export default {
     /**
      * 提交模态框
      */
-    const submitModal = async () => {
+    const submitModal = async (): Promise<void> => {
       if (!modalFormRef.value) {
         return;
       }
 
       try {
         await modalFormRef.value.validate();
-      } catch (error) {
+      } catch {
         return;
       }
 

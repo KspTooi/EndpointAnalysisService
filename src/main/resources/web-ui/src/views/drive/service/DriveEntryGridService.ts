@@ -2,9 +2,10 @@ import DriveApi from "@/views/drive/api/DriveApi.ts";
 
 import { ElMessage } from "element-plus";
 import { ref, onUnmounted, type Ref, reactive, computed, type Reactive, watch } from "vue";
-import type { CurrentDirPo, EntryPo, GetEntryListDto, GetEntryListPathVo } from "@/views/drive/api/DriveTypes.ts";
+import type { CurrentDirPo, EntryPo, GetEntryListDto, GetEntryListVo } from "@/views/drive/api/DriveTypes.ts";
 import type { EntryGridEmitter } from "@/views/drive/components/DriveEntryGrid.vue";
 import { DriveStore } from "@/views/drive/service/DriveStore";
+import type Result from "@/commons/model/Result";
 
 /**
  * DriveEntryGrid 服务模块
@@ -41,7 +42,7 @@ export default {
       return true;
     });
 
-    const listLoad = async () => {
+    const listLoad = async (): Promise<Result<GetEntryListVo>> => {
       listLoading.value = true;
       try {
         //如果当前没有空间则不进行任何操作
@@ -145,7 +146,7 @@ export default {
     const startY = ref(0);
 
     // 更新选中项 (核心碰撞检测算法)
-    const updateSelectedIds = () => {
+    const updateSelectedIds = (): void => {
       //如果容器不存在则返回
       if (!gridRef.value) {
         return;
@@ -196,7 +197,7 @@ export default {
      * 鼠标移动事件
      * @param event 鼠标事件
      */
-    const onMouseMove = (event: MouseEvent) => {
+    const onMouseMove = (event: MouseEvent): void => {
       if (!hasSelecting.value || !gridRef.value) {
         return;
       }
@@ -213,7 +214,11 @@ export default {
           return;
         }
 
-        const container = gridRef.value!;
+        const container = gridRef.value;
+
+        if (!container) {
+          return;
+        }
 
         //只有在没有缓存时才获取 Rect（建议在 onMouseDown 中获取并重置为 null）
         if (!cachedRect) {
@@ -247,7 +252,7 @@ export default {
     /**
      * 鼠标抬起事件
      */
-    const onMouseUp = () => {
+    const onMouseUp = (): void => {
       //如果不在框选状态则返回
       if (!hasSelecting.value) {
         return;
@@ -263,7 +268,7 @@ export default {
      * 鼠标按下事件
      * @param event 鼠标事件
      */
-    const onMouseDown = (event: MouseEvent) => {
+    const onMouseDown = (event: MouseEvent): void => {
       //如果容器不存在则返回
       if (!gridRef.value) {
         return;
@@ -306,7 +311,7 @@ export default {
      * 用于鼠标单击一个元素时选择、取消
      * @param entry 条目对象
      */
-    const selectEntry = (entry: EntryPo) => {
+    const selectEntry = (entry: EntryPo): void => {
       //如果点选的时候当前选择了不止一个条目 则直接点选当前条目
       if (selectedIds.value.size > 1) {
         selectedIds.value.clear();
@@ -373,7 +378,7 @@ export default {
      * @param entry 拖拽的条目
      * @param event 拖拽事件
      */
-    const onDragStart = (entry: EntryPo, event: DragEvent) => {
+    const onDragStart = (entry: EntryPo, event: DragEvent): void => {
       if (!entry.id) {
         return;
       }
@@ -391,7 +396,7 @@ export default {
      * @param entry 拖拽的条目
      * @param event 拖拽事件
      */
-    const onDragOver = (entry: EntryPo, event: DragEvent) => {
+    const onDragOver = (entry: EntryPo, event: DragEvent): void => {
       // 简单的防抖或检查可以在这里做
       if (event.dataTransfer) {
         event.dataTransfer.dropEffect = "move";
@@ -403,7 +408,7 @@ export default {
      * @param targetEntry 目标条目
      * @param event 拖拽事件
      */
-    const onDrop = (targetEntry: EntryPo, currentDir: CurrentDirPo, event: DragEvent) => {
+    const onDrop = (targetEntry: EntryPo, currentDir: CurrentDirPo, event: DragEvent): void => {
       //计算实际被拖拽的文件列表 (处理多选)
       let dragEntries: EntryPo[] = [];
 
@@ -464,7 +469,7 @@ export default {
      * 重定向到指定目录
      * @param dirId 目录ID
      */
-    const redirectDirectory = (dirId: string) => {
+    const redirectDirectory = (dirId: string): void => {
       listQuery.directoryId = dirId;
       listLoad();
       selectedIds.value.clear();
@@ -475,7 +480,7 @@ export default {
      * @param entry 条目对象
      * @param currentDir 当前目录
      */
-    const enterDirectory = (entry: EntryPo, currentDir: CurrentDirPo) => {
+    const enterDirectory = (entry: EntryPo, currentDir: CurrentDirPo): void => {
       //如果条目ID为空 则进入上级目录
       if (entry.id == null) {
         listQuery.directoryId = currentDir.parentId;
@@ -499,7 +504,7 @@ export default {
     /**
      * 返回上级目录
      */
-    const backspace = () => {
+    const backspace = (): void => {
       const currentDir = DriveStore().getCurrentDir;
 
       //已经位于root目录

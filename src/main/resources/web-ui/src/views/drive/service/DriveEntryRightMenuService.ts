@@ -36,7 +36,7 @@ export default {
      * @param event 鼠标事件
      * @param entries 当前条目 为null表示没有选中条目
      */
-    const openRightMenu = (event: MouseEvent, entries: EntryPo[] | null = null) => {
+    const openRightMenu = (event: MouseEvent, entries: EntryPo[] | null = null): void => {
       x.value = event.clientX;
       y.value = event.clientY;
       currentEntries.value = entries || [];
@@ -46,7 +46,7 @@ export default {
     /**
      * 关闭右键菜单
      */
-    const closeRightMenu = () => {
+    const closeRightMenu = (): void => {
       visible.value = false;
     };
 
@@ -54,7 +54,7 @@ export default {
      * 处理点击到外部区域关闭菜单
      * @param event 鼠标事件
      */
-    const onClickOutside = (event: MouseEvent) => {
+    const onClickOutside = (event: MouseEvent): void => {
       if (rightMenuRef.value && !rightMenuRef.value.contains(event.target as Node)) {
         closeRightMenu();
       }

@@ -30,7 +30,7 @@ export default {
      * 处理鼠标滚轮事件
      * @param e 滚轮事件
      */
-    const onWheel = (e: WheelEvent) => {
+    const onWheel = (e: WheelEvent): void => {
       // 只有按住 Ctrl 时才触发缩放
       if (e.ctrlKey) {
         e.preventDefault();
@@ -82,7 +82,7 @@ export default {
     /**
      * 重置缩放
      */
-    const resetScale = () => {
+    const resetScale = (): void => {
       scale.value = initialScale;
       showIndicator.value = false;
     };
@@ -113,7 +113,7 @@ export default {
     /**
      * 鼠标移动处理 (绑定在 document 上以保证拖出容器也能响应)
      */
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseMove = (e: MouseEvent): void => {
       if (!isDragging.value) {
         return;
       }
@@ -129,7 +129,7 @@ export default {
     /**
      * 鼠标抬起处理
      */
-    const onMouseUp = () => {
+    const onMouseUp = (): void => {
       isDragging.value = false;
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
@@ -139,7 +139,7 @@ export default {
      * 鼠标按下事件 (需要绑定在目标元素上)
      * @param e 鼠标事件
      */
-    const onMouseDown = (e: MouseEvent) => {
+    const onMouseDown = (e: MouseEvent): void => {
       // 只有左键点击才触发拖拽
       if (e.button !== 0) {
         return;
@@ -161,7 +161,7 @@ export default {
     /**
      * 重置位置
      */
-    const resetPosition = () => {
+    const resetPosition = (): void => {
       x.value = 0;
       y.value = 0;
     };
