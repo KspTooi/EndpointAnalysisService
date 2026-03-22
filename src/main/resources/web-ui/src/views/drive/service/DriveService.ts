@@ -11,7 +11,7 @@ import { DriveStore } from "@/views/drive/service/DriveStore.ts";
 import DriveApi from "@/views/drive/api/DriveApi";
 import { ElMessage } from "element-plus";
 import { Result } from "@/commons/model/Result.ts";
-import { useTabStore } from "@/store/TabHolder";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 import FileCategoryService, { EntryCategory } from "@/commons/service/FileCategoryService.ts";
 import type DriveModalDownloadUrl from "@/views/drive/components/DriveModalDownloadUrl.vue";
 import Http from "@/commons/Http";
@@ -90,6 +90,9 @@ export default {
     entryGridRef: Ref<InstanceType<typeof DriveEntryGrid>>,
     downloadUrlModalRef: Ref<InstanceType<typeof DriveModalDownloadUrl>>
   ) {
+    //获取标签页服务
+    const { tabs, getActiveTab, getActiveTabIndex, openTabAt } = ComTabService.useTabService();
+
     return {
       //刷新
       refresh: async () => {
@@ -207,19 +210,16 @@ export default {
             const fullPath = `${routePath}?sign=${encodeURIComponent(sign)}&name=${encodeURIComponent(entry.name)}`;
 
             //在当前激活的TAB后面插入一个新标签
-            const activeTab = useTabStore().activeTabId;
-            const activeTabIndex = useTabStore().tabs.findIndex((t) => t.id === activeTab);
-            if (activeTabIndex !== -1) {
-              useTabStore().insertTab(
-                {
-                  id: `preview-${entry.id}`, // 使用文件ID作为Tab ID，防止重复打开
-                  title: entry.name,
-                  path: fullPath,
-                  closable: true,
-                },
-                activeTabIndex + 1
-              );
-            }
+            openTabAt(
+              {
+                id: `preview-${entry.id}`, // 使用文件ID作为Tab ID，防止重复打开
+                icon: null,
+                title: entry.name,
+                path: fullPath,
+                closable: true,
+              },
+              getActiveTabIndex() + 1
+            );
           }
         } catch (error: any) {
           ElMessage.error(error.message || "获取预览链接失败");

@@ -5,7 +5,7 @@ import { defineStore, storeToRefs } from "pinia";
 import { ElMessage } from "element-plus";
 import { computed, ref, type Ref } from "vue";
 import { useRoute } from "vue-router";
-import { useTabStore } from "@/store/TabHolder.ts";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
 const fallbackMc = {
   id: "fallback-maintenance-center",
@@ -59,8 +59,8 @@ export default {
     //先获取菜单储存
     const menuStore = this.useMenuStore();
 
-    //获取tabStore
-    const tabStore = useTabStore();
+    //获取标签页服务
+    const { openTab } = ComTabService.useTabService();
 
     //获取路由
     const route = useRoute();
@@ -174,8 +174,9 @@ export default {
       }
 
       //使用tabStore添加新标签
-      tabStore.addTab({
+      openTab({
         id: item.id,
+        icon: null,
         title: item.name,
         path: item.menuPath,
       });

@@ -59,10 +59,10 @@ import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { Component } from "vue";
 import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import { useTabStore } from "@/store/TabHolder.ts";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 import logoUrl from "@/assets/EAS_CROWN.png";
 
-const tabStore = useTabStore();
+const { openTab } = ComTabService.useTabService();
 
 // 使用 markRaw 包装所有图标组件
 const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
@@ -126,9 +126,10 @@ const onMenuItemClick = (item: GetUserMenuTreeVo) => {
     return;
   }
 
-  tabStore.addTab({
-    id: item.id as any,
-    title: item.name as any,
+  openTab({
+    id: item.id,
+    icon: item.menuIcon ?? null,
+    title: item.name,
     path: item.menuPath,
   });
 

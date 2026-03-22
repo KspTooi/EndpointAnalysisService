@@ -1,18 +1,11 @@
 <template>
   <div class="tab-panel-container">
     <div class="tab-prefix-controls">
-      <el-icon class="control-btn close-btn" @click="onCloseCurrentTab" title="关闭标签页">
+      <el-icon title="关闭标签页" class="control-btn close-btn" @click="onCloseCurrentTab">
         <Close />
       </el-icon>
     </div>
-    <draggable
-      v-model="tabs"
-      item-key="id"
-      class="draggable-tabs"
-      animation="200"
-      ghost-class="ghost-tab"
-      ref="draggableRef"
-    >
+    <draggable ref="draggableRef" v-model="tabs" item-key="id" class="draggable-tabs" animation="200" ghost-class="ghost-tab">
       <template #item="{ element: tab }">
         <div
           class="tab-item"
@@ -29,7 +22,7 @@
     </draggable>
 
     <div class="tab-controls">
-      <el-icon class="control-btn" @click="onRefresh" title="刷新">
+      <el-icon class="control-btn" title="刷新" @click="onRefresh">
         <Refresh />
       </el-icon>
       <slot name="controls"></slot>
@@ -43,42 +36,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { storeToRefs } from "pinia";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import draggable from "vuedraggable";
 import { ElIcon } from "element-plus";
 import { Refresh, Close } from "@element-plus/icons-vue";
-import { useTabStore, type Tab } from "@/store/TabHolder.ts";
+import ComTabService, { type Tab } from "@/soa/com-series/service/ComTabService.ts";
 
 const draggableRef = ref<any>(null);
-const tabStore = useTabStore();
-const { activeTabId, tabs } = storeToRefs(tabStore);
 
+//标签服务（不需要路由同步，只需操作标签）
+const { tabs, activeTabId, activeTab, closeTab, closeNoActiveTab, refreshActiveTab } = ComTabService.useTabService();
 
-
-const onTabClick = (tabId: string) => {
-  tabStore.setActiveTab(tabId);
+const onTabClick = (tabId: string): void => {
+  activeTab(tabId);
 };
 
-const onTabClose = (tabId: string) => {
+const onTabClose = (tabId: string): void => {
   if (tabs.value.length > 1) {
-    tabStore.removeTab(tabId);
+    console.log("closeTab", tabId);
+    closeTab(tabId);
   }
 };
 
-const onRefresh = () => {
-  tabStore.refreshActiveView();
+const onRefresh = (): void => {
+  refreshActiveTab();
 };
 
-const onCloseCurrentTab = () => {
+const onCloseCurrentTab = (): void => {
   if (activeTabId.value && tabs.value.length > 1) {
-    tabStore.removeTab(activeTabId.value);
+    closeTab(activeTabId.value);
   }
 };
 
-
-
-// Context Menu Logic
+//右键菜单状态
 const contextMenu = ref({
   visible: false,
   x: 0,
@@ -86,33 +76,37 @@ const contextMenu = ref({
   targetTab: null as Tab | null,
 });
 
-const openContextMenu = (event: MouseEvent, tab: Tab) => {
+const openContextMenu = (event: MouseEvent, tab: Tab): void => {
   contextMenu.value.visible = true;
   contextMenu.value.x = event.clientX;
   contextMenu.value.y = event.clientY;
   contextMenu.value.targetTab = tab;
 };
 
-const closeContextMenu = () => {
+const closeContextMenu = (): void => {
   contextMenu.value.visible = false;
   contextMenu.value.targetTab = null;
 };
 
-const closeCurrentTab = () => {
+const closeCurrentTab = (): void => {
   if (contextMenu.value.targetTab) {
     onTabClose(contextMenu.value.targetTab.id);
   }
   closeContextMenu();
 };
 
-const closeOtherTabs = () => {
-  if (contextMenu.value.targetTab) {
-    tabStore.closeOtherTabs(contextMenu.value.targetTab.id);
+const closeOtherTabs = (): void => {
+  if (!contextMenu.value.targetTab) {
+    closeContextMenu();
+    return;
   }
+  //先激活目标标签，再关闭其他标签
+  activeTab(contextMenu.value.targetTab.id);
+  closeNoActiveTab();
   closeContextMenu();
 };
 
-const onWheel = (event: WheelEvent) => {
+const onWheel = (event: WheelEvent): void => {
   const el = draggableRef.value?.$el as HTMLElement | undefined;
   if (el) {
     event.preventDefault();

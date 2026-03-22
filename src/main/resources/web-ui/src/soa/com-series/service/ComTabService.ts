@@ -10,7 +10,7 @@ export interface Tab {
   icon: string | null; // 标签图标名称
   title: string; // 标签标题
   path: string; // 标签路径
-  closable?: boolean; // 是否可关闭
+  closable?: boolean; // 是否可关闭 默认true
 }
 
 /**
@@ -87,6 +87,19 @@ export default {
       if (router.currentRoute.value.path !== tabToActivate.path) {
         router.push(tabToActivate.path);
       }
+    };
+
+    /**
+     * 激活一个标签(根据索引)
+     * @param index 索引
+     */
+    const activeOf = (index: number): void => {
+      //如果索引小于1或大于标签列表的长度，则不处理
+      if (index < 1 || index > tabs.value.length) {
+        return;
+      }
+      //激活标签
+      activeTab(tabs.value[index - 1].id);
     };
 
     /**
@@ -169,12 +182,12 @@ export default {
       }
 
       //先根据ID查找标签
-      const existingTab = getTab(tabId);
+      //const existingTab = getTab(tabId);
 
       //如果标签不可关闭，就不处理
-      if (!existingTab?.closable) {
-        return;
-      }
+      //if (!existingTab?.closable) {
+      //  return;
+      //}
 
       //根据ID查找标签在标签列表中的索引
       const index = tabs.value.findIndex((t) => t.id === tabId);
@@ -239,6 +252,22 @@ export default {
     };
 
     /**
+     * 获取当前激活标签的索引
+     * @returns 成功返回索引，失败返回0
+     */
+    const getActiveTabIndex = (): number => {
+      if (!activeTabId.value) {
+        return 0;
+      }
+
+      const index = tabs.value.findIndex((t) => t.id === activeTabId.value);
+      if (index === -1) {
+        return 0;
+      }
+      return index;
+    };
+
+    /**
      * 更新一个已存在的标签
      * @param tab 标签
      * @returns 成功返回true，失败返回false
@@ -295,8 +324,14 @@ export default {
       //激活一个标签
       activeTab,
 
+      //激活一个标签(根据索引)
+      activeOf,
+
       //获取当前激活标签
       getActiveTab,
+
+      //获取当前激活标签的索引
+      getActiveTabIndex,
 
       //更新一个已存在的标签
       updateTab,

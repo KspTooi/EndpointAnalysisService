@@ -1,11 +1,11 @@
 import { createRouter, createWebHashHistory, type Router } from "vue-router";
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo";
 import { type App, ref } from "vue";
-import { useTabStore } from "@/store/TabHolder";
 import ComPage404 from "@/soa/com-series/ComPage404.vue";
 import ComPage401 from "@/soa/com-series/ComPage401.vue";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 import ComPageLanding from "@/soa/com-series/ComPageLanding.vue";
+import ComTabService from "@/soa/com-series/service/ComTabService";
 
 //是否已初始化
 let hasInitialized = false;
@@ -54,8 +54,10 @@ vueRouter.beforeEach((to, from, next) => {
     return next();
   }
 
-  const tabStore = useTabStore();
-  const activeTab = tabStore.tabs.find((t) => t.id === tabStore.activeTabId);
+  const { tabs, getActiveTab } = ComTabService.useTabService();
+
+  //获取当前激活标签
+  const activeTab = getActiveTab();
 
   // 优先恢复当前激活标签，但排除根路径和登录页，避免自跳转/无意义跳转
   if (activeTab && activeTab.path !== "/" && activeTab.path !== "/auth/login" && activeTab.path !== to.path) {
@@ -63,7 +65,7 @@ vueRouter.beforeEach((to, from, next) => {
   }
 
   // 激活标签不可用时，回退到最近访问的业务标签（同样排除根路径和登录页）
-  const fallbackTab = [...tabStore.tabs].reverse().find((t) => t.path !== "/" && t.path !== "/auth/login");
+  const fallbackTab = [...tabs.value].reverse().find((t) => t.path !== "/" && t.path !== "/auth/login");
 
   // 防止重定向到当前目标，避免产生循环跳转
   if (fallbackTab && fallbackTab.path !== to.path) {

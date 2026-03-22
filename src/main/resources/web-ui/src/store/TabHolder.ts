@@ -72,11 +72,11 @@ export const useTabStore = defineStore("tabStore", () => {
     }
   });
 
-  const refreshActiveView = () => {
+  const refreshActiveView = (): void => {
     refreshCounter.value++;
   };
 
-  const setActiveTab = (tabId: string) => {
+  const setActiveTab = (tabId: string): void => {
     const tabToActivate = tabs.value.find((t) => t.id === tabId);
     if (tabToActivate) {
       activeTabId.value = tabToActivate.id;
@@ -90,7 +90,7 @@ export const useTabStore = defineStore("tabStore", () => {
    * 添加标签，始终追加到非固定标签末尾
    * @param tab 标签
    */
-  const addTab = (tab: Tab) => {
+  const addTab = (tab: Tab): void => {
     const existingTab = tabs.value.find((t) => t.id === tab.id);
     if (!existingTab) {
       tabs.value.push(tab);
@@ -103,7 +103,7 @@ export const useTabStore = defineStore("tabStore", () => {
    * @param tab 标签
    * @param index 索引（从0开始，最小为fixedTabs.length）
    */
-  const insertTab = (tab: Tab, index: number) => {
+  const insertTab = (tab: Tab, index: number): void => {
     let _index = index;
     if (_index < fixedTabs.length) {
       _index = fixedTabs.length;
@@ -121,38 +121,44 @@ export const useTabStore = defineStore("tabStore", () => {
     setActiveTab(tab.id);
   };
 
-  const removeTab = (tabId: string) => {
+  const removeTab = (tabId: string): void => {
     // 固定标签不可删除
-    if (fixedTabIds.has(tabId)) return;
+    if (fixedTabIds.has(tabId)) {
+      return;
+    }
 
     const index = tabs.value.findIndex((t) => t.id === tabId);
-    if (index === -1) return;
+    if (index === -1) {
+      return;
+    }
 
     if (activeTabId.value === tabId) {
       const newActiveTab = tabs.value[index + 1] || tabs.value[index - 1];
       if (newActiveTab) {
         setActiveTab(newActiveTab.id);
-      } else {
-        activeTabId.value = null;
+        return;
       }
+      activeTabId.value = null;
     }
 
     tabs.value.splice(index, 1);
   };
 
-  const closeOtherTabs = (tabId: string) => {
+  const closeOtherTabs = (tabId: string): void => {
     const currentTab = tabs.value.find((t) => t.id === tabId);
-    if (!currentTab) return;
+    if (!currentTab) {
+      return;
+    }
     // 保留固定标签 + 当前标签（若当前标签本身是固定标签则只保留固定标签）
     if (fixedTabIds.has(tabId)) {
       tabs.value = [...fixedTabs];
-    } else {
-      tabs.value = [...fixedTabs, currentTab];
+      return;
     }
+    tabs.value = [...fixedTabs, currentTab];
     setActiveTab(tabId);
   };
 
-  const setTabs = (newTabs: Tab[]) => {
+  const setTabs = (newTabs: Tab[]): void => {
     // 确保fixedTabs始终在最前
     const dynamicTabs = newTabs.filter((t) => !fixedTabIds.has(t.id));
     tabs.value = [...fixedTabs, ...dynamicTabs];
@@ -174,7 +180,7 @@ export const useTabStore = defineStore("tabStore", () => {
    * 激活指定索引的标签（1-based）
    * @param index 索引
    */
-  const activeOf = (index: number) => {
+  const activeOf = (index: number): void => {
     if (index < 1 || index > tabs.value.length) {
       return null;
     }
@@ -185,7 +191,7 @@ export const useTabStore = defineStore("tabStore", () => {
    * 更新当前标签页的地址
    * @param path 地址
    */
-  const updateCurrentTabPath = (path: string) => {
+  const updateCurrentTabPath = (path: string): void => {
     const currentTab = tabs.value.find((t) => t.id === activeTabId.value);
     if (currentTab) {
       currentTab.path = path;

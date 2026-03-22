@@ -58,8 +58,8 @@ export default {
    * 用户认证服务
    */
   useUserAuth() {
-    const login = async (username: string, password: string) => {
-      var dto = {
+    const login = async (username: string, password: string): Promise<UserLoginVo> => {
+      const dto = {
         username,
         password,
       } as UserLoginDto;

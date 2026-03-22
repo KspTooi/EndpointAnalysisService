@@ -1,14 +1,15 @@
 import { computed, ref } from "vue";
-import { useTabStore } from "@/store/TabHolder.ts";
 import GenricHotkeyService from "@/commons/service/GenricHotkeyService.ts";
 import { useRoute, useRouter } from "vue-router";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
 export default {
   /**
    * 框架快捷键服务
    */
   useComTabHotkey() {
-    const { activeOf } = useTabStore();
+    //获取标签页服务
+    const { activeOf } = ComTabService.useTabService();
 
     /**
      * 初始化快捷键

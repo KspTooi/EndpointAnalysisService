@@ -69,9 +69,9 @@
  * 4. 如果调用方需要区分“未通过CDRC进入”和“CDRC上下文已失效”，应结合 cdrcCanReturn 与 getCdrcQuery() 的结果一起判断。
  */
 import { computed, onMounted, ref } from "vue";
-import { useRoute, useRouter, type RouteRecordNameGeneric } from "vue-router";
-import { useTabStore, type Tab } from "@/store/TabHolder.ts";
+import { useRoute, useRouter, type RouteRecordNameGeneric, type RouteRecordRaw } from "vue-router";
 import { ElMessage } from "element-plus";
+import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 
 /** CDRC上下文前缀 */
 const CDRC_CONTEXT_PREFIX = "cdrc-context";
@@ -105,7 +105,7 @@ interface CDRCCache {
 /**
  * 获取一个唯一的CDRC跳转ID
  */
-function nextRedirectId() {
+function nextRedirectId(): string {
   return "cdrc-redirect-" + Date.now() + "-" + Math.random().toString(36).substring(2, 15);
 }
 
@@ -114,7 +114,7 @@ function nextRedirectId() {
  * @param prefix CDRC上下文前缀
  * @returns TTL毫秒数
  */
-function getCdrcContextTtl(prefix: string) {
+function getCdrcContextTtl(prefix: string): number {
   //回源上下文是一次性的，TTL应更短
   if (prefix === CDRC_RETURN_CONTEXT_PREFIX) {
     return CDRC_RETURN_CONTEXT_TTL_MS;
@@ -192,7 +192,7 @@ function resolveCdrcContext(prefix: string, cdrcContextId: string): CDRCContext 
  * @param prefix CDRC上下文前缀
  * @param cdrcRedirectId CDRC跳转ID或回退ID
  */
-function removeCdrcContext(prefix: string, cdrcRedirectId: string) {
+function removeCdrcContext(prefix: string, cdrcRedirectId: string): void {
   if (!cdrcRedirectId) {
     return;
   }
@@ -206,7 +206,7 @@ function removeCdrcContext(prefix: string, cdrcRedirectId: string) {
  * @param cdrcRedirectId CDRC跳转ID或回退ID
  * @param cdrcContext CDRC上下文对象
  */
-function putCdrcContext(prefix: string, cdrcRedirectId: string, cdrcContext: CDRCContext) {
+function putCdrcContext(prefix: string, cdrcRedirectId: string, cdrcContext: CDRCContext): void {
   //如果上下文为空 不进行存储
   if (!cdrcContext) {
     return;
@@ -236,7 +236,7 @@ function putCdrcContext(prefix: string, cdrcRedirectId: string, cdrcContext: CDR
  * @param nameOrPath 路由的名称或路径
  * @return null:无法找到对应的路由 否则返回路由对象
  */
-function getRouteByNameOrPath(nameOrPath: string) {
+function getRouteByNameOrPath(nameOrPath: string): RouteRecordRaw | null {
   const router = useRouter();
 
   //查找Vue路由里面是否有匹配的名称
@@ -259,7 +259,7 @@ export default {
   useDirectRouteContext() {
     const route = useRoute();
     const router = useRouter();
-    const tabStore = useTabStore();
+    const { tabs, activeTabId, getActiveTab, updateTab } = ComTabService.useTabService();
 
     //当前CDRC上下文
     let cdrcContext: CDRCContext = null;
@@ -299,7 +299,7 @@ export default {
     //如果现在正在CDRC目标页，则将当前标签页设置为CDRC目标页
     if (cdrcRedirectId) {
       //查找当前活动的标签页
-      const currentActiveTab = tabStore.tabs.find((tab) => tab.id === tabStore.activeTabId);
+      const currentActiveTab = getActiveTab();
       if (currentActiveTab) {
         //获取当前的路由地址和查询参数
         const currentRoute = router.currentRoute.value;
@@ -310,7 +310,13 @@ export default {
           currentRoute.path + "?" + new URLSearchParams(currentRouteQuery as Record<string, string>).toString();
 
         //更新当前标签页的地址
-        tabStore.updateCurrentTabPath(currentRoutePath);
+        updateTab({
+          id: currentActiveTab.id,
+          icon: currentActiveTab.icon,
+          title: currentActiveTab.title,
+          path: currentRoutePath,
+          closable: currentActiveTab.closable,
+        });
       }
     }
 
@@ -320,7 +326,7 @@ export default {
      * @param sendQuery 需发送的查询参数
      * @param returnQuery 从目标返回时会携带的查询参数
      */
-    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any) => {};
+    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any): void => {};
 
     /**
      * 直接跳转
@@ -341,8 +347,7 @@ export default {
       }
 
       //查询当前标签的name
-      const currentActiveTabId = tabStore.activeTabId;
-      const currentTab = tabStore.tabs.find((tab) => tab.id === currentActiveTabId);
+      const currentTab = getActiveTab();
 
       if (!currentTab) {
         console.error("无法使用CDRC跳转，当前激活标签的name不存在!");
@@ -398,7 +403,7 @@ export default {
     /**
      * 使用CDRC回退
      */
-    const cdrcReturn = () => {
+    const cdrcReturn = (): void => {
       if (!cdrcCanReturn) {
         console.error("无法使用CDRC回退，当前路由没有配置回退!");
         return;
@@ -414,7 +419,16 @@ export default {
       }
 
       //更新当前标签页的地址
-      tabStore.updateCurrentTabPath(cdrcSource);
+      const currentTab = getActiveTab();
+      if (currentTab) {
+        updateTab({
+          id: currentTab.id,
+          icon: currentTab.icon,
+          title: currentTab.title,
+          path: cdrcSource,
+          closable: currentTab.closable,
+        });
+      }
 
       //跳转到源路由并携带返回参数
       router.push({
@@ -430,7 +444,7 @@ export default {
      * @param autoReturn 是否自动回源 如果为true，则当CDRC上下文失效时执行自动回源
      * @returns CDRC查询参数 如果CDRC上下文失效且未开启自动回源，则返回null
      */
-    const getCdrcQuery = (autoReturn: boolean = true) => {
+    const getCdrcQuery = (autoReturn: boolean = true): any => {
       //如果CDRC上下文不存在，则自动回退
       if (cdrcQuery == null) {
         if (autoReturn) {
@@ -446,7 +460,7 @@ export default {
     /**
      * 获取CDRC返回查询参数
      */
-    const getCdrcReturnQuery = () => {
+    const getCdrcReturnQuery = (): any => {
       return cdrcReturnQuery;
     };
 
