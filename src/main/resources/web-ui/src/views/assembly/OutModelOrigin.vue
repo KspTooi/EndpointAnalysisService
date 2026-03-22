@@ -2,7 +2,7 @@
   <StdListContainer>
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="primary" v-if="cdrcCanReturn" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
+      <el-button v-if="cdrcCanReturn" type="primary" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
     </StdListAreaAction>
 
     <!-- 原始模型信息区域 -->
@@ -25,7 +25,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
         <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />

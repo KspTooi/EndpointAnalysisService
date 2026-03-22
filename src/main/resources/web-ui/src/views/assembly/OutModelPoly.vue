@@ -2,7 +2,7 @@
   <StdListContainer>
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="primary" v-if="cdrcCanReturn" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
+      <el-button v-if="cdrcCanReturn" type="primary" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
       <el-button type="danger" @click="syncPolyFromOrigin">从原始模型同步</el-button>
       <el-button type="success" @click="openPolyAddModal">新增聚合字段</el-button>
     </StdListAreaAction>
@@ -27,7 +27,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="polyListData" row-key="id" stripe v-loading="polyListLoading" border height="100%">
+      <el-table :data="polyListData" v-loading="polyListLoading" row-key="id" stripe border height="100%">
         <!-- 序号 -->
         <el-table-column prop="seq" label="序号" min-width="70" align="center">
           <template #default="scope">
@@ -152,8 +152,7 @@
                   color: scope.row.policyCrudJson?.includes(key) ? POLICY_CRUD_COLOR_MAP[key] : '#c0c4cc',
                   fontWeight: 500,
                 }"
-                >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
-              >
+              >{{ POLICY_CRUD_LABEL_MAP[key] }}</span>
             </div>
           </template>
         </el-table-column>
@@ -210,7 +209,7 @@
         <!-- 操作 -->
         <el-table-column label="操作" fixed="right" min-width="80" align="center">
           <template #default="scope">
-            <el-button link type="danger" size="small" @click="removePolyList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removePolyList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -283,7 +282,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="polyAddModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitPolyAdd" :loading="polyAddLoading">创建</el-button>
+          <el-button type="primary" :loading="polyAddLoading" @click="submitPolyAdd">创建</el-button>
         </div>
       </template>
     </el-dialog>

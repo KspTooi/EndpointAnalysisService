@@ -7,7 +7,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable style="height: 500px">
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
         <el-table-column prop="source" label="匹配源类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="匹配目标类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" min-width="65" show-overflow-tooltip>
@@ -24,10 +24,10 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="80" align="center">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModalSelf('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModalSelf('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -39,6 +39,7 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listTotal"
+          background
           @size-change="
             (val: number) => {
               listForm.pageSize = val;
@@ -51,7 +52,6 @@
               loadList();
             }
           "
-          background
         />
       </template>
     </StdListAreaTable>
@@ -88,7 +88,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisibleSelf = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建" : "保存" }}
           </el-button>
         </div>
@@ -106,7 +106,7 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import TymSchemaFieldApi from "@/views/assembly/api/TymSchemaFieldApi";
-import type { GetTymSchemaListVo } from "./api/TymSchemaApi";
+import type { GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
 
 const modalVisible = ref(false);
 const typeSchemaId = ref<string>("");
@@ -127,8 +127,7 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
-  TymSchemaFieldService.useTymSchemaFieldList(typeSchemaId);
+const { listForm, listData, listTotal, listLoading, loadList, removeList } = TymSchemaFieldService.useTymSchemaFieldList(typeSchemaId);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
@@ -148,7 +147,7 @@ const {
 /**
  * 关闭模态框
  */
-const onClose = () => {
+const onClose = (): void => {
   emit("on-close");
 };
 

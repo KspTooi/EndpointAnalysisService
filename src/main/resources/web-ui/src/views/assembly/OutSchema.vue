@@ -15,8 +15,8 @@
           </el-form-item>
         </div>
         <el-form-item>
-          <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
-          <el-button @click="resetList" :disabled="listLoading">重置</el-button>
+          <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
+          <el-button :disabled="listLoading" @click="resetList">重置</el-button>
         </el-form-item>
       </el-form>
     </StdListAreaQuery>
@@ -28,7 +28,7 @@
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
-      <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+      <el-table :data="listData" v-loading="listLoading" stripe border height="100%">
         <el-table-column label="序号" min-width="60" align="center">
           <template #default="scope">
             {{ (listForm.pageNum - 1) * listForm.pageSize + scope.$index + 1 }}
@@ -45,8 +45,8 @@
               link
               type="primary"
               size="small"
-              @click="cdrcRedirect('out-model-origin-manager', scope.row)"
               :icon="ViewIcon"
+              @click="cdrcRedirect('out-model-origin-manager', scope.row)"
             >
               查看原始模型
             </el-button>
@@ -54,18 +54,18 @@
               link
               type="primary"
               size="small"
-              @click="cdrcRedirect('out-model-poly-manager', scope.row)"
               :icon="ManagementIcon"
+              @click="cdrcRedirect('out-model-poly-manager', scope.row)"
             >
               设计方案
             </el-button>
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
-            <el-button link type="success" size="small" @click="executeOutSchema(scope.row)" :icon="ManagementIcon">
+            <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOutSchema(scope.row)">
               执行
             </el-button>
-            <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
+            <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -77,6 +77,7 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listTotal"
+          background
           @size-change="
             (val: number) => {
               listForm.pageSize = val;
@@ -89,7 +90,6 @@
               loadList();
             }
           "
-          background
         />
       </template>
     </StdListAreaTable>
@@ -160,8 +160,8 @@
               >
                 <template #append>
                   <el-button
-                    :icon="MagicStickIcon"
                     :disabled="!modalForm.tableName"
+                    :icon="MagicStickIcon"
                     @click="modalForm.permCodePrefix = modalForm.tableName.toLowerCase().replace(/_/g, ':')"
                     >推断</el-button
                   >
@@ -259,8 +259,8 @@
               >
                 <template #append>
                   <el-button
-                    :icon="MagicStickIcon"
                     :disabled="!modalForm.tableName"
+                    :icon="MagicStickIcon"
                     @click="
                       () => {
                         const parts = modalForm.tableName.split('_');
@@ -289,7 +289,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="modalVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitModal" :loading="modalLoading">
+          <el-button type="primary" :loading="modalLoading" @click="submitModal">
             {{ modalMode === "add" ? "创建并导入原始字段" : "保存并更新原始字段" }}
           </el-button>
         </div>
