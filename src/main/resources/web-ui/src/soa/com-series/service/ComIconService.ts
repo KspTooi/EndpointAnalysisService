@@ -70,5 +70,9 @@ export default {
       globalIconCache.set(iconName, dynamicComponent);
       return dynamicComponent;
     };
+
+    return {
+      resolveIcon,
+    };
   },
 };
