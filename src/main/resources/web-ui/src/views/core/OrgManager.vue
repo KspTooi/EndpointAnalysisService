@@ -146,10 +146,10 @@
 import { computed, ref } from "vue";
 import { Edit, Delete, Plus } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
-import type { FormInstance, TableInstance } from "element-plus";
+import type { FormInstance } from "element-plus";
 import OrgManagerService from "@/views/core/service/OrgManagerService.ts";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import OrgApi from "@/views/core/api/OrgApi.ts";
+import OrgApi, { type GetOrgDetailsVo } from "@/views/core/api/OrgApi.ts";
 import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
@@ -157,10 +157,9 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const PlusIcon = markRaw(Plus);
 
-const listTableRef = ref<TableInstance>();
-const modalFormRef = ref<FormInstance>();
+const modalFormRef = ref<FormInstance | null>(null);
 
-const { queryForm, listLoading, filteredData, treeSelectData, filterData, resetQuery, removeList, loadList } =
+const { queryForm, listLoading, filteredData, treeSelectData, resetQuery, removeList, loadList } =
   OrgManagerService.useOrgTree();
 
 const {
@@ -182,14 +181,17 @@ const filterTreeSelectData = computed(() => {
       if (node.value === id) {
         const disableAllChildren = (children: any[]): any[] => {
           return children.map((child) => ({
+            // eslint-disable-next-line no-restricted-syntax
             ...child,
             disabled: true,
             children: child.children ? disableAllChildren(child.children) : undefined,
           }));
         };
+        // eslint-disable-next-line no-restricted-syntax
         return { ...node, disabled: true, children: node.children ? disableAllChildren(node.children) : undefined };
       }
       if (node.children && node.children.length > 0) {
+        // eslint-disable-next-line no-restricted-syntax
         return { ...node, children: disableNode(node.children, id) };
       }
       return node;
@@ -212,7 +214,7 @@ const filterTreeSelectData = computed(() => {
   return treeSelectData.value;
 });
 
-const getOrgDetail = async (id: string) => {
+const getOrgDetail = async (id: string): Promise<GetOrgDetailsVo> => {
   const result = await OrgApi.getOrgDetails({ id });
   if (!result) {
     throw new Error("获取数据失败");
@@ -220,7 +222,7 @@ const getOrgDetail = async (id: string) => {
   return result;
 };
 
-const editOrgSeq = async (id: string, dto: any) => {
+const editOrgSeq = async (id: string, dto: any): Promise<void> => {
   const result = await OrgApi.editOrg(dto);
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);

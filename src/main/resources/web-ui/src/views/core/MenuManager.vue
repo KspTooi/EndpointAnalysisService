@@ -248,19 +248,13 @@
 <script setup lang="ts">
 import type { FormInstance, TableInstance } from "element-plus";
 import { ref } from "vue";
-import {
-  Delete as DeleteIcon,
-  View as ViewIcon,
-  Plus as PlusIcon,
-  InfoFilled,
-  Edit as EditIcon,
-} from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, Plus as PlusIcon, InfoFilled, Edit as EditIcon } from "@element-plus/icons-vue";
 import StdIconPicker from "@/soa/std-series/StdIconPicker.vue";
 import { Icon } from "@iconify/vue";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import MenuApi from "@/views/core/api/MenuApi.ts";
+import MenuApi, { type GetMenuDetailsVo } from "@/views/core/api/MenuApi.ts";
 import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
@@ -270,7 +264,7 @@ const grcmRef = ref<InstanceType<typeof GenricRouteChooseModal>>();
 //路由选择模态框查询参数
 const grcmQuery = ref<string>("");
 
-const openGRCM = () => {
+const openGRCM = (): void => {
   grcmRef.value?.openModal();
 };
 
@@ -311,9 +305,9 @@ const {
 } = MenuManagerService.useMenuModal(modalFormRef, loadList, fullMenuTree, loadFullMenuTree);
 
 //先加载菜单服务
-const { loadMenuTree } = ComMenuService.useMenuService();
+const { loadMenus } = ComMenuService.useMenuService();
 
-const getMenuDetail = async (id: string) => {
+const getMenuDetail = async (id: string): Promise<GetMenuDetailsVo> => {
   const result = await MenuApi.getMenuDetails({ id });
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);
@@ -321,13 +315,13 @@ const getMenuDetail = async (id: string) => {
   return result.data;
 };
 
-const editMenuSeq = async (id: string, dto: any) => {
+const editMenuSeq = async (id: string, dto: any): Promise<void> => {
   const result = await MenuApi.editMenu(dto);
   if (!Result.isSuccess(result)) {
     throw new Error(result.message);
   }
   //通知左侧菜单重新加载
-  loadMenuTree();
+  loadMenus();
 };
 </script>
 

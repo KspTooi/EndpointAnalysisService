@@ -257,11 +257,10 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
-import { ElMessage } from "element-plus";
 import UserAuthService from "@/views/auth/service/UserAuthService";
 
 //按钮级权限打包
-const { hasCode, vHasCode } = UserAuthService.usePreAuthorize();
+const { vHasCode } = UserAuthService.usePreAuthorize();
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -274,7 +273,7 @@ const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
  * 选择组织
  * @param org 组织
  */
-const onSelectOrg = (org: GetOrgTreeVo | null) => {
+const onSelectOrg = (org: GetOrgTreeVo | null): void => {
   loadList(org?.id ?? null);
   orgId.value = org?.id ?? null;
 };

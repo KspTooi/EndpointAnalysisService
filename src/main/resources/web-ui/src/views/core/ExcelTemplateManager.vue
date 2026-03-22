@@ -302,7 +302,7 @@ const editRules = {
   ],
 };
 
-const loadList = async () => {
+const loadList = async (): Promise<void> => {
   listLoading.value = true;
   const result = await ExcelTemplateApi.getExcelTemplateList(listForm);
 
@@ -318,7 +318,7 @@ const loadList = async () => {
   listLoading.value = false;
 };
 
-const resetList = () => {
+const resetList = (): void => {
   listForm.pageNum = 1;
   listForm.pageSize = 20;
   listForm.name = null;
@@ -329,16 +329,16 @@ const resetList = () => {
 
 loadList();
 
-const openUploadDialog = () => {
+const openUploadDialog = (): void => {
   uploadDialogVisible.value = true;
 };
 
-const resetUploadDialog = () => {
+const resetUploadDialog = (): void => {
   fileList.value = [];
   uploadRef.value?.clearFiles();
 };
 
-const onFileChange = (file: UploadFile, fileListParam: UploadFile[]) => {
+const onFileChange = (file: UploadFile, fileListParam: UploadFile[]): void => {
   if (!file.name.endsWith(".xlsx")) {
     ElMessage.error(`文件 ${file.name} 格式错误：只能上传.xlsx格式的文件`);
     uploadRef.value?.handleRemove(file);
@@ -387,7 +387,7 @@ const onFileChange = (file: UploadFile, fileListParam: UploadFile[]) => {
   fileList.value = fileListParam;
 };
 
-const submitUpload = async () => {
+const submitUpload = async (): Promise<void> => {
   if (fileList.value.length === 0) {
     ElMessage.warning("请先选择要上传的文件");
     return;
@@ -430,7 +430,7 @@ const submitUpload = async () => {
   }
 };
 
-const openEditModal = (row: GetExcelTemplateListVo) => {
+const openEditModal = (row: GetExcelTemplateListVo): void => {
   editForm.id = row.id;
   editForm.name = row.name;
   editForm.code = row.code;
@@ -439,7 +439,7 @@ const openEditModal = (row: GetExcelTemplateListVo) => {
   editDialogVisible.value = true;
 };
 
-const resetEditDialog = () => {
+const resetEditDialog = (): void => {
   editForm.id = 0;
   editForm.name = "";
   editForm.code = "";
@@ -451,10 +451,10 @@ const resetEditDialog = () => {
   }
 };
 
-const submitEdit = async () => {
+const submitEdit = async (): Promise<void> => {
   try {
     await editFormRef?.value?.validate();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -476,14 +476,14 @@ const submitEdit = async () => {
   }
 };
 
-const removeTemplate = async (id: number) => {
+const removeTemplate = async (id: number): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除该模板吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -496,14 +496,14 @@ const removeTemplate = async (id: number) => {
   }
 };
 
-const removeTemplateBatch = async () => {
+const removeTemplateBatch = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm("确定删除选中的模板吗？", "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
     });
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -518,7 +518,7 @@ const removeTemplateBatch = async () => {
   }
 };
 
-const downloadTemplate = async (code: string) => {
+const downloadTemplate = async (code: string): Promise<void> => {
   try {
     await ExcelTemplateApi.downloadExcelTemplate(code);
     ElMessage.success("下载成功");

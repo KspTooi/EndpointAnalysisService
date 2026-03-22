@@ -151,7 +151,7 @@ onMounted(async () => {
 /**
  * 开始执行安装向导
  */
-const startWizard = async () => {
+const startWizard = async (): Promise<void> => {
   wizardStep.value = "running";
   try {
     wizardResult.value = await MaintainApi.executeInstallWizard();
@@ -166,7 +166,7 @@ const startWizard = async () => {
 /**
  * 向导完成后刷新页面
  */
-const reloadPage = () => {
+const reloadPage = (): void => {
   window.location.reload();
 };
 

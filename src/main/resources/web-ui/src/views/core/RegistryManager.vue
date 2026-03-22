@@ -227,7 +227,7 @@ const currentNodeId = ref<string | null>(null); // 当前选中的树节点 ID
  * 处理树节点选中事件
  * @param node 树形组件传回的节点对象
  */
-const onSelectNode = (node: GetRegistryNodeTreeVo | null) => {
+const onSelectNode = (node: GetRegistryNodeTreeVo | null): void => {
   currentKeyPath.value = node?.keyPath ?? null;
   currentNodeId.value = node?.id ?? null;
   resetList(currentKeyPath.value); // 选中节点后重置并刷新列表
@@ -248,7 +248,7 @@ const {
 } = RegistryManagerService.useRegistryList(currentKeyPath);
 
 const modalFormRef = ref<FormInstance>();
-const _loadList = () => loadList(currentKeyPath.value);
+const _loadList = (): Promise<void> => loadList(currentKeyPath.value);
 
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, submitModal } =
@@ -257,7 +257,7 @@ const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal,
 /**
  * 触发查询动作
  */
-const onSearch = () => {
+const onSearch = (): void => {
   listForm.value.pageNum = 1; // 重置为第一页
   loadList(currentKeyPath.value);
 };
@@ -265,7 +265,7 @@ const onSearch = () => {
 /**
  * 导出查询结果
  */
-const onExport = async () => {
+const onExport = async (): Promise<void> => {
   if (!currentKeyPath.value) {
     ElMessage.warning("请先选择节点");
     return;

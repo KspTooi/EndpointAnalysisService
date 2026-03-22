@@ -201,7 +201,7 @@ const { remove, removeBatch } = NoticeRcdService.useNoticeRcdCrud({
 /**
  * 跳转到关联页面
  */
-const onForward = () => {
+const onForward = (): void => {
   if (!detailsData.value?.forward) {
     return;
   }
