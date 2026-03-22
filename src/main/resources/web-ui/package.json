@@ -19,7 +19,9 @@
     "//lint": "代码审判日。ESLint 会逐行扫描你写的每一行 .vue/.ts/.js，把你那些'能跑就行'的骚操作全部揪出来挂在墙上示众。只看不改，适合自我反省用。",
     "lint": "eslint . --ext .vue,.ts,.js",
     "//lint:fix": "ESLint 的慈悲模式。发现问题后它会亲自动手替你擦屁股——能自动修复的它修复，修不了的它留给你，顺便鄙视你一眼。",
-    "lint:fix": "eslint . --ext .vue,.ts,.js --fix"
+    "lint:fix": "eslint . --ext .vue,.ts,.js --fix",
+    "//format": "格式化代码。它专门负责把你的代码变成人类能看懂的样子。",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,vue}\""
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
