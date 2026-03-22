@@ -254,10 +254,9 @@ import { ref, markRaw } from "vue";
 import { Edit, Delete, View, Hide, CopyDocument, Download, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import EpSiteService from "@/views/document/service/EpSiteService.ts";
-import EpSiteApi, { type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
+import EpSiteApi, { type GetEpSiteDetailsVo, type GetEpSiteListVo } from "@/views/document/api/EpSiteApi.ts";
 import ImportWizardModal from "@/soa/com-series/ImportWizardModal.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import { Result } from "@/commons/model/Result.ts";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 
 // 使用markRaw包装图标组件
@@ -289,7 +288,7 @@ const {
 const copyToClipboard = EpSiteService.copyToClipboard;
 
 // 导出站点
-const onExport = async () => {
+const onExport = async (): Promise<void> => {
   try {
     await EpSiteApi.exportEpSite(listForm.value);
   } catch (e: any) {
@@ -303,7 +302,7 @@ const isEmpty = (value: string | null | undefined): boolean => {
 };
 
 // 复制站点信息
-const copySiteInfo = (row: GetEpSiteListVo) => {
+const copySiteInfo = (row: GetEpSiteListVo): void => {
   const name = isEmpty(row.name) ? "未设定" : row.name;
   const address = isEmpty(row.address) ? "未设定" : row.address;
   const username = isEmpty(row.username) ? "未设定" : row.username;
@@ -326,7 +325,7 @@ const modalFormRef = ref<FormInstance>();
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   EpSiteService.useEpSiteModal(modalFormRef, loadList);
 
-const getEpSiteDetail = async (id: string) => {
+const getEpSiteDetail = async (id: string): Promise<GetEpSiteDetailsVo> => {
   const result = await EpSiteApi.getEpSiteDetails({ id });
   if (!result) {
     throw new Error("获取数据失败");
@@ -334,7 +333,7 @@ const getEpSiteDetail = async (id: string) => {
   return result;
 };
 
-const editEpSiteSeq = async (id: string, dto: any) => {
+const editEpSiteSeq = async (id: string, dto: any): Promise<void> => {
   const result = await EpSiteApi.editEpSite(dto);
   if (!result) {
     throw new Error("修改失败");

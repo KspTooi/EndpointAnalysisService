@@ -163,7 +163,7 @@
 
 <script setup lang="ts">
 import { ref, markRaw } from "vue";
-import { Edit, Delete, ArrowDown, Download, Upload } from "@element-plus/icons-vue";
+import { Edit, Delete, Download, Upload } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import EpStdWordService from "@/views/document/service/EpStdWordService.ts";
 import EpStdWordApi, { type GetEpStdWordListVo } from "@/views/document/api/EpStdWordApi.ts";
@@ -175,7 +175,6 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 const DownloadIcon = markRaw(Download);
 const UploadIcon = markRaw(Upload);
-const ArrowDownIcon = markRaw(ArrowDown);
 
 const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 
@@ -183,7 +182,7 @@ const importWizardRef = ref<InstanceType<typeof ImportWizardModal>>();
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, removeListBatch } =
   EpStdWordService.useEpStdWordList();
 
-const onExport = async () => {
+const onExport = async (): Promise<void> => {
   try {
     await EpStdWordApi.exportEpStdWord(listForm.value);
   } catch (e: any) {
