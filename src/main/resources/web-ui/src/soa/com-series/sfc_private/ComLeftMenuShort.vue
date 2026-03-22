@@ -8,101 +8,119 @@
 
       <!-- 菜单区域 -->
       <el-menu
-        :default-active="activeItemId"
+        v-loading="loading"
+        :default-active="activeMenuId"
         class="panel-menu-short"
         :collapse="true"
         :unique-opened="false"
       >
-        <template v-for="item in filteredItems" :key="item.id">
-          <!-- 目录类型 -->
-          <el-sub-menu
-            v-if="item.menuKind === 0 && item.children?.length"
-            :index="item.id"
-            :show-timeout="50"
-            :hide-timeout="35"
-          >
-            <template #title>
-              <el-icon>
-                <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
-              </el-icon>
-              <span class="menu-name">{{ item.name }}</span>
-            </template>
-
-            <template v-for="child in filterChildren(item.children)" :key="child.id">
-              <el-menu-item v-if="child.menuKind === 1" :index="child.id" @click="onMenuItemClick(child)">
-                <el-icon>
-                  <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
-                </el-icon>
-                <span>{{ child.name }}</span>
-              </el-menu-item>
-            </template>
-          </el-sub-menu>
-
-          <!-- 菜单类型 -->
-          <el-menu-item v-if="item.menuKind === 1" :index="item.id" @click="onMenuItemClick(item)">
+        <!-- 菜单项 一级菜单 目录类型 -->
+        <el-sub-menu
+          v-for="item in filterDirectoryMenu(menuTree)"
+          :key="item.id"
+          :index="item.id"
+          :show-timeout="50"
+          :hide-timeout="35"
+        >
+          <template #title>
             <el-icon>
               <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
             <span class="menu-name">{{ item.name }}</span>
-            <template #title>{{ item.name }}</template>
+          </template>
+
+          <!-- 二级菜单 目录类型 -->
+          <el-sub-menu v-for="child in filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
+            <template #title>
+              <el-icon>
+                <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+              </el-icon>
+              <span>{{ child.name }}</span>
+            </template>
+            <!-- 三级菜单 菜单项类型 -->
+            <el-menu-item
+              v-for="grandChild in filterItemMenu(child.children)"
+              :key="grandChild.id"
+              :index="grandChild.id"
+              @click="openMenu(grandChild)"
+            >
+              <el-icon>
+                <component :is="getIconComponent(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+              </el-icon>
+              <span>{{ grandChild.name }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <!-- 二级菜单 菜单项类型 -->
+          <el-menu-item
+            v-for="child in filterItemMenu(item.children)"
+            :key="child.id"
+            :index="child.id"
+            @click="openMenu(child)"
+          >
+            <el-icon>
+              <component :is="getIconComponent(child.menuIcon)" v-if="child.menuIcon" />
+            </el-icon>
+            <span>{{ child.name }}</span>
           </el-menu-item>
-        </template>
+        </el-sub-menu>
+
+        <!-- 菜单项 一级菜单 菜单项类型 -->
+        <el-menu-item v-for="item in filterItemMenu(menuTree)" :key="item.id" :index="item.id" @click="openMenu(item)">
+          <el-icon>
+            <component :is="getIconComponent(item.menuIcon)" v-if="item.menuIcon" />
+          </el-icon>
+          <span class="menu-name">{{ item.name }}</span>
+          <template #title>{{ item.name }}</template>
+        </el-menu-item>
       </el-menu>
     </div>
   </el-aside>
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw, h } from "vue";
+import { markRaw, h, onMounted } from "vue";
 import { ElMenu, ElMenuItem, ElSubMenu, ElIcon, ElAside } from "element-plus";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 import { Icon } from "@iconify/vue";
 import type { Component } from "vue";
-import type { GetUserMenuTreeVo } from "@/views/core/api/MenuApi.ts";
-import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 import logoUrl from "@/assets/EAS_CROWN.png";
+import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
 
-const { openTab } = ComTabService.useTabService();
+// 使用菜单服务
+const {
+  menuTree,
+  loading,
+  activeMenuId,
+  loadMenus,
+  openMenu,
+  filterDirectoryMenu,
+  filterItemMenu,
+} = ComMenuService.useMenuService();
+
+// 初始化菜单
+onMounted(() => {
+  loadMenus();
+});
 
 // 使用 markRaw 包装所有图标组件
 const icons = Object.fromEntries(Object.entries(ElementPlusIcons).map(([key, component]) => [key, markRaw(component)]));
-
-// 定义组件props
-const props = defineProps<{
-  items: GetUserMenuTreeVo[];
-  activeItemId?: string;
-}>();
-
-// 定义事件
-const emit = defineEmits<{
-  (e: "item-click", itemId: string): void;
-  (e: "update:activeItemId", itemId: string): void;
-}>();
-
-// 过滤掉按钮类型的菜单
-const filteredItems = computed(() => {
-  return props.items.filter((item) => item.menuKind !== 2);
-});
-
-// 过滤子菜单中的按钮
-const filterChildren = (children: GetUserMenuTreeVo[] | undefined) => {
-  if (!children) return [];
-  return children.filter((child) => child.menuKind !== 2);
-};
 
 // 缓存动态生成的图标组件，避免重复创建导致重渲染
 const iconCache = new Map<string, Component>();
 
 // 获取图标组件
-const getIconComponent = (iconName: string | Component | undefined) => {
-  if (!iconName) return null;
+const getIconComponent = (iconName: string | Component | undefined): Component | null => {
+  if (!iconName) {
+    return null;
+  }
 
   if (typeof iconName === "string") {
     if (iconName.includes(":")) {
       if (iconCache.has(iconName)) {
         return iconCache.get(iconName);
       }
-      
+
       const component = markRaw(() => h(Icon, { icon: iconName, width: 18, height: 18 }));
       iconCache.set(iconName, component);
       return component;
@@ -113,29 +131,14 @@ const getIconComponent = (iconName: string | Component | undefined) => {
     }
   }
 
-  return iconName;
+  return iconName as Component;
 };
 
-// 处理菜单项点击
-const onMenuItemClick = (item: GetUserMenuTreeVo) => {
-  if (item.menuKind !== 1) {
-    return;
-  }
-  
-  if (!item.menuPath) {
-    return;
-  }
-
-  openTab({
-    id: item.id,
-    icon: item.menuIcon ?? null,
-    title: item.name,
-    path: item.menuPath,
-  });
-
-  emit("item-click", item.id as any);
-  emit("update:activeItemId", item.id as any);
-};
+// 定义事件
+const emit = defineEmits<{
+  (e: "item-click", itemId: string): void;
+  (e: "update:activeItemId", itemId: string): void;
+}>();
 </script>
 
 <style scoped>
@@ -193,7 +196,9 @@ const onMenuItemClick = (item: GetUserMenuTreeVo) => {
   justify-content: center !important;
   margin: 0 !important;
   border-radius: 0 !important;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 :deep(.panel-menu-short.el-menu--collapse .el-menu-item .el-icon),
