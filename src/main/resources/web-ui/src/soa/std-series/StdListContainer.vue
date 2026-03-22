@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 defineProps<{
-  nopadding?: boolean
-}>()
+  nopadding?: boolean;
+}>();
 </script>
 
 <style scoped>

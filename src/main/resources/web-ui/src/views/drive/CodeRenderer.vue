@@ -23,7 +23,9 @@ const sign = computed(() => route.query.sign as string);
 
 // 计算下载/预览链接
 const fileUrl = computed(() => {
-  if (!sign.value) {return "";}
+  if (!sign.value) {
+    return "";
+  }
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign.value}&preview=1`);
 });
 
@@ -58,7 +60,9 @@ const getLanguageByExt = (filename: string) => {
  * 加载代码内容
  */
 const loadCode = async () => {
-  if (!fileUrl.value) {return;}
+  if (!fileUrl.value) {
+    return;
+  }
 
   loading.value = true;
   codeContent.value = "";
@@ -86,7 +90,9 @@ const loadCode = async () => {
  * 渲染并高亮代码
  */
 const renderCode = () => {
-  if (!codeContent.value) {return;}
+  if (!codeContent.value) {
+    return;
+  }
 
   const lang = getLanguageByExt(fileName.value);
   let result;
@@ -124,7 +130,9 @@ const generateLineNumbers = (html: string) => {
  * 复制代码到剪贴板
  */
 const onCopy = async () => {
-  if (!codeContent.value) {return;}
+  if (!codeContent.value) {
+    return;
+  }
   try {
     await navigator.clipboard.writeText(codeContent.value);
     ElMessage.success("代码已复制到剪贴板");

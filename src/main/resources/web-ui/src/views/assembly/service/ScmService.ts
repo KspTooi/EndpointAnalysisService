@@ -1,12 +1,6 @@
 import { computed, onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type {
-  GetScmListDto,
-  GetScmListVo,
-  GetScmDetailsVo,
-  AddScmDto,
-  EditScmDto,
-} from "@/views/assembly/api/ScmApi";
+import type { GetScmListDto, GetScmListVo, GetScmDetailsVo, AddScmDto, EditScmDto } from "@/views/assembly/api/ScmApi";
 import ScmApi from "@/views/assembly/api/ScmApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";

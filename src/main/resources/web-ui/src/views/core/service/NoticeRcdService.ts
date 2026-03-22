@@ -213,11 +213,7 @@ export default {
   /**
    * 用户通知记录CRUD打包
    */
-  useNoticeRcdCrud(callbacks?: {
-    onRemoved?: (id: string) => void;
-    onBatchRemoved?: () => void;
-    onReadAll?: () => void;
-  }) {
+  useNoticeRcdCrud(callbacks?: { onRemoved?: (id: string) => void; onBatchRemoved?: () => void; onReadAll?: () => void }) {
     /**
      * 删除通知记录
      */
@@ -298,7 +294,6 @@ export default {
       readAll,
     };
   },
-
 
   /**
    * 用户通知记录模态框打包

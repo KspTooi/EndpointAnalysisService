@@ -62,8 +62,13 @@ const props = defineProps<{
   onSuccess?: () => void; //成功回调
 }>();
 
-const { queryForm, loading, popoverVisible, onBeforeShow, onConfirm, onCancel } =
-  SeqQuickPopoverService.useSeqQuickPopover(props.id, props.getDetailApi, props.editApi, props.seqField, props.onSuccess);
+const { queryForm, loading, popoverVisible, onBeforeShow, onConfirm, onCancel } = SeqQuickPopoverService.useSeqQuickPopover(
+  props.id,
+  props.getDetailApi,
+  props.editApi,
+  props.seqField,
+  props.onSuccess
+);
 </script>
 
 <style scoped>

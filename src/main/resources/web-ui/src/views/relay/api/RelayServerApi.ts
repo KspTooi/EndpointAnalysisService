@@ -173,7 +173,9 @@ export default {
    * @returns 中继服务器路由状态
    */
   getRelayServerRouteState: async (id: string): Promise<GetRelayServerRouteStateVo[]> => {
-    const ret = await Http.postEntity<Result<GetRelayServerRouteStateVo[]>>("/relayServer/getRelayServerRouteState", { id: id });
+    const ret = await Http.postEntity<Result<GetRelayServerRouteStateVo[]>>("/relayServer/getRelayServerRouteState", {
+      id: id,
+    });
     return ret.data;
   },
 

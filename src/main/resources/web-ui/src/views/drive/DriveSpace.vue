@@ -169,11 +169,15 @@
               <div class="guide-list">
                 <div class="guide-item">
                   <span class="guide-label text-danger">主管理员</span>
-                  <span class="guide-text">拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。</span>
+                  <span class="guide-text"
+                    >拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。</span
+                  >
                 </div>
                 <div class="guide-item">
                   <span class="guide-label text-primary">行政管理员</span>
-                  <span class="guide-text">可管理空间成员和基本信息，拥有文件的全部操作权限，但是无法添加或修改主管理员和其他行政管理员，也不能删除空间。</span>
+                  <span class="guide-text"
+                    >可管理空间成员和基本信息，拥有文件的全部操作权限，但是无法添加或修改主管理员和其他行政管理员，也不能删除空间。</span
+                  >
                 </div>
                 <div class="guide-item">
                   <span class="guide-label text-success">编辑者</span>
@@ -278,14 +282,18 @@ import type { GetOrgTreeVo } from "@/views/core/api/OrgApi.ts";
 
 // bytes 转 MB 显示
 const mbDisplay = (bytes: string) => {
-  if (!bytes) {return "-";}
+  if (!bytes) {
+    return "-";
+  }
   const mb = Number(bytes) / 1048576;
   return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
 };
 
 // 计算配额百分比
 const getQuotaPercentage = (used: string, limit: string) => {
-  if (!limit || limit === "0") {return 0;}
+  if (!limit || limit === "0") {
+    return 0;
+  }
   const percentage = Math.round((Number(used) / Number(limit)) * 100);
   return percentage > 100 ? 100 : percentage;
 };
@@ -293,38 +301,69 @@ const getQuotaPercentage = (used: string, limit: string) => {
 // 根据使用百分比获取进度条颜色
 const getQuotaColor = (used: string, limit: string) => {
   const p = getQuotaPercentage(used, limit);
-  if (p >= 90) {return "#f56c6c";} // 危险
-  if (p >= 70) {return "#e6a23c";} // 警告
+  if (p >= 90) {
+    return "#f56c6c";
+  } // 危险
+  if (p >= 70) {
+    return "#e6a23c";
+  } // 警告
   return "#409eff"; // 正常
 };
 
 // 角色文字映射
 const roleLabel = (role: number) => {
-  if (role === 0) {return "主管理员";}
-  if (role === 1) {return "行政管理员";}
-  if (role === 2) {return "编辑者";}
-  if (role === 3) {return "查看者";}
-  if (role === -1) {return "超级权限";}
+  if (role === 0) {
+    return "主管理员";
+  }
+  if (role === 1) {
+    return "行政管理员";
+  }
+  if (role === 2) {
+    return "编辑者";
+  }
+  if (role === 3) {
+    return "查看者";
+  }
+  if (role === -1) {
+    return "超级权限";
+  }
   return "未知";
 };
 
 // 角色颜色类映射
 const roleClass = (role: number) => {
-  if (role === 0) {return "text-danger";}
-  if (role === 1) {return "text-primary";}
-  if (role === 2) {return "text-success";}
-  if (role === -1) {return "text-success";}
+  if (role === 0) {
+    return "text-danger";
+  }
+  if (role === 1) {
+    return "text-primary";
+  }
+  if (role === 2) {
+    return "text-success";
+  }
+  if (role === -1) {
+    return "text-success";
+  }
   return "text-info";
 };
 
 // 角色权限说明映射
 const roleDescription = (role: number) => {
-  if (role === 0) {return "主管理员：拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。";}
-  if (role === 1)
-    {return "行政管理员：可管理空间成员和基本信息，拥有文件的全部操作权限，但是无法添加或修改主管理员和其他行政管理员，也不能删除空间。";}
-  if (role === 2) {return "编辑者：可上传、下载、编辑、删除空间内的文件和目录，但是不能管理成员和空间基本信息。";}
-  if (role === 3) {return "查看者：仅拥有空间内文件的查看和下载权限。";}
-  if (role === -1) {return "超级权限：平台管理员，拥有空间的全部管理权限，与主管理员权限相同。";}
+  if (role === 0) {
+    return "主管理员：拥有空间的全部管理权限，包括删除空间、管理所有成员及配额设置，可以添加行政管理员。";
+  }
+  if (role === 1) {
+    return "行政管理员：可管理空间成员和基本信息，拥有文件的全部操作权限，但是无法添加或修改主管理员和其他行政管理员，也不能删除空间。";
+  }
+  if (role === 2) {
+    return "编辑者：可上传、下载、编辑、删除空间内的文件和目录，但是不能管理成员和空间基本信息。";
+  }
+  if (role === 3) {
+    return "查看者：仅拥有空间内文件的查看和下载权限。";
+  }
+  if (role === -1) {
+    return "超级权限：平台管理员，拥有空间的全部管理权限，与主管理员权限相同。";
+  }
   return "暂无权限说明";
 };
 
@@ -365,7 +404,9 @@ const deptSelectModalRef = ref<InstanceType<typeof CoreOrgDeptSelectModal>>();
 
 // 打开用户选择弹窗
 const openUserSelect = async () => {
-  if (!userSelectModalRef.value) {return;}
+  if (!userSelectModalRef.value) {
+    return;
+  }
   try {
     const result = await userSelectModalRef.value.select();
     const users = Array.isArray(result) ? (result as GetUserListVo[]) : [result as GetUserListVo];
@@ -377,7 +418,9 @@ const openUserSelect = async () => {
 
 // 打开部门选择弹窗
 const openDeptSelect = async () => {
-  if (!deptSelectModalRef.value) {return;}
+  if (!deptSelectModalRef.value) {
+    return;
+  }
   try {
     const result = await deptSelectModalRef.value.select();
     const depts = Array.isArray(result) ? (result as GetOrgTreeVo[]) : [result as GetOrgTreeVo];

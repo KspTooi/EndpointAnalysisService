@@ -72,9 +72,7 @@
         <el-table-column label="服务器状态" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{
-                scope.row.status === 1 ? "启用" : "禁用"
-              }}
+              {{ scope.row.status === 1 ? "启用" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>

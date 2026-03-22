@@ -69,7 +69,9 @@ export default {
         scale.value = newScale;
 
         // 显示缩放提示
-        if (timer) {clearTimeout(timer);}
+        if (timer) {
+          clearTimeout(timer);
+        }
         showIndicator.value = true;
         timer = window.setTimeout(() => {
           showIndicator.value = false;
@@ -112,7 +114,9 @@ export default {
      * 鼠标移动处理 (绑定在 document 上以保证拖出容器也能响应)
      */
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging.value) {return;}
+      if (!isDragging.value) {
+        return;
+      }
       e.preventDefault(); // 防止选中文字或触发其他默认行为
 
       const dx = e.clientX - startX;
@@ -137,7 +141,9 @@ export default {
      */
     const onMouseDown = (e: MouseEvent) => {
       // 只有左键点击才触发拖拽
-      if (e.button !== 0) {return;}
+      if (e.button !== 0) {
+        return;
+      }
 
       e.preventDefault(); // 防止图片原本的拖拽行为(生成半透明副本)
 

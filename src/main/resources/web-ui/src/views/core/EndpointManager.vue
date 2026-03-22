@@ -159,7 +159,8 @@
               content="支持AntPathMatcher路径匹配。? 匹配一个字符, * 匹配零个或多个字符, ** 匹配路径中的零个或多个目录。例如: /user/**"
               placement="top"
             >
-              <el-icon class="align-middle ml-1"><InfoFilled /></el-icon> </el-tooltip>端点路径
+              <el-icon class="align-middle ml-1"><InfoFilled /></el-icon> </el-tooltip
+            >端点路径
           </span>
         </template>
         <el-input v-model="modalForm.path" placeholder="请输入端点路径" clearable />
@@ -278,7 +279,8 @@
               <p class="m-0 font-bold text-orange-500">⚠️ 特殊情况处理：</p>
               <ul class="mt-2 mb-0 leading-relaxed">
                 <li>
-                  <strong>端点未配置：</strong>如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问
+                  <strong>端点未配置：</strong
+                  >如果接口路径没有配置端点，系统会根据配置项"endpoint.access.denied"决定是否允许访问
                 </li>
                 <li><strong>权限为*：</strong>如果端点的权限字段设置为"*"，表示该接口无需权限验证，所有用户都可以访问</li>
                 <li><strong>多个匹配：</strong>如果多个端点都匹配请求路径，系统会选择最精确的匹配规则</li>

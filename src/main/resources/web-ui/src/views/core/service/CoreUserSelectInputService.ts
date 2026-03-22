@@ -106,7 +106,7 @@ export default {
           }
         });
       }
-      
+
       if (!multiple && typeof initialUserId === "string") {
         loadUserById(initialUserId).then((user) => {
           if (user) {

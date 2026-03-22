@@ -65,8 +65,13 @@ export default {
   /**
    * 获取当前用户激活的公司成员列表
    */
-  getCurrentUserActiveCompanyMemberList: async (dto: GetCurrentUserActiveCompanyMemberListDto): Promise<Result<GetCurrentUserActiveCompanyMemberListVo>> => {
-    return await Http.postEntity<Result<GetCurrentUserActiveCompanyMemberListVo>>("/companyMember/getCurrentUserActiveCompanyMemberList", dto);
+  getCurrentUserActiveCompanyMemberList: async (
+    dto: GetCurrentUserActiveCompanyMemberListDto
+  ): Promise<Result<GetCurrentUserActiveCompanyMemberListVo>> => {
+    return await Http.postEntity<Result<GetCurrentUserActiveCompanyMemberListVo>>(
+      "/companyMember/getCurrentUserActiveCompanyMemberList",
+      dto
+    );
   },
 
   /**

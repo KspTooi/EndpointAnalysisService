@@ -64,13 +64,13 @@ const props = withDefaults(
     showHeader?: boolean;
     multiple?: boolean;
     defaultCheckedKeys?: string[];
-    selectKind?: 'all' | 'root' | 'dept';
+    selectKind?: "all" | "root" | "dept";
   }>(),
   {
     showHeader: true,
     multiple: false,
     defaultCheckedKeys: () => [],
-    selectKind: 'all',
+    selectKind: "all",
   }
 );
 

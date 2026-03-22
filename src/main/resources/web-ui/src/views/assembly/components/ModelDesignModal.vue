@@ -145,7 +145,8 @@
                       color: scope.row.policyCrudJson?.includes(key) ? POLICY_CRUD_COLOR_MAP[key] : '#c0c4cc',
                       fontWeight: 500,
                     }"
-                  >{{ POLICY_CRUD_LABEL_MAP[key] }}</span>
+                    >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
+                  >
                 </div>
               </template>
             </el-table-column>

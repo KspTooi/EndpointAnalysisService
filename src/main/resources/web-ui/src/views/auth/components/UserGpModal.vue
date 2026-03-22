@@ -111,12 +111,7 @@
                   >
                     授权
                   </el-button>
-                  <el-button
-                    v-else-if="scope.row.hasPermission === 1"
-                    type="danger"
-                    link
-                    @click="grandAndRevoke(scope.row, 1)"
-                  >
+                  <el-button v-else-if="scope.row.hasPermission === 1" type="danger" link @click="grandAndRevoke(scope.row, 1)">
                     取消授权
                   </el-button>
                   <span v-else style="color: #999">未知</span>
@@ -203,20 +198,10 @@
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <el-button
-                    v-if="scope.row.hasPermission === 0"
-                    type="primary"
-                    link
-                    @click="grandAndRevoke(scope.row, 0)"
-                  >
+                  <el-button v-if="scope.row.hasPermission === 0" type="primary" link @click="grandAndRevoke(scope.row, 0)">
                     授权
                   </el-button>
-                  <el-button
-                    v-if="scope.row.hasPermission === 1"
-                    type="danger"
-                    link
-                    @click="grandAndRevoke(scope.row, 1)"
-                  >
+                  <el-button v-if="scope.row.hasPermission === 1" type="danger" link @click="grandAndRevoke(scope.row, 1)">
                     取消授权
                   </el-button>
                 </template>
@@ -260,11 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  GetGroupListVo,
-  GetGroupPermissionMenuViewVo,
-  GetGroupPermissionNodeVo,
-} from "@/views/auth/api/GroupApi.ts";
+import type { GetGroupListVo, GetGroupPermissionMenuViewVo, GetGroupPermissionNodeVo } from "@/views/auth/api/GroupApi.ts";
 import { ElMessage, type TableInstance } from "element-plus";
 import { ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
@@ -325,10 +306,7 @@ const resetModal = (): void => {
 /**
  * 授权或取消授权
  */
-const grandAndRevoke = async (
-  row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo,
-  type: number
-): Promise<void> => {
+const grandAndRevoke = async (row: GetGroupPermissionMenuViewVo | GetGroupPermissionNodeVo, type: number): Promise<void> => {
   await permissionOps.grandAndRevoke(row, type, ElMessage);
 };
 

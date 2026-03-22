@@ -42,7 +42,9 @@ const isXlsx = computed(() => {
 
 const fileUrl = computed(() => {
   const sign = route.query.sign as string;
-  if (!sign) {return "";}
+  if (!sign) {
+    return "";
+  }
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
@@ -89,7 +91,9 @@ const excelOptions = {
 };
 
 const loadXlsFile = async () => {
-  if (!fileUrl.value) {return;}
+  if (!fileUrl.value) {
+    return;
+  }
 
   loading.value = true;
   try {

@@ -1,5 +1,12 @@
 <template>
-  <el-dialog v-model="visible" title="公司成员列表" width="800px" :close-on-click-modal="false" class="modal-centered" @close="onClose">
+  <el-dialog
+    v-model="visible"
+    title="公司成员列表"
+    width="800px"
+    :close-on-click-modal="false"
+    class="modal-centered"
+    @close="onClose"
+  >
     <!-- 查询表单 -->
     <div class="query-form">
       <el-form :model="queryForm">

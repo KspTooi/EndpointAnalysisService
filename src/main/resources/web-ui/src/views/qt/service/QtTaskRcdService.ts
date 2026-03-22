@@ -55,7 +55,7 @@ export default {
       }
 
       listLoading.value = false;
-      
+
       // 持久化查询条件
       QueryPersistService.persistQuery("qt-task-rcd", listForm.value);
     };
@@ -78,10 +78,10 @@ export default {
       listForm.value.endTime = "";
       listForm.value.costTime = null;
       listForm.value.createTime = "";
-      
+
       // 清除持久化的查询条件
       QueryPersistService.clearQuery("qt-task-rcd");
-      
+
       loadList();
     };
 

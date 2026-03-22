@@ -78,7 +78,9 @@ const closeModal = () => {
  * 复制链接到剪贴板
  */
 const copyUrl = async () => {
-  if (!downloadUrl.value) {return;}
+  if (!downloadUrl.value) {
+    return;
+  }
 
   try {
     await navigator.clipboard.writeText(downloadUrl.value);

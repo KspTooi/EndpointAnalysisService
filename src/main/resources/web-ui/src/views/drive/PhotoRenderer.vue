@@ -11,7 +11,9 @@ const containerRef = ref<HTMLElement | null>(null);
 // 计算图片源地址
 const imgSrc = computed(() => {
   const sign = route.query.sign as string;
-  if (!sign) {return "";}
+  if (!sign) {
+    return "";
+  }
   return Http.resolve(`/drive/object/access/downloadEntry?sign=${sign}&preview=1`);
 });
 
@@ -32,7 +34,9 @@ const { scale, showIndicator, onWheel, resetScale } = DriveRendererService.useRe
  * 将图片移动到容器中心
  */
 const moveToCenter = () => {
-  if (!containerRef.value || !imgRef.value) {return;}
+  if (!containerRef.value || !imgRef.value) {
+    return;
+  }
 
   const containerRect = containerRef.value.getBoundingClientRect();
   const imgRect = imgRef.value.getBoundingClientRect();

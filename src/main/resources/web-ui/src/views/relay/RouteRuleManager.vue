@@ -42,9 +42,7 @@
         <el-table-column label="匹配类型" prop="matchType" width="90" show-overflow-tooltip>
           <template #default="scope">
             <el-tag :type="scope.row.matchType === 0 ? 'success' : 'danger'">
-              {{
-                scope.row.matchType === 0 ? "全部" : "IP地址"
-              }}
+              {{ scope.row.matchType === 0 ? "全部" : "IP地址" }}
             </el-tag>
           </template>
         </el-table-column>

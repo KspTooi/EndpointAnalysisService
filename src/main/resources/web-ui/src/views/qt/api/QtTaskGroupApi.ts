@@ -16,7 +16,7 @@ export interface GetQtTaskGroupListDto extends PageQuery {
  * 列表VO
  */
 export interface GetQtTaskGroupListVo {
-  id: string; // 
+  id: string; //
   name: string; // 分组名
   remark: string; // 分组备注
   createTime: string; // 创建时间
@@ -30,7 +30,7 @@ export interface GetQtTaskGroupListVo {
  * 详情VO
  */
 export interface GetQtTaskGroupDetailsVo {
-  id: string; // 
+  id: string; //
   name: string; // 分组名
   remark: string; // 分组备注
   createTime: string; // 创建时间
@@ -52,7 +52,7 @@ export interface AddQtTaskGroupDto {
  * 编辑DTO
  */
 export interface EditQtTaskGroupDto {
-  id: string; // 
+  id: string; //
   name: string; // 分组名
   remark: string; // 分组备注
 }

@@ -202,31 +202,57 @@ const requestPreviewModalRef = ref<InstanceType<typeof RequestPreviewModal>>();
 const executeLoading = ref(false);
 
 const methodColor = (method: string) => {
-  if (method === "DELETE") {return "#E74C3C";}
-  if (method === "GET") {return "#3498DB";}
-  if (method === "POST") {return "#2ECC71";}
-  if (method === "PUT") {return "#F1C40F";}
+  if (method === "DELETE") {
+    return "#E74C3C";
+  }
+  if (method === "GET") {
+    return "#3498DB";
+  }
+  if (method === "POST") {
+    return "#2ECC71";
+  }
+  if (method === "PUT") {
+    return "#F1C40F";
+  }
   return "#95A5A6";
 };
 
 const statusColor = (status: number) => {
-  if (status === 0) {return "#2ECC71";}
-  if (status === 1) {return "#E74C3C";}
-  if (status === 2) {return "#F1C40F";}
+  if (status === 0) {
+    return "#2ECC71";
+  }
+  if (status === 1) {
+    return "#E74C3C";
+  }
+  if (status === 2) {
+    return "#F1C40F";
+  }
   return "#95A5A6";
 };
 
 const statusText = (status: number) => {
-  if (status === 0) {return "正常";}
-  if (status === 1) {return "HTTP失败";}
-  if (status === 2) {return "业务失败";}
+  if (status === 0) {
+    return "正常";
+  }
+  if (status === 1) {
+    return "HTTP失败";
+  }
+  if (status === 2) {
+    return "业务失败";
+  }
   return "连接超时";
 };
 
 const httpCodeColor = (code: number) => {
-  if (code >= 200 && code < 300) {return "#2ECC71";}
-  if (code >= 300 && code < 400) {return "#F1C40F";}
-  if (code >= 400 && code < 500) {return "#E74C3C";}
+  if (code >= 200 && code < 300) {
+    return "#2ECC71";
+  }
+  if (code >= 300 && code < 400) {
+    return "#F1C40F";
+  }
+  if (code >= 400 && code < 500) {
+    return "#E74C3C";
+  }
   return "#95A5A6";
 };
 

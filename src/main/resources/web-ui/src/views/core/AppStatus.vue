@@ -253,7 +253,9 @@ const {
 
 // GetRtStatusVo 的 memoryTotal/swapTotal 单位为 MB，直接套用 formatBytes 前需换算为 bytes
 const formatBytes = (mb: number | undefined | null): string => {
-  if (mb == null) {return "0 B";}
+  if (mb == null) {
+    return "0 B";
+  }
   return formatSysBytes(mb * 1024 * 1024);
 };
 </script>

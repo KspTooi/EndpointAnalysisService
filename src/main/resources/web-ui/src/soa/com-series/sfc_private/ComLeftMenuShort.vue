@@ -88,15 +88,8 @@ import logoUrl from "@/assets/EAS_CROWN.png";
 import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
 
 // 使用菜单服务
-const {
-  menuTree,
-  loading,
-  activeMenuId,
-  loadMenus,
-  openMenu,
-  filterDirectoryMenu,
-  filterItemMenu,
-} = ComMenuService.useMenuService();
+const { menuTree, loading, activeMenuId, loadMenus, openMenu, filterDirectoryMenu, filterItemMenu } =
+  ComMenuService.useMenuService();
 
 // 初始化菜单
 onMounted(() => {

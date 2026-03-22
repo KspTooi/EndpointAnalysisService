@@ -168,7 +168,7 @@
         <el-form-item label="一次性参数 (JSON)" prop="targetParam">
           <el-input
             v-model="execModalForm.targetParam"
-            placeholder="请输入 JSON 格式参数，例如: {&quot;key&quot;: &quot;value&quot;}"
+            placeholder='请输入 JSON 格式参数，例如: {"key": "value"}'
             clearable
             type="textarea"
             :rows="6"
@@ -328,7 +328,8 @@
                 <el-option label="全部执行(补跑全部)" :value="2">
                   <span>全部执行</span>
                   <span class="text-gray-400 text-sm ml-2 text-xs">
-                    <span class="text-red-500 font-bold">! </span>补跑全部;不建议使用</span>
+                    <span class="text-red-500 font-bold">! </span>补跑全部;不建议使用</span
+                  >
                 </el-option>
               </el-select>
             </el-form-item>
@@ -515,7 +516,9 @@ const {
 // --- Cron 预览逻辑 ---
 const cronDescription = computed(() => {
   const cron = modalForm.cron;
-  if (!cron) {return "未输入表达式";}
+  if (!cron) {
+    return "未输入表达式";
+  }
   try {
     return cronstrue.toString(cron, { locale: "zh_CN" });
   } catch (e) {
@@ -525,7 +528,9 @@ const cronDescription = computed(() => {
 
 const nextRunTimes = computed(() => {
   const cron = modalForm.cron;
-  if (!cron) {return [];}
+  if (!cron) {
+    return [];
+  }
   try {
     const interval = CronExpressionParser.parse(cron, { tz: "Asia/Shanghai" });
     const times = [];
