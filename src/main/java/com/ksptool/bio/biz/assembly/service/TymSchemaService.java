@@ -52,7 +52,13 @@ public class TymSchemaService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addTymSchema(AddTymSchemaDto dto) {
+    public void addTymSchema(AddTymSchemaDto dto) throws BizException {
+
+        //校验编码是否唯一
+        if (repository.countByCode(dto.getCode()) > 0) {
+            throw new BizException("编码已存在:[" + dto.getCode() + "]");
+        }
+
         TymSchemaPo insertPo = as(dto, TymSchemaPo.class);
         insertPo.setTypeCount(0);
         repository.save(insertPo);
@@ -68,6 +74,11 @@ public class TymSchemaService {
     public void editTymSchema(EditTymSchemaDto dto) throws BizException {
         TymSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        //校验编码是否唯一
+        if (repository.countByCodeExcludeId(dto.getCode(), updatePo.getId()) > 0) {
+            throw new BizException("编码已存在:[" + dto.getCode() + "]");
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);

@@ -28,4 +28,28 @@ public interface TymSchemaRepository extends JpaRepository<TymSchemaPo, Long> {
             ORDER BY u.seq ASC,u.createTime DESC
             """)
     Page<TymSchemaPo> getTymSchemaList(@Param("po") TymSchemaPo po, Pageable pageable);
+
+    
+    /**
+     * 根据编码统计类型映射方案数量
+     *
+     * @param code 编码
+     * @return 类型映射方案数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM TymSchemaPo u WHERE u.code = :code
+            """)
+    int countByCode(@Param("code") String code);
+
+    /**
+     * 根据编码统计类型映射方案数量 排除指定ID
+     *
+     * @param code 编码
+     * @param id   类型映射方案ID
+     * @return 类型映射方案数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM TymSchemaPo u WHERE u.code = :code AND u.id != :id
+            """)    
+    int countByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
 }
