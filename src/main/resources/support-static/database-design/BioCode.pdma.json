@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-3-23 05:44:26",
+  "updatedTime": "2026-4-5 02:06:55",
   "dbConns": [],
   "profile": {
     "default": {
@@ -29321,7 +29321,7 @@
         },
         {
           "defKey": "code",
-          "defName": "方案编码",
+          "defName": "方案编码(唯一)",
           "comment": "",
           "type": "",
           "len": "",
@@ -29336,42 +29336,6 @@
           "extProps": {},
           "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
           "id": "C3D23201-F25E-4C0F-B8DC-878239AC5302"
-        },
-        {
-          "defKey": "map_source",
-          "defName": "映射源",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-          "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
-          "id": "AF485274-AFA8-44E2-AA67-8544EF19CB8F"
-        },
-        {
-          "defKey": "map_target",
-          "defName": "映射目标",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-          "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
-          "id": "8A76D02A-627D-4711-B8C9-20D30A903786"
         },
         {
           "defKey": "type_count",
@@ -29519,7 +29483,22 @@
         }
       ],
       "correlations": [],
-      "indexes": [],
+      "indexes": [
+        {
+          "defKey": "uk_code",
+          "defName": null,
+          "unique": true,
+          "comment": "",
+          "fields": [
+            {
+              "fieldDefKey": "C3D23201-F25E-4C0F-B8DC-878239AC5302",
+              "ascOrDesc": "A",
+              "id": "B740797B-DC65-459A-A0E8-4F8D3E02B715"
+            }
+          ],
+          "id": "2F64DD43-10BA-42EF-A3CE-5F0703F21A3F"
+        }
+      ],
       "type": "P"
     },
     {
