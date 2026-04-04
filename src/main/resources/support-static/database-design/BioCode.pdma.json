@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-5 02:06:55",
+  "updatedTime": "2026-4-5 02:50:17",
   "dbConns": [],
   "profile": {
     "default": {
@@ -29988,7 +29988,7 @@
         },
         {
           "defKey": "name",
-          "defName": "SCM名称",
+          "defName": "SCM名称(唯一)",
           "comment": "",
           "type": "",
           "len": "",
@@ -30021,24 +30021,6 @@
           "extProps": {},
           "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
           "id": "1020F600-0DA1-483D-AFF3-C43F99C15DD3"
-        },
-        {
-          "defKey": "code",
-          "defName": "SCM编码",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-          "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
-          "id": "91E7839D-2B00-4D5E-826C-EBF9119F628B"
         },
         {
           "defKey": "scm_url",
@@ -30240,7 +30222,22 @@
         }
       ],
       "correlations": [],
-      "indexes": [],
+      "indexes": [
+        {
+          "defKey": "uk_scm_name",
+          "defName": null,
+          "unique": true,
+          "comment": "",
+          "fields": [
+            {
+              "fieldDefKey": "B6A58304-526B-4CFD-9243-D4266F4F19D9",
+              "ascOrDesc": "A",
+              "id": "A07BE75A-3DCE-44E2-8CFA-CC8BBC21A008"
+            }
+          ],
+          "id": "49A8BDFC-2218-4992-8641-F73B2919649A"
+        }
+      ],
       "type": "P"
     },
     {
