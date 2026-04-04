@@ -85,7 +85,13 @@ public class ScmService {
      * @param dto 新增数据
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addScm(AddScmDto dto) {
+    public void addScm(AddScmDto dto) throws BizException {
+
+        //校验名称是否唯一
+        if (repository.countByName(dto.getName()) > 0) {
+            throw new BizException("名称已存在:[" + dto.getName() + "]");
+        }
+
         ScmPo insertPo = as(dto, ScmPo.class);
         repository.save(insertPo);
     }
@@ -99,6 +105,11 @@ public class ScmService {
     public void editScm(EditScmDto dto) throws BizException {
         ScmPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
+
+        //校验名称是否唯一
+        if (repository.countByNameExcludeId(dto.getName(), updatePo.getId()) > 0) {
+            throw new BizException("名称已存在:[" + dto.getName() + "]");
+        }
 
         assign(dto, updatePo);
         repository.save(updatePo);

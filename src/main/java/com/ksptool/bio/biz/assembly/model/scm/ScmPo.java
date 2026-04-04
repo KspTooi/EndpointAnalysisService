@@ -17,7 +17,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "assembly_scm")
+@Table(name = "assembly_scm", indexes = {
+        @Index(name = "uk_scm_name", columnList = "name", unique = true)
+})
 @EntityListeners(AuditingEntityListener.class)
 public class ScmPo {
 
@@ -26,19 +28,16 @@ public class ScmPo {
     @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 32, comment = "蓝图名称")
+    @Column(name = "name", nullable = false, length = 32, comment = "SCM名称(唯一)")
     private String name;
 
     @Column(name = "project_name", length = 80, comment = "项目名称")
     private String projectName;
 
-    @Column(name = "code", nullable = false, length = 32, comment = "蓝图编码")
-    private String code;
-
     @Column(name = "scm_url", nullable = false, length = 1000, comment = "SCM仓库地址")
     private String scmUrl;
 
-    @Column(name = "scm_auth_kind", nullable = false, columnDefinition = "TINYINT", comment = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY")
+    @Column(name = "scm_auth_kind", nullable = false, columnDefinition = "TINYINT", comment = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT")
     private Integer scmAuthKind;
 
     @Column(name = "scm_username", columnDefinition = "TEXT", comment = "SCM用户名")
@@ -53,7 +52,7 @@ public class ScmPo {
     @Column(name = "scm_branch", nullable = false, length = 80, comment = "SCM分支")
     private String scmBranch;
 
-    @Column(name = "remark", columnDefinition = "TEXT", comment = "蓝图备注")
+    @Column(name = "remark", columnDefinition = "TEXT", comment = "SCM备注")
     private String remark;
 
     @CreatedDate

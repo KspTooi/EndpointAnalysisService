@@ -27,11 +27,6 @@ public class EditScmDto implements DtoCustomValidator {
     @Schema(description = "项目名称")
     private String projectName;
 
-    @NotBlank(message = "SCM编码不能为空")
-    @Size(max = 32, message = "SCM编码长度不能超过32个字符")
-    @Schema(description = "SCM编码")
-    private String code;
-
     @NotBlank(message = "SCM仓库地址不能为空")
     @Size(max = 1000, message = "SCM仓库地址长度不能超过1000个字符")
     @Schema(description = "SCM仓库地址")
@@ -42,12 +37,15 @@ public class EditScmDto implements DtoCustomValidator {
     @Schema(description = "SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT")
     private Integer scmAuthKind;
 
+    @Size(max = 10000, message = "SCM用户名长度不能超过10000个字符")
     @Schema(description = "SCM用户名")
     private String scmUsername;
 
+    @Size(max = 10000, message = "SCM密码长度不能超过10000个字符")
     @Schema(description = "SCM密码")
     private String scmPassword;
 
+    @Size(max = 10000, message = "SSH KEY长度不能超过10000个字符")
     @Schema(description = "SSH KEY")
     private String scmPk;
 

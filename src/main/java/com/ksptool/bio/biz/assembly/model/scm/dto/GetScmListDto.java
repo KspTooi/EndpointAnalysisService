@@ -15,8 +15,5 @@ public class GetScmListDto extends PageQuery {
     @Schema(description = "项目名称")
     private String projectName;
 
-    @Schema(description = "SCM编码")
-    private String code;
-
 }
 

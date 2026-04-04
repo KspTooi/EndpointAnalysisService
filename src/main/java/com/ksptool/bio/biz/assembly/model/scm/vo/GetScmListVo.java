@@ -19,9 +19,6 @@ public class GetScmListVo {
     @Schema(description = "项目名称")
     private String projectName;
 
-    @Schema(description = "SCM编码")
-    private String code;
-
     @Schema(description = "SCM仓库地址")
     private String scmUrl;
 
