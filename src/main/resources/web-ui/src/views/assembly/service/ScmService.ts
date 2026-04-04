@@ -20,7 +20,6 @@ export default {
       pageSize: 20,
       name: "",
       projectName: "",
-      code: "",
     });
 
     const listData = ref<GetScmListVo[]>([]);
@@ -54,7 +53,6 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.projectName = "";
-      listForm.value.code = "";
       loadList();
     };
 
@@ -124,7 +122,6 @@ export default {
       id: "",
       name: "",
       projectName: "",
-      code: "",
       scmUrl: "",
       scmAuthKind: 0,
       scmUsername: "",
@@ -143,12 +140,20 @@ export default {
       return {
         name: [{ required: true, message: "请输入SCM名称", trigger: "blur", max: 32 }],
         projectName: [{ required: false, trigger: "blur", max: 80 }],
-        code: [{ required: true, message: "请输入SCM编码", trigger: "blur", max: 32 }],
         scmUrl: [{ required: true, message: "请输入SCM仓库地址", trigger: "blur", max: 1000 }],
         scmAuthKind: [{ required: true, message: "请选择SCM认证方式", trigger: "change", type: "number" }],
-        scmUsername: needUsernamePassword ? [{ required: true, message: "请输入SCM用户名", trigger: "blur" }] : [],
-        scmPassword: needUsernamePassword ? [{ required: true, message: "请输入SCM密码", trigger: "blur" }] : [],
-        scmPk: needPk ? [{ required: true, message: "请输入SSH KEY", trigger: "blur" }] : [],
+        scmUsername: [
+          ...(needUsernamePassword ? [{ required: true, message: "请输入SCM用户名", trigger: "blur" as const }] : []),
+          { max: 10000, message: "SCM用户名长度不能超过10000个字符", trigger: "blur" },
+        ],
+        scmPassword: [
+          ...(needUsernamePassword ? [{ required: true, message: "请输入SCM密码", trigger: "blur" as const }] : []),
+          { max: 10000, message: "SCM密码长度不能超过10000个字符", trigger: "blur" },
+        ],
+        scmPk: [
+          ...(needPk ? [{ required: true, message: "请输入SSH KEY", trigger: "blur" as const }] : []),
+          { max: 10000, message: "SSH KEY长度不能超过10000个字符", trigger: "blur" },
+        ],
         scmBranch: [{ required: true, message: "请输入SCM分支", trigger: "blur", max: 80 }],
         remark: [{ required: false, trigger: "blur", max: 500 }],
       };
@@ -166,7 +171,6 @@ export default {
         modalForm.id = "";
         modalForm.name = "";
         modalForm.projectName = "";
-        modalForm.code = "";
         modalForm.scmUrl = "";
         modalForm.scmAuthKind = 0;
         modalForm.scmUsername = "";
@@ -189,7 +193,6 @@ export default {
           modalForm.id = details.id;
           modalForm.name = details.name;
           modalForm.projectName = details.projectName;
-          modalForm.code = details.code;
           modalForm.scmUrl = details.scmUrl;
           modalForm.scmAuthKind = details.scmAuthKind;
           modalForm.scmUsername = details.scmUsername;
@@ -215,7 +218,6 @@ export default {
       modalForm.id = "";
       modalForm.name = "";
       modalForm.projectName = "";
-      modalForm.code = "";
       modalForm.scmUrl = "";
       modalForm.scmAuthKind = 0;
       modalForm.scmUsername = "";
@@ -246,7 +248,6 @@ export default {
           const addDto: AddScmDto = {
             name: modalForm.name,
             projectName: modalForm.projectName,
-            code: modalForm.code,
             scmUrl: modalForm.scmUrl,
             scmAuthKind: modalForm.scmAuthKind,
             scmUsername: modalForm.scmUsername,
@@ -279,7 +280,6 @@ export default {
             id: modalForm.id,
             name: modalForm.name,
             projectName: modalForm.projectName,
-            code: modalForm.code,
             scmUrl: modalForm.scmUrl,
             scmAuthKind: modalForm.scmAuthKind,
             scmUsername: modalForm.scmUsername,

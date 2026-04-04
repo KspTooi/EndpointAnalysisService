@@ -10,9 +10,6 @@
           <el-form-item label="项目名称">
             <el-input v-model="listForm.projectName" placeholder="输入项目名称" clearable />
           </el-form-item>
-          <el-form-item label="SCM编码">
-            <el-input v-model="listForm.code" placeholder="输入SCM编码" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
@@ -36,7 +33,6 @@
         </el-table-column>
         <el-table-column prop="name" label="SCM名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="projectName" label="项目名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="code" label="SCM编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="scmUrl" label="SCM仓库地址" min-width="160" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="100" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
@@ -101,9 +97,6 @@
         <el-form-item label="项目名称" prop="projectName">
           <el-input v-model="modalForm.projectName" placeholder="请输入项目名称" clearable maxlength="80" show-word-limit />
         </el-form-item>
-        <el-form-item label="SCM编码" prop="code">
-          <el-input v-model="modalForm.code" placeholder="请输入SCM编码" clearable maxlength="32" show-word-limit />
-        </el-form-item>
         <el-form-item label="SCM类型">
           <el-select model-value="git" disabled style="width: 100%">
             <el-option label="Git" value="git" />
@@ -121,7 +114,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3" label="SCM用户名" prop="scmUsername">
-          <el-input v-model="modalForm.scmUsername" placeholder="请输入SCM用户名" clearable />
+          <el-input v-model="modalForm.scmUsername" placeholder="请输入SCM用户名" clearable maxlength="10000" show-word-limit />
         </el-form-item>
         <el-form-item v-if="modalForm.scmAuthKind === 1 || modalForm.scmAuthKind === 3" label="SCM密码" prop="scmPassword">
           <el-input
@@ -129,10 +122,19 @@
             :placeholder="modalForm.scmAuthKind === 3 ? '请输入PAT令牌' : '请输入SCM密码'"
             clearable
             show-password
+            maxlength="10000"
+            show-word-limit
           />
         </el-form-item>
         <el-form-item v-if="modalForm.scmAuthKind === 2" label="SSH KEY" prop="scmPk">
-          <el-input v-model="modalForm.scmPk" placeholder="请输入SSH KEY" type="textarea" :rows="3" />
+          <el-input
+            v-model="modalForm.scmPk"
+            placeholder="请输入SSH KEY"
+            type="textarea"
+            :rows="3"
+            maxlength="10000"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="SCM分支" prop="scmBranch">
           <el-input v-model="modalForm.scmBranch" placeholder="请输入SCM分支" clearable maxlength="80" show-word-limit />

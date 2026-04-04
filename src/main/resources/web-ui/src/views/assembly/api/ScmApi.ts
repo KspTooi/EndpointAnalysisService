@@ -10,7 +10,6 @@ import type Result from "@/commons/model/Result.ts";
 export interface GetScmListDto extends PageQuery {
   name?: string; // SCM名称
   projectName?: string; // 项目名称
-  code?: string; // SCM编码
 }
 
 /**
@@ -20,7 +19,6 @@ export interface GetScmListVo {
   id: string; // 主键ID
   name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   createTime: string; // 创建时间
 }
@@ -32,7 +30,6 @@ export interface GetScmDetailsVo {
   id: string; // 主键ID
   name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
@@ -48,7 +45,6 @@ export interface GetScmDetailsVo {
 export interface AddScmDto {
   name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名
@@ -65,7 +61,6 @@ export interface EditScmDto {
   id: string; // 主键ID
   name: string; // SCM名称
   projectName: string; // 项目名称
-  code: string; // SCM编码
   scmUrl: string; // SCM仓库地址
   scmAuthKind: number; // SCM认证方式 0:公开 1:账号密码 2:SSH KEY 3:PAT
   scmUsername: string; // SCM用户名

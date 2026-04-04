@@ -202,7 +202,7 @@
           <el-col :span="12">
             <el-form-item label="从SCM读取" prop="inputScmId">
               <el-select v-model="modalForm.inputScmId" placeholder="请选择输入SCM" filterable clearable style="width: 100%">
-                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="`${item.name}（${item.code}）`" />
+                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -224,7 +224,7 @@
           <el-col :span="12">
             <el-form-item label="输出到SCM" prop="outputScmId">
               <el-select v-model="modalForm.outputScmId" placeholder="请选择输出SCM" filterable clearable style="width: 100%">
-                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="`${item.name}（${item.code}）`" />
+                <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
               </el-select>
             </el-form-item>
           </el-col>
