@@ -3,7 +3,6 @@ package com.ksptool.bio.biz.assembly.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptool.bio.biz.assembly.common.assemblybp.collector.MysqlCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.collector.VelocityBlueprintCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.converter.StaticPolyConv;
@@ -24,6 +23,7 @@ import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
+import com.ksptool.bio.biz.core.service.AttachService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,6 +132,7 @@ public class OutSchemaService {
             for (var field : fields) {
                 field.setOutputSchemaId(insertPo.getId());
                 field.setSeq(seq++);
+                field.setPk(0);
                 insertFields.add(field);
             }
 
@@ -256,8 +257,7 @@ public class OutSchemaService {
         OutSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("预览方案参数失败,数据不存在或无权限访问."));
 
-        
-            
+
     }
 
     /**
