@@ -10,9 +10,6 @@
           <el-form-item label="方案编码">
             <el-input v-model="listForm.code" placeholder="输入方案编码" clearable />
           </el-form-item>
-          <el-form-item label="映射目标">
-            <el-input v-model="listForm.mapTarget" placeholder="输入映射目标" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
@@ -36,8 +33,6 @@
         </el-table-column>
         <el-table-column prop="name" label="方案名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="方案编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="mapSource" label="映射源" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="mapTarget" label="映射目标" min-width="100" show-overflow-tooltip />
         <el-table-column prop="typeCount" label="类型数量" min-width="80" show-overflow-tooltip />
         <el-table-column prop="defaultType" label="默认类型" min-width="100" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" min-width="65" show-overflow-tooltip>
@@ -117,12 +112,6 @@
         </el-form-item>
         <el-form-item label="方案编码" prop="code">
           <el-input v-model="modalForm.code" placeholder="请输入方案编码" clearable maxlength="32" show-word-limit />
-        </el-form-item>
-        <el-form-item label="映射源" prop="mapSource">
-          <el-input v-model="modalForm.mapSource" placeholder="请输入映射源" clearable maxlength="32" show-word-limit />
-        </el-form-item>
-        <el-form-item label="映射目标" prop="mapTarget">
-          <el-input v-model="modalForm.mapTarget" placeholder="请输入映射目标" clearable maxlength="32" show-word-limit />
         </el-form-item>
         <el-form-item label="默认类型" prop="defaultType">
           <el-input v-model="modalForm.defaultType" placeholder="请输入默认类型" clearable maxlength="80" show-word-limit />

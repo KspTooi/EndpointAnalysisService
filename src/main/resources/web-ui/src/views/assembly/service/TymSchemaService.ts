@@ -27,7 +27,6 @@ export default {
       id: "",
       name: "",
       code: "",
-      mapTarget: "",
     });
 
     const listData = ref<GetTymSchemaListVo[]>([]);
@@ -62,7 +61,6 @@ export default {
       listForm.value.id = "";
       listForm.value.name = "";
       listForm.value.code = "";
-      listForm.value.mapTarget = "";
       loadList();
     };
 
@@ -115,8 +113,6 @@ export default {
       id: "",
       name: "",
       code: "",
-      mapSource: "",
-      mapTarget: "",
       typeCount: 0,
       defaultType: "",
       seq: 0,
@@ -135,14 +131,6 @@ export default {
       code: [
         { required: true, message: "请输入方案编码", trigger: "blur" },
         { max: 32, message: "方案编码长度不能超过32个字符", trigger: "blur" },
-      ],
-      mapSource: [
-        { required: true, message: "请输入映射源", trigger: "blur" },
-        { max: 32, message: "映射源长度不能超过32个字符", trigger: "blur" },
-      ],
-      mapTarget: [
-        { required: true, message: "请输入映射目标", trigger: "blur" },
-        { max: 32, message: "映射目标长度不能超过32个字符", trigger: "blur" },
       ],
       defaultType: [
         { required: true, message: "请输入默认类型", trigger: "blur" },
@@ -163,8 +151,6 @@ export default {
         modalForm.id = "";
         modalForm.name = "";
         modalForm.code = "";
-        modalForm.mapSource = "";
-        modalForm.mapTarget = "";
         modalForm.typeCount = 0;
         modalForm.defaultType = "";
         modalForm.seq = 0;
@@ -185,8 +171,6 @@ export default {
           modalForm.id = details.id;
           modalForm.name = details.name;
           modalForm.code = details.code;
-          modalForm.mapSource = details.mapSource;
-          modalForm.mapTarget = details.mapTarget;
           modalForm.typeCount = details.typeCount;
           modalForm.defaultType = details.defaultType;
           modalForm.seq = details.seq;
@@ -210,8 +194,6 @@ export default {
       modalForm.id = "";
       modalForm.name = "";
       modalForm.code = "";
-      modalForm.mapSource = "";
-      modalForm.mapTarget = "";
       modalForm.typeCount = 0;
       modalForm.defaultType = "";
       modalForm.seq = 0;
@@ -240,8 +222,6 @@ export default {
           const addDto: AddTymSchemaDto = {
             name: modalForm.name,
             code: modalForm.code,
-            mapSource: modalForm.mapSource,
-            mapTarget: modalForm.mapTarget,
             defaultType: modalForm.defaultType,
             seq: modalForm.seq,
             remark: modalForm.remark,
@@ -270,8 +250,6 @@ export default {
             id: modalForm.id,
             name: modalForm.name,
             code: modalForm.code,
-            mapSource: modalForm.mapSource,
-            mapTarget: modalForm.mapTarget,
             defaultType: modalForm.defaultType,
             seq: modalForm.seq,
             remark: modalForm.remark,

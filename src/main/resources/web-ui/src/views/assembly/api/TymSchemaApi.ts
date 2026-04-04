@@ -11,7 +11,6 @@ export interface GetTymSchemaListDto extends PageQuery {
   id?: string; // 主键ID
   name?: string; // 方案名称
   code?: string; // 方案编码
-  mapTarget?: string; // 映射目标
 }
 
 /**
@@ -21,8 +20,6 @@ export interface GetTymSchemaListVo {
   id: string; // 主键ID
   name: string; // 方案名称
   code: string; // 方案编码
-  mapSource: string; // 映射源
-  mapTarget: string; // 映射目标
   typeCount: number; // 类型数量
   defaultType: string; // 默认类型
   seq: number; // 排序
@@ -36,8 +33,6 @@ export interface GetTymSchemaDetailsVo {
   id: string; // 主键ID
   name: string; // 方案名称
   code: string; // 方案编码
-  mapSource: string; // 映射源
-  mapTarget: string; // 映射目标
   typeCount: number; // 类型数量
   defaultType: string; // 默认类型
   seq: number; // 排序
@@ -51,8 +46,6 @@ export interface GetTymSchemaDetailsVo {
 export interface AddTymSchemaDto {
   name: string; // 方案名称
   code: string; // 方案编码
-  mapSource: string; // 映射源
-  mapTarget: string; // 映射目标
   defaultType: string; // 默认类型
   seq: number; // 排序
   remark: string; // 备注
@@ -65,8 +58,6 @@ export interface EditTymSchemaDto {
   id: string; // 主键ID
   name: string; // 方案名称
   code: string; // 方案编码
-  mapSource: string; // 映射源
-  mapTarget: string; // 映射目标
   defaultType: string; // 默认类型
   seq: number; // 排序
   remark: string; // 备注
