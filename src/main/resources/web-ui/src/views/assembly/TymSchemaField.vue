@@ -1,12 +1,26 @@
 <template>
-  <el-dialog v-model="modalVisible" :title="title" width="1000px" :close-on-click-modal="false" @close="onClose">
-    <!-- 操作按钮区域 -->
+  <StdListContainer>
+    <!-- 操作按钮区域（含 CDRC 回源） -->
     <StdListAreaAction class="flex gap-2">
+      <el-button v-if="cdrcCanReturn" type="primary" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
       <el-button type="success" @click="openModalSelf('add', null)">新增方案字段</el-button>
     </StdListAreaAction>
 
+    <!-- 当前方案上下文信息（由 CDRC send 传入） -->
+    <div class="schema-info-bar">
+      <div class="schema-info-item">
+        <span class="schema-info-label">方案名称</span>
+        <span class="schema-info-value">{{ schemaRow?.name ?? "—" }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">方案编码</span>
+        <span class="schema-info-value">{{ schemaRow?.code ?? "—" }}</span>
+      </div>
+    </div>
+
     <!-- 列表表格区域 -->
-    <StdListAreaTable style="height: 500px">
+    <StdListAreaTable>
       <el-table v-loading="listLoading" :data="listData" stripe border height="100%">
         <el-table-column prop="source" label="匹配源类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="target" label="匹配目标类型" min-width="120" show-overflow-tooltip />
@@ -94,33 +108,26 @@
         </div>
       </template>
     </el-dialog>
-  </el-dialog>
+  </StdListContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, computed } from "vue";
+import { ref, markRaw, onMounted } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import TymSchemaFieldService from "@/views/assembly/service/TymSchemaFieldService";
+import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
 import TymSchemaFieldApi from "@/views/assembly/api/TymSchemaFieldApi";
 import type { GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 
-const modalVisible = ref(false);
-const typeSchemaId = ref<string>("");
-const getTymSchemaListVo = ref<GetTymSchemaListVo | null>(null);
-const emit = defineEmits<{
-  (e: "on-close"): void;
-}>();
-
-const title = computed(() => {
-  if (getTymSchemaListVo.value) {
-    return `类型映射方案字段管理: ${getTymSchemaListVo.value.name}(${getTymSchemaListVo.value.code})`;
-  }
-  return "管理方案字段";
-});
+// 使用 CDRC：来源页跳转时写入上下文，本页通过 getCdrcQuery 取类型映射方案行
+const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
+const schemaRow = getCdrcQuery() as GetTymSchemaListVo | null;
+const typeSchemaId = ref(schemaRow?.id ?? "");
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
@@ -145,27 +152,57 @@ const {
   submitModal,
 } = TymSchemaFieldService.useTymSchemaFieldModal(modalFormRef, typeSchemaId, loadList);
 
-/**
- * 关闭模态框
- */
-const onClose = (): void => {
-  emit("on-close");
-};
-
-defineExpose({
-  /**
-   * 打开模态框
-   * @param typeSchemaId 类型映射方案ID
-   */
-  openModal: async (row: GetTymSchemaListVo | null) => {
-    if (row) {
-      getTymSchemaListVo.value = row;
-    }
-    modalVisible.value = true;
-    typeSchemaId.value = row.id;
-    await loadList();
-  },
+// 进入页面后按 typeSchemaId 拉取字段列表（须由 CDRC 传入有效方案 id）
+onMounted(async () => {
+  if (!typeSchemaId.value) {
+    return;
+  }
+  await loadList();
 });
+
+/**
+ * 原先通过 defineExpose({ openModal }) 由父页面打开外层对话框嵌套列表；
+ * 现改为独立路由 tym-schema-field-manager（CDRC），字段新增/编辑仍为页内 el-dialog，与 TymSchema 等模态框风格一致。
+ */
 </script>
 
-<style scoped></style>
+<style scoped>
+.schema-info-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  background: #fff;
+  border-radius: 0;
+  border: 1px solid #e4e7ed;
+  border-left: 4px solid #409eff;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.schema-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 20px;
+}
+
+.schema-info-label {
+  font-size: 11px;
+  color: #909399;
+  letter-spacing: 0.5px;
+}
+
+.schema-info-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.schema-info-divider {
+  width: 1px;
+  height: 36px;
+  background: #e4e7ed;
+  flex-shrink: 0;
+}
+</style>

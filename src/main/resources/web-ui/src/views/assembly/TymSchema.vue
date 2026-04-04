@@ -50,7 +50,8 @@
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="220">
           <template #default="scope">
-            <el-button link type="primary" size="small" :icon="EditIcon" @click="openSchemaFieldModal(scope.row)">
+            <!-- 方案字段管理：CDRC 跳转至 tym-schema-field-manager，不再使用子组件模态框 -->
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="cdrcRedirect('tym-schema-field-manager', scope.row)">
               管理方案
             </el-button>
             <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
@@ -84,9 +85,6 @@
         />
       </template>
     </StdListAreaTable>
-
-    <!-- 方案字段管理模态框 -->
-    <TymSchemaField ref="schemaFieldRef" @on-close="loadList" />
 
     <!-- 新增/编辑模态框 -->
     <el-dialog
@@ -136,7 +134,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
+import { ref, markRaw, watch } from "vue";
+import { useRoute } from "vue-router";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import TymSchemaService from "@/views/assembly/service/TymSchemaService";
@@ -144,16 +143,30 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
-import TymSchemaApi, { type GetTymSchemaListVo } from "@/views/assembly/api/TymSchemaApi";
+import TymSchemaApi from "@/views/assembly/api/TymSchemaApi";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import TymSchemaField from "@/views/assembly/TymSchemaField.vue";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
+const route = useRoute();
+// CDRC：跳转到类型映射方案字段管理页
+const { cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
+
 // 列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = TymSchemaService.useTymSchemaList();
+
+// 从字段管理页 CDRC 回源时 URL 会带 cdrc-return-id，此处刷新列表（如类型数量等）
+watch(
+  () => route.query["cdrc-return-id"],
+  (id) => {
+    if (!id) return;
+    loadList();
+  },
+  { immediate: true }
+);
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
@@ -162,16 +175,6 @@ const modalFormRef = ref<FormInstance>();
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
   TymSchemaService.useTymSchemaModal(modalFormRef, loadList);
 
-//方案字段管理模态框引用
-const schemaFieldRef = ref<InstanceType<typeof TymSchemaField>>();
-
-/**
- * 打开方案字段管理模态框
- * @param row 行数据
- */
-const openSchemaFieldModal = (row: GetTymSchemaListVo): void => {
-  schemaFieldRef.value?.openModal(row);
-};
 </script>
 
 <style scoped></style>

@@ -25,6 +25,14 @@ export default class GenRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/assembly/TymSchema.vue"),
         meta: { breadcrumb: "类型映射方案管理" },
       }),
+      // 类型映射方案字段管理（通常由 TymSchema 通过 CDRC 跳转进入）
+      RouteEntryPo.build({
+        biz: "assembly",
+        path: "tym-schema-field-manager",
+        name: "tym-schema-field-manager",
+        component: () => import("@/views/assembly/TymSchemaField.vue"),
+        meta: { breadcrumb: "类型映射方案字段管理" },
+      }),
       RouteEntryPo.build({
         biz: "assembly",
         path: "scm-manager",
