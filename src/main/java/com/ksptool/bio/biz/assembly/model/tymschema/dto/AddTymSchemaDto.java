@@ -22,16 +22,6 @@ public class AddTymSchemaDto {
     @Schema(description = "方案编码")
     private String code;
 
-    @NotBlank(message = "映射源不能为空")
-    @Size(max = 32, min = 1, message = "映射源长度必须在1-32个字符之间")
-    @Schema(description = "映射源")
-    private String mapSource;
-
-    @NotBlank(message = "映射目标不能为空")
-    @Size(max = 32, min = 1, message = "映射目标长度必须在1-32个字符之间")
-    @Schema(description = "映射目标")
-    private String mapTarget;
-
     @NotBlank(message = "默认类型不能为空")
     @Size(max = 80, min = 1, message = "默认类型长度必须在1-80个字符之间")
     @Schema(description = "默认类型")

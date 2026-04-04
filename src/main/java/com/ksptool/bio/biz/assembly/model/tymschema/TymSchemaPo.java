@@ -17,7 +17,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "assembly_tym_schema")
+@Table(name = "assembly_tym_schema", indexes = {
+        @Index(name = "uk_code", columnList = "code", unique = true)
+})
 @EntityListeners(AuditingEntityListener.class)
 public class TymSchemaPo {
 
@@ -29,14 +31,8 @@ public class TymSchemaPo {
     @Column(name = "name", nullable = false, length = 32, comment = "方案名称")
     private String name;
 
-    @Column(name = "code", nullable = false, length = 32, comment = "方案编码")
+    @Column(name = "code", nullable = false, length = 32, comment = "方案编码(唯一)")
     private String code;
-
-    @Column(name = "map_source", nullable = false, length = 32, comment = "映射源")
-    private String mapSource;
-
-    @Column(name = "map_target", nullable = false, length = 32, comment = "映射目标")
-    private String mapTarget;
 
     @Column(name = "type_count", nullable = false, comment = "类型数量")
     private Integer typeCount;

@@ -17,8 +17,6 @@ public interface TymSchemaRepository extends JpaRepository<TymSchemaPo, Long> {
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.name} IS NULL OR u.name  LIKE CONCAT('%', :#{#po.name}, '%') )
             AND (:#{#po.code} IS NULL OR u.code  LIKE CONCAT('%', :#{#po.code}, '%') )
-            AND (:#{#po.mapSource} IS NULL OR u.mapSource  LIKE CONCAT('%', :#{#po.mapSource}, '%') )
-            AND (:#{#po.mapTarget} IS NULL OR u.mapTarget  LIKE CONCAT('%', :#{#po.mapTarget}, '%') )
             AND (:#{#po.typeCount} IS NULL OR u.typeCount  = :#{#po.typeCount} )
             AND (:#{#po.defaultType} IS NULL OR u.defaultType LIKE CONCAT('%', :#{#po.defaultType}, '%') )
             AND (:#{#po.seq} IS NULL OR u.seq  = :#{#po.seq} )

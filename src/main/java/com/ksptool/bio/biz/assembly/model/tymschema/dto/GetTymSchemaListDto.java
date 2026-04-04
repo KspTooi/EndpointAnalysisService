@@ -18,8 +18,4 @@ public class GetTymSchemaListDto extends PageQuery {
     @Schema(description = "方案编码")
     private String code;
 
-    @Schema(description = "映射目标")
-    private String mapTarget;
-
 }
-

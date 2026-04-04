@@ -19,12 +19,6 @@ public class GetTymSchemaDetailsVo {
     @Schema(description = "方案编码")
     private String code;
 
-    @Schema(description = "映射源")
-    private String mapSource;
-
-    @Schema(description = "映射目标")
-    private String mapTarget;
-
     @Schema(description = "类型数量")
     private Integer typeCount;
 
@@ -41,4 +35,3 @@ public class GetTymSchemaDetailsVo {
     private LocalDateTime createTime;
 
 }
-
