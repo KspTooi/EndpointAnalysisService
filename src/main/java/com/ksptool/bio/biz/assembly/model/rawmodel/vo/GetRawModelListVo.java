@@ -21,7 +21,7 @@ public class GetRawModelListVo {
     private String dataType;
 
     @Schema(description = "长度")
-    private String length;
+    private Integer length;
 
     @Schema(description = "必填 0:否 1:是")
     private Integer require;

@@ -37,7 +37,7 @@ public class PolyModelPo {
     private String dataType;
 
     @Column(name = "length", length = 255, comment = "长度")
-    private String length;
+    private Integer length;
 
     @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "必填 0:否 1:是")
     private Integer require;

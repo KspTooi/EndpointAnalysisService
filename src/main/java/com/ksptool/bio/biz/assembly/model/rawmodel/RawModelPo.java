@@ -34,8 +34,8 @@ public class RawModelPo {
     @Column(name = "data_type", nullable = false, length = 255, comment = "数据类型")
     private String dataType;
 
-    @Column(name = "length", length = 255, comment = "长度")
-    private String length;
+    @Column(name = "length", comment = "长度")
+    private Integer length;
 
     @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "必填 0:否 1:是")
     private Integer require;

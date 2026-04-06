@@ -18,11 +18,17 @@
       </div>
       <div class="schema-info-divider" />
       <div class="schema-info-item">
+        <span class="schema-info-label">字段数量</span>
+        <span v-if="listViewModel === 'raw'" class="schema-info-value">{{ originListData.length }}</span>
+        <span v-if="listViewModel === 'poly'" class="schema-info-value">{{ polyListData.length }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
         <span class="schema-info-label">显示原始模型</span>
         <el-switch
           v-model="listViewModel"
           :disabled="polyListLoading || originListLoading"
-          :active-value="'origin'"
+          :active-value="'raw'"
           :inactive-value="'poly'"
           size="small"
         />
@@ -32,22 +38,22 @@
         <span class="schema-info-label">从原始模型生成</span>
         <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncPolyModelFromOrigin">开始</el-button>
       </div>
-      <div v-show="listViewModel === 'origin'" class="schema-info-item">
+      <div v-show="listViewModel === 'raw'" class="schema-info-item">
         <span class="schema-info-label">从数据源生成</span>
-        <el-button type="primary" size="small" :icon="MagicStickIcon">开始</el-button>
+        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncRawModelFromDataSource">开始</el-button>
       </div>
     </div>
 
     <!-- 操作按钮区域 -->
     <div v-loading="polyListLoading || originListLoading" class="action-bar">
       <el-button v-if="cdrcCanReturn" type="primary" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
-      <el-button :disabled="listViewModel === 'origin'" type="success" :icon="AddFieldIcon" link @click="openPolyAddModal()"
+      <el-button :disabled="listViewModel === 'raw'" type="success" :icon="AddFieldIcon" link @click="openPolyAddModal()"
         >添加字段</el-button
       >
     </div>
 
     <!-- 原始模型列表表格区域 -->
-    <StdListAreaTable v-show="listViewModel === 'origin'">
+    <StdListAreaTable v-show="listViewModel === 'raw'">
       <el-table v-loading="originListLoading" :data="originListData" stripe border height="100%">
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
@@ -383,7 +389,7 @@ const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 const outputSchemaId = ref(schemaInfo?.id ?? "");
 
 //列表视图模式 poly: 聚合模型, origin: 原始模型
-const listViewModel = ref<"poly" | "origin">("poly");
+const listViewModel = ref<"raw" | "poly">("poly");
 
 //聚合模型列表打包
 const {
@@ -399,11 +405,12 @@ const {
   listData: originListData,
   listLoading: originListLoading,
   loadList: loadOriginList,
+  syncRawModelFromDataSource,
 } = OpSchemaDesignService.useRawModelList(outputSchemaId);
 
 //监听列表视图模式变化
 watch(listViewModel, (newVal) => {
-  if (newVal === "origin") {
+  if (newVal === "raw") {
     loadOriginList();
   }
   if (newVal === "poly") {

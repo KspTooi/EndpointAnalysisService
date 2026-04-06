@@ -11,9 +11,10 @@ import com.ksptool.bio.biz.assembly.model.rawmodel.dto.EditRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelDetailsVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
-import com.ksptool.bio.biz.assembly.repository.RawModelRepository;
-import com.ksptool.bio.biz.assembly.repository.OpSchemaRepository;
 import com.ksptool.bio.biz.assembly.repository.DataSourceRepository;
+import com.ksptool.bio.biz.assembly.repository.OpSchemaRepository;
+import com.ksptool.bio.biz.assembly.repository.RawModelRepository;
+import com.ksptool.entities.any.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +117,48 @@ public class RawModelService {
 
 
     /**
+     * 从数据源同步原始模型
+     *
+     * @param opSchemaId 输出方案ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void syncRawModelFromDataSource(Long opSchemaId) throws BizException {
+
+        //查询输出方案
+        OpSchemaPo opSchema = opSchemaRepository.findById(opSchemaId)
+                .orElseThrow(() -> new BizException("输出方案不存在或无权限访问."));
+
+        //查询数据源
+        var hasBindDataSource = opSchema.getDataSourceId() != null;
+
+        if (!hasBindDataSource) {
+            throw new BizException("输出方案未绑定数据源,请先绑定数据源.");
+        }
+
+        var dataSource = dataSourceRepository.findById(opSchema.getDataSourceId())
+                .orElseThrow(() -> new BizException("数据源不存在或无权限访问."));
+
+        //查询数据源表字段
+        var fields = getDataSourceTableFields(dataSource, opSchema.getTableName());
+
+        if (fields == null) {
+            throw new BizException("查询数据源表字段失败.");
+        }
+
+        //批量组装原始模型
+        var rawModels = Any.of(fields).val("outputSchemaId", opSchemaId).asList(RawModelPo.class);
+
+        //批量保存原始模型
+        repository.saveAll(rawModels);
+
+        //更新输出方案字段数量
+        opSchema.setFieldCountOrigin(fields.size());
+
+        //保存输出方案
+        opSchemaRepository.save(opSchema);
+    }
+
+    /**
      * 查询数据源表字段
      *
      * @param dataSource 数据源
@@ -155,12 +198,19 @@ public class RawModelService {
                 int seq = 1;
                 while (rs.next()) {
                     RawModelPo po = new RawModelPo();
+                    po.setId(null);
+                    po.setOutputSchemaId(null);
                     po.setName(rs.getString("COLUMN_NAME"));
                     po.setDataType(rs.getString("TYPE_NAME"));
+
+                    //处理字段长度
                     int columnSize = rs.getInt("COLUMN_SIZE");
+                    
+
                     po.setLength(columnSize > 0 ? String.valueOf(columnSize) : null);
                     // IS_NULLABLE: YES 表示可为空, 主键或非空则 require=1
                     String nullable = rs.getString("IS_NULLABLE");
+
                     boolean isPk = pkColumns.contains(po.getName());
                     po.setRequire((isPk || "NO".equalsIgnoreCase(nullable)) ? 1 : 0);
                     po.setRemark(rs.getString("REMARKS"));
@@ -174,44 +224,5 @@ public class RawModelService {
 
         return result;
     }
-
-    /**
-     * 从数据源同步原始模型
-     * @param opSchemaId 输出方案ID
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void syncRawModelFromDataSource(Long opSchemaId) throws BizException {
-
-        //查询输出方案
-        OpSchemaPo opSchema = opSchemaRepository.findById(opSchemaId)
-                .orElseThrow(() -> new BizException("输出方案不存在或无权限访问."));
-
-        //查询数据源
-        var hasBindDataSource = opSchema.getDataSourceId() != null;
-
-        if (!hasBindDataSource) {
-            throw new BizException("输出方案未绑定数据源,请先绑定数据源.");
-        }
-
-        var dataSource = dataSourceRepository.findById(opSchema.getDataSourceId())
-                .orElseThrow(() -> new BizException("数据源不存在或无权限访问."));
-
-        //查询数据源表字段
-        var fields = getDataSourceTableFields(dataSource, opSchema.getTableName());
-
-        if (fields == null) {
-            throw new BizException("查询数据源表字段失败.");
-        }
-
-        //批量保存原始模型
-        repository.saveAll(fields);
-
-        //更新输出方案字段数量
-        opSchema.setFieldCountOrigin(fields.size());
-
-        //保存输出方案
-        opSchemaRepository.save(opSchema);
-    }
-
 
 }

@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-7 00:52:25",
+  "updatedTime": "2026-4-7 02:28:46",
   "dbConns": [],
   "profile": {
     "default": {
@@ -30990,9 +30990,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": "",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
           "extProps": {},
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
           "id": "FAE8AF3A-642A-40DF-87EE-88AF0EDBFB42"
         },
         {
@@ -31398,7 +31398,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
+          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
           "refDict": "",
           "extProps": {},
           "notes": {},
@@ -31412,7 +31412,7 @@
           "attr8": "",
           "attr9": "",
           "id": "4A73CDBB-635D-48D2-9383-D4630550A0E5",
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0"
+          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F"
         },
         {
           "defKey": "require",

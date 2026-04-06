@@ -30,9 +30,8 @@ public class EditRawModelDto {
     @Schema(description = "数据类型")
     private String dataType;
 
-    @Size(max = 255, message = "长度不能超过255")
     @Schema(description = "长度")
-    private String length;
+    private Integer length;
 
     @NotNull(message = "必填不能为空")
     @Range(min = 0, max = 1, message = "必填值只能为0或1")

@@ -1,6 +1,11 @@
 import { computed, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type { GetPolyModelListDto, GetPolyModelListVo, EditPolyModelDto, AddPolyModelDto } from "@/views/assembly/api/PolyModelApi";
+import type {
+  GetPolyModelListDto,
+  GetPolyModelListVo,
+  EditPolyModelDto,
+  AddPolyModelDto,
+} from "@/views/assembly/api/PolyModelApi";
 import PolyModelApi from "@/views/assembly/api/PolyModelApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -35,11 +40,32 @@ export default {
       listLoading.value = false;
     };
 
+    const syncRawModelFromDataSource = async (): Promise<void> => {
+      try {
+        await ElMessageBox.confirm("确定从数据源重新生成原始模型吗？已有字段将被覆盖。", "生成原始模型", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+      } catch {
+        return;
+      }
+
+      try {
+        await RawModelApi.syncRawModelFromDataSource({ id: outputSchemaId.value });
+        ElMessage.success("同步操作已完成。");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     return {
       listData,
       listTotal,
       listLoading,
       loadList,
+      syncRawModelFromDataSource,
     };
   },
 
