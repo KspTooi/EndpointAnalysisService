@@ -36,19 +36,26 @@
         </el-table-column>
         <el-table-column prop="name" label="输出方案名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="modelName" label="模型名称" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="tableName" label="数据源表名" min-width="120" show-overflow-tooltip />
+        <el-table-column
+          prop="tableName"
+          label="数据源表名"
+          min-width="120"
+          show-overflow-tooltip
+          :formatter="
+            (row: GetOutSchemaListVo) => {
+              if (!row.tableName) {
+                return '-';
+              }
+              return row.tableName;
+            }
+          "
+        />
         <el-table-column prop="fieldCountOrigin" label="字段数(原始)" min-width="110" show-overflow-tooltip />
         <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="240">
           <template #default="scope">
-            <el-button
-              link
-              type="primary"
-              size="small"
-              :icon="ViewIcon"
-              @click="cdrcRedirect('out-model-origin-manager', scope.row)"
-            >
-              查看原始模型
+            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
+              编辑
             </el-button>
             <el-button
               link
@@ -58,9 +65,6 @@
               @click="cdrcRedirect('out-model-poly-manager', scope.row)"
             >
               设计
-            </el-button>
-            <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
-              编辑
             </el-button>
             <el-button link type="success" size="small" :icon="SimulationIcon"> 模拟 </el-button>
             <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOutSchema(scope.row)">
@@ -119,9 +123,8 @@
           <el-col :span="8">
             <el-card class="h-full">
               <template #header>
-                <div class="flex items-center text-blue-600 font-bold">
-                  <span class="text-xl mr-2">📥</span>
-                  <span>输入节点 (Input)</span>
+                <div class="flex items-center font-bold">
+                  <span>输入配置</span>
                 </div>
               </template>
 
@@ -144,7 +147,7 @@
               <el-form-item label="数据源表名" prop="tableName">
                 <DataSourceTableBrowser v-model="modalForm.tableName" :data-source-id="modalForm.dataSourceId" />
               </el-form-item>
-              <el-form-item label="从SCM读取" prop="inputScmId">
+              <el-form-item label="从SCM读取蓝图" prop="inputScmId">
                 <el-select v-model="modalForm.inputScmId" placeholder="请选择输入SCM" filterable clearable style="width: 100%">
                   <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
                 </el-select>
@@ -165,9 +168,8 @@
           <el-col :span="8">
             <el-card class="h-full border-purple-200">
               <template #header>
-                <div class="flex items-center text-purple-600 font-bold">
-                  <span class="text-xl mr-2">⚙️</span>
-                  <span>核心处理 (Process)</span>
+                <div class="flex items-center font-bold">
+                  <span>转换配置</span>
                 </div>
               </template>
 
@@ -234,9 +236,8 @@
           <el-col :span="8">
             <el-card class="h-full">
               <template #header>
-                <div class="flex items-center text-green-600 font-bold">
-                  <span class="text-xl mr-2">📤</span>
-                  <span>输出节点 (Output)</span>
+                <div class="flex items-center font-bold">
+                  <span>输出配置</span>
                 </div>
               </template>
 
@@ -312,6 +313,7 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import ComIconService from "@/soa/com-series/service/ComIconService";
+import type { GetOutSchemaListVo } from "./api/OutSchemaApi";
 
 const { resolveIcon } = ComIconService.useIconService();
 
