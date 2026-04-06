@@ -7,7 +7,7 @@ import type Result from "@/commons/model/Result.ts";
 /**
  * 查询列表DTO
  */
-export interface GetOutSchemaListDto extends PageQuery {
+export interface GetOpSchemaListDto extends PageQuery {
   name?: string; // 输出方案名称
   modelName?: string; // 模型名称
   tableName?: string; // 数据源表名
@@ -16,7 +16,7 @@ export interface GetOutSchemaListDto extends PageQuery {
 /**
  * 列表VO
  */
-export interface GetOutSchemaListVo {
+export interface GetOpSchemaListVo {
   id: string; // 主键ID
   name: string; // 输出方案名称
   modelName: string; // 模型名称
@@ -28,7 +28,7 @@ export interface GetOutSchemaListVo {
 /**
  * 详情VO
  */
-export interface GetOutSchemaDetailsVo {
+export interface GetOpSchemaDetailsVo {
   id: string; // 主键ID
   dataSourceId: string; // 数据源ID
   typeSchemaId: string; // 类型映射方案ID
@@ -48,7 +48,7 @@ export interface GetOutSchemaDetailsVo {
 /**
  * 新增DTO
  */
-export interface AddOutSchemaDto {
+export interface AddOpSchemaDto {
   dataSourceId: string; // 数据源ID
   typeSchemaId: string; // 类型映射方案ID
   inputScmId: string; // 输入SCM ID
@@ -67,7 +67,7 @@ export interface AddOutSchemaDto {
 /**
  * 编辑DTO
  */
-export interface EditOutSchemaDto {
+export interface EditOpSchemaDto {
   id: string; // 主键ID
   dataSourceId: string; // 数据源ID
   typeSchemaId: string; // 类型映射方案ID
@@ -88,15 +88,15 @@ export default {
   /**
    * 获取输出方案列表
    */
-  getOutSchemaList: async (dto: GetOutSchemaListDto): Promise<PageResult<GetOutSchemaListVo>> => {
-    return await Http.postEntity<PageResult<GetOutSchemaListVo>>("/outSchema/getOutSchemaList", dto);
+  getOpSchemaList: async (dto: GetOpSchemaListDto): Promise<PageResult<GetOpSchemaListVo>> => {
+    return await Http.postEntity<PageResult<GetOpSchemaListVo>>("/opSchema/getOpSchemaList", dto);
   },
 
   /**
    * 获取输出方案详情
    */
-  getOutSchemaDetails: async (dto: CommonIdDto): Promise<GetOutSchemaDetailsVo> => {
-    const result = await Http.postEntity<Result<GetOutSchemaDetailsVo>>("/outSchema/getOutSchemaDetails", dto);
+  getOpSchemaDetails: async (dto: CommonIdDto): Promise<GetOpSchemaDetailsVo> => {
+    const result = await Http.postEntity<Result<GetOpSchemaDetailsVo>>("/opSchema/getOpSchemaDetails", dto);
     if (result.code === 0) {
       return result.data;
     }
@@ -106,8 +106,8 @@ export default {
   /**
    * 新增输出方案
    */
-  addOutSchema: async (dto: AddOutSchemaDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outSchema/addOutSchema", dto);
+  addOpSchema: async (dto: AddOpSchemaDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/addOpSchema", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -117,8 +117,8 @@ export default {
   /**
    * 编辑输出方案
    */
-  editOutSchema: async (dto: EditOutSchemaDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outSchema/editOutSchema", dto);
+  editOpSchema: async (dto: EditOpSchemaDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/editOpSchema", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -128,8 +128,8 @@ export default {
   /**
    * 删除输出方案
    */
-  removeOutSchema: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outSchema/removeOutSchema", dto);
+  removeOpSchema: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/removeOpSchema", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -139,8 +139,8 @@ export default {
   /**
    * 执行输出方案
    */
-  executeOutSchema: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outSchema/executeOutSchema", dto);
+  executeOpSchema: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/executeOpSchema", dto);
     if (result.code === 0) {
       return result.message;
     }

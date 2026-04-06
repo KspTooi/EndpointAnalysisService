@@ -1,13 +1,13 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  GetOutSchemaListDto,
-  GetOutSchemaListVo,
-  GetOutSchemaDetailsVo,
-  AddOutSchemaDto,
-  EditOutSchemaDto,
-} from "@/views/assembly/api/OutSchemaApi";
-import OutSchemaApi from "@/views/assembly/api/OutSchemaApi";
+  GetOpSchemaListDto,
+  GetOpSchemaListVo,
+  GetOpSchemaDetailsVo,
+  AddOpSchemaDto,
+  EditOpSchemaDto,
+} from "@/views/assembly/api/OpSchemaApi";
+import OpSchemaApi from "@/views/assembly/api/OpSchemaApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { GetDataSourceListVo } from "@/views/assembly/api/DataSourceApi";
@@ -26,8 +26,8 @@ export default {
   /**
    * 输出方案列表管理
    */
-  useOutSchemaList() {
-    const listForm = ref<GetOutSchemaListDto>({
+  useOpSchemaList() {
+    const listForm = ref<GetOpSchemaListDto>({
       pageNum: 1,
       pageSize: 20,
       name: "",
@@ -35,7 +35,7 @@ export default {
       tableName: "",
     });
 
-    const listData = ref<GetOutSchemaListVo[]>([]);
+    const listData = ref<GetOpSchemaListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -44,7 +44,7 @@ export default {
      */
     const loadList = async (): Promise<void> => {
       listLoading.value = true;
-      const result = await OutSchemaApi.getOutSchemaList(listForm.value);
+      const result = await OpSchemaApi.getOpSchemaList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -73,7 +73,7 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: GetOutSchemaListVo): Promise<void> => {
+    const removeList = async (row: GetOpSchemaListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -85,7 +85,7 @@ export default {
       }
 
       try {
-        await OutSchemaApi.removeOutSchema({ id: row.id });
+        await OpSchemaApi.removeOpSchema({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -100,8 +100,8 @@ export default {
     /**
      * 执行输出方案
      */
-    const executeOutSchema = async (row: GetOutSchemaListVo): Promise<void> => {
-      await OutSchemaApi.executeOutSchema({ id: row.id });
+    const executeOpSchema = async (row: GetOpSchemaListVo): Promise<void> => {
+      await OpSchemaApi.executeOpSchema({ id: row.id });
       ElMessage.success("执行成功");
       await loadList();
     };
@@ -114,18 +114,18 @@ export default {
       loadList,
       resetList,
       removeList,
-      executeOutSchema,
+      executeOpSchema,
     };
   },
 
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  useOutSchemaModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useOpSchemaModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<GetOutSchemaDetailsVo>({
+    const modalForm = reactive<GetOpSchemaDetailsVo>({
       id: "",
       dataSourceId: "",
       typeSchemaId: "",
@@ -183,7 +183,7 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetOutSchemaListVo | null): Promise<void> => {
+    const openModal = async (mode: ModalMode, row: GetOpSchemaListVo | null): Promise<void> => {
       modalMode.value = mode;
 
       //重新拉取数据源、类型映射方案、SCM列表
@@ -226,7 +226,7 @@ export default {
         }
 
         try {
-          const details = await OutSchemaApi.getOutSchemaDetails({ id: row.id });
+          const details = await OpSchemaApi.getOpSchemaDetails({ id: row.id });
           modalForm.id = details.id;
           modalForm.dataSourceId = details.dataSourceId;
           modalForm.typeSchemaId = details.typeSchemaId;
@@ -290,7 +290,7 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: AddOutSchemaDto = {
+          const addDto: AddOpSchemaDto = {
             dataSourceId: modalForm.dataSourceId,
             typeSchemaId: modalForm.typeSchemaId,
             inputScmId: modalForm.inputScmId,
@@ -305,7 +305,7 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          const message = await OutSchemaApi.addOutSchema(addDto);
+          const message = await OpSchemaApi.addOpSchema(addDto);
           ElMessage.success(message);
           modalVisible.value = false;
           resetModal();
@@ -325,7 +325,7 @@ export default {
         }
 
         try {
-          const editDto: EditOutSchemaDto = {
+          const editDto: EditOpSchemaDto = {
             id: modalForm.id,
             dataSourceId: modalForm.dataSourceId,
             typeSchemaId: modalForm.typeSchemaId,
@@ -341,7 +341,7 @@ export default {
             baseOutput: modalForm.baseOutput,
             remark: modalForm.remark,
           };
-          const message = await OutSchemaApi.editOutSchema(editDto);
+          const message = await OpSchemaApi.editOpSchema(editDto);
           ElMessage.success(message);
           modalVisible.value = false;
           resetModal();

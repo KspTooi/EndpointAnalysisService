@@ -338,7 +338,7 @@ import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContex
 import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
 import OutSchemaDesignService from "@/views/assembly/service/OutSchemaDesignSevice";
 import type { GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 import ComIconService from "@/soa/com-series/service/ComIconService";
 
 const { resolveIcon } = ComIconService.useIconService();
@@ -379,7 +379,7 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
 
 const { cdrcCanReturn, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
 
-const schemaInfo = getCdrcQuery() as GetOutSchemaListVo;
+const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 const outputSchemaId = ref(schemaInfo?.id ?? "");
 
 //列表视图模式 poly: 聚合模型, origin: 原始模型

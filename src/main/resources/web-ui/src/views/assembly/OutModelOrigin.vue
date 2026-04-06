@@ -49,12 +49,12 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 //使用CDRC打包上下文
 const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
 
-const schemaInfo = getCdrcQuery() as GetOutSchemaListVo;
+const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 
 const { listData, listLoading } = OutModelOriginService.useOutModelOriginList(schemaInfo, cdrcReturn);
 </script>

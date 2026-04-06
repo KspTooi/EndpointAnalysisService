@@ -303,7 +303,7 @@ import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContex
 import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
 import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
 import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 const DeleteIcon = markRaw(Delete);
 
@@ -338,7 +338,7 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
 
 const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
 
-const schemaInfo = getCdrcQuery() as GetOutSchemaListVo;
+const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 const outputSchemaId = ref(schemaInfo?.id ?? "");
 
 const {

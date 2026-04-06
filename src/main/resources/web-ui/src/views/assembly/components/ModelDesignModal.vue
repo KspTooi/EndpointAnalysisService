@@ -296,7 +296,7 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
 import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
 import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 const DeleteIcon = markRaw(Delete);
 
@@ -331,7 +331,7 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
 const modalVisible = ref(false);
 const activeTab = ref(localStorage.getItem(ACTIVE_TAB_KEY) ?? "poly");
 const outputSchemaId = ref("");
-const outSchemaVo = ref<GetOutSchemaListVo | null>(null);
+const opSchemaVo = ref<GetOpSchemaListVo | null>(null);
 const polyLoaded = ref(false);
 const editingCellKey = ref("");
 
@@ -340,8 +340,8 @@ const emit = defineEmits<{
 }>();
 
 const title = computed(() => {
-  if (outSchemaVo.value) {
-    return `模型设计: ${outSchemaVo.value.name}（${outSchemaVo.value.modelName}）`;
+  if (opSchemaVo.value) {
+    return `模型设计: ${opSchemaVo.value.name}（${opSchemaVo.value.modelName}）`;
   }
   return "模型设计";
 });
@@ -528,8 +528,8 @@ const onClose = (): void => {
 };
 
 defineExpose({
-  openModal: async (row: GetOutSchemaListVo) => {
-    outSchemaVo.value = row;
+  openModal: async (row: GetOpSchemaListVo) => {
+    opSchemaVo.value = row;
     outputSchemaId.value = row.id;
     polyLoaded.value = false;
     clearEditingCell();

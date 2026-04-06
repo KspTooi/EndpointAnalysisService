@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/outModelOrigin")
+@RequestMapping("/rawModel")
 @Tag(name = "代码装配-输出方案原始模型管理", description = "输出方案原始模型管理")
 @Slf4j
 public class RawModelController {

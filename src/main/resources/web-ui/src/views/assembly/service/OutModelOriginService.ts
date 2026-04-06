@@ -3,13 +3,13 @@ import type { GetOutModelOriginListDto, GetOutModelOriginListVo } from "@/views/
 import OutModelOriginApi from "@/views/assembly/api/OutModelOriginApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage } from "element-plus";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 export default {
   /**
    * 输出方案原始模型表列表管理
    */
-  useOutModelOriginList(outputSchema: GetOutSchemaListVo, cdrcReturn: () => void) {
+  useOutModelOriginList(outputSchema: GetOpSchemaListVo, cdrcReturn: () => void) {
     const listForm = ref<GetOutModelOriginListDto>({
       outputSchemaId: null,
     });

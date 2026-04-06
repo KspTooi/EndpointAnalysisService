@@ -42,7 +42,7 @@
           min-width="120"
           show-overflow-tooltip
           :formatter="
-            (row: GetOutSchemaListVo) => {
+            (row: GetOpSchemaListVo) => {
               if (!row.tableName) {
                 return '-';
               }
@@ -67,7 +67,7 @@
               设计
             </el-button>
             <el-button link type="success" size="small" :icon="SimulationIcon"> 模拟 </el-button>
-            <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOutSchema(scope.row)">
+            <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOpSchema(scope.row)">
               执行
             </el-button>
             <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
@@ -305,7 +305,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete, Management, MagicStick, View } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import OutSchemaService from "@/views/assembly/service/OutSchemaService";
+import OpSchemaService from "@/views/assembly/service/OpSchemaService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -313,7 +313,7 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import ComIconService from "@/soa/com-series/service/ComIconService";
-import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
+import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 const { resolveIcon } = ComIconService.useIconService();
 
@@ -325,8 +325,8 @@ const ViewIcon = resolveIcon("view");
 const SimulationIcon = resolveIcon("monitor");
 
 //列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOutSchema } =
-  OutSchemaService.useOutSchemaList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOpSchema } =
+  OpSchemaService.useOpSchemaList();
 
 //使用CDRC打包上下文
 const { cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
@@ -346,7 +346,7 @@ const {
   openModal,
   resetModal,
   submitModal,
-} = OutSchemaService.useOutSchemaModal(modalFormRef, loadList);
+} = OpSchemaService.useOpSchemaModal(modalFormRef, loadList);
 </script>
 
 <style scoped>
