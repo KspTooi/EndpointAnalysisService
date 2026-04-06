@@ -202,19 +202,34 @@ public class RawModelService {
                     po.setOutputSchemaId(null);
                     po.setName(rs.getString("COLUMN_NAME"));
                     po.setDataType(rs.getString("TYPE_NAME"));
+                    po.setLength(null);
+                    po.setRequire(0); //是否必填 0:否 1:是
+                    po.setRemark(rs.getString("REMARKS"));
+                    po.setPk(0); //是否主键 0:否 1:是
+                    po.setSeq(seq++);
 
                     //处理字段长度
                     int columnSize = rs.getInt("COLUMN_SIZE");
-                    
 
-                    po.setLength(columnSize > 0 ? String.valueOf(columnSize) : null);
-                    // IS_NULLABLE: YES 表示可为空, 主键或非空则 require=1
+                    if(columnSize > 0){
+                        po.setLength(columnSize);
+                    }
+
+                    //处理字段必填项
                     String nullable = rs.getString("IS_NULLABLE");
 
+                    if("YES".equalsIgnoreCase(nullable)){
+                        po.setRequire(1);
+                    }
+
+                    //处理字段主键项
                     boolean isPk = pkColumns.contains(po.getName());
-                    po.setRequire((isPk || "NO".equalsIgnoreCase(nullable)) ? 1 : 0);
-                    po.setRemark(rs.getString("REMARKS"));
-                    po.setSeq(seq++);
+
+                    if(isPk){
+                        po.setPk(1);
+                        po.setRequire(1); //主键是必填项
+                    }
+
                     result.add(po);
                 }
             }
