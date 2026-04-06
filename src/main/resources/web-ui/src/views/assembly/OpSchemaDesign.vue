@@ -288,7 +288,15 @@
           <el-input v-model="polyAddForm.dataType" placeholder="请输入数据类型" clearable maxlength="255" show-word-limit />
         </el-form-item>
         <el-form-item label="长度" prop="length">
-          <el-input v-model="polyAddForm.length" placeholder="请输入长度" clearable maxlength="255" show-word-limit />
+          <el-input
+            v-model.number="polyAddForm.length"
+            type="number"
+            placeholder="请输入长度"
+            clearable
+            min="0"
+            max="65535"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item label="必填" prop="require">
           <el-checkbox v-model="polyAddFormRequireChecked" />

@@ -234,6 +234,10 @@ export default {
     const modalRules: FormRules = {
       name: [{ required: true, message: "请输入字段名", trigger: "blur" }],
       dataType: [{ required: true, message: "请输入数据类型", trigger: "blur" }],
+      length: [
+        { required: true, message: "请输入长度", trigger: "blur" },
+        { type: "number", min: 0, max: 65535, message: "长度只能在0-65535之间", trigger: "blur" },
+      ],
       require: [{ required: true, message: "请选择必填", trigger: "change" }],
       policyCrudJson: [{ required: true, message: "请选择可见性策略", trigger: "change" }],
       policyQuery: [{ required: true, message: "请选择查询策略", trigger: "change" }],
