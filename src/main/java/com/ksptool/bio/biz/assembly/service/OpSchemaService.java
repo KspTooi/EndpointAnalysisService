@@ -275,13 +275,18 @@ public class OpSchemaService {
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
+        var iAppendPath = opSchemaPo.getBaseInput().trim();
+        if (iAppendPath.startsWith("/")) {
+            iAppendPath = iAppendPath.substring(1);
+        }
+        var iBpPath = workSpaceInputPath.resolve(iAppendPath);
 
         //先检出输入SCM
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
         
         //使用QBE读取蓝图文件列表
         try {
-            QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
+            QbeBlueprintReader reader = new QbeBlueprintReader(iBpPath.toString());
             List<QbeBlueprint> blueprints = reader.readBlueprint();
 
             //转换为VO
