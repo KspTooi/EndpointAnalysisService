@@ -35,6 +35,7 @@ export default {
     const syncFromOrigin = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
+          closeOnClickModal: false,
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",

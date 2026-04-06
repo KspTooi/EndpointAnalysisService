@@ -62,7 +62,7 @@
               type="primary"
               size="small"
               :icon="ManagementIcon"
-              @click="cdrcRedirect('out-model-poly-manager', scope.row)"
+              @click="cdrcRedirect('out-schema-design', scope.row)"
             >
               设计
             </el-button>
@@ -313,7 +313,7 @@ import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import ComIconService from "@/soa/com-series/service/ComIconService";
-import type { GetOutSchemaListVo } from "./api/OutSchemaApi";
+import type { GetOutSchemaListVo } from "@/views/assembly/api/OutSchemaApi";
 
 const { resolveIcon } = ComIconService.useIconService();
 

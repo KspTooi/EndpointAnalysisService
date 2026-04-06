@@ -49,6 +49,13 @@ export default class GenRouteRegister extends GenricRouteRegister {
       }),
       RouteEntryPo.build({
         biz: "assembly",
+        path: "out-schema-design",
+        name: "out-schema-design",
+        component: () => import("@/views/assembly/OutSchemaDesign.vue"),
+        meta: { breadcrumb: "输出方案设计" },
+      }),
+      RouteEntryPo.build({
+        biz: "assembly",
         path: "out-model-origin-manager",
         name: "out-model-origin-manager",
         component: () => import("@/views/assembly/OutModelOrigin.vue"),
