@@ -45,19 +45,19 @@ import static com.ksptool.entities.Entities.assign;
 
 @Slf4j
 @Service
-public class OutSchemaService {
+public class OpSchemaService {
 
     @Autowired
-    private OutSchemaRepository repository;
+    private OpSchemaRepository repository;
 
     @Autowired
     private DataSourceRepository datasourceRepository;
 
     @Autowired
-    private OutModelOriginService outModelOriginService;
+    private RawModelService rawModelService;
 
     @Autowired
-    private OutModelOriginRepository outModelOriginRepository;
+    private RawModelRepository rawModelRepository;
 
     @Autowired
     private ScmRepository scmRepository;
@@ -75,7 +75,7 @@ public class OutSchemaService {
     private TymSchemaFieldRepository tymsfRepository;
 
     @Autowired
-    private OutModelPolyRepository outModelPolyRepository;
+    private PolyModelRepository polyModelRepository;
 
     /**
      * 查询输出方案列表
@@ -120,7 +120,7 @@ public class OutSchemaService {
                 return "新增成功,但未能从数据源导入原始字段,数据源不存在或无权限访问！";
             }
 
-            var fields = outModelOriginService.getDataSourceTableFields(dataSource, dto.getTableName());
+            var fields = rawModelService.getDataSourceTableFields(dataSource, dto.getTableName());
 
             if (fields == null) {
                 return "新增成功,但未能从数据源导入原始字段,查询数据源表字段失败！";
@@ -137,7 +137,7 @@ public class OutSchemaService {
             }
 
             //批量保存原始字段
-            outModelOriginRepository.saveAll(insertFields);
+            rawModelRepository.saveAll(insertFields);
 
             //更新输出方案字段数量
             insertPo.setFieldCountOrigin(insertFields.size());
@@ -173,13 +173,13 @@ public class OutSchemaService {
             return "未能同步原始字段,数据源不存在或无权限访问！";
         }
 
-        var latestFields = outModelOriginService.getDataSourceTableFields(dataSource, dto.getTableName());
+        var latestFields = rawModelService.getDataSourceTableFields(dataSource, dto.getTableName());
         if (latestFields == null) {
             return "未能同步原始字段,查询数据源表字段失败！";
         }
 
         // 已存在的原始字段，以字段名为 key
-        List<RawModelPo> existingFields = outModelOriginRepository.getOmoByOutputSchemaId(dto.getId());
+        List<RawModelPo> existingFields = rawModelRepository.getOmoByOutputSchemaId(dto.getId());
         Map<String, RawModelPo> existingMap = existingFields.stream()
                 .collect(Collectors.toMap(RawModelPo::getName, f -> f));
 
@@ -193,7 +193,7 @@ public class OutSchemaService {
                 .filter(f -> !latestNames.contains(f.getName()))
                 .collect(Collectors.toList());
         if (!toDelete.isEmpty()) {
-            outModelOriginRepository.deleteAll(toDelete);
+            rawModelRepository.deleteAll(toDelete);
         }
 
         // 新增数据库中不存在的字段，已存在的跳过（保留用户可能已修改的数据）
@@ -208,7 +208,7 @@ public class OutSchemaService {
             toInsert.add(field);
         }
         if (!toInsert.isEmpty()) {
-            outModelOriginRepository.saveAll(toInsert);
+            rawModelRepository.saveAll(toInsert);
         }
 
         // 更新字段数量
@@ -274,7 +274,7 @@ public class OutSchemaService {
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
 
         //查询聚合模型
-        var ompPos = outModelPolyRepository.getByOutputSchemaId(opSchemaPo.getId());
+        var ompPos = polyModelRepository.getByOutputSchemaId(opSchemaPo.getId());
 
         if (ompPos == null || ompPos.isEmpty()) {
             throw new BizException("执行输出方案失败,输出方案下没有聚合模型,请先创建聚合模型.");

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OutModelPolyRepository extends JpaRepository<PolyModelPo, Long> {
+public interface PolyModelRepository extends JpaRepository<PolyModelPo, Long> {
 
     @Query("""
             SELECT u FROM PolyModelPo u

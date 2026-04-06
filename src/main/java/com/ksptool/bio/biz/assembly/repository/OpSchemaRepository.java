@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OutSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
+public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
 
     @Query("""
             SELECT u FROM OpSchemaPo u

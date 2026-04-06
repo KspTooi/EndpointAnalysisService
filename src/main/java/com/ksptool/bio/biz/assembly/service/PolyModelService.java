@@ -24,13 +24,13 @@ import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
 @Service
-public class OutModelPolyService {
+public class PolyModelService {
 
     @Autowired
-    private OutModelPolyRepository repository;
+    private PolyModelRepository repository;
 
     @Autowired
-    private OutModelOriginRepository omoRepository;
+    private RawModelRepository omoRepository;
 
     @Autowired
     private TymSchemaRepository tymSchemaRepository;
@@ -39,7 +39,7 @@ public class OutModelPolyService {
     private TymSchemaFieldRepository tymSfRepository;
 
     @Autowired
-    private OutSchemaRepository outSchemaRepository;
+    private OpSchemaRepository opSchemaRepository;
 
     /**
      * 查询聚合模型列表
@@ -124,7 +124,7 @@ public class OutModelPolyService {
     public void syncFromOriginBySchema(CommonIdDto dto) throws BizException {
 
         //先查询输出方案
-        OpSchemaPo opSchemaPo = outSchemaRepository.findById(dto.getId()).orElseThrow(() -> new BizException("输出方案不存在"));
+        OpSchemaPo opSchemaPo = opSchemaRepository.findById(dto.getId()).orElseThrow(() -> new BizException("输出方案不存在"));
 
         //检查输出方案是否具有类型映射方案
         if (opSchemaPo.getTypeSchemaId() == null) {

@@ -10,7 +10,7 @@ import com.ksptool.bio.biz.assembly.model.rawmodel.dto.EditRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelDetailsVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
-import com.ksptool.bio.biz.assembly.repository.OutModelOriginRepository;
+import com.ksptool.bio.biz.assembly.repository.RawModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +26,10 @@ import static com.ksptool.entities.Entities.assign;
 
 
 @Service
-public class OutModelOriginService {
+public class RawModelService {
 
     @Autowired
-    private OutModelOriginRepository repository;
+    private RawModelRepository repository;
 
 
     /**

@@ -3,7 +3,7 @@ package com.ksptool.bio.biz.assembly.controller;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
-import com.ksptool.bio.biz.assembly.service.OutModelOriginService;
+import com.ksptool.bio.biz.assembly.service.RawModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/outModelOrigin")
 @Tag(name = "代码装配-输出方案原始模型管理", description = "输出方案原始模型管理")
 @Slf4j
-public class OutModelOriginController {
+public class RawModelController {
 
     @Autowired
-    private OutModelOriginService outModelOriginService;
+    private RawModelService rawModelService;
 
     @PostMapping("/getOutModelOriginList")
     @Operation(summary = "查询原始模型列表")
     public PageResult<GetRawModelListVo> getOutModelOriginList(@RequestBody @Valid GetRawModelDto dto) throws Exception {
-        return outModelOriginService.getOutModelOriginList(dto);
+        return rawModelService.getOutModelOriginList(dto);
     }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OutModelOriginRepository extends JpaRepository<RawModelPo, Long> {
+public interface RawModelRepository extends JpaRepository<RawModelPo, Long> {
 
     /**
      * 查询输出方案原始字段
