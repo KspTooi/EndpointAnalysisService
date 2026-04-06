@@ -145,6 +145,10 @@ public class RawModelService {
             throw new BizException("查询数据源表字段失败.");
         }
 
+        //先删除输出方案的原始模型
+        repository.clearRawModelByOutputSchemaId(opSchemaId);
+
+
         //批量组装原始模型
         var rawModels = Any.of(fields).val("outputSchemaId", opSchemaId).asList(RawModelPo.class);
 

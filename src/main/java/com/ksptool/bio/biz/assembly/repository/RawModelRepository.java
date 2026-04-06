@@ -2,6 +2,7 @@ package com.ksptool.bio.biz.assembly.repository;
 
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -38,4 +39,16 @@ public interface RawModelRepository extends JpaRepository<RawModelPo, Long> {
             ORDER BY u.seq ASC
             """)
     List<RawModelPo> getRawModelList(@Param("po") RawModelPo po);
+
+    /**
+     * 清空输出方案原始模型
+     *
+     * @param outputSchemaId 输出方案ID
+     * @return 删除条
+     */
+    @Query("""
+            DELETE FROM RawModelPo u WHERE u.outputSchemaId = :outputSchemaId
+            """)
+    @Modifying
+    void clearRawModelByOutputSchemaId(@Param("outputSchemaId") Long outputSchemaId);
 }
