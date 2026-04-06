@@ -56,14 +56,19 @@
     <StdListAreaTable v-show="listViewModel === 'raw'">
       <el-table v-loading="originListLoading" :data="originListData" stripe border height="100%">
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
-        <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="dataType" label="数据类型" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="length" label="长度" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="require" label="必填" min-width="100" show-overflow-tooltip align="center">
+        <el-table-column prop="name" label="字段名" min-width="100" show-overflow-tooltip />
+        <el-table-column prop="dataType" label="数据类型" min-width="80" show-overflow-tooltip />
+        <el-table-column prop="length" label="长度" min-width="40" show-overflow-tooltip />
+        <el-table-column prop="require" label="必填" min-width="35" show-overflow-tooltip align="center">
           <template #default="scope">
-            <span :style="{ color: scope.row.require === 1 ? '#F56C6C' : '#909399' }">
-              {{ scope.row.require === 1 ? "是" : "否" }}
-            </span>
+            <el-checkbox v-if="scope.row.require === 1" :model-value="true" />
+            <el-checkbox v-else :model-value="false" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="pk" label="主键" min-width="35" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <span v-if="scope.row.pk === 1"><PkIcon style="font-size: 18px" /></span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="注释" min-width="120" show-overflow-tooltip />
@@ -361,6 +366,7 @@ const DeleteIcon = resolveIcon("delete");
 const MagicStickIcon = resolveIcon("magic-stick");
 const CloseIcon = resolveIcon("fontisto:close");
 const AddFieldIcon = resolveIcon("zondicons:add-outline");
+const PkIcon = resolveIcon("fxemoji:key");
 
 const POLICY_CRUD_LABEL_MAP: Record<string, string> = {
   AD: "增",
