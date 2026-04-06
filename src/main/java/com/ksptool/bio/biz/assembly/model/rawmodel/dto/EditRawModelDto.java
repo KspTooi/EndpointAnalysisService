@@ -20,23 +20,23 @@ public class EditRawModelDto {
     @Schema(description = "输出方案ID")
     private Long outputSchemaId;
 
-    @NotBlank(message = "原始字段名不能为空")
-    @Size(max = 255, message = "原始字段名长度不能超过255")
-    @Schema(description = "原始字段名")
+    @NotBlank(message = "字段名不能为空")
+    @Size(max = 255, message = "字段名长度不能超过255")
+    @Schema(description = "字段名")
     private String name;
 
-    @NotBlank(message = "原始数据类型不能为空")
-    @Size(max = 255, message = "原始数据类型长度不能超过255")
-    @Schema(description = "原始数据类型")
-    private String kind;
+    @NotBlank(message = "数据类型不能为空")
+    @Size(max = 255, message = "数据类型长度不能超过255")
+    @Schema(description = "数据类型")
+    private String dataType;
 
-    @Size(max = 255, message = "原始长度不能超过255")
-    @Schema(description = "原始长度")
+    @Size(max = 255, message = "长度不能超过255")
+    @Schema(description = "长度")
     private String length;
 
-    @NotNull(message = "原始必填不能为空")
-    @Range(min = 0, max = 1, message = "原始必填值只能为0或1")
-    @Schema(description = "原始必填 0:否 1:是")
+    @NotNull(message = "必填不能为空")
+    @Range(min = 0, max = 1, message = "必填值只能为0或1")
+    @Schema(description = "必填 0:否 1:是")
     private Integer require;
 
     @NotNull(message = "是否主键不能为空")
@@ -44,12 +44,12 @@ public class EditRawModelDto {
     @Schema(description = "是否主键 0:否 1:是")
     private Integer pk;
 
-    @Size(max = 255, message = "原始备注长度不能超过255")
-    @Schema(description = "原始备注")
+    @Size(max = 255, message = "备注长度不能超过255")
+    @Schema(description = "备注")
     private String remark;
 
-    @NotNull(message = "原始排序不能为空")
-    @Schema(description = "原始排序")
+    @NotNull(message = "排序不能为空")
+    @Schema(description = "排序")
     private Integer seq;
 
 }

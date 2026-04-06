@@ -28,25 +28,25 @@ public class RawModelPo {
     @Column(name = "output_schema_id", nullable = false, comment = "输出方案ID")
     private Long outputSchemaId;
 
-    @Column(name = "name", nullable = false, length = 255, comment = "原始字段名")
+    @Column(name = "name", nullable = false, length = 255, comment = "字段名")
     private String name;
 
-    @Column(name = "kind", nullable = false, length = 255, comment = "原始数据类型")
-    private String kind;
+    @Column(name = "data_type", nullable = false, length = 255, comment = "数据类型")
+    private String dataType;
 
-    @Column(name = "length", length = 255, comment = "原始长度")
+    @Column(name = "length", length = 255, comment = "长度")
     private String length;
 
-    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "原始必填 0:否 1:是")
+    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "必填 0:否 1:是")
     private Integer require;
 
-    @Column(name = "remark", length = 255, comment = "原始备注")
+    @Column(name = "remark", length = 255, comment = "备注")
     private String remark;
 
     @Column(name = "pk", nullable = false, columnDefinition = "TINYINT", comment = "是否主键 0:否 1:是")
     private Integer pk;
 
-    @Column(name = "seq", nullable = false, comment = "原始排序")
+    @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
     @CreatedDate

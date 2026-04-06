@@ -147,7 +147,7 @@ public class RawModelService {
                 while (rs.next()) {
                     RawModelPo po = new RawModelPo();
                     po.setName(rs.getString("COLUMN_NAME"));
-                    po.setKind(rs.getString("TYPE_NAME"));
+                    po.setDataType(rs.getString("TYPE_NAME"));
                     int columnSize = rs.getInt("COLUMN_SIZE");
                     po.setLength(columnSize > 0 ? String.valueOf(columnSize) : null);
                     // IS_NULLABLE: YES 表示可为空, 主键或非空则 require=1

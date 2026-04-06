@@ -14,25 +14,25 @@ public class GetRawModelDetailsVo {
     @Schema(description = "输出方案ID")
     private Long outputSchemaId;
 
-    @Schema(description = "原始字段名")
+    @Schema(description = "字段名")
     private String name;
 
-    @Schema(description = "原始数据类型")
-    private String kind;
+    @Schema(description = "数据类型")
+    private String dataType;
 
-    @Schema(description = "原始长度")
+    @Schema(description = "长度")
     private String length;
 
-    @Schema(description = "原始必填 0:否 1:是")
+    @Schema(description = "必填 0:否 1:是")
     private Integer require;
 
-    @Schema(description = "原始备注")
+    @Schema(description = "备注")
     private String remark;
 
     @Schema(description = "是否主键 0:否 1:是")
     private Integer pk;
 
-    @Schema(description = "原始排序")
+    @Schema(description = "排序")
     private Integer seq;
 
 }

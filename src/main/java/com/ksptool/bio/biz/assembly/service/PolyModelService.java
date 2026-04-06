@@ -162,7 +162,7 @@ public class PolyModelService {
             var targetType = tymsPo.getDefaultType();
 
             for (var tymSfPo : tymSfPos) {
-                if (tymSfPo.getSource().equals(omoPo.getKind())) {
+                if (tymSfPo.getSource().equals(omoPo.getDataType())) {
                     mat = tymSfPo;
                     break;
                 }
@@ -176,9 +176,8 @@ public class PolyModelService {
             //组装聚合模型
             var ompPo = new PolyModelPo();
             ompPo.setOutputSchemaId(opSchemaPo.getId());
-            ompPo.setOutputModelOriginId(omoPo.getId());
             ompPo.setName(omoPo.getName());
-            ompPo.setKind(targetType);
+            ompPo.setDataType(targetType);
             ompPo.setLength(omoPo.getLength());
             ompPo.setRequire(omoPo.getRequire());
             ompPo.setPolicyCrudJson(Set.of("AD", "ED", "DV", "LD", "LV"));

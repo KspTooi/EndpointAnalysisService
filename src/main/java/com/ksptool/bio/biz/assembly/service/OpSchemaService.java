@@ -356,7 +356,7 @@ public class OpSchemaService {
 
             //设置标准名称 omo中是下划线命名,需要转换为大驼峰命名
             pf.setStdName(NamesTool.toPascalCase(ompPo.getName()));
-            pf.setType(ompPo.getKind());
+            pf.setType(ompPo.getDataType());
             pf.setComment(ompPo.getRemark());
 
             //处理必填 0:否 1:是

@@ -30,38 +30,35 @@ public class PolyModelPo {
     @Column(name = "output_schema_id", nullable = false, comment = "输出方案ID")
     private Long outputSchemaId;
 
-    @Column(name = "output_model_origin_id", nullable = false, comment = "原始字段ID")
-    private Long outputModelOriginId;
-
-    @Column(name = "name", nullable = false, length = 255, comment = "聚合字段名")
+    @Column(name = "name", nullable = false, length = 255, comment = "字段名")
     private String name;
 
-    @Column(name = "kind", nullable = false, length = 255, comment = "聚合数据类型")
-    private String kind;
+    @Column(name = "data_type", nullable = false, length = 255, comment = "数据类型")
+    private String dataType;
 
-    @Column(name = "length", length = 255, comment = "聚合长度")
+    @Column(name = "length", length = 255, comment = "长度")
     private String length;
 
-    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "聚合必填 0:否 1:是")
+    @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "必填 0:否 1:是")
     private Integer require;
 
-    @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "聚合可见性策略 AD、ED、DV、LD、LV")
+    @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
     @Convert(converter = SetStringConv.class)
     private Set<String> policyCrudJson;
 
-    @Column(name = "policy_query", nullable = false, columnDefinition = "TINYINT", comment = "聚合查询策略 0:等于 1:模糊")
+    @Column(name = "policy_query", nullable = false, columnDefinition = "TINYINT", comment = "查询策略 0:等于")
     private Integer policyQuery;
 
-    @Column(name = "policy_view", nullable = false, columnDefinition = "TINYINT", comment = "聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
+    @Column(name = "policy_view", nullable = false, columnDefinition = "TINYINT", comment = "显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT")
     private Integer policyView;
 
     @Column(name = "pk", nullable = false, columnDefinition = "TINYINT", comment = "是否主键 0:否 1:是")
     private Integer pk;
 
-    @Column(name = "remark", nullable = false, length = 80, comment = "聚合字段备注")
+    @Column(name = "remark", nullable = false, length = 80, comment = "字段备注")
     private String remark;
 
-    @Column(name = "seq", nullable = false, comment = "聚合排序")
+    @Column(name = "seq", nullable = false, comment = "排序")
     private Integer seq;
 
     @CreatedDate
