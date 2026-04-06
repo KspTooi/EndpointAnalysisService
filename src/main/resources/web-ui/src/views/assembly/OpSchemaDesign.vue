@@ -125,7 +125,11 @@
               size="small"
               @blur="submitCell(scope.row, 'dataType')"
             />
-            <div v-if="!isEditingCell(scope.row.id, 'dataType')" class="editable-cell" @click="activateCell(scope.row.id, 'dataType')">
+            <div
+              v-if="!isEditingCell(scope.row.id, 'dataType')"
+              class="editable-cell"
+              @click="activateCell(scope.row.id, 'dataType')"
+            >
               {{ scope.row.dataType || "-" }}
             </div>
           </template>
@@ -332,7 +336,6 @@ import type { FormInstance } from "element-plus";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
-import PolyModelService from "@/views/assembly/service/PolyModelService";
 import OpSchemaDesignService from "@/views/assembly/service/OpSchemaDesignService";
 import type { GetPolyModelListVo } from "@/views/assembly/api/PolyModelApi";
 import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
@@ -389,7 +392,7 @@ const {
   loadList: loadPolyList,
   removeList: removePolyList,
   syncPolyModelFromOrigin,
-} = PolyModelService.usePolyModelList(outputSchemaId);
+} = OpSchemaDesignService.usePolyModelList(outputSchemaId);
 
 //原始模型列表打包
 const {
@@ -412,7 +415,7 @@ watch(listViewModel, (newVal) => {
 
 const editingCellKey = ref("");
 
-const { submitRow, commitField } = PolyModelService.usePolyModelCellEdit();
+const { submitRow, commitField } = OpSchemaDesignService.usePolyModelCellEdit();
 
 const buildCellKey = (rowId: string, field: string): string => `${rowId}_${field}`;
 
