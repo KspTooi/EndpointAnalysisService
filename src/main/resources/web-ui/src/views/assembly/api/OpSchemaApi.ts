@@ -97,7 +97,7 @@ export interface GetOpBluePrintListVo {
  * 预览蓝图DTO
  */
 export interface PreviewOpBluePrintDto {
-  opSchemaId: number; // 输出方案ID
+  opSchemaId: string; // 输出方案ID
   sha256Hex: string; // 蓝图SHA256
 }
 

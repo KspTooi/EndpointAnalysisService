@@ -66,7 +66,15 @@
             >
               设计
             </el-button>
-            <el-button link type="success" size="small" :icon="SimulationIcon"> 模拟 </el-button>
+            <el-button
+              link
+              type="success"
+              size="small"
+              :icon="SimulationIcon"
+              @click="cdrcRedirect('op-schema-preview', scope.row)"
+            >
+              模拟
+            </el-button>
             <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOpSchema(scope.row)">
               执行
             </el-button>
