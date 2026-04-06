@@ -53,7 +53,6 @@ public class QbeField {
     private boolean edit = true;
     private boolean details = true;
 
-
     //附加字段
     private Map<String, Object> ext;
 

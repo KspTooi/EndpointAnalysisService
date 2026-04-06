@@ -347,7 +347,7 @@ public class OpSchemaService {
             throw new BizException("预览蓝图输出失败: " + e.getMessage());
         }
 
-        qbeVelocityEngine.buildVc(null, null)
+        
 
         return "预览蓝图输出";
     }

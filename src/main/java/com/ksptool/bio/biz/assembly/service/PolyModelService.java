@@ -3,6 +3,8 @@ package com.ksptool.bio.biz.assembly.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeField;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.polymodel.PolyModelPo;
 import com.ksptool.bio.biz.assembly.model.polymodel.dto.AddPolyModelDto;
@@ -40,6 +42,7 @@ public class PolyModelService {
 
     @Autowired
     private OpSchemaRepository opSchemaRepository;
+    
 
     /**
      * 查询聚合模型列表
@@ -191,6 +194,39 @@ public class PolyModelService {
 
         //批量保存聚合模型
         repository.saveAll(polyModelPos);
+    }
+
+
+    /**
+     * 根据输出方案ID查询QBE模型
+     * 
+     * @param opSchemaId 输出方案ID
+     * @return QBE模型
+     * @throws BizException 业务异常
+     */
+    public QbeModel getQbeModelByOpSchemaId(Long opSchemaId) throws BizException {
+
+        //先查询输出方案
+        OpSchemaPo opSchemaPo = opSchemaRepository.findById(opSchemaId).orElseThrow(() -> new BizException("输出方案不存在"));
+
+        //查询输出方案下全部的聚合模型
+        var polyModelPos = repository.getPolyModelByOutputSchemaId(opSchemaPo.getId());
+
+
+        //组装为QBE模型
+        var qbeModel = new QbeModel();
+        qbeModel.setTableName(opSchemaPo.getName());
+
+        var qbeFields = new ArrayList<QbeField>();
+
+        //通过聚合模型生成QBE字段
+        for (var polyModelPo : polyModelPos) {
+            var qbeField = new QbeField();
+            qbeField.setFieldName(polyModelPo.getName());
+            qbeFields.add(qbeField);
+        }
+
+        return qbeModel;
     }
 
 }
