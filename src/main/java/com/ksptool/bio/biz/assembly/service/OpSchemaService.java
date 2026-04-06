@@ -82,6 +82,9 @@ public class OpSchemaService {
     @Autowired
     private PolyModelRepository polyModelRepository;
 
+    @Autowired
+    private PolyModelService polyModelService;
+
     //QBE Velocity引擎实例
     private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
 
@@ -347,9 +350,12 @@ public class OpSchemaService {
             throw new BizException("预览蓝图输出失败: " + e.getMessage());
         }
 
-        
-
-        return "预览蓝图输出";
+        //查询QBE模型
+        var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
+    
+        //渲染蓝图
+        var renderedBlueprint = qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, null);
+        return renderedBlueprint;
     }
 
     /**

@@ -12,7 +12,7 @@ import java.util.Map;
 public class QbeField {
 
     //字段原始名称(qfpon) ex: user_id
-    private String fieldName;
+    private String stdName;
 
     //用于简写字段名称
     private String fstn; //字段标准化名称(fstn) ex: UserId
@@ -28,7 +28,7 @@ public class QbeField {
 
     //字段长度
     @Setter
-    private int length;
+    private Integer length;
 
     //字段注释
     @Setter
@@ -58,12 +58,12 @@ public class QbeField {
 
 
     public void setStdName(String stdName) {
-        if (StringUtils.isBlank(fieldName)) {
+        if (StringUtils.isBlank(stdName)) {
             throw new IllegalArgumentException("字段原始名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(fieldName);
-        this.fieldName = fieldName;
+        StdName stdNameObj = StdName.of(stdName);
+        this.stdName = stdName;
         this.fstn = stdNameObj.getValue();
         this.fbcn = stdNameObj.getValue();
         this.fscn = stdNameObj.toSmallCamelCase();

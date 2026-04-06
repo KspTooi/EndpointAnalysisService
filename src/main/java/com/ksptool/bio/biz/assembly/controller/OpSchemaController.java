@@ -80,7 +80,7 @@ public class OpSchemaController {
     @Operation(summary = "预览蓝图输出")
     @PostMapping("/previewOpBluePrint")
     public Result<String> previewOpBluePrint(@RequestBody @Valid PreviewOpBluePrintDto dto) throws Exception {
-        return Result.success(opSchemaService.previewOpBluePrint(dto.getSha256Hex()));
+        return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(),dto.getSha256Hex()));
     }
 
 

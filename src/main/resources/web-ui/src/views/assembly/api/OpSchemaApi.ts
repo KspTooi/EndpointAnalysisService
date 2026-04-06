@@ -84,6 +84,23 @@ export interface EditOpSchemaDto {
   remark: string; // 备注
 }
 
+/**
+ * 蓝图列表VO
+ */
+export interface GetOpBluePrintListVo {
+  fileName: string; // 蓝图文件名
+  filePath: string; // 蓝图文件路径(相对于基准路径)
+  sha256Hex: string; // 蓝图SHA256
+}
+
+/**
+ * 预览蓝图DTO
+ */
+export interface PreviewOpBluePrintDto {
+  opSchemaId: number; // 输出方案ID
+  sha256Hex: string; // 蓝图SHA256
+}
+
 export default {
   /**
    * 获取输出方案列表
@@ -143,6 +160,28 @@ export default {
     const result = await Http.postEntity<Result<string>>("/opSchema/executeOpSchema", dto);
     if (result.code === 0) {
       return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 查询蓝图文件列表
+   */
+  getOpBluePrintList: async (dto: CommonIdDto): Promise<GetOpBluePrintListVo[]> => {
+    const result = await Http.postEntity<Result<GetOpBluePrintListVo[]>>("/opSchema/getOpBluePrintList", dto);
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 预览蓝图输出
+   */
+  previewOpBluePrint: async (dto: PreviewOpBluePrintDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/previewOpBluePrint", dto);
+    if (result.code === 0) {
+      return result.data;
     }
     throw new Error(result.message);
   },

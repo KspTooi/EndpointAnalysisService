@@ -14,7 +14,7 @@ import java.util.Map;
 public class QbeModel {
 
     //表原始名称(pon) ex: local_user_account
-    private String tableName;
+    private String stdName;
 
     //用于简写表名称
     private String stn; //表标准化名称(stn) ex: LocalUserAccount
@@ -39,14 +39,14 @@ public class QbeModel {
     @Setter
     private int seq;
 
-    public void setTableName(String tableName) {
+    public void setStdName(String stdName) {
 
-        if (StringUtils.isBlank(tableName)) {
-            throw new IllegalArgumentException("表原始名称不能为空!");
+        if (StringUtils.isBlank(stdName)) {
+            throw new IllegalArgumentException("模型标准化名称不能为空!");
         }
-
-        StdName stdNameObj = StdName.of(tableName);
-        this.tableName = tableName;
+        
+        StdName stdNameObj = StdName.of(stdName);
+        this.stdName = stdName;
         this.stn = stdNameObj.getValue();
         this.bcn = stdNameObj.getValue();
         this.scn = stdNameObj.toSmallCamelCase();

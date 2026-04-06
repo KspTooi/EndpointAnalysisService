@@ -5,6 +5,7 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeField;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.polymodel.PolyModelPo;
 import com.ksptool.bio.biz.assembly.model.polymodel.dto.AddPolyModelDto;
@@ -42,7 +43,7 @@ public class PolyModelService {
 
     @Autowired
     private OpSchemaRepository opSchemaRepository;
-    
+
 
     /**
      * 查询聚合模型列表
@@ -199,7 +200,7 @@ public class PolyModelService {
 
     /**
      * 根据输出方案ID查询QBE模型
-     * 
+     *
      * @param opSchemaId 输出方案ID
      * @return QBE模型
      * @throws BizException 业务异常
@@ -212,20 +213,30 @@ public class PolyModelService {
         //查询输出方案下全部的聚合模型
         var polyModelPos = repository.getPolyModelByOutputSchemaId(opSchemaPo.getId());
 
-
         //组装为QBE模型
         var qbeModel = new QbeModel();
-        qbeModel.setTableName(opSchemaPo.getName());
+        qbeModel.setStdName(StdName.ofSnakeCase(opSchemaPo.getTableName()).toString());
 
         var qbeFields = new ArrayList<QbeField>();
 
         //通过聚合模型生成QBE字段
         for (var polyModelPo : polyModelPos) {
             var qbeField = new QbeField();
-            qbeField.setFieldName(polyModelPo.getName());
+            qbeField.setStdName(polyModelPo.getName());
+            qbeField.setType(polyModelPo.getDataType());
+            qbeField.setLength(polyModelPo.getLength());
+            qbeField.setComment(polyModelPo.getRemark());
+            qbeField.setRequired(polyModelPo.getRequire() == 1);
+            qbeField.setPrimaryKey(polyModelPo.getPk() == 1);
+            qbeField.setSeq(polyModelPo.getSeq());
+            qbeField.setListQuery(polyModelPo.getPolicyCrudJson().contains("LIST_QUERY"));
+            qbeField.setListView(polyModelPo.getPolicyCrudJson().contains("LIST_VIEW"));
+            qbeField.setAdd(polyModelPo.getPolicyCrudJson().contains("ADD"));
+            qbeField.setEdit(polyModelPo.getPolicyCrudJson().contains("EDIT"));
+            qbeField.setDetails(polyModelPo.getPolicyCrudJson().contains("DETAILS"));
             qbeFields.add(qbeField);
         }
-
+        qbeModel.setFields(qbeFields);
         return qbeModel;
     }
 
