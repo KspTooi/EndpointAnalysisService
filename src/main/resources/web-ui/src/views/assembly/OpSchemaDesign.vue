@@ -101,7 +101,7 @@
         </el-table-column>
 
         <!-- 聚合字段名 -->
-        <el-table-column prop="name" label="聚合字段名" min-width="150">
+        <el-table-column prop="name" label="字段名" min-width="150">
           <template #default="scope">
             <el-input
               v-if="isEditingCell(scope.row.id, 'name')"
@@ -116,7 +116,7 @@
         </el-table-column>
 
         <!-- 备注 -->
-        <el-table-column prop="remark" label="备注" min-width="150">
+        <el-table-column prop="remark" label="字段备注" min-width="150">
           <template #default="scope">
             <el-input
               v-if="isEditingCell(scope.row.id, 'remark')"
@@ -195,11 +195,11 @@
               size="small"
               @visible-change="(visible: boolean) => onPolicyCrudVisibleChange(scope.row, visible)"
             >
-              <el-option value="AD" label="新增" />
-              <el-option value="ED" label="编辑" />
-              <el-option value="DV" label="详情" />
-              <el-option value="LD" label="列表查询" />
-              <el-option value="LV" label="列表显示" />
+              <el-option value="ADD" label="新增" />
+              <el-option value="EDIT" label="编辑" />
+              <el-option value="DETAILS" label="详情" />
+              <el-option value="LIST_QUERY" label="列表查询" />
+              <el-option value="LIST_VIEW" label="列表显示" />
             </el-select>
             <div
               v-if="!isEditingCell(scope.row.id, 'policyCrudJson')"
@@ -215,28 +215,6 @@
                 }"
                 >{{ POLICY_CRUD_LABEL_MAP[key] }}</span
               >
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- 查询策略 -->
-        <el-table-column prop="policyQuery" label="查询策略" min-width="110">
-          <template #default="scope">
-            <el-select
-              v-if="isEditingCell(scope.row.id, 'policyQuery')"
-              :model-value="scope.row.policyQuery"
-              size="small"
-              @change="(val: number) => submitField(scope.row, 'policyQuery', val)"
-            >
-              <el-option :value="0" label="等于" />
-              <el-option :value="1" label="模糊" />
-            </el-select>
-            <div
-              v-if="!isEditingCell(scope.row.id, 'policyQuery')"
-              class="editable-cell"
-              @click="activateCell(scope.row.id, 'policyQuery')"
-            >
-              {{ formatPolicyQuery(scope.row.policyQuery) }}
             </div>
           </template>
         </el-table-column>
@@ -265,6 +243,16 @@
             >
               {{ formatPolicyView(scope.row.policyView) }}
             </div>
+          </template>
+        </el-table-column>
+
+        <!-- 主键 -->
+        <el-table-column prop="pk" label="主键" min-width="45" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <div v-if="scope.row.pk === 1" style="display: flex; justify-content: center; align-items: center">
+              <PkIcon style="font-size: 18px" />
+            </div>
+            <span v-else class="text-gray-400">否</span>
           </template>
         </el-table-column>
 
@@ -313,7 +301,7 @@
         <el-form-item label="必填" prop="require">
           <el-checkbox v-model="polyAddFormRequireChecked" />
         </el-form-item>
-        <el-form-item label="可见性策略" prop="policyCrudJson">
+        <el-form-item label="可见策略" prop="policyCrudJson">
           <el-checkbox-group v-model="polyAddForm.policyCrudJson">
             <el-checkbox value="AD" label="增" />
             <el-checkbox value="ED" label="编" />
@@ -323,7 +311,7 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="查询策略" prop="policyQuery">
-          <el-select v-model="polyAddForm.policyQuery">
+          <el-select v-model="polyAddForm.policyQuery" :disabled="true">
             <el-option :value="0" label="等于" />
             <el-option :value="1" label="模糊" />
           </el-select>
@@ -341,6 +329,9 @@
         </el-form-item>
         <el-form-item label="字段备注" prop="remark">
           <el-input v-model="polyAddForm.remark" placeholder="请输入字段备注" clearable maxlength="80" show-word-limit />
+        </el-form-item>
+        <el-form-item label="主键" prop="pk">
+          <el-checkbox :model-value="false" :disabled="true" />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input v-model.number="polyAddForm.seq" placeholder="请输入排序" clearable />
@@ -376,20 +367,20 @@ const AddFieldIcon = resolveIcon("zondicons:add-outline");
 const PkIcon = resolveIcon("fxemoji:key");
 
 const POLICY_CRUD_LABEL_MAP: Record<string, string> = {
-  AD: "增",
-  ED: "编",
-  DV: "详",
-  LD: "查",
-  LV: "列",
+  ADD: "增",
+  EDIT: "编",
+  DETAILS: "详",
+  LIST_QUERY: "查",
+  LIST_VIEW: "列",
 };
 const POLICY_CRUD_COLOR_MAP: Record<string, string> = {
-  AD: "#41b7cc",
-  ED: "#41b7cc",
-  DV: "#41b7cc",
-  LD: "#41b7cc",
-  LV: "#41b7cc",
+  ADD: "#41b7cc",
+  EDIT: "#41b7cc",
+  DETAILS: "#41b7cc",
+  LIST_QUERY: "#41b7cc",
+  LIST_VIEW: "#41b7cc",
 };
-const POLICY_CRUD_ORDER = ["AD", "ED", "DV", "LD", "LV"] as const;
+const POLICY_CRUD_ORDER = ["ADD", "EDIT", "DETAILS", "LIST_QUERY", "LIST_VIEW"] as const;
 const POLICY_QUERY_LABEL_MAP: Record<number, string> = {
   0: "等于",
   1: "模糊",

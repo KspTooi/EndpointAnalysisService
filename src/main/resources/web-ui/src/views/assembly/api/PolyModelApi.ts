@@ -23,6 +23,7 @@ export interface GetPolyModelListVo {
   policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 查询策略 0:等于
   policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+  pk: number; // 是否主键 0:否 1:是
   remark: string; // 字段备注
   seq: number; // 排序
 }
@@ -40,6 +41,7 @@ export interface AddPolyModelDto {
   policyQuery: number; // 查询策略 0:等于
   policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   remark: string; // 字段备注
+  pk: number; // 是否主键 0:否 1:是
   seq: number; // 排序
 }
 
@@ -57,6 +59,7 @@ export interface EditPolyModelDto {
   policyQuery: number; // 查询策略 0:等于
   policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
   remark: string; // 字段备注
+  pk: number; // 是否主键 0:否 1:是
   seq: number; // 排序
 }
 

@@ -159,6 +159,7 @@ export default {
       policyCrudJson: row.policyCrudJson,
       policyQuery: row.policyQuery,
       policyView: row.policyView,
+      pk: row.pk,
       remark: row.remark,
       seq: row.seq,
     });
@@ -221,6 +222,7 @@ export default {
       policyQuery: 0,
       policyView: 0,
       remark: "",
+      pk: 0,
       seq: 0,
     });
 
@@ -235,7 +237,7 @@ export default {
       name: [{ required: true, message: "请输入字段名", trigger: "blur" }],
       dataType: [{ required: true, message: "请输入数据类型", trigger: "blur" }],
       length: [
-        { required: true, message: "请输入长度", trigger: "blur" },
+        { required: false, message: "请输入长度", trigger: "blur" },
         { type: "number", min: 0, max: 65535, message: "长度只能在0-65535之间", trigger: "blur" },
       ],
       require: [{ required: true, message: "请选择必填", trigger: "change" }],
@@ -256,6 +258,7 @@ export default {
       modalForm.policyQuery = 0;
       modalForm.policyView = 0;
       modalForm.remark = "";
+      modalForm.pk = 0;
       modalForm.seq = 0;
       modalVisible.value = true;
     };
