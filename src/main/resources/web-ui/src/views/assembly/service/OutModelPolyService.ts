@@ -19,7 +19,7 @@ export default {
     const loadList = async (): Promise<void> => {
       listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
-      const result = await OutModelPolyApi.getOutModelPolyList(listForm.value);
+      const result = await OutModelPolyApi.getPolyModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -45,7 +45,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.syncFromOriginBySchema({ id: outputSchemaId.value });
+        await OutModelPolyApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
         ElMessage.success("同步成功");
         await loadList();
       } catch (error: any) {
@@ -65,7 +65,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.removeOutModelPoly({ id: row.id });
+        await OutModelPolyApi.removePolyModel({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -108,7 +108,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editOutModelPoly(editDto);
+        await OutModelPolyApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -129,7 +129,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editOutModelPoly(editDto);
+        await OutModelPolyApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         (row as any)[field] = oldValue;

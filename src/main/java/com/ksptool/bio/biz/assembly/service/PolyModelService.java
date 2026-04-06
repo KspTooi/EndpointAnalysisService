@@ -47,11 +47,11 @@ public class PolyModelService {
      * @param dto 查询参数
      * @return 聚合模型列表
      */
-    public PageResult<GetPolyModelListVo> getOutModelPolyList(GetPolyModelListDto dto) {
+    public PageResult<GetPolyModelListVo> getPolyModelList(GetPolyModelListDto dto) {
         PolyModelPo query = new PolyModelPo();
         assign(dto, query);
 
-        List<PolyModelPo> list = repository.getOutModelPolyList(query);
+        List<PolyModelPo> list = repository.getPolyModelList(query);
         if (list.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -66,7 +66,7 @@ public class PolyModelService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addOutModelPoly(AddPolyModelDto dto) {
+    public void addPolyModel(AddPolyModelDto dto) {
         PolyModelPo insertPo = as(dto, PolyModelPo.class);
         repository.save(insertPo);
     }
@@ -78,7 +78,7 @@ public class PolyModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editOutModelPoly(EditPolyModelDto dto) throws BizException {
+    public void editPolyModel(EditPolyModelDto dto) throws BizException {
         PolyModelPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
@@ -93,7 +93,7 @@ public class PolyModelService {
      * @return 聚合模型详情
      * @throws BizException 业务异常
      */
-    public GetPolyModelDetailsVo getOutModelPolyDetails(CommonIdDto dto) throws BizException {
+    public GetPolyModelDetailsVo getPolyModelDetails(CommonIdDto dto) throws BizException {
         PolyModelPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetPolyModelDetailsVo.class);
@@ -106,7 +106,7 @@ public class PolyModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeOutModelPoly(CommonIdDto dto) throws BizException {
+    public void removePolyModel(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
             return;
@@ -121,7 +121,7 @@ public class PolyModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void syncFromOriginBySchema(CommonIdDto dto) throws BizException {
+    public void syncPolyModelFromOriginBySchema(CommonIdDto dto) throws BizException {
 
         //先查询输出方案
         OpSchemaPo opSchemaPo = opSchemaRepository.findById(dto.getId()).orElseThrow(() -> new BizException("输出方案不存在"));
@@ -132,7 +132,7 @@ public class PolyModelService {
         }
 
         //检查输出方案是否具有原始模型
-        if (omoRepository.getOmoByOutputSchemaId(opSchemaPo.getId()).isEmpty()) {
+        if (omoRepository.getRawModelByOutputSchemaId(opSchemaPo.getId()).isEmpty()) {
             throw new BizException("输出方案下没有原始模型");
         }
 
@@ -143,7 +143,7 @@ public class PolyModelService {
         var tymsPo = tymSchemaRepository.findById(tymSid).orElseThrow(() -> new BizException("类型映射方案不存在"));
 
         //查找输出方案下全部的原始模型
-        var omoPos = omoRepository.getOmoByOutputSchemaId(opSchemaPo.getId());
+        var omoPos = omoRepository.getRawModelByOutputSchemaId(opSchemaPo.getId());
 
         //查找输出方案下绑定的全部映射方案
         var tymSfPos = tymSfRepository.getTymSfByTymSid(tymSid);
@@ -152,7 +152,7 @@ public class PolyModelService {
         var ompPos = new ArrayList<PolyModelPo>();
 
         //先清空输出方案下全部的聚合模型
-        repository.clearByOutputSchemaId(opSchemaPo.getId());
+        repository.clearPolyModelByOutputSchemaId(opSchemaPo.getId());
 
         //遍历原始模型
         for (var omoPo : omoPos) {

@@ -22,7 +22,7 @@ public interface RawModelRepository extends JpaRepository<RawModelPo, Long> {
             WHERE u.outputSchemaId = :outputSchemaId
             ORDER BY u.seq ASC
             """)
-    List<RawModelPo> getOmoByOutputSchemaId(Long outputSchemaId);
+    List<RawModelPo> getRawModelByOutputSchemaId(Long outputSchemaId);
 
 
     /**
@@ -37,5 +37,5 @@ public interface RawModelRepository extends JpaRepository<RawModelPo, Long> {
             (:#{#po.outputSchemaId} IS NULL OR u.outputSchemaId  = :#{#po.outputSchemaId} )
             ORDER BY u.seq ASC
             """)
-    List<RawModelPo> getOutModelOriginList(@Param("po") RawModelPo po);
+    List<RawModelPo> getRawModelList(@Param("po") RawModelPo po);
 }

@@ -32,7 +32,7 @@ export default {
      */
     const loadList = async (): Promise<void> => {
       listLoading.value = true;
-      const result = await OutModelOriginApi.getOutModelOriginList(listForm.value);
+      const result = await OutModelOriginApi.getRawModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -68,7 +68,7 @@ export default {
     const loadList = async (): Promise<void> => {
       listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
-      const result = await OutModelPolyApi.getOutModelPolyList(listForm.value);
+      const result = await OutModelPolyApi.getPolyModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -93,7 +93,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.syncFromOriginBySchema({ id: outputSchemaId.value });
+        await OutModelPolyApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
         ElMessage.success("同步成功");
         await loadList();
       } catch (error: any) {
@@ -113,7 +113,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.removeOutModelPoly({ id: row.id });
+        await OutModelPolyApi.removePolyModel({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -156,7 +156,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editOutModelPoly(editDto);
+        await OutModelPolyApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -177,7 +177,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editOutModelPoly(editDto);
+        await OutModelPolyApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         (row as any)[field] = oldValue;
@@ -269,7 +269,7 @@ export default {
       modalLoading.value = true;
 
       try {
-        await OutModelPolyApi.addOutModelPoly(modalForm);
+        await OutModelPolyApi.addPolyModel(modalForm);
         ElMessage.success("新增成功");
         modalVisible.value = false;
         await reloadCallback();

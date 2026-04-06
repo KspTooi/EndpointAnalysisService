@@ -24,10 +24,10 @@ public class RawModelController {
     @Autowired
     private RawModelService rawModelService;
 
-    @PostMapping("/getOutModelOriginList")
+    @PostMapping("/getRawModelList")
     @Operation(summary = "查询原始模型列表")
-    public PageResult<GetRawModelListVo> getOutModelOriginList(@RequestBody @Valid GetRawModelDto dto) throws Exception {
-        return rawModelService.getOutModelOriginList(dto);
+    public PageResult<GetRawModelListVo> getRawModelList(@RequestBody @Valid GetRawModelDto dto) throws Exception {
+        return rawModelService.getRawModelList(dto);
     }
 
 }

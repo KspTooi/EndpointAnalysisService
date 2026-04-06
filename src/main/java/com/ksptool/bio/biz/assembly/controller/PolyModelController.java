@@ -29,30 +29,30 @@ public class PolyModelController {
     @Autowired
     private PolyModelService polyModelService;
 
-    @PostMapping("/getOutModelPolyList")
+    @PostMapping("/getPolyModelList")
     @Operation(summary = "查询聚合模型列表")
-    public PageResult<GetPolyModelListVo> getOutModelPolyList(@RequestBody @Valid GetPolyModelListDto dto) throws Exception {
-        return polyModelService.getOutModelPolyList(dto);
+    public PageResult<GetPolyModelListVo> getPolyModelList(@RequestBody @Valid GetPolyModelListDto dto) throws Exception {
+        return polyModelService.getPolyModelList(dto);
     }
 
     @Operation(summary = "新增聚合模型")
-    @PostMapping("/addOutModelPoly")
-    public Result<String> addOutModelPoly(@RequestBody @Valid AddPolyModelDto dto) throws Exception {
-        polyModelService.addOutModelPoly(dto);
+    @PostMapping("/addPolyModel")
+    public Result<String> addPolyModel(@RequestBody @Valid AddPolyModelDto dto) throws Exception {
+        polyModelService.addPolyModel(dto);
         return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑聚合模型")
-    @PostMapping("/editOutModelPoly")
-    public Result<String> editOutModelPoly(@RequestBody @Valid EditPolyModelDto dto) throws Exception {
-        polyModelService.editOutModelPoly(dto);
+    @PostMapping("/editPolyModel")
+    public Result<String> editPolyModel(@RequestBody @Valid EditPolyModelDto dto) throws Exception {
+        polyModelService.editPolyModel(dto);
         return Result.success("修改成功");
     }
 
     @Operation(summary = "查询聚合模型详情")
-    @PostMapping("/getOutModelPolyDetails")
-    public Result<GetPolyModelDetailsVo> getOutModelPolyDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetPolyModelDetailsVo details = polyModelService.getOutModelPolyDetails(dto);
+    @PostMapping("/getPolyModelDetails")
+    public Result<GetPolyModelDetailsVo> getPolyModelDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        GetPolyModelDetailsVo details = polyModelService.getPolyModelDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
@@ -60,16 +60,16 @@ public class PolyModelController {
     }
 
     @Operation(summary = "删除聚合模型元素")
-    @PostMapping("/removeOutModelPoly")
-    public Result<String> removeOutModelPoly(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        polyModelService.removeOutModelPoly(dto);
+    @PostMapping("/removePolyModel")
+    public Result<String> removePolyModel(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        polyModelService.removePolyModel(dto);
         return Result.success("操作成功");
     }
 
     @Operation(summary = "从原始模型同步聚合模型(输出方案ID)")
-    @PostMapping("/syncFromOriginBySchema")
-    public Result<String> syncFromOrigin(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        polyModelService.syncFromOriginBySchema(dto);
+    @PostMapping("/syncPolyModelFromOriginBySchema")
+    public Result<String> syncPolyModelFromOriginBySchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        polyModelService.syncPolyModelFromOriginBySchema(dto);
         return Result.success("同步成功");
     }
 

@@ -83,11 +83,11 @@ public class OpSchemaService {
      * @param dto 查询参数
      * @return 输出方案列表
      */
-    public PageResult<GetOpSchemaListVo> getOutSchemaList(GetOpSchemaListDto dto) {
+    public PageResult<GetOpSchemaListVo> getOpSchemaList(GetOpSchemaListDto dto) {
         OpSchemaPo query = new OpSchemaPo();
         assign(dto, query);
 
-        Page<OpSchemaPo> page = repository.getOutSchemaList(query, dto.pageRequest());
+        Page<OpSchemaPo> page = repository.getOpSchemaList(query, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -102,7 +102,7 @@ public class OpSchemaService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public String addOutSchema(AddOpSchemaDto dto) {
+    public String addOpSchema(AddOpSchemaDto dto) {
         OpSchemaPo insertPo = as(dto, OpSchemaPo.class);
         insertPo.setFieldCountOrigin(0);
         insertPo.setFieldCountPoly(0);
@@ -156,7 +156,7 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public String editOutSchema(EditOpSchemaDto dto) throws BizException {
+    public String editOpSchema(EditOpSchemaDto dto) throws BizException {
         OpSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
@@ -179,7 +179,7 @@ public class OpSchemaService {
         }
 
         // 已存在的原始字段，以字段名为 key
-        List<RawModelPo> existingFields = rawModelRepository.getOmoByOutputSchemaId(dto.getId());
+        List<RawModelPo> existingFields = rawModelRepository.getRawModelByOutputSchemaId(dto.getId());
         Map<String, RawModelPo> existingMap = existingFields.stream()
                 .collect(Collectors.toMap(RawModelPo::getName, f -> f));
 
@@ -226,7 +226,7 @@ public class OpSchemaService {
      * @return 输出方案详情
      * @throws BizException 业务异常
      */
-    public GetOpSchemaDetailsVo getOutSchemaDetails(CommonIdDto dto) throws BizException {
+    public GetOpSchemaDetailsVo getOpSchemaDetails(CommonIdDto dto) throws BizException {
         OpSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetOpSchemaDetailsVo.class);
@@ -239,7 +239,7 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeOutSchema(CommonIdDto dto) throws BizException {
+    public void removeOpSchema(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
             return;
@@ -253,7 +253,7 @@ public class OpSchemaService {
      * @param dto 预览参数
      * @throws BizException 业务异常
      */
-    public void previewOutSchemaParams(CommonIdDto dto) throws BizException {
+    public void previewOpSchemaParams(CommonIdDto dto) throws BizException {
         OpSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("预览方案参数失败,数据不存在或无权限访问."));
 
@@ -267,14 +267,14 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void executeOutSchema(CommonIdDto dto) throws BizException {
+    public void executeOpSchema(CommonIdDto dto) throws BizException {
 
         //查询输出方案
         OpSchemaPo opSchemaPo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
 
         //查询聚合模型
-        var ompPos = polyModelRepository.getByOutputSchemaId(opSchemaPo.getId());
+        var ompPos = polyModelRepository.getPolyModelByOutputSchemaId(opSchemaPo.getId());
 
         if (ompPos == null || ompPos.isEmpty()) {
             throw new BizException("执行输出方案失败,输出方案下没有聚合模型,请先创建聚合模型.");

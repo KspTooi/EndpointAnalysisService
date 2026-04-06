@@ -31,28 +31,28 @@ public class OpSchemaController {
 
     @PostMapping("/getOpSchemaList")
     @Operation(summary = "查询输出方案列表")
-    public PageResult<GetOpSchemaListVo> getOutSchemaList(@RequestBody @Valid GetOpSchemaListDto dto) throws Exception {
-        return opSchemaService.getOutSchemaList(dto);
+    public PageResult<GetOpSchemaListVo> getOpSchemaList(@RequestBody @Valid GetOpSchemaListDto dto) throws Exception {
+        return opSchemaService.getOpSchemaList(dto);
     }
 
     @Operation(summary = "新增输出方案")
-    @PostMapping("/addOutSchema")
-    public Result<String> addOutSchema(@RequestBody @Valid AddOpSchemaDto dto) throws Exception {
-        var message = opSchemaService.addOutSchema(dto);
+    @PostMapping("/addOpSchema")
+    public Result<String> addOpSchema(@RequestBody @Valid AddOpSchemaDto dto) throws Exception {
+        var message = opSchemaService.addOpSchema(dto);
         return Result.success(message, null);
     }
 
     @Operation(summary = "编辑输出方案")
-    @PostMapping("/editOutSchema")
-    public Result<String> editOutSchema(@RequestBody @Valid EditOpSchemaDto dto) throws Exception {
-        var message = opSchemaService.editOutSchema(dto);
+    @PostMapping("/editOpSchema")
+    public Result<String> editOpSchema(@RequestBody @Valid EditOpSchemaDto dto) throws Exception {
+        var message = opSchemaService.editOpSchema(dto);
         return Result.success(message, null);
     }
 
     @Operation(summary = "查询输出方案详情")
-    @PostMapping("/getOutSchemaDetails")
-    public Result<GetOpSchemaDetailsVo> getOutSchemaDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetOpSchemaDetailsVo details = opSchemaService.getOutSchemaDetails(dto);
+    @PostMapping("/getOpSchemaDetails")
+    public Result<GetOpSchemaDetailsVo> getOpSchemaDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        GetOpSchemaDetailsVo details = opSchemaService.getOpSchemaDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
@@ -60,29 +60,29 @@ public class OpSchemaController {
     }
 
     @Operation(summary = "删除输出方案")
-    @PostMapping("/removeOutSchema")
-    public Result<String> removeOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        opSchemaService.removeOutSchema(dto);
+    @PostMapping("/removeOpSchema")
+    public Result<String> removeOpSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        opSchemaService.removeOpSchema(dto);
         return Result.success("操作成功");
     }
 
     @Operation(summary = "预览方案参数")
-    @PostMapping("/previewOutSchemaParams")
-    public Result<String> sortOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        opSchemaService.previewOutSchemaParams(dto);
+    @PostMapping("/previewOpSchemaParams")
+    public Result<String> previewOpSchemaParams(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        opSchemaService.previewOpSchemaParams(dto);
         return Result.success("操作成功");
     }
 
     @Operation(summary = "执行输出方案")
-    @PostMapping("/executeOutSchema")
-    public Result<String> executeOutSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+    @PostMapping("/executeOpSchema")
+    public Result<String> executeOpSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
         // 不支持批处理，因为执行输出方案是单个执行的
         if (dto.isBatch()) {
             return Result.error("不支持批处理");
         }
 
-        opSchemaService.executeOutSchema(dto);
+        opSchemaService.executeOpSchema(dto);
         return Result.success("操作成功");
     }
 }

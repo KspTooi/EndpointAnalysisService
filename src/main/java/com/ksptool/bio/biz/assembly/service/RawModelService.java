@@ -38,11 +38,11 @@ public class RawModelService {
      * @param dto 查询参数
      * @return 原始模型列表
      */
-    public PageResult<GetRawModelListVo> getOutModelOriginList(GetRawModelDto dto) {
+    public PageResult<GetRawModelListVo> getRawModelList(GetRawModelDto dto) {
         RawModelPo query = new RawModelPo();
         assign(dto, query);
 
-        List<RawModelPo> list = repository.getOutModelOriginList(query);
+        List<RawModelPo> list = repository.getRawModelList(query);
         if (list.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -57,7 +57,7 @@ public class RawModelService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addOutModelOrigin(AddRawModelDto dto) {
+    public void addRawModel(AddRawModelDto dto) {
         RawModelPo insertPo = as(dto, RawModelPo.class);
         repository.save(insertPo);
     }
@@ -69,7 +69,7 @@ public class RawModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editOutModelOrigin(EditRawModelDto dto) throws BizException {
+    public void editRawModel(EditRawModelDto dto) throws BizException {
         RawModelPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
@@ -84,7 +84,7 @@ public class RawModelService {
      * @return 原始模型详情
      * @throws BizException 业务异常
      */
-    public GetRawModelDetailsVo getOutModelOriginDetails(CommonIdDto dto) throws BizException {
+    public GetRawModelDetailsVo getRawModelDetails(CommonIdDto dto) throws BizException {
         RawModelPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetRawModelDetailsVo.class);
@@ -97,7 +97,7 @@ public class RawModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeOutModelOrigin(CommonIdDto dto) throws BizException {
+    public void removeRawModel(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
             return;

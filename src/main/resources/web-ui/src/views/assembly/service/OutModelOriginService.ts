@@ -23,7 +23,7 @@ export default {
      */
     const loadList = async (): Promise<void> => {
       listLoading.value = true;
-      const result = await OutModelOriginApi.getOutModelOriginList(listForm.value);
+      const result = await OutModelOriginApi.getRawModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;

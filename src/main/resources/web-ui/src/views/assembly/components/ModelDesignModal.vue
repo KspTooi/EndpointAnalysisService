@@ -432,7 +432,7 @@ const submitPolyAdd = async (): Promise<void> => {
   polyAddLoading.value = true;
 
   try {
-    await OutModelPolyApi.addOutModelPoly(polyAddForm);
+    await OutModelPolyApi.addPolyModel(polyAddForm);
     ElMessage.success("新增成功");
     polyAddModalVisible.value = false;
     await loadPolyList();
