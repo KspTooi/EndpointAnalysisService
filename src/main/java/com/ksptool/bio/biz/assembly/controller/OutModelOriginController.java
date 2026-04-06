@@ -1,8 +1,8 @@
 package com.ksptool.bio.biz.assembly.controller;
 
 import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.dto.GetOutModelOriginListDto;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.vo.GetOutModelOriginListVo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
+import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
 import com.ksptool.bio.biz.assembly.service.OutModelOriginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +26,7 @@ public class OutModelOriginController {
 
     @PostMapping("/getOutModelOriginList")
     @Operation(summary = "查询原始模型列表")
-    public PageResult<GetOutModelOriginListVo> getOutModelOriginList(@RequestBody @Valid GetOutModelOriginListDto dto) throws Exception {
+    public PageResult<GetRawModelListVo> getOutModelOriginList(@RequestBody @Valid GetRawModelDto dto) throws Exception {
         return outModelOriginService.getOutModelOriginList(dto);
     }
 

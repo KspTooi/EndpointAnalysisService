@@ -1,6 +1,6 @@
 package com.ksptool.bio.biz.assembly.repository;
 
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.OutModelOriginPo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo, Long> {
+public interface OutModelOriginRepository extends JpaRepository<RawModelPo, Long> {
 
     /**
      * 查询输出方案原始字段
@@ -18,11 +18,11 @@ public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo
      * @return 输出方案原始字段
      */
     @Query("""
-            SELECT u FROM OutModelOriginPo u
+            SELECT u FROM RawModelPo u
             WHERE u.outputSchemaId = :outputSchemaId
             ORDER BY u.seq ASC
             """)
-    List<OutModelOriginPo> getOmoByOutputSchemaId(Long outputSchemaId);
+    List<RawModelPo> getOmoByOutputSchemaId(Long outputSchemaId);
 
 
     /**
@@ -32,10 +32,10 @@ public interface OutModelOriginRepository extends JpaRepository<OutModelOriginPo
      * @return 输出方案原始字段列表
      */
     @Query("""
-            SELECT u FROM OutModelOriginPo u
+            SELECT u FROM RawModelPo u
             WHERE
             (:#{#po.outputSchemaId} IS NULL OR u.outputSchemaId  = :#{#po.outputSchemaId} )
             ORDER BY u.seq ASC
             """)
-    List<OutModelOriginPo> getOutModelOriginList(@Param("po") OutModelOriginPo po);
+    List<RawModelPo> getOutModelOriginList(@Param("po") RawModelPo po);
 }

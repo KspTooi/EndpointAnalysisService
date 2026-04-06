@@ -1,14 +1,14 @@
-package com.ksptool.bio.biz.assembly.model.outmodelpoly.vo;
+package com.ksptool.bio.biz.assembly.model.polymodel.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
-import lombok.Getter;
-import lombok.Setter;
-import io.swagger.v3.oas.annotations.media.Schema;
-
 @Getter
 @Setter
-public class GetOutModelPolyListVo {
+public class GetPolyModelDetailsVo {
 
     @Schema(description = "主键ID")
     private Long id;
@@ -31,7 +31,7 @@ public class GetOutModelPolyListVo {
     @Schema(description = "聚合必填 0:否 1:是")
     private Integer require;
 
-    @Schema(description = "聚合可见性策略 AD、ED、DV、LD、LV")
+    @Schema(description = "聚合可见性策略 ADD、EDIT、LQ、LW")
     private Set<String> policyCrudJson;
 
     @Schema(description = "聚合查询策略 0:等于 1:模糊")
@@ -48,7 +48,6 @@ public class GetOutModelPolyListVo {
 
     @Schema(description = "聚合排序")
     private Integer seq;
-
 
 }
 

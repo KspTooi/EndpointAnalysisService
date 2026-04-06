@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.assembly.model.outmodelorigin;
+package com.ksptool.bio.biz.assembly.model.rawmodel;
 
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
@@ -9,17 +9,16 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "assembly_out_model_origin")
+@Table(name = "assembly_raw_model")
 @EntityListeners(AuditingEntityListener.class)
-public class OutModelOriginPo {
+public class RawModelPo {
 
     @Id
     @SnowflakeIdGenerated

@@ -1,8 +1,8 @@
-package com.ksptool.bio.biz.assembly.model.outschema.vo;
+package com.ksptool.bio.biz.assembly.model.opschema.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter

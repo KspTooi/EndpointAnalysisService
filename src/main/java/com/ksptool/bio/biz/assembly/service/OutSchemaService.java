@@ -12,13 +12,13 @@ import com.ksptool.bio.biz.assembly.common.assemblybp.projector.Projector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.OutModelOriginPo;
-import com.ksptool.bio.biz.assembly.model.outschema.OutSchemaPo;
-import com.ksptool.bio.biz.assembly.model.outschema.dto.AddOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.outschema.dto.EditOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.outschema.dto.GetOutSchemaListDto;
-import com.ksptool.bio.biz.assembly.model.outschema.vo.GetOutSchemaDetailsVo;
-import com.ksptool.bio.biz.assembly.model.outschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOutSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOutSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOutSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaDetailsVo;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
@@ -84,10 +84,10 @@ public class OutSchemaService {
      * @return 输出方案列表
      */
     public PageResult<GetOutSchemaListVo> getOutSchemaList(GetOutSchemaListDto dto) {
-        OutSchemaPo query = new OutSchemaPo();
+        OpSchemaPo query = new OpSchemaPo();
         assign(dto, query);
 
-        Page<OutSchemaPo> page = repository.getOutSchemaList(query, dto.pageRequest());
+        Page<OpSchemaPo> page = repository.getOutSchemaList(query, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
@@ -103,7 +103,7 @@ public class OutSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public String addOutSchema(AddOutSchemaDto dto) {
-        OutSchemaPo insertPo = as(dto, OutSchemaPo.class);
+        OpSchemaPo insertPo = as(dto, OpSchemaPo.class);
         insertPo.setFieldCountOrigin(0);
         insertPo.setFieldCountPoly(0);
 
@@ -126,7 +126,7 @@ public class OutSchemaService {
                 return "新增成功,但未能从数据源导入原始字段,查询数据源表字段失败！";
             }
 
-            var insertFields = new ArrayList<OutModelOriginPo>();
+            var insertFields = new ArrayList<RawModelPo>();
 
             int seq = 1;
             for (var field : fields) {
@@ -157,7 +157,7 @@ public class OutSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public String editOutSchema(EditOutSchemaDto dto) throws BizException {
-        OutSchemaPo updatePo = repository.findById(dto.getId())
+        OpSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
@@ -179,17 +179,17 @@ public class OutSchemaService {
         }
 
         // 已存在的原始字段，以字段名为 key
-        List<OutModelOriginPo> existingFields = outModelOriginRepository.getOmoByOutputSchemaId(dto.getId());
-        Map<String, OutModelOriginPo> existingMap = existingFields.stream()
-                .collect(Collectors.toMap(OutModelOriginPo::getName, f -> f));
+        List<RawModelPo> existingFields = outModelOriginRepository.getOmoByOutputSchemaId(dto.getId());
+        Map<String, RawModelPo> existingMap = existingFields.stream()
+                .collect(Collectors.toMap(RawModelPo::getName, f -> f));
 
         // 最新字段名集合，用于检测数据库中已删除的字段
         java.util.Set<String> latestNames = latestFields.stream()
-                .map(OutModelOriginPo::getName)
+                .map(RawModelPo::getName)
                 .collect(Collectors.toSet());
 
         // 删除数据库中已不存在的字段
-        List<OutModelOriginPo> toDelete = existingFields.stream()
+        List<RawModelPo> toDelete = existingFields.stream()
                 .filter(f -> !latestNames.contains(f.getName()))
                 .collect(Collectors.toList());
         if (!toDelete.isEmpty()) {
@@ -197,8 +197,8 @@ public class OutSchemaService {
         }
 
         // 新增数据库中不存在的字段，已存在的跳过（保留用户可能已修改的数据）
-        List<OutModelOriginPo> toInsert = new ArrayList<>();
-        int maxSeq = existingFields.stream().mapToInt(OutModelOriginPo::getSeq).max().orElse(0);
+        List<RawModelPo> toInsert = new ArrayList<>();
+        int maxSeq = existingFields.stream().mapToInt(RawModelPo::getSeq).max().orElse(0);
         for (var field : latestFields) {
             if (existingMap.containsKey(field.getName())) {
                 continue;
@@ -227,7 +227,7 @@ public class OutSchemaService {
      * @throws BizException 业务异常
      */
     public GetOutSchemaDetailsVo getOutSchemaDetails(CommonIdDto dto) throws BizException {
-        OutSchemaPo po = repository.findById(dto.getId())
+        OpSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
         return as(po, GetOutSchemaDetailsVo.class);
     }
@@ -254,7 +254,7 @@ public class OutSchemaService {
      * @throws BizException 业务异常
      */
     public void previewOutSchemaParams(CommonIdDto dto) throws BizException {
-        OutSchemaPo po = repository.findById(dto.getId())
+        OpSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("预览方案参数失败,数据不存在或无权限访问."));
 
 
@@ -270,36 +270,36 @@ public class OutSchemaService {
     public void executeOutSchema(CommonIdDto dto) throws BizException {
 
         //查询输出方案
-        OutSchemaPo outSchemaPo = repository.findById(dto.getId())
+        OpSchemaPo opSchemaPo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
 
         //查询聚合模型
-        var ompPos = outModelPolyRepository.getByOutputSchemaId(outSchemaPo.getId());
+        var ompPos = outModelPolyRepository.getByOutputSchemaId(opSchemaPo.getId());
 
         if (ompPos == null || ompPos.isEmpty()) {
             throw new BizException("执行输出方案失败,输出方案下没有聚合模型,请先创建聚合模型.");
         }
 
         //查询输入与输出SCM
-        ScmPo inputScmPo = scmRepository.findById(outSchemaPo.getInputScmId())
+        ScmPo inputScmPo = scmRepository.findById(opSchemaPo.getInputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输入SCM不存在或无权限访问."));
 
-        ScmPo outputScmPo = scmRepository.findById(outSchemaPo.getOutputScmId())
+        ScmPo outputScmPo = scmRepository.findById(opSchemaPo.getOutputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输出SCM不存在或无权限访问."));
 
         //查询数据源
-        DataSourcePo dataSourcePo = datasourceRepository.findById(outSchemaPo.getDataSourceId())
+        DataSourcePo dataSourcePo = datasourceRepository.findById(opSchemaPo.getDataSourceId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据源不存在或无权限访问."));
 
         //查询类型映射方案
-        TymSchemaPo tymsPo = tymsRepository.findById(outSchemaPo.getTypeSchemaId())
+        TymSchemaPo tymsPo = tymsRepository.findById(opSchemaPo.getTypeSchemaId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,类型映射方案不存在或无权限访问."));
 
         //查询类型映射方案字段
         List<TymSchemaFieldPo> tymsfPos = tymsfRepository.getTymSfByTymSid(tymsPo.getId());
 
         //准备工作空间
-        var workSpaceName = "gen_workspace_" + outSchemaPo.getName();
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
         var workSpaceOutputPath = workSpacePath.resolve("output");
@@ -318,8 +318,8 @@ public class OutSchemaService {
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
         scmService.pullFromScm(outputScmPo, workSpaceOutputPath.toString());
 
-        var iAppendPath = outSchemaPo.getBaseInput().trim();
-        var oAppendPath = outSchemaPo.getBaseOutput().trim();
+        var iAppendPath = opSchemaPo.getBaseInput().trim();
+        var oAppendPath = opSchemaPo.getBaseOutput().trim();
 
         //绝对路径转换为相对路径
         if (iAppendPath.startsWith("/")) {
@@ -417,13 +417,13 @@ public class OutSchemaService {
         factory.setOutputBasePath(oPrjPath.toString());
 
         //选择要收集的表
-        factory.selectTables(outSchemaPo.getTableName());
+        factory.selectTables(opSchemaPo.getTableName());
 
         //需移除的表前缀
-        factory.removeTablePrefixes(outSchemaPo.getRemoveTablePrefix());
+        factory.removeTablePrefixes(opSchemaPo.getRemoveTablePrefix());
         factory.setOverwriteEnabled(true);
 
-        factory.putGlobalVar("modelName", outSchemaPo.getModelName());
+        factory.putGlobalVar("modelName", opSchemaPo.getModelName());
 
         //执行AssemblyBlueprint流水线
         factory.execute();

@@ -3,20 +3,21 @@ package com.ksptool.bio.biz.assembly.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
-
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.ksptool.bio.biz.assembly.model.polymodel.dto.AddPolyModelDto;
+import com.ksptool.bio.biz.assembly.model.polymodel.dto.EditPolyModelDto;
+import com.ksptool.bio.biz.assembly.model.polymodel.dto.GetPolyModelListDto;
+import com.ksptool.bio.biz.assembly.model.polymodel.vo.GetPolyModelDetailsVo;
+import com.ksptool.bio.biz.assembly.model.polymodel.vo.GetPolyModelListVo;
+import com.ksptool.bio.biz.assembly.service.OutModelPolyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-
-import com.ksptool.bio.biz.assembly.service.OutModelPolyService;
-import com.ksptool.bio.biz.assembly.model.outmodelpoly.dto.AddOutModelPolyDto;
-import com.ksptool.bio.biz.assembly.model.outmodelpoly.dto.EditOutModelPolyDto;
-import com.ksptool.bio.biz.assembly.model.outmodelpoly.dto.GetOutModelPolyListDto;
-import com.ksptool.bio.biz.assembly.model.outmodelpoly.vo.GetOutModelPolyListVo;
-import com.ksptool.bio.biz.assembly.model.outmodelpoly.vo.GetOutModelPolyDetailsVo;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -30,28 +31,28 @@ public class OutModelPolyController {
 
     @PostMapping("/getOutModelPolyList")
     @Operation(summary = "查询聚合模型列表")
-    public PageResult<GetOutModelPolyListVo> getOutModelPolyList(@RequestBody @Valid GetOutModelPolyListDto dto) throws Exception {
+    public PageResult<GetPolyModelListVo> getOutModelPolyList(@RequestBody @Valid GetPolyModelListDto dto) throws Exception {
         return outModelPolyService.getOutModelPolyList(dto);
     }
 
     @Operation(summary = "新增聚合模型")
     @PostMapping("/addOutModelPoly")
-    public Result<String> addOutModelPoly(@RequestBody @Valid AddOutModelPolyDto dto) throws Exception {
+    public Result<String> addOutModelPoly(@RequestBody @Valid AddPolyModelDto dto) throws Exception {
         outModelPolyService.addOutModelPoly(dto);
         return Result.success("新增成功");
     }
 
     @Operation(summary = "编辑聚合模型")
     @PostMapping("/editOutModelPoly")
-    public Result<String> editOutModelPoly(@RequestBody @Valid EditOutModelPolyDto dto) throws Exception {
+    public Result<String> editOutModelPoly(@RequestBody @Valid EditPolyModelDto dto) throws Exception {
         outModelPolyService.editOutModelPoly(dto);
         return Result.success("修改成功");
     }
 
     @Operation(summary = "查询聚合模型详情")
     @PostMapping("/getOutModelPolyDetails")
-    public Result<GetOutModelPolyDetailsVo> getOutModelPolyDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetOutModelPolyDetailsVo details = outModelPolyService.getOutModelPolyDetails(dto);
+    public Result<GetPolyModelDetailsVo> getOutModelPolyDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        GetPolyModelDetailsVo details = outModelPolyService.getOutModelPolyDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }

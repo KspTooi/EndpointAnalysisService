@@ -1,18 +1,18 @@
 package com.ksptool.bio.biz.assembly.repository;
 
-import com.ksptool.bio.biz.assembly.model.outschema.OutSchemaPo;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OutSchemaRepository extends JpaRepository<OutSchemaPo, Long> {
+public interface OutSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
 
     @Query("""
-            SELECT u FROM OutSchemaPo u
+            SELECT u FROM OpSchemaPo u
             WHERE
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.dataSourceId} IS NULL OR u.dataSourceId  = :#{#po.dataSourceId} )
@@ -36,5 +36,5 @@ public interface OutSchemaRepository extends JpaRepository<OutSchemaPo, Long> {
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
             ORDER BY u.updateTime DESC
             """)
-    Page<OutSchemaPo> getOutSchemaList(@Param("po") OutSchemaPo po, Pageable pageable);
+    Page<OpSchemaPo> getOutSchemaList(@Param("po") OpSchemaPo po, Pageable pageable);
 }

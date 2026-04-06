@@ -1,20 +1,16 @@
-package com.ksptool.bio.biz.assembly.model.outmodelorigin.dto;
+package com.ksptool.bio.biz.assembly.model.rawmodel.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class EditOutModelOriginDto {
-
-    @NotNull(message = "主键ID不能为空")
-    @Schema(description = "主键ID")
-    private Long id;
+public class AddRawModelDto {
 
     @NotNull(message = "输出方案ID不能为空")
     @Schema(description = "输出方案ID")

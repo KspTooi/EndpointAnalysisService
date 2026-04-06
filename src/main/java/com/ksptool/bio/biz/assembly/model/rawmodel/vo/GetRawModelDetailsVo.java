@@ -1,12 +1,12 @@
-package com.ksptool.bio.biz.assembly.model.outmodelorigin.vo;
+package com.ksptool.bio.biz.assembly.model.rawmodel.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter
-public class GetOutModelOriginDetailsVo {
+public class GetRawModelDetailsVo {
 
     @Schema(description = "主键ID")
     private Long id;

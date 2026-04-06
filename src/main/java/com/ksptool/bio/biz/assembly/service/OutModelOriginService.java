@@ -1,14 +1,19 @@
 package com.ksptool.bio.biz.assembly.service;
 
-import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.exception.BizException;
-
-import static com.ksptool.entities.Entities.as;
-import static com.ksptool.entities.Entities.assign;
-
+import com.ksptool.assembly.entity.web.CommonIdDto;
+import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.dto.AddRawModelDto;
+import com.ksptool.bio.biz.assembly.model.rawmodel.dto.EditRawModelDto;
+import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
+import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelDetailsVo;
+import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
+import com.ksptool.bio.biz.assembly.repository.OutModelOriginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,15 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
-import com.ksptool.bio.biz.assembly.repository.OutModelOriginRepository;
-import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.OutModelOriginPo;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.vo.GetOutModelOriginListVo;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.dto.GetOutModelOriginListDto;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.vo.GetOutModelOriginDetailsVo;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.dto.EditOutModelOriginDto;
-import com.ksptool.bio.biz.assembly.model.outmodelorigin.dto.AddOutModelOriginDto;
+import static com.ksptool.entities.Entities.as;
+import static com.ksptool.entities.Entities.assign;
 
 
 @Service
@@ -40,16 +38,16 @@ public class OutModelOriginService {
      * @param dto 查询参数
      * @return 原始模型列表
      */
-    public PageResult<GetOutModelOriginListVo> getOutModelOriginList(GetOutModelOriginListDto dto) {
-        OutModelOriginPo query = new OutModelOriginPo();
+    public PageResult<GetRawModelListVo> getOutModelOriginList(GetRawModelDto dto) {
+        RawModelPo query = new RawModelPo();
         assign(dto, query);
 
-        List<OutModelOriginPo> list = repository.getOutModelOriginList(query);
+        List<RawModelPo> list = repository.getOutModelOriginList(query);
         if (list.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<GetOutModelOriginListVo> vos = as(list, GetOutModelOriginListVo.class);
+        List<GetRawModelListVo> vos = as(list, GetRawModelListVo.class);
         return PageResult.success(vos, list.size());
     }
 
@@ -59,8 +57,8 @@ public class OutModelOriginService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addOutModelOrigin(AddOutModelOriginDto dto) {
-        OutModelOriginPo insertPo = as(dto, OutModelOriginPo.class);
+    public void addOutModelOrigin(AddRawModelDto dto) {
+        RawModelPo insertPo = as(dto, RawModelPo.class);
         repository.save(insertPo);
     }
 
@@ -71,8 +69,8 @@ public class OutModelOriginService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void editOutModelOrigin(EditOutModelOriginDto dto) throws BizException {
-        OutModelOriginPo updatePo = repository.findById(dto.getId())
+    public void editOutModelOrigin(EditRawModelDto dto) throws BizException {
+        RawModelPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
@@ -86,10 +84,10 @@ public class OutModelOriginService {
      * @return 原始模型详情
      * @throws BizException 业务异常
      */
-    public GetOutModelOriginDetailsVo getOutModelOriginDetails(CommonIdDto dto) throws BizException {
-        OutModelOriginPo po = repository.findById(dto.getId())
+    public GetRawModelDetailsVo getOutModelOriginDetails(CommonIdDto dto) throws BizException {
+        RawModelPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po, GetOutModelOriginDetailsVo.class);
+        return as(po, GetRawModelDetailsVo.class);
     }
 
     /**
@@ -114,7 +112,7 @@ public class OutModelOriginService {
      * @param dataSource 数据源
      * @return 数据源表字段 获取异常时直接返回null
      */
-    public List<OutModelOriginPo> getDataSourceTableFields(DataSourcePo dataSource, String tableName) {
+    public List<RawModelPo> getDataSourceTableFields(DataSourcePo dataSource, String tableName) {
 
         var drive = dataSource.getDrive();
         var url = dataSource.getUrl();
@@ -132,7 +130,7 @@ public class OutModelOriginService {
             return null;
         }
 
-        List<OutModelOriginPo> result = new ArrayList<>();
+        List<RawModelPo> result = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             DatabaseMetaData metaData = conn.getMetaData();
 
@@ -147,7 +145,7 @@ public class OutModelOriginService {
             try (ResultSet rs = metaData.getColumns(dbSchema, dbSchema, tableName, "%")) {
                 int seq = 1;
                 while (rs.next()) {
-                    OutModelOriginPo po = new OutModelOriginPo();
+                    RawModelPo po = new RawModelPo();
                     po.setName(rs.getString("COLUMN_NAME"));
                     po.setKind(rs.getString("TYPE_NAME"));
                     int columnSize = rs.getInt("COLUMN_SIZE");
