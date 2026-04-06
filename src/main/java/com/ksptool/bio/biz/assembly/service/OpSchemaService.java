@@ -13,11 +13,11 @@ import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjecto
 import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOutSchemaListDto;
-import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaDetailsVo;
-import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
@@ -83,7 +83,7 @@ public class OpSchemaService {
      * @param dto 查询参数
      * @return 输出方案列表
      */
-    public PageResult<GetOutSchemaListVo> getOutSchemaList(GetOutSchemaListDto dto) {
+    public PageResult<GetOpSchemaListVo> getOutSchemaList(GetOpSchemaListDto dto) {
         OpSchemaPo query = new OpSchemaPo();
         assign(dto, query);
 
@@ -92,7 +92,7 @@ public class OpSchemaService {
             return PageResult.successWithEmpty();
         }
 
-        List<GetOutSchemaListVo> vos = as(page.getContent(), GetOutSchemaListVo.class);
+        List<GetOpSchemaListVo> vos = as(page.getContent(), GetOpSchemaListVo.class);
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
@@ -102,7 +102,7 @@ public class OpSchemaService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public String addOutSchema(AddOutSchemaDto dto) {
+    public String addOutSchema(AddOpSchemaDto dto) {
         OpSchemaPo insertPo = as(dto, OpSchemaPo.class);
         insertPo.setFieldCountOrigin(0);
         insertPo.setFieldCountPoly(0);
@@ -156,7 +156,7 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public String editOutSchema(EditOutSchemaDto dto) throws BizException {
+    public String editOutSchema(EditOpSchemaDto dto) throws BizException {
         OpSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
@@ -226,10 +226,10 @@ public class OpSchemaService {
      * @return 输出方案详情
      * @throws BizException 业务异常
      */
-    public GetOutSchemaDetailsVo getOutSchemaDetails(CommonIdDto dto) throws BizException {
+    public GetOpSchemaDetailsVo getOutSchemaDetails(CommonIdDto dto) throws BizException {
         OpSchemaPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po, GetOutSchemaDetailsVo.class);
+        return as(po, GetOpSchemaDetailsVo.class);
     }
 
     /**

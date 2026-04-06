@@ -3,11 +3,11 @@ package com.ksptool.bio.biz.assembly.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOutSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOutSchemaListDto;
-import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaDetailsVo;
-import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOutSchemaListVo;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.service.OpSchemaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/outSchema")
+@RequestMapping("/opSchema")
 @Tag(name = "代码装配-输出方案管理", description = "输出方案管理")
 @Slf4j
 public class OpSchemaController {
@@ -29,30 +29,30 @@ public class OpSchemaController {
     @Autowired
     private OpSchemaService opSchemaService;
 
-    @PostMapping("/getOutSchemaList")
+    @PostMapping("/getOpSchemaList")
     @Operation(summary = "查询输出方案列表")
-    public PageResult<GetOutSchemaListVo> getOutSchemaList(@RequestBody @Valid GetOutSchemaListDto dto) throws Exception {
+    public PageResult<GetOpSchemaListVo> getOutSchemaList(@RequestBody @Valid GetOpSchemaListDto dto) throws Exception {
         return opSchemaService.getOutSchemaList(dto);
     }
 
     @Operation(summary = "新增输出方案")
     @PostMapping("/addOutSchema")
-    public Result<String> addOutSchema(@RequestBody @Valid AddOutSchemaDto dto) throws Exception {
+    public Result<String> addOutSchema(@RequestBody @Valid AddOpSchemaDto dto) throws Exception {
         var message = opSchemaService.addOutSchema(dto);
         return Result.success(message, null);
     }
 
     @Operation(summary = "编辑输出方案")
     @PostMapping("/editOutSchema")
-    public Result<String> editOutSchema(@RequestBody @Valid EditOutSchemaDto dto) throws Exception {
+    public Result<String> editOutSchema(@RequestBody @Valid EditOpSchemaDto dto) throws Exception {
         var message = opSchemaService.editOutSchema(dto);
         return Result.success(message, null);
     }
 
     @Operation(summary = "查询输出方案详情")
     @PostMapping("/getOutSchemaDetails")
-    public Result<GetOutSchemaDetailsVo> getOutSchemaDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        GetOutSchemaDetailsVo details = opSchemaService.getOutSchemaDetails(dto);
+    public Result<GetOpSchemaDetailsVo> getOutSchemaDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        GetOpSchemaDetailsVo details = opSchemaService.getOutSchemaDetails(dto);
         if (details == null) {
             return Result.error("无数据");
         }
