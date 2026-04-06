@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import OutModelOriginService from "@/views/assembly/service/OutModelOriginService";
+import RawModelService from "@/views/assembly/service/RawModelService";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
@@ -56,7 +56,7 @@ const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRou
 
 const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 
-const { listData, listLoading } = OutModelOriginService.useOutModelOriginList(schemaInfo, cdrcReturn);
+const { listData, listLoading } = RawModelService.useRawModelList(schemaInfo, cdrcReturn);
 </script>
 
 <style scoped>

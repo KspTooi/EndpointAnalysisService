@@ -2,16 +2,16 @@ import Http from "@/commons/Http.ts";
 import type PageResult from "@/commons/model/PageResult.ts";
 
 /**
- * 查询列表DTO
+ * 查询原始模型列表 DTO（对应后端 GetRawModelDto）
  */
-export interface GetOutModelOriginListDto {
+export interface GetRawModelDto {
   outputSchemaId: string; // 输出方案ID
 }
 
 /**
- * 列表VO
+ * 原始模型列表 VO（对应后端 GetRawModelListVo）
  */
-export interface GetOutModelOriginListVo {
+export interface GetRawModelListVo {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
   name: string; // 原始字段名
@@ -24,9 +24,9 @@ export interface GetOutModelOriginListVo {
 
 export default {
   /**
-   * 获取输出方案原始模型表列表
+   * 获取输出方案原始模型列表
    */
-  getRawModelList: async (dto: GetOutModelOriginListDto): Promise<PageResult<GetOutModelOriginListVo>> => {
-    return await Http.postEntity<PageResult<GetOutModelOriginListVo>>("/outModelOrigin/getRawModelList", dto);
+  getRawModelList: async (dto: GetRawModelDto): Promise<PageResult<GetRawModelListVo>> => {
+    return await Http.postEntity<PageResult<GetRawModelListVo>>("/outModelOrigin/getRawModelList", dto);
   },
 };

@@ -5,7 +5,7 @@
       <el-tab-pane label="聚合模型" name="poly" lazy>
         <div v-if="activeTab === 'poly'" class="poly-tab-content">
           <StdListAreaAction class="flex gap-2">
-            <el-button type="danger" @click="syncPolyFromOrigin">从原始模型同步</el-button>
+            <el-button type="danger" @click="syncPolyModelFromOrigin">从原始模型同步</el-button>
             <el-button type="success" @click="openPolyAddModal">新增聚合字段</el-button>
           </StdListAreaAction>
 
@@ -293,9 +293,9 @@ import { markRaw } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
-import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
-import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
-import type { AddOutModelPolyDto, GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
+import PolyModelService from "@/views/assembly/service/PolyModelService";
+import PolyModelApi from "@/views/assembly/api/PolyModelApi";
+import type { AddPolyModelDto, GetPolyModelListVo } from "@/views/assembly/api/PolyModelApi";
 import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 const DeleteIcon = markRaw(Delete);
@@ -353,12 +353,12 @@ const {
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
-  syncFromOrigin: syncPolyFromOrigin,
-} = OutModelPolyService.useOutModelPolyList(outputSchemaId);
+  syncPolyModelFromOrigin,
+} = PolyModelService.usePolyModelList(outputSchemaId);
 
 // ==================== 单元格内联编辑 ====================
 
-const { submitRow, commitField } = OutModelPolyService.useCellEdit();
+const { submitRow, commitField } = PolyModelService.usePolyModelCellEdit();
 
 // ==================== 新增模态框 ====================
 
@@ -366,7 +366,7 @@ const polyAddModalVisible = ref(false);
 const polyAddLoading = ref(false);
 const polyAddFormRef = ref<FormInstance>();
 
-const polyAddForm = reactive<AddOutModelPolyDto>({
+const polyAddForm = reactive<AddPolyModelDto>({
   outputSchemaId: "",
   outputModelOriginId: "",
   name: "",
@@ -432,7 +432,7 @@ const submitPolyAdd = async (): Promise<void> => {
   polyAddLoading.value = true;
 
   try {
-    await OutModelPolyApi.addPolyModel(polyAddForm);
+    await PolyModelApi.addPolyModel(polyAddForm);
     ElMessage.success("新增成功");
     polyAddModalVisible.value = false;
     await loadPolyList();
@@ -455,7 +455,7 @@ const clearEditingCell = (): void => {
 
 const isEditingCell = (rowId: string, field: string): boolean => editingCellKey.value === buildCellKey(rowId, field);
 
-const submitCell = async (row: GetOutModelPolyListVo, field: string): Promise<void> => {
+const submitCell = async (row: GetPolyModelListVo, field: string): Promise<void> => {
   const success = await submitRow(row);
   if (!success) {
     return;
@@ -469,7 +469,7 @@ const submitCell = async (row: GetOutModelPolyListVo, field: string): Promise<vo
   }
 };
 
-const submitField = async (row: GetOutModelPolyListVo, field: string, value: any): Promise<void> => {
+const submitField = async (row: GetPolyModelListVo, field: string, value: any): Promise<void> => {
   const success = await commitField(row, field, value);
   if (!success) {
     return;
@@ -477,14 +477,14 @@ const submitField = async (row: GetOutModelPolyListVo, field: string, value: any
   clearEditingCell();
 };
 
-const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean): Promise<void> => {
+const onPolicyCrudVisibleChange = async (row: GetPolyModelListVo, visible: boolean): Promise<void> => {
   if (visible) {
     return;
   }
   await submitCell(row, "policyCrudJson");
 };
 
-const toggleRequire = async (row: GetOutModelPolyListVo): Promise<void> => {
+const toggleRequire = async (row: GetPolyModelListVo): Promise<void> => {
   const nextValue = row.require === 1 ? 0 : 1;
   await submitField(row, "require", nextValue);
 };

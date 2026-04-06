@@ -1,38 +1,27 @@
-import { computed, onMounted, reactive, ref, type Ref } from "vue";
+import { computed, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type {
-  GetOutModelPolyListDto,
-  GetOutModelPolyListVo,
-  EditOutModelPolyDto,
-  AddOutModelPolyDto,
-} from "@/views/assembly/api/OutModelPolyApi";
-import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
+import type { GetPolyModelListDto, GetPolyModelListVo, EditPolyModelDto, AddPolyModelDto } from "@/views/assembly/api/PolyModelApi";
+import PolyModelApi from "@/views/assembly/api/PolyModelApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
-import OutModelOriginApi, {
-  type GetOutModelOriginListDto,
-  type GetOutModelOriginListVo,
-} from "@/views/assembly/api/OutModelOriginApi";
+import RawModelApi, { type GetRawModelDto, type GetRawModelListVo } from "@/views/assembly/api/RawModelApi";
 
 export default {
   /**
    * 原始模型列表管理
    */
-  useOutModelOriginList(outputSchemaId: Ref<string>) {
-    const listForm = ref<GetOutModelOriginListDto>({
+  useRawModelList(outputSchemaId: Ref<string>) {
+    const listForm = ref<GetRawModelDto>({
       outputSchemaId: outputSchemaId.value,
     });
 
-    const listData = ref<GetOutModelOriginListVo[]>([]);
+    const listData = ref<GetRawModelListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
-    /**
-     * 加载列表
-     */
     const loadList = async (): Promise<void> => {
       listLoading.value = true;
-      const result = await OutModelOriginApi.getRawModelList(listForm.value);
+      const result = await RawModelApi.getRawModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -57,18 +46,18 @@ export default {
   /**
    * 聚合模型列表管理
    */
-  useOutModelPolyList(outputSchemaId: Ref<string>) {
-    const listForm = ref<GetOutModelPolyListDto>({
+  usePolyModelList(outputSchemaId: Ref<string>) {
+    const listForm = ref<GetPolyModelListDto>({
       outputSchemaId: outputSchemaId.value,
     });
 
-    const listData = ref<GetOutModelPolyListVo[]>([]);
+    const listData = ref<GetPolyModelListVo[]>([]);
     const listLoading = ref(false);
 
     const loadList = async (): Promise<void> => {
       listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
-      const result = await OutModelPolyApi.getPolyModelList(listForm.value);
+      const result = await PolyModelApi.getPolyModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -81,7 +70,7 @@ export default {
       listLoading.value = false;
     };
 
-    const syncFromOrigin = async (): Promise<void> => {
+    const syncPolyModelFromOrigin = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
           confirmButtonText: "确定",
@@ -93,7 +82,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
+        await PolyModelApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
         ElMessage.success("同步成功");
         await loadList();
       } catch (error: any) {
@@ -101,7 +90,7 @@ export default {
       }
     };
 
-    const removeList = async (row: GetOutModelPolyListVo): Promise<void> => {
+    const removeList = async (row: GetPolyModelListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -113,7 +102,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.removePolyModel({ id: row.id });
+        await PolyModelApi.removePolyModel({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -126,15 +115,15 @@ export default {
       listLoading,
       loadList,
       removeList,
-      syncFromOrigin,
+      syncPolyModelFromOrigin,
     };
   },
 
   /**
-   * 表格行内编辑提交
+   * 聚合模型表格行内编辑
    */
-  useCellEdit() {
-    const buildEditDto = (row: GetOutModelPolyListVo): EditOutModelPolyDto => ({
+  usePolyModelCellEdit() {
+    const buildEditDto = (row: GetPolyModelListVo): EditPolyModelDto => ({
       id: row.id,
       outputSchemaId: row.outputSchemaId,
       outputModelOriginId: row.outputModelOriginId,
@@ -149,14 +138,11 @@ export default {
       seq: row.seq,
     });
 
-    /**
-     * 提交整行当前值到后端（文本类 input blur 时调用）
-     */
-    const submitRow = async (row: GetOutModelPolyListVo): Promise<boolean> => {
+    const submitRow = async (row: GetPolyModelListVo): Promise<boolean> => {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editPolyModel(editDto);
+        await PolyModelApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -164,10 +150,7 @@ export default {
       }
     };
 
-    /**
-     * 提交指定字段新值（checkbox / select change 时调用）
-     */
-    const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any): Promise<boolean> => {
+    const commitField = async (row: GetPolyModelListVo, field: string, newValue: any): Promise<boolean> => {
       const oldValue = (row as any)[field];
       if (JSON.stringify(newValue) === JSON.stringify(oldValue)) {
         return false;
@@ -177,7 +160,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editPolyModel(editDto);
+        await PolyModelApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         (row as any)[field] = oldValue;
@@ -193,9 +176,9 @@ export default {
   },
 
   /**
-   * 新增聚合字段模态框管理
+   * 新增聚合模型模态框
    */
-  usePolyAddModal(
+  usePolyModelAddModal(
     outputSchemaId: Ref<string>,
     modalFormRef: Ref<FormInstance | undefined>,
     reloadCallback: () => Promise<void>
@@ -203,7 +186,7 @@ export default {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
 
-    const modalForm = reactive<AddOutModelPolyDto>({
+    const modalForm = reactive<AddPolyModelDto>({
       outputSchemaId: outputSchemaId.value,
       outputModelOriginId: "",
       name: "",
@@ -269,7 +252,7 @@ export default {
       modalLoading.value = true;
 
       try {
-        await OutModelPolyApi.addPolyModel(modalForm);
+        await PolyModelApi.addPolyModel(modalForm);
         ElMessage.success("新增成功");
         modalVisible.value = false;
         await reloadCallback();

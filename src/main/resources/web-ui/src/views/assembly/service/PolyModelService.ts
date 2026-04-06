@@ -1,25 +1,25 @@
 import { ref, type Ref } from "vue";
-import type { GetOutModelPolyListDto, GetOutModelPolyListVo, EditOutModelPolyDto } from "@/views/assembly/api/OutModelPolyApi";
-import OutModelPolyApi from "@/views/assembly/api/OutModelPolyApi";
+import type { GetPolyModelListDto, GetPolyModelListVo, EditPolyModelDto } from "@/views/assembly/api/PolyModelApi";
+import PolyModelApi from "@/views/assembly/api/PolyModelApi";
 import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
   /**
-   * 按输出方案ID过滤的列表管理
+   * 按输出方案ID过滤的聚合模型列表
    */
-  useOutModelPolyList(outputSchemaId: Ref<string>) {
-    const listForm = ref<GetOutModelPolyListDto>({
+  usePolyModelList(outputSchemaId: Ref<string>) {
+    const listForm = ref<GetPolyModelListDto>({
       outputSchemaId: outputSchemaId.value,
     });
 
-    const listData = ref<GetOutModelPolyListVo[]>([]);
+    const listData = ref<GetPolyModelListVo[]>([]);
     const listLoading = ref(false);
 
     const loadList = async (): Promise<void> => {
       listLoading.value = false;
       listForm.value.outputSchemaId = outputSchemaId.value;
-      const result = await OutModelPolyApi.getPolyModelList(listForm.value);
+      const result = await PolyModelApi.getPolyModelList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -32,7 +32,7 @@ export default {
       listLoading.value = false;
     };
 
-    const syncFromOrigin = async (): Promise<void> => {
+    const syncPolyModelFromOrigin = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
           closeOnClickModal: false,
@@ -45,7 +45,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
+        await PolyModelApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
         ElMessage.success("同步成功");
         await loadList();
       } catch (error: any) {
@@ -53,7 +53,7 @@ export default {
       }
     };
 
-    const removeList = async (row: GetOutModelPolyListVo): Promise<void> => {
+    const removeList = async (row: GetPolyModelListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -65,7 +65,7 @@ export default {
       }
 
       try {
-        await OutModelPolyApi.removePolyModel({ id: row.id });
+        await PolyModelApi.removePolyModel({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -78,15 +78,15 @@ export default {
       listLoading,
       loadList,
       removeList,
-      syncFromOrigin,
+      syncPolyModelFromOrigin,
     };
   },
 
   /**
-   * 表格行内编辑提交
+   * 聚合模型表格行内编辑
    */
-  useCellEdit() {
-    const buildEditDto = (row: GetOutModelPolyListVo): EditOutModelPolyDto => ({
+  usePolyModelCellEdit() {
+    const buildEditDto = (row: GetPolyModelListVo): EditPolyModelDto => ({
       id: row.id,
       outputSchemaId: row.outputSchemaId,
       outputModelOriginId: row.outputModelOriginId,
@@ -101,14 +101,11 @@ export default {
       seq: row.seq,
     });
 
-    /**
-     * 提交整行当前值到后端（文本类 input blur 时调用）
-     */
-    const submitRow = async (row: GetOutModelPolyListVo): Promise<boolean> => {
+    const submitRow = async (row: GetPolyModelListVo): Promise<boolean> => {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editPolyModel(editDto);
+        await PolyModelApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -116,10 +113,7 @@ export default {
       }
     };
 
-    /**
-     * 提交指定字段新值（checkbox / select change 时调用）
-     */
-    const commitField = async (row: GetOutModelPolyListVo, field: string, newValue: any): Promise<boolean> => {
+    const commitField = async (row: GetPolyModelListVo, field: string, newValue: any): Promise<boolean> => {
       const oldValue = (row as any)[field];
       if (JSON.stringify(newValue) === JSON.stringify(oldValue)) {
         return false;
@@ -129,7 +123,7 @@ export default {
       const editDto = buildEditDto(row);
 
       try {
-        await OutModelPolyApi.editPolyModel(editDto);
+        await PolyModelApi.editPolyModel(editDto);
         return true;
       } catch (error: any) {
         (row as any)[field] = oldValue;

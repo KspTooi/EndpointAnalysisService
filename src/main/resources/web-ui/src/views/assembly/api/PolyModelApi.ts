@@ -4,16 +4,16 @@ import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
 import type Result from "@/commons/model/Result.ts";
 
 /**
- * 查询列表DTO
+ * 查询聚合模型列表 DTO（对应后端 GetPolyModelListDto）
  */
-export interface GetOutModelPolyListDto {
+export interface GetPolyModelListDto {
   outputSchemaId?: string; // 输出方案ID
 }
 
 /**
- * 列表VO
+ * 聚合模型列表 VO（对应后端 GetPolyModelListVo）
  */
-export interface GetOutModelPolyListVo {
+export interface GetPolyModelListVo {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
   outputModelOriginId: string; // 原始字段ID
@@ -29,9 +29,9 @@ export interface GetOutModelPolyListVo {
 }
 
 /**
- * 新增DTO
+ * 新增 DTO（对应后端 AddPolyModelDto）
  */
-export interface AddOutModelPolyDto {
+export interface AddPolyModelDto {
   outputSchemaId: string; // 输出方案ID
   outputModelOriginId: string; // 原始字段ID
   name: string; // 聚合字段名
@@ -46,9 +46,9 @@ export interface AddOutModelPolyDto {
 }
 
 /**
- * 编辑DTO
+ * 编辑 DTO（对应后端 EditPolyModelDto）
  */
-export interface EditOutModelPolyDto {
+export interface EditPolyModelDto {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
   outputModelOriginId: string; // 原始字段ID
@@ -67,14 +67,14 @@ export default {
   /**
    * 获取输出方案聚合模型列表
    */
-  getPolyModelList: async (dto: GetOutModelPolyListDto): Promise<PageResult<GetOutModelPolyListVo>> => {
-    return await Http.postEntity<PageResult<GetOutModelPolyListVo>>("/outModelPoly/getPolyModelList", dto);
+  getPolyModelList: async (dto: GetPolyModelListDto): Promise<PageResult<GetPolyModelListVo>> => {
+    return await Http.postEntity<PageResult<GetPolyModelListVo>>("/outModelPoly/getPolyModelList", dto);
   },
 
   /**
    * 新增输出方案聚合模型
    */
-  addPolyModel: async (dto: AddOutModelPolyDto): Promise<string> => {
+  addPolyModel: async (dto: AddPolyModelDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/outModelPoly/addPolyModel", dto);
     if (result.code === 0) {
       return result.message;
@@ -85,7 +85,7 @@ export default {
   /**
    * 编辑输出方案聚合模型
    */
-  editPolyModel: async (dto: EditOutModelPolyDto): Promise<string> => {
+  editPolyModel: async (dto: EditPolyModelDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/outModelPoly/editPolyModel", dto);
     if (result.code === 0) {
       return result.message;

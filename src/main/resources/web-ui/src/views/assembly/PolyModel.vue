@@ -1,9 +1,16 @@
 <template>
   <StdListContainer>
-    <!-- 当前输出方案信息区域 -->
-    <div v-loading="polyListLoading || originListLoading" class="schema-info-bar">
+    <!-- 操作按钮区域 -->
+    <StdListAreaAction class="flex gap-2">
+      <el-button v-if="cdrcCanReturn" type="primary" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
+      <el-button type="danger" @click="syncPolyModelFromOrigin">从原始模型同步</el-button>
+      <el-button type="success" @click="openPolyAddModal">新增聚合字段</el-button>
+    </StdListAreaAction>
+
+    <!-- 原始模型信息区域 -->
+    <div class="schema-info-bar">
       <div class="schema-info-item">
-        <span class="schema-info-label">名称</span>
+        <span class="schema-info-label">输出方案</span>
         <span class="schema-info-value">{{ schemaInfo.name }}</span>
       </div>
       <div class="schema-info-divider" />
@@ -14,58 +21,12 @@
       <div class="schema-info-divider" />
       <div class="schema-info-item">
         <span class="schema-info-label">数据源表名</span>
-        <span class="schema-info-value">{{ schemaInfo.tableName ?? "未配置" }}</span>
-      </div>
-      <div class="schema-info-divider" />
-      <div class="schema-info-item">
-        <span class="schema-info-label">显示原始模型</span>
-        <el-switch
-          v-model="listViewModel"
-          :disabled="polyListLoading || originListLoading"
-          :active-value="'origin'"
-          :inactive-value="'poly'"
-          size="small"
-        />
-      </div>
-      <div class="schema-info-divider" />
-      <div v-show="listViewModel === 'poly'" class="schema-info-item">
-        <span class="schema-info-label">从原始模型生成</span>
-        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncPolyFromOrigin">开始</el-button>
-      </div>
-      <div v-show="listViewModel === 'origin'" class="schema-info-item">
-        <span class="schema-info-label">从数据源生成</span>
-        <el-button type="primary" size="small" :icon="MagicStickIcon">开始</el-button>
+        <span class="schema-info-value">{{ schemaInfo.tableName }}</span>
       </div>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div v-loading="polyListLoading || originListLoading" class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
-      <el-button :disabled="listViewModel === 'origin'" type="success" :icon="AddFieldIcon" link @click="openPolyAddModal()"
-        >添加字段</el-button
-      >
-    </div>
-
-    <!-- 原始模型列表表格区域 -->
-    <StdListAreaTable v-show="listViewModel === 'origin'">
-      <el-table v-loading="originListLoading" :data="originListData" stripe border height="100%">
-        <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
-        <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="length" label="长度" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="require" label="必填" min-width="100" show-overflow-tooltip align="center">
-          <template #default="scope">
-            <span :style="{ color: scope.row.require === 1 ? '#F56C6C' : '#909399' }">
-              {{ scope.row.require === 1 ? "是" : "否" }}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="remark" label="注释" min-width="120" show-overflow-tooltip />
-      </el-table>
-    </StdListAreaTable>
-
-    <!-- 聚合模型列表表格区域 -->
-    <StdListAreaTable v-show="listViewModel === 'poly'">
+    <!-- 列表表格区域 -->
+    <StdListAreaTable>
       <el-table v-loading="polyListLoading" :data="polyListData" row-key="id" stripe border height="100%">
         <!-- 序号 -->
         <el-table-column prop="seq" label="序号" min-width="70" align="center">
@@ -330,23 +291,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import type { FormInstance } from "element-plus";
+import { ref, reactive, computed, onMounted } from "vue";
+import { Delete } from "@element-plus/icons-vue";
+import { markRaw } from "vue";
+import type { FormInstance, FormRules } from "element-plus";
+import { ElMessage } from "element-plus";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
+import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
-import OutModelPolyService from "@/views/assembly/service/OutModelPolyService";
-import OutSchemaDesignService from "@/views/assembly/service/OutSchemaDesignSevice";
-import type { GetOutModelPolyListVo } from "@/views/assembly/api/OutModelPolyApi";
+import PolyModelService from "@/views/assembly/service/PolyModelService";
+import PolyModelApi from "@/views/assembly/api/PolyModelApi";
+import type { AddPolyModelDto, GetPolyModelListVo } from "@/views/assembly/api/PolyModelApi";
 import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
-import ComIconService from "@/soa/com-series/service/ComIconService";
 
-const { resolveIcon } = ComIconService.useIconService();
-
-const DeleteIcon = resolveIcon("delete");
-const MagicStickIcon = resolveIcon("magic-stick");
-const CloseIcon = resolveIcon("fontisto:close");
-const AddFieldIcon = resolveIcon("zondicons:add-outline");
+const DeleteIcon = markRaw(Delete);
 
 const POLICY_CRUD_LABEL_MAP: Record<string, string> = {
   AD: "增",
@@ -377,45 +336,24 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
   6: "LDT",
 };
 
-const { cdrcCanReturn, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
+const { cdrcCanReturn, cdrcReturnName, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
 
 const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 const outputSchemaId = ref(schemaInfo?.id ?? "");
 
-//列表视图模式 poly: 聚合模型, origin: 原始模型
-const listViewModel = ref<"poly" | "origin">("poly");
-
-//聚合模型列表打包
 const {
   listData: polyListData,
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
-  syncFromOrigin: syncPolyFromOrigin,
-} = OutModelPolyService.useOutModelPolyList(outputSchemaId);
-
-//原始模型列表打包
-const {
-  listData: originListData,
-  listLoading: originListLoading,
-  loadList: loadOriginList,
-} = OutSchemaDesignService.useOutModelOriginList(outputSchemaId);
-
-//监听列表视图模式变化
-watch(listViewModel, (newVal) => {
-  if (newVal === "origin") {
-    loadOriginList();
-  }
-  if (newVal === "poly") {
-    loadPolyList();
-  }
-});
+  syncPolyModelFromOrigin,
+} = PolyModelService.usePolyModelList(outputSchemaId);
 
 // ==================== 单元格内联编辑 ====================
 
 const editingCellKey = ref("");
 
-const { submitRow, commitField } = OutModelPolyService.useCellEdit();
+const { submitRow, commitField } = PolyModelService.usePolyModelCellEdit();
 
 const buildCellKey = (rowId: string, field: string): string => `${rowId}_${field}`;
 
@@ -429,7 +367,7 @@ const clearEditingCell = (): void => {
 
 const isEditingCell = (rowId: string, field: string): boolean => editingCellKey.value === buildCellKey(rowId, field);
 
-const submitCell = async (row: GetOutModelPolyListVo, field: string): Promise<void> => {
+const submitCell = async (row: GetPolyModelListVo, field: string): Promise<void> => {
   const success = await submitRow(row);
   if (!success) {
     return;
@@ -443,7 +381,7 @@ const submitCell = async (row: GetOutModelPolyListVo, field: string): Promise<vo
   }
 };
 
-const submitField = async (row: GetOutModelPolyListVo, field: string, value: any): Promise<void> => {
+const submitField = async (row: GetPolyModelListVo, field: string, value: any): Promise<void> => {
   const success = await commitField(row, field, value);
   if (!success) {
     return;
@@ -451,14 +389,14 @@ const submitField = async (row: GetOutModelPolyListVo, field: string, value: any
   clearEditingCell();
 };
 
-const onPolicyCrudVisibleChange = async (row: GetOutModelPolyListVo, visible: boolean): Promise<void> => {
+const onPolicyCrudVisibleChange = async (row: GetPolyModelListVo, visible: boolean): Promise<void> => {
   if (visible) {
     return;
   }
   await submitCell(row, "policyCrudJson");
 };
 
-const toggleRequire = async (row: GetOutModelPolyListVo): Promise<void> => {
+const toggleRequire = async (row: GetPolyModelListVo): Promise<void> => {
   const nextValue = row.require === 1 ? 0 : 1;
   await submitField(row, "require", nextValue);
 };
@@ -468,18 +406,86 @@ const formatPolicyView = (value: number): string => POLICY_VIEW_LABEL_MAP[value]
 
 // ==================== 新增模态框 ====================
 
+const polyAddModalVisible = ref(false);
+const polyAddLoading = ref(false);
 const polyAddFormRef = ref<FormInstance>();
 
-const {
-  modalVisible: polyAddModalVisible,
-  modalLoading: polyAddLoading,
-  modalForm: polyAddForm,
-  modalRequireChecked: polyAddFormRequireChecked,
-  modalRules: polyAddRules,
-  openModal: openPolyAddModal,
-  resetModal: resetPolyAddModal,
-  submitModal: submitPolyAdd,
-} = OutSchemaDesignService.usePolyAddModal(outputSchemaId, polyAddFormRef, loadPolyList);
+const polyAddForm = reactive<AddPolyModelDto>({
+  outputSchemaId: "",
+  outputModelOriginId: "",
+  name: "",
+  kind: "",
+  length: "",
+  require: 0,
+  policyCrudJson: [],
+  policyQuery: 0,
+  policyView: 0,
+  remark: "",
+  seq: 0,
+});
+
+const polyAddFormRequireChecked = computed({
+  get: () => polyAddForm.require === 1,
+  set: (val: boolean) => {
+    polyAddForm.require = val ? 1 : 0;
+  },
+});
+
+const polyAddRules: FormRules = {
+  outputModelOriginId: [{ required: true, message: "请输入原始字段ID", trigger: "blur" }],
+  name: [{ required: true, message: "请输入聚合字段名", trigger: "blur" }],
+  kind: [{ required: true, message: "请输入聚合数据类型", trigger: "blur" }],
+  require: [{ required: true, message: "请选择聚合必填", trigger: "change" }],
+  policyCrudJson: [{ required: true, message: "请选择聚合可见性策略", trigger: "change" }],
+  policyQuery: [{ required: true, message: "请选择聚合查询策略", trigger: "change" }],
+  policyView: [{ required: true, message: "请选择聚合显示策略", trigger: "change" }],
+  remark: [{ required: true, message: "请输入聚合字段备注", trigger: "blur" }],
+  seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
+};
+
+const openPolyAddModal = (): void => {
+  polyAddForm.outputSchemaId = outputSchemaId.value;
+  polyAddForm.outputModelOriginId = "";
+  polyAddForm.name = "";
+  polyAddForm.kind = "";
+  polyAddForm.length = "";
+  polyAddForm.require = 0;
+  polyAddForm.policyCrudJson = [];
+  polyAddForm.policyQuery = 0;
+  polyAddForm.policyView = 0;
+  polyAddForm.remark = "";
+  polyAddForm.seq = 0;
+  polyAddModalVisible.value = true;
+};
+
+const resetPolyAddModal = (): void => {
+  polyAddFormRef.value?.resetFields();
+};
+
+const submitPolyAdd = async (): Promise<void> => {
+  if (!polyAddFormRef.value) {
+    return;
+  }
+
+  try {
+    await polyAddFormRef.value.validate();
+  } catch {
+    return;
+  }
+
+  polyAddLoading.value = true;
+
+  try {
+    await PolyModelApi.addPolyModel(polyAddForm);
+    ElMessage.success("新增成功");
+    polyAddModalVisible.value = false;
+    await loadPolyList();
+  } catch (error: any) {
+    ElMessage.error(error.message);
+  }
+
+  polyAddLoading.value = false;
+};
 
 onMounted(() => {
   loadPolyList();
@@ -487,10 +493,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.std-list-container {
-  padding-top: 0;
-}
-
 .schema-info-bar {
   display: flex;
   align-items: center;
@@ -499,8 +501,9 @@ onMounted(() => {
   background: #fff;
   border-radius: 0;
   border: 1px solid #e4e7ed;
-  border-top: 2px solid var(--el-color-primary);
+  border-left: 4px solid #409eff;
   flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .schema-info-item {
@@ -514,7 +517,6 @@ onMounted(() => {
   font-size: 11px;
   color: #909399;
   letter-spacing: 0.5px;
-  height: 25px;
 }
 
 .schema-info-value {
@@ -545,33 +547,5 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-.action-bar {
-  display: flex;
-  margin-bottom: 8px;
-}
-
-.action-bar :deep(.el-button.is-link) {
-  padding: 8px 16px;
-  border-radius: 0;
-  transition:
-    background-color 0.2s,
-    color 0.2s;
-}
-
-.action-bar :deep(.el-button.is-link:hover) {
-  background-color: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-}
-
-.action-bar :deep(.el-button--success.is-link:hover) {
-  background-color: var(--el-color-success-light-9);
-  color: var(--el-color-success);
-}
-
-.action-bar :deep(.el-button--danger.is-link:hover) {
-  background-color: var(--el-color-danger-light-9);
-  color: var(--el-color-danger);
 }
 </style>

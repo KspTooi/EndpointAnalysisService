@@ -62,7 +62,7 @@
               type="primary"
               size="small"
               :icon="ManagementIcon"
-              @click="cdrcRedirect('out-schema-design', scope.row)"
+              @click="cdrcRedirect('op-schema-design', scope.row)"
             >
               设计
             </el-button>
