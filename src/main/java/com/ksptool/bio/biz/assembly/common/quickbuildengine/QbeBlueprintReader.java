@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,6 +114,7 @@ public class QbeBlueprintReader {
 
         //解析蓝图内容
         blueprint.setTemplateContent(templateContent);
+        blueprint.setSha256Hex(DigestUtils.sha256Hex(templateContent));
         blueprint.setFileName(path.getFileName().toString());
 
         //设置绝对路径和基准路径

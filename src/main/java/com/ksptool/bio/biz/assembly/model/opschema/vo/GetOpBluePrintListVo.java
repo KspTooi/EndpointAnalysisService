@@ -14,4 +14,7 @@ public class GetOpBluePrintListVo {
     @Schema(description = "蓝图文件路径(相对于基准路径)")
     private String filePath;
 
+    @Schema(description = "蓝图SHA256")
+    private String sha256Hex;
+
 }

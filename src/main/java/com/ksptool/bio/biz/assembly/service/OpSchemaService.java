@@ -275,7 +275,7 @@ public class OpSchemaService {
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
-        var iAppendPath = opSchemaPo.getBaseInput().trim();
+        var iAppendPath = opSchemaPo.getBaseInput().trim();  //这是在输出方案中配置的蓝图SCM相对路径
         if (iAppendPath.startsWith("/")) {
             iAppendPath = iAppendPath.substring(1);
         }
