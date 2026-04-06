@@ -28,16 +28,13 @@
         />
       </div>
       <div class="schema-info-divider" />
-      <div class="schema-info-item">
-        <span class="schema-info-label">同步原始模型</span>
-        <el-button
-          :disabled="listViewModel === 'origin'"
-          type="primary"
-          size="small"
-          :icon="MagicStickIcon"
-          @click="syncPolyFromOrigin"
-          >开始</el-button
-        >
+      <div v-show="listViewModel === 'poly'" class="schema-info-item">
+        <span class="schema-info-label">从原始模型生成</span>
+        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncPolyFromOrigin">开始</el-button>
+      </div>
+      <div v-show="listViewModel === 'origin'" class="schema-info-item">
+        <span class="schema-info-label">从数据源生成</span>
+        <el-button type="primary" size="small" :icon="MagicStickIcon">开始</el-button>
       </div>
     </div>
 
