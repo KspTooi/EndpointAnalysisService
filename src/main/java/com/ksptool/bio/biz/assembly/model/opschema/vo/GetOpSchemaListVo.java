@@ -1,13 +1,15 @@
-package com.ksptool.bio.biz.assembly.model.opschema.dto;
+package com.ksptool.bio.biz.assembly.model.opschema.vo;
 
-import com.ksptool.assembly.entity.web.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GetOutSchemaListDto extends PageQuery {
+public class GetOpSchemaListVo {
+
+    @Schema(description = "主键ID")
+    private Long id;
 
     @Schema(description = "输出方案名称")
     private String name;
@@ -17,6 +19,12 @@ public class GetOutSchemaListDto extends PageQuery {
 
     @Schema(description = "数据源表名")
     private String tableName;
+
+    @Schema(description = "字段数(原始)")
+    private Integer fieldCountOrigin;
+
+    @Schema(description = "字段数(聚合)")
+    private Integer fieldCountPoly;
 
 }
 

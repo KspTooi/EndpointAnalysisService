@@ -12,7 +12,11 @@ import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
-public class AddOutSchemaDto implements DtoCustomValidator {
+public class EditOpSchemaDto implements DtoCustomValidator {
+
+    @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID")
+    private Long id;
 
     @Schema(description = "数据源ID")
     private Long dataSourceId;
@@ -69,12 +73,9 @@ public class AddOutSchemaDto implements DtoCustomValidator {
 
     @Override
     public String validate() {
-
-        //未选择数据源的情况下不可以填写表名
         if (dataSourceId == null && StringUtils.isBlank(tableName)) {
             return "未选择数据源时不能填写数据源表名";
         }
-
         return null;
     }
 

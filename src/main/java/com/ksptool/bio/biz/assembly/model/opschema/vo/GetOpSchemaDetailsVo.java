@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetOutSchemaDetailsVo {
+public class GetOpSchemaDetailsVo {
 
     @Schema(description = "主键ID")
     private Long id;
