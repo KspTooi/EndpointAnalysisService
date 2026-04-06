@@ -65,14 +65,14 @@ export default {
    * 获取输出方案聚合模型列表
    */
   getPolyModelList: async (dto: GetPolyModelListDto): Promise<PageResult<GetPolyModelListVo>> => {
-    return await Http.postEntity<PageResult<GetPolyModelListVo>>("/outModelPoly/getPolyModelList", dto);
+    return await Http.postEntity<PageResult<GetPolyModelListVo>>("/polyModel/getPolyModelList", dto);
   },
 
   /**
    * 新增输出方案聚合模型
    */
   addPolyModel: async (dto: AddPolyModelDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outModelPoly/addPolyModel", dto);
+    const result = await Http.postEntity<Result<string>>("/polyModel/addPolyModel", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -83,7 +83,7 @@ export default {
    * 编辑输出方案聚合模型
    */
   editPolyModel: async (dto: EditPolyModelDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outModelPoly/editPolyModel", dto);
+    const result = await Http.postEntity<Result<string>>("/polyModel/editPolyModel", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -94,7 +94,7 @@ export default {
    * 删除输出方案聚合模型
    */
   removePolyModel: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outModelPoly/removePolyModel", dto);
+    const result = await Http.postEntity<Result<string>>("/polyModel/removePolyModel", dto);
     if (result.code === 0) {
       return result.message;
     }
@@ -105,7 +105,7 @@ export default {
    * 从原始模型同步聚合模型（输出方案ID）
    */
   syncPolyModelFromOriginBySchema: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/outModelPoly/syncPolyModelFromOriginBySchema", dto);
+    const result = await Http.postEntity<Result<string>>("/polyModel/syncPolyModelFromOriginBySchema", dto);
     if (result.code === 0) {
       return result.message;
     }

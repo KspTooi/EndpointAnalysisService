@@ -27,6 +27,6 @@ export default {
    * 获取输出方案原始模型列表
    */
   getRawModelList: async (dto: GetRawModelDto): Promise<PageResult<GetRawModelListVo>> => {
-    return await Http.postEntity<PageResult<GetRawModelListVo>>("/outModelOrigin/getRawModelList", dto);
+    return await Http.postEntity<PageResult<GetRawModelListVo>>("/rawModel/getRawModelList", dto);
   },
 };
