@@ -126,9 +126,8 @@ export default {
     const buildEditDto = (row: GetPolyModelListVo): EditPolyModelDto => ({
       id: row.id,
       outputSchemaId: row.outputSchemaId,
-      outputModelOriginId: row.outputModelOriginId,
       name: row.name,
-      kind: row.kind,
+      dataType: row.dataType,
       length: row.length,
       require: row.require,
       policyCrudJson: row.policyCrudJson,
@@ -188,9 +187,8 @@ export default {
 
     const modalForm = reactive<AddPolyModelDto>({
       outputSchemaId: outputSchemaId.value,
-      outputModelOriginId: "",
       name: "",
-      kind: "",
+      dataType: "",
       length: "",
       require: 0,
       policyCrudJson: [],
@@ -208,22 +206,20 @@ export default {
     });
 
     const modalRules: FormRules = {
-      outputModelOriginId: [{ required: true, message: "请输入原始字段ID", trigger: "blur" }],
-      name: [{ required: true, message: "请输入聚合字段名", trigger: "blur" }],
-      kind: [{ required: true, message: "请输入聚合数据类型", trigger: "blur" }],
-      require: [{ required: true, message: "请选择聚合必填", trigger: "change" }],
-      policyCrudJson: [{ required: true, message: "请选择聚合可见性策略", trigger: "change" }],
-      policyQuery: [{ required: true, message: "请选择聚合查询策略", trigger: "change" }],
-      policyView: [{ required: true, message: "请选择聚合显示策略", trigger: "change" }],
-      remark: [{ required: true, message: "请输入聚合字段备注", trigger: "blur" }],
-      seq: [{ required: true, message: "请输入聚合排序", trigger: "blur" }],
+      name: [{ required: true, message: "请输入字段名", trigger: "blur" }],
+      dataType: [{ required: true, message: "请输入数据类型", trigger: "blur" }],
+      require: [{ required: true, message: "请选择必填", trigger: "change" }],
+      policyCrudJson: [{ required: true, message: "请选择可见性策略", trigger: "change" }],
+      policyQuery: [{ required: true, message: "请选择查询策略", trigger: "change" }],
+      policyView: [{ required: true, message: "请选择显示策略", trigger: "change" }],
+      remark: [{ required: true, message: "请输入字段备注", trigger: "blur" }],
+      seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
     };
 
     const openModal = (): void => {
       modalForm.outputSchemaId = outputSchemaId.value;
-      modalForm.outputModelOriginId = "";
       modalForm.name = "";
-      modalForm.kind = "";
+      modalForm.dataType = "";
       modalForm.length = "";
       modalForm.require = 0;
       modalForm.policyCrudJson = [];

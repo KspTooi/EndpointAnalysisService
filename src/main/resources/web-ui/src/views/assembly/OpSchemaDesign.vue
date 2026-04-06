@@ -51,7 +51,7 @@
       <el-table v-loading="originListLoading" :data="originListData" stripe border height="100%">
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="字段名" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="kind" label="数据类型" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="dataType" label="数据类型" min-width="120" show-overflow-tooltip />
         <el-table-column prop="length" label="长度" min-width="100" show-overflow-tooltip />
         <el-table-column prop="require" label="必填" min-width="100" show-overflow-tooltip align="center">
           <template #default="scope">
@@ -117,16 +117,16 @@
         </el-table-column>
 
         <!-- 数据类型 -->
-        <el-table-column prop="kind" label="数据类型" min-width="120">
+        <el-table-column prop="dataType" label="数据类型" min-width="120">
           <template #default="scope">
             <el-input
-              v-if="isEditingCell(scope.row.id, 'kind')"
-              v-model="scope.row.kind"
+              v-if="isEditingCell(scope.row.id, 'dataType')"
+              v-model="scope.row.dataType"
               size="small"
-              @blur="submitCell(scope.row, 'kind')"
+              @blur="submitCell(scope.row, 'dataType')"
             />
-            <div v-if="!isEditingCell(scope.row.id, 'kind')" class="editable-cell" @click="activateCell(scope.row.id, 'kind')">
-              {{ scope.row.kind || "-" }}
+            <div v-if="!isEditingCell(scope.row.id, 'dataType')" class="editable-cell" @click="activateCell(scope.row.id, 'dataType')">
+              {{ scope.row.dataType || "-" }}
             </div>
           </template>
         </el-table-column>
@@ -271,19 +271,16 @@
         label-width="130px"
         :validate-on-rule-change="false"
       >
-        <el-form-item label="原始字段ID" prop="outputModelOriginId">
-          <el-input v-model="polyAddForm.outputModelOriginId" placeholder="请输入原始字段ID" clearable />
+        <el-form-item label="字段名" prop="name">
+          <el-input v-model="polyAddForm.name" placeholder="请输入字段名" clearable maxlength="255" show-word-limit />
         </el-form-item>
-        <el-form-item label="聚合字段名" prop="name">
-          <el-input v-model="polyAddForm.name" placeholder="请输入聚合字段名" clearable maxlength="255" show-word-limit />
+        <el-form-item label="数据类型" prop="dataType">
+          <el-input v-model="polyAddForm.dataType" placeholder="请输入数据类型" clearable maxlength="255" show-word-limit />
         </el-form-item>
-        <el-form-item label="聚合数据类型" prop="kind">
-          <el-input v-model="polyAddForm.kind" placeholder="请输入聚合数据类型" clearable maxlength="255" show-word-limit />
+        <el-form-item label="长度" prop="length">
+          <el-input v-model="polyAddForm.length" placeholder="请输入长度" clearable maxlength="255" show-word-limit />
         </el-form-item>
-        <el-form-item label="聚合长度" prop="length">
-          <el-input v-model="polyAddForm.length" placeholder="请输入聚合长度" clearable maxlength="255" show-word-limit />
-        </el-form-item>
-        <el-form-item label="聚合必填" prop="require">
+        <el-form-item label="必填" prop="require">
           <el-checkbox v-model="polyAddFormRequireChecked" />
         </el-form-item>
         <el-form-item label="可见性策略" prop="policyCrudJson">
@@ -312,11 +309,11 @@
             <el-option :value="6" label="LDT" />
           </el-select>
         </el-form-item>
-        <el-form-item label="聚合字段备注" prop="remark">
-          <el-input v-model="polyAddForm.remark" placeholder="请输入聚合字段备注" clearable maxlength="80" show-word-limit />
+        <el-form-item label="字段备注" prop="remark">
+          <el-input v-model="polyAddForm.remark" placeholder="请输入字段备注" clearable maxlength="80" show-word-limit />
         </el-form-item>
-        <el-form-item label="聚合排序" prop="seq">
-          <el-input v-model.number="polyAddForm.seq" placeholder="请输入聚合排序" clearable />
+        <el-form-item label="排序" prop="seq">
+          <el-input v-model.number="polyAddForm.seq" placeholder="请输入排序" clearable />
         </el-form-item>
       </el-form>
       <template #footer>

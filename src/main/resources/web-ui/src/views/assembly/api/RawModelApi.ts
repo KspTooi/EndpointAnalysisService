@@ -14,12 +14,12 @@ export interface GetRawModelDto {
 export interface GetRawModelListVo {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
-  name: string; // 原始字段名
-  kind: string; // 原始数据类型
-  length: string; // 原始长度
-  require: number; // 原始必填 0:否 1:是
-  remark: string; // 原始备注
-  seq: number; // 原始排序
+  name: string; // 字段名
+  dataType: string; // 数据类型
+  length: string; // 长度
+  require: number; // 必填 0:否 1:是
+  remark: string; // 备注
+  seq: number; // 排序
 }
 
 export default {

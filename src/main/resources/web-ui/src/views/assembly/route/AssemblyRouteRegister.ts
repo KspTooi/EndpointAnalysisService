@@ -4,7 +4,7 @@ import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister"
 /**
  * 代码生成路由注册
  */
-export default class GenRouteRegister extends GenricRouteRegister {
+export default class AssemblyRouteRegister extends GenricRouteRegister {
   /**
    * 注册代码生成路由
    * @returns 路由条目数组
@@ -53,21 +53,7 @@ export default class GenRouteRegister extends GenricRouteRegister {
         name: "op-schema-design",
         component: () => import("@/views/assembly/OpSchemaDesign.vue"),
         meta: { breadcrumb: "输出方案设计" },
-      }),
-      RouteEntryPo.build({
-        biz: "assembly",
-        path: "raw-model-manager",
-        name: "raw-model-manager",
-        component: () => import("@/views/assembly/RawModel.vue"),
-        meta: { breadcrumb: "输出方案原始模型管理" },
-      }),
-      RouteEntryPo.build({
-        biz: "assembly",
-        path: "poly-model-manager",
-        name: "poly-model-manager",
-        component: () => import("@/views/assembly/PolyModel.vue"),
-        meta: { breadcrumb: "输出方案聚合模型管理" },
-      }),
+      })
     ];
   }
 }

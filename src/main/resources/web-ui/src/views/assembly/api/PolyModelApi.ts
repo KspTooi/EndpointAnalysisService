@@ -16,16 +16,15 @@ export interface GetPolyModelListDto {
 export interface GetPolyModelListVo {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
-  outputModelOriginId: string; // 原始字段ID
-  name: string; // 聚合字段名
-  kind: string; // 聚合数据类型
-  length: string; // 聚合长度
-  require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string[]; // 聚合可见性策略 AD、ED、DV、LD、LV
-  policyQuery: number; // 聚合查询策略 0:等于 1:模糊
-  policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  remark: string; // 聚合字段备注
-  seq: number; // 聚合排序
+  name: string; // 字段名
+  dataType: string; // 数据类型
+  length: string; // 长度
+  require: number; // 必填 0:否 1:是
+  policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyQuery: number; // 查询策略 0:等于
+  policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+  remark: string; // 字段备注
+  seq: number; // 排序
 }
 
 /**
@@ -33,16 +32,15 @@ export interface GetPolyModelListVo {
  */
 export interface AddPolyModelDto {
   outputSchemaId: string; // 输出方案ID
-  outputModelOriginId: string; // 原始字段ID
-  name: string; // 聚合字段名
-  kind: string; // 聚合数据类型
-  length: string; // 聚合长度
-  require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string[]; // 聚合可见性策略 AD、ED、DV、LD、LV
-  policyQuery: number; // 聚合查询策略 0:等于 1:模糊
-  policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  remark: string; // 聚合字段备注
-  seq: number; // 聚合排序
+  name: string; // 字段名
+  dataType: string; // 数据类型
+  length: string; // 长度
+  require: number; // 必填 0:否 1:是
+  policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyQuery: number; // 查询策略 0:等于
+  policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+  remark: string; // 字段备注
+  seq: number; // 排序
 }
 
 /**
@@ -51,16 +49,15 @@ export interface AddPolyModelDto {
 export interface EditPolyModelDto {
   id: string; // 主键ID
   outputSchemaId: string; // 输出方案ID
-  outputModelOriginId: string; // 原始字段ID
-  name: string; // 聚合字段名
-  kind: string; // 聚合数据类型
-  length: string; // 聚合长度
-  require: number; // 聚合必填 0:否 1:是
-  policyCrudJson: string[]; // 聚合可见性策略 AD、ED、DV、LD、LV
-  policyQuery: number; // 聚合查询策略 0:等于 1:模糊
-  policyView: number; // 聚合显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-  remark: string; // 聚合字段备注
-  seq: number; // 聚合排序
+  name: string; // 字段名
+  dataType: string; // 数据类型
+  length: string; // 长度
+  require: number; // 必填 0:否 1:是
+  policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
+  policyQuery: number; // 查询策略 0:等于
+  policyView: number; // 显示策略 0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+  remark: string; // 字段备注
+  seq: number; // 排序
 }
 
 export default {

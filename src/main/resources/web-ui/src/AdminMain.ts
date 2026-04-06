@@ -21,7 +21,7 @@ import RelayRouteRegister from "@/views/relay/route/RelayRouteRegister";
 import DocumentRouteRegister from "@/views/document/route/DocumentRouteRegister";
 import AuditRouteRegister from "@/views/audit/route/AuditRouteRegister";
 import QtRouteRegister from "@/views/qt/route/QtRouteRegister.ts";
-import GenRouteRegister from "@/views/assembly/route/GenRouteRegister.ts";
+import AssemblyRouteRegister from "@/views/assembly/route/AssemblyRouteRegister.ts";
 
 //初始化Iconify
 setupIconify();
@@ -49,7 +49,7 @@ addRoute(new RelayRouteRegister());
 addRoute(new DocumentRouteRegister());
 addRoute(new AuditRouteRegister());
 addRoute(new QtRouteRegister());
-addRoute(new GenRouteRegister());
+addRoute(new AssemblyRouteRegister());
 
 //初始化SOA路由服务
 initialize(app);
