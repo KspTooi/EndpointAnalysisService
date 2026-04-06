@@ -6,6 +6,7 @@ import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.PreviewOpBluePrintDto;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
@@ -74,6 +75,12 @@ public class OpSchemaController {
     @PostMapping("/getOpBluePrintList")
     public Result<List<GetOpBluePrintListVo>> getOpBluePrintList(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return Result.success(opSchemaService.getOpBluePrintList(dto));
+    }
+
+    @Operation(summary = "预览蓝图输出")
+    @PostMapping("/previewOpBluePrint")
+    public Result<String> previewOpBluePrint(@RequestBody @Valid PreviewOpBluePrintDto dto) throws Exception {
+        return Result.success(opSchemaService.previewOpBluePrint(dto.getSha256Hex()));
     }
 
 

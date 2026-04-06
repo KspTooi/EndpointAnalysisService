@@ -108,12 +108,12 @@ public class QbeVelocityEngine {
         }
 
         Map<String, String> params = new HashMap<>();
-        params.put("QMSTN", model.getQmstn());
-        params.put("QMSCN", model.getQmscn());
-        params.put("QMBCN", model.getQmbcn());
-        params.put("QMULN", model.getQmuln());
-        params.put("QMALCN", model.getQmalcn());
-        params.put("QMAUCN", model.getQmaucn());
+        params.put("STN", model.getStn());
+        params.put("SCN", model.getScn());
+        params.put("BCN", model.getBcn());
+        params.put("ULN", model.getUln());
+        params.put("ALCN", model.getAlcn());
+        params.put("AUCN", model.getAucn());
 
         //渲染蓝图
         for (QbeBlueprint blueprint : blueprints) {
@@ -183,6 +183,37 @@ public class QbeVelocityEngine {
 
         }
     }
+
+
+    /**
+     * 渲染模板为字符串
+     * 
+     * @param templateContent 模板内容
+     * @param model            QBE模型
+     * @param globalVars      全局变量
+     * @return 渲染后的字符串
+     */
+    public String renderAsString(String templateContent, QbeModel model, Map<String, String> globalVars) {
+
+        if (StringUtils.isBlank(templateContent)) {
+            throw new IllegalArgumentException("模板内容不能为空!");
+        }
+        if (model == null) {
+            throw new IllegalArgumentException("模型不能为空!");
+        }
+
+        VelocityContext vc = buildVc(model, globalVars != null ? globalVars : new HashMap<>());
+        StringWriter writer = new StringWriter();
+
+        boolean success = Velocity.evaluate(vc, writer, "template", templateContent);
+        if (!success) {
+            throw new RuntimeException("无法渲染模板内容");
+        }
+
+        return writer.toString();
+    }
+
+
 
     /**
      * 构建VelocityContext

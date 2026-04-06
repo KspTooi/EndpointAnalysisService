@@ -12,15 +12,15 @@ import java.util.Map;
 public class QbeField {
 
     //字段原始名称(qfpon) ex: user_id
-    private String qfpon;
+    private String fieldName;
 
     //用于简写字段名称
-    private String qfstn; //字段标准化名称(qfstn) ex: UserId
-    private String qfscn; //字段小驼峰名称(qfscn) ex: userId
-    private String qfbcn; //字段大驼峰名称(qfbcn) ex: UserId
-    private String qfuln; //字段下划线名称(qfuln) ex: user_id
-    private String qfalcn; //字段全小写名称(qfalcn) ex: userid
-    private String qfaucn; //字段全大写名称(qfaucn) ex: USERID
+    private String fstn; //字段标准化名称(fstn) ex: UserId
+    private String fscn; //字段小驼峰名称(fscn) ex: userId
+    private String fbcn; //字段大驼峰名称(fbcn) ex: UserId
+    private String fuln; //字段下划线名称(fuln) ex: user_id
+    private String falcn; //字段全小写名称(falcn) ex: userid
+    private String faucn; //字段全大写名称(faucn) ex: USERID
 
     //字段类型
     @Setter
@@ -59,18 +59,18 @@ public class QbeField {
 
 
     public void setStdName(String stdName) {
-        if (StringUtils.isBlank(qfpon)) {
+        if (StringUtils.isBlank(fieldName)) {
             throw new IllegalArgumentException("字段原始名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(qfpon);
-        this.qfpon = stdName;
-        this.qfstn = stdNameObj.getValue();
-        this.qfbcn = stdNameObj.getValue();
-        this.qfscn = stdNameObj.toSmallCamelCase();
-        this.qfuln = stdNameObj.toUnderLineName();
-        this.qfalcn = stdNameObj.toLowerCase();
-        this.qfaucn = stdNameObj.toUpperCase();
+        StdName stdNameObj = StdName.of(fieldName);
+        this.fieldName = fieldName;
+        this.fstn = stdNameObj.getValue();
+        this.fbcn = stdNameObj.getValue();
+        this.fscn = stdNameObj.toSmallCamelCase();
+        this.fuln = stdNameObj.toUnderLineName();
+        this.falcn = stdNameObj.toLowerCase();
+        this.faucn = stdNameObj.toUpperCase();
     }
 
     /**

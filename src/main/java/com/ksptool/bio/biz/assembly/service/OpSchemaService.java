@@ -7,13 +7,13 @@ import com.ksptool.bio.biz.assembly.common.assemblybp.collector.MysqlCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.collector.VelocityBlueprintCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.converter.StaticPolyConv;
 import com.ksptool.bio.biz.assembly.common.assemblybp.core.AssemblyFactory;
-import com.ksptool.bio.biz.assembly.common.assemblybp.entity.blueprint.RawBlueprint;
 import com.ksptool.bio.biz.assembly.common.assemblybp.entity.field.PolyField;
 import com.ksptool.bio.biz.assembly.common.assemblybp.projector.Projector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeVelocityEngine;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,9 @@ public class OpSchemaService {
 
     @Autowired
     private PolyModelRepository polyModelRepository;
+
+    //QBE Velocity引擎实例
+    private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
 
     /**
      * 查询输出方案列表
@@ -283,7 +287,7 @@ public class OpSchemaService {
 
         //先检出输入SCM
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
-        
+
         //使用QBE读取蓝图文件列表
         try {
             QbeBlueprintReader reader = new QbeBlueprintReader(iBpPath.toString());
@@ -295,6 +299,7 @@ public class OpSchemaService {
                 var vo = new GetOpBluePrintListVo();
                 vo.setFileName(blueprint.getFileName());
                 vo.setFilePath(blueprint.getRelativeFilePath());
+                vo.setSha256Hex(blueprint.getSha256Hex());
                 ret.add(vo);
             }
             return ret;
@@ -303,6 +308,48 @@ public class OpSchemaService {
             log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpaceInputPath.toString(), e);
             throw new BizException("读取蓝图文件列表失败: " + e.getMessage());
         }
+    }
+
+    /**
+     * 预览蓝图输出
+     *
+     * @param sha256Hex 蓝图SHA256
+     * @return 蓝图输出
+     * @throws BizException 业务异常
+     */
+    public String previewOpBluePrint(Long opSchemaId, String sha256Hex) throws BizException {
+
+        OpSchemaPo opSchemaPo = repository.findById(opSchemaId)
+                .orElseThrow(() -> new BizException("预览蓝图输出失败,输出方案不存在或无权限访问."));
+
+        var iBpPath = getBluePrintPath(opSchemaPo);
+
+        //查询目录是否存在
+        if (!Files.exists(iBpPath)) {
+            throw new BizException("预览蓝图输出失败,蓝图目录不存在.");
+        }
+
+        QbeBlueprint blueprint = null;
+
+        //QBE读取所有蓝图文件
+        try {
+            QbeBlueprintReader reader = new QbeBlueprintReader(iBpPath.toString());
+            List<QbeBlueprint> blueprints = reader.readBlueprint();
+
+            //查找指定SHA256的蓝图文件
+            blueprint = blueprints.stream()
+                    .filter(b -> b.getSha256Hex().equals(sha256Hex))
+                    .findFirst()
+                    .orElseThrow(() -> new BizException("预览蓝图输出失败,蓝图文件不存在."));
+
+        } catch (IOException e) {
+            log.error("预览蓝图输出失败: {} 路径: {}", e.getMessage(), iBpPath.toString(), e);
+            throw new BizException("预览蓝图输出失败: " + e.getMessage());
+        }
+
+        qbeVelocityEngine.buildVc(null, null)
+
+        return "预览蓝图输出";
     }
 
     /**
@@ -489,4 +536,30 @@ public class OpSchemaService {
         //将输出目录推送到输出SCM
         scmService.pushToScm(outputScmPo, workSpaceOutputPath.toString());
     }
+
+
+
+
+    /**
+     * 获取蓝图文件路径
+     * 输入路径: 工作空间/input/输入SCM相对路径
+     *
+     * @param opSchemaPo 输出方案
+     * @return 蓝图文件绝对路径
+     * @throws BizException 业务异常
+     */
+    private Path getBluePrintPath(OpSchemaPo opSchemaPo) throws BizException {
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
+        var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
+        var workSpaceInputPath = workSpacePath.resolve("input");
+        var iAppendPath = opSchemaPo.getBaseInput().trim();  //这是在输出方案中配置的蓝图SCM相对路径
+        if (iAppendPath.startsWith("/")) {
+            iAppendPath = iAppendPath.substring(1);
+        }
+        return workSpaceInputPath.resolve(iAppendPath);
+    }
+
+
+
+
 }

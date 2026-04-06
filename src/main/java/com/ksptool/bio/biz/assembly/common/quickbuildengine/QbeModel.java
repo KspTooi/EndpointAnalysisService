@@ -14,15 +14,15 @@ import java.util.Map;
 public class QbeModel {
 
     //表原始名称(pon) ex: local_user_account
-    private String qmpon;
+    private String tableName;
 
     //用于简写表名称
-    private String qmstn; //表标准化名称(qmstn) ex: LocalUserAccount
-    private String qmscn; //表小驼峰名称(qmscn) ex: localUserAccount
-    private String qmbcn; //表大驼峰名称(qmbcn) ex: LocalUserAccount
-    private String qmuln; //表下划线名称(qmuln) ex: local_user_account
-    private String qmalcn; //表全小写名称(qmalcn) ex: localuseraccount
-    private String qmaucn; //表全大写名称(qmaucn) ex: LOCALUSERACCOUNT
+    private String stn; //表标准化名称(stn) ex: LocalUserAccount
+    private String scn; //表小驼峰名称(scn) ex: localUserAccount
+    private String bcn; //表大驼峰名称(bcn) ex: LocalUserAccount
+    private String uln; //表下划线名称(uln) ex: local_user_account
+    private String alcn; //表全小写名称(alcn) ex: localuseraccount
+    private String aucn; //表全大写名称(aucn) ex: LOCALUSERACCOUNT
 
     //表注释
     @Setter
@@ -39,20 +39,20 @@ public class QbeModel {
     @Setter
     private int seq;
 
-    public void setPon(String pon) {
+    public void setTableName(String tableName) {
 
-        if (StringUtils.isBlank(pon)) {
+        if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException("表原始名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(pon);
-        this.qmpon = pon;
-        this.qmstn = stdNameObj.getValue();
-        this.qmbcn = stdNameObj.getValue();
-        this.qmscn = stdNameObj.toSmallCamelCase();
-        this.qmuln = stdNameObj.toUnderLineName();
-        this.qmalcn = stdNameObj.toLowerCase();
-        this.qmaucn = stdNameObj.toUpperCase();
+        StdName stdNameObj = StdName.of(tableName);
+        this.tableName = tableName;
+        this.stn = stdNameObj.getValue();
+        this.bcn = stdNameObj.getValue();
+        this.scn = stdNameObj.toSmallCamelCase();
+        this.uln = stdNameObj.toUnderLineName();
+        this.alcn = stdNameObj.toLowerCase();
+        this.aucn = stdNameObj.toUpperCase();
     }
 
     /**
