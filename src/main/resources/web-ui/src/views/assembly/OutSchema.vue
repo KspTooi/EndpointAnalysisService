@@ -57,11 +57,12 @@
               :icon="ManagementIcon"
               @click="cdrcRedirect('out-model-poly-manager', scope.row)"
             >
-              设计方案
+              设计
             </el-button>
             <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
             </el-button>
+            <el-button link type="success" size="small" :icon="SimulationIcon"> 模拟 </el-button>
             <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOutSchema(scope.row)">
               执行
             </el-button>
@@ -310,12 +311,16 @@ import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
+import ComIconService from "@/soa/com-series/service/ComIconService";
 
-const EditIcon = markRaw(Edit);
-const DeleteIcon = markRaw(Delete);
-const ManagementIcon = markRaw(Management);
-const MagicStickIcon = markRaw(MagicStick);
-const ViewIcon = markRaw(View);
+const { resolveIcon } = ComIconService.useIconService();
+
+const EditIcon = resolveIcon("edit");
+const DeleteIcon = resolveIcon("delete");
+const ManagementIcon = resolveIcon("management");
+const MagicStickIcon = resolveIcon("magic-stick");
+const ViewIcon = resolveIcon("view");
+const SimulationIcon = resolveIcon("monitor");
 
 //列表管理打包
 const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOutSchema } =
