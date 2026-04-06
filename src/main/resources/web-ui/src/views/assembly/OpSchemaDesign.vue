@@ -58,7 +58,12 @@
         <el-table-column prop="seq" label="序号" min-width="45" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="字段名" min-width="95" show-overflow-tooltip />
         <el-table-column prop="dataType" label="数据类型" min-width="80" show-overflow-tooltip />
-        <el-table-column prop="length" label="长度" min-width="40" show-overflow-tooltip />
+        <el-table-column prop="length" label="长度" min-width="40" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.length == null" class="text-gray-400">不支持</span>
+            <span v-else>{{ scope.row.length }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="require" label="必填" min-width="25" show-overflow-tooltip align="center">
           <template #default="scope">
             <el-checkbox v-if="scope.row.require === 1" :model-value="true" />
@@ -70,7 +75,7 @@
             <div v-if="scope.row.pk === 1" style="display: flex; justify-content: center; align-items: center">
               <PkIcon style="font-size: 18px" />
             </div>
-            <span v-else>-</span>
+            <span v-else class="text-gray-400">否</span>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="注释" min-width="120" show-overflow-tooltip />
