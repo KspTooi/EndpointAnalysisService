@@ -121,7 +121,7 @@ public class PolyModelService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void syncPolyModelFromOriginBySchema(CommonIdDto dto) throws BizException {
+    public void importFromRaw(CommonIdDto dto) throws BizException {
 
         //先查询输出方案
         OpSchemaPo opSchemaPo = opSchemaRepository.findById(dto.getId()).orElseThrow(() -> new BizException("输出方案不存在"));
@@ -143,26 +143,26 @@ public class PolyModelService {
         var tymsPo = tymSchemaRepository.findById(tymSid).orElseThrow(() -> new BizException("类型映射方案不存在"));
 
         //查找输出方案下全部的原始模型
-        var omoPos = omoRepository.getRawModelByOutputSchemaId(opSchemaPo.getId());
+        var rawModelPos = omoRepository.getRawModelByOutputSchemaId(opSchemaPo.getId());
 
         //查找输出方案下绑定的全部映射方案
         var tymSfPos = tymSfRepository.getTymSfByTymSid(tymSid);
 
         //聚合模型
-        var ompPos = new ArrayList<PolyModelPo>();
+        var polyModelPos = new ArrayList<PolyModelPo>();
 
         //先清空输出方案下全部的聚合模型
         repository.clearPolyModelByOutputSchemaId(opSchemaPo.getId());
 
         //遍历原始模型
-        for (var omoPo : omoPos) {
+        for (var rawModelPo : rawModelPos) {
 
             //查找原始模型匹配的映射方案
             TymSchemaFieldPo mat = null;
             var targetType = tymsPo.getDefaultType();
 
             for (var tymSfPo : tymSfPos) {
-                if (tymSfPo.getSource().equals(omoPo.getDataType())) {
+                if (tymSfPo.getSource().equals(rawModelPo.getDataType())) {
                     mat = tymSfPo;
                     break;
                 }
@@ -174,22 +174,23 @@ public class PolyModelService {
             }
 
             //组装聚合模型
-            var ompPo = new PolyModelPo();
-            ompPo.setOutputSchemaId(opSchemaPo.getId());
-            ompPo.setName(omoPo.getName());
-            ompPo.setDataType(targetType);
-            ompPo.setLength(omoPo.getLength());
-            ompPo.setRequire(omoPo.getRequire());
-            ompPo.setPolicyCrudJson(Set.of("AD", "ED", "DV", "LD", "LV"));
-            ompPo.setPolicyQuery(0); //0:等于 1:模糊
-            ompPo.setPolicyView(0); //0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
-            ompPo.setRemark(omoPo.getRemark());
-            ompPo.setSeq(omoPo.getSeq());
-            ompPos.add(ompPo);
+            var polyModelPo = new PolyModelPo();
+            polyModelPo.setOutputSchemaId(opSchemaPo.getId());
+            polyModelPo.setName(rawModelPo.getName());
+            polyModelPo.setDataType(targetType);
+            polyModelPo.setLength(rawModelPo.getLength());
+            polyModelPo.setRequire(rawModelPo.getRequire());
+            polyModelPo.setPolicyCrudJson(Set.of("ADD", "EDIT", "DETAILS", "LIST_QUERY", "LIST_VIEW"));
+            polyModelPo.setPolicyQuery(0); //0:等于 1:模糊
+            polyModelPo.setPolicyView(0); //0:文本框 1:文本域 2:下拉 3:单 4:多 5:LD 6:LDT
+            polyModelPo.setPk(rawModelPo.getPk());
+            polyModelPo.setRemark(rawModelPo.getRemark());
+            polyModelPo.setSeq(rawModelPo.getSeq());
+            polyModelPos.add(polyModelPo);
         }
 
         //批量保存聚合模型
-        repository.saveAll(ompPos);
+        repository.saveAll(polyModelPos);
     }
 
 }

@@ -96,7 +96,7 @@ export default {
       listLoading.value = false;
     };
 
-    const syncPolyModelFromOrigin = async (): Promise<void> => {
+    const importFromRaw = async (): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定从原始模型同步聚合模型吗？已有字段将被覆盖。", "提示", {
           confirmButtonText: "确定",
@@ -108,8 +108,8 @@ export default {
       }
 
       try {
-        await PolyModelApi.syncPolyModelFromOriginBySchema({ id: outputSchemaId.value });
-        ElMessage.success("同步成功");
+        await PolyModelApi.importFromRaw({ id: outputSchemaId.value });
+        ElMessage.success("导入成功");
         await loadList();
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -141,7 +141,7 @@ export default {
       listLoading,
       loadList,
       removeList,
-      syncPolyModelFromOrigin,
+      importFromRaw,
     };
   },
 

@@ -102,10 +102,10 @@ export default {
   },
 
   /**
-   * 从原始模型同步聚合模型（输出方案ID）
+   * 从原始模型导入聚合模型（输出方案ID）
    */
-  syncPolyModelFromOriginBySchema: async (dto: CommonIdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/polyModel/syncPolyModelFromOriginBySchema", dto);
+  importFromRaw: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/polyModel/importFromRaw", dto);
     if (result.code === 0) {
       return result.message;
     }

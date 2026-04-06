@@ -42,7 +42,7 @@ public class PolyModelPo {
     @Column(name = "`require`", nullable = false, columnDefinition = "TINYINT", comment = "必填 0:否 1:是")
     private Integer require;
 
-    @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW")
+    @Column(name = "policy_crud_json", nullable = false, columnDefinition = "JSON", comment = "可见性策略 ADD、EDIT、DETAILS、LIST_QUERY、LIST_VIEW")
     @Convert(converter = SetStringConv.class)
     private Set<String> policyCrudJson;
 

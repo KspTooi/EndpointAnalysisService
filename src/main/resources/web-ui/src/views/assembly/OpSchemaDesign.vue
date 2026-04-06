@@ -35,12 +35,12 @@
       </div>
       <div class="schema-info-divider" />
       <div v-show="listViewModel === 'poly'" class="schema-info-item">
-        <span class="schema-info-label">从原始模型生成</span>
-        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncPolyModelFromOrigin">开始</el-button>
+        <span class="schema-info-label">从原始模型导入</span>
+        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="importFromRaw">导入</el-button>
       </div>
       <div v-show="listViewModel === 'raw'" class="schema-info-item">
-        <span class="schema-info-label">从数据源生成</span>
-        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncRawModelFromDataSource">开始</el-button>
+        <span class="schema-info-label">从数据源导入</span>
+        <el-button type="primary" size="small" :icon="MagicStickIcon" @click="syncRawModelFromDataSource">导入</el-button>
       </div>
     </div>
 
@@ -418,7 +418,7 @@ const {
   listLoading: polyListLoading,
   loadList: loadPolyList,
   removeList: removePolyList,
-  syncPolyModelFromOrigin,
+  importFromRaw,
 } = OpSchemaDesignService.usePolyModelList(outputSchemaId);
 
 //原始模型列表打包

@@ -67,9 +67,9 @@ public class PolyModelController {
     }
 
     @Operation(summary = "从原始模型同步聚合模型(输出方案ID)")
-    @PostMapping("/syncPolyModelFromOriginBySchema")
-    public Result<String> syncPolyModelFromOriginBySchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        polyModelService.syncPolyModelFromOriginBySchema(dto);
+    @PostMapping("/importFromRaw")
+    public Result<String> importFromRaw(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        polyModelService.importFromRaw(dto);
         return Result.success("同步成功");
     }
 
