@@ -57,13 +57,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { DocumentCopy, Document, ArrowLeft } from "@element-plus/icons-vue";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import OpSchemaApi from "@/views/assembly/api/OpSchemaApi";
-import type { GetOpBluePrintListVo } from "@/views/assembly/api/OpSchemaApi";
+import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 import ComIconService from "@/soa/com-series/service/ComIconService";
 
 const { resolveIcon } = ComIconService.useIconService();
@@ -71,7 +71,7 @@ const ArrowLeftIcon = resolveIcon("arrow-left");
 
 const { getCdrcQuery, cdrcReturn, cdrcReturnName } = ComDirectRouteContext.useDirectRouteContext();
 
-const cdrcRow = getCdrcQuery();
+const cdrcRow: GetOpSchemaListVo = getCdrcQuery();
 
 const schemaName = ref<string>("");
 const opSchemaId = ref<string>("");
@@ -180,7 +180,17 @@ const loadBlueprintList = async (): Promise<void> => {
   try {
     blueprintList.value = await OpSchemaApi.getOpBluePrintList({ id: opSchemaId.value });
   } catch (error: any) {
-    ElMessage.error(error.message || "加载蓝图列表失败");
+    //弹出确认
+    await ElMessageBox.confirm(error.message, "提示", {
+      confirmButtonText: "确定",
+      showCancelButton: false,
+      showClose: false,
+      closeOnClickModal: false,
+      closeOnPressEscape: false,
+      type: "warning",
+    });
+
+    cdrcReturn();
   } finally {
     listLoading.value = false;
   }

@@ -307,7 +307,7 @@ public class OpSchemaService {
             }
             return ret;
 
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpaceInputPath.toString(), e);
             throw new BizException("读取蓝图文件列表失败: " + e.getMessage());
         }
@@ -352,7 +352,7 @@ public class OpSchemaService {
 
         //查询QBE模型
         var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
-    
+
         //渲染蓝图
         var renderedBlueprint = qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, null);
         return renderedBlueprint;
@@ -544,8 +544,6 @@ public class OpSchemaService {
     }
 
 
-
-
     /**
      * 获取蓝图文件路径
      * 输入路径: 工作空间/input/输入SCM相对路径
@@ -564,8 +562,6 @@ public class OpSchemaService {
         }
         return workSpaceInputPath.resolve(iAppendPath);
     }
-
-
 
 
 }
