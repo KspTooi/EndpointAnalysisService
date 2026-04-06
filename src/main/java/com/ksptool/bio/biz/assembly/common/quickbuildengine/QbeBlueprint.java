@@ -10,7 +10,7 @@ public class QbeBlueprint {
     //蓝图文件名
     private String fileName;
 
-    //蓝图MD5
+    //蓝图SHA256
     private String sha256Hex;
 
     //绝对路径
