@@ -32,7 +32,6 @@ public class EditPolyModelDto {
     @Schema(description = "数据类型")
     private String dataType;
 
-    @Size(max = 255, message = "长度不能超过255")
     @Schema(description = "长度")
     private Integer length;
 
