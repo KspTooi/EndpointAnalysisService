@@ -6,6 +6,7 @@ import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.service.OpSchemaService;
@@ -13,6 +14,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,6 +69,13 @@ public class OpSchemaController {
         opSchemaService.removeOpSchema(dto);
         return Result.success("操作成功");
     }
+
+    @Operation(summary = "查询蓝图文件列表")
+    @PostMapping("/getOpBluePrintList")
+    public Result<List<GetOpBluePrintListVo>> getOpBluePrintList(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(opSchemaService.getOpBluePrintList(dto));
+    }
+
 
     @Operation(summary = "预览方案参数")
     @PostMapping("/previewOpSchemaParams")

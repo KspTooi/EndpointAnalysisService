@@ -7,15 +7,19 @@ import com.ksptool.bio.biz.assembly.common.assemblybp.collector.MysqlCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.collector.VelocityBlueprintCollector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.converter.StaticPolyConv;
 import com.ksptool.bio.biz.assembly.common.assemblybp.core.AssemblyFactory;
+import com.ksptool.bio.biz.assembly.common.assemblybp.entity.blueprint.RawBlueprint;
 import com.ksptool.bio.biz.assembly.common.assemblybp.entity.field.PolyField;
 import com.ksptool.bio.biz.assembly.common.assemblybp.projector.Projector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjector;
 import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
+import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
@@ -245,6 +249,55 @@ public class OpSchemaService {
             return;
         }
         repository.deleteById(dto.getId());
+    }
+
+    /**
+     * 查询蓝图文件列表
+     *
+     * @param dto 查询参数
+     * @return 蓝图文件列表
+     */
+    public List<GetOpBluePrintListVo> getOpBluePrintList(CommonIdDto dto) throws BizException {
+
+        OpSchemaPo opSchemaPo = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("查询蓝图文件列表失败,数据不存在或无权限访问."));
+
+        //必须先配置输入SCM
+        if (opSchemaPo.getInputScmId() == null) {
+            throw new BizException("查询蓝图文件列表失败,输入SCM未配置.");
+        }
+
+        //查询输入SCM
+        ScmPo inputScmPo = scmRepository.findById(opSchemaPo.getInputScmId())
+                .orElseThrow(() -> new BizException("查询蓝图文件列表失败,输入SCM不存在或无权限访问."));
+
+        //准备工作空间
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
+        var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
+        var workSpaceInputPath = workSpacePath.resolve("input");
+
+        //先检出输入SCM
+        scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
+        
+        //使用QBE读取蓝图文件列表
+        try {
+            QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
+            List<QbeBlueprint> blueprints = reader.readBlueprint();
+
+            //转换为VO
+            var ret = new ArrayList<GetOpBluePrintListVo>();
+            for (var blueprint : blueprints) {
+                var vo = new GetOpBluePrintListVo();
+                vo.setFileName(blueprint.getFileName());
+                vo.setFilePath(blueprint.getRelativeFilePath());
+                ret.add(vo);
+            }
+            return ret;
+
+        } catch (IOException e) {
+            log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpaceInputPath.toString(), e);
+            throw new BizException("读取蓝图文件列表失败: " + e.getMessage());
+        }
     }
 
     /**
