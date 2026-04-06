@@ -1,5 +1,5 @@
 <template>
-  <div class="preview-page">
+  <div v-loading="listLoading" element-loading-text="正在处理蓝图，请稍后..." class="preview-page">
     <!-- 顶部工具栏 -->
     <div class="top-bar">
       <el-button :icon="ArrowLeftIcon" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
@@ -10,7 +10,7 @@
       <!-- 左侧蓝图列表 -->
       <div class="left-panel">
         <div class="panel-header">蓝图文件</div>
-        <div v-loading="listLoading" class="blueprint-list">
+        <div class="blueprint-list">
           <div
             v-for="item in blueprintList"
             :key="item.sha256Hex"
