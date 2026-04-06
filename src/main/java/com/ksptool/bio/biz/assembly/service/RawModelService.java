@@ -4,6 +4,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
+import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.dto.AddRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.dto.EditRawModelDto;
@@ -11,6 +12,8 @@ import com.ksptool.bio.biz.assembly.model.rawmodel.dto.GetRawModelDto;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelDetailsVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.vo.GetRawModelListVo;
 import com.ksptool.bio.biz.assembly.repository.RawModelRepository;
+import com.ksptool.bio.biz.assembly.repository.OpSchemaRepository;
+import com.ksptool.bio.biz.assembly.repository.DataSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,12 @@ public class RawModelService {
 
     @Autowired
     private RawModelRepository repository;
+
+    @Autowired
+    private OpSchemaRepository opSchemaRepository;
+
+    @Autowired
+    private DataSourceRepository dataSourceRepository;
 
 
     /**
@@ -164,6 +173,44 @@ public class RawModelService {
         }
 
         return result;
+    }
+
+    /**
+     * 从数据源同步原始模型
+     * @param opSchemaId 输出方案ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void syncRawModelFromDataSource(Long opSchemaId) throws BizException {
+
+        //查询输出方案
+        OpSchemaPo opSchema = opSchemaRepository.findById(opSchemaId)
+                .orElseThrow(() -> new BizException("输出方案不存在或无权限访问."));
+
+        //查询数据源
+        var hasBindDataSource = opSchema.getDataSourceId() != null;
+
+        if (!hasBindDataSource) {
+            throw new BizException("输出方案未绑定数据源,请先绑定数据源.");
+        }
+
+        var dataSource = dataSourceRepository.findById(opSchema.getDataSourceId())
+                .orElseThrow(() -> new BizException("数据源不存在或无权限访问."));
+
+        //查询数据源表字段
+        var fields = getDataSourceTableFields(dataSource, opSchema.getTableName());
+
+        if (fields == null) {
+            throw new BizException("查询数据源表字段失败.");
+        }
+
+        //批量保存原始模型
+        repository.saveAll(fields);
+
+        //更新输出方案字段数量
+        opSchema.setFieldCountOrigin(fields.size());
+
+        //保存输出方案
+        opSchemaRepository.save(opSchema);
     }
 
 

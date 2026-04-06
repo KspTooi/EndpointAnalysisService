@@ -1,5 +1,7 @@
 import Http from "@/commons/Http.ts";
 import type PageResult from "@/commons/model/PageResult.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
+import type Result from "@/commons/model/Result.ts";
 
 /**
  * 查询原始模型列表 DTO（对应后端 GetRawModelDto）
@@ -28,5 +30,16 @@ export default {
    */
   getRawModelList: async (dto: GetRawModelDto): Promise<PageResult<GetRawModelListVo>> => {
     return await Http.postEntity<PageResult<GetRawModelListVo>>("/rawModel/getRawModelList", dto);
+  },
+
+  /**
+   * 从数据源同步原始模型
+   */
+  syncRawModelFromDataSource: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/rawModel/syncRawModelFromDataSource", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
   },
 };
