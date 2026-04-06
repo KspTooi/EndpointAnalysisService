@@ -18,7 +18,7 @@ export interface GetPolyModelListVo {
   outputSchemaId: string; // 输出方案ID
   name: string; // 字段名
   dataType: string; // 数据类型
-  length: string; // 长度
+  length: number; // 长度
   require: number; // 必填 0:否 1:是
   policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 查询策略 0:等于
@@ -34,7 +34,7 @@ export interface AddPolyModelDto {
   outputSchemaId: string; // 输出方案ID
   name: string; // 字段名
   dataType: string; // 数据类型
-  length: string; // 长度
+  length: number; // 长度
   require: number; // 必填 0:否 1:是
   policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 查询策略 0:等于
@@ -51,7 +51,7 @@ export interface EditPolyModelDto {
   outputSchemaId: string; // 输出方案ID
   name: string; // 字段名
   dataType: string; // 数据类型
-  length: string; // 长度
+  length: number; // 长度
   require: number; // 必填 0:否 1:是
   policyCrudJson: string[]; // 可见性策略 ADD、EDIT、LIST_QUERY、LIST_VIEW
   policyQuery: number; // 查询策略 0:等于

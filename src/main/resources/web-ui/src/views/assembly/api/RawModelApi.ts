@@ -18,7 +18,7 @@ export interface GetRawModelListVo {
   outputSchemaId: string; // 输出方案ID
   name: string; // 字段名
   dataType: string; // 数据类型
-  length: string; // 长度
+  length: number; // 长度
   require: number; // 必填 0:否 1:是
   remark: string; // 备注
   seq: number; // 排序

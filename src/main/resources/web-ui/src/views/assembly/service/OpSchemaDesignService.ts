@@ -215,7 +215,7 @@ export default {
       outputSchemaId: outputSchemaId.value,
       name: "",
       dataType: "",
-      length: "",
+      length: 0,
       require: 0,
       policyCrudJson: [],
       policyQuery: 0,
@@ -246,7 +246,7 @@ export default {
       modalForm.outputSchemaId = outputSchemaId.value;
       modalForm.name = "";
       modalForm.dataType = "";
-      modalForm.length = "";
+      modalForm.length = 0;
       modalForm.require = 0;
       modalForm.policyCrudJson = [];
       modalForm.policyQuery = 0;
