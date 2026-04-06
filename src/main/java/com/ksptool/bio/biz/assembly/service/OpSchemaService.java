@@ -28,6 +28,7 @@ import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
 import com.ksptool.bio.biz.core.service.AttachService;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,9 @@ public class OpSchemaService {
 
     //QBE Velocity引擎实例
     private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
+
+    //Gson实例
+    private final Gson gson = new Gson();
 
     /**
      * 查询输出方案列表
@@ -359,16 +363,18 @@ public class OpSchemaService {
     }
 
     /**
-     * 预览方案参数
+     * 预览Qbe模型
      *
-     * @param dto 预览参数
+     * @param opSchemaId 输出方案ID
      * @throws BizException 业务异常
      */
-    public void previewOpSchemaParams(CommonIdDto dto) throws BizException {
-        OpSchemaPo po = repository.findById(dto.getId())
-                .orElseThrow(() -> new BizException("预览方案参数失败,数据不存在或无权限访问."));
+    public String previewQbeModel(Long opSchemaId) throws BizException {
+        OpSchemaPo opSchemaPo = repository.findById(opSchemaId)
+                .orElseThrow(() -> new BizException("预览Qbe模型失败,输出方案不存在或无权限访问."));
 
-
+        //直接根据方案获取QBE模型
+        var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
+        return gson.toJson(qbeModel);
     }
 
     /**

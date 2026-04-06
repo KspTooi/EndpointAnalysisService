@@ -83,12 +83,10 @@ public class OpSchemaController {
         return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(),dto.getSha256Hex()));
     }
 
-
-    @Operation(summary = "预览方案参数")
-    @PostMapping("/previewOpSchemaParams")
-    public Result<String> previewOpSchemaParams(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        opSchemaService.previewOpSchemaParams(dto);
-        return Result.success("操作成功");
+    @Operation(summary = "预览Qbe模型JSON")
+    @PostMapping("/previewQbeModel")
+    public Result<String> previewQbeModel(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        return Result.success(opSchemaService.previewQbeModel(dto.getId()));
     }
 
     @Operation(summary = "执行输出方案")

@@ -11,11 +11,26 @@
       <div class="left-panel">
         <div class="panel-header">蓝图文件</div>
         <div class="blueprint-list">
+          <!-- 固定条目：QBE模型 -->
+          <div
+            class="blueprint-item"
+            :class="{ active: selectedKey === '__qbe_model__' }"
+            @click="selectQbeModel"
+          >
+            <el-icon class="item-icon"><DataAnalysis /></el-icon>
+            <div class="item-info">
+              <div class="item-name">QBE模型</div>
+              <div class="item-path">查看当前输出方案的QBE模型JSON</div>
+            </div>
+          </div>
+
+          <div class="list-divider" />
+
           <div
             v-for="item in blueprintList"
             :key="item.sha256Hex"
             class="blueprint-item"
-            :class="{ active: selectedSha256 === item.sha256Hex }"
+            :class="{ active: selectedKey === item.sha256Hex }"
             @click="selectBlueprint(item)"
           >
             <el-icon class="item-icon"><Document /></el-icon>
@@ -58,7 +73,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { DocumentCopy, Document, ArrowLeft } from "@element-plus/icons-vue";
+import { DocumentCopy, Document, DataAnalysis } from "@element-plus/icons-vue";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
@@ -79,7 +94,8 @@ const opSchemaId = ref<string>("");
 const listLoading = ref(false);
 const previewLoading = ref(false);
 const blueprintList = ref<GetOpBluePrintListVo[]>([]);
-const selectedSha256 = ref<string>("");
+/** 当前选中项的唯一标识：固定条目用 '__qbe_model__'，蓝图条目用 sha256Hex */
+const selectedKey = ref<string>("");
 const selectedFileName = ref<string>("");
 const codeContent = ref<string>("");
 const rawHtml = ref<string>("");
@@ -144,18 +160,50 @@ const renderCode = (code: string, fileName: string): void => {
 };
 
 /**
- * 选择蓝图，调用预览接口
+ * 清空右侧预览区
  */
-const selectBlueprint = async (item: GetOpBluePrintListVo): Promise<void> => {
-  if (selectedSha256.value === item.sha256Hex) {
-    return;
-  }
-
-  selectedSha256.value = item.sha256Hex;
-  selectedFileName.value = item.fileName;
+const clearPreview = (): void => {
   codeContent.value = "";
   rawHtml.value = "";
   detectedLanguage.value = "";
+};
+
+/**
+ * 选择 QBE模型 固定条目
+ */
+const selectQbeModel = async (): Promise<void> => {
+  if (selectedKey.value === "__qbe_model__") {
+    return;
+  }
+
+  selectedKey.value = "__qbe_model__";
+  selectedFileName.value = "QBE模型";
+  clearPreview();
+  previewLoading.value = true;
+
+  try {
+    const json = await OpSchemaApi.previewQbeModel({ id: opSchemaId.value });
+    const formatted = JSON.stringify(JSON.parse(json), null, 2);
+    codeContent.value = formatted;
+    renderCode(formatted, "model.json");
+  } catch (error: any) {
+    ElMessage.error(error.message || "预览QBE模型失败");
+  } finally {
+    previewLoading.value = false;
+  }
+};
+
+/**
+ * 选择蓝图，调用预览接口
+ */
+const selectBlueprint = async (item: GetOpBluePrintListVo): Promise<void> => {
+  if (selectedKey.value === item.sha256Hex) {
+    return;
+  }
+
+  selectedKey.value = item.sha256Hex;
+  selectedFileName.value = item.fileName;
+  clearPreview();
   previewLoading.value = true;
 
   try {
@@ -365,6 +413,12 @@ onMounted(async () => {
   text-align: center;
   color: #909399;
   font-size: 13px;
+}
+
+.list-divider {
+  height: 1px;
+  background-color: #e4e7ed;
+  margin: 4px 0;
 }
 
 /* 右侧代码预览 */
