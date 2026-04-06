@@ -214,21 +214,21 @@ public class RawModelService {
                     //处理字段长度
                     int columnSize = rs.getInt("COLUMN_SIZE");
 
-                    if(columnSize > 0){
+                    if (columnSize > 0) {
                         po.setLength(columnSize);
                     }
 
                     //处理字段必填项
                     String nullable = rs.getString("IS_NULLABLE");
 
-                    if("YES".equalsIgnoreCase(nullable)){
+                    if ("NO".equalsIgnoreCase(nullable)) {
                         po.setRequire(1);
                     }
 
                     //处理字段主键项
                     boolean isPk = pkColumns.contains(po.getName());
 
-                    if(isPk){
+                    if (isPk) {
                         po.setPk(1);
                         po.setRequire(1); //主键是必填项
                     }
