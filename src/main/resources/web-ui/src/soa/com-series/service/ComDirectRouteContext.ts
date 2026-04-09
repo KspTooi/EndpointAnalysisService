@@ -56,7 +56,7 @@
  * 六、典型调用示例
  * 来源页：
  * const { cdrcRedirect, getCdrcReturnQuery } = ComDirectRouteContext.useDirectRouteContext();
- * cdrcRedirect("raw-model-manager", scope.row, { pageNum: 1, pageSize: 20 });
+ * cdrcRedirect("out-model-origin-manager", scope.row, { pageNum: 1, pageSize: 20 });
  *
  * 目标页：
  * const { getCdrcQuery, cdrcReturn } = ComDirectRouteContext.useDirectRouteContext();

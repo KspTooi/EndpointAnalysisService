@@ -88,7 +88,15 @@ const { isMenuCollapse, toggleMenu, autoBreadcrumbs } = ComFrameworkService.useC
 const authStore = UserAuthService.AuthStore();
 
 //获取应用版本
-const appVersion = computed(() => authStore.getUserInfo.appVersion);
+const appVersion = computed(() => {
+  const userInfo = authStore.getUserInfo;
+
+  if (!userInfo) {
+    return "未知";
+  }
+
+  return userInfo.appVersion;
+});
 </script>
 
 <style scoped>
