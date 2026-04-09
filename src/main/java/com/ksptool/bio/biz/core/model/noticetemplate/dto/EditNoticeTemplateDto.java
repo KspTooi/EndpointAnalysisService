@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class EditNoticeTemplateDto {
@@ -31,6 +29,7 @@ public class EditNoticeTemplateDto {
 
     @Schema(description = "模板内容 (含占位符)")
     @NotBlank(message = "模板内容不能为空")
+    @Length(max = 10000, message = "模板内容长度不能超过1万字")
     private String content;
 
     @Schema(description = "状态: 0启用, 1禁用")
