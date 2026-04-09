@@ -231,7 +231,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="排序" prop="seq">
-        <el-input-number v-model.number="modalForm.seq" :min="0" :max="655350" placeholder="请输入排序" clearable />
+        <el-input-number v-model.number="modalForm.seq" :min="0" placeholder="请输入排序" clearable />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -248,14 +248,21 @@
 <script setup lang="ts">
 import type { FormInstance, TableInstance } from "element-plus";
 import { ref } from "vue";
-import { Delete as DeleteIcon, Plus as PlusIcon, InfoFilled, Edit as EditIcon } from "@element-plus/icons-vue";
+import {
+  Delete as DeleteIcon,
+  View as ViewIcon,
+  Plus as PlusIcon,
+  InfoFilled,
+  Edit as EditIcon,
+} from "@element-plus/icons-vue";
 import StdIconPicker from "@/soa/std-series/StdIconPicker.vue";
 import { Icon } from "@iconify/vue";
+import type { GetMenuDetailsVo } from "@/views/core/api/MenuApi.ts";
 import MenuManagerService from "@/views/core/service/MenuManagerService.ts";
 import GenricRouteChooseModal from "@/soa/genric-route/GenricRouteChooseModal.vue";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import MenuApi, { type GetMenuDetailsVo } from "@/views/core/api/MenuApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import MenuApi from "@/views/core/api/MenuApi.ts";
+import { Result } from "@/commons/model/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
 

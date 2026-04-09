@@ -30,7 +30,6 @@
             <el-form-item>
               <el-button type="primary" :disabled="listLoading" @click="loadList">查询</el-button>
               <el-button :disabled="listLoading" @click="resetList">重置</el-button>
-              <StdExpandButton v-model="uiState.isAdvancedSearch" :disabled="listLoading" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -232,7 +231,6 @@ import { ref, markRaw, reactive } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
 import NoticeService from "@/views/core/service/NoticeService.ts";
-import StdExpandButton from "@/soa/std-series/StdExpandButton.vue";
 import CoreUserSelectModal from "@/views/core/components/public/CoreUserSelectModal.vue";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
 import CoreOrgDeptSelectModal from "@/views/core/components/public/CoreOrgDeptSelectModal.vue";
