@@ -112,30 +112,40 @@ export default {
     };
 
     /**
+     * 创建一个新标签
+     * @param tab 标签
+     * @returns 返回标签ID
+     */
+    const createTab = (tab: Tab): string => {
+      if (!tab?.id) {
+        return null;
+      }
+      //如果标签没有名字,其ID作为名字
+      if (!tab?.title) {
+        tab.title = tab.id;
+      }
+      //存在同ID标签,则更新
+      const existingTab = getTab(tab.id);
+
+      if (existingTab) {
+        updateTab(tab);
+        return existingTab.id;
+      }
+      //不存在同ID标签,则创建
+      tabs.value.push(tab);
+      return tab.id;
+    };
+
+    /**
      * 打开一个新标签，并追加到所有标签的最后
      * @param tab 标签
      * @returns 成功返回标签ID，失败返回null
      */
     const openTab = (tab: Tab): string | null => {
-      if (!tab?.id) {
-        return null;
-      }
-
-      //如果标签没有名字,其ID作为名字
-      if (!tab?.title) {
-        tab.title = tab.id;
-      }
-
-      //已存在相同ID的标签时直接激活，不重复插入
-      const existingTab = getTab(tab.id);
-
-      //不存在相同ID的标签时，添加到标签列表
-      if (!existingTab) {
-        tabs.value.push(tab);
-      }
-
+      //先创建标签
+      const tabId = createTab(tab);
       //激活标签
-      activeTab(tab.id);
+      activeTab(tabId);
       return tab.id;
     };
 
@@ -311,6 +321,9 @@ export default {
 
       //打开一个新标签，并追加到所有标签的最后
       openTab,
+
+      //创建一个新标签
+      createTab,
 
       //打开一个新标签，并插入到指定索引位置
       openTabAt,
