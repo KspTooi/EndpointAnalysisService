@@ -82,6 +82,7 @@
             placement: 'top',
             enterable: false,
           }"
+          :formatter="(_, __, value) => value ?? '-'"
         />
         <el-table-column prop="status" label="状态" min-width="100">
           <template #default="scope">
