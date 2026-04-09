@@ -80,7 +80,6 @@ public class OrgService {
             }
             parentVo.getChildren().add(vo);
         }
-
         return treeVos;
     }
 
@@ -116,12 +115,12 @@ public class OrgService {
         var isRootAdd = false;
         var isSubOrgAdd = false;
 
-        //判断现在是在新增租户还是新增租户下的子机构 0:部门 1:企业(租户)
-        if (dto.getKind() == 1) {
+        //判断现在是在新增租户还是新增租户下的子机构 0:企业(租户) 1:子企业 2:部门 3:班组
+        if (dto.getKind() == 0) {
             isRootAdd = true;
         }
 
-        if (dto.getKind() == 0) {
+        if (dto.getKind() > 0) {
             isSubOrgAdd = true;
         }
 
@@ -217,12 +216,12 @@ public class OrgService {
         var isRootEdit = false;
         var isSubOrgEdit = false;
 
-        //判断现在是在编辑租户还是编辑租户下的子机构 0:部门 1:企业(租户)
-        if (updatePo.getKind() == 1) {
+        //判断现在是在编辑租户还是编辑租户下的子机构 0:企业(租户) 1:子企业 2:部门 3:班组
+        if (updatePo.getKind() == 0) { //企业(租户)
             isRootEdit = true;
         }
 
-        if (updatePo.getKind() == 0) {
+        if (updatePo.getKind() > 0) { //子企业 部门 班组
             isSubOrgEdit = true;
         }
 
@@ -311,7 +310,7 @@ public class OrgService {
                         .orElseThrow(() -> new BizException("无法处理编辑请求,父级组织不存在."));
 
                 basePathIds.add(parent.getId().toString());
-                
+
                 //如果父级是NULL，则停止向上查找
                 if (parent.getParentId() == null) {
                     break;

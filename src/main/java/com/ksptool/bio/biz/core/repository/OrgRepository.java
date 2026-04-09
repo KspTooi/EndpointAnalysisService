@@ -10,25 +10,29 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * 组织机构仓库
+ * kind: 0:企业(租户) 1:子企业 2:部门 3:班组
+ */
 @Repository
 public interface OrgRepository extends JpaRepository<OrgPo, Long> {
 
     /**
-     * 根据名称查询企业
+     * 根据名称查询企业(租户)
      *
-     * @param name 企业名称
-     * @return 企业
+     * @param name 企业(租户)名称
+     * @return 企业(租户)
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 1")
+    @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 0")
     OrgPo getRootByName(@Param("name") String name);
 
     /**
-     * 根据id列表查询企业
+     * 根据id列表查询企业(租户)
      *
      * @param ids 企业id列表
      * @return 企业列表
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.id IN :ids AND d.kind = 1")
+    @Query("SELECT d FROM OrgPo d WHERE d.id IN :ids AND d.kind = 0")
     List<OrgPo> getRootsByIds(@Param("ids") List<Long> ids);
 
 
@@ -38,7 +42,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @param id 企业id
      * @return 企业
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.id = :id AND d.kind = 1")
+    @Query("SELECT d FROM OrgPo d WHERE d.id = :id AND d.kind = 0")
     OrgPo getRootById(@Param("id") Long id);
 
     /**
@@ -47,7 +51,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @param deptId 部门id
      * @return 部门
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.id = :deptId AND d.kind = 0")
+    @Query("SELECT d FROM OrgPo d WHERE d.id = :deptId AND d.kind = 2")
     OrgPo getDeptById(@Param("deptId") Long deptId);
 
     /**
@@ -56,7 +60,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @param deptIds 部门id列表
      * @return 部门列表
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.id IN :deptIds AND d.kind = 0")
+    @Query("SELECT d FROM OrgPo d WHERE d.id IN :deptIds AND d.kind = 2")
     List<OrgPo> getDeptsByIds(@Param("deptIds") List<Long> deptIds);
 
     /**
@@ -66,7 +70,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @param orgId 组织id
      * @return 部门
      */
-    @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 0 AND d.rootId = :orgId")
+    @Query("SELECT d FROM OrgPo d WHERE d.name = :name AND d.kind = 2 AND d.rootId = :orgId")
     OrgPo getDeptByName(@Param("name") String name, @Param("orgId") Long orgId);
 
 
@@ -117,7 +121,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @return 企业数量
      */
     @Query("""
-            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 1
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0
             """)
     Long countRootByName(@Param("name") String name);
 
@@ -129,7 +133,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @return 企业数量
      */
     @Query("""
-            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 1 AND u.id != :id
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0 AND u.id != :id
             """)
     Long countRootByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 
@@ -141,7 +145,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @return 部门数量
      */
     @Query("""
-            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0 AND u.parentId = :parentId
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind > 0 AND u.parentId = :parentId
             """)
     Long countDeptByNameAndParentId(@Param("name") String name, @Param("parentId") Long parentId);
 
@@ -155,7 +159,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      * @return 部门数量
      */
     @Query("""
-            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind = 0 AND u.parentId = :parentId AND u.id != :id
+            SELECT COUNT(u) FROM OrgPo u WHERE u.name = :name AND u.kind > 0 AND u.parentId = :parentId AND u.id != :id
             """)
     Long countDeptByNameAndParentIdExcludeId(@Param("name") String name, @Param("parentId") Long parentId, @Param("id") Long id);
 
@@ -167,7 +171,7 @@ public interface OrgRepository extends JpaRepository<OrgPo, Long> {
      */
     @Query("""
             SELECT d FROM OrgPo d
-            WHERE d.kind = 0
+            WHERE d.kind > 0
             AND (
                 d.id = :deptId
                 OR CONCAT(',', d.orgPathIds, ',') LIKE CONCAT('%,', :deptId, ',%')

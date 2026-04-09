@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.core.model.org.dto;
 
+import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,18 +8,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
-import com.ksptool.bio.biz.core.common.aop.DtoCustomValidator;
-
 @Getter
 @Setter
-public class AddOrgDto implements DtoCustomValidator{
+public class AddOrgDto implements DtoCustomValidator {
 
     @Schema(description = "上级组织ID NULL顶级组织")
     private Long parentId;
 
     @NotNull(message = "组织机构类型不能为空")
-    @Range(min = 0, max = 1, message = "组织机构类型必须在0和1之间")
-    @Schema(description = "0:部门 1:企业")
+    @Range(min = 0, max = 3, message = "组织机构类型必须在0-3之间")
+    @Schema(description = "0:企业(租户) 1:子企业 2:部门 3:班组")
     private Integer kind;
 
     @NotNull(message = "组织机构名称不能为空")
@@ -41,27 +40,19 @@ public class AddOrgDto implements DtoCustomValidator{
     @Override
     public String validate() {
 
-        //企业不允许填写主管ID
-        if (kind == 1) {
-            if (principalId != null) {
-                return "企业不允许填主管ID";
-            }
-        }
-
-        //顶级组织只能是企业
-        if (parentId == null) {
-            if (kind != 1) {
-                return "顶级组织只能是企业";
-            }
-        }
-
-        //部门必填parentId
+        //企业(租户)不允许填写主管ID
         if (kind == 0) {
-            if (parentId == null) {
-                return "新增部门时必须填写上级组织ID";
+            if (principalId != null) {
+                return "企业(租户)不允许填主管ID";
             }
         }
 
+        //1:子企业 2:部门 3:班组 必须有父级
+        if (kind == 1 || kind == 2 || kind == 3) {
+            if (parentId == null) {
+                return "新增子企业、部门、班组时必须填写上级组织ID";
+            }
+        }
 
         return null;
     }

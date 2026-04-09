@@ -19,7 +19,7 @@ public class GetOrgListVo {
     @Schema(description = "上级组织ID NULL顶级组织")
     private Long parentId;
 
-    @Schema(description = "0:部门 1:企业")
+    @Schema(description = "0:企业(租户) 1:子企业 2:部门 3:班组")
     private Integer kind;
 
     @Schema(description = "组织机构名称")
