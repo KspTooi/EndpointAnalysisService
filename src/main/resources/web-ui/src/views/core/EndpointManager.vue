@@ -172,7 +172,7 @@
         <el-input v-model="modalForm.description" placeholder="请输入端点描述" clearable />
       </el-form-item>
       <el-form-item label="排序" prop="seq">
-        <el-input-number v-model.number="modalForm.seq" :min="0" :max="655350" placeholder="请输入排序" clearable />
+        <el-input-number v-model.number="modalForm.seq" :min="0" placeholder="请输入排序" clearable />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -389,7 +389,7 @@
 <script setup lang="ts">
 import type { GetEndpointDetailsVo, GetEndpointTreeDto, GetEndpointTreeVo } from "@/views/core/api/EndpointApi.ts";
 import EndpointApi from "@/views/core/api/EndpointApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { reactive, ref, computed, onMounted } from "vue";
 import {
