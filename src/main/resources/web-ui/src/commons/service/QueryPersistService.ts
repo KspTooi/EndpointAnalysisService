@@ -13,7 +13,8 @@ export default {
 
       //如果值不为空，则持久化
       if (value !== null && value !== undefined && value !== "") {
-        localStorage.setItem(prefix + "_" + key, value + "");
+        const saveValue = typeof value === "object" ? JSON.stringify(value) : value + "";
+        localStorage.setItem(prefix + "_" + key, saveValue);
         continue;
       }
 
@@ -37,12 +38,16 @@ export default {
           continue;
         }
 
-        if (typeof query[key] === "string" || query[key] === null) {
+        if (typeof query[key] === "string") {
           query[key] = value;
           continue;
         }
-
-        query[key] = value;
+        
+        try {
+          query[key] = JSON.parse(value);
+        } catch (e) {
+          query[key] = value;
+        }
       }
     }
   },
