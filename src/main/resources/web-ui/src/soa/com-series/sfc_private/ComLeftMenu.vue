@@ -41,68 +41,73 @@
           </el-icon>
           <span>维护中心(备用)</span>
         </el-menu-item> -->
-
-        <!-- 菜单项 一级菜单 目录类型 -->
-        <el-sub-menu v-for="item in filterDirectoryMenu(menuTree)" :key="item.id" :index="item.id">
-          <template #title>
-            <el-icon>
-              <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
-            </el-icon>
-            <span>{{ item.name }}</span>
-          </template>
-
-          <!-- 菜单项 二级菜单 目录类型 -->
-          <el-sub-menu v-for="child in filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
+        <template v-for="item in menuTree" :key="item.id">
+          <!-- 菜单项 一级菜单 目录类型 -->
+          <el-sub-menu v-if="item.menuKind === 0" :key="item.id" :index="item.id">
             <template #title>
               <el-icon>
-                <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
+                <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
               </el-icon>
-              <span>{{ child.name }}</span>
+              <span>{{ item.name }}</span>
             </template>
-            <!-- 三级菜单 目录类型 -->
-            <el-sub-menu v-for="grandChild in filterDirectoryMenu(child.children)" :key="grandChild.id" :index="grandChild.id">
+
+            <!-- 菜单项 二级菜单 目录类型 -->
+            <el-sub-menu v-for="child in filterDirectoryMenu(item.children)" :key="child.id" :index="child.id">
               <template #title>
+                <el-icon>
+                  <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
+                </el-icon>
+                <span>{{ child.name }}</span>
+              </template>
+              <!-- 三级菜单 目录类型 -->
+              <el-sub-menu
+                v-for="grandChild in filterDirectoryMenu(child.children)"
+                :key="grandChild.id"
+                :index="grandChild.id"
+              >
+                <template #title>
+                  <el-icon>
+                    <component :is="resolveIcon(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+                  </el-icon>
+                  <span>{{ grandChild.name }}</span>
+                </template>
+              </el-sub-menu>
+              <!-- 三级菜单 菜单项类型 -->
+              <el-menu-item
+                v-for="grandChild in filterItemMenu(child.children)"
+                :key="grandChild.id"
+                :index="grandChild.id"
+                @click="openMenu(grandChild)"
+              >
                 <el-icon>
                   <component :is="resolveIcon(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
                 </el-icon>
                 <span>{{ grandChild.name }}</span>
-              </template>
+              </el-menu-item>
             </el-sub-menu>
-            <!-- 三级菜单 菜单项类型 -->
+
+            <!-- 菜单项 二级菜单 菜单项类型 -->
             <el-menu-item
-              v-for="grandChild in filterItemMenu(child.children)"
-              :key="grandChild.id"
-              :index="grandChild.id"
-              @click="openMenu(grandChild)"
+              v-for="child in filterItemMenu(item.children)"
+              :key="child.id"
+              :index="child.id"
+              @click="openMenu(child)"
             >
               <el-icon>
-                <component :is="resolveIcon(grandChild.menuIcon)" v-if="grandChild.menuIcon" />
+                <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
               </el-icon>
-              <span>{{ grandChild.name }}</span>
+              <span>{{ child.name }}</span>
             </el-menu-item>
           </el-sub-menu>
 
-          <!-- 菜单项 二级菜单 菜单项类型 -->
-          <el-menu-item
-            v-for="child in filterItemMenu(item.children)"
-            :key="child.id"
-            :index="child.id"
-            @click="openMenu(child)"
-          >
+          <!-- 菜单项 一级菜单 菜单项类型 -->
+          <el-menu-item v-if="item.menuKind === 1" :key="item.id" :index="item.id" @click="openMenu(item)">
             <el-icon>
-              <component :is="resolveIcon(child.menuIcon)" v-if="child.menuIcon" />
+              <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
             </el-icon>
-            <span>{{ child.name }}</span>
+            <span>{{ item.name }}</span>
           </el-menu-item>
-        </el-sub-menu>
-
-        <!-- 菜单项 一级菜单 菜单项类型 -->
-        <el-menu-item v-for="item in filterItemMenu(menuTree)" :key="item.id" :index="item.id" @click="openMenu(item)">
-          <el-icon>
-            <component :is="resolveIcon(item.menuIcon)" v-if="item.menuIcon" />
-          </el-icon>
-          <span>{{ item.name }}</span>
-        </el-menu-item>
+        </template>
       </el-menu>
     </div>
   </el-aside>
