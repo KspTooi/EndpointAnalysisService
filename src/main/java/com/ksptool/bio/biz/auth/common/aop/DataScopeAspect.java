@@ -1,6 +1,8 @@
 package com.ksptool.bio.biz.auth.common.aop;
 
 import com.ksptool.assembly.entity.exception.BizException;
+import com.ksptool.bio.biz.auth.common.mybatis.RsContext;
+import com.ksptool.bio.biz.auth.common.mybatis.RsContextHolder;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -67,6 +69,9 @@ public class DataScopeAspect {
             return;
         }
 
+        //在MybatisRsContextHolder中设置数据权限上下文
+        RsContextHolder.set(new RsContext(rsMax, aud.getId(), aud.getRootId(), aud.getRsAllowDepts()));
+
         //取出 Hibernate 的 Session 并激活过滤器
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter(ROW_SCOPE_FILTER_NAME);
@@ -93,5 +98,8 @@ public class DataScopeAspect {
         Session session = entityManager.unwrap(Session.class);
         // 强制关闭，清空当前线程/Session的权限上下文
         session.disableFilter(ROW_SCOPE_FILTER_NAME);
+
+        //清空MybatisRsContextHolder中的数据权限上下文
+        RsContextHolder.clear();
     }
 }
