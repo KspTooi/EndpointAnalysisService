@@ -81,6 +81,7 @@
             placement: 'top',
             enterable: false,
           }"
+          :formatter="(_, __, value) => value ?? '-'"
         />
         <el-table-column label="系统权限" min-width="100">
           <template #default="scope">
@@ -186,7 +187,7 @@
         <el-input v-model="modalForm.remark" type="textarea" :rows="3" placeholder="请输入权限描述" />
       </el-form-item>
       <el-form-item label="排序号" prop="seq">
-        <el-input-number v-model="modalForm.seq" :min="0" :max="9999" />
+        <el-input-number v-model="modalForm.seq" :min="0" />
       </el-form-item>
       <el-form-item v-if="modalMode === 'add'" label="系统权限" prop="isSystem">
         <el-radio-group v-model="modalForm.isSystem">
