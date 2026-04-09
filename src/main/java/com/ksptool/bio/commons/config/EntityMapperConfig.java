@@ -8,6 +8,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -42,6 +43,28 @@ public class EntityMapperConfig implements EntityMapper {
         Converter<Long, String> longToStringConverter = new Converter<Long, String>() {
             public String convert(MappingContext<Long, String> context) {
                 return context.getSource() != null ? context.getSource().toString() : null;
+            }
+        };
+
+        // double -> BigDecimal（Assign/as 自动映射）
+        Converter<Double, BigDecimal> doubleToDecimalConverter = new Converter<>() {
+            public BigDecimal convert(MappingContext<Double, BigDecimal> context) {
+                Double src = context.getSource();
+                if (src == null) {
+                    return null;
+                }
+                return BigDecimal.valueOf(src);
+            }
+        };
+
+        // BigDecimal -> double（Assign/as 自动映射）
+        Converter<BigDecimal, Double> decimalToDoubleConverter = new Converter<>() {
+            public Double convert(MappingContext<BigDecimal, Double> context) {
+                BigDecimal src = context.getSource();
+                if (src == null) {
+                    return null;
+                }
+                return src.doubleValue();
             }
         };
 
@@ -89,6 +112,8 @@ public class EntityMapperConfig implements EntityMapper {
 
         mMapper.addConverter(toStringConverter);
         mMapper.addConverter(longToStringConverter);
+        mMapper.addConverter(doubleToDecimalConverter);
+        mMapper.addConverter(decimalToDoubleConverter);
         mMapper.addConverter(strToDateConverter);
         mMapper.addConverter(dateToStrConverter);
         mMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
