@@ -1,7 +1,7 @@
 import { onMounted, ref } from "vue";
 import type { GetAuditLoginListDto, GetAuditLoginListVo } from "@/views/audit/api/AuditLoginApi.ts";
 import AuditLoginApi from "@/views/audit/api/AuditLoginApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 
