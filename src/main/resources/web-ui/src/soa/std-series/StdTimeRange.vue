@@ -211,7 +211,8 @@ function disableEndDate(date: Date): boolean {
 
 .oper-time-edit__message {
   margin-top: 4px;
-  color: var(--el-color-danger);
+  /* color: var(--el-color-danger); */
+  color: #a8abb2;
   font-size: 12px;
   line-height: 1.2;
 }
