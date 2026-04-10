@@ -33,10 +33,13 @@
           />
           <el-button
             size="small"
+            :disabled="queryForm.seq >= 655350"
             :icon="ArrowDown"
             @click="
-              queryForm.seq++;
-              onConfirm();
+              () => {
+                queryForm.seq++;
+                onConfirm();
+              }
             "
           />
         </el-button-group>
