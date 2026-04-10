@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { GetUserListDto, GetUserListVo } from "@/views/core/api/UserApi";
 import AdminUserApi from "@/views/core/api/UserApi";
-import { Result } from "@/commons/model/Result.ts";
+import { Result } from "@/commons/model/Result";
 import { ElMessage } from "element-plus";
 
 export default {
