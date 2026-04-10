@@ -1,8 +1,8 @@
 import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { GetOrgTreeVo, GetOrgDetailsVo, AddOrgDto, EditOrgDto } from "@/views/core/api/OrgApi.ts";
 import OrgApi from "@/views/core/api/OrgApi.ts";
-import { Result } from "@/commons/model/Result.ts";
-import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import { Result } from "@/commons/model/Result";
+import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 
 export default {
   /**
@@ -163,7 +163,7 @@ export default {
     const modalForm = reactive<GetOrgDetailsVo>({
       id: "",
       parentId: null as string | null,
-      kind: 0, // 0:部门 1:企业
+      kind: 0, // 0:企业 1:子企业 2:部门 3:班组
       name: "",
       principalId: null as string | null,
       seq: 0,
@@ -177,7 +177,7 @@ export default {
         { required: true, message: "请输入组织机构名称", trigger: "blur" },
         { min: 1, max: 128, message: "组织机构名称长度必须在1-128个字符之间", trigger: "blur" },
       ],
-      parentId: modalForm.kind === 0 ? [{ required: true, message: "请选择上级组织", trigger: "change" }] : [],
+      parentId: [1, 2, 3].includes(modalForm.kind) ? [{ required: true, message: "请选择上级组织", trigger: "change" }] : [],
       seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
     }));
 
@@ -192,12 +192,12 @@ export default {
 
       if (mode === "add") {
         modalForm.parentId = null;
-        modalForm.kind = 1; // 顶级默认为企业
+        modalForm.kind = 0; // 顶级默认为企业
       }
 
       if (mode === "add-item" && row) {
         modalForm.parentId = row.id;
-        modalForm.kind = 0; // 子级默认为部门
+        modalForm.kind = 1; // 子级默认为子企业
       }
 
       //如果是编辑模式则需要加载详情数据
@@ -303,10 +303,13 @@ export default {
      * 组织机构类型名称
      */
     const modalKindName = computed(() => {
-      if (modalForm.kind == 1) {
-        return "企业";
-      }
-      return "部门";
+      const kindNameMap = {
+        0: "企业",
+        1: "子企业",
+        2: "部门",
+        3: "班组",
+      };
+      return kindNameMap[modalForm.kind] || "";
     });
 
     /**

@@ -43,9 +43,13 @@
         <el-table-column prop="name" label="组织机构名称" min-width="200" show-overflow-tooltip />
         <el-table-column prop="kind" label="类型" min-width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.kind === 1 ? 'primary' : 'info'">
+            <el-tag v-if="scope.row.kind === 0" type="success">企业</el-tag>
+            <el-tag v-if="scope.row.kind === 1" type="primary">子企业</el-tag>
+            <el-tag v-if="scope.row.kind === 2" type="info">部门</el-tag>
+            <el-tag v-if="scope.row.kind === 3" type="warning">班组</el-tag>
+            <!-- <el-tag :type="scope.row.kind === 1 ? 'primary' : 'info'">
               {{ scope.row.kind === 1 ? "企业" : "部门" }}
-            </el-tag>
+            </el-tag> -->
           </template>
         </el-table-column>
         <el-table-column prop="seq" label="排序" min-width="100">
@@ -78,13 +82,7 @@
   <!-- 组织机构编辑/新增模态框 -->
   <el-dialog
     v-model="modalVisible"
-    :title="
-      modalMode === 'edit'
-        ? '编辑' + modalKindName
-        : modalMode === 'add-item'
-          ? '新增子级' + modalKindName
-          : '添加' + modalKindName
-    "
+    :title="modalMode === 'edit' ? '编辑' + modalKindName : modalMode === 'add-item' ? '新增子级' : '添加' + modalKindName"
     width="500px"
     :close-on-click-modal="false"
     @close="
@@ -105,13 +103,22 @@
       </el-form-item>
 
       <el-form-item v-if="modalMode !== 'edit'" :label="modalKindName + '类型'" prop="kind">
-        <el-radio-group v-model="modalForm.kind" :disabled="modalMode === 'add-item'">
-          <el-radio :value="1">企业</el-radio>
-          <el-radio :value="0">部门</el-radio>
+        <el-radio-group
+          v-model="modalForm.kind"
+          @change="
+            (e) => {
+              if (e === 0) modalForm.parentId = null;
+            }
+          "
+        >
+          <el-radio :value="0" :disabled="modalMode === 'add-item'">企业</el-radio>
+          <el-radio :value="1">子企业</el-radio>
+          <el-radio :value="2">部门</el-radio>
+          <el-radio :value="3">班组</el-radio>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item v-show="modalKind == 0" label="上级组织" prop="parentId">
+      <el-form-item v-if="[1, 2, 3].includes(modalKind)" label="上级组织" prop="parentId">
         <el-tree-select
           v-model="modalForm.parentId"
           :data="filterTreeSelectData"
@@ -119,7 +126,7 @@
           clearable
           check-strictly
           :render-after-expand="true"
-          :disabled="modalMode === 'add-item'"
+          :disabled="modalMode === 'add-item' && modalForm.kind === 0"
           node-key="value"
         />
       </el-form-item>
@@ -128,7 +135,7 @@
         <el-input v-model="modalForm.principalId" placeholder="请输入主管ID" clearable />
       </el-form-item> -->
       <el-form-item :label="modalKindName + '排序'" prop="seq">
-        <el-input-number v-model="modalForm.seq" :min="0" :max="655350" style="width: 100%" />
+        <el-input-number v-model="modalForm.seq" :min="0" style="width: 100%" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -149,9 +156,10 @@ import { markRaw } from "vue";
 import type { FormInstance } from "element-plus";
 import OrgManagerService from "@/views/core/service/OrgManagerService.ts";
 import ComSeqFixer from "@/soa/com-series/ComSeqFixer.vue";
-import OrgApi, { type GetOrgDetailsVo } from "@/views/core/api/OrgApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import OrgApi from "@/views/core/api/OrgApi.ts";
+import { Result } from "@/commons/model/Result";
 import StdListLayout from "@/soa/std-series/StdListLayout.vue";
+import type { GetOrgDetailsVo } from "@/views/core/api/OrgApi.ts";
 
 const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
@@ -181,17 +189,15 @@ const filterTreeSelectData = computed(() => {
       if (node.value === id) {
         const disableAllChildren = (children: any[]): any[] => {
           return children.map((child) => ({
-            // eslint-disable-next-line no-restricted-syntax
             ...child,
             disabled: true,
             children: child.children ? disableAllChildren(child.children) : undefined,
           }));
         };
-        // eslint-disable-next-line no-restricted-syntax
+
         return { ...node, disabled: true, children: node.children ? disableAllChildren(node.children) : undefined };
       }
       if (node.children && node.children.length > 0) {
-        // eslint-disable-next-line no-restricted-syntax
         return { ...node, children: disableNode(node.children, id) };
       }
       return node;
