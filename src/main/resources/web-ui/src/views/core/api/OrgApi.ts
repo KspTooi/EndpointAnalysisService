@@ -10,7 +10,7 @@ export interface GetOrgTreeVo {
   id: string; // 主键id
   rootId: string; // 一级组织ID
   parentId: string | null; // 上级组织ID NULL顶级组织
-  kind: number; // 0:部门 1:企业
+  kind: number; // 0:企业 1:子企业 2:部门 3:班组
   name: string; // 组织机构名称
   seq: number; // 排序
   children: GetOrgTreeVo[]; // 子组织
@@ -20,7 +20,7 @@ export interface GetOrgDetailsVo {
   id: string; // 主键id
   rootId: string; // 一级组织ID
   parentId: string | null; // 上级组织ID NULL顶级组织
-  kind: number; // 0:部门 1:企业
+  kind: number; // 0:企业 1:子企业 2:部门 3:班组
   name: string; // 组织机构名称
   principalId: string | null; // 主管ID
   principalName: string; // 主管名称
@@ -29,7 +29,7 @@ export interface GetOrgDetailsVo {
 
 export interface AddOrgDto {
   parentId?: string | null; // 上级组织ID NULL顶级组织
-  kind: number; // 0:部门 1:企业
+  kind: number; // 0:企业 1:子企业 2:部门 3:班组
   name: string; // 组织机构名称
   principalId?: string | null; // 主管ID 企业不允许填
   seq: number; // 排序

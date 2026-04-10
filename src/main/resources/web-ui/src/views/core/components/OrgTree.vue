@@ -33,7 +33,7 @@
         <template #default="{ node, data }">
           <span class="custom-tree-node" :class="{ 'is-disabled': isNodeDisabled(data) }">
             <el-icon class="node-icon">
-              <component :is="data.kind === 1 ? OfficeBuildingIcon : ManagementIcon" />
+              <component :is="resolveIcon(iconMap[data.kind])" />
             </el-icon>
             <span class="node-label">{{ node.label }}</span>
           </span>
@@ -46,13 +46,13 @@
 <script setup lang="ts">
 import { ref, markRaw, onMounted } from "vue";
 import type { ElTree } from "element-plus";
-import { Search, OfficeBuilding, Management } from "@element-plus/icons-vue";
+import { Search, OfficeBuilding } from "@element-plus/icons-vue";
 import type { GetOrgTreeVo } from "@/views/core/api/OrgApi";
 import OrgTreeService from "@/views/core/service/OrgTreeService";
+import ComIconService from "@/soa/com-series/service/ComIconService.ts";
 
 const SearchIcon = markRaw(Search);
 const OfficeBuildingIcon = markRaw(OfficeBuilding);
-const ManagementIcon = markRaw(Management);
 
 const emit = defineEmits<{
   (e: "on-select", node: GetOrgTreeVo | null): void;
@@ -73,6 +73,15 @@ const props = withDefaults(
     selectKind: "all",
   }
 );
+
+const { resolveIcon } = ComIconService.useIconService();
+
+const iconMap = {
+  0: "ep:office-building",
+  1: "mdi:domain",
+  2: "mdi:sitemap",
+  3: "mdi:account-group",
+};
 
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const isAllSelected = ref(true);

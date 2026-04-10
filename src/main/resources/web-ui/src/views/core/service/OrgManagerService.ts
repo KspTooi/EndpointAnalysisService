@@ -312,18 +312,6 @@ export default {
       return kindNameMap[modalForm.kind] || "";
     });
 
-    /**
-     * 监听组织机构类型变化 用于模态框改变类型时清空上级组织
-     */
-    watch(
-      () => modalForm.kind,
-      (newVal): void => {
-        if (newVal == 1) {
-          modalForm.parentId = null;
-        }
-      }
-    );
-
     return {
       modalKindName,
       modalKind: computed(() => {

@@ -3,7 +3,7 @@
     <splitpanes class="custom-theme">
       <!-- 左侧树形列表：占满整个左侧 -->
       <pane size="20" min-size="10" max-size="40">
-        <div class="pt-2 px-1" style="height: 100%; box-sizing: border-box;">
+        <div class="pt-2 px-1" style="height: 100%; box-sizing: border-box">
           <OrgTree @on-select="onSelectOrg" />
         </div>
       </pane>
@@ -97,7 +97,12 @@
                 </template>
               </el-table-column>
               <el-table-column prop="createTime" label="创建时间" min-width="180" />
-              <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="180" />
+              <el-table-column
+                prop="lastLoginTime"
+                label="最后登录时间"
+                min-width="180"
+                :formatter="(_, __, value) => value ?? '-'"
+              />
               <el-table-column label="操作" fixed="right" min-width="180">
                 <template #default="scope">
                   <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">

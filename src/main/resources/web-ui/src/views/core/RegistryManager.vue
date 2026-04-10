@@ -64,7 +64,13 @@
               <el-table-column type="selection" width="40" />
               <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
               <el-table-column prop="nkey" label="Key" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="label" label="标签" min-width="150" show-overflow-tooltip />
+              <el-table-column
+                prop="label"
+                label="标签"
+                min-width="150"
+                show-overflow-tooltip
+                :formatter="(_, __, value) => value ?? '-'"
+              />
               <el-table-column label="数据类型" width="100">
                 <template #default="scope">
                   <el-tag v-if="scope.row.nvalueKind === 0" size="small">字符串</el-tag>
@@ -74,7 +80,13 @@
                 </template>
               </el-table-column>
               <el-table-column prop="nvalue" label="数据值" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="remark" label="说明" min-width="150" show-overflow-tooltip />
+              <el-table-column
+                prop="remark"
+                label="说明"
+                min-width="150"
+                show-overflow-tooltip
+                :formatter="(_, __, value) => value ?? '-'"
+              />
               <el-table-column label="状态" width="80">
                 <template #default="scope">
                   <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'" size="small">
