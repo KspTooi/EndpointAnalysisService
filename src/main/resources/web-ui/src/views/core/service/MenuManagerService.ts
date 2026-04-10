@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, ref, watch, type Ref } from "vue";
 import type { GetMenuDetailsVo, GetMenuTreeDto, GetMenuTreeVo } from "@/views/core/api/MenuApi.ts";
 import MenuApi from "@/views/core/api/MenuApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox, type FormInstance, type TableInstance } from "element-plus";
 import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import ComMenuService from "@/soa/com-series/service/ComMenuService.ts";
