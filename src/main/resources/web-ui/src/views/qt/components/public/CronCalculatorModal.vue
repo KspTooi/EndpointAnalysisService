@@ -18,13 +18,7 @@
           <el-form-item label="执行频率">
             <div class="flex items-center">
               <span class="mr-2">每隔</span>
-              <el-input-number
-                v-model="config.intervalValue"
-                :min="1"
-                :max="59"
-                controls-position="right"
-                style="width: 120px"
-              />
+              <el-input-number v-model="config.intervalValue" :min="1" controls-position="right" style="width: 120px" />
               <el-select v-model="config.intervalUnit" class="mx-2" style="width: 100px">
                 <el-option label="秒" value="second" />
                 <el-option label="分钟" value="minute" />
