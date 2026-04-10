@@ -9,7 +9,7 @@ import type {
   BatchEditUserDto,
 } from "@/views/core/api/UserApi.ts";
 import AdminUserApi from "@/views/core/api/UserApi.ts";
-import { Result } from "@/commons/model/Result.ts";
+import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import QueryPersistService from "@/commons/service/QueryPersistService.ts";
 import GroupApi from "@/views/auth/api/GroupApi.ts";
