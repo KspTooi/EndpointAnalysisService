@@ -242,7 +242,7 @@ export default {
     const router = useRouter();
 
     //获取标签页服务
-    const { getActiveTab, updateTab } = ComTabService.useTabService();
+    const { getActiveTab, updateTab, openTab } = ComTabService.useTabService();
 
     //获取菜单服务
     const { getMenuByPath, openMenu } = ComMenuService.useMenuService();
@@ -310,30 +310,70 @@ export default {
     }
 
     /**
-     * 跳转到一个已有的菜单项并携带一次性上下文
+     * 跳转到一个已有的菜单项并携带一次性上下文，并创建一个新的标签页
+     * 并创建一个新的标签页
      * @param nameOrPath 路由的名称或路径
+     * @param tabId 标签页ID
+     * @param tabName 标签页名称
      * @param sendQuery 需发送的查询参数
+     * @returns 是否跳转成功 true:成功 false:失败
      */
-    const cdrcRedirectToMenu = (nameOrPath: string, sendQuery?: any): void => {
-      //先根据名称或路径获取路由
-      const grsRoute = getRouteByNameOrPath(nameOrPath);
+    const cdrcRedirectWithNewTab = (nameOrPath: string, tabId: string, tabName: string, sendQuery?: any): boolean => {
+      //查找目标路由
+      const targetRoute = getRouteByNameOrPath(nameOrPath);
 
-      if (!grsRoute) {
-        console.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
-        ElMessage.error(`CDRC跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
-        return;
+      if (!targetRoute) {
+        console.error(`CDRC新标签跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        ElMessage.error(`CDRC新标签跳转失败，无法通过名称或路径 ${nameOrPath} 找到对应的路由!`);
+        return false;
       }
 
-      //然后根据GRS路由获取到菜单项
-      const menuItem = getMenuByPath(grsRoute.path);
-      if (!menuItem) {
-        console.error(`CDRC跳转失败，无法通过路径 ${grsRoute.path} 找到对应的路由!`);
-        ElMessage.error(`CDRC跳转失败，无法通过路径 ${grsRoute.path} 找到对应的路由!`);
-        return;
+      if (!tabId) {
+        console.error("CDRC新标签跳转失败，tabId不能为空!");
+        ElMessage.error("CDRC新标签跳转失败，tabId不能为空!");
+        return false;
       }
 
-      //打开菜单
-      openMenu(menuItem);
+      //获取当前标签页信息（作为来源页）
+      const currentTab = getActiveTab();
+
+      if (!currentTab) {
+        console.error("无法使用CDRC新标签跳转，当前激活标签不存在!");
+        ElMessage.error("无法使用CDRC新标签跳转，无法找到当前激活的标签!");
+        return false;
+      }
+
+      //生成唯一的CDRC跳转ID
+      const redirectId = nextRedirectId();
+
+      //构建CDRC上下文（新标签模式下不需要returnQuery，目标页无需回源）
+      const newTabCdrcContext: CDRCContext = {
+        return: null,
+        send: sendQuery ?? null,
+      };
+
+      //将上下文存入sessionStorage
+      putCdrcContext(CDRC_CONTEXT_PREFIX, redirectId, newTabCdrcContext);
+
+      //构建目标路由的完整路径（含CDRC查询参数）
+      const targetPath = targetRoute.buildPath();
+      const cdrcQuery = new URLSearchParams({
+        "cdrc-source": currentTab.path,
+        "cdrc-source-name": currentTab.title,
+        "cdrc-redirect-id": redirectId,
+      }).toString();
+      const tabPath = targetPath + "?" + cdrcQuery;
+
+      //创建新标签页并激活（如果同ID标签已存在则更新路径后激活）
+      openTab({
+        id: tabId,
+        icon: null,
+        title: tabName ?? tabId,
+        path: tabPath,
+        closable: true,
+      });
+
+      return true;
     };
 
     /**
@@ -502,6 +542,15 @@ export default {
        * @param returnQuery 从目标返回时会携带的查询参数
        */
       cdrcRedirect,
+
+      /**
+       * CDRC新标签跳转函数
+       * @param nameOrPath 路由的名称或路径
+       * @param tabId 标签页ID
+       * @param tabName 标签页名称
+       * @param sendQuery 需发送的查询参数
+       */
+      cdrcRedirectWithNewTab,
     };
   },
 };
