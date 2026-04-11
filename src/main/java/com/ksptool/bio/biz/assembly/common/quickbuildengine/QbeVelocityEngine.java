@@ -2,6 +2,7 @@ package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.text.PreparedPrompt;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -92,9 +93,10 @@ public class QbeVelocityEngine {
      * 渲染蓝图
      *
      * @param model      QBE模型
+     * @param schema     输出方案
      * @param blueprints 蓝图列表
      */
-    public void render(QbeModel model, List<QbeBlueprint> blueprints) {
+    public void render(QbeModel model, OpSchemaPo schema, List<QbeBlueprint> blueprints) {
 
         if (model == null) {
             throw new IllegalArgumentException("模型不能为空!");
@@ -154,7 +156,7 @@ public class QbeVelocityEngine {
             StringWriter writer = new StringWriter();
 
             //构建VelocityContext
-            VelocityContext vc = buildVc(model, globalVars);
+            VelocityContext vc = buildVc(model, schema, globalVars);
 
             //渲染模板
             boolean success = Velocity.evaluate(vc, writer, "template", templateContent);
@@ -195,7 +197,7 @@ public class QbeVelocityEngine {
      * @param globalVars      全局变量
      * @return 渲染后的字符串
      */
-    public String renderAsString(String templateContent, QbeModel model, Map<String, String> globalVars) {
+    public String renderAsString(String templateContent, QbeModel model, OpSchemaPo schema, Map<String, String> globalVars) {
 
         if (StringUtils.isBlank(templateContent)) {
             throw new IllegalArgumentException("模板内容不能为空!");
@@ -204,9 +206,11 @@ public class QbeVelocityEngine {
             throw new IllegalArgumentException("模型不能为空!");
         }
 
-        VelocityContext vc = buildVc(model, globalVars != null ? globalVars : new HashMap<>());
+        //构建VelocityContext
+        VelocityContext vc = buildVc(model, schema, globalVars);
         StringWriter writer = new StringWriter();
 
+        //渲染模板
         boolean success = Velocity.evaluate(vc, writer, "template", templateContent);
         if (!success) {
             throw new RuntimeException("无法渲染模板内容");
@@ -223,11 +227,22 @@ public class QbeVelocityEngine {
      * @param GlobalVars 全局变量
      * @return VelocityContext 包含模型和全局变量的VelocityContext
      */
-    public VelocityContext buildVc(QbeModel model, Map<String, String> GlobalVars) {
+    public VelocityContext buildVc(QbeModel model, OpSchemaPo schema,Map<String, String> GlobalVars) {
         //渲染模板 先把modelMap放进VC
         VelocityContext vc = new VelocityContext();
-        vc.put("model", model);
-        vc.put("global", GlobalVars);
+
+        if(model != null){
+            vc.put("model", model);
+        }
+
+        if(schema != null){
+            vc.put("schema", schema);
+        }
+
+        if(GlobalVars != null){
+            vc.put("global", GlobalVars);
+        }
+
         return vc;
     }
 

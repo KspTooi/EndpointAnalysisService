@@ -367,7 +367,7 @@ public class OpSchemaService {
         var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
 
         //渲染蓝图
-        return qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, null);
+        return qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, opSchemaPo, null);
     }
 
     /**
