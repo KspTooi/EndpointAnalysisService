@@ -324,11 +324,6 @@ public class OpSchemaService {
                     targetType = mat.getTarget();
                 }
 
-                //如果未匹配到tymSf 不更新数据类型
-                if (mat == null) {
-                    continue;
-                }
-
                 //更新聚合模型的数据类型
                 polyModel.setDataType(targetType);
                 polyModelRepository.save(polyModel);
