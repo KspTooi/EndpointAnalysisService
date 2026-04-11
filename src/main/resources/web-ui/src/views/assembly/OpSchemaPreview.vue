@@ -88,8 +88,13 @@
 
           <div v-loading="previewLoading" class="code-wrapper">
             <pre v-if="rawHtml" class="hljs code-block"><code v-html="rawHtml"></code></pre>
-            <div v-else-if="!previewLoading" class="empty-tip">
+
+            <div v-if="!previewLoading && !previewBlueprintDeleted" class="empty-tip">
               {{ blueprintList.length > 0 ? "请从左侧选择一个蓝图文件" : "暂无内容" }}
+            </div>
+
+            <div v-if="previewBlueprintDeleted" class="empty-tip">
+              <close-icon class="text-red-500 mr-2 size-8" />该蓝图已被删除，请重新选择
             </div>
           </div>
         </div>
@@ -152,6 +157,7 @@ const {
   detectedLanguage,
   previewLoading,
   previewFileName,
+  previewBlueprintDeleted,
   previewBlueprint,
   previewQbeModel,
   clearPreview,

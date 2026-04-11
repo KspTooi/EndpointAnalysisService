@@ -72,6 +72,9 @@ export default {
     //正在预览的文件名
     const previewFileName = ref<string>("");
 
+    //正在预览的蓝图已被删除
+    const previewBlueprintDeleted = ref<boolean>(false);
+
     const getLanguageByExt = (filename: string): string => {
       const ext = filename.split(".").pop()?.toLowerCase();
       const map: Record<string, string> = {
@@ -142,12 +145,23 @@ export default {
      * @param opSchemaId 输出方案ID
      */
     const previewBlueprint = async (vo: GetOpBluePrintListVo, opSchemaId: string): Promise<void> => {
-      //预览蓝图
-      const blueprintOutput = await OpSchemaApi.previewOpBluePrint({ opSchemaId: opSchemaId, sha256Hex: vo.sha256Hex });
-      codeContent.value = blueprintOutput;
-      renderCode(blueprintOutput, vo.parsedName);
+      try {
+        previewBlueprintDeleted.value = false;
+        previewLoading.value = true;
+        //清空预览
+        clearPreview();
 
-      previewFileName.value = vo.parsedName;
+        //预览蓝图
+        const blueprintOutput = await OpSchemaApi.previewOpBluePrint({ opSchemaId: opSchemaId, sha256Hex: vo.sha256Hex });
+        codeContent.value = blueprintOutput;
+        renderCode(blueprintOutput, vo.parsedName);
+
+        previewFileName.value = vo.parsedName;
+      } catch {
+        previewBlueprintDeleted.value = true;
+      } finally {
+        previewLoading.value = false;
+      }
     };
 
     /**
@@ -155,6 +169,8 @@ export default {
      * @param opSchemaId 输出方案ID
      */
     const previewQbeModel = async (opSchemaId: string): Promise<void> => {
+      //清空预览
+      clearPreview();
       const qbeModelJson = await OpSchemaApi.previewQbeModel({ id: opSchemaId });
       codeContent.value = qbeModelJson;
 
@@ -189,6 +205,9 @@ export default {
 
       //加载状态
       previewLoading,
+
+      //正在预览的蓝图已被删除
+      previewBlueprintDeleted,
 
       //正在预览的文件名
       previewFileName,
