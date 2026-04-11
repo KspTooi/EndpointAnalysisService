@@ -26,6 +26,11 @@
         <span class="schema-info-label">字段数量(聚合)</span>
         <span class="schema-info-value">{{ cdrcRow?.fieldCountPoly ?? 0 }}</span>
       </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">显示未解析的文件名</span>
+        <el-switch v-model="showRawName" size="small" />
+      </div>
     </div>
 
     <!-- 操作按钮区域 -->
@@ -58,8 +63,12 @@
           >
             <el-icon class="item-icon"><Document /></el-icon>
             <div class="item-info">
-              <div class="item-name" :title="item.fileName">{{ item.fileName }}</div>
-              <div class="item-path" :title="item.filePath">{{ item.filePath }}</div>
+              <div class="item-name" :title="showRawName ? item.fileName : item.parsedName">
+                {{ showRawName ? item.fileName : item.parsedName }}
+              </div>
+              <div class="item-path" :title="showRawName ? item.filePath : item.parsedPath">
+                {{ showRawName ? item.filePath : item.parsedPath }}
+              </div>
             </div>
           </div>
           <div v-if="!listLoading && blueprintList.length === 0" class="empty-list">暂无蓝图文件</div>
@@ -119,6 +128,7 @@ const blueprintList = ref<GetOpBluePrintListVo[]>([]);
 /** 当前选中项的唯一标识：固定条目用 '__qbe_model__'，蓝图条目用 sha256Hex */
 const selectedKey = ref<string>("");
 const selectedFileName = ref<string>("");
+const showRawName = ref(false);
 const codeContent = ref<string>("");
 const rawHtml = ref<string>("");
 const detectedLanguage = ref<string>("");
@@ -224,7 +234,7 @@ const selectBlueprint = async (item: GetOpBluePrintListVo): Promise<void> => {
   }
 
   selectedKey.value = item.sha256Hex;
-  selectedFileName.value = item.fileName;
+  selectedFileName.value = showRawName.value ? item.fileName : item.parsedName;
   clearPreview();
   previewLoading.value = true;
 

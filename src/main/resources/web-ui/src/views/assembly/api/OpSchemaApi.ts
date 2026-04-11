@@ -90,6 +90,8 @@ export interface EditOpSchemaDto {
 export interface GetOpBluePrintListVo {
   fileName: string; // 蓝图文件名
   filePath: string; // 蓝图文件路径(相对于基准路径)
+  parsedName: string; // 蓝图解析名(代入参数解析后的文件名)
+  parsedPath: string; // 蓝图解析路径(代入参数解析后的路径)
   sha256Hex: string; // 蓝图SHA256
 }
 
