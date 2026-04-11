@@ -57,7 +57,7 @@ public interface ${model.std}Repository extends JpaRepository<${model.std}Po, Lo
     #end
     #end
     #end
-    ORDER BY u.updateTime DESC
+    ORDER BY u.createTime DESC
     """)
     Page<${model.std}Po> get${model.std}List(@Param("po") ${model.std}Po po, Pageable pageable);
 }
