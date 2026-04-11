@@ -18,16 +18,6 @@
       </div>
       <div class="schema-info-divider" />
       <div class="schema-info-item">
-        <span class="schema-info-label">字段数量(原始)</span>
-        <span class="schema-info-value">{{ cdrcRow?.fieldCountOrigin ?? 0 }}</span>
-      </div>
-      <div class="schema-info-divider" />
-      <div class="schema-info-item">
-        <span class="schema-info-label">字段数量(聚合)</span>
-        <span class="schema-info-value">{{ cdrcRow?.fieldCountPoly ?? 0 }}</span>
-      </div>
-      <div class="schema-info-divider" />
-      <div class="schema-info-item">
         <span class="schema-info-label">显示未解析的文件名</span>
         <el-switch v-model="showRawName" size="small" />
       </div>
@@ -46,7 +36,11 @@
         <div class="panel-header">蓝图文件</div>
         <div class="blueprint-list">
           <!-- 固定条目：QBE模型 -->
-          <div class="blueprint-item" :class="{ active: selectedKey === '__qbe_model__' }" @click="selectQbeModel">
+          <div
+            class="blueprint-item"
+            :class="{ active: selectedKey === '__qbe_model__' }"
+            @click="onQbeModelSelect(cdrcRow.id)"
+          >
             <el-icon class="item-icon"><DataAnalysis /></el-icon>
             <div class="item-info">
               <div class="item-name">QBE模型</div>
@@ -61,7 +55,7 @@
             :key="item.sha256Hex"
             class="blueprint-item"
             :class="{ active: selectedKey === item.sha256Hex }"
-            @click="selectBlueprint(item)"
+            @click="onBlueprintSelect(item)"
           >
             <el-icon class="item-icon"><Document /></el-icon>
             <div class="item-info">
@@ -82,7 +76,7 @@
         <div class="code-preview-container">
           <div class="toolbar">
             <div class="file-info">
-              <span class="file-name">{{ selectedFileName || "请选择蓝图文件" }}</span>
+              <span class="file-name">{{ previewFileName || "请选择蓝图文件" }}</span>
               <span v-if="detectedLanguage" class="file-lang">({{ detectedLanguage }})</span>
             </div>
             <div class="actions">
@@ -105,203 +99,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
 import { DocumentCopy, Document, DataAnalysis } from "@element-plus/icons-vue";
-import hljs from "highlight.js";
-import "highlight.js/styles/atom-one-dark.css";
-import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
-import OpSchemaApi from "@/views/assembly/api/OpSchemaApi";
-import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 import ComIconService from "@/soa/com-series/service/ComIconService";
+import OpSchemaPreviewService from "@/views/assembly/service/OpSchemaPreviewService";
+import { ref } from "vue";
+import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
+import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext";
 
+//图标服务
 const { resolveIcon } = ComIconService.useIconService();
 const CloseIcon = resolveIcon("fontisto:close");
 const RefreshIcon = resolveIcon("el:download");
 const ExecuteIcon = resolveIcon("game-icons:nuclear-bomb");
 
+//CDRC上下文服务
 const { getCdrcQuery, cdrcReturn, cdrcCanReturn } = ComDirectRouteContext.useDirectRouteContext();
+const cdrcRow = getCdrcQuery() as GetOpSchemaListVo;
 
-const cdrcRow: GetOpSchemaListVo = getCdrcQuery();
-
-const opSchemaId = ref<string>("");
-
-const listLoading = ref(false);
-const previewLoading = ref(false);
-const blueprintList = ref<GetOpBluePrintListVo[]>([]);
-/** 当前选中项的唯一标识：固定条目用 '__qbe_model__'，蓝图条目用 sha256Hex */
+//当前选中蓝图的key 如果是QBE模型，则为__qbe_model__ 如果是蓝图，则为蓝图的sha256Hex
 const selectedKey = ref<string>("");
-const selectedFileName = ref<string>("");
-const showRawName = ref(false);
-const codeContent = ref<string>("");
-const rawHtml = ref<string>("");
-const detectedLanguage = ref<string>("");
 
 /**
- * 根据文件名后缀获取高亮语言
+ * 选中蓝图
+ * @param item 蓝图VO
  */
-const getLanguageByExt = (filename: string): string => {
-  const ext = filename.split(".").pop()?.toLowerCase();
-  const map: Record<string, string> = {
-    js: "javascript",
-    ts: "typescript",
-    vue: "xml",
-    html: "xml",
-    css: "css",
-    scss: "scss",
-    json: "json",
-    java: "java",
-    py: "python",
-    go: "go",
-    c: "c",
-    cpp: "cpp",
-    cs: "csharp",
-    php: "php",
-    sql: "sql",
-    md: "markdown",
-    sh: "bash",
-    yml: "yaml",
-    xml: "xml",
-  };
-  return ext ? map[ext] || "" : "";
-};
-
-/**
- * 为代码添加行号结构
- */
-const generateLineNumbers = (html: string): string => {
-  const lines = html.split(/\r\n|\r|\n/);
-  if (lines[lines.length - 1] === "") {
-    lines.pop();
-  }
-  return lines.map((line) => `<div class="code-line">${line || " "}</div>`).join("");
-};
-
-/**
- * 渲染并高亮代码
- */
-const renderCode = (code: string, fileName: string): void => {
-  const lang = getLanguageByExt(fileName);
-  let result;
-
-  if (lang && hljs.getLanguage(lang)) {
-    result = hljs.highlight(code, { language: lang });
-    detectedLanguage.value = lang;
-  } else {
-    result = hljs.highlightAuto(code);
-    detectedLanguage.value = result.language || "text";
-  }
-
-  rawHtml.value = generateLineNumbers(result.value);
-};
-
-/**
- * 清空右侧预览区
- */
-const clearPreview = (): void => {
-  codeContent.value = "";
-  rawHtml.value = "";
-  detectedLanguage.value = "";
-};
-
-/**
- * 选择 QBE模型 固定条目
- */
-const selectQbeModel = async (): Promise<void> => {
-  if (selectedKey.value === "__qbe_model__") {
-    return;
-  }
-
-  selectedKey.value = "__qbe_model__";
-  selectedFileName.value = "QBE模型";
-  clearPreview();
-  previewLoading.value = true;
-
-  try {
-    const json = await OpSchemaApi.previewQbeModel({ id: opSchemaId.value });
-    const formatted = JSON.stringify(JSON.parse(json), null, 2);
-    codeContent.value = formatted;
-    renderCode(formatted, "model.json");
-  } catch (error: any) {
-    ElMessage.error(error.message || "预览QBE模型失败");
-  } finally {
-    previewLoading.value = false;
-  }
-};
-
-/**
- * 选择蓝图，调用预览接口
- */
-const selectBlueprint = async (item: GetOpBluePrintListVo): Promise<void> => {
-  if (selectedKey.value === item.sha256Hex) {
-    return;
-  }
-
+const onBlueprintSelect = (item: GetOpBluePrintListVo): void => {
   selectedKey.value = item.sha256Hex;
-  selectedFileName.value = showRawName.value ? item.fileName : item.parsedName;
-  clearPreview();
-  previewLoading.value = true;
-
-  try {
-    const code = await OpSchemaApi.previewOpBluePrint({
-      opSchemaId: opSchemaId.value,
-      sha256Hex: item.sha256Hex,
-    });
-    codeContent.value = code;
-    renderCode(code, item.fileName);
-  } catch (error: any) {
-    ElMessage.error(error.message || "预览失败");
-  } finally {
-    previewLoading.value = false;
-  }
+  previewBlueprint(item, cdrcRow.id);
 };
 
 /**
- * 加载蓝图列表
+ * 选中QBE模型
+ * @param opSchemaId 输出方案ID
  */
-const loadBlueprintList = async (): Promise<void> => {
-  listLoading.value = true;
-  try {
-    blueprintList.value = await OpSchemaApi.getOpBluePrintList({ id: opSchemaId.value });
-  } catch (error: any) {
-    //弹出确认
-    await ElMessageBox.confirm(error.message, "提示", {
-      confirmButtonText: "确定",
-      showCancelButton: false,
-      showClose: false,
-      closeOnClickModal: false,
-      closeOnPressEscape: false,
-      type: "warning",
-    });
-
-    cdrcReturn();
-  } finally {
-    listLoading.value = false;
-  }
+const onQbeModelSelect = (opSchemaId: string): void => {
+  selectedKey.value = "__qbe_model__";
+  previewQbeModel(opSchemaId);
 };
+
+//蓝图列表服务打包
+const { listLoading, blueprintList, showRawName, loadBlueprintList } = OpSchemaPreviewService.useBlueprintList(
+  cdrcRow,
+  cdrcReturn
+);
 
 /**
- * 复制代码到剪贴板
+ * 蓝图预览打包
  */
-const onCopy = async (): Promise<void> => {
-  if (!codeContent.value) {
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(codeContent.value);
-    ElMessage.success("代码已复制到剪贴板");
-  } catch {
-    ElMessage.error("复制失败");
-  }
-};
-
-onMounted(async () => {
-  if (!cdrcRow) {
-    return;
-  }
-  opSchemaId.value = cdrcRow.id;
-  await loadBlueprintList();
-});
+const {
+  codeContent,
+  rawHtml,
+  detectedLanguage,
+  previewLoading,
+  previewFileName,
+  previewBlueprint,
+  previewQbeModel,
+  clearPreview,
+  onCopy,
+} = OpSchemaPreviewService.useBlueprintPreview();
 </script>
 
 <style scoped>
