@@ -56,10 +56,8 @@ import static com.ksptool.entities.Entities.assign;
 @Service
 public class OpSchemaService {
 
-
-
     @Autowired
-    private ObjectMapper objectMapper;
+    private Gson gson;
 
     @Autowired
     private OpSchemaRepository repository;
@@ -386,9 +384,9 @@ public class OpSchemaService {
         var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
         var map = new HashMap<String, Object>();
         map.put("model", qbeModel);
-        map.put("global", opSchemaPo);
-
-        return objectMapper.writeValueAsString(map);
+        map.put("schema", opSchemaPo);
+        map.put("global", new HashMap<String, Object>());
+        return gson.toJson(map);
     }
 
     /**
