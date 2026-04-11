@@ -1,0 +1,77 @@
+package com.ksptool.bio.biz.prompt.model;
+
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "ep_prompt")
+@EntityListeners(AuditingEntityListener.class)
+public class PromptPo {
+
+    @Id
+    @SnowflakeIdGenerated
+    @Column(name = "id", nullable = false, comment = "主键ID")
+    private Long id;
+
+    @Column(name = "root_id", comment = "租户ID")
+    private Long rootId;
+
+    @Column(name = "dept_id", comment = "部门ID")
+    private Long deptId;
+
+    @Column(name = "name", comment = "名称")
+    private String name;
+
+    @Column(name = "tags", comment = "标签(CTJ)")
+    private String tags;
+
+    @Column(name = "content", nullable = true, comment = "内容")
+    private String content;
+
+    @Column(name = "param_count", comment = "参数数量")
+    private String paramCount;
+
+    @Column(name = "version", comment = "版本号")
+    private String version;
+
+    @CreatedDate
+    @Column(name = "create_time", comment = "创建时间")
+    private LocalDateTime createTime;
+
+    @CreatedBy
+    @Column(name = "creator_id", comment = "创建人ID")
+    private Long creatorId;
+
+    @LastModifiedDate
+    @Column(name = "update_time", comment = "更新时间")
+    private LocalDateTime updateTime;
+
+    @LastModifiedBy
+    @Column(name = "updater_id", comment = "更新人ID")
+    private Long updaterId;
+
+    @Column(name = "delete_time", nullable = true, comment = "删除时间")
+    private LocalDateTime deleteTime;
+
+
+    @PrePersist
+    private void onCreate() throws AuthException {
+
+    }
+
+    @PreUpdate
+    private void onUpdate() throws AuthException {
+
+    }
+}
