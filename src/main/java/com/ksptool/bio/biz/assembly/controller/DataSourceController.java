@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.assembly.controller;
 
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -66,6 +67,11 @@ public class DataSourceController {
     @Operation(summary = "删除数据源")
     @PostMapping("/removeDataSource")
     public Result<String> removeDataSource(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
+        if (dto.isBatch()) {
+            throw new BizException("不支持批量操作.");
+        }
+
         dataSourceService.removeDataSource(dto);
         return Result.success("操作成功");
     }

@@ -12,7 +12,7 @@ import com.ksptool.bio.biz.assembly.model.datsource.vo.GetDataSourceDetailsVo;
 import com.ksptool.bio.biz.assembly.model.datsource.vo.GetDataSourceListVo;
 import com.ksptool.bio.biz.assembly.model.datsource.vo.GetDataSourceTableListVo;
 import com.ksptool.bio.biz.assembly.repository.DataSourceRepository;
-
+import com.ksptool.bio.biz.assembly.repository.OpSchemaRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +32,9 @@ public class DataSourceService {
 
     @Autowired
     private DataSourceRepository repository;
+
+    @Autowired
+    private OpSchemaRepository opSchemaRepository;
 
     /**
      * 查询数据源列表
@@ -125,10 +128,12 @@ public class DataSourceService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeDataSource(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+
+        //删除时检查是否被输出方案使用
+        if (opSchemaRepository.countByDataSourceId(dto.getId()) > 0) {
+            throw new BizException("该数据源已被输出方案使用,无法执行删除操作!");
         }
+
         repository.deleteById(dto.getId());
     }
 

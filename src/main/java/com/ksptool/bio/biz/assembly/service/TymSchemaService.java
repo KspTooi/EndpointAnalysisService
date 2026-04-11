@@ -111,7 +111,7 @@ public class TymSchemaService {
     public void removeTymSchema(CommonIdDto dto) throws BizException {
 
         //删除时检查是否被输出方案使用
-        if (opSchemaRepository.countByTymSchemaId(dto.getId()) > 0) {
+        if (opSchemaRepository.countByTypeSchemaId(dto.getId()) > 0) {
             throw new BizException("该类型映射方案已被输出方案使用,无法执行删除操作!");
         }
 
