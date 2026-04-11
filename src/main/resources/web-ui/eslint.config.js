@@ -156,19 +156,6 @@ export default defineConfigWithVueTs(
       ],
     },
   },
-  {
-    //对象展开运算符降级为警告，允许在必要场景下使用
-    rules: {
-      "no-restricted-syntax": [
-        "warn",
-        {
-          selector: "ObjectExpression > SpreadElement",
-          message:
-            "建议避免在对象中使用扩展运算符(...)。扩展运算符会隐式引入未知属性，使数据流向变得不透明。如非必要，请逐一显式列出需要传递的属性，确保每个字段都在掌控之中。",
-        },
-      ],
-    },
-  },
 
   // 忽略目录
   {
