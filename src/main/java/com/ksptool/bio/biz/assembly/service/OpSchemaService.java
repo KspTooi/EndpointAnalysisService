@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.assembly.service;
 
+import com.google.gson.Gson;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
@@ -15,7 +16,6 @@ import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeVelocityEngine;
-import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
@@ -30,13 +30,13 @@ import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
 import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
 import com.ksptool.bio.biz.core.service.AttachService;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,6 +55,12 @@ import static com.ksptool.entities.Entities.assign;
 @Slf4j
 @Service
 public class OpSchemaService {
+
+    //Gson实例
+    private final Gson gson = new Gson();
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private OpSchemaRepository repository;
@@ -91,9 +97,6 @@ public class OpSchemaService {
 
     //QBE Velocity引擎实例
     private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
-
-    //Gson实例
-    private final Gson gson = new Gson();
 
     /**
      * 查询输出方案列表
@@ -367,8 +370,7 @@ public class OpSchemaService {
         var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
 
         //渲染蓝图
-        var renderedBlueprint = qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, null);
-        return renderedBlueprint;
+        return qbeVelocityEngine.renderAsString(blueprint.getTemplateContent(), qbeModel, null);
     }
 
     /**
@@ -383,7 +385,11 @@ public class OpSchemaService {
 
         //直接根据方案获取QBE模型
         var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
-        return gson.toJson(qbeModel);
+        var map = new HashMap<String, Object>();
+        map.put("model", qbeModel);
+        map.put("global", opSchemaPo);
+
+        return objectMapper.writeValueAsString(map);
     }
 
     /**

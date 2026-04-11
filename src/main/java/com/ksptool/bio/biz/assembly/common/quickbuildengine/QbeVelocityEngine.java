@@ -189,9 +189,9 @@ public class QbeVelocityEngine {
 
     /**
      * 渲染模板为字符串
-     * 
+     *
      * @param templateContent 模板内容
-     * @param model            QBE模型
+     * @param model           QBE模型
      * @param globalVars      全局变量
      * @return 渲染后的字符串
      */
@@ -216,7 +216,6 @@ public class QbeVelocityEngine {
     }
 
 
-
     /**
      * 构建VelocityContext
      *
@@ -225,7 +224,6 @@ public class QbeVelocityEngine {
      * @return VelocityContext 包含模型和全局变量的VelocityContext
      */
     public VelocityContext buildVc(QbeModel model, Map<String, String> GlobalVars) {
-
         //渲染模板 先把modelMap放进VC
         VelocityContext vc = new VelocityContext();
         vc.put("model", model);
