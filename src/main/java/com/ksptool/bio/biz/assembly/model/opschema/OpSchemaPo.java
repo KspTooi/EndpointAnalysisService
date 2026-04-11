@@ -43,6 +43,9 @@ public class OpSchemaPo {
     @Column(name = "model_name", nullable = false, length = 255, comment = "模型名称")
     private String modelName;
 
+    @Column(name = "model_remark",nullable = false, length = 80, comment = "模型备注")
+    private String modelRemark;
+
     @Column(name = "table_name", length = 80, comment = "数据源表名")
     private String tableName;
 
