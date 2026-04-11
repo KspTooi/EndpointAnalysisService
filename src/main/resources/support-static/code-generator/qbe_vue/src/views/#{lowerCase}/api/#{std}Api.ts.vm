@@ -1,11 +1,11 @@
 import Http from "@/commons/Http.ts";
-import type PageResult from "@/commons/entity/PageResult.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
-import type PageQuery from "@/commons/entity/PageQuery.ts";
-import type Result from "@/commons/entity/Result.ts";
+import type PageResult from "@/commons/model/PageResult.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
+import type PageQuery from "@/commons/model/PageQuery.ts";
+import type Result from "@/commons/model/Result.ts";
 
 /**
- * 查询列表DTO
+ * 查询${schema.modelRemark}列表DTO
  */
 export interface Get${model.std}ListDto extends PageQuery {
 #foreach($field in $model.fields)
@@ -16,7 +16,7 @@ export interface Get${model.std}ListDto extends PageQuery {
 }
 
 /**
- * 列表VO
+ * 查询${schema.modelRemark}列表Vo
  */
 export interface Get${model.std}ListVo {
 #foreach($field in $model.fields)
@@ -27,7 +27,7 @@ export interface Get${model.std}ListVo {
 }
 
 /**
- * 详情VO
+ * 查询${schema.modelRemark}详情Vo
  */
 export interface Get${model.std}DetailsVo {
 #foreach($field in $model.fields)
@@ -38,7 +38,7 @@ export interface Get${model.std}DetailsVo {
 }
 
 /**
- * 新增DTO
+ * 新增${schema.modelRemark}Dto
  */
 export interface Add${model.std}Dto {
 #foreach($field in $model.fields)
@@ -49,7 +49,7 @@ export interface Add${model.std}Dto {
 }
 
 /**
- * 编辑DTO
+ * 编辑${schema.modelRemark}Dto
  */
 export interface Edit${model.std}Dto {
 #foreach($field in $model.fields)
