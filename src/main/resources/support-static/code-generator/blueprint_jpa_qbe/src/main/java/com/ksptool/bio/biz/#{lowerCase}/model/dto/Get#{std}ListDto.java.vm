@@ -14,7 +14,7 @@ import lombok.Setter;
 public class Get${model.std}ListDto extends PageQuery {
 
     ## 遍历 listQuery=true 且非主键的字段生成查询属性
-    #foreach ($field in $fields)
+    #foreach ($field in $model.fields)
     #if($field.listQuery && !$field.primaryKey)
     @Schema(description="${field.comment}")
     private ${field.type} ${field.camelCase};

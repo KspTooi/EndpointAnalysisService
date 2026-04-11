@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class Get${model.std}ListVo {
 
     ## 遍历 listView=true 的字段生成属性（包含主键）
-    #foreach ($field in $fields)
+    #foreach ($field in $model.fields)
     #if($field.listView)
     @Schema(description="${field.comment}")
     private ${field.type} ${field.camelCase};

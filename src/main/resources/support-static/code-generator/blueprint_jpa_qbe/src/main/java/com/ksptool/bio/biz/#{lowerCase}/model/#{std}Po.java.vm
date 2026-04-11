@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "${model.snakeCase}")
+@Table(name = "${model.tableName}")
 public class ${model.std}Po {
 
     ## 主键字段
-    #foreach ($field in $fields)
+    #foreach ($field in $model.fields)
     #if($field.primaryKey)
     @Id
     @Column(name = "${field.snakeCase}"#if($field.comment != ''), comment = "${field.comment}"#end)
@@ -24,7 +24,7 @@ public class ${model.std}Po {
     #end
     #end
     ## 普通字段
-    #foreach ($field in $fields)
+    #foreach ($field in $model.fields)
     #if(!$field.primaryKey)
     @Column(name = "${field.snakeCase}"#if(!$field.required), nullable = true#end#if($field.comment != ''), comment = "${field.comment}"#end)
     private ${field.type} ${field.camelCase};
@@ -35,7 +35,7 @@ public class ${model.std}Po {
     @PrePersist
     private void onCreate() throws AuthException {
         ## 主键为空时自动生成雪花ID
-        #foreach ($field in $fields)
+        #foreach ($field in $model.fields)
         #if($field.primaryKey)
         if (this.${field.camelCase} == null) {
             this.${field.camelCase} = IdWorker.nextId();
@@ -47,7 +47,7 @@ public class ${model.std}Po {
         #set($hasUpdateTime = false)
         #set($hasCreatorId = false)
         #set($hasUpdaterId = false)
-        #foreach ($field in $fields)
+        #foreach ($field in $model.fields)
         #if($field.camelCase == "createTime")#set($hasCreateTime = true)#end
         #if($field.camelCase == "updateTime")#set($hasUpdateTime = true)#end
         #if($field.camelCase == "creatorId")#set($hasCreatorId = true)#end
@@ -87,7 +87,7 @@ public class ${model.std}Po {
     private void onUpdate() throws AuthException {
         #set($hasUpdateTime = false)
         #set($hasUpdaterId = false)
-        #foreach ($field in $fields)
+        #foreach ($field in $model.fields)
         #if($field.camelCase == "updateTime")#set($hasUpdateTime = true)#end
         #if($field.camelCase == "updaterId")#set($hasUpdaterId = true)#end
         #end
