@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="listLoading" element-loading-text="正在处理蓝图，请稍后..." class="preview-page">
+  <div v-loading="listLoading" element-loading-text="正在从SCM下载蓝图列表" class="preview-page">
     <!-- 输出方案信息区域 -->
     <div class="schema-info-bar">
       <div class="schema-info-item">
