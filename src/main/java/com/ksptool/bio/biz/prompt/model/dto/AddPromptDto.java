@@ -12,9 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Setter
 public class AddPromptDto {
 
-    @Schema(description="部门ID")
-    private Long deptId;
-
     @Schema(description="名称")
     private String name;
 
