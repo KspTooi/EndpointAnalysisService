@@ -1,0 +1,111 @@
+import Http from "@/commons/Http.ts";
+import type PageResult from "@/commons/entity/PageResult.ts";
+import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
+import type PageQuery from "@/commons/entity/PageQuery.ts";
+import type Result from "@/commons/entity/Result.ts";
+
+/**
+ * 查询列表DTO
+ */
+export interface Get${model.std}ListDto extends PageQuery {
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+  ${field.camelCase}?: ${field.type}; // ${field.comment}
+#end
+#end
+}
+
+/**
+ * 列表VO
+ */
+export interface Get${model.std}ListVo {
+#foreach($field in $model.fields)
+  ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
+}
+
+/**
+ * 详情VO
+ */
+export interface Get${model.std}DetailsVo {
+#foreach($field in $model.fields)
+  ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
+}
+
+/**
+ * 新增DTO
+ */
+export interface Add${model.std}Dto {
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+  ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
+#end
+}
+
+/**
+ * 编辑DTO
+ */
+export interface Edit${model.std}Dto {
+#foreach($field in $model.fields)
+#if($field.primaryKey)
+  ${field.camelCase}: ${field.type}; // ${field.comment}
+#elseif($field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+  ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
+#end
+}
+
+export default {
+  /**
+   * 获取${model.comment}列表
+   */
+  get${model.std}List: async (dto: Get${model.std}ListDto): Promise<PageResult<Get${model.std}ListVo>> => {
+    return await Http.postEntity<PageResult<Get${model.std}ListVo>>("/${model.camelCase}/get${model.std}List", dto);
+  },
+
+  /**
+   * 获取${model.comment}详情
+   */
+  get${model.std}Details: async (dto: CommonIdDto): Promise<Get${model.std}DetailsVo> => {
+    const result = await Http.postEntity<Result<Get${model.std}DetailsVo>>("/${model.camelCase}/get${model.std}Details", dto);
+    if (result.code === 0) {
+      return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 新增${model.comment}
+   */
+  add${model.std}: async (dto: Add${model.std}Dto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/${model.camelCase}/add${model.std}", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 编辑${model.comment}
+   */
+  edit${model.std}: async (dto: Edit${model.std}Dto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/${model.camelCase}/edit${model.std}", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 删除${model.comment}
+   */
+  remove${model.std}: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/${model.camelCase}/remove${model.std}", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+};

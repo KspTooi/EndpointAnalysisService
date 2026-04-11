@@ -4,13 +4,13 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
           <el-form-item label="${field.comment}">
 #if($field.type == "number")
-            <el-input v-model.number="listForm.${field.pfscn}" placeholder="输入${field.comment}" clearable />
+            <el-input v-model.number="listForm.${field.camelCase}" placeholder="输入${field.comment}" clearable />
 #else
-            <el-input v-model="listForm.${field.pfscn}" placeholder="输入${field.comment}" clearable />
+            <el-input v-model="listForm.${field.camelCase}" placeholder="输入${field.comment}" clearable />
 #end
           </el-form-item>
 #end
@@ -25,15 +25,15 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增${comment}</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增${model.comment}</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
-#foreach($field in $fields)
-#if($field.pfscn != "deleteTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId")
-        <el-table-column prop="${field.pfscn}" label="${field.comment}" min-width="120" show-overflow-tooltip />
+#foreach($field in $model.fields)
+#if($field.camelCase != "deleteTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId")
+        <el-table-column prop="${field.camelCase}" label="${field.comment}" min-width="120" show-overflow-tooltip />
 #end
 #end
         <el-table-column label="操作" fixed="right" min-width="180">
@@ -73,7 +73,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑${comment}' : '新增${comment}'"
+      :title="modalMode === 'edit' ? '编辑${model.comment}' : '新增${model.comment}'"
       width="600px"
       :close-on-click-modal="false"
       @close="
@@ -89,13 +89,13 @@
         label-width="100px"
         :validate-on-rule-change="false"
       >
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
-        <el-form-item label="${field.comment}" prop="${field.pfscn}">
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+        <el-form-item label="${field.comment}" prop="${field.camelCase}">
 #if($field.type == "number")
-          <el-input v-model.number="modalForm.${field.pfscn}" placeholder="请输入${field.comment}" clearable />
+          <el-input v-model.number="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable />
 #else
-          <el-input v-model="modalForm.${field.pfscn}" placeholder="请输入${field.comment}" clearable />
+          <el-input v-model="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable />
 #end
         </el-form-item>
 #end
@@ -117,7 +117,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import ${ptstn}Service from "@/views/${ptscn}/service/${ptstn}Service.ts";
+import ${model.std}Service from "@/views/${model.camelCase}/service/${model.std}Service.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -128,14 +128,14 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = ${ptstn}Service.use${ptstn}List();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = ${model.std}Service.use${model.std}List();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
 
 // 模态框打包
 const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
-  ${ptstn}Service.use${ptstn}Modal(modalFormRef, loadList);
+  ${model.std}Service.use${model.std}Modal(modalFormRef, loadList);
 </script>
 
 <style scoped></style>

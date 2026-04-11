@@ -1,13 +1,13 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  Get${ptstn}ListDto,
-  Get${ptstn}ListVo,
-  Get${ptstn}DetailsVo,
-  Add${ptstn}Dto,
-  Edit${ptstn}Dto,
-} from "@/views/${ptscn}/api/${ptstn}Api.ts";
-import ${ptstn}Api from "@/views/${ptscn}/api/${ptstn}Api.ts";
+  Get${model.std}ListDto,
+  Get${model.std}ListVo,
+  Get${model.std}DetailsVo,
+  Add${model.std}Dto,
+  Edit${model.std}Dto,
+} from "@/views/${model.camelCase}/api/${model.std}Api.ts";
+import ${model.std}Api from "@/views/${model.camelCase}/api/${model.std}Api.ts";
 import { Result } from "@/commons/entity/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -18,20 +18,20 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * ${comment}列表管理
+   * ${model.comment}列表管理
    */
-  use${ptstn}List() {
-    const listForm = ref<Get${ptstn}ListDto>({
+  use${model.std}List() {
+    const listForm = ref<Get${model.std}ListDto>({
       pageNum: 1,
       pageSize: 20,
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
-      ${field.pfscn}: #if($field.type == "number")null#else""#end,
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+      ${field.camelCase}: #if($field.type == "number")null#else""#end,
 #end
 #end
     });
 
-    const listData = ref<Get${ptstn}ListVo[]>([]);
+    const listData = ref<Get${model.std}ListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -40,7 +40,7 @@ export default {
      */
     const loadList = async () => {
       listLoading.value = true;
-      const result = await ${ptstn}Api.get${ptstn}List(listForm.value);
+      const result = await ${model.std}Api.get${model.std}List(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -60,9 +60,9 @@ export default {
     const resetList = () => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
-      listForm.value.${field.pfscn} = #if($field.type == "number")null#else""#end;
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+      listForm.value.${field.camelCase} = #if($field.type == "number")null#else""#end;
 #end
 #end
       loadList();
@@ -71,7 +71,7 @@ export default {
     /**
      * 删除记录
      */
-    const removeList = async (row: Get${ptstn}ListVo) => {
+    const removeList = async (row: Get${model.std}ListVo) => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -83,7 +83,7 @@ export default {
       }
 
       try {
-        await ${ptstn}Api.remove${ptstn}({ id: row.id });
+        await ${model.std}Api.remove${model.std}({ id: row.id });
         ElMessage.success("删除成功");
         await loadList();
       } catch (error: any) {
@@ -109,13 +109,13 @@ export default {
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  use${ptstn}Modal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  use${model.std}Modal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const modalForm = reactive<Get${ptstn}DetailsVo>({
-#foreach($field in $fields)
-      ${field.pfscn}: #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end,
+    const modalForm = reactive<Get${model.std}DetailsVo>({
+#foreach($field in $model.fields)
+      ${field.camelCase}: #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end,
 #end
     });
 
@@ -123,10 +123,10 @@ export default {
      * 表单验证规则
      */
     const modalRules: FormRules = {
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
 #if($field.required)
-      ${field.pfscn}: [{ required: true, message: "请输入${field.comment}", trigger: "blur" }],
+      ${field.camelCase}: [{ required: true, message: "请输入${field.comment}", trigger: "blur" }],
 #end
 #end
 #end
@@ -137,12 +137,12 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: Get${ptstn}ListVo | null) => {
+    const openModal = async (mode: ModalMode, row: Get${model.std}ListVo | null) => {
       modalMode.value = mode;
 
       if (mode === "add") {
-#foreach($field in $fields)
-        modalForm.${field.pfscn} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
+#foreach($field in $model.fields)
+        modalForm.${field.camelCase} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
 #end
         modalVisible.value = true;
         return;
@@ -155,9 +155,9 @@ export default {
         }
 
         try {
-          const details = await ${ptstn}Api.get${ptstn}Details({ id: row.id });
-#foreach($field in $fields)
-          modalForm.${field.pfscn} = details.${field.pfscn};
+          const details = await ${model.std}Api.get${model.std}Details({ id: row.id });
+#foreach($field in $model.fields)
+          modalForm.${field.camelCase} = details.${field.camelCase};
 #end
           modalVisible.value = true;
         } catch (error: any) {
@@ -174,8 +174,8 @@ export default {
         return;
       }
       modalFormRef.value.resetFields();
-#foreach($field in $fields)
-      modalForm.${field.pfscn} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
+#foreach($field in $model.fields)
+      modalForm.${field.camelCase} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
 #end
     };
 
@@ -197,14 +197,14 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: Add${ptstn}Dto = {
-#foreach($field in $fields)
-#if(!$field.primaryKey && $field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
-            ${field.pfscn}: modalForm.${field.pfscn},
+          const addDto: Add${model.std}Dto = {
+#foreach($field in $model.fields)
+#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+            ${field.camelCase}: modalForm.${field.camelCase},
 #end
 #end
           };
-          await ${ptstn}Api.add${ptstn}(addDto);
+          await ${model.std}Api.add${model.std}(addDto);
           ElMessage.success("新增成功");
           modalVisible.value = false;
           resetModal();
@@ -224,16 +224,16 @@ export default {
         }
 
         try {
-          const editDto: Edit${ptstn}Dto = {
-#foreach($field in $fields)
+          const editDto: Edit${model.std}Dto = {
+#foreach($field in $model.fields)
 #if($field.primaryKey)
-            ${field.pfscn}: modalForm.${field.pfscn},
-#elseif($field.pfscn != "createTime" && $field.pfscn != "updateTime" && $field.pfscn != "creatorId" && $field.pfscn != "updaterId" && $field.pfscn != "deleteTime")
-            ${field.pfscn}: modalForm.${field.pfscn},
+            ${field.camelCase}: modalForm.${field.camelCase},
+#elseif($field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+            ${field.camelCase}: modalForm.${field.camelCase},
 #end
 #end
           };
-          await ${ptstn}Api.edit${ptstn}(editDto);
+          await ${model.std}Api.edit${model.std}(editDto);
           ElMessage.success("编辑成功");
           modalVisible.value = false;
           resetModal();
