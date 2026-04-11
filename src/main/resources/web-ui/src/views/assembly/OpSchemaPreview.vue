@@ -35,7 +35,9 @@
 
     <!-- 操作按钮区域 -->
     <div class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
+      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
+      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="RefreshIcon" link>刷新蓝图</el-button>
+      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="ExecuteIcon" link>执行已选蓝图</el-button>
     </div>
 
     <div class="main-content">
@@ -115,6 +117,8 @@ import ComIconService from "@/soa/com-series/service/ComIconService";
 
 const { resolveIcon } = ComIconService.useIconService();
 const CloseIcon = resolveIcon("fontisto:close");
+const RefreshIcon = resolveIcon("el:download");
+const ExecuteIcon = resolveIcon("game-icons:nuclear-bomb");
 
 const { getCdrcQuery, cdrcReturn, cdrcCanReturn } = ComDirectRouteContext.useDirectRouteContext();
 
