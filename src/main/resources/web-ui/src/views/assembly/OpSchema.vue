@@ -155,6 +155,17 @@
               <el-form-item label="数据源表名" prop="tableName">
                 <DataSourceTableBrowser v-model="modalForm.tableName" :data-source-id="modalForm.dataSourceId" />
               </el-form-item>
+              <el-form-item label="类型映射方案" prop="typeSchemaId">
+                <el-select
+                  v-model="modalForm.typeSchemaId"
+                  placeholder="请选择类型映射方案"
+                  filterable
+                  clearable
+                  style="width: 100%"
+                >
+                  <el-option v-for="item in modalTypeSchema" :key="item.id" :value="item.id" :label="item.name" />
+                </el-select>
+              </el-form-item>
               <el-form-item label="从SCM读取蓝图" prop="inputScmId">
                 <el-select v-model="modalForm.inputScmId" placeholder="请选择输入SCM" filterable clearable style="width: 100%">
                   <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
@@ -257,13 +268,13 @@
                   show-word-limit
                 />
               </el-form-item>
-              <el-form-item label="写出策略" prop="policyOverride">
+              <el-form-item v-if="false" label="写出策略" prop="policyOverride">
                 <el-select v-model="modalForm.policyOverride" placeholder="请选择写出策略" style="width: 100%">
                   <el-option :value="0" label="不覆盖" />
                   <el-option :value="1" label="覆盖" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="移除表前缀" prop="removeTablePrefix">
+              <el-form-item v-if="false" label="移除表前缀" prop="removeTablePrefix">
                 <el-input
                   v-model="modalForm.removeTablePrefix"
                   placeholder="请输入移除表前缀"
