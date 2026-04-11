@@ -16,9 +16,6 @@ public class EditPromptDto {
     private Long id;
 
 
-    @Schema(description="部门ID")
-    private Long deptId;
-
     @Schema(description="名称")
     private String name;
 

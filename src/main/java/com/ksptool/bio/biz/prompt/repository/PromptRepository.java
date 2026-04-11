@@ -14,7 +14,6 @@ public interface PromptRepository extends JpaRepository<PromptPo, Long>{
     @Query("""
     SELECT u FROM PromptPo u
     WHERE
-    AND (:#{#po.deptId} IS NULL OR u.deptId = :#{#po.deptId} )
     AND (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%'))
     AND (:#{#po.tags} IS NULL OR u.tags LIKE CONCAT('%', :#{#po.tags}, '%'))
     ORDER BY u.updateTime DESC
