@@ -25,14 +25,23 @@
 
     <!-- 操作按钮区域 -->
     <div class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
+      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">
+        回退
+      </el-button>
       <el-button type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint">刷新蓝图</el-button>
-      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="CheckAllIcon" link @click="checkedAll"
-        >全选</el-button
+      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="CheckAllIcon" link @click="checkedAll">
+        全选
+      </el-button>
+      <el-button
+        type="success"
+        class="ml-0!"
+        style="color: #a53200"
+        :icon="ClearCheckedIcon"
+        link
+        @click="clearSelected"
       >
-      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="ClearCheckedIcon" link @click="clearSelected"
-        >清空已选</el-button
-      >
+        清空已选
+      </el-button>
       <el-button type="success" class="ml-0!" :icon="ExecuteIcon" link @click="onExecute">执行已选蓝图</el-button>
     </div>
 
@@ -118,11 +127,52 @@
         </pane>
       </splitpanes>
     </div>
+
+    <!-- 执行进度模态框 -->
+    <el-dialog
+      v-model="executionVisible"
+      title="执行输出方案"
+      width="500px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="!executionLoading"
+    >
+      <div class="execution-content">
+        <div v-if="executionLoading" class="execution-warning">
+          <el-icon class="is-loading"><Loading /></el-icon>
+          <span>正在执行中，这是一个耗时的操作，请勿关闭窗口...</span>
+        </div>
+
+        <div class="execution-steps">
+          <div v-for="(step, index) in executionSteps" :key="index" class="step-item">
+            <div class="step-icon">
+              <el-icon><Document /></el-icon>
+            </div>
+            <div class="step-title">{{ step }}</div>
+          </div>
+        </div>
+
+        <div v-if="executionError" class="execution-error-msg">
+          <el-alert :title="executionError" type="error" :closable="false" show-icon />
+        </div>
+
+        <div v-if="executionFinished" class="execution-success-msg">
+          <el-result icon="success" title="执行成功" sub-title="所有蓝图已成功处理并推送至SCM"> </el-result>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button v-if="!executionLoading" @click="executionVisible = false">{{
+            executionFinished ? "完成" : "取消"
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DocumentCopy, Document, DataAnalysis } from "@element-plus/icons-vue";
+import { DocumentCopy, Document, DataAnalysis, Loading } from "@element-plus/icons-vue";
 import ComIconService from "@/soa/com-series/service/ComIconService";
 import OpSchemaPreviewService from "@/views/assembly/service/OpSchemaPreviewService";
 import { ref } from "vue";
@@ -197,7 +247,7 @@ const {
 } = OpSchemaPreviewService.useBlueprintPreview();
 
 //操作栏打包
-const { refreshBlueprint, executeSelectedBlueprint } = OpSchemaPreviewService.useActionBar(
+const { refreshBlueprint, executeSelectedBlueprint, executionVisible, executionLoading, executionFinished, executionError, executionSteps } = OpSchemaPreviewService.useActionBar(
   cdrcRow,
   selectedKey,
   selectedBlueprint,
@@ -541,5 +591,63 @@ const onExecute = (): void => {
   align-items: center;
   color: #5c6370;
   font-size: 14px;
+}
+
+/* 执行进度模态框样式 */
+.execution-content {
+  padding: 10px 0;
+}
+
+.execution-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #e6a23c;
+  font-size: 14px;
+  background: #fdf6ec;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.execution-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  background: #f8f9fa;
+  border-left: 4px solid #dcdfe6;
+  color: #606266;
+}
+
+.step-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.step-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.execution-error-msg {
+  margin-top: 15px;
+}
+
+.execution-success-msg {
+  margin-top: 10px;
+}
+
+.execution-success-msg :deep(.el-result) {
+  padding: 10px 0;
 }
 </style>

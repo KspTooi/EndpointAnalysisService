@@ -2,9 +2,8 @@ import { onMounted, ref, type Ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
-import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import OpSchemaApi from "@/views/assembly/api/OpSchemaApi";
-import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
+import type { ExecuteOpSchemaDto, GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 
 export default {
   /**
@@ -300,7 +299,6 @@ export default {
    * @param loadBlueprintList 加载蓝图列表
    * @param previewBlueprint 预览蓝图
    * @param previewQbeModel 预览QBE模型
-   * @param clearPreview 清空预览
    */
   useActionBar(
     schema: GetOpSchemaListVo,
@@ -310,6 +308,17 @@ export default {
     previewBlueprint: (vo: GetOpBluePrintListVo, opSchemaId: string) => Promise<void>,
     previewQbeModel: (opSchemaId: string) => Promise<void>
   ) {
+    const executionVisible = ref(false);
+    const executionLoading = ref(false);
+    const executionFinished = ref(false);
+    const executionError = ref("");
+    const executionSteps = [
+      "检出输入输出SCM",
+      "SCM拉取蓝图",
+      "执行QBE引擎",
+      "SCM推送产物",
+    ];
+
     /**
      * 刷新蓝图
      */
@@ -329,23 +338,54 @@ export default {
       }
 
       //如果是蓝图，则预览蓝图
-      previewBlueprint(selectedBlueprint.value, schema.id);
+      if (selectedBlueprint.value) {
+        previewBlueprint(selectedBlueprint.value, schema.id);
+      }
     };
 
     /**
      * 执行已选蓝图
      */
     const executeSelectedBlueprint = async (vos: GetOpBluePrintListVo[]): Promise<void> => {
-      console.log("执行已选蓝图: " + vos.length);
-      console.log(vos);
+      if (vos.length === 0) {
+        ElMessage.warning("请先勾选要执行的蓝图文件");
+        return;
+      }
+
+      // 重置执行状态
+      executionVisible.value = true;
+      executionLoading.value = true;
+      executionFinished.value = false;
+      executionError.value = "";
+
+      const dto: ExecuteOpSchemaDto = {
+        opSchemaId: schema.id,
+        sha256Hexs: vos.map((v) => v.sha256Hex),
+      };
+
+      try {
+        await OpSchemaApi.executeOpSchema(dto);
+        executionFinished.value = true;
+      } catch (error: any) {
+        executionError.value = error.message;
+      } finally {
+        executionLoading.value = false;
+      }
     };
 
     return {
-      //刷新蓝图
+      // 刷新蓝图
       refreshBlueprint,
 
-      //执行已选蓝图
+      // 执行已选蓝图
       executeSelectedBlueprint,
+
+      // 执行状态
+      executionVisible,
+      executionLoading,
+      executionFinished,
+      executionError,
+      executionSteps,
     };
   },
 };

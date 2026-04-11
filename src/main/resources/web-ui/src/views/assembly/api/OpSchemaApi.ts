@@ -110,6 +110,14 @@ export interface PreviewOpBluePrintDto {
   sha256Hex: string; // 蓝图SHA256
 }
 
+/**
+ * 执行输出方案DTO
+ */
+export interface ExecuteOpSchemaDto {
+  opSchemaId: string; // 输出方案ID
+  sha256Hexs: string[]; // 蓝图SHA256列表
+}
+
 export default {
   /**
    * 获取输出方案列表
@@ -165,7 +173,7 @@ export default {
   /**
    * 执行输出方案
    */
-  executeOpSchema: async (dto: CommonIdDto): Promise<string> => {
+  executeOpSchema: async (dto: ExecuteOpSchemaDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/opSchema/executeOpSchema", dto);
     if (result.code === 0) {
       return result.message;
