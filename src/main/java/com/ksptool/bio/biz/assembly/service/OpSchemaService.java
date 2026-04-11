@@ -20,7 +20,6 @@ import com.ksptool.bio.biz.assembly.model.polymodel.PolyModelPo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
-import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaRepository;
 import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
 import com.ksptool.bio.biz.core.service.AttachService;
