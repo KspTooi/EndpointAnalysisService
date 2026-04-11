@@ -1,27 +1,23 @@
-package com.ksptool.bio.biz.${ptalcn}.model.dto;
+package com.ksptool.bio.biz.${lowerCase}.model.dto;
 
-import java.time.LocalDate;
+## 预先导入LDT、BigDecimal、List等类型
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
-#foreach ($import in $imports)
-import ${import};
-#end
 
 @Getter
 @Setter
-public class Add${ptstn}Dto {
+public class Add${std}Dto {
 
     #foreach ($field in $fields)
-    #if(!${field.primaryKey})
-
-    #if(${field.comment} != "")
+    #if(!$field.primaryKey && $field.add)
     @Schema(description="${field.comment}")
-    #end
-    private ${field.type} ${field.pfscn};
-    #end
-    #end
+    private ${field.type} ${field.camelCase};
 
+    #end
+    #end
 }
-
