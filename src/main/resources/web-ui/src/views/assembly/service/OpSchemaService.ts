@@ -134,6 +134,7 @@ export default {
       name: "",
       modelName: "",
       modelRemark: "",
+      bizDomain: "",
       tableName: "",
       removeTablePrefix: "",
       permCodePrefix: "",
@@ -162,6 +163,10 @@ export default {
       modelRemark: [
         { required: true, message: "请输入模型备注", trigger: "blur" },
         { max: 80, message: "模型备注不能超过80个字符", trigger: "blur" },
+      ],
+      bizDomain: [
+        { required: true, message: "请输入业务域", trigger: "blur" },
+        { max: 80, message: "业务域不能超过80个字符", trigger: "blur" },
       ],
       tableName: [{ max: 80, message: "数据源表名不能超过80个字符", trigger: "blur" }],
       removeTablePrefix: [
@@ -214,6 +219,7 @@ export default {
         modalForm.name = "";
         modalForm.modelName = "";
         modalForm.modelRemark = "";
+        modalForm.bizDomain = "";
         modalForm.tableName = "";
         modalForm.removeTablePrefix = "";
         modalForm.permCodePrefix = "";
@@ -241,6 +247,7 @@ export default {
           modalForm.name = details.name;
           modalForm.modelName = details.modelName;
           modalForm.modelRemark = details.modelRemark;
+          modalForm.bizDomain = details.bizDomain;
           modalForm.tableName = details.tableName;
           modalForm.removeTablePrefix = details.removeTablePrefix;
           modalForm.permCodePrefix = details.permCodePrefix;
@@ -271,6 +278,7 @@ export default {
       modalForm.name = "";
       modalForm.modelName = "";
       modalForm.modelRemark = "";
+      modalForm.bizDomain = "";
       modalForm.tableName = "";
       modalForm.removeTablePrefix = "";
       modalForm.permCodePrefix = "";
@@ -306,6 +314,7 @@ export default {
             name: modalForm.name,
             modelName: modalForm.modelName,
             modelRemark: modalForm.modelRemark,
+            bizDomain: modalForm.bizDomain,
             tableName: modalForm.tableName,
             removeTablePrefix: modalForm.removeTablePrefix,
             permCodePrefix: modalForm.permCodePrefix,
@@ -343,6 +352,7 @@ export default {
             name: modalForm.name,
             modelName: modalForm.modelName,
             modelRemark: modalForm.modelRemark,
+            bizDomain: modalForm.bizDomain,
             tableName: modalForm.tableName,
             removeTablePrefix: modalForm.removeTablePrefix,
             permCodePrefix: modalForm.permCodePrefix,

@@ -209,14 +209,14 @@
               <el-form-item label="方案名称" prop="name">
                 <el-input v-model="modalForm.name" placeholder="请输入输出方案名称" clearable maxlength="32" show-word-limit />
               </el-form-item>
-              <el-form-item label="模型名称" prop="modelName">
+              <el-form-item label="模型名称 (用于代码模型)" prop="modelName">
                 <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit>
                   <template #append>
                     <el-button :icon="MagicStickIcon" @click="modalForm.modelName = modalForm.name">推断</el-button>
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item label="模型备注" prop="modelRemark">
+              <el-form-item label="模型备注 (用于接口文档、代码注释)" prop="modelRemark">
                 <el-input
                   v-model="modalForm.modelRemark"
                   placeholder="请输入模型备注"
@@ -224,6 +224,37 @@
                   maxlength="80"
                   show-word-limit
                 />
+              </el-form-item>
+              <el-form-item label="业务域" prop="bizDomain">
+                <el-input
+                  v-model="modalForm.bizDomain"
+                  placeholder="请输入业务域"
+                  clearable
+                  maxlength="80"
+                  show-word-limit
+                >
+                  <template #append>
+                    <el-button
+                      :icon="MagicStickIcon"
+                      @click="
+                        () => {
+                          if (!modalForm.tableName) {
+                            ElMessage.warning('请先填写数据源表名');
+                            return;
+                          }
+                          const underscoreIndex = modalForm.tableName.indexOf('_');
+                          if (underscoreIndex <= 0) {
+                            ElMessage.warning('表名无法推断业务域（需含下划线前缀）');
+                            return;
+                          }
+                          modalForm.bizDomain = modalForm.tableName.substring(0, underscoreIndex);
+                        }
+                      "
+                    >
+                      推断
+                    </el-button>
+                  </template>
+                </el-input>
               </el-form-item>
 
               <el-form-item label="权限码前缀" prop="permCodePrefix">
@@ -244,17 +275,6 @@
                     </el-button>
                   </template>
                 </el-input>
-              </el-form-item>
-              <el-form-item label="方案备注" prop="remark">
-                <el-input
-                  v-model="modalForm.remark"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="请输入方案备注"
-                  clearable
-                  show-word-limit
-                  maxlength="1000"
-                />
               </el-form-item>
             </el-card>
           </el-col>
@@ -325,6 +345,17 @@
                     </el-button>
                   </template>
                 </el-input>
+              </el-form-item>
+              <el-form-item label="方案备注" prop="remark">
+                <el-input
+                  v-model="modalForm.remark"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入方案备注"
+                  clearable
+                  show-word-limit
+                  maxlength="1000"
+                />
               </el-form-item>
             </el-card>
           </el-col>

@@ -32,6 +32,9 @@ public class GetOpSchemaDetailsVo {
     @Schema(description = "模型备注")
     private String modelRemark;
 
+    @Schema(description = "业务域")
+    private String bizDomain;
+
     @Schema(description = "数据源表名")
     private String tableName;
 

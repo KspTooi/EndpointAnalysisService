@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-12 03:18:43",
+  "updatedTime": "2026-4-12 04:52:37",
   "dbConns": [],
   "profile": {
     "default": {
@@ -30533,6 +30533,24 @@
           "extProps": {},
           "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
           "id": "2D1F52F8-FD50-4523-84BB-8DCD39F8C551"
+        },
+        {
+          "defKey": "biz_domain",
+          "defName": "业务域",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
+          "id": "1056E698-8F4F-4C3B-AE0A-E100A4D51AD4"
         },
         {
           "defKey": "table_name",

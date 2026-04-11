@@ -41,6 +41,11 @@ public class AddOpSchemaDto implements DtoCustomValidator {
     @Schema(description = "模型备注")
     private String modelRemark;
 
+    @NotBlank(message = "业务域不能为空")
+    @Size(max = 80, message = "业务域不能超过80个字符")
+    @Schema(description = "业务域")
+    private String bizDomain;
+
     @Size(max = 80, message = "数据源表名不能超过80个字符")
     @Schema(description = "数据源表名")
     private String tableName;
