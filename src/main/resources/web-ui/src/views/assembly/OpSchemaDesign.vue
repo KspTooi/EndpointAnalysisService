@@ -46,10 +46,11 @@
 
     <!-- 操作按钮区域 -->
     <div v-loading="polyListLoading || originListLoading" class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
+      <el-button type="primary" :icon="CloseIcon" link @click="goToList">回退</el-button>
       <el-button :disabled="listViewModel === 'raw'" type="success" :icon="AddFieldIcon" link @click="openPolyAddModal()"
         >添加字段</el-button
       >
+      <el-button type="primary" :icon="PreviewIcon" link @click="goToPreview">转到模拟</el-button>
     </div>
 
     <!-- 原始模型列表表格区域 -->
@@ -365,6 +366,7 @@ const MagicStickIcon = resolveIcon("magic-stick");
 const CloseIcon = resolveIcon("fontisto:close");
 const AddFieldIcon = resolveIcon("zondicons:add-outline");
 const PkIcon = resolveIcon("fxemoji:key");
+const PreviewIcon = resolveIcon("view");
 
 const POLICY_CRUD_LABEL_MAP: Record<string, string> = {
   ADD: "增",
@@ -395,7 +397,7 @@ const POLICY_VIEW_LABEL_MAP: Record<number, string> = {
   6: "LDT",
 };
 
-const { cdrcCanReturn, cdrcReturn, getCdrcQuery } = ComDirectRouteContext.useDirectRouteContext();
+const { cdrcCanReturn, cdrcReturn, getCdrcQuery, cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
 
 const schemaInfo = getCdrcQuery() as GetOpSchemaListVo;
 const outputSchemaId = ref(schemaInfo?.id ?? "");
@@ -499,6 +501,14 @@ const {
   resetModal: resetPolyAddModal,
   submitModal: submitPolyAdd,
 } = OpSchemaDesignService.usePolyModelAddModal(outputSchemaId, polyAddFormRef, loadPolyList);
+
+const goToPreview = (): void => {
+  cdrcRedirect("op-schema-preview", schemaInfo);
+};
+
+const goToList = (): void => {
+  cdrcRedirect("op-schema-manager", schemaInfo);
+};
 
 onMounted(() => {
   loadPolyList();

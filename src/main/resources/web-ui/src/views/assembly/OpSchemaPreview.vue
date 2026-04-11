@@ -25,7 +25,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn"> 回退 </el-button>
+      <el-button type="primary" class="ml-0!" :icon="CloseIcon" link @click="goToList"> 回退 </el-button>
       <el-button type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint">刷新蓝图</el-button>
       <el-button type="success" class="ml-0!" style="color: #a53200" :icon="CheckAllIcon" link @click="checkedAll">
         全选
@@ -34,6 +34,7 @@
         清空已选
       </el-button>
       <el-button type="success" class="ml-0!" :icon="ExecuteIcon" link @click="onExecute">执行已选蓝图</el-button>
+      <el-button type="primary" class="ml-0!" :icon="DesignIcon" link @click="goToDesign">转到设计</el-button>
     </div>
 
     <div class="main-content">
@@ -164,6 +165,7 @@
 
 <script setup lang="ts">
 import { DocumentCopy, Document, DataAnalysis, Loading } from "@element-plus/icons-vue";
+import { ElMessageBox } from "element-plus";
 import ComIconService from "@/soa/com-series/service/ComIconService";
 import OpSchemaPreviewService from "@/views/assembly/service/OpSchemaPreviewService";
 import { ref } from "vue";
@@ -179,9 +181,10 @@ const RefreshIcon = resolveIcon("el:download");
 const ExecuteIcon = resolveIcon("game-icons:nuclear-bomb");
 const CheckAllIcon = resolveIcon("ep:check");
 const ClearCheckedIcon = resolveIcon("ep:circle-close");
+const DesignIcon = resolveIcon("edit");
 
 //CDRC上下文服务
-const { getCdrcQuery, cdrcReturn, cdrcCanReturn } = ComDirectRouteContext.useDirectRouteContext();
+const { getCdrcQuery, cdrcReturn, cdrcCanReturn, cdrcRedirect } = ComDirectRouteContext.useDirectRouteContext();
 const cdrcRow = getCdrcQuery() as GetOpSchemaListVo;
 
 //当前选中蓝图的key 如果是QBE模型，则为__qbe_model__ 如果是蓝图，则为蓝图的sha256Hex
@@ -255,11 +258,29 @@ const {
   previewQbeModel
 );
 
+const goToDesign = (): void => {
+  cdrcRedirect("op-schema-design", cdrcRow);
+};
+
+const goToList = (): void => {
+  cdrcRedirect("op-schema-manager", cdrcRow);
+};
+
 /**
  * 执行已选蓝图 胶水代码
  */
 const onExecute = (): void => {
-  executeSelectedBlueprint(checkedBlueprints.value);
+  if (checkedBlueprints.value.length === 0) {
+    ElMessageBox.alert("请先勾选至少一个蓝图文件", "提示", { confirmButtonText: "确定" });
+    return;
+  }
+  ElMessageBox.confirm(`确认执行已选的 ${checkedBlueprints.value.length} 个蓝图？此操作将推送至SCM，请谨慎操作。`, "执行确认", {
+    confirmButtonText: "确认执行",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    executeSelectedBlueprint(checkedBlueprints.value);
+  });
 };
 </script>
 
