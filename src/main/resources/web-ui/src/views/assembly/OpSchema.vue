@@ -167,8 +167,22 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="从SCM读取蓝图" prop="inputScmId">
-                <el-select v-model="modalForm.inputScmId" placeholder="请选择输入SCM" filterable clearable style="width: 100%">
+                <el-select
+                  v-model="modalForm.inputScmId"
+                  placeholder="请选择输入SCM"
+                  filterable
+                  clearable
+                  style="width: 100%"
+                  :class="{ 'scm-not-found': modalForm.inputScmId && !modalScm.find((s) => s.id === modalForm.inputScmId) }"
+                >
                   <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
+                  <el-option
+                    v-if="modalForm.inputScmId && !modalScm.find((s) => s.id === modalForm.inputScmId)"
+                    :value="modalForm.inputScmId"
+                    label="该SCM无法访问"
+                    class="text-red-500!"
+                    disabled
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item label="SCM基准路径" prop="baseInput">
@@ -255,8 +269,22 @@
               </template>
 
               <el-form-item label="输出到SCM" prop="outputScmId">
-                <el-select v-model="modalForm.outputScmId" placeholder="请选择输出SCM" filterable clearable style="width: 100%">
+                <el-select
+                  v-model="modalForm.outputScmId"
+                  placeholder="请选择输出SCM"
+                  filterable
+                  clearable
+                  style="width: 100%"
+                  :class="{ 'scm-not-found': modalForm.outputScmId && !modalScm.find((s) => s.id === modalForm.outputScmId) }"
+                >
                   <el-option v-for="item in modalScm" :key="item.id" :value="item.id" :label="item.name" />
+                  <el-option
+                    v-if="modalForm.outputScmId && !modalScm.find((s) => s.id === modalForm.outputScmId)"
+                    :value="modalForm.outputScmId"
+                    label="该SCM无法访问"
+                    class="text-red-500!"
+                    disabled
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item label="SCM基准路径" prop="baseOutput">
@@ -366,5 +394,10 @@ const {
 .el-card {
   box-shadow: none !important;
   border-radius: 0 !important;
+}
+
+.scm-not-found :deep(.el-select__placeholder),
+.scm-not-found :deep(.el-select__selected-item) {
+  color: var(--el-color-danger) !important;
 }
 </style>

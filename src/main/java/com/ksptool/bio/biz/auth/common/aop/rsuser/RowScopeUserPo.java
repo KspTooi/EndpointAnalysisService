@@ -22,7 +22,7 @@ import org.hibernate.annotations.ParamDef;
 })
 @Filter(
         name = "rsUserFilter",
-        condition = "creator_id = :userId"
+        condition = "(creator_id = :userId)"
 )
 public abstract class RowScopeUserPo {
 

@@ -42,7 +42,7 @@ spring:
         bootstrap-mode: lazy
 
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       #ddl-auto: update
       ddl-auto: none
@@ -51,7 +51,7 @@ spring:
         format_sql: false
         use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.MySQLDialect
-    open-in-view: false
+    open-in-view: true
 
   main:
     lazy-initialization: true
@@ -164,4 +164,3 @@ captcha:
 
 flowable:
   database-schema-update: true
-
