@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.ksptool.bio.commons.annotation.PrintLog;
 
 ## 引入专用包
 import com.ksptool.bio.biz.${model.lowerCase}.service.${model.std}Service;
@@ -26,36 +28,41 @@ import com.ksptool.bio.biz.${model.lowerCase}.model.vo.Get${model.std}DetailsVo;
 ## lowerCase; //全小写名称 ex: localuseraccount
 ## upperCase; //全大写名称 ex: LOCALUSERACCOUNT
 
+@PrintLog
 @RestController
 @RequestMapping("/${model.camelCase}")
-@Tag(name = "${model.comment}", description = "${model.comment}")
+@Tag(name = "${schema.modelRemark}", description = "${schema.modelRemark}")
 @Slf4j
 public class ${model.std}Controller {
 
     @Autowired
     private ${model.std}Service ${model.camelCase}Service;
 
+    @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:view')")
     @PostMapping("/get${model.std}List")
-    @Operation(summary ="列表查询")
+    @Operation(summary ="查询#{schema.modelRemark}列表")
     public PageResult<Get${model.std}ListVo> get${model.std}List(@RequestBody @Valid Get${model.std}ListDto dto) throws Exception{
         return ${model.camelCase}Service.get${model.std}List(dto);
     }
 
-    @Operation(summary ="新增")
+    @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:add')")
+    @Operation(summary ="新增#{schema.modelRemark}")
     @PostMapping("/add${model.std}")
     public Result<String> add${model.std}(@RequestBody @Valid Add${model.std}Dto dto) throws Exception{
 		${model.camelCase}Service.add${model.std}(dto);
         return Result.success("新增成功");
     }
 
-    @Operation(summary ="编辑")
+    @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:edit')")
+    @Operation(summary ="编辑#{schema.modelRemark}")
     @PostMapping("/edit${model.std}")
     public Result<String> edit${model.std}(@RequestBody @Valid Edit${model.std}Dto dto) throws Exception{
 		${model.camelCase}Service.edit${model.std}(dto);
         return Result.success("修改成功");
     }
 
-    @Operation(summary ="查询详情")
+    @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:view')")
+    @Operation(summary ="查询#{schema.modelRemark}详情")
     @PostMapping("/get${model.std}Details")
     public Result<Get${model.std}DetailsVo> get${model.std}Details(@RequestBody @Valid CommonIdDto dto) throws Exception{
         Get${model.std}DetailsVo details = ${model.camelCase}Service.get${model.std}Details(dto);
@@ -65,7 +72,8 @@ public class ${model.std}Controller {
         return Result.success(details);
     }
 
-    @Operation(summary ="删除")
+    @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:remove')")
+    @Operation(summary ="删除#{schema.modelRemark}")
     @PostMapping("/remove${model.std}")
     public Result<String> remove${model.std}(@RequestBody @Valid CommonIdDto dto) throws Exception{
         ${model.camelCase}Service.remove${model.std}(dto);
