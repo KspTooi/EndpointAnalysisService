@@ -3,11 +3,7 @@ package com.ksptool.bio.biz.assembly.controller;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.ExecuteOpSchemaDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
-import com.ksptool.bio.biz.assembly.model.opschema.dto.PreviewOpBluePrintDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.*;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
@@ -16,15 +12,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @RestController
@@ -33,14 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OpSchemaController {
 
-    @Autowired
-    private OpSchemaService opSchemaService;
-
     //执行锁，防止同时执行多个输出方案，因为QBE引擎是单线程的，并发会出现线程安全问题
     private final ReentrantLock executeLock = new ReentrantLock();
-
     //预览锁，防止同时预览多个输出方案，因为SCM拉取和推送是单线程的，并发会出现线程安全问题
     private final ReentrantLock previewLock = new ReentrantLock();
+    @Autowired
+    private OpSchemaService opSchemaService;
 
     @PostMapping("/getOpSchemaList")
     @Operation(summary = "查询输出方案列表")
@@ -82,19 +75,28 @@ public class OpSchemaController {
     @Operation(summary = "查询蓝图文件列表")
     @PostMapping("/getOpBluePrintList")
     public Result<List<GetOpBluePrintListVo>> getOpBluePrintList(@RequestBody @Valid CommonIdDto dto) throws Exception {
-        return Result.success(opSchemaService.getOpBluePrintList(dto));
+
+        if (!previewLock.tryLock()) {
+            return Result.error("当前SCM正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
+        }
+
+        try {
+            return Result.success(opSchemaService.getOpBluePrintList(dto));
+        } finally {
+            previewLock.unlock();
+        }
     }
 
     @Operation(summary = "预览蓝图输出")
     @PostMapping("/previewOpBluePrint")
     public Result<String> previewOpBluePrint(@RequestBody @Valid PreviewOpBluePrintDto dto) throws Exception {
 
-        if(!previewLock.tryLock()){
+        if (!previewLock.tryLock()) {
             return Result.error("当前SCM正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
         }
 
-        try{
-            return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(),dto.getSha256Hex()));
+        try {
+            return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(), dto.getSha256Hex()));
         } finally {
             previewLock.unlock();
         }
@@ -111,11 +113,11 @@ public class OpSchemaController {
     @PostMapping("/executeOpSchema")
     public Result<String> executeOpSchema(@RequestBody @Valid ExecuteOpSchemaDto dto) throws Exception {
 
-        if(!executeLock.tryLock()){
+        if (!executeLock.tryLock()) {
             return Result.error("当前QBE引擎正忙，这可能由于前一次执行操作尚未完成，请稍后再试。");
         }
 
-        try{
+        try {
             opSchemaService.executeOpSchema(dto);
             return Result.success("操作成功");
         } finally {
