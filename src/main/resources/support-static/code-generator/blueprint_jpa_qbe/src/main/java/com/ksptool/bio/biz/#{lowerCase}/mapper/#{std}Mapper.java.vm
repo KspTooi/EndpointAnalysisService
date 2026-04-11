@@ -1,13 +1,7 @@
 package com.ksptool.bio.biz.${model.lowerCase}.mapper;
 
-import com.ksptool.assembly.entity.web.PageCalculator;
-import com.ksptool.bio.biz.ship.model.shiplargescreen.vo.GetLsCabinEventListVo;
-import com.ksptool.bio.biz.ship.model.shiplargescreen.vo.GetLsShipCabinListVo;
-import com.ksptool.bio.biz.ship.model.shiplargescreen.vo.GetLsShipListVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 @Mapper
 public interface ${model.std}Mapper {
