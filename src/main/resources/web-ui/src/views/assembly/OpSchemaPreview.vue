@@ -51,8 +51,8 @@
               >
                 <el-icon class="item-icon"><DataAnalysis /></el-icon>
                 <div class="item-info">
-                  <div class="item-name">QBE模型</div>
-                  <div class="item-path">查看当前输出方案的QBE模型JSON</div>
+                  <div class="item-name">QBE引擎模型参数</div>
+                  <div class="item-path">查看提供给QBE引擎的模型数据JSON</div>
                 </div>
               </div>
 

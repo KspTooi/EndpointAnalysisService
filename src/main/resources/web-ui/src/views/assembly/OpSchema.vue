@@ -50,8 +50,11 @@
             }
           "
         />
-        <el-table-column prop="fieldCountOrigin" label="字段数(原始)" min-width="110" show-overflow-tooltip />
-        <el-table-column prop="fieldCountPoly" label="字段数(聚合)" min-width="110" show-overflow-tooltip />
+        <el-table-column label="字段数(原始/聚合)" min-width="140" show-overflow-tooltip>
+          <template #default="scope">
+            {{ scope.row.fieldCountOrigin }} of {{ scope.row.fieldCountPoly }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" fixed="right" min-width="240">
           <template #default="scope">
             <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">

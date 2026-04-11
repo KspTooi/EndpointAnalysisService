@@ -73,6 +73,9 @@ public class PolyModelService {
     public void addPolyModel(AddPolyModelDto dto) {
         PolyModelPo insertPo = as(dto, PolyModelPo.class);
         repository.save(insertPo);
+
+        //更新输出方案的聚合模型数量
+        opSchemaRepository.updatePolyModelCount(insertPo.getOutputSchemaId());
     }
 
     /**
@@ -88,6 +91,9 @@ public class PolyModelService {
 
         assign(dto, updatePo);
         repository.save(updatePo);
+
+        //更新输出方案的聚合模型数量
+        opSchemaRepository.updatePolyModelCount(updatePo.getOutputSchemaId());
     }
 
     /**
@@ -116,6 +122,9 @@ public class PolyModelService {
             return;
         }
         repository.deleteById(dto.getId());
+
+        //更新输出方案的聚合模型数量
+        opSchemaRepository.updatePolyModelCount(dto.getId());
     }
 
     /**
@@ -195,6 +204,9 @@ public class PolyModelService {
 
         //批量保存聚合模型
         repository.saveAll(polyModelPos);
+
+        //更新输出方案的聚合模型数量
+        opSchemaRepository.updatePolyModelCount(opSchemaPo.getId());
     }
 
 

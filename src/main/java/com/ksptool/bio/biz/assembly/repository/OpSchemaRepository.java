@@ -4,6 +4,7 @@ import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -59,4 +60,16 @@ public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
             SELECT COUNT(u) FROM OpSchemaPo u WHERE u.dataSourceId = :dataSourceId
             """)
     int countByDataSourceId(@Param("dataSourceId") Long dataSourceId);
+
+    /**
+     * 更新输出方案的聚合模型数量
+     *
+     * @param outputSchemaId 输出方案ID
+     * @return 更新条数
+     */
+    @Query("""
+            UPDATE OpSchemaPo u SET u.fieldCountPoly = (SELECT COUNT(p) FROM PolyModelPo p WHERE p.outputSchemaId = :outputSchemaId) WHERE u.id = :outputSchemaId
+            """)
+    @Modifying
+    int updatePolyModelCount(@Param("outputSchemaId") Long outputSchemaId);
 }
