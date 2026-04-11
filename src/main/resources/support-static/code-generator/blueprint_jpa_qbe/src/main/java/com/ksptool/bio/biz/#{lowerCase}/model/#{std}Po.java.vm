@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "${model.tableName}")
 public class ${model.std}Po {
 
-    ## 主键字段
+    ##主键字段
     #foreach ($field in $model.fields)
     #if($field.primaryKey)
     @Id
@@ -23,7 +23,7 @@ public class ${model.std}Po {
 
     #end
     #end
-    ## 普通字段
+    ##普通字段
     #foreach ($field in $model.fields)
     #if(!$field.primaryKey)
     @Column(name = "${field.snakeCase}"#if(!$field.required), nullable = true#end#if($field.comment != ''), comment = "${field.comment}"#end)
