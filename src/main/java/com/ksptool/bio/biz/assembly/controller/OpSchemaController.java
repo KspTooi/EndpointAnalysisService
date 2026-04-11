@@ -96,4 +96,11 @@ public class OpSchemaController {
         opSchemaService.executeOpSchema(dto);
         return Result.success("操作成功");
     }
+
+    @Operation(summary = "复制输出方案")
+    @PostMapping("/copyOpSchema")
+    public Result<String> copyOpSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        opSchemaService.copyOpSchema(dto);
+        return Result.success("复制成功");
+    }
 }

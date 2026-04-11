@@ -17,6 +17,7 @@ import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
+import com.ksptool.bio.biz.assembly.model.polymodel.PolyModelPo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.repository.*;
@@ -70,6 +71,9 @@ public class OpSchemaService {
 
     @Autowired
     private PolyModelService polyModelService;
+
+    @Autowired
+    private PolyModelRepository polyModelRepository;
 
     //QBE Velocity引擎实例
     private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
@@ -286,6 +290,102 @@ public class OpSchemaService {
             return;
         }
         repository.deleteById(dto.getId());
+    }
+
+    /**
+     * 复制输出方案(含原始模型和聚合模型)
+     *
+     * @param dto 源输出方案ID
+     * @throws BizException 业务异常
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void copyOpSchema(CommonIdDto dto) throws Exception {
+        OpSchemaPo source = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("复制失败,数据不存在或无权限访问."));
+
+        var userId = session().getUserId();
+
+        //检查两个SCM的可用性
+        Long inputScmId = null;
+        if (source.getInputScmId() != null) {
+            ScmPo inputScmPo = scmRepository.findById(source.getInputScmId()).orElse(null);
+            if (inputScmPo != null && Objects.equals(inputScmPo.getCreatorId(), userId)) {
+                inputScmId = source.getInputScmId();
+            }
+        }
+
+        Long outputScmId = null;
+        if (source.getOutputScmId() != null) {
+            ScmPo outputScmPo = scmRepository.findById(source.getOutputScmId()).orElse(null);
+            if (outputScmPo != null && Objects.equals(outputScmPo.getCreatorId(), userId)) {
+                outputScmId = source.getOutputScmId();
+            }
+        }
+
+        //复制基础信息
+        OpSchemaPo copy = new OpSchemaPo();
+        copy.setDataSourceId(source.getDataSourceId());
+        copy.setTypeSchemaId(source.getTypeSchemaId());
+        copy.setInputScmId(inputScmId);
+        copy.setOutputScmId(outputScmId);
+        copy.setName(source.getName() + "-副本");
+        copy.setModelName(source.getModelName());
+        copy.setModelRemark(source.getModelRemark());
+        copy.setBizDomain(source.getBizDomain());
+        copy.setTableName(source.getTableName());
+        copy.setRemoveTablePrefix(source.getRemoveTablePrefix());
+        copy.setPermCodePrefix(source.getPermCodePrefix());
+        copy.setPolicyOverride(source.getPolicyOverride());
+        copy.setBaseInput(source.getBaseInput());
+        copy.setBaseOutput(source.getBaseOutput());
+        copy.setRemark(source.getRemark());
+        copy.setFieldCountOrigin(source.getFieldCountOrigin());
+        copy.setFieldCountPoly(source.getFieldCountPoly());
+
+        //先保存输出方案，这样才能获取到主键ID
+        copy = repository.save(copy);
+
+        Long newId = copy.getId();
+
+        //复制原始模型
+        List<RawModelPo> rawModels = rawModelRepository.getRawModelByOutputSchemaId(source.getId());
+        if (!rawModels.isEmpty()) {
+            List<RawModelPo> rawCopies = new ArrayList<>();
+            for (RawModelPo raw : rawModels) {
+                RawModelPo rawCopy = new RawModelPo();
+                rawCopy.setOutputSchemaId(newId);
+                rawCopy.setName(raw.getName());
+                rawCopy.setDataType(raw.getDataType());
+                rawCopy.setLength(raw.getLength());
+                rawCopy.setRequire(raw.getRequire());
+                rawCopy.setRemark(raw.getRemark());
+                rawCopy.setPk(raw.getPk());
+                rawCopy.setSeq(raw.getSeq());
+                rawCopies.add(rawCopy);
+            }
+            rawModelRepository.saveAll(rawCopies);
+        }
+
+        List<PolyModelPo> polyModels = polyModelRepository.getPolyModelByOutputSchemaId(source.getId());
+        if (!polyModels.isEmpty()) {
+            List<PolyModelPo> polyCopies = new ArrayList<>();
+            for (PolyModelPo poly : polyModels) {
+                PolyModelPo polyCopy = new PolyModelPo();
+                polyCopy.setOutputSchemaId(newId);
+                polyCopy.setName(poly.getName());
+                polyCopy.setDataType(poly.getDataType());
+                polyCopy.setLength(poly.getLength());
+                polyCopy.setRequire(poly.getRequire());
+                polyCopy.setPolicyCrudJson(poly.getPolicyCrudJson());
+                polyCopy.setPolicyQuery(poly.getPolicyQuery());
+                polyCopy.setPolicyView(poly.getPolicyView());
+                polyCopy.setPk(poly.getPk());
+                polyCopy.setRemark(poly.getRemark());
+                polyCopy.setSeq(poly.getSeq());
+                polyCopies.add(polyCopy);
+            }
+            polyModelRepository.saveAll(polyCopies);
+        }
     }
 
     /**
