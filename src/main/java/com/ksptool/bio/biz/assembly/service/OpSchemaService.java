@@ -8,7 +8,6 @@ import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeVelocityEngine;
-import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
@@ -20,6 +19,9 @@ import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.model.polymodel.PolyModelPo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
+import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
+import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaRepository;
+import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
 import com.ksptool.bio.biz.core.service.AttachService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static com.ksptool.bio.biz.auth.service.SessionService.session;
@@ -76,6 +77,12 @@ public class OpSchemaService {
     @Autowired
     private PolyModelRepository polyModelRepository;
 
+    @Autowired
+    private TymSchemaRepository tymSchemaRepository;
+
+    @Autowired
+    private TymSchemaFieldRepository tymSfRepository;
+
     //QBE Velocity引擎实例
     private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
 
@@ -105,7 +112,7 @@ public class OpSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public String addOpSchema(AddOpSchemaDto dto) throws Exception {
-        
+
         if (repository.countByNameExcludeId(dto.getName(), null) > 0) {
             throw new BizException("新增失败,输出方案名称已存在.");
         }
@@ -272,6 +279,63 @@ public class OpSchemaService {
         int newCount = existingFields.size() - toDelete.size() + toInsert.size();
         updatePo.setFieldCountOrigin(newCount);
         repository.save(updatePo);
+
+        //重映射现有的聚合模型(如果有配置类型映射方案)
+        if (dto.getTypeSchemaId() != null) {
+
+            //获取类型映射方案
+            TymSchemaPo tymSchemaPo = tymSchemaRepository.findById(dto.getTypeSchemaId())
+                    .orElseThrow(() -> new BizException("修改输出方案失败,类型映射方案不存在或无权限访问."));
+
+            //获取类型映射方案下全部的映射类型
+            List<TymSchemaFieldPo> tymSfPos = tymSfRepository.getTymSfByTymSid(dto.getTypeSchemaId());
+
+            //先获取现有聚合模型
+            List<PolyModelPo> polyModels = polyModelRepository.getPolyModelByOutputSchemaId(dto.getId());
+
+            //获取全部原始模型
+            List<RawModelPo> rawModels = rawModelRepository.getRawModelByOutputSchemaId(dto.getId());
+
+            //遍历聚合模型
+            for (PolyModelPo polyModel : polyModels) {
+                //获取原始模型
+                RawModelPo rawModel = rawModels.stream()
+                        .filter(r -> r.getName().equals(polyModel.getName()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (rawModel == null) {
+                    continue;
+                }
+
+                //更新聚合模型的数据类型，先查找原始模型匹配的映射方案
+
+                TymSchemaFieldPo mat = null;
+                var targetType = tymSchemaPo.getDefaultType();
+
+                for (var tymSfPo : tymSfPos) {
+                    if (tymSfPo.getSource().equals(rawModel.getDataType())) {
+                        mat = tymSfPo;
+                        break;
+                    }
+                }
+
+                //如果匹配到tymSf 则使用tymSf的target类型
+                if (mat != null) {
+                    targetType = mat.getTarget();
+                }
+
+                //如果未匹配到tymSf 不更新数据类型
+                if (mat == null) {
+                    continue;
+                }
+
+                //更新聚合模型的数据类型
+                polyModel.setDataType(targetType);
+                polyModelRepository.save(polyModel);
+            }
+
+        }
 
         return "修改成功,新增" + toInsert.size() + "个原始字段,删除" + toDelete.size() + "个原始字段！";
     }
