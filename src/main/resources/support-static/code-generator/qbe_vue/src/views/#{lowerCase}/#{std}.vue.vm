@@ -25,7 +25,7 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增${model.comment}</el-button>
+      <el-button type="success" @click="openModal('add', null)">新增${schema.modelRemark}</el-button>
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
@@ -74,7 +74,7 @@
     <!-- 新增/编辑模态框 -->
     <el-dialog
       v-model="modalVisible"
-      :title="modalMode === 'edit' ? '编辑${model.comment}' : '新增${model.comment}'"
+      :title="modalMode === 'edit' ? '编辑${schema.modelRemark}' : '新增${schema.modelRemark}'"
       width="600px"
       :close-on-click-modal="false"
       @close="

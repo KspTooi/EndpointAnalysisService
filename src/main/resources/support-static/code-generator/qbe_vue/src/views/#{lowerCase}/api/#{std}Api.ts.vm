@@ -63,14 +63,14 @@ export interface Edit${model.std}Dto {
 
 export default {
   /**
-   * 获取${model.comment}列表
+   * 获取${schema.modelRemark}列表
    */
   get${model.std}List: async (dto: Get${model.std}ListDto): Promise<PageResult<Get${model.std}ListVo>> => {
     return await Http.postEntity<PageResult<Get${model.std}ListVo>>("/${model.camelCase}/get${model.std}List", dto);
   },
 
   /**
-   * 获取${model.comment}详情
+   * 获取${schema.modelRemark}详情
    */
   get${model.std}Details: async (dto: CommonIdDto): Promise<Get${model.std}DetailsVo> => {
     const result = await Http.postEntity<Result<Get${model.std}DetailsVo>>("/${model.camelCase}/get${model.std}Details", dto);
@@ -81,7 +81,7 @@ export default {
   },
 
   /**
-   * 新增${model.comment}
+   * 新增${schema.modelRemark}
    */
   add${model.std}: async (dto: Add${model.std}Dto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/${model.camelCase}/add${model.std}", dto);
@@ -92,7 +92,7 @@ export default {
   },
 
   /**
-   * 编辑${model.comment}
+   * 编辑${schema.modelRemark}
    */
   edit${model.std}: async (dto: Edit${model.std}Dto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/${model.camelCase}/edit${model.std}", dto);
@@ -103,7 +103,7 @@ export default {
   },
 
   /**
-   * 删除${model.comment}
+   * 删除${schema.modelRemark}
    */
   remove${model.std}: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/${model.camelCase}/remove${model.std}", dto);

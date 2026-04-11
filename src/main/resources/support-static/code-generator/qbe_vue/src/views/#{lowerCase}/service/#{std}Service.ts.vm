@@ -18,7 +18,7 @@ type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * ${model.comment}列表管理
+   * ${schema.modelRemark}列表管理
    */
   use${model.std}List() {
     const listForm = ref<Get${model.std}ListDto>({
