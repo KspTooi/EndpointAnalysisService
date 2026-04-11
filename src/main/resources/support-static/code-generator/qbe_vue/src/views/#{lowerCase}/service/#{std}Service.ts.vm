@@ -25,7 +25,7 @@ export default {
       pageNum: 1,
       pageSize: 20,
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.listQuery)
       ${field.camelCase}: #if($field.type == "number")null#else""#end,
 #end
 #end
@@ -61,7 +61,7 @@ export default {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.listQuery)
       listForm.value.${field.camelCase} = #if($field.type == "number")null#else""#end;
 #end
 #end
@@ -115,7 +115,9 @@ export default {
     const modalMode = ref<ModalMode>("add");
     const modalForm = reactive<Get${model.std}DetailsVo>({
 #foreach($field in $model.fields)
+#if($field.details)
       ${field.camelCase}: #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end,
+#end
 #end
     });
 
@@ -124,9 +126,16 @@ export default {
      */
     const modalRules: FormRules = {
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
-#if($field.required)
+#if(!$field.primaryKey && $field.add)
+#if($field.required && $field.length)
+      ${field.camelCase}: [
+        { required: true, message: "请输入${field.comment}", trigger: "blur" },
+        { max: ${field.length}, message: "${field.comment}长度不能超过${field.length}个字符", trigger: "blur" },
+      ],
+#elseif($field.required)
       ${field.camelCase}: [{ required: true, message: "请输入${field.comment}", trigger: "blur" }],
+#elseif($field.length)
+      ${field.camelCase}: [{ max: ${field.length}, message: "${field.comment}长度不能超过${field.length}个字符", trigger: "blur" }],
 #end
 #end
 #end
@@ -142,7 +151,9 @@ export default {
 
       if (mode === "add") {
 #foreach($field in $model.fields)
+#if($field.details)
         modalForm.${field.camelCase} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
+#end
 #end
         modalVisible.value = true;
         return;
@@ -157,7 +168,9 @@ export default {
         try {
           const details = await ${model.std}Api.get${model.std}Details({ id: row.id });
 #foreach($field in $model.fields)
+#if($field.details)
           modalForm.${field.camelCase} = details.${field.camelCase};
+#end
 #end
           modalVisible.value = true;
         } catch (error: any) {
@@ -175,7 +188,9 @@ export default {
       }
       modalFormRef.value.resetFields();
 #foreach($field in $model.fields)
+#if($field.details)
       modalForm.${field.camelCase} = #if($field.type == "number")0#elseif($field.type == "boolean")false#else""#end;
+#end
 #end
     };
 
@@ -199,7 +214,7 @@ export default {
         try {
           const addDto: Add${model.std}Dto = {
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.add)
             ${field.camelCase}: modalForm.${field.camelCase},
 #end
 #end
@@ -228,7 +243,7 @@ export default {
 #foreach($field in $model.fields)
 #if($field.primaryKey)
             ${field.camelCase}: modalForm.${field.camelCase},
-#elseif($field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#elseif($field.edit)
             ${field.camelCase}: modalForm.${field.camelCase},
 #end
 #end

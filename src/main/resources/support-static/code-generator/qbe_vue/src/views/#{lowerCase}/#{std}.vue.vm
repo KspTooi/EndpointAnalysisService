@@ -5,7 +5,7 @@
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.listQuery)
           <el-form-item label="${field.comment}">
 #if($field.type == "number")
             <el-input v-model.number="listForm.${field.camelCase}" placeholder="输入${field.comment}" clearable />
@@ -32,7 +32,7 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
 #foreach($field in $model.fields)
-#if($field.camelCase != "deleteTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId")
+#if($field.listView)
         <el-table-column prop="${field.camelCase}" label="${field.comment}" min-width="120" show-overflow-tooltip />
 #end
 #end
@@ -90,7 +90,7 @@
         :validate-on-rule-change="false"
       >
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.add)
         <el-form-item label="${field.comment}" prop="${field.camelCase}">
 #if($field.type == "number")
           <el-input v-model.number="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable />

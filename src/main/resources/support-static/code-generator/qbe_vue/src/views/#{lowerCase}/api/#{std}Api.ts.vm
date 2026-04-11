@@ -9,7 +9,7 @@ import type Result from "@/commons/entity/Result.ts";
  */
 export interface Get${model.std}ListDto extends PageQuery {
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.listQuery)
   ${field.camelCase}?: ${field.type}; // ${field.comment}
 #end
 #end
@@ -20,7 +20,9 @@ export interface Get${model.std}ListDto extends PageQuery {
  */
 export interface Get${model.std}ListVo {
 #foreach($field in $model.fields)
+#if($field.listView)
   ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
 #end
 }
 
@@ -29,7 +31,9 @@ export interface Get${model.std}ListVo {
  */
 export interface Get${model.std}DetailsVo {
 #foreach($field in $model.fields)
+#if($field.details)
   ${field.camelCase}: ${field.type}; // ${field.comment}
+#end
 #end
 }
 
@@ -38,7 +42,7 @@ export interface Get${model.std}DetailsVo {
  */
 export interface Add${model.std}Dto {
 #foreach($field in $model.fields)
-#if(!$field.primaryKey && $field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#if(!$field.primaryKey && $field.add)
   ${field.camelCase}: ${field.type}; // ${field.comment}
 #end
 #end
@@ -51,7 +55,7 @@ export interface Edit${model.std}Dto {
 #foreach($field in $model.fields)
 #if($field.primaryKey)
   ${field.camelCase}: ${field.type}; // ${field.comment}
-#elseif($field.camelCase != "createTime" && $field.camelCase != "updateTime" && $field.camelCase != "creatorId" && $field.camelCase != "updaterId" && $field.camelCase != "deleteTime")
+#elseif($field.edit)
   ${field.camelCase}: ${field.type}; // ${field.comment}
 #end
 #end
