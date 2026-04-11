@@ -26,8 +26,6 @@ import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaListVo;
 import com.ksptool.bio.biz.assembly.model.rawmodel.RawModelPo;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
-import com.ksptool.bio.biz.assembly.model.tymschema.TymSchemaPo;
-import com.ksptool.bio.biz.assembly.model.tymschemafield.TymSchemaFieldPo;
 import com.ksptool.bio.biz.assembly.repository.*;
 import com.ksptool.bio.biz.core.service.AttachService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,21 +34,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 
 @Slf4j
@@ -80,12 +74,6 @@ public class OpSchemaService {
 
     @Autowired
     private ScmService scmService;
-
-    @Autowired
-    private TymSchemaRepository tymsRepository;
-
-    @Autowired
-    private TymSchemaFieldRepository tymsfRepository;
 
     @Autowired
     private PolyModelRepository polyModelRepository;
@@ -127,22 +115,22 @@ public class OpSchemaService {
         var session = session();
         var userId = session.getUserId();
 
-        if(dto.getInputScmId() != null){
+        if (dto.getInputScmId() != null) {
 
             ScmPo inputScmPo = scmRepository.findById(dto.getInputScmId())
-                .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
+                    .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
 
-            if(inputScmPo.getCreatorId() != userId){
+            if (!Objects.equals(inputScmPo.getCreatorId(), userId)) {
                 throw new BizException("新增输出方案失败,无权访问SCM。");
             }
 
         }
 
-        if(dto.getOutputScmId() != null){
+        if (dto.getOutputScmId() != null) {
             ScmPo outputScmPo = scmRepository.findById(dto.getOutputScmId())
-                .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
+                    .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
 
-            if(outputScmPo.getCreatorId() != userId){
+            if (!Objects.equals(outputScmPo.getCreatorId(), userId)) {
                 throw new BizException("新增输出方案失败,无权访问SCM。");
             }
         }
@@ -208,20 +196,20 @@ public class OpSchemaService {
         var session = session();
         var userId = session.getUserId();
 
-        if(dto.getInputScmId() != null){
+        if (dto.getInputScmId() != null) {
             ScmPo inputScmPo = scmRepository.findById(dto.getInputScmId())
-                .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
+                    .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
 
-            if(inputScmPo.getCreatorId() != userId){
+            if (!Objects.equals(inputScmPo.getCreatorId(), userId)) {
                 throw new BizException("修改输出方案失败,无权访问SCM。");
             }
         }
 
-        if(dto.getOutputScmId() != null){
+        if (dto.getOutputScmId() != null) {
             ScmPo outputScmPo = scmRepository.findById(dto.getOutputScmId())
-                .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
+                    .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
 
-            if(outputScmPo.getCreatorId() != userId){
+            if (!Objects.equals(outputScmPo.getCreatorId(), userId)) {
                 throw new BizException("修改输出方案失败,无权访问SCM。");
             }
         }
@@ -300,10 +288,9 @@ public class OpSchemaService {
      * 删除输出方案元素
      *
      * @param dto 删除参数
-     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeOpSchema(CommonIdDto dto) throws BizException {
+    public void removeOpSchema(CommonIdDto dto) {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
             return;
@@ -334,7 +321,7 @@ public class OpSchemaService {
         var session = session();
         var userId = session.getUserId();
 
-        if(inputScmPo.getCreatorId() != userId){
+        if (!Objects.equals(inputScmPo.getCreatorId(), userId)) {
             throw new BizException("查询蓝图文件列表失败,无权访问SCM。");
         }
 
@@ -374,7 +361,7 @@ public class OpSchemaService {
             return ret;
 
         } catch (IOException | IllegalArgumentException e) {
-            log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpaceInputPath.toString(), e);
+            log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpaceInputPath, e);
             throw new BizException("读取蓝图文件列表失败: " + e.getMessage());
         }
     }
@@ -398,7 +385,7 @@ public class OpSchemaService {
             throw new BizException("预览蓝图输出失败,蓝图目录不存在.");
         }
 
-        QbeBlueprint blueprint = null;
+        QbeBlueprint blueprint;
 
         //QBE读取所有蓝图文件
         try {
@@ -412,7 +399,7 @@ public class OpSchemaService {
                     .orElseThrow(() -> new BizException("预览蓝图输出失败,蓝图文件不存在."));
 
         } catch (IOException e) {
-            log.error("预览蓝图输出失败: {} 路径: {}", e.getMessage(), iBpPath.toString(), e);
+            log.error("预览蓝图输出失败: {} 路径: {}", e.getMessage(), iBpPath, e);
             throw new BizException("预览蓝图输出失败: " + e.getMessage());
         }
 
@@ -473,13 +460,6 @@ public class OpSchemaService {
         DataSourcePo dataSourcePo = datasourceRepository.findById(opSchemaPo.getDataSourceId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据源不存在或无权限访问."));
 
-        //查询类型映射方案
-        TymSchemaPo tymsPo = tymsRepository.findById(opSchemaPo.getTypeSchemaId())
-                .orElseThrow(() -> new BizException("执行输出方案失败,类型映射方案不存在或无权限访问."));
-
-        //查询类型映射方案字段
-        List<TymSchemaFieldPo> tymsfPos = tymsfRepository.getTymSfByTymSid(tymsPo.getId());
-
         //准备工作空间
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
@@ -491,7 +471,7 @@ public class OpSchemaService {
             try {
                 Files.createDirectories(workSpacePath);
             } catch (IOException e) {
-                log.error("创建工作空间失败: {} 路径: {}", e.getMessage(), workSpacePath.toString(), e);
+                log.error("创建工作空间失败: {} 路径: {}", e.getMessage(), workSpacePath, e);
                 throw new BizException("创建工作空间失败: " + e.getMessage());
             }
         }
@@ -621,9 +601,8 @@ public class OpSchemaService {
      *
      * @param opSchemaPo 输出方案
      * @return 蓝图文件绝对路径
-     * @throws BizException 业务异常
      */
-    private Path getBluePrintPath(OpSchemaPo opSchemaPo) throws BizException {
+    private Path getBluePrintPath(OpSchemaPo opSchemaPo) {
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
