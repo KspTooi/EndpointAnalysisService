@@ -414,7 +414,7 @@ public class ScmService {
      * @param basePath 本地工作目录
      * @throws BizException 业务异常
      */
-    public void pushToScm(ScmPo scmPo, String basePath) throws BizException {
+    public void pushToScm(ScmPo scmPo, String basePath,String commitMessage) throws BizException {
         var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
         var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
         int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
@@ -446,7 +446,7 @@ public class ScmService {
             }
 
             git.commit()
-                    .setMessage("BioCode代码生成器自动提交")
+                    .setMessage(commitMessage)
                     .call();
 
             log.info("pushToScm: push 目录={} url={}", basePath, scmPo.getScmUrl());

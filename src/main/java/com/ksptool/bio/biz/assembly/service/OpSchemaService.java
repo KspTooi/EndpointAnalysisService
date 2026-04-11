@@ -591,8 +591,10 @@ public class OpSchemaService {
         qbeVelocityEngine.setOverwriteEnabled(true);
         qbeVelocityEngine.render(qbeModel, opSchemaPo, blueprints);
 
+        var message = "QBE生成引擎提交 OpSchemaId=" + opSchemaPo.getId() + " 蓝图数量=" + blueprints.size();
+
         //将输出目录推送到输出SCM
-        scmService.pushToScm(outputScmPo, workSpaceOutputPath.toString());
+        scmService.pushToScm(outputScmPo, workSpaceOutputPath.toString(), message);
     }
 
 

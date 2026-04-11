@@ -134,7 +134,7 @@
           <span>正在执行中，请勿关闭窗口...</span>
         </div>
 
-        <div class="execution-steps">
+        <div v-if="!executionFinished" class="execution-steps">
           <div v-for="(step, index) in executionSteps" :key="index" class="step-item">
             <div class="step-icon">
               <el-icon><Document /></el-icon>
