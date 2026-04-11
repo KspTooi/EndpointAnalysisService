@@ -26,7 +26,9 @@
     <!-- 操作按钮区域 -->
     <div class="action-bar">
       <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
-      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="RefreshIcon" link>刷新蓝图</el-button>
+      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint"
+        >刷新蓝图</el-button
+      >
       <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="ExecuteIcon" link>执行已选蓝图</el-button>
     </div>
 
@@ -124,12 +126,16 @@ const cdrcRow = getCdrcQuery() as GetOpSchemaListVo;
 //当前选中蓝图的key 如果是QBE模型，则为__qbe_model__ 如果是蓝图，则为蓝图的sha256Hex
 const selectedKey = ref<string>("");
 
+//当前选中的蓝图
+const selectedBlueprint = ref<GetOpBluePrintListVo | null>(null);
+
 /**
  * 选中蓝图
  * @param item 蓝图VO
  */
 const onBlueprintSelect = (item: GetOpBluePrintListVo): void => {
   selectedKey.value = item.sha256Hex;
+  selectedBlueprint.value = item;
   previewBlueprint(item, cdrcRow.id);
 };
 
@@ -139,6 +145,7 @@ const onBlueprintSelect = (item: GetOpBluePrintListVo): void => {
  */
 const onQbeModelSelect = (opSchemaId: string): void => {
   selectedKey.value = "__qbe_model__";
+  selectedBlueprint.value = null;
   previewQbeModel(opSchemaId);
 };
 
@@ -163,6 +170,17 @@ const {
   clearPreview,
   onCopy,
 } = OpSchemaPreviewService.useBlueprintPreview();
+
+//操作栏打包
+const { refreshBlueprint } = OpSchemaPreviewService.useActionBar(
+  cdrcRow,
+  selectedKey,
+  selectedBlueprint,
+  loadBlueprintList,
+  previewBlueprint,
+  previewQbeModel,
+  clearPreview
+);
 </script>
 
 <style scoped>

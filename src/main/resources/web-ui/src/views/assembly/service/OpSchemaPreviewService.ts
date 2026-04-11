@@ -1,4 +1,4 @@
-import { onMounted, ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
@@ -223,6 +223,49 @@ export default {
 
       //复制代码
       onCopy,
+    };
+  },
+
+  /**
+   * 操作栏打包
+   * @param schema 输出方案
+   * @param selectedKey 当前选中蓝图的key
+   * @param selectedBlueprint 当前选中的蓝图
+   * @param loadBlueprintList 加载蓝图列表
+   * @param previewBlueprint 预览蓝图
+   * @param previewQbeModel 预览QBE模型
+   * @param clearPreview 清空预览
+   */
+  useActionBar(
+    schema: GetOpSchemaListVo,
+    selectedKey: Ref<string>,
+    selectedBlueprint: Ref<GetOpBluePrintListVo | null>,
+    loadBlueprintList: () => Promise<void>,
+    previewBlueprint: (vo: GetOpBluePrintListVo, opSchemaId: string) => Promise<void>,
+    previewQbeModel: (opSchemaId: string) => Promise<void>
+  ) {
+    const refreshBlueprint = async (): Promise<void> => {
+      //重新加载蓝图列表
+      await loadBlueprintList();
+
+      //判断当前选的是什么
+      if (!selectedKey.value) {
+        return;
+      }
+
+      //如果是QBE模型，则预览QBE模型
+      if (selectedKey.value === "__qbe_model__") {
+        previewQbeModel(schema.id);
+        return;
+      }
+
+      //如果是蓝图，则预览蓝图
+      previewBlueprint(selectedBlueprint.value, schema.id);
+    };
+
+    return {
+      //刷新蓝图
+      refreshBlueprint,
     };
   },
 };
