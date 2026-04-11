@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-12 04:52:37",
+  "updatedTime": "2026-4-12 05:50:39",
   "dbConns": [],
   "profile": {
     "default": {
@@ -30788,7 +30788,22 @@
         }
       ],
       "correlations": [],
-      "indexes": [],
+      "indexes": [
+        {
+          "defKey": "uk_name",
+          "defName": null,
+          "unique": true,
+          "comment": "",
+          "fields": [
+            {
+              "fieldDefKey": "57FF5079-611E-48D2-97F6-16E26A2C6E7B",
+              "ascOrDesc": "A",
+              "id": "A40C302B-B8CA-4529-8221-A72136A02F6B"
+            }
+          ],
+          "id": "CAEFF214-D99F-41E0-8AA9-B3181A4CE14D"
+        }
+      ],
       "type": "P"
     },
     {
