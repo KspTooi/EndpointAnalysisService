@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Setter
 public class Get${model.std}DetailsVo {
 
-    ## 遍历 details=true 的字段生成属性（包含主键）
     #foreach ($field in $model.fields)
     #if($field.details)
     @Schema(description="${field.comment}")

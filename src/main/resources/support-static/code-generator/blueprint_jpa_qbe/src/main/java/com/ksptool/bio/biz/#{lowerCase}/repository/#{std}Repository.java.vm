@@ -43,9 +43,6 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface ${model.std}Repository extends JpaRepository<${model.std}Po, Long>{
 
-    ## 遍历 listQuery=true 且非主键的字段，生成 QBE 风格的动态查询条件
-    ## String 类型使用 LIKE 模糊匹配，其他类型使用精确匹配
-    ## 参数为空(NULL)时该条件自动跳过，实现可选过滤
     @Query("""
     SELECT u FROM ${model.std}Po u
     WHERE
