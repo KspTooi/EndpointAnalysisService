@@ -13,7 +13,9 @@ import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjecto
 import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeVelocityEngine;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.StdName;
 import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
@@ -296,16 +298,8 @@ public class OpSchemaService {
         //先检出输入SCM
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
 
-        //准备解析参数
-        Map<String, String> params = new HashMap<>();
-        params.put("modelName", opSchemaPo.getModelName());
-        params.put("tableName", opSchemaPo.getTableName());
-        params.put("removeTablePrefix", opSchemaPo.getRemoveTablePrefix());
-        params.put("permCodePrefix", opSchemaPo.getPermCodePrefix());
-        params.put("policyOverride", opSchemaPo.getPolicyOverride());
-        params.put("baseInput", opSchemaPo.getBaseInput());
-        params.put("baseOutput", opSchemaPo.getBaseOutput());
-
+        //准备QBE模型
+        var qbeModel = new QbeModel(opSchemaPo.getTableName(), opSchemaPo.getModelName());
 
         //使用QBE读取蓝图文件列表
         try {
@@ -319,6 +313,9 @@ public class OpSchemaService {
                 vo.setFileName(blueprint.getFileName());
                 vo.setFilePath(blueprint.getRelativeFilePath());
                 vo.setSha256Hex(blueprint.getSha256Hex());
+                blueprint.resolvePath(qbeModel);
+                vo.setParsedName(blueprint.getOutputFileName());
+                vo.setParsedPath(blueprint.getOutputFilePath());
                 ret.add(vo);
             }
             return ret;

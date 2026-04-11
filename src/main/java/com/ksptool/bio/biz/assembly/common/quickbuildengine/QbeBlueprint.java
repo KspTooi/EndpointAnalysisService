@@ -5,6 +5,7 @@ import com.ksptool.text.PreparedPrompt;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -40,6 +41,30 @@ public class QbeBlueprint {
 
     //最终输出路径(包含文件名,占位符已解析)
     private String outputFilePath;
+
+    /**
+     * 解析路径
+     * 以给定的模型解析相对路径和文件名，以替换掉文件名和路径中的占位符
+     * 例如: /#{tableName}/#{std}/#{camelCase}.java.vm 将被解析为 /local_user_account/LocalUserAccount/localUserAccount.java
+     * @param model 模型
+     */
+    public void resolvePath(QbeModel model) {
+        
+        if (model == null) {
+            throw new IllegalArgumentException("模型不能为空!");
+        }
+
+        var params = new HashMap<String, String>();
+        params.put("tableName", model.getTableName());
+        params.put("std", model.getStd());
+        params.put("camelCase", model.getCamelCase());
+        params.put("pascalCase", model.getPascalCase());
+        params.put("snakeCase", model.getSnakeCase());
+        params.put("lowerCase", model.getLowerCase());
+        params.put("upperCase", model.getUpperCase());
+        resolvePath(params);
+    }
+
 
     /**
      * 解析路径
