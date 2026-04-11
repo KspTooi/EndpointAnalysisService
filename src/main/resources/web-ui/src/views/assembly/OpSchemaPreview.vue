@@ -89,7 +89,7 @@
           <div v-loading="previewLoading" class="code-wrapper">
             <pre v-if="rawHtml" class="hljs code-block"><code v-html="rawHtml"></code></pre>
 
-            <div v-if="!previewLoading && !previewBlueprintDeleted" class="empty-tip">
+            <div v-if="!rawHtml && !previewLoading && !previewBlueprintDeleted" class="empty-tip">
               {{ blueprintList.length > 0 ? "请从左侧选择一个蓝图文件" : "暂无内容" }}
             </div>
 
