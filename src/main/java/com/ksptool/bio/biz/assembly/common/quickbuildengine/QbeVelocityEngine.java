@@ -107,13 +107,15 @@ public class QbeVelocityEngine {
             throw new IllegalArgumentException("输出基准路径不能为空!");
         }
 
+        //用于路径解析的参数
         Map<String, String> params = new HashMap<>();
-        params.put("STN", model.getStn());
-        params.put("SCN", model.getScn());
-        params.put("BCN", model.getBcn());
-        params.put("ULN", model.getUln());
-        params.put("ALCN", model.getAlcn());
-        params.put("AUCN", model.getAucn());
+        params.put("tableName", model.getTableName());
+        params.put("std", model.getStd());
+        params.put("camelCase", model.getCamelCase());
+        params.put("pascalCase", model.getPascalCase());
+        params.put("snakeCase", model.getSnakeCase());
+        params.put("lowerCase", model.getLowerCase());
+        params.put("upperCase", model.getUpperCase());
 
         //渲染蓝图
         for (QbeBlueprint blueprint : blueprints) {

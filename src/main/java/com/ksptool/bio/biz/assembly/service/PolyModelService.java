@@ -214,15 +214,13 @@ public class PolyModelService {
         var polyModelPos = repository.getPolyModelByOutputSchemaId(opSchemaPo.getId());
 
         //组装为QBE模型
-        var qbeModel = new QbeModel();
-        qbeModel.setStdName(StdName.ofSnakeCase(opSchemaPo.getTableName()).toString());
+        var qbeModel = new QbeModel(opSchemaPo.getTableName(), opSchemaPo.getModelName());
 
         var qbeFields = new ArrayList<QbeField>();
 
         //通过聚合模型生成QBE字段
         for (var polyModelPo : polyModelPos) {
-            var qbeField = new QbeField();
-            qbeField.setStdName(polyModelPo.getName());
+            var qbeField = new QbeField(polyModelPo.getName(), polyModelPo.getDataType());
             qbeField.setType(polyModelPo.getDataType());
             qbeField.setLength(polyModelPo.getLength());
             qbeField.setComment(polyModelPo.getRemark());

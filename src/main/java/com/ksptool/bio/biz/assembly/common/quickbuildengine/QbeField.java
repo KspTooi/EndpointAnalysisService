@@ -11,39 +11,33 @@ import java.util.Map;
 @Setter
 public class QbeField {
 
-    //字段原始名称(qfpon) ex: user_id
-    private String stdName;
+    //字段名称(直接从数据库获取的名称) 例: user_id
+    private String fieldName;
 
-    //用于简写字段名称
-    private String fstn; //字段标准化名称(fstn) ex: UserId
-    private String fscn; //字段小驼峰名称(fscn) ex: userId
-    private String fbcn; //字段大驼峰名称(fbcn) ex: UserId
-    private String fuln; //字段下划线名称(fuln) ex: user_id
-    private String falcn; //字段全小写名称(falcn) ex: userid
-    private String faucn; //字段全大写名称(faucn) ex: USERID
+    //用于简写的字段名称
+    private String std; //标准化名称 ex: LocalUserAccount
+    private String camelCase; //小驼峰名称 ex: localUserAccount
+    private String pascalCase; //大驼峰名称 ex: LocalUserAccount
+    private String snakeCase; //下划线名称 ex: local_user_account
+    private String lowerCase; //全小写名称 ex: localuseraccount
+    private String upperCase; //全大写名称 ex: LOCALUSERACCOUNT
 
     //字段类型
-    @Setter
     private String type;
 
     //字段长度
-    @Setter
     private Integer length;
 
     //字段注释
-    @Setter
     private String comment;
 
-    //必填
-    @Setter
+    //是否必填
     private boolean required;
 
     //是否主键
-    @Setter
     private boolean primaryKey;
 
     //排序号
-    @Setter
     private int seq;
 
     //字段支持的操作
@@ -56,20 +50,32 @@ public class QbeField {
     //附加字段
     private Map<String, Object> ext;
 
+    /**
+     * 构造函数
+     *
+     * @param fieldName 字段名称: 例如user_id
+     * @param fieldType 字段类型: 例如VARCHAR
+     */
+    public QbeField(String fieldName,String fieldType){
 
-    public void setStdName(String stdName) {
-        if (StringUtils.isBlank(stdName)) {
-            throw new IllegalArgumentException("字段原始名称不能为空!");
+        if(StringUtils.isBlank(fieldName)){
+            throw new IllegalArgumentException("字段名称不能为空!");
         }
 
-        StdName stdNameObj = StdName.of(stdName);
-        this.stdName = stdName;
-        this.fstn = stdNameObj.getValue();
-        this.fbcn = stdNameObj.getValue();
-        this.fscn = stdNameObj.toSmallCamelCase();
-        this.fuln = stdNameObj.toUnderLineName();
-        this.falcn = stdNameObj.toLowerCase();
-        this.faucn = stdNameObj.toUpperCase();
+        if(StringUtils.isBlank(fieldType)){
+            throw new IllegalArgumentException("字段类型不能为空!");
+        }
+
+        this.fieldName = fieldName;
+        this.type = fieldType;
+
+        StdName stdNameObj = StdName.of(fieldName);
+        this.std = stdNameObj.getValue();
+        this.camelCase = stdNameObj.toSmallCamelCase();
+        this.pascalCase = stdNameObj.getValue();
+        this.snakeCase = stdNameObj.toUnderLineName();
+        this.lowerCase = stdNameObj.toLowerCase();
+        this.upperCase = stdNameObj.toUpperCase();
     }
 
     /**
