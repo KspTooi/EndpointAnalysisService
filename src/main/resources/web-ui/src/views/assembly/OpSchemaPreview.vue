@@ -1,9 +1,36 @@
 <template>
   <div v-loading="listLoading" element-loading-text="正在处理蓝图，请稍后..." class="preview-page">
-    <!-- 顶部工具栏 -->
-    <div class="top-bar">
-      <el-button :icon="ArrowLeftIcon" @click="cdrcReturn">{{ cdrcReturnName }}</el-button>
-      <span class="schema-title">{{ schemaName }} — 蓝图预览</span>
+    <!-- 输出方案信息区域 -->
+    <div class="schema-info-bar">
+      <div class="schema-info-item">
+        <span class="schema-info-label">输出方案</span>
+        <span class="schema-info-value">{{ cdrcRow?.name }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">模型名称</span>
+        <span class="schema-info-value">{{ cdrcRow?.modelName }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">数据源表名</span>
+        <span class="schema-info-value">{{ cdrcRow?.tableName ?? "未配置" }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">字段数量(原始)</span>
+        <span class="schema-info-value">{{ cdrcRow?.fieldCountOrigin ?? 0 }}</span>
+      </div>
+      <div class="schema-info-divider" />
+      <div class="schema-info-item">
+        <span class="schema-info-label">字段数量(聚合)</span>
+        <span class="schema-info-value">{{ cdrcRow?.fieldCountPoly ?? 0 }}</span>
+      </div>
+    </div>
+
+    <!-- 操作按钮区域 -->
+    <div class="action-bar">
+      <el-button v-if="cdrcCanReturn" type="primary" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
     </div>
 
     <div class="main-content">
@@ -12,11 +39,7 @@
         <div class="panel-header">蓝图文件</div>
         <div class="blueprint-list">
           <!-- 固定条目：QBE模型 -->
-          <div
-            class="blueprint-item"
-            :class="{ active: selectedKey === '__qbe_model__' }"
-            @click="selectQbeModel"
-          >
+          <div class="blueprint-item" :class="{ active: selectedKey === '__qbe_model__' }" @click="selectQbeModel">
             <el-icon class="item-icon"><DataAnalysis /></el-icon>
             <div class="item-info">
               <div class="item-name">QBE模型</div>
@@ -82,13 +105,12 @@ import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/a
 import ComIconService from "@/soa/com-series/service/ComIconService";
 
 const { resolveIcon } = ComIconService.useIconService();
-const ArrowLeftIcon = resolveIcon("arrow-left");
+const CloseIcon = resolveIcon("fontisto:close");
 
-const { getCdrcQuery, cdrcReturn, cdrcReturnName } = ComDirectRouteContext.useDirectRouteContext();
+const { getCdrcQuery, cdrcReturn, cdrcCanReturn } = ComDirectRouteContext.useDirectRouteContext();
 
 const cdrcRow: GetOpSchemaListVo = getCdrcQuery();
 
-const schemaName = ref<string>("");
 const opSchemaId = ref<string>("");
 
 const listLoading = ref(false);
@@ -264,7 +286,6 @@ onMounted(async () => {
     return;
   }
   opSchemaId.value = cdrcRow.id;
-  schemaName.value = cdrcRow.name || "";
   await loadBlueprintList();
 });
 </script>
@@ -279,29 +300,70 @@ onMounted(async () => {
   background-color: #f5f7fa;
 }
 
-.top-bar {
-  height: 48px;
-  flex-shrink: 0;
+.schema-info-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  background-color: #ffffff;
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: 0;
   border-bottom: 1px solid #e4e7ed;
+  border-top: 2px solid var(--el-color-primary);
+  flex-shrink: 0;
 }
 
-.schema-title {
-  font-size: 14px;
+.schema-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 20px;
+}
+
+.schema-info-label {
+  font-size: 11px;
+  color: #909399;
+  letter-spacing: 0.5px;
+  height: 25px;
+}
+
+.schema-info-value {
+  font-size: 15px;
   font-weight: 600;
   color: #303133;
+}
+
+.schema-info-divider {
+  width: 1px;
+  height: 36px;
+  background: #e4e7ed;
+  flex-shrink: 0;
+}
+
+.action-bar {
+  display: flex;
+  margin-bottom: 0;
+  border-bottom: 1px solid #e4e7ed;
+  flex-shrink: 0;
+}
+
+.action-bar :deep(.el-button.is-link) {
+  padding: 8px 16px;
+  border-radius: 0;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.action-bar :deep(.el-button.is-link:hover) {
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 
 .main-content {
   flex: 1;
   display: flex;
   overflow: hidden;
-  padding: 12px;
-  gap: 12px;
+  padding: 5px;
+  padding-top: 0;
 }
 
 /* 左侧面板 */
@@ -311,8 +373,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -327,8 +387,6 @@ onMounted(async () => {
   color: #909399;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #e4e7ed;
-  background-color: #fafafa;
 }
 
 .blueprint-list {

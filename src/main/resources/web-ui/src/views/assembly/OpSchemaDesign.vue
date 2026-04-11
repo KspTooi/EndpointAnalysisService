@@ -3,7 +3,7 @@
     <!-- 当前输出方案信息区域 -->
     <div v-loading="polyListLoading || originListLoading" class="schema-info-bar">
       <div class="schema-info-item">
-        <span class="schema-info-label">名称</span>
+        <span class="schema-info-label">输出方案</span>
         <span class="schema-info-value">{{ schemaInfo.name }}</span>
       </div>
       <div class="schema-info-divider" />
