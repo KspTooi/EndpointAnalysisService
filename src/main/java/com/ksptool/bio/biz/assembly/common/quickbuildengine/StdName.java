@@ -1,6 +1,5 @@
 package com.ksptool.bio.biz.assembly.common.quickbuildengine;
 
-import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
