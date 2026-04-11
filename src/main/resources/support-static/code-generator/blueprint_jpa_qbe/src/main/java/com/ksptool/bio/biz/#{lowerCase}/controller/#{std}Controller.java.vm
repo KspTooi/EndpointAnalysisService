@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.${lowerCase}.controller;
+package com.ksptool.bio.biz.${model.lowerCase}.controller;
 
 ## 引入公用包
 import com.ksptool.assembly.entity.web.CommonIdDto;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 ## 引入专用包
-import com.ksptool.bio.biz.${lowerCase}.service.${std}Service;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Add${std}Dto;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Edit${std}Dto;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Get${std}ListDto;
-import com.ksptool.bio.biz.${lowerCase}.model.vo.Get${std}ListVo;
-import com.ksptool.bio.biz.${lowerCase}.model.vo.Get${std}DetailsVo;
+import com.ksptool.bio.biz.${model.lowerCase}.service.${model.std}Service;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Add${model.std}Dto;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Edit${model.std}Dto;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Get${model.std}ListDto;
+import com.ksptool.bio.biz.${model.lowerCase}.model.vo.Get${model.std}ListVo;
+import com.ksptool.bio.biz.${model.lowerCase}.model.vo.Get${model.std}DetailsVo;
 ## std; //标准化名称 ex: LocalUserAccount
 ## camelCase; //小驼峰名称 ex: localUserAccount
 ## pascalCase; //大驼峰名称 ex: LocalUserAccount
@@ -27,38 +27,38 @@ import com.ksptool.bio.biz.${lowerCase}.model.vo.Get${std}DetailsVo;
 ## upperCase; //全大写名称 ex: LOCALUSERACCOUNT
 
 @RestController
-@RequestMapping("/${camelCase}")
-@Tag(name = "${comment}", description = "${comment}")
+@RequestMapping("/${model.camelCase}")
+@Tag(name = "${model.comment}", description = "${model.comment}")
 @Slf4j
-public class ${std}Controller {
+public class ${model.std}Controller {
 
     @Autowired
-    private ${std}Service ${camelCase}Service;
+    private ${model.std}Service ${model.camelCase}Service;
 
-    @PostMapping("/get${std}List")
+    @PostMapping("/get${model.std}List")
     @Operation(summary ="列表查询")
-    public PageResult<Get${std}ListVo> get${std}List(@RequestBody @Valid Get${std}ListDto dto) throws Exception{
-        return ${camelCase}Service.get${std}List(dto);
+    public PageResult<Get${model.std}ListVo> get${model.std}List(@RequestBody @Valid Get${model.std}ListDto dto) throws Exception{
+        return ${model.camelCase}Service.get${model.std}List(dto);
     }
 
     @Operation(summary ="新增")
-    @PostMapping("/add${std}")
-    public Result<String> add${std}(@RequestBody @Valid Add${std}Dto dto) throws Exception{
-		${camelCase}Service.add${std}(dto);
+    @PostMapping("/add${model.std}")
+    public Result<String> add${model.std}(@RequestBody @Valid Add${model.std}Dto dto) throws Exception{
+		${model.camelCase}Service.add${model.std}(dto);
         return Result.success("新增成功");
     }
 
     @Operation(summary ="编辑")
-    @PostMapping("/edit${std}")
-    public Result<String> edit${std}(@RequestBody @Valid Edit${std}Dto dto) throws Exception{
-		${camelCase}Service.edit${std}(dto);
+    @PostMapping("/edit${model.std}")
+    public Result<String> edit${model.std}(@RequestBody @Valid Edit${model.std}Dto dto) throws Exception{
+		${model.camelCase}Service.edit${model.std}(dto);
         return Result.success("修改成功");
     }
 
     @Operation(summary ="查询详情")
-    @PostMapping("/get${std}Details")
-    public Result<Get${std}DetailsVo> get${std}Details(@RequestBody @Valid CommonIdDto dto) throws Exception{
-        Get${std}DetailsVo details = ${camelCase}Service.get${std}Details(dto);
+    @PostMapping("/get${model.std}Details")
+    public Result<Get${model.std}DetailsVo> get${model.std}Details(@RequestBody @Valid CommonIdDto dto) throws Exception{
+        Get${model.std}DetailsVo details = ${model.camelCase}Service.get${model.std}Details(dto);
         if(details == null){
             return Result.error("无数据");
         }
@@ -66,9 +66,9 @@ public class ${std}Controller {
     }
 
     @Operation(summary ="删除")
-    @PostMapping("/remove${std}")
-    public Result<String> remove${std}(@RequestBody @Valid CommonIdDto dto) throws Exception{
-        ${camelCase}Service.remove${std}(dto);
+    @PostMapping("/remove${model.std}")
+    public Result<String> remove${model.std}(@RequestBody @Valid CommonIdDto dto) throws Exception{
+        ${model.camelCase}Service.remove${model.std}(dto);
         return Result.success("操作成功");
     }
 
