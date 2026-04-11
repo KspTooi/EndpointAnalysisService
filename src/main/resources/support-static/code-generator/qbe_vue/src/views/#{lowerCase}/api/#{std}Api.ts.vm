@@ -5,7 +5,7 @@ import type PageQuery from "@/commons/model/PageQuery.ts";
 import type Result from "@/commons/model/Result.ts";
 
 /**
- * 查询${schema.modelRemark}列表DTO
+ * 查询${schema.modelRemark}列表Dto
  */
 export interface Get${model.std}ListDto extends PageQuery {
 #foreach($field in $model.fields)
