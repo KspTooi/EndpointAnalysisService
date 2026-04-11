@@ -36,6 +36,7 @@ export interface GetOpSchemaDetailsVo {
   outputScmId: string; // 输出SCM ID
   name: string; // 输出方案名称
   modelName: string; // 模型名称
+  modelRemark: string; // 模型备注
   tableName: string; // 数据源表名
   removeTablePrefix: string; // 移除表前缀
   permCodePrefix: string; // 权限码前缀
@@ -55,6 +56,7 @@ export interface AddOpSchemaDto {
   outputScmId: string; // 输出SCM ID
   name: string; // 输出方案名称
   modelName: string; // 模型名称
+  modelRemark: string; // 模型备注
   tableName: string; // 数据源表名
   removeTablePrefix: string; // 移除表前缀
   permCodePrefix: string; // 权限码前缀
@@ -75,6 +77,7 @@ export interface EditOpSchemaDto {
   outputScmId: string; // 输出SCM ID
   name: string; // 输出方案名称
   modelName: string; // 模型名称
+  modelRemark: string; // 模型备注
   tableName: string; // 数据源表名
   removeTablePrefix: string; // 移除表前缀
   permCodePrefix: string; // 权限码前缀

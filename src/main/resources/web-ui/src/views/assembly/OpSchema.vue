@@ -191,22 +191,16 @@
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item label="类型映射方案" prop="typeSchemaId">
-                <el-select
-                  v-model="modalForm.typeSchemaId"
-                  placeholder="请选择类型映射方案"
-                  filterable
+              <el-form-item label="模型备注" prop="modelRemark">
+                <el-input
+                  v-model="modalForm.modelRemark"
+                  placeholder="请输入模型备注"
                   clearable
-                  style="width: 100%"
-                >
-                  <el-option
-                    v-for="item in modalTypeSchema"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="`${item.name}（${item.code}）`"
-                  />
-                </el-select>
+                  maxlength="80"
+                  show-word-limit
+                />
               </el-form-item>
+
               <el-form-item label="权限码前缀" prop="permCodePrefix">
                 <el-input
                   v-model="modalForm.permCodePrefix"

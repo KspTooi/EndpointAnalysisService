@@ -133,6 +133,7 @@ export default {
       outputScmId: "",
       name: "",
       modelName: "",
+      modelRemark: "",
       tableName: "",
       removeTablePrefix: "",
       permCodePrefix: "",
@@ -157,6 +158,10 @@ export default {
       modelName: [
         { required: true, message: "请输入模型名称", trigger: "change" },
         { max: 255, message: "模型名称不能超过255个字符", trigger: "change" },
+      ],
+      modelRemark: [
+        { required: true, message: "请输入模型备注", trigger: "blur" },
+        { max: 80, message: "模型备注不能超过80个字符", trigger: "blur" },
       ],
       tableName: [{ max: 80, message: "数据源表名不能超过80个字符", trigger: "blur" }],
       removeTablePrefix: [
@@ -208,6 +213,7 @@ export default {
         modalForm.outputScmId = "";
         modalForm.name = "";
         modalForm.modelName = "";
+        modalForm.modelRemark = "";
         modalForm.tableName = "";
         modalForm.removeTablePrefix = "";
         modalForm.permCodePrefix = "";
@@ -234,6 +240,7 @@ export default {
           modalForm.outputScmId = details.outputScmId;
           modalForm.name = details.name;
           modalForm.modelName = details.modelName;
+          modalForm.modelRemark = details.modelRemark;
           modalForm.tableName = details.tableName;
           modalForm.removeTablePrefix = details.removeTablePrefix;
           modalForm.permCodePrefix = details.permCodePrefix;
@@ -263,6 +270,7 @@ export default {
       modalForm.outputScmId = "";
       modalForm.name = "";
       modalForm.modelName = "";
+      modalForm.modelRemark = "";
       modalForm.tableName = "";
       modalForm.removeTablePrefix = "";
       modalForm.permCodePrefix = "";
@@ -297,6 +305,7 @@ export default {
             outputScmId: modalForm.outputScmId,
             name: modalForm.name,
             modelName: modalForm.modelName,
+            modelRemark: modalForm.modelRemark,
             tableName: modalForm.tableName,
             removeTablePrefix: modalForm.removeTablePrefix,
             permCodePrefix: modalForm.permCodePrefix,
@@ -333,6 +342,7 @@ export default {
             outputScmId: modalForm.outputScmId,
             name: modalForm.name,
             modelName: modalForm.modelName,
+            modelRemark: modalForm.modelRemark,
             tableName: modalForm.tableName,
             removeTablePrefix: modalForm.removeTablePrefix,
             permCodePrefix: modalForm.permCodePrefix,
