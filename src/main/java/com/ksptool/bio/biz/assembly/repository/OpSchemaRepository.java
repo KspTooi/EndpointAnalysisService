@@ -37,4 +37,15 @@ public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
             ORDER BY u.updateTime DESC
             """)
     Page<OpSchemaPo> getOpSchemaList(@Param("po") OpSchemaPo po, Pageable pageable);
+
+    /**
+     * 根据映射方案ID统计输出方案数量
+     *
+     * @param tymSchemaId 映射方案ID
+     * @return 输出方案数量
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OpSchemaPo u WHERE u.typeSchemaId = :tymSchemaId
+            """)
+    int countByTymSchemaId(@Param("typeSchemaId") Long typeSchemaId);
 }

@@ -9,6 +9,7 @@ import com.ksptool.bio.biz.assembly.model.tymschema.dto.EditTymSchemaDto;
 import com.ksptool.bio.biz.assembly.model.tymschema.dto.GetTymSchemaListDto;
 import com.ksptool.bio.biz.assembly.model.tymschema.vo.GetTymSchemaDetailsVo;
 import com.ksptool.bio.biz.assembly.model.tymschema.vo.GetTymSchemaListVo;
+import com.ksptool.bio.biz.assembly.repository.OpSchemaRepository;
 import com.ksptool.bio.biz.assembly.repository.TymSchemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,9 @@ public class TymSchemaService {
 
     @Autowired
     private TymSchemaRepository repository;
+
+    @Autowired
+    private OpSchemaRepository opSchemaRepository;
 
     /**
      * 查询类型映射方案列表
@@ -105,10 +109,12 @@ public class TymSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeTymSchema(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+
+        //删除时检查是否被输出方案使用
+        if (opSchemaRepository.countByTymSchemaId(dto.getId()) > 0) {
+            throw new BizException("该类型映射方案已被输出方案使用,无法执行删除操作!");
         }
+
         repository.deleteById(dto.getId());
     }
 
