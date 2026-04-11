@@ -29,6 +29,9 @@ public class GetOpSchemaDetailsVo {
     @Schema(description = "模型名称")
     private String modelName;
 
+    @Schema(description = "模型备注")
+    private String modelRemark;
+
     @Schema(description = "数据源表名")
     private String tableName;
 
