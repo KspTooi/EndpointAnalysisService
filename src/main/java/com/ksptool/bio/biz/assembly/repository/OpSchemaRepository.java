@@ -40,6 +40,14 @@ public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
     Page<OpSchemaPo> getOpSchemaList(@Param("po") OpSchemaPo po, Pageable pageable);
 
     /**
+     * 根据名称查询输出方案（排除指定ID）
+     */
+    @Query("""
+            SELECT COUNT(u) FROM OpSchemaPo u WHERE u.name = :name AND (:excludeId IS NULL OR u.id <> :excludeId)
+            """)
+    int countByNameExcludeId(@Param("name") String name, @Param("excludeId") Long excludeId);
+
+    /**
      * 根据类型映射方案ID统计输出方案数量
      *
      * @param typeSchemaId 类型映射方案ID

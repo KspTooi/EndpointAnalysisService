@@ -37,7 +37,7 @@ public class OpSchemaPo {
     @Column(name = "output_scm_id", comment = "输出SCM ID")
     private Long outputScmId;
 
-    @Column(name = "name", nullable = false, length = 32, comment = "输出方案名称")
+    @Column(name = "name", nullable = false, unique = true, length = 32, comment = "输出方案名称")
     private String name;
 
     @Column(name = "model_name", nullable = false, length = 255, comment = "模型名称")

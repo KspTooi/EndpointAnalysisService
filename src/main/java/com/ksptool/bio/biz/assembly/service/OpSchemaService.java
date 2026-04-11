@@ -104,6 +104,11 @@ public class OpSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public String addOpSchema(AddOpSchemaDto dto) throws Exception {
+        
+        if (repository.countByNameExcludeId(dto.getName(), null) > 0) {
+            throw new BizException("新增失败,输出方案名称已存在.");
+        }
+
         OpSchemaPo insertPo = as(dto, OpSchemaPo.class);
 
         var session = session();
@@ -182,6 +187,11 @@ public class OpSchemaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public String editOpSchema(EditOpSchemaDto dto) throws Exception {
+
+        if (repository.countByNameExcludeId(dto.getName(), dto.getId()) > 0) {
+            throw new BizException("修改失败,输出方案名称已存在.");
+        }
+
         OpSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
