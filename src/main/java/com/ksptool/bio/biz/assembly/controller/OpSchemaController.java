@@ -5,6 +5,7 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.ExecuteOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.PreviewOpBluePrintDto;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
@@ -91,13 +92,7 @@ public class OpSchemaController {
 
     @Operation(summary = "执行输出方案")
     @PostMapping("/executeOpSchema")
-    public Result<String> executeOpSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
-
-        // 不支持批处理，因为执行输出方案是单个执行的
-        if (dto.isBatch()) {
-            return Result.error("不支持批处理");
-        }
-
+    public Result<String> executeOpSchema(@RequestBody @Valid ExecuteOpSchemaDto dto) throws Exception {
         opSchemaService.executeOpSchema(dto);
         return Result.success("操作成功");
     }

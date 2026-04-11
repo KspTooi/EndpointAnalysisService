@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/polyModel")
 @Tag(name = "代码装配-输出方案聚合模型管理", description = "输出方案聚合模型管理")
 @Slf4j
-public class PolyModelController {
+public class
+PolyModelController {
 
     @Autowired
     private PolyModelService polyModelService;

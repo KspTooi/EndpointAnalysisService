@@ -215,7 +215,8 @@ public class PolyModelService {
 
         //组装为QBE模型
         var qbeModel = new QbeModel(opSchemaPo.getTableName(), opSchemaPo.getModelName());
-
+        qbeModel.setBizDomain(opSchemaPo.getBizDomain());
+        
         var qbeFields = new ArrayList<QbeField>();
 
         //通过聚合模型生成QBE字段

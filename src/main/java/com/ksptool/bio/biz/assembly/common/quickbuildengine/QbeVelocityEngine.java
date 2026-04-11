@@ -72,6 +72,15 @@ public class QbeVelocityEngine {
     }
 
     /**
+     * 设置文件覆盖开关
+     *
+     * @param overwriteEnabled true:覆盖 false:不覆盖
+     */
+    public void setOverwriteEnabled(boolean overwriteEnabled) {
+        this.overwriteEnabled = overwriteEnabled;
+    }
+
+    /**
      * 设置输出基准路径(绝对路径)
      * 如果路径已被手动设置，则后续调用将被忽略
      *
@@ -118,6 +127,7 @@ public class QbeVelocityEngine {
         params.put("snakeCase", model.getSnakeCase());
         params.put("lowerCase", model.getLowerCase());
         params.put("upperCase", model.getUpperCase());
+        params.put("bizDomain", schema.getBizDomain());
 
         //渲染蓝图
         for (QbeBlueprint blueprint : blueprints) {

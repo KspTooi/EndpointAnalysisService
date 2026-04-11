@@ -4,14 +4,6 @@ import com.google.gson.Gson;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
-import com.ksptool.bio.biz.assembly.common.assemblybp.collector.MysqlCollector;
-import com.ksptool.bio.biz.assembly.common.assemblybp.collector.VelocityBlueprintCollector;
-import com.ksptool.bio.biz.assembly.common.assemblybp.converter.StaticPolyConv;
-import com.ksptool.bio.biz.assembly.common.assemblybp.core.AssemblyFactory;
-import com.ksptool.bio.biz.assembly.common.assemblybp.entity.field.PolyField;
-import com.ksptool.bio.biz.assembly.common.assemblybp.projector.Projector;
-import com.ksptool.bio.biz.assembly.common.assemblybp.projector.VelocityProjector;
-import com.ksptool.bio.biz.assembly.common.assemblybp.utils.NamesTool;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
 import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeModel;
@@ -20,6 +12,7 @@ import com.ksptool.bio.biz.assembly.model.datsource.DataSourcePo;
 import com.ksptool.bio.biz.assembly.model.opschema.OpSchemaPo;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.AddOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.EditOpSchemaDto;
+import com.ksptool.bio.biz.assembly.model.opschema.dto.ExecuteOpSchemaDto;
 import com.ksptool.bio.biz.assembly.model.opschema.dto.GetOpSchemaListDto;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpBluePrintListVo;
 import com.ksptool.bio.biz.assembly.model.opschema.vo.GetOpSchemaDetailsVo;
@@ -74,9 +67,6 @@ public class OpSchemaService {
 
     @Autowired
     private ScmService scmService;
-
-    @Autowired
-    private PolyModelRepository polyModelRepository;
 
     @Autowired
     private PolyModelService polyModelService;
@@ -340,6 +330,7 @@ public class OpSchemaService {
 
         //准备QBE模型
         var qbeModel = new QbeModel(opSchemaPo.getTableName(), opSchemaPo.getModelName());
+        qbeModel.setBizDomain(opSchemaPo.getBizDomain());
 
         //使用QBE读取蓝图文件列表
         try {
@@ -436,18 +427,11 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public void executeOpSchema(CommonIdDto dto) throws BizException {
+    public void executeOpSchema(ExecuteOpSchemaDto dto) throws BizException {
 
         //查询输出方案
-        OpSchemaPo opSchemaPo = repository.findById(dto.getId())
+        OpSchemaPo opSchemaPo = repository.findById(dto.getOpSchemaId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,数据不存在或无权限访问."));
-
-        //查询聚合模型
-        var ompPos = polyModelRepository.getPolyModelByOutputSchemaId(opSchemaPo.getId());
-
-        if (ompPos == null || ompPos.isEmpty()) {
-            throw new BizException("执行输出方案失败,输出方案下没有聚合模型,请先创建聚合模型.");
-        }
 
         //查询输入与输出SCM
         ScmPo inputScmPo = scmRepository.findById(opSchemaPo.getInputScmId())
@@ -456,25 +440,11 @@ public class OpSchemaService {
         ScmPo outputScmPo = scmRepository.findById(opSchemaPo.getOutputScmId())
                 .orElseThrow(() -> new BizException("执行输出方案失败,输出SCM不存在或无权限访问."));
 
-        //查询数据源
-        DataSourcePo dataSourcePo = datasourceRepository.findById(opSchemaPo.getDataSourceId())
-                .orElseThrow(() -> new BizException("执行输出方案失败,数据源不存在或无权限访问."));
-
         //准备工作空间
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
         var workSpaceOutputPath = workSpacePath.resolve("output");
-
-        //不存在创建
-        if (!Files.exists(workSpacePath)) {
-            try {
-                Files.createDirectories(workSpacePath);
-            } catch (IOException e) {
-                log.error("创建工作空间失败: {} 路径: {}", e.getMessage(), workSpacePath, e);
-                throw new BizException("创建工作空间失败: " + e.getMessage());
-            }
-        }
 
         //先检出两个SCM
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
@@ -483,112 +453,43 @@ public class OpSchemaService {
         var iAppendPath = opSchemaPo.getBaseInput().trim();
         var oAppendPath = opSchemaPo.getBaseOutput().trim();
 
-        //绝对路径转换为相对路径
         if (iAppendPath.startsWith("/")) {
             iAppendPath = iAppendPath.substring(1);
         }
-
         if (oAppendPath.startsWith("/")) {
             oAppendPath = oAppendPath.substring(1);
         }
 
-        //蓝图输入路径
         var iBpPath = workSpaceInputPath.resolve(iAppendPath);
-
-        //投影输出路径
         var oPrjPath = workSpaceOutputPath.resolve(oAppendPath);
 
-        //配置AssemblyBlueprint 直接创建Mysql采集器(这里复用"输出方案"中绑定的"数据源")
-        MysqlCollector coll = new MysqlCollector();
-        coll.setUrl(dataSourcePo.getUrl());
-        coll.setUsername(dataSourcePo.getUsername());
-        coll.setPassword(dataSourcePo.getPassword());
-        coll.setDatabase(dataSourcePo.getDbSchema());
+        //查询QBE模型
+        var qbeModel = polyModelService.getQbeModelByOpSchemaId(opSchemaPo.getId());
 
+        //读取蓝图文件列表
+        List<QbeBlueprint> blueprints;
+        try {
+            QbeBlueprintReader reader = new QbeBlueprintReader(iBpPath.toString());
+            List<QbeBlueprint> allBlueprints = reader.readBlueprint();
 
-        //创建蓝图采集器、聚合转换器、投影仪
-        VelocityBlueprintCollector blueprintCollector = new VelocityBlueprintCollector();
+            //按sha256Hex过滤
+            blueprints = allBlueprints.stream()
+                    .filter(b -> dto.getSha256Hexs().contains(b.getSha256Hex()))
+                    .collect(Collectors.toList());
 
-        //使用静态字段的聚合转换器以织入自定义的聚合模型
-        StaticPolyConv converter = new StaticPolyConv();
-
-        //插入所有ompPos为polyField
-        for (var ompPo : ompPos) {
-            var pf = new PolyField();
-
-            //设置标准名称 omo中是下划线命名,需要转换为大驼峰命名
-            pf.setStdName(NamesTool.toPascalCase(ompPo.getName()));
-            pf.setType(ompPo.getDataType());
-            pf.setComment(ompPo.getRemark());
-
-            //处理必填 0:否 1:是
-            pf.setRequired(false);
-
-            if (ompPo.getRequire() == 1) {
-                pf.setRequired(true);
-            }
-
-            pf.setSeq(ompPo.getSeq());
-
-            //向PF中注入OMP专有的附加字段
-            pf.put("omp_length", ompPo.getLength());
-            pf.put("omp_require", ompPo.getRequire());
-
-            //处理PCJ 如果PCJ中有ADD EDIT LQ LW 则设置为true,否则设置为false
-            pf.put("omp_add", false);
-            pf.put("omp_edit", false);
-            pf.put("omp_lq", false);
-            pf.put("omp_lw", false);
-
-            if (ompPo.getPolicyCrudJson().contains("ADD")) {
-                pf.put("omp_add", true);
-            }
-            if (ompPo.getPolicyCrudJson().contains("EDIT")) {
-                pf.put("omp_edit", true);
-            }
-            if (ompPo.getPolicyCrudJson().contains("LQ")) {
-                pf.put("omp_lq", true);
-            }
-            if (ompPo.getPolicyCrudJson().contains("LW")) {
-                pf.put("omp_lw", true);
-            }
-
-            //处理PQ
-            pf.put("omp_pq", ompPo.getPolicyQuery());
-
-            //处理PV
-            pf.put("omp_pv", ompPo.getPolicyView());
-            converter.addStaticField(pf);
+        } catch (IOException e) {
+            log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), iBpPath, e);
+            throw new BizException("执行输出方案失败,读取蓝图文件列表失败: " + e.getMessage());
         }
 
-        //配置投影仪
-        Projector projector = new VelocityProjector();
+        if (blueprints.isEmpty()) {
+            throw new BizException("执行输出方案失败,未找到匹配的蓝图文件.");
+        }
 
-        //创建AssemblyFactory
-        AssemblyFactory factory = new AssemblyFactory();
-        factory.setCollector(coll);
-        factory.setCollector(blueprintCollector);
-        factory.setConverter(converter);
-        factory.setProjector(projector);
-
-        //启用投影参数日志
-        projector.enableProjectorMap(true);
-
-        //设置输入和输出路径(使用绝对路径)
-        factory.setInputBasePath(iBpPath.toString());
-        factory.setOutputBasePath(oPrjPath.toString());
-
-        //选择要收集的表
-        factory.selectTables(opSchemaPo.getTableName());
-
-        //需移除的表前缀
-        factory.removeTablePrefixes(opSchemaPo.getRemoveTablePrefix());
-        factory.setOverwriteEnabled(true);
-
-        factory.putGlobalVar("modelName", opSchemaPo.getModelName());
-
-        //执行AssemblyBlueprint流水线
-        factory.execute();
+        //使用第二代QBE引擎渲染并写出文件
+        qbeVelocityEngine.setOutputBasePath(oPrjPath.toString());
+        qbeVelocityEngine.setOverwriteEnabled(true);
+        qbeVelocityEngine.render(qbeModel, opSchemaPo, blueprints);
 
         //将输出目录推送到输出SCM
         scmService.pushToScm(outputScmPo, workSpaceOutputPath.toString());

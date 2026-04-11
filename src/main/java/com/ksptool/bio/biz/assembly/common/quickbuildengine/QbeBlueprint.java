@@ -62,6 +62,7 @@ public class QbeBlueprint {
         params.put("snakeCase", model.getSnakeCase());
         params.put("lowerCase", model.getLowerCase());
         params.put("upperCase", model.getUpperCase());
+        params.put("bizDomain", model.getBizDomain());
         resolvePath(params);
     }
 

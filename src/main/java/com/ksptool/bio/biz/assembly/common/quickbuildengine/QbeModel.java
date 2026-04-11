@@ -17,6 +17,9 @@ public class QbeModel {
     //表名: 例如local_user_account
     private String tableName;
 
+    //业务域: 例如user
+    private String bizDomain;
+
     //表注释
     private String comment;
 
