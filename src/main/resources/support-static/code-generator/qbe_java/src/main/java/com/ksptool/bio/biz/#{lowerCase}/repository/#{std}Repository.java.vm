@@ -46,10 +46,12 @@ public interface ${model.std}Repository extends JpaRepository<${model.std}Po, Lo
     @Query("""
     SELECT u FROM ${model.std}Po u
     WHERE
+    #set($firstCondition = true)
     #foreach($field in $model.fields)
     #if($field.listQuery && !$field.primaryKey)
-    #if($foreach.first)
+    #if($firstCondition)
     (:#{#po.${field.camelCase}} IS NULL OR u.${field.camelCase}#if(${field.type} == 'String') LIKE CONCAT('%', :#{#po.${field.camelCase}}, '%')#else = :#{#po.${field.camelCase}} #end)
+    #set($firstCondition = false)
     #else
     AND (:#{#po.${field.camelCase}} IS NULL OR u.${field.camelCase}#if(${field.type} == 'String') LIKE CONCAT('%', :#{#po.${field.camelCase}}, '%')#else = :#{#po.${field.camelCase}} #end)
     #end
