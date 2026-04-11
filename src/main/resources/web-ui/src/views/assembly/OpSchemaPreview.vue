@@ -25,21 +25,12 @@
 
     <!-- 操作按钮区域 -->
     <div class="action-bar">
-      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">
-        回退
-      </el-button>
+      <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn"> 回退 </el-button>
       <el-button type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint">刷新蓝图</el-button>
       <el-button type="success" class="ml-0!" style="color: #a53200" :icon="CheckAllIcon" link @click="checkedAll">
         全选
       </el-button>
-      <el-button
-        type="success"
-        class="ml-0!"
-        style="color: #a53200"
-        :icon="ClearCheckedIcon"
-        link
-        @click="clearSelected"
-      >
+      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="ClearCheckedIcon" link @click="clearSelected">
         清空已选
       </el-button>
       <el-button type="success" class="ml-0!" :icon="ExecuteIcon" link @click="onExecute">执行已选蓝图</el-button>
@@ -140,7 +131,7 @@
       <div class="execution-content">
         <div v-if="executionLoading" class="execution-warning">
           <el-icon class="is-loading"><Loading /></el-icon>
-          <span>正在执行中，这是一个耗时的操作，请勿关闭窗口...</span>
+          <span>正在执行中，请勿关闭窗口...</span>
         </div>
 
         <div class="execution-steps">
@@ -247,7 +238,15 @@ const {
 } = OpSchemaPreviewService.useBlueprintPreview();
 
 //操作栏打包
-const { refreshBlueprint, executeSelectedBlueprint, executionVisible, executionLoading, executionFinished, executionError, executionSteps } = OpSchemaPreviewService.useActionBar(
+const {
+  refreshBlueprint,
+  executeSelectedBlueprint,
+  executionVisible,
+  executionLoading,
+  executionFinished,
+  executionError,
+  executionSteps,
+} = OpSchemaPreviewService.useActionBar(
   cdrcRow,
   selectedKey,
   selectedBlueprint,
@@ -379,7 +378,7 @@ const onExecute = (): void => {
 
 .blueprint-list::-webkit-scrollbar-thumb {
   background: #c0c4cc;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 .blueprint-item {
@@ -456,7 +455,7 @@ const onExecute = (): void => {
 .right-panel {
   height: 100%;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 0;
   border: 1px solid #e4e7ed;
   box-sizing: border-box;
 }
@@ -551,7 +550,7 @@ const onExecute = (): void => {
 
 .code-wrapper::-webkit-scrollbar-thumb {
   background: #4b5263;
-  border-radius: 5px;
+  border-radius: 0;
 }
 
 .code-block {
@@ -607,7 +606,7 @@ const onExecute = (): void => {
   font-size: 14px;
   background: #fdf6ec;
   padding: 10px 15px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .execution-steps {
@@ -622,7 +621,7 @@ const onExecute = (): void => {
   align-items: center;
   gap: 12px;
   padding: 10px 15px;
-  border-radius: 6px;
+  border-radius: 0;
   background: #f8f9fa;
   border-left: 4px solid #dcdfe6;
   color: #606266;
@@ -649,5 +648,16 @@ const onExecute = (): void => {
 
 .execution-success-msg :deep(.el-result) {
   padding: 10px 0;
+}
+
+/* 全局直角风格覆盖 */
+:deep(.el-button),
+:deep(.el-input__wrapper),
+:deep(.el-textarea__inner),
+:deep(.el-select__wrapper),
+:deep(.el-dialog),
+:deep(.el-card),
+:deep(.el-alert) {
+  border-radius: 0 !important;
 }
 </style>
