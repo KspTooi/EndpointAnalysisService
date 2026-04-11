@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class GetOpSchemaListVo {
@@ -25,6 +27,9 @@ public class GetOpSchemaListVo {
 
     @Schema(description = "字段数(聚合)")
     private Integer fieldCountPoly;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
 
 }
 

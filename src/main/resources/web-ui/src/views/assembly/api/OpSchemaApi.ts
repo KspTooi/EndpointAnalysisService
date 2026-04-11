@@ -23,6 +23,7 @@ export interface GetOpSchemaListVo {
   tableName: string; // 数据源表名
   fieldCountOrigin: number; // 字段数(原始)
   fieldCountPoly: number; // 字段数(聚合)
+  createTime: string; // 创建时间
 }
 
 /**
@@ -201,6 +202,17 @@ export default {
     const result = await Http.postEntity<Result<string>>("/opSchema/previewQbeModel", dto);
     if (result.code === 0) {
       return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 复制输出方案
+   */
+  copyOpSchema: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/opSchema/copyOpSchema", dto);
+    if (result.code === 0) {
+      return result.message;
     }
     throw new Error(result.message);
   },

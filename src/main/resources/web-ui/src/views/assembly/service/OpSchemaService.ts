@@ -93,6 +93,29 @@ export default {
       }
     };
 
+    /**
+     * 复制记录
+     */
+    const copyList = async (row: GetOpSchemaListVo): Promise<void> => {
+      try {
+        await ElMessageBox.confirm(`确定复制输出方案「${row.name}」吗？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "info",
+        });
+      } catch {
+        return;
+      }
+
+      try {
+        await OpSchemaApi.copyOpSchema({ id: row.id });
+        ElMessage.success("复制成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     onMounted(async () => {
       await loadList();
     });
@@ -105,6 +128,7 @@ export default {
       loadList,
       resetList,
       removeList,
+      copyList,
     };
   },
 

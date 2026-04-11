@@ -55,7 +55,8 @@
             {{ scope.row.fieldCountOrigin }} of {{ scope.row.fieldCountPoly }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" min-width="240">
+        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" min-width="280">
           <template #default="scope">
             <el-button link type="primary" size="small" :icon="EditIcon" @click="openModal('edit', scope.row)">
               编辑
@@ -78,6 +79,7 @@
             >
               模拟
             </el-button>
+            <el-button link type="warning" size="small" :icon="CopyIcon" @click="copyList(scope.row)"> 复制 </el-button>
             <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -402,9 +404,10 @@ const ManagementIcon = resolveIcon("management");
 const MagicStickIcon = resolveIcon("magic-stick");
 const ViewIcon = resolveIcon("view");
 const SimulationIcon = resolveIcon("monitor");
+const CopyIcon = resolveIcon("copy-document");
 
 //列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, copyList } =
   OpSchemaService.useOpSchemaList();
 
 //使用CDRC打包上下文
