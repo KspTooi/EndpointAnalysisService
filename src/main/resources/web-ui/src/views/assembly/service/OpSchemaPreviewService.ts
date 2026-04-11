@@ -11,17 +11,28 @@ export default {
    * 蓝图列表打包
    */
   useBlueprintList(opSchema: GetOpSchemaListVo, cdrcReturn: () => void) {
+    //输出方案ID
     const opSchemaId = ref<string>(opSchema.id);
+
+    //蓝图列表加载状态
     const listLoading = ref(false);
+
+    //蓝图列表
     const blueprintList = ref<GetOpBluePrintListVo[]>([]);
 
     //是否显示未解析的文件名
     const showRawName = ref(false);
 
+    //已选中的蓝图列表
+    const checkedBlueprints = ref<GetOpBluePrintListVo[]>([]);
+
     const loadBlueprintList = async (): Promise<void> => {
       listLoading.value = true;
       try {
         blueprintList.value = await OpSchemaApi.getOpBluePrintList({ id: opSchemaId.value });
+
+        //成功拉取数据后，自动选中所有蓝图
+        checkedBlueprints.value = [...blueprintList.value];
       } catch (error: any) {
         await ElMessageBox.confirm(error.message, "提示", {
           confirmButtonText: "确定",
@@ -45,6 +56,46 @@ export default {
       await loadBlueprintList();
     });
 
+    /**
+     * 切换已选中蓝图
+     * @param vo 蓝图VO
+     */
+    const toggleCheckedBlueprint = (vo: GetOpBluePrintListVo): void => {
+      //如果已选中，则取消选中
+      if (checkedBlueprints.value.some((item) => item.sha256Hex === vo.sha256Hex)) {
+        checkedBlueprints.value = checkedBlueprints.value.filter((item) => item.sha256Hex !== vo.sha256Hex);
+        return;
+      }
+
+      //如果未选中，则选中
+      if (!checkedBlueprints.value.some((item) => item.sha256Hex === vo.sha256Hex)) {
+        checkedBlueprints.value.push(vo);
+      }
+    };
+
+    /**
+     * 是否已选中蓝图
+     * @param vo 蓝图VO
+     * @returns 是否已选中
+     */
+    const isChecked = (vo: GetOpBluePrintListVo): boolean => {
+      return checkedBlueprints.value.some((item) => item.sha256Hex === vo.sha256Hex);
+    };
+
+    /**
+     * 全选
+     */
+    const checkedAll = (): void => {
+      checkedBlueprints.value = [...blueprintList.value];
+    };
+
+    /**
+     * 清空已选
+     */
+    const clearSelected = (): void => {
+      checkedBlueprints.value = [];
+    };
+
     return {
       //加载状态
       listLoading,
@@ -57,6 +108,21 @@ export default {
 
       //加载蓝图列表
       loadBlueprintList,
+
+      //已选中的蓝图列表
+      checkedBlueprints,
+
+      //切换已选中蓝图
+      toggleCheckedBlueprint,
+
+      //是否已选中蓝图
+      isChecked,
+
+      //全选
+      checkedAll,
+
+      //清空已选
+      clearSelected,
     };
   },
 
@@ -244,6 +310,9 @@ export default {
     previewBlueprint: (vo: GetOpBluePrintListVo, opSchemaId: string) => Promise<void>,
     previewQbeModel: (opSchemaId: string) => Promise<void>
   ) {
+    /**
+     * 刷新蓝图
+     */
     const refreshBlueprint = async (): Promise<void> => {
       //重新加载蓝图列表
       await loadBlueprintList();
@@ -263,9 +332,20 @@ export default {
       previewBlueprint(selectedBlueprint.value, schema.id);
     };
 
+    /**
+     * 执行已选蓝图
+     */
+    const executeSelectedBlueprint = async (vos: GetOpBluePrintListVo[]): Promise<void> => {
+      console.log("执行已选蓝图: " + vos.length);
+      console.log(vos);
+    };
+
     return {
       //刷新蓝图
       refreshBlueprint,
+
+      //执行已选蓝图
+      executeSelectedBlueprint,
     };
   },
 };

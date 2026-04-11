@@ -26,10 +26,14 @@
     <!-- 操作按钮区域 -->
     <div class="action-bar">
       <el-button v-if="cdrcCanReturn" type="primary" class="ml-0!" :icon="CloseIcon" link @click="cdrcReturn">回退</el-button>
-      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint"
-        >刷新蓝图</el-button
+      <el-button type="success" class="ml-0!" :icon="RefreshIcon" link @click="refreshBlueprint">刷新蓝图</el-button>
+      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="CheckAllIcon" link @click="checkedAll"
+        >全选</el-button
       >
-      <el-button v-if="cdrcCanReturn" type="success" class="ml-0!" :icon="ExecuteIcon" link>执行已选蓝图</el-button>
+      <el-button type="success" class="ml-0!" style="color: #a53200" :icon="ClearCheckedIcon" link @click="clearSelected"
+        >清空已选</el-button
+      >
+      <el-button type="success" class="ml-0!" :icon="ExecuteIcon" link @click="onExecute">执行已选蓝图</el-button>
     </div>
 
     <div class="main-content">
@@ -59,6 +63,12 @@
             :class="{ active: selectedKey === item.sha256Hex }"
             @click="onBlueprintSelect(item)"
           >
+            <el-checkbox
+              :model-value="checkedBlueprints.some((c) => c.sha256Hex === item.sha256Hex)"
+              class="item-checkbox"
+              @change="toggleCheckedBlueprint(item)"
+              @click.stop
+            />
             <el-icon class="item-icon"><Document /></el-icon>
             <div class="item-info">
               <div class="item-name" :title="showRawName ? item.fileName : item.parsedName">
@@ -118,6 +128,8 @@ const { resolveIcon } = ComIconService.useIconService();
 const CloseIcon = resolveIcon("fontisto:close");
 const RefreshIcon = resolveIcon("el:download");
 const ExecuteIcon = resolveIcon("game-icons:nuclear-bomb");
+const CheckAllIcon = resolveIcon("ep:check");
+const ClearCheckedIcon = resolveIcon("ep:circle-close");
 
 //CDRC上下文服务
 const { getCdrcQuery, cdrcReturn, cdrcCanReturn } = ComDirectRouteContext.useDirectRouteContext();
@@ -150,10 +162,16 @@ const onQbeModelSelect = (opSchemaId: string): void => {
 };
 
 //蓝图列表服务打包
-const { listLoading, blueprintList, showRawName, loadBlueprintList } = OpSchemaPreviewService.useBlueprintList(
-  cdrcRow,
-  cdrcReturn
-);
+const {
+  listLoading,
+  blueprintList,
+  showRawName,
+  checkedBlueprints,
+  loadBlueprintList,
+  toggleCheckedBlueprint,
+  checkedAll,
+  clearSelected,
+} = OpSchemaPreviewService.useBlueprintList(cdrcRow, cdrcReturn);
 
 /**
  * 蓝图预览打包
@@ -167,20 +185,25 @@ const {
   previewBlueprintDeleted,
   previewBlueprint,
   previewQbeModel,
-  clearPreview,
   onCopy,
 } = OpSchemaPreviewService.useBlueprintPreview();
 
 //操作栏打包
-const { refreshBlueprint } = OpSchemaPreviewService.useActionBar(
+const { refreshBlueprint, executeSelectedBlueprint } = OpSchemaPreviewService.useActionBar(
   cdrcRow,
   selectedKey,
   selectedBlueprint,
   loadBlueprintList,
   previewBlueprint,
-  previewQbeModel,
-  clearPreview
+  previewQbeModel
 );
+
+/**
+ * 执行已选蓝图 胶水代码
+ */
+const onExecute = (): void => {
+  executeSelectedBlueprint(checkedBlueprints.value);
+};
 </script>
 
 <style scoped>
