@@ -1,24 +1,23 @@
-package com.ksptool.bio.biz.${ptalcn}.model.vo;
+package com.ksptool.bio.biz.${model.lowerCase}.model.vo;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
-#foreach ($import in $imports)
-import ${import};
-#end
 
 @Getter
 @Setter
-public class Get${ptstn}DetailsVo{
+public class Get${model.std}DetailsVo {
+
+    ## 遍历 details=true 的字段生成属性（包含主键）
     #foreach ($field in $fields)
-
-    #if(${field.comment} != "")
+    #if($field.details)
     @Schema(description="${field.comment}")
-    #end
-    private ${field.type} ${field.pfscn};
-    #end
+    private ${field.type} ${field.camelCase};
 
+    #end
+    #end
 }
-

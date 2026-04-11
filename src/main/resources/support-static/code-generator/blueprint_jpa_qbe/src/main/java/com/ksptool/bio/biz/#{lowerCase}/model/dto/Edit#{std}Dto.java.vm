@@ -1,25 +1,31 @@
-package com.ksptool.bio.biz.${ptalcn}.model.dto;
+package com.ksptool.bio.biz.${model.lowerCase}.model.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
-#foreach ($import in $imports)
-import ${import};
-#end
 
 @Getter
 @Setter
-public class Edit${ptstn}Dto {
+public class Edit${model.std}Dto {
 
+    ## 主键字段单独生成（edit DTO 必须携带主键用于定位记录）
     #foreach ($field in $fields)
-
-    #if(${field.comment} != "")
+    #if($field.primaryKey)
     @Schema(description="${field.comment}")
-    #end
-    private ${field.type} ${field.pfscn};
-    #end
+    private ${field.type} ${field.camelCase};
 
+    #end
+    #end
+    ## 遍历 edit=true 且非主键的字段生成属性
+    #foreach ($field in $fields)
+    #if(!$field.primaryKey && $field.edit)
+    @Schema(description="${field.comment}")
+    private ${field.type} ${field.camelCase};
+
+    #end
+    #end
 }
-

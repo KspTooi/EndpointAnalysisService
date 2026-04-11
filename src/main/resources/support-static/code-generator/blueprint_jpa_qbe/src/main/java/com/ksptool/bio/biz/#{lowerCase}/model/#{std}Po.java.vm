@@ -1,88 +1,81 @@
-package com.ksptool.bio.biz.${ptalcn}.model;
+package com.ksptool.bio.biz.${model.lowerCase}.model;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import java.time.LocalDateTime;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.commons.utils.IdWorker;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-    #foreach ($import in $imports)
-import ${import};
-#end
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "${ptuln}")
-public class ${ptstn}Po {
+@Table(name = "${model.snakeCase}")
+public class ${model.std}Po {
 
+    ## 主键字段
     #foreach ($field in $fields)
-    #if(${field.primaryKey})
-    @Column(name = "${field.pfuln}"#if(${field.comment} != ''), comment = "${field.comment}"#end)
+    #if($field.primaryKey)
     @Id
-    private ${field.type} ${field.pfscn};
+    @Column(name = "${field.snakeCase}"#if($field.comment != ''), comment = "${field.comment}"#end)
+    private ${field.type} ${field.camelCase};
 
     #end
-    #if(!${field.primaryKey})
-    @Column(name = "${field.pfuln}"#if(${field.required} == false), nullable = true#end#if(${field.comment} != ''), comment = "${field.comment}"#end)
-    private ${field.type} ${field.pfscn};
+    #end
+    ## 普通字段
+    #foreach ($field in $fields)
+    #if(!$field.primaryKey)
+    @Column(name = "${field.snakeCase}"#if(!$field.required), nullable = true#end#if($field.comment != ''), comment = "${field.comment}"#end)
+    private ${field.type} ${field.camelCase};
 
     #end
     #end
 
     @PrePersist
     private void onCreate() throws AuthException {
-
+        ## 主键为空时自动生成雪花ID
         #foreach ($field in $fields)
-        #if(${field.primaryKey})
-        if (this.${field.pfscn} == null) {
-            this.${field.pfscn} = IdWorker.nextId();
+        #if($field.primaryKey)
+        if (this.${field.camelCase} == null) {
+            this.${field.camelCase} = IdWorker.nextId();
         }
         #end
         #end
-        
+
         #set($hasCreateTime = false)
         #set($hasUpdateTime = false)
         #set($hasCreatorId = false)
         #set($hasUpdaterId = false)
         #foreach ($field in $fields)
-        #if(${field.pfscn} == "createTime")
-        #set($hasCreateTime = true)
+        #if($field.camelCase == "createTime")#set($hasCreateTime = true)#end
+        #if($field.camelCase == "updateTime")#set($hasUpdateTime = true)#end
+        #if($field.camelCase == "creatorId")#set($hasCreatorId = true)#end
+        #if($field.camelCase == "updaterId")#set($hasUpdaterId = true)#end
         #end
-        #if(${field.pfscn} == "updateTime")
-        #set($hasUpdateTime = true)
-        #end
-        #if(${field.pfscn} == "creatorId")
-        #set($hasCreatorId = true)
-        #end
-        #if(${field.pfscn} == "updaterId")
-        #set($hasUpdaterId = true)
-        #end
-        #end
-        
+
         #if($hasCreateTime || $hasUpdateTime || $hasCreatorId || $hasUpdaterId)
         LocalDateTime now = LocalDateTime.now();
         #end
-        
+
         #if($hasCreateTime)
         if (this.createTime == null) {
             this.createTime = now;
         }
         #end
-        
+
         #if($hasUpdateTime)
         if (this.updateTime == null) {
             this.updateTime = #if($hasCreateTime)this.createTime#else now#end;
         }
         #end
-        
+
         #if($hasCreatorId)
         if (this.creatorId == null) {
             this.creatorId = SessionService.session().getUserId();
         }
         #end
-        
+
         #if($hasUpdaterId)
         if (this.updaterId == null) {
             this.updaterId = SessionService.session().getUserId();
@@ -95,22 +88,16 @@ public class ${ptstn}Po {
         #set($hasUpdateTime = false)
         #set($hasUpdaterId = false)
         #foreach ($field in $fields)
-        #if(${field.pfscn} == "updateTime")
-        #set($hasUpdateTime = true)
+        #if($field.camelCase == "updateTime")#set($hasUpdateTime = true)#end
+        #if($field.camelCase == "updaterId")#set($hasUpdaterId = true)#end
         #end
-        #if(${field.pfscn} == "updaterId")
-        #set($hasUpdaterId = true)
-        #end
-        #end
-        
+
         #if($hasUpdateTime)
         this.updateTime = LocalDateTime.now();
         #end
-        
+
         #if($hasUpdaterId)
-        if (this.updaterId == null) {
-            this.updaterId = SessionService.session().getUserId();
-        }
+        this.updaterId = SessionService.session().getUserId();
         #end
     }
 }

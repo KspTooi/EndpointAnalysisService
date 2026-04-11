@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.${lowerCase}.service;
+package com.ksptool.bio.biz.${model.lowerCase}.service;
 
 ## 引入公用包
 import com.ksptool.assembly.entity.web.PageResult;
@@ -15,57 +15,57 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import java.util.Optional;
 ## 引入专用包
-import com.ksptool.bio.biz.${lowerCase}.repository.${std}Repository;
-import com.ksptool.bio.biz.${lowerCase}.model.${std}Po;
-import com.ksptool.bio.biz.${lowerCase}.model.vo.Get${std}ListVo;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Get${std}ListDto;
-import com.ksptool.bio.biz.${lowerCase}.model.vo.Get${std}DetailsVo;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Edit${std}Dto;
-import com.ksptool.bio.biz.${lowerCase}.model.dto.Add${std}Dto;
+import com.ksptool.bio.biz.${model.lowerCase}.repository.${model.std}Repository;
+import com.ksptool.bio.biz.${model.lowerCase}.model.${model.std}Po;
+import com.ksptool.bio.biz.${model.lowerCase}.model.vo.Get${model.std}ListVo;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Get${model.std}ListDto;
+import com.ksptool.bio.biz.${model.lowerCase}.model.vo.Get${model.std}DetailsVo;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Edit${model.std}Dto;
+import com.ksptool.bio.biz.${model.lowerCase}.model.dto.Add${model.std}Dto;
 
 
 @Service
-public class ${std}Service {
+public class ${model.std}Service {
 
     @Autowired
-    private ${std}Repository repository;
+    private ${model.std}Repository repository;
 
-    public PageResult<Get${std}ListVo> get${std}List(Get${std}ListDto dto){
-        ${std}Po query = new ${std}Po();
+    public PageResult<Get${model.std}ListVo> get${model.std}List(Get${model.std}ListDto dto){
+        ${model.std}Po query = new ${model.std}Po();
         assign(dto,query);
 
-        Page<${std}Po> page = repository.get${std}List(query, dto.pageRequest());
+        Page<${model.std}Po> page = repository.get${model.std}List(query, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
-        List<Get${std}ListVo> vos = as(page.getContent(), Get${std}ListVo.class);
+        List<Get${model.std}ListVo> vos = as(page.getContent(), Get${model.std}ListVo.class);
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void add${std}(Add${std}Dto dto){
-        ${std}Po insertPo = as(dto,${std}Po.class);
+    public void add${model.std}(Add${model.std}Dto dto){
+        ${model.std}Po insertPo = as(dto,${model.std}Po.class);
         repository.save(insertPo);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void edit${std}(Edit${std}Dto dto) throws BizException {
-        ${std}Po updatePo = repository.findById(dto.getId())
+    public void edit${model.std}(Edit${model.std}Dto dto) throws BizException {
+        ${model.std}Po updatePo = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto,updatePo);
         repository.save(updatePo);
     }
 
-    public Get${std}DetailsVo get${std}Details(CommonIdDto dto) throws BizException {
-        ${std}Po po = repository.findById(dto.getId())
+    public Get${model.std}DetailsVo get${model.std}Details(CommonIdDto dto) throws BizException {
+        ${model.std}Po po = repository.findById(dto.getId())
             .orElseThrow(()-> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po,Get${std}DetailsVo.class);
+        return as(po,Get${model.std}DetailsVo.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void remove${std}(CommonIdDto dto) throws BizException {
+    public void remove${model.std}(CommonIdDto dto) throws BizException {
         if (dto.isBatch()) {
             repository.deleteAllById(dto.getIds());
             return;

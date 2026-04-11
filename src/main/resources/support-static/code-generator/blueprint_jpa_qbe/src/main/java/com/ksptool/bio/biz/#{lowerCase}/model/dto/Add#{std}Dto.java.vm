@@ -1,6 +1,5 @@
-package com.ksptool.bio.biz.${lowerCase}.model.dto;
+package com.ksptool.bio.biz.${model.lowerCase}.model.dto;
 
-## 预先导入LDT、BigDecimal、List等类型
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,8 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter
-public class Add${std}Dto {
+public class Add${model.std}Dto {
 
+    ## 遍历 add=true 且非主键的字段生成属性
     #foreach ($field in $fields)
     #if(!$field.primaryKey && $field.add)
     @Schema(description="${field.comment}")
