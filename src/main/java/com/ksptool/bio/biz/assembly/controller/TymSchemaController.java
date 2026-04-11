@@ -1,5 +1,6 @@
 package com.ksptool.bio.biz.assembly.controller;
 
+import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
@@ -62,6 +63,11 @@ public class TymSchemaController {
     @Operation(summary = "删除类型映射方案")
     @PostMapping("/removeTymSchema")
     public Result<String> removeTymSchema(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
+        if (dto.isBatch()) {
+            throw new BizException("不支持批量操作.");
+        }
+        
         tymSchemaService.removeTymSchema(dto);
         return Result.success("操作成功");
     }

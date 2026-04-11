@@ -44,7 +44,7 @@ public class QbeModel {
         if (StringUtils.isBlank(stdName)) {
             throw new IllegalArgumentException("模型标准化名称不能为空!");
         }
-        
+
         StdName stdNameObj = StdName.of(stdName);
         this.stdName = stdName;
         this.stn = stdNameObj.getValue();
