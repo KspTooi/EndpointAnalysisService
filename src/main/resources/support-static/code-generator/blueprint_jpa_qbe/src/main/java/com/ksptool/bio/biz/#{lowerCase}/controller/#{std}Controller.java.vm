@@ -40,13 +40,13 @@ public class ${model.std}Controller {
 
     @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:view')")
     @PostMapping("/get${model.std}List")
-    @Operation(summary ="查询#{schema.modelRemark}列表")
+    @Operation(summary ="查询${schema.modelRemark}列表")
     public PageResult<Get${model.std}ListVo> get${model.std}List(@RequestBody @Valid Get${model.std}ListDto dto) throws Exception{
         return ${model.camelCase}Service.get${model.std}List(dto);
     }
 
     @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:add')")
-    @Operation(summary ="新增#{schema.modelRemark}")
+    @Operation(summary ="新增${schema.modelRemark}")
     @PostMapping("/add${model.std}")
     public Result<String> add${model.std}(@RequestBody @Valid Add${model.std}Dto dto) throws Exception{
 		${model.camelCase}Service.add${model.std}(dto);
@@ -54,7 +54,7 @@ public class ${model.std}Controller {
     }
 
     @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:edit')")
-    @Operation(summary ="编辑#{schema.modelRemark}")
+    @Operation(summary ="编辑${schema.modelRemark}")
     @PostMapping("/edit${model.std}")
     public Result<String> edit${model.std}(@RequestBody @Valid Edit${model.std}Dto dto) throws Exception{
 		${model.camelCase}Service.edit${model.std}(dto);
@@ -62,7 +62,7 @@ public class ${model.std}Controller {
     }
 
     @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:view')")
-    @Operation(summary ="查询#{schema.modelRemark}详情")
+    @Operation(summary ="查询${schema.modelRemark}详情")
     @PostMapping("/get${model.std}Details")
     public Result<Get${model.std}DetailsVo> get${model.std}Details(@RequestBody @Valid CommonIdDto dto) throws Exception{
         Get${model.std}DetailsVo details = ${model.camelCase}Service.get${model.std}Details(dto);
@@ -73,7 +73,7 @@ public class ${model.std}Controller {
     }
 
     @PreAuthorize("@auth.hasCode('${schema.permCodePrefix}:remove')")
-    @Operation(summary ="删除#{schema.modelRemark}")
+    @Operation(summary ="删除${schema.modelRemark}")
     @PostMapping("/remove${model.std}")
     public Result<String> remove${model.std}(@RequestBody @Valid CommonIdDto dto) throws Exception{
         ${model.camelCase}Service.remove${model.std}(dto);
