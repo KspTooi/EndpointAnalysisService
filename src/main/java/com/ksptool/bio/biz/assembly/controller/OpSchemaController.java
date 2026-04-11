@@ -30,8 +30,10 @@ public class OpSchemaController {
 
     //执行锁，防止同时执行多个输出方案，因为QBE引擎是单线程的，并发会出现线程安全问题
     private final ReentrantLock executeLock = new ReentrantLock();
+    
     //预览锁，防止同时预览多个输出方案，因为SCM拉取和推送是单线程的，并发会出现线程安全问题
     private final ReentrantLock previewLock = new ReentrantLock();
+
     @Autowired
     private OpSchemaService opSchemaService;
 
@@ -77,7 +79,7 @@ public class OpSchemaController {
     public Result<List<GetOpBluePrintListVo>> getOpBluePrintList(@RequestBody @Valid CommonIdDto dto) throws Exception {
 
         if (!previewLock.tryLock()) {
-            return Result.error("当前SCM正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
+            return Result.error("当前SCM服务正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
         }
 
         try {
@@ -92,7 +94,7 @@ public class OpSchemaController {
     public Result<String> previewOpBluePrint(@RequestBody @Valid PreviewOpBluePrintDto dto) throws Exception {
 
         if (!previewLock.tryLock()) {
-            return Result.error("当前SCM正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
+            return Result.error("当前SCM服务正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
         }
 
         try {
