@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Setter
 public class Edit${model.std}Dto {
 
-    ## 主键字段单独生成（edit DTO 必须携带主键用于定位记录）
     #foreach ($field in $model.fields)
     #if($field.primaryKey)
     @Schema(description="${field.comment}")
@@ -20,7 +19,7 @@ public class Edit${model.std}Dto {
 
     #end
     #end
-    ## 遍历 edit=true 且非主键的字段生成属性
+
     #foreach ($field in $model.fields)
     #if(!$field.primaryKey && $field.edit)
     @Schema(description="${field.comment}")
