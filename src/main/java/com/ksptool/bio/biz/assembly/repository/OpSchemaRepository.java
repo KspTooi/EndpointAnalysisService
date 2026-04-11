@@ -45,7 +45,7 @@ public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
      * @return 输出方案数量
      */
     @Query("""
-            SELECT COUNT(u) FROM OpSchemaPo u WHERE u.typeSchemaId = :tymSchemaId
+            SELECT COUNT(u) FROM OpSchemaPo u WHERE u.typeSchemaId = :typeSchemaId
             """)
     int countByTymSchemaId(@Param("typeSchemaId") Long typeSchemaId);
 }
