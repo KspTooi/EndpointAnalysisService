@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import static com.ksptool.bio.biz.auth.service.SessionService.session;
 
 
 @Slf4j
@@ -120,14 +121,38 @@ public class OpSchemaService {
      * @param dto 新增参数
      */
     @Transactional(rollbackFor = Exception.class)
-    public String addOpSchema(AddOpSchemaDto dto) {
+    public String addOpSchema(AddOpSchemaDto dto) throws Exception {
         OpSchemaPo insertPo = as(dto, OpSchemaPo.class);
+
+        var session = session();
+        var userId = session.getUserId();
+
+        if(dto.getInputScmId() != null){
+
+            ScmPo inputScmPo = scmRepository.findById(dto.getInputScmId())
+                .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
+
+            if(inputScmPo.getCreatorId() != userId){
+                throw new BizException("新增输出方案失败,无权访问SCM。");
+            }
+
+        }
+
+        if(dto.getOutputScmId() != null){
+            ScmPo outputScmPo = scmRepository.findById(dto.getOutputScmId())
+                .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
+
+            if(outputScmPo.getCreatorId() != userId){
+                throw new BizException("新增输出方案失败,无权访问SCM。");
+            }
+        }
+
+
         insertPo.setFieldCountOrigin(0);
         insertPo.setFieldCountPoly(0);
 
         //先保存输出方案，这样才能获取到主键ID
         insertPo = repository.save(insertPo);
-
 
         //如果输入数据源和表名,则查询数据源表字段
         if (dto.getDataSourceId() != null && StringUtils.isNotBlank(dto.getTableName())) {
@@ -174,11 +199,32 @@ public class OpSchemaService {
      * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
-    public String editOpSchema(EditOpSchemaDto dto) throws BizException {
+    public String editOpSchema(EditOpSchemaDto dto) throws Exception {
         OpSchemaPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
+
+        var session = session();
+        var userId = session.getUserId();
+
+        if(dto.getInputScmId() != null){
+            ScmPo inputScmPo = scmRepository.findById(dto.getInputScmId())
+                .orElseThrow(() -> new BizException("新增输出方案失败,输入SCM不存在或无权限访问."));
+
+            if(inputScmPo.getCreatorId() != userId){
+                throw new BizException("修改输出方案失败,无权访问SCM。");
+            }
+        }
+
+        if(dto.getOutputScmId() != null){
+            ScmPo outputScmPo = scmRepository.findById(dto.getOutputScmId())
+                .orElseThrow(() -> new BizException("新增输出方案失败,输出SCM不存在或无权限访问."));
+
+            if(outputScmPo.getCreatorId() != userId){
+                throw new BizException("修改输出方案失败,无权访问SCM。");
+            }
+        }
 
         // 没有配置数据源或表名，直接保存
         if (dto.getDataSourceId() == null || StringUtils.isBlank(dto.getTableName())) {
@@ -271,7 +317,7 @@ public class OpSchemaService {
      * @param dto 查询参数
      * @return 蓝图文件列表
      */
-    public List<GetOpBluePrintListVo> getOpBluePrintList(CommonIdDto dto) throws BizException {
+    public List<GetOpBluePrintListVo> getOpBluePrintList(CommonIdDto dto) throws Exception {
 
         OpSchemaPo opSchemaPo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询蓝图文件列表失败,数据不存在或无权限访问."));
@@ -284,6 +330,13 @@ public class OpSchemaService {
         //查询输入SCM
         ScmPo inputScmPo = scmRepository.findById(opSchemaPo.getInputScmId())
                 .orElseThrow(() -> new BizException("查询蓝图文件列表失败,输入SCM不存在或无权限访问."));
+
+        var session = session();
+        var userId = session.getUserId();
+
+        if(inputScmPo.getCreatorId() != userId){
+            throw new BizException("查询蓝图文件列表失败,无权访问SCM。");
+        }
 
         //准备工作空间
         var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
