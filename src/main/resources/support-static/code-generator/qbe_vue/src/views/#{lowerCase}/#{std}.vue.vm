@@ -31,6 +31,7 @@
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
+        <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
 #foreach($field in $model.fields)
 #if($field.listView)
         <el-table-column prop="${field.camelCase}" label="${field.comment}" min-width="120" show-overflow-tooltip />
