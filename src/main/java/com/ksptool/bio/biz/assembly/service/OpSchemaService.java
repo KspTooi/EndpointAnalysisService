@@ -56,8 +56,7 @@ import static com.ksptool.entities.Entities.assign;
 @Service
 public class OpSchemaService {
 
-    //Gson实例
-    private final Gson gson = new Gson();
+
 
     @Autowired
     private ObjectMapper objectMapper;
