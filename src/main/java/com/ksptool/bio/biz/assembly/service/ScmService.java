@@ -8,6 +8,7 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.auth.common.aop.rsuser.RowScopeUser;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
@@ -52,6 +53,7 @@ import static com.ksptool.entities.Entities.assign;
 
 @Slf4j
 @Service
+@RowScopeUser
 public class ScmService {
 
     @Autowired
