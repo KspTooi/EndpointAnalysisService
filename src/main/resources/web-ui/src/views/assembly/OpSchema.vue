@@ -235,19 +235,14 @@
                 >
                   <template #append>
                     <el-button
+                      :disabled="!modalForm.tableName"
                       :icon="MagicStickIcon"
                       @click="
                         () => {
-                          if (!modalForm.tableName) {
-                            ElMessage.warning('请先填写数据源表名');
-                            return;
+                          const parts = modalForm.tableName.split('_');
+                          if (parts.length > 1) {
+                            modalForm.bizDomain = parts[0];
                           }
-                          const underscoreIndex = modalForm.tableName.indexOf('_');
-                          if (underscoreIndex <= 0) {
-                            ElMessage.warning('表名无法推断业务域（需含下划线前缀）');
-                            return;
-                          }
-                          modalForm.bizDomain = modalForm.tableName.substring(0, underscoreIndex);
                         }
                       "
                     >
