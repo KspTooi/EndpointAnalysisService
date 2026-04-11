@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -294,6 +295,17 @@ public class OpSchemaService {
 
         //先检出输入SCM
         scmService.pullFromScm(inputScmPo, workSpaceInputPath.toString());
+
+        //准备解析参数
+        Map<String, String> params = new HashMap<>();
+        params.put("modelName", opSchemaPo.getModelName());
+        params.put("tableName", opSchemaPo.getTableName());
+        params.put("removeTablePrefix", opSchemaPo.getRemoveTablePrefix());
+        params.put("permCodePrefix", opSchemaPo.getPermCodePrefix());
+        params.put("policyOverride", opSchemaPo.getPolicyOverride());
+        params.put("baseInput", opSchemaPo.getBaseInput());
+        params.put("baseOutput", opSchemaPo.getBaseOutput());
+
 
         //使用QBE读取蓝图文件列表
         try {
