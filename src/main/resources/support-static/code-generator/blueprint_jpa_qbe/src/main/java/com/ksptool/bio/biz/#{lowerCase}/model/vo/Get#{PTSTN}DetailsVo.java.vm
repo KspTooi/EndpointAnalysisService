@@ -11,16 +11,14 @@ import ${import};
 
 @Getter
 @Setter
-public class Get${ptstn}ListVo{
-
+public class Get${ptstn}DetailsVo{
     #foreach ($field in $fields)
-        #if(${field.omp_lw})##只有omp_lv=true的字段才允许列表显示
 
-            #if(${field.comment} != "")##如果有注释就增加Swagger注解
+    #if(${field.comment} != "")
     @Schema(description="${field.comment}")
-            #end
-    private ${field.type} ${field.pfscn};
-        #end
     #end
+    private ${field.type} ${field.pfscn};
+    #end
+
 }
 
