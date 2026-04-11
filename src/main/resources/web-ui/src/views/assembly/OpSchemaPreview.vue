@@ -37,80 +37,86 @@
     </div>
 
     <div class="main-content">
-      <!-- 左侧蓝图列表 -->
-      <div class="left-panel">
-        <div class="panel-header">蓝图文件</div>
-        <div class="blueprint-list">
-          <!-- 固定条目：QBE模型 -->
-          <div
-            class="blueprint-item"
-            :class="{ active: selectedKey === '__qbe_model__' }"
-            @click="onQbeModelSelect(cdrcRow.id)"
-          >
-            <el-icon class="item-icon"><DataAnalysis /></el-icon>
-            <div class="item-info">
-              <div class="item-name">QBE模型</div>
-              <div class="item-path">查看当前输出方案的QBE模型JSON</div>
-            </div>
-          </div>
-
-          <div class="list-divider" />
-
-          <div
-            v-for="item in blueprintList"
-            :key="item.sha256Hex"
-            class="blueprint-item"
-            :class="{ active: selectedKey === item.sha256Hex }"
-            @click="onBlueprintSelect(item)"
-          >
-            <el-checkbox
-              :model-value="checkedBlueprints.some((c) => c.sha256Hex === item.sha256Hex)"
-              class="item-checkbox"
-              @change="toggleCheckedBlueprint(item)"
-              @click.stop
-            />
-            <el-icon class="item-icon"><Document /></el-icon>
-            <div class="item-info">
-              <div class="item-name" :title="showRawName ? item.fileName : item.parsedName">
-                {{ showRawName ? item.fileName : item.parsedName }}
+      <splitpanes class="custom-theme">
+        <!-- 左侧蓝图列表 -->
+        <pane size="20" min-size="10" max-size="50">
+          <div class="left-panel">
+            <div class="panel-header">蓝图文件</div>
+            <div class="blueprint-list">
+              <!-- 固定条目：QBE模型 -->
+              <div
+                class="blueprint-item"
+                :class="{ active: selectedKey === '__qbe_model__' }"
+                @click="onQbeModelSelect(cdrcRow.id)"
+              >
+                <el-icon class="item-icon"><DataAnalysis /></el-icon>
+                <div class="item-info">
+                  <div class="item-name">QBE模型</div>
+                  <div class="item-path">查看当前输出方案的QBE模型JSON</div>
+                </div>
               </div>
-              <div class="item-path" :title="showRawName ? item.filePath : item.parsedPath">
-                {{ showRawName ? item.filePath : item.parsedPath }}
+
+              <div class="list-divider" />
+
+              <div
+                v-for="item in blueprintList"
+                :key="item.sha256Hex"
+                class="blueprint-item"
+                :class="{ active: selectedKey === item.sha256Hex }"
+                @click="onBlueprintSelect(item)"
+              >
+                <el-checkbox
+                  :model-value="checkedBlueprints.some((c) => c.sha256Hex === item.sha256Hex)"
+                  class="item-checkbox"
+                  @change="toggleCheckedBlueprint(item)"
+                  @click.stop
+                />
+                <el-icon class="item-icon"><Document /></el-icon>
+                <div class="item-info">
+                  <div class="item-name" :title="showRawName ? item.fileName : item.parsedName">
+                    {{ showRawName ? item.fileName : item.parsedName }}
+                  </div>
+                  <div class="item-path" :title="showRawName ? item.filePath : item.parsedPath">
+                    {{ showRawName ? item.filePath : item.parsedPath }}
+                  </div>
+                </div>
+              </div>
+              <div v-if="!listLoading && blueprintList.length === 0" class="empty-list">暂无蓝图文件</div>
+            </div>
+          </div>
+        </pane>
+
+        <!-- 右侧代码预览 -->
+        <pane>
+          <div class="right-panel">
+            <div class="code-preview-container">
+              <div class="toolbar">
+                <div class="file-info">
+                  <span class="file-name">{{ previewFileName || "请选择蓝图文件" }}</span>
+                  <span v-if="detectedLanguage" class="file-lang">({{ detectedLanguage }})</span>
+                </div>
+                <div class="actions">
+                  <el-button link type="primary" :disabled="!codeContent" @click="onCopy">
+                    <el-icon><DocumentCopy /></el-icon> 复制
+                  </el-button>
+                </div>
+              </div>
+
+              <div v-loading="previewLoading" class="code-wrapper">
+                <pre v-if="rawHtml" class="hljs code-block"><code v-html="rawHtml"></code></pre>
+
+                <div v-if="!rawHtml && !previewLoading && !previewBlueprintDeleted" class="empty-tip">
+                  {{ blueprintList.length > 0 ? "请从左侧选择一个蓝图文件" : "暂无内容" }}
+                </div>
+
+                <div v-if="previewBlueprintDeleted" class="empty-tip">
+                  <close-icon class="text-red-500 mr-2 size-8" />该蓝图已被删除，请重新选择
+                </div>
               </div>
             </div>
           </div>
-          <div v-if="!listLoading && blueprintList.length === 0" class="empty-list">暂无蓝图文件</div>
-        </div>
-      </div>
-
-      <!-- 右侧代码预览 -->
-      <div class="right-panel">
-        <div class="code-preview-container">
-          <div class="toolbar">
-            <div class="file-info">
-              <span class="file-name">{{ previewFileName || "请选择蓝图文件" }}</span>
-              <span v-if="detectedLanguage" class="file-lang">({{ detectedLanguage }})</span>
-            </div>
-            <div class="actions">
-              <el-button link type="primary" :disabled="!codeContent" @click="onCopy">
-                <el-icon><DocumentCopy /></el-icon> 复制
-              </el-button>
-            </div>
-          </div>
-
-          <div v-loading="previewLoading" class="code-wrapper">
-            <pre v-if="rawHtml" class="hljs code-block"><code v-html="rawHtml"></code></pre>
-
-            <div v-if="!rawHtml && !previewLoading && !previewBlueprintDeleted" class="empty-tip">
-              {{ blueprintList.length > 0 ? "请从左侧选择一个蓝图文件" : "暂无内容" }}
-            </div>
-
-            <div v-if="previewBlueprintDeleted" class="empty-tip">
-              <close-icon class="text-red-500 mr-2 size-8" />该蓝图已被删除，请重新选择
-            </div>
-          </div>
-        </div>
-      </div>
+        </pane>
+      </splitpanes>
     </div>
   </div>
 </template>
@@ -122,6 +128,8 @@ import OpSchemaPreviewService from "@/views/assembly/service/OpSchemaPreviewServ
 import { ref } from "vue";
 import type { GetOpBluePrintListVo, GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 
 //图标服务
 const { resolveIcon } = ComIconService.useIconService();
@@ -276,7 +284,6 @@ const onExecute = (): void => {
 
 .main-content {
   flex: 1;
-  display: flex;
   overflow: hidden;
   padding: 5px;
   padding-top: 0;
@@ -284,12 +291,12 @@ const onExecute = (): void => {
 
 /* 左侧面板 */
 .left-panel {
-  width: 260px;
-  flex-shrink: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .panel-header {
@@ -397,10 +404,49 @@ const onExecute = (): void => {
 
 /* 右侧代码预览 */
 .right-panel {
-  flex: 1;
+  height: 100%;
   overflow: hidden;
   border-radius: 4px;
   border: 1px solid #e4e7ed;
+  box-sizing: border-box;
+}
+
+/* splitpanes 自定义主题 */
+:deep(.splitpanes.custom-theme) {
+  border: none;
+  height: 100%;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__pane) {
+  background-color: transparent;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter) {
+  background-color: var(--el-border-color-extra-light);
+  width: 1px;
+  border: none;
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter:hover) {
+  background-color: var(--el-color-primary);
+  width: 3px;
+}
+
+:deep(.splitpanes.custom-theme .splitpanes__splitter:after) {
+  content: "";
+  position: absolute;
+  left: -5px;
+  right: -5px;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+:deep(.splitpanes__pane) {
+  transition: none !important;
 }
 
 .code-preview-container {
