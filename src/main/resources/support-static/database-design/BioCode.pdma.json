@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-11 20:12:47",
+  "updatedTime": "2026-4-12 03:18:43",
   "dbConns": [],
   "profile": {
     "default": {
@@ -30515,6 +30515,24 @@
           "extProps": {},
           "domain": "590D8569-6946-4A9F-954F-FBA9A1988143",
           "id": "40C3ED39-78A6-449D-8EA9-422C9F711441"
+        },
+        {
+          "defKey": "model_remark",
+          "defName": "模型描述",
+          "comment": "",
+          "type": "",
+          "len": "",
+          "scale": "",
+          "primaryKey": false,
+          "notNull": true,
+          "autoIncrement": false,
+          "defaultValue": "",
+          "hideInGraph": false,
+          "refDict": "",
+          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "extProps": {},
+          "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
+          "id": "2D1F52F8-FD50-4523-84BB-8DCD39F8C551"
         },
         {
           "defKey": "table_name",
