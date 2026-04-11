@@ -212,7 +212,19 @@
               <el-form-item label="模型名称 (用于代码模型)" prop="modelName">
                 <el-input v-model="modalForm.modelName" placeholder="请输入模型名称" clearable maxlength="255" show-word-limit>
                   <template #append>
-                    <el-button :icon="MagicStickIcon" @click="modalForm.modelName = modalForm.name">推断</el-button>
+                    <el-button
+                      :disabled="!modalForm.tableName"
+                      :icon="MagicStickIcon"
+                      @click="
+                        () => {
+                          const parts = modalForm.tableName.split('_');
+                          const nameParts = parts.length > 1 ? parts.slice(1) : parts;
+                          modalForm.modelName = nameParts.map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('');
+                        }
+                      "
+                    >
+                      推断
+                    </el-button>
                   </template>
                 </el-input>
               </el-form-item>
