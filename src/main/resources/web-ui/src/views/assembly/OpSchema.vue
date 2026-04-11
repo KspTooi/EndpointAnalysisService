@@ -75,9 +75,6 @@
             >
               模拟
             </el-button>
-            <el-button link type="success" size="small" :icon="ManagementIcon" @click="executeOpSchema(scope.row)">
-              执行
-            </el-button>
             <el-button link type="danger" size="small" :icon="DeleteIcon" @click="removeList(scope.row)"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -404,7 +401,7 @@ const ViewIcon = resolveIcon("view");
 const SimulationIcon = resolveIcon("monitor");
 
 //列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList, executeOpSchema } =
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
   OpSchemaService.useOpSchemaList();
 
 //使用CDRC打包上下文
