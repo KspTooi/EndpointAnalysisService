@@ -23,9 +23,6 @@ import java.util.Properties;
 @Slf4j
 public class QbeVelocityEngine {
 
-    //gson实例
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
     //velocity引擎实例
     private VelocityEngine velocityEngine;
 

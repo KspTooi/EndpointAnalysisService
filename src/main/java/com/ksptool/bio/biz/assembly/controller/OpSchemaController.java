@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,12 @@ public class OpSchemaController {
 
     @Autowired
     private OpSchemaService opSchemaService;
+
+    //执行锁，防止同时执行多个输出方案，因为QBE引擎是单线程的，并发会出现线程安全问题
+    private final ReentrantLock executeLock = new ReentrantLock();
+
+    //预览锁，防止同时预览多个输出方案，因为SCM拉取和推送是单线程的，并发会出现线程安全问题
+    private final ReentrantLock previewLock = new ReentrantLock();
 
     @PostMapping("/getOpSchemaList")
     @Operation(summary = "查询输出方案列表")
@@ -81,7 +88,17 @@ public class OpSchemaController {
     @Operation(summary = "预览蓝图输出")
     @PostMapping("/previewOpBluePrint")
     public Result<String> previewOpBluePrint(@RequestBody @Valid PreviewOpBluePrintDto dto) throws Exception {
-        return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(),dto.getSha256Hex()));
+
+        if(!previewLock.tryLock()){
+            return Result.error("当前SCM正忙，这可能由于前一次拉取或推送操作尚未完成，请稍后再试。");
+        }
+
+        try{
+            return Result.success(opSchemaService.previewOpBluePrint(dto.getOpSchemaId(),dto.getSha256Hex()));
+        } finally {
+            previewLock.unlock();
+        }
+
     }
 
     @Operation(summary = "预览Qbe模型JSON")
@@ -93,8 +110,17 @@ public class OpSchemaController {
     @Operation(summary = "执行输出方案")
     @PostMapping("/executeOpSchema")
     public Result<String> executeOpSchema(@RequestBody @Valid ExecuteOpSchemaDto dto) throws Exception {
-        opSchemaService.executeOpSchema(dto);
-        return Result.success("操作成功");
+
+        if(!executeLock.tryLock()){
+            return Result.error("当前QBE引擎正忙，这可能由于前一次执行操作尚未完成，请稍后再试。");
+        }
+
+        try{
+            opSchemaService.executeOpSchema(dto);
+            return Result.success("操作成功");
+        } finally {
+            executeLock.unlock();
+        }
     }
 
     @Operation(summary = "复制输出方案")
