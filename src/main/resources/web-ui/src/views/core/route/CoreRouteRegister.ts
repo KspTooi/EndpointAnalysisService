@@ -59,20 +59,6 @@ export default class CoreRouteRegister extends GenricRouteRegister {
       }),
       RouteEntryPo.build({
         biz: "core",
-        path: "company-manager",
-        name: "company-manager",
-        component: () => import("@/views/core/CompanyManager.vue"),
-        meta: { breadcrumb: "公司管理" },
-      }),
-      RouteEntryPo.build({
-        biz: "core",
-        path: "company-member-manager",
-        name: "company-member-manager",
-        component: () => import("@/views/core/CompanyMember.vue"),
-        meta: { breadcrumb: "公司成员管理" },
-      }),
-      RouteEntryPo.build({
-        biz: "core",
         path: "excel-template-manager",
         name: "excel-template-manager",
         component: () => import("@/views/core/ExcelTemplateManager.vue"),
