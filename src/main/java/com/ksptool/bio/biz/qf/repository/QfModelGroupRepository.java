@@ -16,7 +16,22 @@ public interface QfModelGroupRepository extends JpaRepository<QfModelGroupPo, Lo
             WHERE
             (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%'))
             AND (:#{#po.code} IS NULL OR u.code LIKE CONCAT('%', :#{#po.code}, '%'))
-            ORDER BY u.createTime DESC
+            ORDER BY u.seq ASC, u.createTime DESC
             """ )
     Page<QfModelGroupPo> getQfModelGroupList(@Param("po") QfModelGroupPo po, Pageable pageable);
+
+    /**
+     * 根据编码统计流程模型分组数量 排除指定ID
+     *
+     * @param code 流程模型分组编码
+     * @param id   流程模型分组ID
+     * @return 流程模型分组数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM QfModelGroupPo t
+            WHERE t.code = :code AND (:id IS NULL OR t.id != :id)
+            """)
+    Long countByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
+
+
 }

@@ -52,7 +52,15 @@ public class QfModelGroupService {
      * @param dto 新增条件
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addQfModelGroup(AddQfModelGroupDto dto) {
+    public void addQfModelGroup(AddQfModelGroupDto dto) throws BizException {
+
+        //查询编码是否被占用
+        var existPo = repository.countByCodeExcludeId(dto.getCode(), null);
+
+        if (existPo > 0) {
+            throw new BizException("流程模型分组编码已存在:[" + dto.getCode() + "]");
+        }
+
         QfModelGroupPo insertPo = as(dto, QfModelGroupPo.class);
         repository.save(insertPo);
     }
@@ -65,6 +73,13 @@ public class QfModelGroupService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModelGroup(EditQfModelGroupDto dto) throws BizException {
+
+        //查询编码是否被占用
+        var existPo = repository.countByCodeExcludeId(dto.getCode(), dto.getId());
+        if (existPo > 0) {
+            throw new BizException("流程模型分组编码已存在:[" + dto.getCode() + "]");
+        }
+
         QfModelGroupPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 

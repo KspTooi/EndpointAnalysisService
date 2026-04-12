@@ -27,7 +27,6 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="组名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="组编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" min-width="120" show-overflow-tooltip />
@@ -95,7 +94,7 @@
           <el-input v-model="modalForm.remark" placeholder="请输入备注" clearable :maxlength="500" show-word-limit />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
-          <el-input v-model.number="modalForm.seq" placeholder="请输入排序" clearable />
+          <el-input v-model.number="modalForm.seq" placeholder="请输入排序" clearable type="number" :min="0" :max="655350" />
         </el-form-item>
       </el-form>
       <template #footer>

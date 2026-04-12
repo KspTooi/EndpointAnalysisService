@@ -128,7 +128,11 @@ export default {
         { max: 32, message: "组编码长度不能超过32个字符", trigger: "blur" },
       ],
       remark: [{ max: 500, message: "备注长度不能超过500个字符", trigger: "blur" }],
-      seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
+      seq: [
+        { required: true, message: "请输入排序", trigger: "blur" },
+        { type: "number", min: 0, message: "排序必须大于等于0", trigger: "blur" },
+        { type: "number", max: 655350, message: "排序不能超过655350", trigger: "blur" },
+      ],
     };
 
     /**
