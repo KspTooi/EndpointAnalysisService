@@ -17,8 +17,8 @@ export default {
 
     const listForm = ref<GetMenuTreeDto>({
       name: "",
-      menuKind: null,
-      permission: "",
+      kind: null,
+      permissionCode: "",
     });
 
     const listExpand = ref(true);
@@ -50,8 +50,8 @@ export default {
      */
     const resetList = async (): Promise<void> => {
       listForm.value.name = "";
-      listForm.value.menuKind = null;
-      listForm.value.permission = "";
+      listForm.value.kind = null;
+      listForm.value.permissionCode = "";
       QueryPersistService.clearQuery("menu-manager");
       await loadList();
     };
@@ -164,25 +164,22 @@ export default {
       id: "",
       parentId: "",
       name: "",
-      description: "",
       kind: 0,
-      menuKind: 0,
-      menuPath: "",
-      menuQueryParam: "",
-      menuIcon: "",
-      menuHidden: 0,
-      menuBtnId: "",
-      permission: "",
+      path: "",
+      icon: "",
+      hide: 0,
+      permissionCode: "",
       seq: 0,
+      remark: "",
     });
     const modalFormLabel = computed(() => {
-      if (modalForm.menuKind == 0) {
+      if (modalForm.kind == 0) {
         return "目录";
       }
-      if (modalForm.menuKind == 1) {
+      if (modalForm.kind == 1) {
         return "菜单";
       }
-      if (modalForm.menuKind == 2) {
+      if (modalForm.kind == 2) {
         return "按钮";
       }
       return "";
@@ -191,26 +188,21 @@ export default {
     const modalRules = {
       name: [
         { required: true, message: "请输入菜单名称", trigger: "blur" },
-        { min: 2, max: 32, message: "菜单名称长度必须在2-32个字符之间", trigger: "blur" },
+        { min: 2, max: 128, message: "菜单名称长度必须在2-128个字符之间", trigger: "blur" },
       ],
-      menuKind: [{ required: true, message: "请选择菜单类型", trigger: "blur" }],
-      menuPath: [
+      kind: [{ required: true, message: "请选择菜单类型", trigger: "blur" }],
+      path: [
         { required: true, message: "请输入菜单路径", trigger: "blur" },
-        { max: 256, message: "菜单路径长度不能超过256个字符", trigger: "blur" },
+        { max: 500, message: "菜单路径长度不能超过500个字符", trigger: "blur" },
       ],
-      permission: [{ max: 320, message: "所需权限长度不能超过320个字符", trigger: "blur" }],
-      description: [{ max: 200, message: "菜单描述长度不能超过200个字符", trigger: "blur" }],
+      permissionCode: [{ max: 500, message: "所需权限长度不能超过500个字符", trigger: "blur" }],
+      remark: [{ max: 500, message: "备注长度不能超过500个字符", trigger: "blur" }],
       seq: [
         { required: true, message: "请输入排序", trigger: "blur" },
         { type: "number", min: 0, max: 655350, message: "排序只能在0-655350之间", trigger: "blur" },
       ],
-      menuQueryParam: [{ max: 512, message: "菜单查询参数长度不能超过512个字符", trigger: "blur" }],
-      menuIcon: [{ max: 64, message: "菜单图标长度不能超过64个字符", trigger: "blur" }],
-      menuHidden: [{ required: true, message: "请选择是否隐藏", trigger: "blur" }],
-      menuBtnId: [
-        { required: () => modalForm.menuKind == 2, message: "类型为按钮时，按钮ID不能为空", trigger: "blur" },
-        { max: 64, message: "按钮ID长度不能超过64个字符", trigger: "blur" },
-      ],
+      icon: [{ max: 80, message: "菜单图标长度不能超过80个字符", trigger: "blur" }],
+      hide: [{ required: true, message: "请选择是否隐藏", trigger: "blur" }],
     };
 
     /**
@@ -234,13 +226,13 @@ export default {
         modalForm.parentId = currentRow.id;
 
         //当前选项是目录 则首选菜单
-        if (modalCurrentRow.value?.menuKind == 0) {
-          modalForm.menuKind = 1;
+        if (modalCurrentRow.value?.kind == 0) {
+          modalForm.kind = 1;
         }
 
         //当前选项是菜单 则首选按钮
-        if (modalCurrentRow.value?.menuKind == 1) {
-          modalForm.menuKind = 2;
+        if (modalCurrentRow.value?.kind == 1) {
+          modalForm.kind = 2;
         }
       }
 
@@ -256,16 +248,13 @@ export default {
             modalForm.parentId = parentId;
           }
           modalForm.name = ret.data.name;
-          modalForm.description = ret.data.description;
           modalForm.kind = ret.data.kind;
-          modalForm.menuKind = ret.data.menuKind;
-          modalForm.menuPath = ret.data.menuPath;
-          modalForm.menuQueryParam = ret.data.menuQueryParam;
-          modalForm.menuIcon = ret.data.menuIcon;
-          modalForm.menuHidden = ret.data.menuHidden;
-          modalForm.menuBtnId = ret.data.menuBtnId;
-          modalForm.permission = ret.data.permission;
+          modalForm.path = ret.data.path;
+          modalForm.icon = ret.data.icon;
+          modalForm.hide = ret.data.hide;
+          modalForm.permissionCode = ret.data.permissionCode;
           modalForm.seq = ret.data.seq;
+          modalForm.remark = ret.data.remark;
         }
 
         if (Result.isError(ret)) {
@@ -284,19 +273,16 @@ export default {
     const resetModal = (force: boolean = false): void => {
       modalForm.id = "";
       modalForm.name = "";
-      modalForm.description = "";
-      modalForm.kind = 0;
-      modalForm.menuPath = "";
-      modalForm.menuQueryParam = "";
-      modalForm.menuIcon = "";
-      modalForm.menuHidden = 0;
-      modalForm.menuBtnId = "";
-      modalForm.permission = "";
+      modalForm.path = "";
+      modalForm.icon = "";
+      modalForm.hide = 0;
+      modalForm.permissionCode = "";
       modalForm.seq = 0;
+      modalForm.remark = "";
 
       if (force) {
         modalForm.parentId = "";
-        modalForm.menuKind = 0;
+        modalForm.kind = 0;
       }
     };
 
@@ -325,10 +311,6 @@ export default {
         }
 
         if (modalMode.value === "edit") {
-          //如果是目录则将权限设置为null
-          if (modalForm.menuKind == 0) {
-            modalForm.permission = "";
-          }
           await MenuApi.editMenu(modalForm);
           ElMessage.success("操作成功");
           modalVisible.value = false;
@@ -354,7 +336,7 @@ export default {
 
       const filter = (menuTree: GetMenuTreeVo[]): GetMenuTreeVo[] => {
         return menuTree
-          .filter((item) => item.menuKind !== 2) // 按钮不能作为父级
+          .filter((item) => item.kind !== 2) // 按钮不能作为父级
           .map((item) => {
             let disabled = false;
 
@@ -366,23 +348,23 @@ export default {
             // 根据当前操作的菜单类型，判断父级是否可选
             // 0-目录 1-菜单 2-按钮
 
-            // 当前是目录，父级只能是目录或根节点
-            if (currentMenu.menuKind === 0) {
-              if (item.menuKind === 1) {
+            // 当前是目录，父级只能是根节点
+            if (currentMenu.kind === 0) {
+              if (item.kind === 1) {
                 disabled = true;
               }
             }
 
             // 当前是菜单，父级只能是目录
-            if (currentMenu.menuKind === 1) {
-              if (item.menuKind !== 0) {
+            if (currentMenu.kind === 1) {
+              if (item.kind !== 0) {
                 disabled = true;
               }
             }
 
             // 当前是按钮，父级只能是菜单
-            if (currentMenu.menuKind === 2) {
-              if (item.menuKind !== 1) {
+            if (currentMenu.kind === 2) {
+              if (item.kind !== 1) {
                 disabled = true;
               }
             }
@@ -392,13 +374,10 @@ export default {
               parentId: item.parentId,
               name: item.name,
               kind: item.kind,
-              menuKind: item.menuKind,
-              menuPath: item.menuPath,
-              menuQueryParam: item.menuQueryParam,
-              menuIcon: item.menuIcon,
-              menuHidden: item.menuHidden,
-              menuBtnId: item.menuBtnId,
-              permission: item.permission,
+              path: item.path,
+              icon: item.icon,
+              hide: item.hide,
+              permissionCode: item.permissionCode,
               missingPermission: item.missingPermission,
               seq: item.seq,
               disabled,
@@ -409,7 +388,7 @@ export default {
 
       let rootDisabled = false;
       // 菜单和按钮不能直接挂在根节点下
-      if (currentMenu.menuKind === 1 || currentMenu.menuKind === 2) {
+      if (currentMenu.kind === 1 || currentMenu.kind === 2) {
         rootDisabled = true;
       }
 
@@ -424,15 +403,13 @@ export default {
     });
 
     /**
-     * 监听菜单类型变化 用于模态框改变类型时清空菜单路径、查询参数、权限
+     * 监听菜单类型变化 用于模态框改变类型时清空菜单路径
      */
     watch(
-      () => modalForm.menuKind,
+      () => modalForm.kind,
       (newVal: number | null | undefined) => {
         if (newVal == 0) {
-          modalForm.menuPath = "";
-          modalForm.menuQueryParam = "";
-          modalForm.permission = "";
+          modalForm.path = "";
         }
       },
       { immediate: true }

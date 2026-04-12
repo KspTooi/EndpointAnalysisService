@@ -5,68 +5,56 @@ import type Result from "@/commons/model/Result.ts";
 export interface AddMenuDto {
   parentId?: string | null; // 父级ID null:根节点
   name?: string | null; // 菜单名称
-  description?: string | null; // 菜单描述
-  kind?: number | null; // 资源类型 0:菜单 1:接口
-  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
-  menuPath?: string | null; // 菜单路径
-  menuQueryParam?: string | null; // 菜单查询参数
-  menuIcon?: string | null; // 菜单图标
-  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
-  menuBtnId?: string | null; // 按钮ID
-  permission?: string | null; // 所需权限
+  kind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  path?: string | null; // 菜单路径
+  icon?: string | null; // 菜单图标
+  hide?: number | null; // 是否隐藏 0:否 1:是(kind = 1/2时生效)
+  permissionCode?: string | null; // 所需权限
   seq?: number | null; // 排序
+  remark?: string | null; // 备注
 }
 
 export interface EditMenuDto {
   id?: string | null; // 菜单ID
   parentId?: string | null; // 父级ID null:根节点
   name?: string | null; // 菜单名称
-  description?: string | null; // 菜单描述
-  kind?: number | null; // 资源类型 0:菜单 1:接口
-  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
-  menuPath?: string | null; // 菜单路径
-  menuQueryParam?: string | null; // 菜单查询参数
-  menuIcon?: string | null; // 菜单图标
-  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
-  menuBtnId?: string | null; // 按钮ID
-  permission?: string | null; // 所需权限
+  kind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  path?: string | null; // 菜单路径
+  icon?: string | null; // 菜单图标
+  hide?: number | null; // 是否隐藏 0:否 1:是(kind = 1/2时生效)
+  permissionCode?: string | null; // 所需权限
   seq?: number | null; // 排序
+  remark?: string | null; // 备注
 }
 
 export interface GetMenuDetailsVo {
   id?: string | null; // 菜单ID
   parentId?: string | null; // 父级ID null:根节点
   name?: string | null; // 菜单名称
-  description?: string | null; // 菜单描述
-  kind?: number | null; // 资源类型 0:菜单 1:接口
-  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
-  menuPath?: string | null; // 菜单路径
-  menuQueryParam?: string | null; // 菜单查询参数
-  menuIcon?: string | null; // 菜单图标
-  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
-  menuBtnId?: string | null; // 按钮ID
-  permission?: string | null; // 所需权限
+  kind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  path?: string | null; // 菜单路径
+  icon?: string | null; // 菜单图标
+  hide?: number | null; // 是否隐藏 0:否 1:是(kind = 1/2时生效)
+  permissionCode?: string | null; // 所需权限
   seq?: number | null; // 排序
+  remark?: string | null; // 备注
 }
 
 export interface GetMenuTreeDto {
-  name?: string | null; // 菜单名称/描述(模糊)
-  menuKind?: number | null; // 菜单类型
-  permission?: string | null; // 权限(模糊)
+  name?: string | null; // 菜单名称(模糊)
+  kind?: number | null; // 菜单类型
+  permissionCode?: string | null; // 权限码(模糊)
 }
 
 export interface GetMenuTreeVo {
   id?: string | null; // 菜单ID
   parentId?: string | null; // 父级ID null:根节点
   name?: string | null; // 菜单名称
-  kind?: number | null; // 资源类型 0:菜单 1:接口
-  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
-  menuPath?: string | null; // 菜单路径
-  menuQueryParam?: string | null; // 菜单查询参数
-  menuIcon?: string | null; // 菜单图标
-  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
-  menuBtnId?: string | null; // 按钮ID
-  permission?: string | null; // 所需权限
+  kind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  path?: string | null; // 菜单路径
+  icon?: string | null; // 菜单图标
+  hide?: number | null; // 是否隐藏 0:否 1:是(kind = 1/2时生效)
+  permissionCode?: string | null; // 所需权限
   missingPermission?: number | null; // 是否缺失权限节点 0:否 1:完全缺失 2:部分缺失
   seq?: number | null; // 排序
   children: GetMenuTreeVo[]; // 子菜单
@@ -76,12 +64,11 @@ export interface GetUserMenuTreeVo {
   id?: string | null; // 菜单ID
   parentId?: string | null; // 父级ID null:根节点
   name?: string | null; // 菜单名称
-  menuIcon?: string | null; // 菜单图标
-  menuKind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
-  menuPath?: string | null; // 菜单路径
-  menuHidden?: number | null; // 是否隐藏 0:否 1:是(menuKind = 1/2时生效)
-  menuBtnId?: string | null; // 按钮ID
-  permission?: string | null; // 所需权限
+  icon?: string | null; // 菜单图标
+  kind?: number | null; // 菜单类型 0:目录 1:菜单 2:按钮
+  path?: string | null; // 菜单路径
+  hide?: number | null; // 是否隐藏 0:否 1:是(kind = 1/2时生效)
+  permissionCode?: string | null; // 所需权限
   seq?: number | null; // 排序
   children: GetUserMenuTreeVo[]; // 子菜单
 }

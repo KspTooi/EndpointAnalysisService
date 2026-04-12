@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-12 12:06:28",
+  "updatedTime": "2026-4-12 12:35:03",
   "dbConns": [],
   "profile": {
     "default": {
@@ -31960,18 +31960,18 @@
           "defKey": "path",
           "defName": "指向路径",
           "comment": "",
-          "type": "",
-          "len": "",
+          "type": "CHARACTER VARYING",
+          "len": 500,
           "scale": "",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": "",
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
+          "domain": "",
           "id": "9BCBAC85-B21D-4DD0-9555-D092FA9D081A"
         },
         {

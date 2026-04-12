@@ -10,9 +10,9 @@ import ComTabService from "@/soa/com-series/service/ComTabService.ts";
 const fallbackMc: GetUserMenuTreeVo = {
   id: "fallback-maintenance-center",
   name: "维护中心(备用)",
-  menuPath: "/core/application-maintain",
-  menuIcon: "Setting",
-  menuKind: 1,
+  path: "/core/application-maintain",
+  icon: "Setting",
+  kind: 1,
   children: [],
 };
 
@@ -122,7 +122,7 @@ export default {
     const getMenuByPath = (path: string, nodes?: GetUserMenuTreeVo[]): GetUserMenuTreeVo | null => {
       const list = nodes ?? menuTree.value;
       for (const node of list) {
-        if (node.menuPath === path) {
+        if (node.path === path) {
           return node;
         }
         if (node.children?.length) {
@@ -150,7 +150,7 @@ export default {
      * @returns 过滤后的目录类型菜单数据
      */
     const filterDirectoryMenu = (menuTree: GetUserMenuTreeVo[]): GetUserMenuTreeVo[] => {
-      return menuTree.filter((item) => item.menuKind === 0);
+      return menuTree.filter((item) => item.kind === 0);
     };
 
     /**
@@ -159,7 +159,7 @@ export default {
      * @returns 过滤后的菜单类型菜单数据
      */
     const filterItemMenu = (menuTree: GetUserMenuTreeVo[]): GetUserMenuTreeVo[] => {
-      return menuTree.filter((item) => item.menuKind === 1);
+      return menuTree.filter((item) => item.kind === 1);
     };
 
     /**
@@ -175,21 +175,21 @@ export default {
      */
     const openMenu = (item: GetUserMenuTreeVo): void => {
       //如果菜单类型不是菜单项类型，则不处理
-      if (item.menuKind !== 1) {
+      if (item.kind !== 1) {
         return;
       }
 
       //如果菜单路径为空，则不处理
-      if (!item.menuPath) {
+      if (!item.path) {
         return;
       }
 
       //使用tabStore添加新标签
       openTab({
         id: item.id,
-        icon: item.menuIcon,
+        icon: item.icon,
         title: item.name,
-        path: item.menuPath,
+        path: item.path,
       });
     };
 

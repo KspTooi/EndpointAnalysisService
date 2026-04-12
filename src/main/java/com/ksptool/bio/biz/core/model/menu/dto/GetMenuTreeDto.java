@@ -8,13 +8,13 @@ import lombok.Setter;
 @Setter
 public class GetMenuTreeDto {
 
-    @Schema(description = "菜单名称/描述(模糊)")
+    @Schema(description = "菜单名称(模糊)")
     private String name;
 
     @Schema(description = "菜单类型 0:目录 1:菜单 2:按钮")
-    private Integer menuKind;
+    private Integer kind;
 
-    @Schema(description = "权限(模糊)")
-    private String permission;
+    @Schema(description = "权限码(模糊)")
+    private String permissionCode;
 
 }

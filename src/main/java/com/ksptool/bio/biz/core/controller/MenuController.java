@@ -56,8 +56,6 @@ public class MenuController {
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> addMenu(@RequestBody @Valid AddMenuDto dto) throws Exception {
 
-        //纠正输入参数
-        dto.adjust();
 
         //验证输入参数
         if (dto.validate() != null) {
@@ -73,9 +71,6 @@ public class MenuController {
     @Operation(summary = "编辑菜单与按钮")
     @CacheEvict(cacheNames = {"userSession", "userProfile", "menuTree"}, allEntries = true)
     public Result<String> editMenu(@RequestBody @Valid EditMenuDto dto) throws Exception {
-
-        //纠正输入参数
-        dto.adjust();
 
         //验证输入参数
         if (dto.validate() != null) {

@@ -29,12 +29,12 @@
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="所需权限">
-              <el-input v-model="listForm.permission" placeholder="请输入所需权限" clearable />
+              <el-input v-model="listForm.permissionCode" placeholder="请输入所需权限" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="5" :offset="1">
             <el-form-item label="菜单类型">
-              <el-select v-model="listForm.menuKind" placeholder="请选择菜单类型" clearable>
+              <el-select v-model="listForm.kind" placeholder="请选择菜单类型" clearable>
                 <el-option label="目录" value="0" />
                 <el-option label="菜单" value="1" />
                 <el-option label="按钮" value="2" />
@@ -70,37 +70,36 @@
         <el-table-column label="菜单名称" prop="name" show-overflow-tooltip width="360">
           <template #default="scope">
             <div class="inline-flex items-center gap-2">
-              <Icon v-if="scope.row.menuIcon" :icon="scope.row.menuIcon" :width="16" :height="16" class="align-middle inline" />
+              <Icon v-if="scope.row.icon" :icon="scope.row.icon" :width="16" :height="16" class="align-middle inline" />
               {{ scope.row.name }}
-              <span v-if="scope.row.menuKind === 2" class="text-gray-400 text-sm"> ({{ scope.row.menuBtnId }}) </span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="类型" prop="menuKind" width="70">
+        <el-table-column label="类型" prop="kind" width="70">
           <template #default="scope">
-            <el-tag v-if="scope.row.menuKind === 0">目录</el-tag>
-            <el-tag v-if="scope.row.menuKind === 1" type="success">菜单</el-tag>
-            <el-tag v-if="scope.row.menuKind === 2" type="info">按钮</el-tag>
+            <el-tag v-if="scope.row.kind === 0">目录</el-tag>
+            <el-tag v-if="scope.row.kind === 1" type="success">菜单</el-tag>
+            <el-tag v-if="scope.row.kind === 2" type="info">按钮</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="菜单路径" prop="menuPath" show-overflow-tooltip>
+        <el-table-column label="菜单路径" prop="path" show-overflow-tooltip>
           <template #default="scope">
-            <span v-if="scope.row.menuKind === 0 || scope.row.menuKind === 2" class="text-gray-400 text-xs">不适用</span>
-            <span v-else>{{ scope.row.menuPath }}</span>
+            <span v-if="scope.row.kind === 0 || scope.row.kind === 2" class="text-gray-400 text-xs">不适用</span>
+            <span v-else>{{ scope.row.path }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="所需权限" prop="permission" show-overflow-tooltip>
+        <el-table-column label="所需权限" prop="permissionCode" show-overflow-tooltip>
           <template #default="scope">
-            <span v-if="scope.row.menuKind === 0" class="text-gray-400 text-xs">不适用</span>
+            <span v-if="scope.row.kind === 0" class="text-gray-400 text-xs">不适用</span>
             <span
               v-else
               :class="{
                 'text-red-500': scope.row.missingPermission === 1,
                 'text-orange-500': scope.row.missingPermission === 2,
-                'text-green-500': scope.row.missingPermission === 0 && scope.row.permission !== '*',
+                'text-green-500': scope.row.missingPermission === 0,
               }"
             >
-              {{ scope.row.permission }}
+              {{ scope.row.permissionCode }}
             </span>
           </template>
         </el-table-column>
@@ -116,10 +115,10 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="状态" prop="menuHidden" width="100">
+        <el-table-column label="状态" prop="hide" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.menuHidden === 1 ? 'danger' : 'success'">
-              {{ scope.row.menuHidden === 1 ? "隐藏" : "正常" }}
+            <el-tag :type="scope.row.hide === 1 ? 'danger' : 'success'">
+              {{ scope.row.hide === 1 ? "隐藏" : "正常" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -128,7 +127,7 @@
             <div class="inline-flex justify-end items-center gap-2 w-full">
               <!-- 按钮下无法新增子项 -->
               <el-button
-                v-if="scope.row.parentId === null || scope.row.menuKind == 1"
+                v-if="scope.row.parentId === null || scope.row.kind == 1"
                 link
                 type="success"
                 size="small"
@@ -159,7 +158,7 @@
   </StdListLayout>
 
   <!-- 选择路由模态框 -->
-  <GenricRouteChooseModal ref="grcmRef" v-model="modalForm.menuPath" v-model:search-keyword="grcmQuery" />
+  <GenricRouteChooseModal ref="grcmRef" v-model="modalForm.path" v-model:search-keyword="grcmQuery" />
 
   <!-- 菜单编辑模态框 -->
   <el-dialog
@@ -192,46 +191,40 @@
           default-expand-all
         />
       </el-form-item>
-      <el-form-item label="菜单类型" prop="menuKind">
-        <el-select v-model="modalForm.menuKind" placeholder="请选择菜单类型" clearable :disabled="modalMode === 'edit'">
+      <el-form-item label="菜单类型" prop="kind">
+        <el-select v-model="modalForm.kind" placeholder="请选择菜单类型" clearable :disabled="modalMode === 'edit'">
           <el-option label="目录" :value="0" :disabled="modalMode === 'add-item'" />
-          <el-option label="菜单" :value="1" :disabled="modalMode === 'add-item' && modalCurrentRow?.menuKind == 1" />
-          <el-option label="按钮" :value="2" :disabled="modalMode === 'add-item' && modalCurrentRow?.menuKind == 0" />
+          <el-option label="菜单" :value="1" :disabled="modalMode === 'add-item' && modalCurrentRow?.kind == 1" />
+          <el-option label="按钮" :value="2" :disabled="modalMode === 'add-item' && modalCurrentRow?.kind == 0" />
         </el-select>
       </el-form-item>
       <el-form-item :label="modalFormLabel + '名称'" prop="name">
-        <el-input v-model="modalForm.name" placeholder="请输入菜单名称" clearable />
+        <el-input v-model="modalForm.name" placeholder="请输入菜单名称" clearable maxlength="32" show-word-limit />
       </el-form-item>
-      <el-form-item v-if="modalForm.menuKind == 2" label="按钮ID" prop="menuBtnId">
-        <el-input v-model="modalForm.menuBtnId" placeholder="请输入按钮ID" clearable />
-      </el-form-item>
-      <el-form-item v-if="modalForm.menuKind == 1" :label="modalFormLabel + '路径'" prop="menuPath">
-        <el-input v-model="modalForm.menuPath" placeholder="请输入菜单路径" clearable>
+      <el-form-item v-if="modalForm.kind == 1" :label="modalFormLabel + '路径'" prop="path">
+        <el-input v-model="modalForm.path" placeholder="请输入菜单路径" clearable maxlength="500" show-word-limit>
           <template #append>
             <el-button @click="openGRCM">选择路由</el-button>
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item v-if="modalForm.menuKind == 1 || modalForm.menuKind == 2" label="所需权限" prop="permission">
-        <el-input v-model="modalForm.permission" placeholder="请输入所需权限" clearable />
+      <el-form-item v-if="modalForm.kind == 1 || modalForm.kind == 2" label="所需权限" prop="permissionCode">
+        <el-input v-model="modalForm.permissionCode" placeholder="请输入所需权限" clearable maxlength="500" show-word-limit />
       </el-form-item>
-      <el-form-item :label="modalFormLabel + '描述'" prop="description">
-        <el-input v-model="modalForm.description" placeholder="请输入菜单描述" clearable />
+      <el-form-item v-if="modalForm.kind == 0 || modalForm.kind == 1" :label="modalFormLabel + '图标'" prop="icon">
+        <StdIconPicker v-model="modalForm.icon" />
       </el-form-item>
-      <el-form-item v-if="modalForm.menuKind == 0 || modalForm.menuKind == 1" :label="modalFormLabel + '图标'" prop="menuIcon">
-        <StdIconPicker v-model="modalForm.menuIcon" />
-      </el-form-item>
-      <el-form-item v-if="modalForm.menuKind == 1" label="查询参数" prop="menuQueryParam">
-        <el-input v-model="modalForm.menuQueryParam" placeholder="请输入菜单查询参数" clearable />
-      </el-form-item>
-      <el-form-item label="状态" prop="menuHidden">
-        <el-radio-group v-model="modalForm.menuHidden">
+      <el-form-item label="状态" prop="hide">
+        <el-radio-group v-model="modalForm.hide">
           <el-radio :value="0">正常</el-radio>
           <el-radio :value="1">隐藏</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="排序" prop="seq">
         <el-input-number v-model.number="modalForm.seq" :min="0" placeholder="请输入排序" clearable />
+      </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input v-model="modalForm.remark" placeholder="请输入备注" clearable maxlength="500" show-word-limit />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -248,13 +241,7 @@
 <script setup lang="ts">
 import type { FormInstance, TableInstance } from "element-plus";
 import { ref } from "vue";
-import {
-  Delete as DeleteIcon,
-  View as ViewIcon,
-  Plus as PlusIcon,
-  InfoFilled,
-  Edit as EditIcon,
-} from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, Plus as PlusIcon, InfoFilled, Edit as EditIcon } from "@element-plus/icons-vue";
 import StdIconPicker from "@/soa/std-series/StdIconPicker.vue";
 import { Icon } from "@iconify/vue";
 import type { GetMenuDetailsVo } from "@/views/core/api/MenuApi.ts";
