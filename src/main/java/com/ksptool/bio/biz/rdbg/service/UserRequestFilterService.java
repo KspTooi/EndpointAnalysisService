@@ -2,7 +2,6 @@ package com.ksptool.bio.biz.rdbg.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.rdbg.model.filter.SimpleFilterOperationPo;
 import com.ksptool.bio.biz.rdbg.model.filter.SimpleFilterTriggerPo;
 import com.ksptool.bio.biz.rdbg.model.userrequest.UserRequestPo;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -28,8 +25,6 @@ public class UserRequestFilterService {
     @Autowired
     private Gson gson;
 
-    @Autowired
-    private GlobalConfigService globalConfigService;
 
     /**
      * 执行响应过滤器
@@ -116,7 +111,7 @@ public class UserRequestFilterService {
             // 持久化标头
             if (target == 0) {
                 res.headers().firstValue(f).ifPresent(value -> {
-                    globalConfigService.setValue(t, value);
+                    //globalConfigService.setValue(t, value);
                     log.info("响应过滤器：持久化标头 '{}' 的值为 '{}' 到配置 '{}'", f, value, t);
                 });
             }
@@ -130,7 +125,7 @@ public class UserRequestFilterService {
                         JsonElement jsonElement = gson.fromJson(jsonPayload, JsonElement.class);
                         String value = GsonUtils.getFromPath(jsonElement, f);
                         if (StringUtils.isNotBlank(value)) {
-                            globalConfigService.setValue(t, value);
+                            //globalConfigService.setValue(t, value);
                             log.info("响应过滤器：持久化JSON路径 '{}' 的值为 '{}' 到配置 '{}'", f, value, t);
                         }
                     }
@@ -279,7 +274,7 @@ public class UserRequestFilterService {
             if (target == 0) {
                 var value = rs.getHeader(t);
                 if (StringUtils.isNotBlank(value)) {
-                    globalConfigService.setValue(t, value);
+                    //globalConfigService.setValue(t, value);
                 }
             }
 
@@ -287,7 +282,7 @@ public class UserRequestFilterService {
             if (target == 1) {
                 var value = GsonUtils.getFromPath(gson.fromJson(new String(rs.getBody(), StandardCharsets.UTF_8), JsonElement.class), f);
                 if (StringUtils.isNotBlank(value)) {
-                    globalConfigService.setValue(t, value);
+                    //globalConfigService.setValue(t, value);
                 }
             }
 
@@ -324,22 +319,22 @@ public class UserRequestFilterService {
 
             //注入持久化标头 从配置中获取f键的值 并注入到t标头
             if (target == 0) {
-                var value = globalConfigService.get(f);
-                if (StringUtils.isNotBlank(value)) {
-                    rs.setHeader(t, value);
-                }
+                //var value = globalConfigService.get(f);
+                //if (StringUtils.isNotBlank(value)) {
+                //    rs.setHeader(t, value);
+                //}
             }
 
             //注入持久化JSON载荷 解析f字段的路径 将其值存储到配置中 如果f为空则不存储
             if (target == 1) {
-                var value = globalConfigService.get(f);
-                if (StringUtils.isNotBlank(value)) {
-                    var jsonElement = gson.fromJson(value, JsonElement.class);
-                    Map<String, String> map = new HashMap<>();
-                    map.put(t, value);
-                    GsonUtils.injectContent(jsonElement, map);
-                    rs.setBody(gson.toJson(jsonElement).getBytes(StandardCharsets.UTF_8));
-                }
+                //var value = globalConfigService.get(f);
+                //if (StringUtils.isNotBlank(value)) {
+                //    var jsonElement = gson.fromJson(value, JsonElement.class);
+                //    Map<String, String> map = new HashMap<>();
+                //    map.put(t, value);
+                //    GsonUtils.injectContent(jsonElement, map);
+                //    rs.setBody(gson.toJson(jsonElement).getBytes(StandardCharsets.UTF_8));
+                //}
             }
 
         }

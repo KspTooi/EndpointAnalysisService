@@ -16,17 +16,14 @@ import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.model.user.dto.RegisterDto;
-import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.core.service.UserService;
 import com.ksptool.bio.commons.annotation.PrintLog;
-import com.ksptool.bio.commons.enums.GlobalConfigEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,9 +44,6 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private GlobalConfigService globalConfigService;
 
     @Autowired
     private SessionService sessionService;
@@ -112,11 +106,11 @@ public class AuthController {
     @ResponseBody
     public Result<String> register(@Valid @RequestBody RegisterDto dto) {
 
-        String allowRegister = globalConfigService.getValue(GlobalConfigEnum.ALLOW_USER_REGISTER.getKey());
+        //String allowRegister = globalConfigService.getValue(GlobalConfigEnum.ALLOW_USER_REGISTER.getKey());
 
-        if (StringUtils.isBlank(allowRegister) || allowRegister.equals("false")) {
-            return Result.error("管理员已禁用注册");
-        }
+        //if (StringUtils.isBlank(allowRegister) || allowRegister.equals("false")) {
+        //    return Result.error("管理员已禁用注册");
+        //}
 
         try {
             var register = userService.register(dto.getUsername(), dto.getPassword());

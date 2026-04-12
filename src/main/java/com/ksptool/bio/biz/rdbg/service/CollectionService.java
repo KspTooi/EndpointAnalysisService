@@ -2,7 +2,6 @@ package com.ksptool.bio.biz.rdbg.service;
 
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
-import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.drive.service.EntryAccessService;
 import com.ksptool.bio.biz.rdbg.model.collection.CollectionPo;
 import com.ksptool.bio.biz.rdbg.model.collection.dto.AddCollectionDto;
@@ -14,7 +13,6 @@ import com.ksptool.bio.biz.rdbg.model.collectionhistory.CollectionHistoryPo;
 import com.ksptool.bio.biz.rdbg.model.collectionhistory.vo.GetCollectionHistoryDetailsVo;
 import com.ksptool.bio.biz.rdbg.repository.CollectionHistoryRepository;
 import com.ksptool.bio.biz.rdbg.repository.CollectionRepository;
-import com.ksptool.bio.commons.enums.GlobalConfigEnum;
 import com.ksptool.bio.commons.model.*;
 import com.ksptool.bio.commons.utils.IdWorker;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,8 +38,6 @@ public class CollectionService {
     @Autowired
     private EntryAccessService entryAccessService;
 
-    @Autowired
-    private GlobalConfigService globalConfigService;
 
     private HttpRelay httpRelay;
 
@@ -588,19 +583,6 @@ public class CollectionService {
             hrr = httpRelay.sendRequest(schema);
 
             //读取响应内容
-            var maxResponseSize = globalConfigService.getInt(GlobalConfigEnum.RDBG_MAX_RESPONSE_SIZE.getKey(), 10) * 1024 * 1024;
-            var declareResponseSize = Integer.parseInt(hrr.firstHeaderValue("content-length", String.valueOf(maxResponseSize)));
-
-            //响应长度不超限,直接读取
-            if (declareResponseSize <= maxResponseSize) {
-                var retBody = hrr.getBody().readNBytes(declareResponseSize);
-                historyPo.setRetBodyText(new String(retBody, StandardCharsets.UTF_8));
-            }
-
-            //响应长度超限,不读取
-            if (declareResponseSize > maxResponseSize) {
-                historyPo.setRetBodyText("响应长度超出最大限制,无法读取.");
-            }
 
         } catch (Exception e) {
             historyPo.setBizStatus(4);

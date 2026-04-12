@@ -1,9 +1,7 @@
 package com.ksptool.bio;
 
-import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.common.AppVersion;
-import com.ksptool.bio.biz.core.service.GlobalConfigService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.relay.service.RelayServerService;
 import jakarta.annotation.PostConstruct;
@@ -67,7 +65,7 @@ public class BioRunner {
      * 应用启动时检查全局配置
      */
     @Bean
-    public ApplicationRunner configInitializer(GlobalConfigService globalConfigService, SessionService sessionService) {
+    public ApplicationRunner configInitializer() {
         return args -> {
 
             //如果在注册表里面禁用了"自动升级向导"功能,则直接返回
