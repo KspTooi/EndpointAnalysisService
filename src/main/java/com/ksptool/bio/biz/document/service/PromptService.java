@@ -77,6 +77,8 @@ public class PromptService {
             throw new BizException("名称已存在:[" + insertPo.getName() + "]");
         }
 
+        insertPo.setParamCount(0);
+        
         //计算参数数量 统计#的个数
         if(dto.getContent() != null){
             insertPo.setParamCount(dto.getContent().split("#").length - 1);
@@ -103,6 +105,7 @@ public class PromptService {
             throw new BizException("名称已存在:[" + updatePo.getName() + "]");
         }
 
+        updatePo.setParamCount(0);
         //计算参数数量 统计#的个数
         if(dto.getContent() != null){
             updatePo.setParamCount(dto.getContent().split("#").length - 1);

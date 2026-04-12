@@ -29,7 +29,10 @@ public interface PromptRepository extends JpaRepository<PromptPo, Long> {
      * @return 提示词数量
      */
     @Query("""
-            SELECT COUNT(t) FROM PromptPo t WHERE t.name = :name AND (:id IS NULL OR t.id != :id)
+            SELECT COUNT(t) FROM PromptPo t
+            WHERE t.name = :name
+            AND (:id IS NULL OR t.id != :id)
+            AND t.version = (SELECT MAX(t2.version) FROM PromptPo t2 WHERE t2.name = t.name)
             """)
     int countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 }
