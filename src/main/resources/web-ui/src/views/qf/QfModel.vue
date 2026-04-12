@@ -4,6 +4,9 @@
     <StdListAreaQuery>
       <el-form :model="listForm" inline class="flex justify-between">
         <div>
+          <el-form-item label="模型分组">
+            <el-input v-model="listForm.groupName" placeholder="输入模型分组" clearable />
+          </el-form-item>
           <el-form-item label="模型名称">
             <el-input v-model="listForm.name" placeholder="输入模型名称" clearable />
           </el-form-item>
@@ -27,7 +30,12 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="groupName" label="模型分组" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.groupName">{{ scope.row.groupName }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="模型名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="模型编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="version" label="模型版本号" min-width="120" show-overflow-tooltip />
@@ -93,6 +101,11 @@
         label-width="100px"
         :validate-on-rule-change="false"
       >
+        <el-form-item label="模型分组" prop="groupId">
+          <el-select v-model="modalForm.groupId" placeholder="请选择模型分组" clearable style="width: 100%" filterable>
+            <el-option v-for="group in groupList" :key="group.id" :label="group.name" :value="group.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="模型名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入模型名称" clearable :maxlength="80" show-word-limit />
         </el-form-item>
@@ -136,7 +149,7 @@ const { listForm, listData, listTotal, listLoading, loadList, resetList, removeL
 const modalFormRef = ref<FormInstance>();
 
 // 模态框打包
-const { modalVisible, modalLoading, modalMode, modalForm, modalRules, openModal, resetModal, submitModal } =
+const { modalVisible, modalLoading, modalMode, modalForm, modalRules, groupList, openModal, resetModal, submitModal } =
   QfModelService.useQfModelModal(modalFormRef, loadList);
 </script>
 

@@ -9,13 +9,13 @@ import com.ksptool.bio.biz.qf.model.qfmodel.dto.EditQfModelDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.dto.GetQfModelListDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelDetailsVo;
 import com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelListVo;
+import com.ksptool.bio.biz.qf.model.qfmodelgroup.QfModelGroupPo;
+import com.ksptool.bio.biz.qf.repository.QfModelGroupRepository;
 import com.ksptool.bio.biz.qf.repository.QfModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -27,6 +27,9 @@ public class QfModelService {
     @Autowired
     private QfModelRepository repository;
 
+    @Autowired
+    private QfModelGroupRepository qfModelGroupRepository;
+
     /**
      * 查询流程模型列表
      *
@@ -34,16 +37,11 @@ public class QfModelService {
      * @return 查询结果
      */
     public PageResult<GetQfModelListVo> getQfModelList(GetQfModelListDto dto) {
-        QfModelPo query = new QfModelPo();
-        assign(dto, query);
-
-        Page<QfModelPo> page = repository.getQfModelList(query, dto.pageRequest());
+        Page<GetQfModelListVo> page = repository.getQfModelList(dto, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
-
-        List<GetQfModelListVo> vos = as(page.getContent(), GetQfModelListVo.class);
-        return PageResult.success(vos, (int) page.getTotalElements());
+        return PageResult.success(page.getContent(), (int) page.getTotalElements());
     }
 
     /**
@@ -65,6 +63,15 @@ public class QfModelService {
         //设置状态和版本号
         insertPo.setStatus(0);
         insertPo.setVersion(1);
+
+        //处理模型分组
+        if (dto.getGroupId() != null) {
+            QfModelGroupPo groupPo = qfModelGroupRepository.findById(dto.getGroupId())
+                    .orElseThrow(() -> new BizException("模型分组不存在:[" + dto.getGroupId() + "]"));
+            insertPo.setGroupId(groupPo.getId());
+        }
+
+
         repository.save(insertPo);
     }
 
@@ -87,6 +94,14 @@ public class QfModelService {
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
+
+        //处理模型分组
+        if (dto.getGroupId() != null) {
+            QfModelGroupPo groupPo = qfModelGroupRepository.findById(dto.getGroupId())
+                    .orElseThrow(() -> new BizException("模型分组不存在:[" + dto.getGroupId() + "]"));
+            updatePo.setGroupId(groupPo.getId());
+        }
+
         repository.save(updatePo);
     }
 

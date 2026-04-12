@@ -8,6 +8,7 @@ import type Result from "@/commons/model/Result.ts";
  * 查询流程模型列表Dto
  */
 export interface GetQfModelListDto extends PageQuery {
+  groupName?: string; // 模型分组
   name?: string; // 模型名称
   code?: string; // 模型编码
 }
@@ -17,6 +18,7 @@ export interface GetQfModelListDto extends PageQuery {
  */
 export interface GetQfModelListVo {
   id: string; // 主键ID
+  groupName: string; // 模型分组
   name: string; // 模型名称
   code: string; // 模型编码
   version: number; // 模型版本号
@@ -30,6 +32,7 @@ export interface GetQfModelListVo {
  */
 export interface GetQfModelDetailsVo {
   id: string; // 主键ID
+  groupId: string; // 模型分组ID
   name: string; // 模型名称
   code: string; // 模型编码
   bpmnXml: string; // 模型BPMN XML
@@ -40,6 +43,7 @@ export interface GetQfModelDetailsVo {
  * 新增流程模型Dto
  */
 export interface AddQfModelDto {
+  groupId?: string; // 模型分组ID
   name: string; // 模型名称
   code: string; // 模型编码
   seq: number; // 排序
@@ -50,6 +54,7 @@ export interface AddQfModelDto {
  */
 export interface EditQfModelDto {
   id: string; // 主键ID
+  groupId?: string; // 模型分组ID
   name: string; // 模型名称
   code: string; // 模型编码
   seq: number; // 排序

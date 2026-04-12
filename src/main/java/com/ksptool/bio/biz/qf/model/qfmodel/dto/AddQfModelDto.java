@@ -15,6 +15,9 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 public class AddQfModelDto {
 
+    @Schema(description="模型分组ID")
+    private Long groupId;
+
     @NotNull(message = "模型名称不能为空")
     @Length(max = 80, message = "模型名称长度不能超过80个字符")
     @Schema(description = "模型名称")

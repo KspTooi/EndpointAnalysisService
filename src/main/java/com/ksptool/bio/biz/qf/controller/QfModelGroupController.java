@@ -69,6 +69,12 @@ public class QfModelGroupController {
     @Operation(summary = "删除流程模型分组")
     @PostMapping("/removeQfModelGroup")
     public Result<String> removeQfModelGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {
+
+        //不支持批量删除
+        if (dto.isBatch()) {
+            return Result.error("不支持批量删除");
+        }
+
         qfModelGroupService.removeQfModelGroup(dto);
         return Result.success("操作成功");
     }

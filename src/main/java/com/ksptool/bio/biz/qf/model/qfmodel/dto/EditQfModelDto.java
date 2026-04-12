@@ -15,6 +15,10 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 public class EditQfModelDto {
 
+    @NotNull(message = "模型分组ID不能为空")
+    @Schema(description="模型分组ID")
+    private Long groupId;
+
     @NotNull(message = "主键ID不能为空")
     @Schema(description="主键ID")
     private Long id;

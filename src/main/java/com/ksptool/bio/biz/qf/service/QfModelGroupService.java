@@ -10,6 +10,7 @@ import com.ksptool.bio.biz.qf.model.qfmodelgroup.dto.GetQfModelGroupListDto;
 import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupDetailsVo;
 import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupListVo;
 import com.ksptool.bio.biz.qf.repository.QfModelGroupRepository;
+import com.ksptool.bio.biz.qf.repository.QfModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class QfModelGroupService {
 
     @Autowired
     private QfModelGroupRepository repository;
+
+    @Autowired
+    private QfModelRepository modelRepository;
 
     /**
      * 查询流程模型分组列表
@@ -108,10 +112,11 @@ public class QfModelGroupService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeQfModelGroup(CommonIdDto dto) throws BizException {
-        if (dto.isBatch()) {
-            repository.deleteAllById(dto.getIds());
-            return;
+
+        if (modelRepository.countByGroupId(dto.getId()) > 0) {
+            throw new BizException("删除失败,该模型分组下有流程模型,请先移除流程模型后再删除.");
         }
+
         repository.deleteById(dto.getId());
     }
 
