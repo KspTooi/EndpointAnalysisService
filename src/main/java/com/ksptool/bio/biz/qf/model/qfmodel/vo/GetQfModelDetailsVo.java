@@ -1,4 +1,4 @@
-package com.ksptool.bio.biz.qfmodel.model.vo;
+package com.ksptool.bio.biz.qf.model.qfmodel.vo;
 
 import java.time.LocalDateTime;
 import java.math.BigDecimal;

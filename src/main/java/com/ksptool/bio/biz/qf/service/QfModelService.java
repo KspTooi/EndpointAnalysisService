@@ -52,7 +52,14 @@ public class QfModelService {
      * @param dto 新增条件
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addQfModel(AddQfModelDto dto) {
+    public void addQfModel(AddQfModelDto dto) throws BizException {
+
+        //查询编码是否被占用
+        var existPo = repository.countByCodeExcludeId(dto.getCode(), null);
+        if (existPo > 0) {
+            throw new BizException("流程模型编码已存在:[" + dto.getCode() + "]");
+        }
+
         QfModelPo insertPo = as(dto, QfModelPo.class);
         repository.save(insertPo);
     }
@@ -65,6 +72,13 @@ public class QfModelService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModel(EditQfModelDto dto) throws BizException {
+
+        //查询编码是否被占用
+        var existPo = repository.countByCodeExcludeId(dto.getCode(), dto.getId());
+        if (existPo > 0) {
+            throw new BizException("流程模型编码已存在:[" + dto.getCode() + "]");
+        }
+
         QfModelPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 

@@ -1,6 +1,6 @@
-package com.ksptool.bio.biz.qfmodel.repository;
+package com.ksptool.bio.biz.qf.repository;
 
-import com.ksptool.bio.biz.qfmodel.model.QfModelPo;
+import com.ksptool.bio.biz.qf.model.qfmodel.QfModelPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
@@ -19,4 +19,17 @@ public interface QfModelRepository extends JpaRepository<QfModelPo, Long>{
     ORDER BY u.createTime DESC
     """)
     Page<QfModelPo> getQfModelList(@Param("po") QfModelPo po, Pageable pageable);
+
+    /**
+     * 根据编码统计流程模型数量 排除指定ID
+     *
+     * @param code 流程模型编码
+     * @param id   流程模型ID
+     * @return 流程模型数量
+     */
+    @Query("""
+    SELECT COUNT(t) FROM QfModelPo t
+    WHERE t.code = :code AND (:id IS NULL OR t.id != :id)
+    """)
+    Long countByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
 }
