@@ -3,10 +3,7 @@ package com.ksptool.bio.biz.core.model.user;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import com.ksptool.bio.biz.core.model.attach.AttachPo;
-import com.ksptool.bio.biz.core.model.company.CompanyPo;
-import com.ksptool.bio.biz.core.model.companymember.CompanyMemberPo;
 import com.ksptool.bio.biz.rdbg.model.userrequestenv.UserRequestEnvPo;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +16,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -78,10 +73,6 @@ public class UserPo {
     private String deptName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "active_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的公司 为null时表示未激活任何公司")
-    private CompanyPo activeCompany;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "active_env_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), comment = "已激活的环境 为null时表示未激活任何环境")
     private UserRequestEnvPo activeEnv;
 
@@ -114,12 +105,6 @@ public class UserPo {
     @Column(name = "delete_time", comment = "删除时间 为null代表未删除")
     private LocalDateTime deleteTime;
 
-    @OneToMany(mappedBy = "founder", fetch = FetchType.LAZY)
-    private Set<CompanyPo> createdCompanies = new HashSet<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<CompanyMemberPo> companyMemberships = new HashSet<>();
-
 
     @PrePersist
     public void prePersist() throws AuthException {
@@ -140,19 +125,6 @@ public class UserPo {
     @PreUpdate
     public void preUpdate() throws AuthException {
 
-    }
-
-
-    /**
-     * 获取当前用户激活的公司ID
-     *
-     * @return 当前用户激活的公司ID，如果未激活任何公司则返回null
-     */
-    public Long getActiveCompanyId() {
-        if (activeCompany == null) {
-            return null;
-        }
-        return activeCompany.getId();
     }
 
     /**

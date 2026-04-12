@@ -21,14 +21,13 @@ import com.ksptool.bio.biz.core.repository.UserRepository;
 import com.ksptool.bio.commons.dataprocess.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Sort;
-import org.springframework.cache.CacheManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -434,7 +433,8 @@ public class UserService {
 
             }
 
-            user.setActiveCompany(null);
+            //2025-04-12 旧式Company彻底移除
+            //user.setActiveCompany(null);
             user.setActiveEnv(null);
             user.setAvatarAttach(null);
             user.setIsSystem(0);//0:否 1:是
@@ -571,7 +571,7 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void increaseDvByRootId(Long rootId) {
-        
+
         //获取该企业/租户下的全部用户ID
         var onlineUserIds = userRepository.getOnlineUserIdsByRootId(rootId);
 
@@ -592,7 +592,7 @@ public class UserService {
         }
 
     }
-    
+
     /**
      * 为拥有该组的全部在线用户加版本
      *
@@ -618,7 +618,7 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void increaseDvByPermissionId(Long permissionId) {
-        
+
         //获取拥有该权限的用户ID列表
         var onlineUserIds = userRepository.getOnlineUserIdsByPermissionId(permissionId);
 

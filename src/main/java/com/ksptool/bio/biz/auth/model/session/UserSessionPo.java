@@ -97,7 +97,7 @@ public class UserSessionPo extends RowScopePo {
         session.setRootName(userPo.getRootName());
         session.setDeptId(userPo.getDeptId());
         session.setDeptName(userPo.getDeptName());
-        session.setCompanyId(userPo.getActiveCompanyId());
+        //session.setCompanyId(userPo.getActiveCompanyId());
         session.setPermissionCodes(toJson(permissionCodes));
         session.setExpiresAt(LocalDateTime.now().plusSeconds(expiresInSeconds));
         session.setDataVersion(userPo.getDataVersion());
@@ -117,7 +117,8 @@ public class UserSessionPo extends RowScopePo {
         this.rootName = userPo.getRootName();
         this.deptId = userPo.getDeptId();
         this.deptName = userPo.getDeptName();
-        this.companyId = userPo.getActiveCompanyId();
+        //2025-04-12 旧式Company彻底移除
+        //this.companyId = userPo.getActiveCompanyId();
         this.permissionCodes = toJson(permissionCodes);
         this.expiresAt = LocalDateTime.now().plusSeconds(expiresInSeconds);
     }
