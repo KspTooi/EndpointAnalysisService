@@ -193,7 +193,7 @@
       </el-form-item>
       <el-form-item label="菜单类型" prop="kind">
         <el-select v-model="modalForm.kind" placeholder="请选择菜单类型" clearable :disabled="modalMode === 'edit'">
-          <el-option label="目录" :value="0" />
+          <el-option label="目录" :value="0" :disabled="modalMode === 'add-item' && modalCurrentRow?.kind == 1" />
           <el-option label="菜单" :value="1" :disabled="modalMode === 'add-item' && modalCurrentRow?.kind == 1" />
           <el-option label="按钮" :value="2" :disabled="modalMode === 'add-item' && modalCurrentRow?.kind == 0" />
         </el-select>

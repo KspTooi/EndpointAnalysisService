@@ -66,10 +66,6 @@ public class AddMenuDto {
             if (Str.isNotBlank(path)) {
                 return "目录不支持填写路径";
             }
-            //目录不能放置于菜单之下
-            if (parentId != null) {
-                // parentId 合法性由 Service 层校验，此处只做类型约束
-            }
 
             //2026-04-12 可以支持多级目录
             // if (parentId != null) {

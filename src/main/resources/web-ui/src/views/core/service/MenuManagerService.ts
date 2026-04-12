@@ -353,7 +353,7 @@ export default {
               }
             }
 
-            // 当前是菜单，父级只能是目录
+            // 当前是菜单，父级只能是目录（菜单下不能放菜单）
             if (currentMenu.kind === 1) {
               if (item.kind !== 0) {
                 disabled = true;

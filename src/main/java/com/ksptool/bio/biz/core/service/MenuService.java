@@ -204,37 +204,27 @@ public class MenuService {
 
             MenuPo parent = menuRepository.findById(dto.getParentId()).orElseThrow(() -> new BizException("新增失败,父级菜单不存在."));
 
-            //校验父级资源类型
-            if (parent.getKind() != 0) {
-                throw new BizException("新增失败,父级资源不能是接口.");
-            }
-
             //校验父级菜单可达性 0:目录 1:菜单 2:按钮
             if (dto.getKind() == 0) {
-
-                //目录无法放置于菜单与按钮之下
+                //目录只能放置于目录之下
                 if (parent.getKind() != 0) {
-                    throw new BizException("新增失败,目录无法放置于菜单与按钮之下.");
+                    throw new BizException("新增失败,目录只能放置于目录之下.");
                 }
-
             }
 
-            //1:菜单
             if (dto.getKind() == 1) {
-                //菜单不能放置于按钮之下
-                if (parent.getKind() == 2) {
-                    throw new BizException("新增失败,菜单不能放置于按钮之下.");
+                //菜单只能放置于目录之下
+                if (parent.getKind() != 0) {
+                    throw new BizException("新增失败,菜单只能放置于目录之下.");
                 }
             }
 
-            //2:按钮
             if (dto.getKind() == 2) {
-                //按钮必须放置于菜单之下
+                //按钮只能放置于菜单之下
                 if (parent.getKind() != 1) {
-                    throw new BizException("新增失败,按钮必须放置于菜单之下.");
+                    throw new BizException("新增失败,按钮只能放置于菜单之下.");
                 }
             }
-
 
             menuPo.setParentId(parent.getId());
         }
@@ -259,34 +249,25 @@ public class MenuService {
         if (dto.getParentId() != null) {
             MenuPo parent = menuRepository.findById(dto.getParentId()).orElseThrow(() -> new BizException("新增失败,父级菜单不存在."));
 
-            //校验父级资源类型
-            if (parent.getKind() != 0) {
-                throw new BizException("新增失败,父级资源不能是接口.");
-            }
-
             //校验父级菜单可达性 0:目录 1:菜单 2:按钮
             if (dto.getKind() == 0) {
-
-                //目录无法放置于菜单与按钮之下
+                //目录只能放置于目录之下
                 if (parent.getKind() != 0) {
-                    throw new BizException("新增失败,目录无法放置于菜单与按钮之下.");
+                    throw new BizException("编辑失败,目录只能放置于目录之下.");
                 }
-
             }
 
-            //1:菜单
             if (dto.getKind() == 1) {
-                //菜单不能放置于按钮之下
-                if (parent.getKind() == 2) {
-                    throw new BizException("新增失败,菜单不能放置于按钮之下.");
+                //菜单只能放置于目录之下
+                if (parent.getKind() != 0) {
+                    throw new BizException("编辑失败,菜单只能放置于目录之下.");
                 }
             }
 
-            //2:按钮
             if (dto.getKind() == 2) {
-                //按钮必须放置于菜单之下
+                //按钮只能放置于菜单之下
                 if (parent.getKind() != 1) {
-                    throw new BizException("新增失败,按钮必须放置于菜单之下.");
+                    throw new BizException("编辑失败,按钮只能放置于菜单之下.");
                 }
             }
 
