@@ -1,55 +1,55 @@
 import Http from "@/commons/Http.ts";
-import type PageResult from "@/commons/entity/PageResult.ts";
-import type CommonIdDto from "@/commons/entity/CommonIdDto.ts";
-import type PageQuery from "@/commons/entity/PageQuery.ts";
-import type Result from "@/commons/entity/Result.ts";
+import type PageResult from "@/commons/model/PageResult.ts";
+import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
+import type PageQuery from "@/commons/model/PageQuery.ts";
+import type Result from "@/commons/model/Result.ts";
 
 /**
- * 查询列表DTO
+ * 查询提示词列表Dto
  */
 export interface GetPromptListDto extends PageQuery {
   name?: string; // 名称
-  tags?: string; // 标签(CTJ)
+  tags?: CustomizeTagJson[]; // 标签(CTJ)
 }
 
 /**
- * 列表VO
+ * 查询提示词列表Vo
  */
 export interface GetPromptListVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   paramCount: number; // 参数数量
   version: number; // 版本号
   createTime: string; // 创建时间
 }
 
 /**
- * 详情VO
+ * 查询提示词详情Vo
  */
 export interface GetPromptDetailsVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 
 /**
- * 新增DTO
+ * 新增提示词Dto
  */
 export interface AddPromptDto {
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 
 /**
- * 编辑DTO
+ * 编辑提示词Dto
  */
 export interface EditPromptDto {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 

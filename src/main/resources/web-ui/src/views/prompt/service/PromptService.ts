@@ -8,7 +8,7 @@ import type {
   EditPromptDto,
 } from "@/views/prompt/api/PromptApi.ts";
 import PromptApi from "@/views/prompt/api/PromptApi.ts";
-import { Result } from "@/commons/entity/Result";
+import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
