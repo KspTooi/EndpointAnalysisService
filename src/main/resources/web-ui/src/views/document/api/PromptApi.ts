@@ -20,6 +20,7 @@ export interface GetPromptListVo {
   id: string; // 主键ID
   name: string; // 名称
   tags: CustomizeTagJson[]; // 标签(CTJ)
+  charCount: number; // 字符数
   paramCount: number; // 参数数量
   version: number; // 版本号
   createTime: string; // 创建时间

@@ -28,6 +28,7 @@
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="名称" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="charCount" label="字符数" min-width="90" show-overflow-tooltip />
         <el-table-column prop="tags" label="标签" min-width="120" show-overflow-tooltip>
           <template #default="scope">
             <el-tag v-for="tag in scope.row.tags" :key="tag.n" type="info" size="small" class="mr-1">
