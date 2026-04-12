@@ -37,7 +37,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="paramCount" label="参数数量" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="version" label="版本号" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="version" label="版本号" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <span class="text-cyan-600">V{{ scope.row.version }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
