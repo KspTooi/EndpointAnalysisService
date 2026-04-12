@@ -8,51 +8,51 @@ import type Result from "@/commons/model/Result.ts";
  * 查询流程模型分组列表Dto
  */
 export interface GetQfModelGroupListDto extends PageQuery {
-  name?: String; // 组名称
-  code?: String; // 组编码
+  name?: string; // 组名称
+  code?: string; // 组编码
 }
 
 /**
  * 查询流程模型分组列表Vo
  */
 export interface GetQfModelGroupListVo {
-  id: Long; // 主键ID
-  name: String; // 组名称
-  code: String; // 组编码
-  seq: Integer; // 排序
-  createTime: LocalDateTime; // 创建时间
+  id: string; // 主键ID
+  name: string; // 组名称
+  code: string; // 组编码
+  seq: number; // 排序
+  createTime: string; // 创建时间
 }
 
 /**
  * 查询流程模型分组详情Vo
  */
 export interface GetQfModelGroupDetailsVo {
-  id: Long; // 主键ID
-  name: String; // 组名称
-  code: String; // 组编码
-  remark: String; // 备注
-  seq: Integer; // 排序
+  id: string; // 主键ID
+  name: string; // 组名称
+  code: string; // 组编码
+  remark: string; // 备注
+  seq: number; // 排序
 }
 
 /**
  * 新增流程模型分组Dto
  */
 export interface AddQfModelGroupDto {
-  name: String; // 组名称
-  code: String; // 组编码
-  remark: String; // 备注
-  seq: Integer; // 排序
+  name: string; // 组名称
+  code: string; // 组编码
+  remark: string; // 备注
+  seq: number; // 排序
 }
 
 /**
  * 编辑流程模型分组Dto
  */
 export interface EditQfModelGroupDto {
-  id: Long; // 主键ID
-  name: String; // 组名称
-  code: String; // 组编码
-  remark: String; // 备注
-  seq: Integer; // 排序
+  id: string; // 主键ID
+  name: string; // 组名称
+  code: string; // 组编码
+  remark: string; // 备注
+  seq: number; // 排序
 }
 
 export default {
