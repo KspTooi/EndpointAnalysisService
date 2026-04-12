@@ -54,6 +54,7 @@ public class PromptService {
     @Transactional(rollbackFor = Exception.class)
     public void addPrompt(AddPromptDto dto) {
         PromptPo insertPo = as(dto, PromptPo.class);
+        
         repository.save(insertPo);
     }
 

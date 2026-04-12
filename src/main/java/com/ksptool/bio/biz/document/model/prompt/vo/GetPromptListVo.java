@@ -20,10 +20,10 @@ public class GetPromptListVo {
     private String tags;
 
     @Schema(description = "参数数量")
-    private String paramCount;
+    private Integer paramCount;
 
     @Schema(description = "版本号")
-    private String version;
+    private Integer version;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
