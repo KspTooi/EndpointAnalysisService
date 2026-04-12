@@ -5,3 +5,9 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+declare module 'bpmn-js/lib/Modeler' {
+  const BpmnModeler: any
+  export default BpmnModeler
+}
+

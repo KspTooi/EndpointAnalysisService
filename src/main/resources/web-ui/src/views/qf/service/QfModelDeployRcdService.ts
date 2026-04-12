@@ -4,8 +4,8 @@ import type {
   GetQfModelDeployRcdListDto,
   GetQfModelDeployRcdListVo,
   GetQfModelDeployRcdDetailsVo,
-} from "@/views/qt/api/QfModelDeployRcdApi.ts";
-import QfModelDeployRcdApi from "@/views/qt/api/QfModelDeployRcdApi.ts";
+} from "@/views/qf/api/QfModelDeployRcdApi.ts";
+import QfModelDeployRcdApi from "@/views/qf/api/QfModelDeployRcdApi.ts";
 import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
