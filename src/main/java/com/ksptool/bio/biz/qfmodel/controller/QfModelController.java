@@ -23,7 +23,7 @@ import com.ksptool.bio.biz.qfmodel.model.vo.GetQfModelDetailsVo;
 @PrintLog
 @RestController
 @RequestMapping("/qfModel")
-@Tag(name = "流程模型分组", description = "流程模型分组")
+@Tag(name = "流程模型", description = "流程模型")
 @Slf4j
 public class QfModelController {
 
@@ -32,13 +32,13 @@ public class QfModelController {
 
     @PreAuthorize("@auth.hasCode('qf:model:view')")
     @PostMapping("/getQfModelList")
-    @Operation(summary ="查询流程模型分组列表")
+    @Operation(summary ="查询流程模型列表")
     public PageResult<GetQfModelListVo> getQfModelList(@RequestBody @Valid GetQfModelListDto dto) throws Exception{
         return qfModelService.getQfModelList(dto);
     }
 
     @PreAuthorize("@auth.hasCode('qf:model:add')")
-    @Operation(summary ="新增流程模型分组")
+    @Operation(summary ="新增流程模型")
     @PostMapping("/addQfModel")
     public Result<String> addQfModel(@RequestBody @Valid AddQfModelDto dto) throws Exception{
 		qfModelService.addQfModel(dto);
@@ -46,7 +46,7 @@ public class QfModelController {
     }
 
     @PreAuthorize("@auth.hasCode('qf:model:edit')")
-    @Operation(summary ="编辑流程模型分组")
+    @Operation(summary ="编辑流程模型")
     @PostMapping("/editQfModel")
     public Result<String> editQfModel(@RequestBody @Valid EditQfModelDto dto) throws Exception{
 		qfModelService.editQfModel(dto);
@@ -54,7 +54,7 @@ public class QfModelController {
     }
 
     @PreAuthorize("@auth.hasCode('qf:model:view')")
-    @Operation(summary ="查询流程模型分组详情")
+    @Operation(summary ="查询流程模型详情")
     @PostMapping("/getQfModelDetails")
     public Result<GetQfModelDetailsVo> getQfModelDetails(@RequestBody @Valid CommonIdDto dto) throws Exception{
         GetQfModelDetailsVo details = qfModelService.getQfModelDetails(dto);
@@ -65,7 +65,7 @@ public class QfModelController {
     }
 
     @PreAuthorize("@auth.hasCode('qf:model:remove')")
-    @Operation(summary ="删除流程模型分组")
+    @Operation(summary ="删除流程模型")
     @PostMapping("/removeQfModel")
     public Result<String> removeQfModel(@RequestBody @Valid CommonIdDto dto) throws Exception{
         qfModelService.removeQfModel(dto);

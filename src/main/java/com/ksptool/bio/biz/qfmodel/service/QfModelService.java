@@ -28,7 +28,7 @@ public class QfModelService {
     private QfModelRepository repository;
 
     /**
-     * 查询流程模型分组列表
+     * 查询流程模型列表
      * @param dto 查询条件
      * @return 查询结果
      */
@@ -46,7 +46,7 @@ public class QfModelService {
     }
 
     /**
-     * 新增流程模型分组
+     * 新增流程模型
      * @param dto 新增条件
      */
     @Transactional(rollbackFor = Exception.class)
@@ -56,7 +56,7 @@ public class QfModelService {
     }
 
     /**
-     * 编辑流程模型分组
+     * 编辑流程模型
      * @param dto 编辑条件
      * @throws BizException 业务异常
      */
@@ -70,7 +70,7 @@ public class QfModelService {
     }
 
     /**
-     * 查询流程模型分组详情
+     * 查询流程模型详情
      * @param dto 查询条件
      * @return 查询结果
      * @throws BizException 业务异常
@@ -82,7 +82,7 @@ public class QfModelService {
     }
 
     /**
-     * 删除流程模型分组
+     * 删除流程模型
      * @param dto 删除条件
      * @throws BizException 业务异常
      */
