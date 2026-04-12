@@ -51,8 +51,8 @@ public class QfModelPo {
     @Column(name = "bpmn_xml", comment = "模型BPMN XML")
     private String bpmnXml;
 
-    @Column(name = "data_version", nullable = false, comment = "模型版本号")
-    private Integer dataVersion;
+    @Column(name = "version", nullable = false, comment = "模型版本号")
+    private Integer version;
 
     @Column(name = "status", nullable = false, comment = "模型状态 0:草稿 1:已部署 2:历史")
     private Integer status;

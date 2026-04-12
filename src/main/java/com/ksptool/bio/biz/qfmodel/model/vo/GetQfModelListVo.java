@@ -22,7 +22,7 @@ public class GetQfModelListVo {
     private String code;
 
     @Schema(description="模型版本号")
-    private Integer dataVersion;
+    private Integer version;
 
     @Schema(description="模型状态 0:草稿 1:已部署 2:历史")
     private Integer status;

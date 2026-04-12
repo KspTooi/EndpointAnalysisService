@@ -26,7 +26,6 @@ export default {
       pageSize: 20,
       name: "",
       code: "",
-      createTime: "",
     });
 
     const listData = ref<GetQfModelListVo[]>([]);
@@ -60,7 +59,6 @@ export default {
       listForm.value.pageSize = 20;
       listForm.value.name = "";
       listForm.value.code = "";
-      listForm.value.createTime = "";
       loadList();
     };
 
@@ -115,7 +113,6 @@ export default {
       code: "",
       bpmnXml: "",
       seq: 0,
-      createTime: "",
     });
 
     /**
@@ -131,7 +128,6 @@ export default {
         { max: 32, message: "模型编码长度不能超过32个字符", trigger: "blur" },
       ],
       seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
-      createTime: [{ required: true, message: "请输入创建时间", trigger: "blur" }],
     };
 
     /**
@@ -148,7 +144,6 @@ export default {
         modalForm.code = "";
         modalForm.bpmnXml = "";
         modalForm.seq = 0;
-        modalForm.createTime = "";
         modalVisible.value = true;
         return;
       }
@@ -166,7 +161,6 @@ export default {
           modalForm.code = details.code;
           modalForm.bpmnXml = details.bpmnXml;
           modalForm.seq = details.seq;
-          modalForm.createTime = details.createTime;
           modalVisible.value = true;
         } catch (error: any) {
           ElMessage.error(error.message);
@@ -187,7 +181,6 @@ export default {
       modalForm.code = "";
       modalForm.bpmnXml = "";
       modalForm.seq = 0;
-      modalForm.createTime = "";
     };
 
     /**
@@ -212,7 +205,6 @@ export default {
             name: modalForm.name,
             code: modalForm.code,
             seq: modalForm.seq,
-            createTime: modalForm.createTime,
           };
           await QfModelApi.addQfModel(addDto);
           ElMessage.success("新增成功");
@@ -239,7 +231,6 @@ export default {
             name: modalForm.name,
             code: modalForm.code,
             seq: modalForm.seq,
-            createTime: modalForm.createTime,
           };
           await QfModelApi.editQfModel(editDto);
           ElMessage.success("编辑成功");
