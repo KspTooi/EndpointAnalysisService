@@ -93,7 +93,14 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入名称" clearable show-word-limit maxlength="80" />
+          <el-input
+            v-model="modalForm.name"
+            placeholder="请输入名称"
+            clearable
+            show-word-limit
+            maxlength="80"
+            :disabled="modalMode === 'edit'"
+          />
         </el-form-item>
         <el-form-item label="标签" prop="tags">
           <StdCustomizeTagSelect

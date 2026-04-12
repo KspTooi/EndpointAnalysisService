@@ -16,11 +16,11 @@ public interface PromptRepository extends JpaRepository<PromptPo, Long> {
             SELECT u FROM PromptPo u
             WHERE
             (:#{#dto.name} IS NULL OR u.name LIKE CONCAT('%', :#{#dto.name}, '%'))
-            AND :#{#dto.tags} IS NULL OR CAST(u.tags AS String) LIKE CONCAT('%', :#{#dto.tags}, '%'))
+            AND (:#{#dto.tags} IS NULL OR CAST(u.tags AS String) LIKE CONCAT('%', :#{#dto.tags}, '%'))
             AND u.version = (SELECT MAX(u2.version) FROM PromptPo u2 WHERE u2.name = u.name)
             ORDER BY u.createTime DESC
             """ )
-    Page<PromptPo> getPromptList(@Param("po") GetPromptListDto dto, Pageable pageable);
+    Page<PromptPo> getPromptList(@Param("dto") GetPromptListDto dto, Pageable pageable);
 
     /**
      * 根据名称统计提示词数量 排除指定ID

@@ -17,10 +17,10 @@ public class EditPromptDto {
     @Schema(description = "主键ID")
     private Long id;
 
-    @NotBlank(message = "名称不能为空")
+    /* @NotBlank(message = "名称不能为空")
     @Size(max = 80, message = "名称长度不能超过80个字符")
     @Schema(description = "名称")
-    private String name;
+    private String name; */
 
     @NotNull(message = "标签不能为空")
     @Size(max = 6, message = "标签数量不能超过6个")
