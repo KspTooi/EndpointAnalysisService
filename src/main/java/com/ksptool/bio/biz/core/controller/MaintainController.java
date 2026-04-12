@@ -5,7 +5,7 @@ import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.model.maintain.vo.ExecuteInstallWizardVo;
 import com.ksptool.bio.biz.core.model.maintain.vo.MaintainUpdateVo;
-import com.ksptool.bio.biz.core.repository.ResourceRepository;
+import com.ksptool.bio.biz.core.repository.MenuRepository;
 import com.ksptool.bio.biz.core.service.MaintainService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.commons.annotation.PrintLog;
@@ -36,9 +36,6 @@ import java.sql.Connection;
 public class MaintainController {
 
     @Autowired
-    private ResourceRepository resourceRepository;
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -46,6 +43,9 @@ public class MaintainController {
 
     @Autowired
     private RegistrySdk regSdk;
+
+    @Autowired
+    private MenuRepository menuRepository;
 
     @PreAuthorize(value = "@auth.hasCode('maintain:validate:permissions')")
     @Operation(summary = "校验系统内置权限节点")
@@ -82,7 +82,7 @@ public class MaintainController {
         }
 
         try {
-            resourceRepository.clearMenu();
+            menuRepository.clearMenu();
             // 使用JdbcTemplate执行回调，以确保使用的是当前事务的连接
             jdbcTemplate.execute((Connection connection) -> {
                 ScriptUtils.executeSqlScript(connection, sqlScript);
@@ -108,33 +108,6 @@ public class MaintainController {
     public Result<MaintainUpdateVo> repairRegistry() throws BizException {
         return Result.success(maintainService.repairRegistry());
     }
-
-
-    @PreAuthorize(value = "@auth.hasCode('maintain:reset:endpoints')")
-    @Operation(summary = "维护中心:重置端点权限配置")
-    @PostMapping("/resetEndpoints")
-    @Transactional(rollbackFor = Exception.class)
-    public Result<MaintainUpdateVo> resetEndpoints() throws BizException {
-
-        ClassPathResource sqlScript = new ClassPathResource("sql/default_endpoints_1_2G.sql");
-
-        if (!sqlScript.exists()) {
-            throw new BizException("SQL脚本文件 'sql/default_endpoints_1_2G.sql' 不存在。请检查文件是否已正确放置。");
-        }
-
-        try {
-            resourceRepository.clearEndpoint();
-            // 使用JdbcTemplate执行回调，以确保使用的是当前事务的连接
-            jdbcTemplate.execute((Connection connection) -> {
-                ScriptUtils.executeSqlScript(connection, sqlScript);
-                return null;
-            });
-            return Result.success("重置接口权限配置成功", null);
-        } catch (Exception e) {
-            throw new RuntimeException("重置接口权限配置失败: " + e.getMessage(), e);
-        }
-    }
-
 
     /**
      * 检查当前是否处于安装向导模式

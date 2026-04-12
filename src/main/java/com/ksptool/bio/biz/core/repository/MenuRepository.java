@@ -5,6 +5,7 @@ import com.ksptool.bio.biz.core.model.menu.dto.GetMenuTreeDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -92,4 +93,13 @@ public interface MenuRepository extends JpaRepository<MenuPo, Long> {
             WHERE t.parentId = :id
             """ )
     int getMenuChildrenCount(@Param("id") Long id);
+
+    /**
+     * 清空菜单
+     */
+    @Query("""
+            DELETE FROM MenuPo t
+            """ )
+    @Modifying
+    void clearMenu();
 }
