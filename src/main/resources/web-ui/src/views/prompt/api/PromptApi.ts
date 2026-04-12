@@ -9,7 +9,7 @@ import type Result from "@/commons/model/Result.ts";
  */
 export interface GetPromptListDto extends PageQuery {
   name?: string; // 名称
-  tags?: CustomizeTagJson[]; // 标签(CTJ)
+  tags?: string; // 标签(CTJ)
 }
 
 /**
@@ -18,7 +18,7 @@ export interface GetPromptListDto extends PageQuery {
 export interface GetPromptListVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: CustomizeTagJson[]; // 标签(CTJ)
+  tags: string; // 标签(CTJ)
   paramCount: number; // 参数数量
   version: number; // 版本号
   createTime: string; // 创建时间
@@ -30,7 +30,7 @@ export interface GetPromptListVo {
 export interface GetPromptDetailsVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: CustomizeTagJson[]; // 标签(CTJ)
+  tags: string; // 标签(CTJ)
   content: string; // 内容
 }
 
@@ -39,7 +39,7 @@ export interface GetPromptDetailsVo {
  */
 export interface AddPromptDto {
   name: string; // 名称
-  tags: CustomizeTagJson[]; // 标签(CTJ)
+  tags: string; // 标签(CTJ)
   content: string; // 内容
 }
 
@@ -49,7 +49,7 @@ export interface AddPromptDto {
 export interface EditPromptDto {
   id: string; // 主键ID
   name: string; // 名称
-  tags: CustomizeTagJson[]; // 标签(CTJ)
+  tags: string; // 标签(CTJ)
   content: string; // 内容
 }
 
