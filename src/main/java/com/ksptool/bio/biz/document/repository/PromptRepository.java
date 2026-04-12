@@ -19,4 +19,16 @@ public interface PromptRepository extends JpaRepository<PromptPo, Long> {
             ORDER BY u.updateTime DESC
             """ )
     Page<PromptPo> getPromptList(@Param("po") PromptPo po, Pageable pageable);
+    
+    /**
+     * 根据名称统计提示词数量 排除指定ID
+     *
+     * @param name 提示词名称
+     * @param id   提示词ID
+     * @return 提示词数量
+     */
+    @Query("""
+            SELECT COUNT(t) FROM PromptPo t WHERE t.name = :name AND (:id IS NULL OR t.id != :id)
+            """)
+    int countByNameExcludeId(@Param("name") String name, @Param("id") Long id);
 }

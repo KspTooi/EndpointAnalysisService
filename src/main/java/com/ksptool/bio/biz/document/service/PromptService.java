@@ -52,9 +52,16 @@ public class PromptService {
      * @param dto 新增条件
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addPrompt(AddPromptDto dto) {
+    public void addPrompt(AddPromptDto dto) throws BizException {
         PromptPo insertPo = as(dto, PromptPo.class);
         
+        //校验名称是否唯一
+        if (repository.countByNameExcludeId(insertPo.getName(), null) > 0) {
+            throw new BizException("名称已存在:[" + insertPo.getName() + "]");
+        }
+        insertPo.setTags("[]");
+        insertPo.setParamCount(0);
+        insertPo.setVersion(1);
         repository.save(insertPo);
     }
 
@@ -70,6 +77,12 @@ public class PromptService {
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
         assign(dto, updatePo);
+
+        //校验名称是否唯一
+        if (repository.countByNameExcludeId(updatePo.getName(), updatePo.getId()) > 0) {
+            throw new BizException("名称已存在:[" + updatePo.getName() + "]");
+        }
+
         repository.save(updatePo);
     }
 
