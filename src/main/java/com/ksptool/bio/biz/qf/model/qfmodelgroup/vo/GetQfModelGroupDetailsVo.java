@@ -24,4 +24,3 @@ public class GetQfModelGroupDetailsVo {
     private Integer seq;
 
 }
-

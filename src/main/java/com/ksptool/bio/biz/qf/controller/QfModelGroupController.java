@@ -10,7 +10,6 @@ import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupDetailsVo;
 import com.ksptool.bio.biz.qf.model.qfmodelgroup.vo.GetQfModelGroupListVo;
 import com.ksptool.bio.biz.qf.service.QfModelGroupService;
 import com.ksptool.bio.commons.annotation.PrintLog;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,24 +21,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@PrintLog(value = "QF流程模型分组管理")
+@PrintLog
 @RestController
 @RequestMapping("/qfModelGroup")
-@Tag(name = "QF流程模型分组管理", description = "QF流程模型分组管理")
+@Tag(name = "流程模型分组", description = "流程模型分组")
 @Slf4j
 public class QfModelGroupController {
 
     @Autowired
     private QfModelGroupService qfModelGroupService;
 
-    @PreAuthorize("@auth.hasCode('qf:mg:view')")
+    @PreAuthorize("@auth.hasCode('qf:model:group:view')")
     @PostMapping("/getQfModelGroupList")
     @Operation(summary = "查询流程模型分组列表")
     public PageResult<GetQfModelGroupListVo> getQfModelGroupList(@RequestBody @Valid GetQfModelGroupListDto dto) throws Exception {
         return qfModelGroupService.getQfModelGroupList(dto);
     }
 
-    @PreAuthorize("@auth.hasCode('qf:mg:add')")
+    @PreAuthorize("@auth.hasCode('qf:model:group:add')")
     @Operation(summary = "新增流程模型分组")
     @PostMapping("/addQfModelGroup")
     public Result<String> addQfModelGroup(@RequestBody @Valid AddQfModelGroupDto dto) throws Exception {
@@ -47,7 +46,7 @@ public class QfModelGroupController {
         return Result.success("新增成功");
     }
 
-    @PreAuthorize("@auth.hasCode('qf:mg:edit')")
+    @PreAuthorize("@auth.hasCode('qf:model:group:edit')")
     @Operation(summary = "编辑流程模型分组")
     @PostMapping("/editQfModelGroup")
     public Result<String> editQfModelGroup(@RequestBody @Valid EditQfModelGroupDto dto) throws Exception {
@@ -55,7 +54,7 @@ public class QfModelGroupController {
         return Result.success("修改成功");
     }
 
-    @PreAuthorize("@auth.hasCode('qf:mg:view')")
+    @PreAuthorize("@auth.hasCode('qf:model:group:view')")
     @Operation(summary = "查询流程模型分组详情")
     @PostMapping("/getQfModelGroupDetails")
     public Result<GetQfModelGroupDetailsVo> getQfModelGroupDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
@@ -66,7 +65,7 @@ public class QfModelGroupController {
         return Result.success(details);
     }
 
-    @PreAuthorize("@auth.hasCode('qf:mg:remove')")
+    @PreAuthorize("@auth.hasCode('qf:model:group:remove')")
     @Operation(summary = "删除流程模型分组")
     @PostMapping("/removeQfModelGroup")
     public Result<String> removeQfModelGroup(@RequestBody @Valid CommonIdDto dto) throws Exception {

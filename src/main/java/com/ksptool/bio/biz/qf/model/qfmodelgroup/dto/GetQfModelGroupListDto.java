@@ -14,5 +14,5 @@ public class GetQfModelGroupListDto extends PageQuery {
 
     @Schema(description = "组编码")
     private String code;
-}
 
+}

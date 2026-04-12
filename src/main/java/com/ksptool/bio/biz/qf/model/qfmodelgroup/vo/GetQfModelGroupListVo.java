@@ -19,9 +19,6 @@ public class GetQfModelGroupListVo {
     @Schema(description = "组编码")
     private String code;
 
-    @Schema(description = "备注")
-    private String remark;
-
     @Schema(description = "排序")
     private Integer seq;
 
@@ -29,4 +26,3 @@ public class GetQfModelGroupListVo {
     private LocalDateTime createTime;
 
 }
-

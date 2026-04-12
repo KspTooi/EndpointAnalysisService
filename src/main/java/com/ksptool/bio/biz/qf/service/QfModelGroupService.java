@@ -30,8 +30,8 @@ public class QfModelGroupService {
     /**
      * 查询流程模型分组列表
      *
-     * @param dto 查询参数
-     * @return 模型分组列表
+     * @param dto 查询条件
+     * @return 查询结果
      */
     public PageResult<GetQfModelGroupListVo> getQfModelGroupList(GetQfModelGroupListDto dto) {
         QfModelGroupPo query = new QfModelGroupPo();
@@ -49,8 +49,7 @@ public class QfModelGroupService {
     /**
      * 新增流程模型分组
      *
-     * @param dto 新增参数
-     * @throws BizException
+     * @param dto 新增条件
      */
     @Transactional(rollbackFor = Exception.class)
     public void addQfModelGroup(AddQfModelGroupDto dto) {
@@ -61,8 +60,8 @@ public class QfModelGroupService {
     /**
      * 编辑流程模型分组
      *
-     * @param dto 编辑参数
-     * @throws BizException
+     * @param dto 编辑条件
+     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
     public void editQfModelGroup(EditQfModelGroupDto dto) throws BizException {
@@ -76,9 +75,9 @@ public class QfModelGroupService {
     /**
      * 查询流程模型分组详情
      *
-     * @param dto 查询参数
-     * @return 模型分组详情
-     * @throws BizException
+     * @param dto 查询条件
+     * @return 查询结果
+     * @throws BizException 业务异常
      */
     public GetQfModelGroupDetailsVo getQfModelGroupDetails(CommonIdDto dto) throws BizException {
         QfModelGroupPo po = repository.findById(dto.getId())
@@ -89,8 +88,8 @@ public class QfModelGroupService {
     /**
      * 删除流程模型分组
      *
-     * @param dto 删除参数
-     * @throws BizException
+     * @param dto 删除条件
+     * @throws BizException 业务异常
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeQfModelGroup(CommonIdDto dto) throws BizException {
