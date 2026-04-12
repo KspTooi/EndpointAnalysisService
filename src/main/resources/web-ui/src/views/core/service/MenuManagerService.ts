@@ -201,7 +201,10 @@ export default {
         { required: true, message: "请输入排序", trigger: "blur" },
         { type: "number", min: 0, max: 655350, message: "排序只能在0-655350之间", trigger: "blur" },
       ],
-      icon: [{ max: 80, message: "菜单图标长度不能超过80个字符", trigger: "blur" }],
+      icon: [
+        { required: true, message: "请选择菜单图标", trigger: "change" },
+        { max: 80, message: "菜单图标长度不能超过80个字符", trigger: "blur" },
+      ],
       hide: [{ required: true, message: "请选择是否隐藏", trigger: "blur" }],
     };
 
@@ -224,11 +227,6 @@ export default {
 
       if (mode === "add-item" && currentRow) {
         modalForm.parentId = currentRow.id;
-
-        //当前选项是目录 则首选菜单
-        if (modalCurrentRow.value?.kind == 0) {
-          modalForm.kind = 1;
-        }
 
         //当前选项是菜单 则首选按钮
         if (modalCurrentRow.value?.kind == 1) {
@@ -348,9 +346,9 @@ export default {
             // 根据当前操作的菜单类型，判断父级是否可选
             // 0-目录 1-菜单 2-按钮
 
-            // 当前是目录，父级只能是根节点
+            // 当前是目录，父级只能是目录或根节点
             if (currentMenu.kind === 0) {
-              if (item.kind === 1) {
+              if (item.kind !== 0) {
                 disabled = true;
               }
             }
@@ -387,7 +385,7 @@ export default {
       };
 
       let rootDisabled = false;
-      // 菜单和按钮不能直接挂在根节点下
+      // 菜单和按钮不能直接挂在根节点下，目录可以挂在根节点下
       if (currentMenu.kind === 1 || currentMenu.kind === 2) {
         rootDisabled = true;
       }

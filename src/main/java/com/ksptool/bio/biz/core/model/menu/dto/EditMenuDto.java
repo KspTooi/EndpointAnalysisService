@@ -69,13 +69,18 @@ public class EditMenuDto {
             if (Str.isNotBlank(path)) {
                 return "目录不支持填写路径";
             }
-            if (parentId != null) {
-                return "目录仅能放置于根节点";
-            }
+
+            //2026-04-12 可以支持多级目录
+            // if (parentId != null) {
+            //     return "目录仅能放置于根节点";
+            // }
 
             //为目录时必须填写的字段
             if (Str.isBlank(name)) {
                 return "目录名称不能为空";
+            }
+            if (Str.isBlank(icon)) {
+                return "目录图标不能为空";
             }
 
         }
@@ -86,6 +91,9 @@ public class EditMenuDto {
             //为菜单时必须填写的字段
             if (Str.isBlank(path)) {
                 return "菜单路径不能为空";
+            }
+            if (Str.isBlank(icon)) {
+                return "菜单图标不能为空";
             }
 
         }

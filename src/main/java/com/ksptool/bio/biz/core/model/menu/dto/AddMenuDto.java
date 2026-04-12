@@ -66,13 +66,22 @@ public class AddMenuDto {
             if (Str.isNotBlank(path)) {
                 return "目录不支持填写路径";
             }
+            //目录不能放置于菜单之下
             if (parentId != null) {
-                return "目录仅能放置于根节点";
+                // parentId 合法性由 Service 层校验，此处只做类型约束
             }
+
+            //2026-04-12 可以支持多级目录
+            // if (parentId != null) {
+            //     return "目录仅能放置于根节点";
+            // }
 
             //为目录时必须填写的字段
             if (Str.isBlank(name)) {
                 return "目录名称不能为空";
+            }
+            if (Str.isBlank(icon)) {
+                return "目录图标不能为空";
             }
 
         }
@@ -83,17 +92,18 @@ public class AddMenuDto {
             if (Str.isBlank(path)) {
                 return "菜单路径不能为空";
             }
+            if (Str.isBlank(icon)) {
+                return "菜单图标不能为空";
+            }
 
         }
 
 
         if (kind == 2) {
-
             //按钮必须有父级
             if (parentId == null) {
                 return "按钮必须有父级";
             }
-
             //为按钮时不能填写的字段
             if (Str.isNotBlank(path)) {
                 return "按钮不支持填写路径";
@@ -101,7 +111,6 @@ public class AddMenuDto {
             if (Str.isNotBlank(icon)) {
                 return "按钮不支持填写图标";
             }
-
         }
 
         return null;

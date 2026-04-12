@@ -6,8 +6,8 @@ CREATE TABLE core_menu(
                           `parent_id` BIGINT   COMMENT '父级项ID' ,
                           `name` VARCHAR(32) NOT NULL  COMMENT '菜单项名' ,
                           `kind` TINYINT NOT NULL  COMMENT '菜单项类型 0:目录 1:菜单 2:按钮' ,
-                          `path` VARCHAR(80)   COMMENT '指向路径' ,
-                          `icon` VARCHAR(80) NOT NULL  COMMENT '菜单图标' ,
+                          `path` VARCHAR(500)   COMMENT '指向路径' ,
+                          `icon` VARCHAR(80)   COMMENT '菜单图标' ,
                           `hide` TINYINT NOT NULL  COMMENT '隐藏 0:否 1:是' ,
                           `permission_code` VARCHAR(500)   COMMENT '所需权限码(多个逗号)' ,
                           `seq` INT NOT NULL  COMMENT '排序' ,
@@ -19,5 +19,3 @@ CREATE TABLE core_menu(
                           `delete_time` DATETIME   COMMENT '删除时间' ,
                           PRIMARY KEY (id)
 )  COMMENT = '菜单表';
-
-
