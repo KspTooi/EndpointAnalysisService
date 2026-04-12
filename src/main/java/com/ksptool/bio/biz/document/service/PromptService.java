@@ -97,11 +97,6 @@ public class PromptService {
     @Transactional(rollbackFor = Exception.class)
     public void editPrompt(EditPromptDto dto) throws BizException {
 
-        //校验名称是否唯一
-        if (repository.countByNameExcludeId(dto.getName(), dto.getId()) > 0) {
-            throw new BizException("名称已存在:[" + dto.getName() + "]");
-        }
-
         PromptPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 

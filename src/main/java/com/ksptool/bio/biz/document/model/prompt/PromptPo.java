@@ -10,6 +10,8 @@ import com.ksptool.bio.biz.core.common.model.CustomizeTagJson;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -24,6 +26,8 @@ import java.util.List;
 @Entity
 @Table(name = "ep_prompt")
 @EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE core_user SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
 public class PromptPo extends RowScopePo {
 
     @Id
@@ -40,7 +44,7 @@ public class PromptPo extends RowScopePo {
     @Column(name = "name", nullable = false, length = 80, comment = "名称")
     private String name;
 
-    @Column(name = "tags", nullable = false,columnDefinition = "JSON", comment = "标签")
+    @Column(name = "tags", nullable = false, columnDefinition = "JSON", comment = "标签")
     @Convert(converter = ListCTJConv.class)
     private List<CustomizeTagJson> tags;
 
