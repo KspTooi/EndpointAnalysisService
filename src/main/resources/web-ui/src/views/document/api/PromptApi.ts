@@ -34,6 +34,7 @@ export interface GetPromptDetailsVo {
   name: string; // 名称
   tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
+  paramSlots: string[]; // 参数槽位
 }
 
 /**
@@ -53,6 +54,14 @@ export interface EditPromptDto {
   name: string; // 名称
   tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
+}
+
+/**
+ * 编译提示词Dto
+ */
+export interface CompilePromptDto {
+  id: string; // 主键ID
+  params: Record<string, string>; // 参数
 }
 
 export default {
@@ -103,6 +112,17 @@ export default {
     const result = await Http.postEntity<Result<string>>("/prompt/removePrompt", dto);
     if (result.code === 0) {
       return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 编译提示词
+   */
+  compilePrompt: async (dto: CompilePromptDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/prompt/compilePrompt", dto);
+    if (result.code === 0) {
+      return result.data;
     }
     throw new Error(result.message);
   },

@@ -22,4 +22,7 @@ public class GetPromptDetailsVo {
     @Schema(description = "内容")
     private String content;
 
+    @Schema(description = "参数槽位")
+    private List<String> paramSlots;
+
 }

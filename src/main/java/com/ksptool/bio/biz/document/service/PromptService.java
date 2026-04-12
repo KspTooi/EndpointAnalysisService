@@ -6,17 +6,22 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.bio.biz.auth.common.aop.RowScope;
 import com.ksptool.bio.biz.document.model.prompt.PromptPo;
 import com.ksptool.bio.biz.document.model.prompt.dto.AddPromptDto;
+import com.ksptool.bio.biz.document.model.prompt.dto.CompilePromptDto;
 import com.ksptool.bio.biz.document.model.prompt.dto.EditPromptDto;
 import com.ksptool.bio.biz.document.model.prompt.dto.GetPromptListDto;
 import com.ksptool.bio.biz.document.model.prompt.vo.GetPromptDetailsVo;
 import com.ksptool.bio.biz.document.model.prompt.vo.GetPromptListVo;
 import com.ksptool.bio.biz.document.repository.PromptRepository;
+import com.ksptool.text.PreparedPrompt;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.ksptool.entities.Entities.as;
@@ -136,7 +141,18 @@ public class PromptService {
     public GetPromptDetailsVo getPromptDetails(CommonIdDto dto) throws BizException {
         PromptPo po = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("查询详情失败,数据不存在或无权限访问."));
-        return as(po, GetPromptDetailsVo.class);
+
+        var vo = as(po, GetPromptDetailsVo.class);
+
+        vo.setParamSlots(new ArrayList<>());
+        
+        //如果内容不为空则获取参数槽位
+        if(StringUtils.isNotBlank(po.getContent())){
+            PreparedPrompt prompt = new PreparedPrompt(po.getContent());
+            vo.setParamSlots(Arrays.asList(prompt.getUnsetParameters()));
+        }
+
+        return vo;
     }
 
     /**
@@ -152,6 +168,32 @@ public class PromptService {
             return;
         }
         repository.deleteById(dto.getId());
+    }
+
+    /**
+     * 编译提示词
+     *
+     * @param dto 编译条件
+     * @return 编译结果
+     * @throws BizException 业务异常
+     */
+    public String compilePrompt(CompilePromptDto dto) throws BizException {
+
+        PromptPo po = repository.findById(dto.getId())
+                .orElseThrow(() -> new BizException("编译失败,数据不存在或无权限访问."));
+
+        if (StringUtils.isBlank(po.getContent())) {
+            throw new BizException("编译失败,内容不能为空.");
+        }
+
+        PreparedPrompt prompt = new PreparedPrompt(po.getContent());
+
+        if(prompt.getUnsetParameters().length < 1){
+            throw new BizException("编译失败,该提示词没有参数槽位.");
+        }
+
+        prompt.setParameters(dto.getParams());
+        return prompt.execute();
     }
 
 }

@@ -4,6 +4,7 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.document.model.prompt.dto.AddPromptDto;
+import com.ksptool.bio.biz.document.model.prompt.dto.CompilePromptDto;
 import com.ksptool.bio.biz.document.model.prompt.dto.EditPromptDto;
 import com.ksptool.bio.biz.document.model.prompt.dto.GetPromptListDto;
 import com.ksptool.bio.biz.document.model.prompt.vo.GetPromptDetailsVo;
@@ -71,6 +72,15 @@ public class PromptController {
     public Result<String> removePrompt(@RequestBody @Valid CommonIdDto dto) throws Exception {
         promptService.removePrompt(dto);
         return Result.success("操作成功");
+    }
+
+    
+    @PreAuthorize("@auth.hasCode('ep:prompt:compile')")
+    @Operation(summary = "编译提示词")
+    @PostMapping("/compilePrompt")
+    public Result<String> compilePrompt(@RequestBody @Valid CompilePromptDto dto) throws Exception {
+        var result = promptService.compilePrompt(dto);
+        return Result.success(result);
     }
 
 }
