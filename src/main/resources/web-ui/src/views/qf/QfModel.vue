@@ -31,7 +31,13 @@
         <el-table-column prop="name" label="模型名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="模型编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="version" label="模型版本号" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="模型状态 0:草稿 1:已部署 2:历史" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="status" label="模型状态" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <span v-if="scope.row.status === 0">草稿</span>
+            <span v-if="scope.row.status === 1">已部署</span>
+            <span v-if="scope.row.status === 2">历史</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="seq" label="排序" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">

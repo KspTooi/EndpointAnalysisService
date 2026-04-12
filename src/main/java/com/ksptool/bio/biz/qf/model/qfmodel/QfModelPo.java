@@ -36,10 +36,10 @@ public class QfModelPo {
     @Column(name = "dept_id", nullable = false, comment = "所属部门ID")
     private Long deptId;
 
-    @Column(name = "active_deploy_id", nullable = false, comment = "该模型生效的部署ID")
+    @Column(name = "active_deploy_id", comment = "该模型生效的部署ID")
     private Long activeDeployId;
 
-    @Column(name = "group_id", nullable = false, comment = "模型组ID")
+    @Column(name = "group_id", comment = "模型组ID")
     private Long groupId;
 
     @Column(name = "name", nullable = false, length = 80, comment = "模型名称")

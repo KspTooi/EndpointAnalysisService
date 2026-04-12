@@ -61,6 +61,10 @@ public class QfModelService {
         }
 
         QfModelPo insertPo = as(dto, QfModelPo.class);
+
+        //设置状态和版本号
+        insertPo.setStatus(0);
+        insertPo.setVersion(1);
         repository.save(insertPo);
     }
 
