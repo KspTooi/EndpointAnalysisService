@@ -102,7 +102,7 @@
       </div>
       <template #footer>
         <el-button @click="compileVisible = false">关闭</el-button>
-        <el-button type="primary" @click="doCompile" :loading="compileLoading">编译</el-button>
+        <el-button type="primary" :disabled="compileSlots.length === 0" @click="doCompile" :loading="compileLoading">编译</el-button>
       </template>
     </el-dialog>
 
