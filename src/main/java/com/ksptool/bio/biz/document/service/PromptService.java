@@ -3,6 +3,7 @@ package com.ksptool.bio.biz.document.service;
 import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
+import com.ksptool.bio.biz.auth.common.aop.RowScope;
 import com.ksptool.bio.biz.document.model.prompt.PromptPo;
 import com.ksptool.bio.biz.document.model.prompt.dto.AddPromptDto;
 import com.ksptool.bio.biz.document.model.prompt.dto.EditPromptDto;
@@ -17,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
-import com.ksptool.bio.biz.auth.common.aop.RowScope;
 
 
 @Service
@@ -36,24 +37,24 @@ public class PromptService {
      * @return 查询结果
      */
     public PageResult<GetPromptListVo> getPromptList(GetPromptListDto dto) {
-        
+
         PromptPo query = new PromptPo();
         assign(dto, query);
 
-        Page<PromptPo> page = repository.getPromptList(query, dto.pageRequest());
+        Page<PromptPo> page = repository.getPromptList(dto, dto.pageRequest());
         if (page.isEmpty()) {
             return PageResult.successWithEmpty();
         }
 
         List<GetPromptListVo> vos = new ArrayList<>();
-        
+
         //计算字符数
         for (PromptPo po : page.getContent()) {
             var vo = as(po, GetPromptListVo.class);
 
             vo.setCharCount(0);
 
-            if(po.getContent() != null){
+            if (po.getContent() != null) {
                 vo.setCharCount(po.getContent().length());
             }
 
@@ -71,16 +72,16 @@ public class PromptService {
     @Transactional(rollbackFor = Exception.class)
     public void addPrompt(AddPromptDto dto) throws BizException {
         PromptPo insertPo = as(dto, PromptPo.class);
-        
+
         //校验名称是否唯一
         if (repository.countByNameExcludeId(insertPo.getName(), null) > 0) {
             throw new BizException("名称已存在:[" + insertPo.getName() + "]");
         }
 
         insertPo.setParamCount(0);
-        
+
         //计算参数数量 统计#的个数
-        if(dto.getContent() != null){
+        if (dto.getContent() != null) {
             insertPo.setParamCount(dto.getContent().split("#").length - 1);
         }
         insertPo.setVersion(1);
@@ -95,19 +96,23 @@ public class PromptService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void editPrompt(EditPromptDto dto) throws BizException {
+
+        //校验名称是否唯一
+        if (repository.countByNameExcludeId(dto.getName(), dto.getId()) > 0) {
+            throw new BizException("名称已存在:[" + dto.getName() + "]");
+        }
+
         PromptPo updatePo = repository.findById(dto.getId())
                 .orElseThrow(() -> new BizException("更新失败,数据不存在或无权限访问."));
 
-        assign(dto, updatePo);
+        var oldContent = updatePo.getContent();
+        var oldParamCount = updatePo.getParamCount();
 
-        //校验名称是否唯一
-        if (repository.countByNameExcludeId(updatePo.getName(), updatePo.getId()) > 0) {
-            throw new BizException("名称已存在:[" + updatePo.getName() + "]");
-        }
+        assign(dto, updatePo);
 
         updatePo.setParamCount(0);
         //计算参数数量 统计#的个数
-        if(dto.getContent() != null){
+        if (dto.getContent() != null) {
             updatePo.setParamCount(dto.getContent().split("#").length - 1);
         }
 
@@ -121,6 +126,8 @@ public class PromptService {
         PromptPo historyPo = as(updatePo, PromptPo.class);
         historyPo.setId(null);
         historyPo.setVersion(oldVersion);
+        historyPo.setContent(oldContent);
+        historyPo.setParamCount(oldParamCount);
         repository.save(historyPo);
     }
 
