@@ -14,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
+import com.ksptool.bio.biz.auth.common.aop.RowScope;
 
 
 @Service
+@RowScope(requireRoot = true)
 public class PromptService {
 
     @Autowired
