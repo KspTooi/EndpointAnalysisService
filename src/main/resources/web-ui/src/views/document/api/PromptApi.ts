@@ -3,6 +3,7 @@ import type PageResult from "@/commons/model/PageResult.ts";
 import type CommonIdDto from "@/commons/model/CommonIdDto.ts";
 import type PageQuery from "@/commons/model/PageQuery.ts";
 import type Result from "@/commons/model/Result.ts";
+import type CustomizeTagJson from "@/commons/model/json/CustomizeTagJson";
 
 /**
  * 查询提示词列表Dto
@@ -30,7 +31,7 @@ export interface GetPromptListVo {
 export interface GetPromptDetailsVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 
@@ -39,7 +40,7 @@ export interface GetPromptDetailsVo {
  */
 export interface AddPromptDto {
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 
@@ -49,7 +50,7 @@ export interface AddPromptDto {
 export interface EditPromptDto {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   content: string; // 内容
 }
 

@@ -27,7 +27,6 @@
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="tags" label="标签(CTJ)" min-width="120" show-overflow-tooltip />
         <el-table-column prop="paramCount" label="参数数量" min-width="120" show-overflow-tooltip />
@@ -87,13 +86,29 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入名称" clearable />
+          <el-input v-model="modalForm.name" placeholder="请输入名称" clearable show-word-limit maxlength="80" />
         </el-form-item>
         <el-form-item label="标签(CTJ)" prop="tags">
-          <el-input v-model="modalForm.tags" placeholder="请输入标签(CTJ)" clearable />
+          <StdCustomizeTagSelect
+            v-model="modalForm.tags"
+            :tags="[]"
+            allow-create
+            filterable
+            default-first-option
+            placeholder="回车创建新标签"
+            multiple-limit="6"
+          />
         </el-form-item>
         <el-form-item label="内容" prop="content">
-          <el-input v-model="modalForm.content" placeholder="请输入内容" clearable />
+          <el-input
+            v-model="modalForm.content"
+            placeholder="请输入内容"
+            clearable
+            type="textarea"
+            :rows="10"
+            show-word-limit
+            maxlength="10000"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -117,6 +132,7 @@ import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
+import StdCustomizeTagSelect from "@/soa/std-series/StdCustomizeTagSelect.vue";
 
 // 使用markRaw包装图标组件，防止被Vue响应式系统处理
 const EditIcon = markRaw(Edit);
