@@ -10,7 +10,6 @@ import type Result from "@/commons/model/Result.ts";
 export interface GetQfModelListDto extends PageQuery {
   name?: string; // 模型名称
   code?: string; // 模型编码
-  createTime?: string; // 创建时间
 }
 
 /**
@@ -20,7 +19,7 @@ export interface GetQfModelListVo {
   id: string; // 主键ID
   name: string; // 模型名称
   code: string; // 模型编码
-  dataVersion: number; // 模型版本号
+  version: number; // 模型版本号
   status: number; // 模型状态 0:草稿 1:已部署 2:历史
   seq: number; // 排序
   createTime: string; // 创建时间
@@ -35,7 +34,6 @@ export interface GetQfModelDetailsVo {
   code: string; // 模型编码
   bpmnXml: string; // 模型BPMN XML
   seq: number; // 排序
-  createTime: string; // 创建时间
 }
 
 /**
@@ -45,7 +43,6 @@ export interface AddQfModelDto {
   name: string; // 模型名称
   code: string; // 模型编码
   seq: number; // 排序
-  createTime: string; // 创建时间
 }
 
 /**
@@ -56,7 +53,6 @@ export interface EditQfModelDto {
   name: string; // 模型名称
   code: string; // 模型编码
   seq: number; // 排序
-  createTime: string; // 创建时间
 }
 
 export default {

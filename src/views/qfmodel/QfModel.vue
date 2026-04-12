@@ -10,9 +10,6 @@
           <el-form-item label="模型编码">
             <el-input v-model="listForm.code" placeholder="输入模型编码" clearable />
           </el-form-item>
-          <el-form-item label="创建时间">
-            <el-input v-model="listForm.createTime" placeholder="输入创建时间" clearable />
-          </el-form-item>
         </div>
         <el-form-item>
           <el-button type="primary" @click="loadList" :disabled="listLoading">查询</el-button>
@@ -33,7 +30,7 @@
         <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="模型名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="模型编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="dataVersion" label="模型版本号" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="version" label="模型版本号" min-width="120" show-overflow-tooltip />
         <el-table-column prop="status" label="模型状态 0:草稿 1:已部署 2:历史" min-width="120" show-overflow-tooltip />
         <el-table-column prop="seq" label="排序" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
@@ -98,9 +95,6 @@
         </el-form-item>
         <el-form-item label="排序" prop="seq">
           <el-input v-model.number="modalForm.seq" placeholder="请输入排序" clearable />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="createTime">
-          <el-input v-model="modalForm.createTime" placeholder="请输入创建时间" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
