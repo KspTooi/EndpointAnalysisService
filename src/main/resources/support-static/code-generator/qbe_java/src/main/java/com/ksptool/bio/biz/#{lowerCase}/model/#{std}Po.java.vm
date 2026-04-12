@@ -13,12 +13,24 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+#set($hasDeleteTime = false)
+#foreach($field in $model.fields)
+    #if($field.camelCase == "deleteTime")
+        #set($hasDeleteTime = true)
+    #end
+#end
 @Getter
 @Setter
 @Entity
 @Table(name = "${model.tableName}")
 @EntityListeners(AuditingEntityListener.class)
+#if($hasDeleteTime)
+@SQLDelete(sql = "UPDATE ${model.tableName} SET delete_time = NOW() WHERE id = ?")
+@SQLRestriction("delete_time IS NULL")
+#end
 public class ${model.std}Po {
 
     #foreach ($field in $model.fields)
