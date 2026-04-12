@@ -22,7 +22,7 @@ import DocumentRouteRegister from "@/views/document/route/DocumentRouteRegister"
 import AuditRouteRegister from "@/views/audit/route/AuditRouteRegister";
 import QtRouteRegister from "@/views/qt/route/QtRouteRegister.ts";
 import AssemblyRouteRegister from "@/views/assembly/route/AssemblyRouteRegister.ts";
-
+import QfRouteRegister from "@/views/qf/route/QfRouteRegister.ts";
 //初始化Iconify
 setupIconify();
 
@@ -50,6 +50,7 @@ addRoute(new DocumentRouteRegister());
 addRoute(new AuditRouteRegister());
 addRoute(new QtRouteRegister());
 addRoute(new AssemblyRouteRegister());
+addRoute(new QfRouteRegister());
 
 //初始化SOA路由服务
 initialize(app);

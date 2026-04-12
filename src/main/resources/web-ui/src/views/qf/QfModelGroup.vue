@@ -114,7 +114,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import QfModelGroupService from "@/views/qfModelGroup/service/QfModelGroupService.ts";
+import QfModelGroupService from "@/views/qf/service/QfModelGroupService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -125,7 +125,8 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QfModelGroupService.useQfModelGroupList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  QfModelGroupService.useQfModelGroupList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

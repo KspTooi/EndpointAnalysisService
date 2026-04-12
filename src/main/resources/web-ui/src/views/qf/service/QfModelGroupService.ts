@@ -6,8 +6,8 @@ import type {
   GetQfModelGroupDetailsVo,
   AddQfModelGroupDto,
   EditQfModelGroupDto,
-} from "@/views/qfModelGroup/api/QfModelGroupApi.ts";
-import QfModelGroupApi from "@/views/qfModelGroup/api/QfModelGroupApi.ts";
+} from "@/views/qf/api/QfModelGroupApi.ts";
+import QfModelGroupApi from "@/views/qf/api/QfModelGroupApi.ts";
 import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
