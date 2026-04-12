@@ -25,7 +25,4 @@ public class EditQfModelDto {
     @Schema(description="排序")
     private Integer seq;
 
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
 }

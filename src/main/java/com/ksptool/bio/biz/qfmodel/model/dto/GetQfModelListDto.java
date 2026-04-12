@@ -19,7 +19,4 @@ public class GetQfModelListDto extends PageQuery {
     @Schema(description="模型编码")
     private String code;
 
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
 }
