@@ -11,9 +11,8 @@ import com.ksptool.bio.biz.auth.model.group.dto.*;
 import com.ksptool.bio.biz.auth.model.group.vo.*;
 import com.ksptool.bio.biz.auth.model.permission.PermissionPo;
 import com.ksptool.bio.biz.auth.repository.*;
-import com.ksptool.bio.biz.core.model.resource.ResourcePo;
+import com.ksptool.bio.biz.core.repository.MenuRepository;
 import com.ksptool.bio.biz.core.repository.OrgRepository;
-import com.ksptool.bio.biz.core.repository.ResourceRepository;
 import com.ksptool.bio.commons.dataprocess.Str;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,19 +31,10 @@ import static com.ksptool.entities.Entities.as;
 public class GroupService {
 
     @Autowired
-    private UserSessionRepository userSessionRepository;
-
-    @Autowired
     private GroupRepository repository;
 
     @Autowired
     private PermissionRepository permissionRepository;
-
-    @Autowired
-    private ResourceRepository resourceRepository;
-
-    @Autowired
-    private SessionService sessionService;
 
     @Autowired
     private UserGroupRepository ugRepository;
@@ -57,6 +47,9 @@ public class GroupService {
 
     @Autowired
     private OrgRepository orgRepository;
+
+    @Autowired
+    private MenuRepository menuRepository;
 
 
     /**
@@ -277,9 +270,6 @@ public class GroupService {
 
         }
 
-        //处理受影响的在线用户会话 先查询拥有该组的用户ID列表
-        var userIds = ugRepository.getUserIdsByGroupId(group.getId());
-
     }
 
 
@@ -293,22 +283,19 @@ public class GroupService {
     public List<GetGroupPermissionMenuViewVo> getGroupPermissionMenuView(GetGroupPermissionMenuViewDto dto) throws BizException {
 
         GroupPo group = repository.findById(dto.getGroupId()).orElseThrow(() -> new BizException("用户组不存在"));
-        if (group == null) {
-            throw new BizException("用户组不存在");
-        }
 
-        //查找菜单树
-        var menuPos = resourceRepository.getMenuTreeByKeyword(dto.getKeyword());
+        //查找菜单列表
+        var menuPos = menuRepository.getMenusByKeyword(dto.getKeyword());
 
         List<GetGroupPermissionMenuViewVo> flatVos = new ArrayList<>();
 
         //将menuPos转换为flatVos
-        for (ResourcePo po : menuPos) {
+        for (var po : menuPos) {
             GetGroupPermissionMenuViewVo vo = as(po, GetGroupPermissionMenuViewVo.class);
             vo.setChildren(new ArrayList<>());
             vo.setParentId(null);
-            if (po.getParent() != null) {
-                vo.setParentId(po.getParent().getId());
+            if (po.getParentId() != null) {
+                vo.setParentId(po.getParentId());
             }
             flatVos.add(vo);
         }
@@ -337,9 +324,9 @@ public class GroupService {
 
         //搜集菜单中的权限列表
         var permissions = new HashSet<String>();
-        for (ResourcePo menuPo : menuPos) {
-            if (StringUtils.isNotBlank(menuPo.getPermission())) {
-                permissions.addAll(Str.safeSplit(menuPo.getPermission(), ";"));
+        for (var menuPo : menuPos) {
+            if (StringUtils.isNotBlank(menuPo.getPermissionCode())) {
+                permissions.addAll(Str.safeSplit(menuPo.getPermissionCode(), ";"));
             }
         }
 
@@ -350,17 +337,13 @@ public class GroupService {
 
         // 设置缺失权限标记
         for (GetGroupPermissionMenuViewVo vo : flatVos) {
-            if (Str.in(vo.getPermission(), "*")) {
+
+            if (StringUtils.isBlank(vo.getPermissionCode())) {
                 vo.setMissingPermission(0);
                 continue;
             }
 
-            if (StringUtils.isBlank(vo.getPermission())) {
-                vo.setMissingPermission(0);
-                continue;
-            }
-
-            List<String> perms = Str.safeSplit(vo.getPermission(), ";");
+            List<String> perms = Str.safeSplit(vo.getPermissionCode(), ";");
             int missingCount = 0;
             int totalCount = perms.size();
 
@@ -370,53 +353,61 @@ public class GroupService {
                 }
             }
 
+            //如果菜单没有缺失权限，则设置为0
             if (missingCount == 0) {
                 vo.setMissingPermission(0);
                 continue;
             }
 
+            //如果菜单完全缺失权限，则设置为1
             if (missingCount == totalCount) {
                 vo.setMissingPermission(1);
                 continue;
             }
 
+            //如果菜单部分缺失权限，则设置为2
             vo.setMissingPermission(2);
         }
 
         //获取该组拥有的权限
         var groupPerms = permissionRepository.getPermissionsByGroupId(group.getId());
 
-        //设置菜单当前用户是否有权限
+        //设置菜单当前组是否有权限
         for (var vo : flatVos) {
 
-            //获取菜单权限列表
             var menuPerms = vo.getPermissions();
-
             var total = menuPerms.size();
             var has = 0;
 
             for (var menuPerm : menuPerms) {
                 for (var groupPerm : groupPerms) {
-                    if (menuPerm.contains(groupPerm.getCode())) {
+                    if (menuPerm.equals(groupPerm.getCode())) {
                         has++;
                     }
                 }
             }
 
-            //0:没有权限 1:有权限
             vo.setHasPermission(0);
 
+            //如果菜单没有权限，则设置为0
+            if (total == 0) {
+                vo.setHasPermission(0);
+                continue;
+            }
+
+            //如果菜单有权限，则设置为1
             if (has >= total) {
                 vo.setHasPermission(1);
+                continue;
             }
-            //部分授权
-            if (has > 0 && has < total) {
+
+            //如果菜单部分有权限，则设置为2
+            if (has > 0) {
                 vo.setHasPermission(2);
             }
-
         }
 
-        //如果hasPermission不为空，则递归过滤出hasPermission为hasPermission的菜单
+        //如果hasPermission不为空，则递归过滤
         if (dto.getHasPermission() != null) {
             treeVos = filterMenuTreeByHasPermission(treeVos, dto.getHasPermission());
         }

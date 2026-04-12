@@ -81,13 +81,13 @@ export default {
 
     /**
      * 判断菜单行是否可选择
-     * permission 为 * 或 menuKind 为 0（目录）的行不可选择
+     * kind 为 0（目录）或 permissionCode 为空的行不可选择
      */
     const isMenuRowSelectable = (row: GetGroupPermissionMenuViewVo): boolean => {
-      if (row.menuKind === 0) {
+      if (row.kind === 0) {
         return false;
       }
-      if (row.permission === "*") {
+      if (!row.permissionCode) {
         return false;
       }
       return true;
@@ -264,19 +264,14 @@ export default {
         const permissionCodes: string[] = [];
         if (tab.value === "menu") {
           for (const item of menuListSelected.value) {
-            //忽略空和*
-            if (item.permission === "" || item.permission === "*") {
+            if (!item.permissionCode) {
               continue;
             }
 
-            //如果有;代表有多个权限，需要分割
-            if (item.permission.includes(";")) {
-              permissionCodes.push(...item.permission.split(";"));
-            }
-
-            //只有一个权限，直接添加
-            if (!item.permission.includes(";")) {
-              permissionCodes.push(item.permission);
+            if (item.permissionCode.includes(";")) {
+              permissionCodes.push(...item.permissionCode.split(";").filter((p) => p.trim() !== ""));
+            } else {
+              permissionCodes.push(item.permissionCode);
             }
           }
         }
@@ -294,21 +289,18 @@ export default {
         return [row.code];
       }
 
-      // GetGroupPermissionMenuViewVo类型，处理permission字段
-      if ("permission" in row) {
-        const permission = row.permission;
-        //忽略空和*
-        if (!permission || permission === "" || permission === "*") {
+      // GetGroupPermissionMenuViewVo类型，处理permissionCode字段
+      if ("permissionCode" in row) {
+        const permissionCode = row.permissionCode;
+        if (!permissionCode) {
           return [];
         }
 
-        //如果有;代表有多个权限，需要分割
-        if (permission.includes(";")) {
-          return permission.split(";").filter((p) => p.trim() !== "");
+        if (permissionCode.includes(";")) {
+          return permissionCode.split(";").filter((p) => p.trim() !== "");
         }
 
-        //只有一个权限，直接返回
-        return [permission];
+        return [permissionCode];
       }
 
       return [];

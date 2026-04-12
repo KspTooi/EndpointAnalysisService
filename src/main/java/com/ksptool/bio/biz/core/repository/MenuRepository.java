@@ -68,6 +68,20 @@ public interface MenuRepository extends JpaRepository<MenuPo, Long> {
     List<MenuPo> getMenuTree(@Param("po") GetMenuTreeDto po);
 
     /**
+     * 按关键字查询菜单列表（用于权限分配视图）
+     *
+     * @param keyword 关键字，匹配名称或路径，为null时查全部
+     * @return 菜单列表
+     */
+    @Query("""
+            SELECT t FROM MenuPo t
+            WHERE (:keyword IS NULL OR t.name LIKE CONCAT('%',:keyword,'%')
+                   OR t.path LIKE CONCAT('%',:keyword,'%'))
+            ORDER BY t.seq ASC, t.createTime DESC
+            """ )
+    List<MenuPo> getMenusByKeyword(@Param("keyword") String keyword);
+
+    /**
      * 获取菜单子级数量
      *
      * @param id 菜单ID

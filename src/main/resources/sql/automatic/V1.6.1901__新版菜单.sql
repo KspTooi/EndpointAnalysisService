@@ -19,3 +19,5 @@ CREATE TABLE core_menu(
                           `delete_time` DATETIME   COMMENT '删除时间' ,
                           PRIMARY KEY (id)
 )  COMMENT = '菜单表';
+
+

@@ -72,15 +72,14 @@ export interface GetGroupPermissionMenuViewDto {
 
 export interface GetGroupPermissionMenuViewVo {
   id: string; // 菜单ID
-  parentId: string; // 父级ID
+  parentId: string | null; // 父级ID null:根节点
   name: string; // 菜单名称
-  menuIcon: string; // 菜单图标
-  menuKind: number; // 菜单类型
-  menuPath: string; // 菜单路径
-  menuBtnId: string; // 按钮ID
-  permission: string; // 所需权限
-  missingPermission: number; // 是否缺失权限节点 0:否 1:是 2:部分缺失
-  hasPermission: number; // 当前用户是否有权限 0:否 1:是
+  icon: string; // 菜单图标
+  kind: number; // 菜单类型 0:目录 1:菜单 2:按钮
+  path: string; // 菜单路径
+  permissionCode: string; // 所需权限码
+  missingPermission: number; // 是否缺失权限节点 0:否 1:完全缺失 2:部分缺失
+  hasPermission: number; // 当前组是否有权限 0:否 1:是 2:部分授权
   seq: number; // 排序
   children: GetGroupPermissionMenuViewVo[]; // 子菜单
 }

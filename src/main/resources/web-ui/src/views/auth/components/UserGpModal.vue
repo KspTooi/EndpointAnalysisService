@@ -49,29 +49,26 @@
                 <template #default="scope">
                   <div style="display: flex; align-items: center; gap: 8px; display: inline">
                     <Icon
-                      v-if="scope.row.menuIcon"
-                      :icon="scope.row.menuIcon"
+                      v-if="scope.row.icon"
+                      :icon="scope.row.icon"
                       :width="16"
                       :height="16"
                       style="vertical-align: middle; display: inline"
                     />
                     {{ scope.row.name }}
-                    <span v-if="scope.row.menuKind === 2" style="color: #999; font-size: 14px">
-                      ({{ scope.row.menuBtnId }})
-                    </span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="类型" prop="menuKind" width="60">
+              <el-table-column label="类型" prop="kind" width="60">
                 <template #default="scope">
-                  <span v-if="scope.row.menuKind === 0" style="color: var(--el-color-info)">目录</span>
-                  <span v-if="scope.row.menuKind === 1" style="color: var(--el-color-success)">菜单</span>
-                  <span v-if="scope.row.menuKind === 2" style="color: var(--el-color-primary)">按钮</span>
+                  <span v-if="scope.row.kind === 0" style="color: var(--el-color-info)">目录</span>
+                  <span v-if="scope.row.kind === 1" style="color: var(--el-color-success)">菜单</span>
+                  <span v-if="scope.row.kind === 2" style="color: var(--el-color-primary)">按钮</span>
                 </template>
               </el-table-column>
-              <el-table-column label="所需权限" prop="permission" show-overflow-tooltip>
+              <el-table-column label="所需权限" prop="permissionCode" show-overflow-tooltip>
                 <template #default="scope">
-                  <span v-if="scope.row.menuKind === 0" style="color: #999; font-size: 12px">不适用</span>
+                  <span v-if="scope.row.kind === 0" style="color: #999; font-size: 12px">不适用</span>
                   <span
                     v-else
                     :style="{
@@ -80,19 +77,19 @@
                           ? '#f56c6c'
                           : scope.row.missingPermission === 2
                             ? '#e6a23c'
-                            : scope.row.missingPermission === 0 && scope.row.permission !== '*'
+                            : scope.row.missingPermission === 0
                               ? '#67c23a'
                               : '',
                     }"
                   >
-                    {{ scope.row.permission }}
+                    {{ scope.row.permissionCode }}
                   </span>
                 </template>
               </el-table-column>
               <el-table-column label="状态" prop="hasPermission" width="85">
                 <template #default="scope">
-                  <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
-                  <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
+                  <span v-if="scope.row.kind === 0" style="color: #999">不适用</span>
+                  <span v-else-if="!scope.row.permissionCode" style="color: #999">不适用</span>
                   <span v-else-if="scope.row.hasPermission === 1" style="color: #67c23a">已授权</span>
                   <span v-else-if="scope.row.hasPermission === 0" style="color: #f56c6c">未授权</span>
                   <span v-else-if="scope.row.hasPermission === 2" style="color: #e6a23c">部分授权</span>
@@ -101,8 +98,8 @@
               </el-table-column>
               <el-table-column label="操作" width="100">
                 <template #default="scope">
-                  <span v-if="scope.row.menuKind === 0" style="color: #999">不适用</span>
-                  <span v-else-if="scope.row.permission === '*'" style="color: #999">不适用</span>
+                  <span v-if="scope.row.kind === 0" style="color: #999">不适用</span>
+                  <span v-else-if="!scope.row.permissionCode" style="color: #999">不适用</span>
                   <el-button
                     v-else-if="scope.row.hasPermission === 0 || scope.row.hasPermission === 2"
                     type="primary"
