@@ -97,14 +97,15 @@
         <el-form-item label="标签" prop="tags">
           <StdCustomizeTagSelect
             v-model="modalForm.tags"
-            :tags="[]"
+            :tags="[{ n: 'Prompt' }, { n: 'Skill' }, { n: 'Command' }]"
             allow-create
             filterable
             default-first-option
             placeholder="回车创建新标签"
             multiple-limit="6"
             :reserve-keyword="false"
-          />
+          >
+          </StdCustomizeTagSelect>
         </el-form-item>
         <el-form-item label="内容" prop="content">
           <el-input

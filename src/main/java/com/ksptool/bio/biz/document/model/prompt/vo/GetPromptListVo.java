@@ -18,6 +18,9 @@ public class GetPromptListVo {
     @Schema(description = "名称")
     private String name;
 
+    @Schema(description = "字符数")
+    private Integer charCount;
+
     @Schema(description = "标签(CTJ)")
     private List<CustomizeTagJson> tags;
 

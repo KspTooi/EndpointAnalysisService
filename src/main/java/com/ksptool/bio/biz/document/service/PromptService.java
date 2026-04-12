@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -34,6 +36,7 @@ public class PromptService {
      * @return 查询结果
      */
     public PageResult<GetPromptListVo> getPromptList(GetPromptListDto dto) {
+        
         PromptPo query = new PromptPo();
         assign(dto, query);
 
@@ -42,7 +45,21 @@ public class PromptService {
             return PageResult.successWithEmpty();
         }
 
-        List<GetPromptListVo> vos = as(page.getContent(), GetPromptListVo.class);
+        List<GetPromptListVo> vos = new ArrayList<>();
+        
+        //计算字符数
+        for (PromptPo po : page.getContent()) {
+            var vo = as(po, GetPromptListVo.class);
+
+            vo.setCharCount(0);
+
+            if(po.getContent() != null){
+                vo.setCharCount(po.getContent().length());
+            }
+
+            vos.add(vo);
+        }
+
         return PageResult.success(vos, (int) page.getTotalElements());
     }
 
@@ -59,7 +76,11 @@ public class PromptService {
         if (repository.countByNameExcludeId(insertPo.getName(), null) > 0) {
             throw new BizException("名称已存在:[" + insertPo.getName() + "]");
         }
-        insertPo.setParamCount(0);
+
+        //计算参数数量 统计#的个数
+        if(dto.getContent() != null){
+            insertPo.setParamCount(dto.getContent().split("#").length - 1);
+        }
         insertPo.setVersion(1);
         repository.save(insertPo);
     }
@@ -82,7 +103,22 @@ public class PromptService {
             throw new BizException("名称已存在:[" + updatePo.getName() + "]");
         }
 
+        //计算参数数量 统计#的个数
+        if(dto.getContent() != null){
+            updatePo.setParamCount(dto.getContent().split("#").length - 1);
+        }
+
+        //版本号+1
+        var oldVersion = updatePo.getVersion();
+        var newVersion = oldVersion + 1;
+        updatePo.setVersion(newVersion);
         repository.save(updatePo);
+
+        //创建历史版本
+        PromptPo historyPo = as(updatePo, PromptPo.class);
+        historyPo.setId(null);
+        historyPo.setVersion(oldVersion);
+        repository.save(historyPo);
     }
 
     /**

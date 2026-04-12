@@ -16,7 +16,8 @@ public interface PromptRepository extends JpaRepository<PromptPo, Long> {
             WHERE
             (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%'))
             AND (:#{#po.tags} IS NULL OR u.tags LIKE CONCAT('%', :#{#po.tags}, '%'))
-            ORDER BY u.updateTime DESC
+            AND u.version = (SELECT MAX(u2.version) FROM PromptPo u2 WHERE u2.name = u.name)
+            ORDER BY u.createTime DESC
             """ )
     Page<PromptPo> getPromptList(@Param("po") PromptPo po, Pageable pageable);
     
