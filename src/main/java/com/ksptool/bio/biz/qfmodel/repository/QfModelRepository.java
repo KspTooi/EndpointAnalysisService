@@ -16,7 +16,6 @@ public interface QfModelRepository extends JpaRepository<QfModelPo, Long>{
     WHERE
     (:#{#po.name} IS NULL OR u.name LIKE CONCAT('%', :#{#po.name}, '%'))
     AND (:#{#po.code} IS NULL OR u.code LIKE CONCAT('%', :#{#po.code}, '%'))
-    AND (:#{#po.createTime} IS NULL OR u.createTime = :#{#po.createTime} )
     ORDER BY u.createTime DESC
     """)
     Page<QfModelPo> getQfModelList(@Param("po") QfModelPo po, Pageable pageable);
