@@ -75,17 +75,6 @@ export default {
   },
 
   /**
-   * 维护中心:重置端点权限配置
-   */
-  resetEndpoints: async (): Promise<string> => {
-    const result = await Http.postEntity<Result<MaintainUpdateVo>>("/maintain/resetEndpoints", {});
-    if (result.code === 0) {
-      return result.message;
-    }
-    throw new Error(result.message);
-  },
-
-  /**
    * 维护中心:升级数据库
    */
   upgradeDatabase: async (): Promise<MaintainUpdateVo> => {

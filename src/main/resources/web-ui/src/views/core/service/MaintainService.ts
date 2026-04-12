@@ -60,17 +60,6 @@ export default {
         },
       },
       {
-        title: "重置接口权限",
-        description: "将接口的访问权限恢复到出厂默认状态。用于解决接口访问报错(403)的问题。",
-        icon: Cpu,
-        buttonText: "重置接口权限",
-        bgColor: "rgba(180, 76, 241, 0.1)",
-        iconColor: "#b44cf1",
-        key: "endpoints",
-        warning: "警告：此操作将把接口权限配置恢复为出厂默认设置，您自定义的接口权限都将丢失！是否确定要继续？",
-        action: async () => await MaintainApi.resetEndpoints(),
-      },
-      {
         title: "修复注册表",
         description: "检查系统内置注册表条目是否完整，自动补全缺失的配置项，不覆盖已有数据。",
         icon: Tools,
