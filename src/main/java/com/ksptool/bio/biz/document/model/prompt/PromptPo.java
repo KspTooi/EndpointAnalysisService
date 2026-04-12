@@ -3,7 +3,10 @@ package com.ksptool.bio.biz.document.model.prompt;
 import com.ksptool.assembly.entity.exception.AuthException;
 import com.ksptool.bio.biz.auth.common.aop.RowScopePo;
 import com.ksptool.bio.biz.auth.service.SessionService;
+import com.ksptool.bio.biz.core.common.jpa.ListCTJConv;
 import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
+import com.ksptool.bio.biz.core.common.model.CustomizeTagJson;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +17,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,8 +40,9 @@ public class PromptPo extends RowScopePo {
     @Column(name = "name", nullable = false, length = 80, comment = "名称")
     private String name;
 
-    @Column(name = "tags", nullable = false, comment = "标签(CTJ)")
-    private String tags;
+    @Column(name = "tags", nullable = false,columnDefinition = "JSON", comment = "标签")
+    @Convert(converter = ListCTJConv.class)
+    private List<CustomizeTagJson> tags;
 
     @Column(name = "content", comment = "内容")
     private String content;

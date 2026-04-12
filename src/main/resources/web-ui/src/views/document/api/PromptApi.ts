@@ -19,7 +19,7 @@ export interface GetPromptListDto extends PageQuery {
 export interface GetPromptListVo {
   id: string; // 主键ID
   name: string; // 名称
-  tags: string; // 标签(CTJ)
+  tags: CustomizeTagJson[]; // 标签(CTJ)
   paramCount: number; // 参数数量
   version: number; // 版本号
   createTime: string; // 创建时间

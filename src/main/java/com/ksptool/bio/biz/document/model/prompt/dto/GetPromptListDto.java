@@ -12,7 +12,7 @@ public class GetPromptListDto extends PageQuery {
     @Schema(description = "名称")
     private String name;
 
-    @Schema(description = "标签(CTJ)")
+    @Schema(description = "标签")
     private String tags;
 
 }

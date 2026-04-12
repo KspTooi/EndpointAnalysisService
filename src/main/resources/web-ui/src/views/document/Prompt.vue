@@ -28,7 +28,13 @@
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="tags" label="标签(CTJ)" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="tags" label="标签" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag v-for="tag in scope.row.tags" :key="tag.n" type="info" size="small" class="mr-1">
+              {{ tag.n }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="paramCount" label="参数数量" min-width="120" show-overflow-tooltip />
         <el-table-column prop="version" label="版本号" min-width="120" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" min-width="120" show-overflow-tooltip />
@@ -88,7 +94,7 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="modalForm.name" placeholder="请输入名称" clearable show-word-limit maxlength="80" />
         </el-form-item>
-        <el-form-item label="标签(CTJ)" prop="tags">
+        <el-form-item label="标签" prop="tags">
           <StdCustomizeTagSelect
             v-model="modalForm.tags"
             :tags="[]"

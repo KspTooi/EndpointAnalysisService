@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import com.ksptool.bio.biz.core.common.model.CustomizeTagJson;
 
 @Getter
 @Setter
@@ -17,7 +19,7 @@ public class GetPromptListVo {
     private String name;
 
     @Schema(description = "标签(CTJ)")
-    private String tags;
+    private List<CustomizeTagJson> tags;
 
     @Schema(description = "参数数量")
     private Integer paramCount;
