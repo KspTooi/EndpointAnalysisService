@@ -26,7 +26,7 @@ import java.util.List;
 @Entity
 @Table(name = "ep_prompt")
 @EntityListeners(AuditingEntityListener.class)
-@SQLDelete(sql = "UPDATE core_user SET delete_time = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE ep_prompt SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
 public class PromptPo extends RowScopePo {
 
