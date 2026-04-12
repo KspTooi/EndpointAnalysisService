@@ -112,7 +112,7 @@ export default {
       name: "",
       code: "",
       remark: "",
-      seq: "",
+      seq: 0,
     });
 
     /**
@@ -144,7 +144,7 @@ export default {
         modalForm.name = "";
         modalForm.code = "";
         modalForm.remark = "";
-        modalForm.seq = "";
+        modalForm.seq = 0;
         modalVisible.value = true;
         return;
       }
@@ -181,7 +181,7 @@ export default {
       modalForm.name = "";
       modalForm.code = "";
       modalForm.remark = "";
-      modalForm.seq = "";
+      modalForm.seq = 0;
     };
 
     /**

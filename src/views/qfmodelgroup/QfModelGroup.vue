@@ -95,7 +95,7 @@
           <el-input v-model="modalForm.remark" placeholder="请输入备注" clearable :maxlength="500" show-word-limit />
         </el-form-item>
         <el-form-item label="排序" prop="seq">
-          <el-input v-model="modalForm.seq" placeholder="请输入排序" clearable />
+          <el-input v-model.number="modalForm.seq" placeholder="请输入排序" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
