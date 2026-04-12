@@ -59,7 +59,6 @@ public class PromptService {
         if (repository.countByNameExcludeId(insertPo.getName(), null) > 0) {
             throw new BizException("名称已存在:[" + insertPo.getName() + "]");
         }
-        insertPo.setTags("[]");
         insertPo.setParamCount(0);
         insertPo.setVersion(1);
         repository.save(insertPo);
