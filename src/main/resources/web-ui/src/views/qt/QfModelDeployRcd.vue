@@ -23,25 +23,28 @@
 
     <!-- 操作按钮区域 -->
     <StdListAreaAction class="flex gap-2">
-      <el-button type="success" @click="openModal('add', null)">新增流程模型部署历史</el-button>
+      <!-- <el-button type="success" @click="openModal('add', null)">新增流程模型部署历史</el-button> -->
     </StdListAreaAction>
 
     <!-- 列表表格区域 -->
     <StdListAreaTable>
       <el-table :data="listData" stripe v-loading="listLoading" border height="100%">
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
-        <el-table-column prop="id" label="主键ID" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="modelId" label="模型ID" min-width="120" show-overflow-tooltip />
         <el-table-column prop="name" label="模型名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="模型编码" min-width="120" show-overflow-tooltip />
         <el-table-column prop="version" label="模型版本号" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="部署状态 0:正常 1:部署失败" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="status" label="部署状态" min-width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag v-if="scope.row.status === 0" type="success">正常</el-tag>
+            <el-tag v-else-if="scope.row.status === 1" type="danger">失败</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="部署时间" min-width="120" show-overflow-tooltip />
         <el-table-column label="操作" fixed="right" min-width="180">
           <template #default="scope">
-            <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
+            <!-- <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
-            </el-button>
+            </el-button> -->
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -107,7 +110,7 @@
 import { ref, markRaw } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 import type { FormInstance } from "element-plus";
-import QfModelDeployRcdService from "@/views/qfModelDeployRcd/service/QfModelDeployRcdService.ts";
+import QfModelDeployRcdService from "@/views/qt/service/QfModelDeployRcdService.ts";
 import StdListContainer from "@/soa/std-series/StdListContainer.vue";
 import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
@@ -118,7 +121,8 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } = QfModelDeployRcdService.useQfModelDeployRcdList();
+const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
+  QfModelDeployRcdService.useQfModelDeployRcdList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();

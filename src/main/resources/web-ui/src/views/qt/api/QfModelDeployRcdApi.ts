@@ -34,19 +34,6 @@ export interface GetQfModelDeployRcdDetailsVo {
   bpmnXml: string; // 模型BPMN XML
 }
 
-/**
- * 新增流程模型部署历史Dto
- */
-export interface AddQfModelDeployRcdDto {
-}
-
-/**
- * 编辑流程模型部署历史Dto
- */
-export interface EditQfModelDeployRcdDto {
-  id: string; // 主键ID
-}
-
 export default {
   /**
    * 获取流程模型部署历史列表
@@ -59,31 +46,12 @@ export default {
    * 获取流程模型部署历史详情
    */
   getQfModelDeployRcdDetails: async (dto: CommonIdDto): Promise<GetQfModelDeployRcdDetailsVo> => {
-    const result = await Http.postEntity<Result<GetQfModelDeployRcdDetailsVo>>("/qfModelDeployRcd/getQfModelDeployRcdDetails", dto);
+    const result = await Http.postEntity<Result<GetQfModelDeployRcdDetailsVo>>(
+      "/qfModelDeployRcd/getQfModelDeployRcdDetails",
+      dto
+    );
     if (result.code === 0) {
       return result.data;
-    }
-    throw new Error(result.message);
-  },
-
-  /**
-   * 新增流程模型部署历史
-   */
-  addQfModelDeployRcd: async (dto: AddQfModelDeployRcdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/qfModelDeployRcd/addQfModelDeployRcd", dto);
-    if (result.code === 0) {
-      return result.message;
-    }
-    throw new Error(result.message);
-  },
-
-  /**
-   * 编辑流程模型部署历史
-   */
-  editQfModelDeployRcd: async (dto: EditQfModelDeployRcdDto): Promise<string> => {
-    const result = await Http.postEntity<Result<string>>("/qfModelDeployRcd/editQfModelDeployRcd", dto);
-    if (result.code === 0) {
-      return result.message;
     }
     throw new Error(result.message);
   },

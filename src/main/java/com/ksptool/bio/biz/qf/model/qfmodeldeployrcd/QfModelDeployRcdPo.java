@@ -1,20 +1,20 @@
-package com.ksptool.bio.biz.qfmodeldeployrcd.model;
+package com.ksptool.bio.biz.qf.model.qfmodeldeployrcd;
 
 import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.bio.biz.auth.service.SessionService;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -51,10 +51,10 @@ public class QfModelDeployRcdPo {
     @Column(name = "version", nullable = false, comment = "模型版本号")
     private Integer version;
 
-    @Column(name = "eng_deployment_id", length = 128, comment = "引擎"部署ID"(部署失败为NULL)")
+    @Column(name = "eng_deployment_id", length = 128, comment = "引擎部署ID(部署失败为NULL)")
     private String engDeploymentId;
 
-    @Column(name = "eng_process_def_id", length = 128, comment = "引擎"流程ID"(部署失败为NULL)")
+    @Column(name = "eng_process_def_id", length = 128, comment = "引擎流程ID(部署失败为NULL)")
     private String engProcessDefId;
 
     @Column(name = "eng_deploy_result", nullable = false, comment = "引擎返回的部署结果")

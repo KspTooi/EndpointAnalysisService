@@ -4,10 +4,8 @@ import type {
   GetQfModelDeployRcdListDto,
   GetQfModelDeployRcdListVo,
   GetQfModelDeployRcdDetailsVo,
-  AddQfModelDeployRcdDto,
-  EditQfModelDeployRcdDto,
-} from "@/views/qfModelDeployRcd/api/QfModelDeployRcdApi.ts";
-import QfModelDeployRcdApi from "@/views/qfModelDeployRcd/api/QfModelDeployRcdApi.ts";
+} from "@/views/qt/api/QfModelDeployRcdApi.ts";
+import QfModelDeployRcdApi from "@/views/qt/api/QfModelDeployRcdApi.ts";
 import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -117,8 +115,7 @@ export default {
     /**
      * 表单验证规则
      */
-    const modalRules: FormRules = {
-    };
+    const modalRules: FormRules = {};
 
     /**
      * 打开模态框
@@ -181,17 +178,6 @@ export default {
       modalLoading.value = true;
 
       if (modalMode.value === "add") {
-        try {
-          const addDto: AddQfModelDeployRcdDto = {
-          };
-          await QfModelDeployRcdApi.addQfModelDeployRcd(addDto);
-          ElMessage.success("新增成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
         modalLoading.value = false;
         return;
       }
@@ -203,18 +189,6 @@ export default {
           return;
         }
 
-        try {
-          const editDto: EditQfModelDeployRcdDto = {
-            id: modalForm.id,
-          };
-          await QfModelDeployRcdApi.editQfModelDeployRcd(editDto);
-          ElMessage.success("编辑成功");
-          modalVisible.value = false;
-          resetModal();
-          reloadCallback();
-        } catch (error: any) {
-          ElMessage.error(error.message);
-        }
         modalLoading.value = false;
       }
     };
