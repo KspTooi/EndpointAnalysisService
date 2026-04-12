@@ -85,9 +85,10 @@ public class PromptService {
 
         insertPo.setParamCount(0);
 
-        //计算参数数量 统计#的个数
+        //计算参数数量
         if (dto.getContent() != null) {
-            insertPo.setParamCount(dto.getContent().split("#").length - 1);
+            PreparedPrompt prompt = new PreparedPrompt(dto.getContent());
+            insertPo.setParamCount(prompt.getUnsetParameters().length);
         }
         insertPo.setVersion(1);
         repository.save(insertPo);
@@ -111,9 +112,10 @@ public class PromptService {
         assign(dto, updatePo);
 
         updatePo.setParamCount(0);
-        //计算参数数量 统计#的个数
+        //计算参数数量
         if (dto.getContent() != null) {
-            updatePo.setParamCount(dto.getContent().split("#").length - 1);
+            PreparedPrompt prompt = new PreparedPrompt(dto.getContent());
+            updatePo.setParamCount(prompt.getUnsetParameters().length);
         }
 
         //版本号+1
