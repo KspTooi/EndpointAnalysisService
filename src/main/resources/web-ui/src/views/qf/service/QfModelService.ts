@@ -127,7 +127,11 @@ export default {
         { required: true, message: "请输入模型编码", trigger: "blur" },
         { max: 32, message: "模型编码长度不能超过32个字符", trigger: "blur" },
       ],
-      seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
+      seq: [
+        { required: true, message: "请输入排序", trigger: "blur" },
+        { type: "number", min: 0, message: "排序必须大于等于0", trigger: "blur" },
+        { type: "number", max: 655350, message: "排序不能超过655350", trigger: "blur" },
+      ],
     };
 
     /**
