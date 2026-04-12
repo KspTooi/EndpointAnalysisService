@@ -6,9 +6,9 @@ import type {
   GetPromptDetailsVo,
   AddPromptDto,
   EditPromptDto,
-} from "@/views/prompt/api/PromptApi.ts";
-import PromptApi from "@/views/prompt/api/PromptApi.ts";
-import { Result } from "@/commons/model/Result";
+} from "@/views/document/api/PromptApi.ts";
+import PromptApi from "@/views/document/api/PromptApi.ts";
+import { Result } from "@/commons/model/Result.ts";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**

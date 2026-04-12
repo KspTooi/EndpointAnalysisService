@@ -22,6 +22,13 @@ export default class DocumentRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/document/EpSiteManager.vue"),
         meta: { breadcrumb: "站点管理" },
       }),
+      RouteEntryPo.build({
+        biz: "ep",
+        path: "prompt",
+        name: "prompt",
+        component: () => import("@/views/document/Prompt.vue"),
+        meta: { breadcrumb: "提示词" },
+      }),
     ];
   }
 }

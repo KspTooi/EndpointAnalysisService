@@ -1,6 +1,7 @@
 import { RouteEntryPo } from "@/soa/genric-route/api/RouteEntryPo.ts";
 import GenricRouteRegister from "@/soa/genric-route/service/GenricRouteRegister";
 
+
 export default class ${model.std}RouteRegister extends GenricRouteRegister {
   public doRegister(): RouteEntryPo[] {
     return [

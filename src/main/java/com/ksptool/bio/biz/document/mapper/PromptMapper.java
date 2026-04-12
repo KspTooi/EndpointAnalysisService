@@ -1,7 +1,6 @@
-package com.ksptool.bio.biz.prompt.mapper;
+package com.ksptool.bio.biz.document.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PromptMapper {

@@ -11,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.ksptool.assembly.entity.exception.AuthException;
+import com.ksptool.bio.biz.auth.service.SessionService;
 
 @Getter
 @Setter
@@ -47,7 +49,29 @@ public class ${model.std}Po {
 
     @PrePersist
     private void onCreate() throws AuthException {
-
+        #set($hasRootId = false)
+        #set($hasDeptId = false)
+        #foreach($field in $model.fields)
+            #if($field.camelCase == "rootId")
+                #set($hasRootId = true)
+            #end
+            #if($field.camelCase == "deptId")
+                #set($hasDeptId = true)
+            #end
+        #end
+        #if($hasRootId || $hasDeptId)
+        var session = SessionService.session();
+        #if($hasRootId)
+        if (this.rootId == null) {
+            this.rootId = session.getRootId();
+        }
+        #end
+        #if($hasDeptId)
+        if (this.deptId == null) {
+            this.deptId = session.getDeptId();
+        }
+        #end
+        #end
     }
 
     @PreUpdate
