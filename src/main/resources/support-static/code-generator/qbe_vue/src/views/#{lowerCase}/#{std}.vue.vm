@@ -95,6 +95,8 @@
         <el-form-item label="${field.comment}" prop="${field.camelCase}">
 #if($field.type == "number")
           <el-input v-model.number="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable />
+#elseif($field.length)
+          <el-input v-model="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable :maxlength="${field.length}" show-word-limit />
 #else
           <el-input v-model="modalForm.${field.camelCase}" placeholder="请输入${field.comment}" clearable />
 #end
