@@ -103,6 +103,7 @@
             default-first-option
             placeholder="回车创建新标签"
             multiple-limit="6"
+            :reserve-keyword="false"
           />
         </el-form-item>
         <el-form-item label="内容" prop="content">
