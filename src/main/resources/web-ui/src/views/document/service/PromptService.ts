@@ -112,6 +112,7 @@ export default {
       name: "",
       tags: [],
       content: "",
+      paramSlots:[]
     });
 
     /**
