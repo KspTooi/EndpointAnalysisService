@@ -129,7 +129,7 @@
         <el-form-item v-if="modalForm.scmAuthKind === 2" label="SSH KEY" prop="scmPk">
           <el-input
             v-model="modalForm.scmPk"
-            placeholder="请输入SSH KEY"
+            placeholder="SSH私钥(-----BEGIN OPENSSH PRIVATE KEY-----开头)"
             type="textarea"
             :rows="3"
             maxlength="10000"

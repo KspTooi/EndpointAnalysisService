@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,12 @@ public class ScmController {
     @Operation(summary = "新增SCM")
     @PostMapping("/addScm")
     public Result<String> addScm(@RequestBody @Valid AddScmDto dto) throws Exception {
+
+        //标准化SCM URL
+        if (StringUtils.isNotBlank(dto.getScmUrl())) {
+            dto.setScmUrl(scmService.normalizeGitUrl(dto.getScmUrl()));
+        }
+
         scmService.addScm(dto);
         return Result.success("操作成功");
     }
@@ -45,6 +52,12 @@ public class ScmController {
     @Operation(summary = "编辑SCM")
     @PostMapping("/editScm")
     public Result<String> editScm(@RequestBody @Valid EditScmDto dto) throws Exception {
+
+        //标准化SCM URL
+        if (StringUtils.isNotBlank(dto.getScmUrl())) {
+            dto.setScmUrl(scmService.normalizeGitUrl(dto.getScmUrl()));
+        }
+
         scmService.editScm(dto);
         return Result.success("操作成功");
     }

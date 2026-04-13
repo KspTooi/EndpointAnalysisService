@@ -8,9 +8,6 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
-import com.ksptool.bio.biz.auth.common.aop.rsuser.RowScopeUser;
-import com.ksptool.bio.biz.core.common.AppRegistry;
-import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.scm.dto.AddScmDto;
 import com.ksptool.bio.biz.assembly.model.scm.dto.EditScmDto;
@@ -18,18 +15,18 @@ import com.ksptool.bio.biz.assembly.model.scm.dto.GetScmListDto;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmDetailsVo;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmListVo;
 import com.ksptool.bio.biz.assembly.repository.ScmRepository;
+import com.ksptool.bio.biz.auth.common.aop.rsuser.RowScopeUser;
+import com.ksptool.bio.biz.core.common.AppRegistry;
+import com.ksptool.bio.biz.core.service.RegistrySdk;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.SshSessionFactory;
-import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.TransportHttp;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.HttpConnectionFactory;
 import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
@@ -414,7 +411,7 @@ public class ScmService {
      * @param basePath 本地工作目录
      * @throws BizException 业务异常
      */
-    public void pushToScm(ScmPo scmPo, String basePath,String commitMessage) throws BizException {
+    public void pushToScm(ScmPo scmPo, String basePath, String commitMessage) throws BizException {
         var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
         var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
         int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
@@ -487,5 +484,54 @@ public class ScmService {
         }
     }
 
+    /**
+     * 将非标准的 Git SSH URL 统一规范化为 JGit 支持的标准格式
+     *
+     * @param url 原始输入 URL
+     * @return 标准化的 ssh:// URL
+     */
+    public String normalizeGitUrl(String url) {
+
+        if (StringUtils.isBlank(url)) {
+            return url;
+        }
+
+        url = url.trim();
+
+        // 兼容特殊方括号格式: [git@192.168.10.202:50002]:wangshuailong/shipyard.git
+        if (url.startsWith("[") && url.contains("]:")) {
+            int bracketEnd = url.indexOf("]:");
+            // 提取方括号内的认证与主机信息 (例如: git@192.168.10.202:50002)
+            String hostInfo = url.substring(1, bracketEnd);
+            // 提取路径部分 (例如: wangshuailong/shipyard.git)
+            String repoPath = url.substring(bracketEnd + 2);
+
+            // 拼接为标准 ssh:// 格式，确保路径部分以 '/' 分隔
+            if (!repoPath.startsWith("/")) {
+                repoPath = "/" + repoPath;
+            }
+            url = "ssh://" + hostInfo + repoPath;
+        }
+
+        // 兼容传统的 SCP 风格: git@192.168.10.202:wangshuailong/shipyard.git
+        // 如果上方逻辑执行，url 已包含 "://"，下方的 !url.contains("://") 会自然阻断，因此无需 else
+        if (!url.contains("://") && url.contains(":") && url.contains("@")) {
+            String[] parts = url.split(":", 2);
+            String hostInfo = parts[0];
+            String repoPath = parts[1];
+
+            if (!repoPath.startsWith("/")) {
+                repoPath = "/" + repoPath;
+            }
+            url = "ssh://" + hostInfo + repoPath;
+        }
+
+        // 修复漏掉用户名的标准协议: ssh://192.168.10.202... -> ssh://git@192.168.10.202...
+        if (url.startsWith("ssh://") && !url.contains("@")) {
+            url = url.replaceFirst("ssh://", "ssh://git@");
+        }
+
+        return url;
+    }
 
 }

@@ -62,6 +62,20 @@ public class AddScmDto implements DtoCustomValidator {
     @Override
     public String validate() {
 
+        //校验 SCM 仓库地址格式
+        if (StringUtils.isNotBlank(scmUrl)) {
+            String url = scmUrl.trim();
+
+            boolean isHttp = url.startsWith("http://") || url.startsWith("https://");
+            boolean isStandardSsh = url.startsWith("ssh://") || url.startsWith("git://");
+            boolean isScpStyle = url.startsWith("git@") && url.contains(":");
+            boolean isCustomScp = url.startsWith("[") && url.contains("]:");
+
+            if (!isHttp && !isStandardSsh && !isScpStyle && !isCustomScp) {
+                return "SCM仓库地址格式不正确，请输入有效的 HTTP(S) / SSH 或标准 Git 地址";
+            }
+        }
+
         //认证方式为 1:账号密码 时，SCM用户名和SCM密码不能为空
         if (scmAuthKind == 1) {
             if (StringUtils.isBlank(scmUsername)) {
@@ -76,6 +90,19 @@ public class AddScmDto implements DtoCustomValidator {
         if (scmAuthKind == 2) {
             if (StringUtils.isBlank(scmPk)) {
                 return "当SCM认证方式为SSH KEY时，SSH KEY不能为空";
+            }
+
+            //剔除前后可能误输入的空格或换行符
+            String pk = scmPk.trim();
+
+            //必须以 OpenSSH 格式的头部开头
+            if (!pk.startsWith("-----BEGIN OPENSSH PRIVATE KEY-----")) {
+                return "SSH私钥格式不正确，系统目前仅支持 'BEGIN OPENSSH PRIVATE KEY' 格式的新版私钥";
+            }
+
+            //确保有对应的尾部（防止用户复制粘贴时漏掉后半截）
+            if (!pk.endsWith("-----END OPENSSH PRIVATE KEY-----")) {
+                return "SSH私钥内容不完整，请确保包含 'END OPENSSH PRIVATE KEY' 结尾";
             }
         }
 
