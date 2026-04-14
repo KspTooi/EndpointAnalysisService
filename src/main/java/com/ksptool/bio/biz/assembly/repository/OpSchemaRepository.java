@@ -35,7 +35,7 @@ public interface OpSchemaRepository extends JpaRepository<OpSchemaPo, Long> {
             AND (:#{#po.creatorId} IS NULL OR u.creatorId  = :#{#po.creatorId} )
             AND (:#{#po.updateTime} IS NULL OR u.updateTime  = :#{#po.updateTime} )
             AND (:#{#po.updaterId} IS NULL OR u.updaterId  = :#{#po.updaterId} )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<OpSchemaPo> getOpSchemaList(@Param("po") OpSchemaPo po, Pageable pageable);
 

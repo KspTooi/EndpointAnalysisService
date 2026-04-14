@@ -83,7 +83,7 @@ public class OpSchemaService {
     private TymSchemaFieldRepository tymSfRepository;
 
     //QBE Velocity引擎实例
-    private QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
+    private final QbeVelocityEngine qbeVelocityEngine = new QbeVelocityEngine();
 
     /**
      * 查询输出方案列表
@@ -485,7 +485,7 @@ public class OpSchemaService {
         }
 
         //准备工作空间
-        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getId();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
         var iAppendPath = opSchemaPo.getBaseInput().trim();  //这是在输出方案中配置的蓝图SCM相对路径
@@ -610,7 +610,7 @@ public class OpSchemaService {
                 .orElseThrow(() -> new BizException("执行输出方案失败,输出SCM不存在或无权限访问."));
 
         //准备工作空间
-        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getId();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
         var workSpaceOutputPath = workSpacePath.resolve("output");
@@ -675,7 +675,7 @@ public class OpSchemaService {
      * @return 蓝图文件绝对路径
      */
     private Path getBluePrintPath(OpSchemaPo opSchemaPo) {
-        var workSpaceName = "gen_workspace_" + opSchemaPo.getName();
+        var workSpaceName = "gen_workspace_" + opSchemaPo.getId();
         var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
         var workSpaceInputPath = workSpacePath.resolve("input");
         var iAppendPath = opSchemaPo.getBaseInput().trim();  //这是在输出方案中配置的蓝图SCM相对路径

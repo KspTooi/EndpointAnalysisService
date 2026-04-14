@@ -17,7 +17,7 @@ public interface ScmRepository extends JpaRepository<ScmPo, Long> {
             (:#{#po.id} IS NULL OR u.id  = :#{#po.id} )
             AND (:#{#po.name} IS NULL OR u.name  LIKE CONCAT('%', :#{#po.name}, '%') )
             AND (:#{#po.projectName} IS NULL OR u.projectName  LIKE CONCAT('%', :#{#po.projectName}, '%') )
-            ORDER BY u.updateTime DESC
+            ORDER BY u.createTime DESC
             """)
     Page<ScmPo> getScmList(@Param("po") ScmPo po, Pageable pageable);
 
@@ -32,7 +32,7 @@ public interface ScmRepository extends JpaRepository<ScmPo, Long> {
             """)
     int countByName(@Param("name") String name);
 
-    /** 
+    /**
      * 根据名称统计SCM数量 排除指定ID
      *
      * @param name 名称
