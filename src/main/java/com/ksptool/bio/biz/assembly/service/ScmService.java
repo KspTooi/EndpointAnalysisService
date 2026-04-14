@@ -8,15 +8,20 @@ import com.ksptool.assembly.entity.exception.BizException;
 import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprint;
+import com.ksptool.bio.biz.assembly.common.quickbuildengine.QbeBlueprintReader;
 import com.ksptool.bio.biz.assembly.model.scm.ScmPo;
 import com.ksptool.bio.biz.assembly.model.scm.dto.AddScmDto;
 import com.ksptool.bio.biz.assembly.model.scm.dto.EditScmDto;
+import com.ksptool.bio.biz.assembly.model.scm.dto.GetAnchorPointsDto;
 import com.ksptool.bio.biz.assembly.model.scm.dto.GetScmListDto;
+import com.ksptool.bio.biz.assembly.model.scm.vo.GetAnchorPointsVo;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmDetailsVo;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmListVo;
 import com.ksptool.bio.biz.assembly.repository.ScmRepository;
 import com.ksptool.bio.biz.auth.common.aop.rsuser.RowScopeUser;
 import com.ksptool.bio.biz.core.common.AppRegistry;
+import com.ksptool.bio.biz.core.service.AttachService;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +46,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -58,6 +65,9 @@ public class ScmService {
 
     @Autowired
     private RegistrySdk registrySdk;
+
+    @Autowired
+    private AttachService attachService;
 
     /**
      * 获取SCM列表
@@ -483,6 +493,72 @@ public class ScmService {
             throw new BizException("本地目录访问失败: " + e.getMessage());
         }
     }
+
+    /**
+     * 获取导航锚点
+     *
+     * @param dto 查询条件
+     * @return 导航锚点列表
+     */
+    public List<GetAnchorPointsVo> getAnchorPoints(GetAnchorPointsDto dto) throws BizException {
+
+        ScmPo po = repository.findById(dto.getScmId())
+                .orElseThrow(() -> new BizException("获取导航锚点失败,数据不存在或无权限访问."));
+
+        //准备工作空间
+        var workSpaceName = "gen_workspace_" + po.getId();
+        var workSpacePath = attachService.getAttachLocalPath(Paths.get(workSpaceName));
+        var workSpaceInputPath = workSpacePath.resolve("input");
+        var workSpaceOutputPath = workSpacePath.resolve("output");
+
+        try {
+
+            //初始化蓝图读取器
+            QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
+
+            var ret = new ArrayList<GetAnchorPointsVo>();
+
+            //输入SCM
+            if (dto.getKind() == 0) {
+
+                //检出输入SCM
+                pullFromScm(po, workSpaceInputPath.toString());
+                
+                reader.setBlueprintExtension("qbeinput");
+
+                List<QbeBlueprint> allBlueprints = reader.readBlueprint();
+                
+                for (QbeBlueprint blueprint : allBlueprints) {
+                    var vo = new GetAnchorPointsVo();
+                    vo.setName(blueprint.getFileName());
+                    vo.setRelativePath(blueprint.getRelativeFilePath());
+                    ret.add(vo);
+                }
+
+                return ret;
+            }
+
+            //检出输出SCM
+            pullFromScm(po, workSpaceOutputPath.toString());
+
+            reader.setBlueprintExtension("qbeoutput");
+            List<QbeBlueprint> allBlueprints = reader.readBlueprint();
+            for (QbeBlueprint blueprint : allBlueprints) {
+                var vo = new GetAnchorPointsVo();
+                vo.setName(blueprint.getFileName());
+                vo.setRelativePath(blueprint.getRelativeFilePath());
+                ret.add(vo);
+            }
+
+            return ret;
+
+        } catch (IOException e) {
+            log.error("读取蓝图文件列表失败: {} 路径: {}", e.getMessage(), workSpacePath, e);
+            throw new BizException("获取导航锚点失败,读取蓝图文件列表失败: " + e.getMessage());
+        }
+
+    }
+
 
     /**
      * 将非标准的 Git SSH URL 统一规范化为 JGit 支持的标准格式

@@ -5,7 +5,9 @@ import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.assembly.model.scm.dto.AddScmDto;
 import com.ksptool.bio.biz.assembly.model.scm.dto.EditScmDto;
+import com.ksptool.bio.biz.assembly.model.scm.dto.GetAnchorPointsDto;
 import com.ksptool.bio.biz.assembly.model.scm.dto.GetScmListDto;
+import com.ksptool.bio.biz.assembly.model.scm.vo.GetAnchorPointsVo;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmDetailsVo;
 import com.ksptool.bio.biz.assembly.model.scm.vo.GetScmListVo;
 import com.ksptool.bio.biz.assembly.service.ScmService;
@@ -13,6 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,6 +88,12 @@ public class ScmController {
     @PostMapping("/testScmConnection")
     public Result<String> testScmConnection(@RequestBody @Valid CommonIdDto dto) throws Exception {
         return scmService.testScmConnection(dto);
+    }
+
+    @Operation(summary = "获取导航锚点")
+    @PostMapping("/getAnchorPoints")
+    public Result<List<GetAnchorPointsVo>> getAnchorPoints(@RequestBody @Valid GetAnchorPointsDto dto) throws Exception {
+        return Result.success(scmService.getAnchorPoints(dto));
     }
 
 }
