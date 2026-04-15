@@ -323,6 +323,12 @@ public class ScmService {
      * @throws BizException 业务异常
      */
     public void pullFromScm(ScmPo scmPo, String basePath) throws BizException {
+
+        //检测本地仓库是否落后于远程仓库
+        if (!checkFromScm(scmPo, basePath)) {
+            return;
+        }
+
         var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
         var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
         int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
@@ -564,6 +570,100 @@ public class ScmService {
 
     }
 
+    /**
+     * 检测本地仓库是否落后于远程仓库
+     *
+     * @param scmPo    SCM配置
+     * @param basePath 本地工作目录
+     * @return true: 需要更新(或尚未Clone); false: 本地已是最新状态
+     */
+    public boolean checkFromScm(ScmPo scmPo, String basePath) {
+        File localDir = new File(basePath);
+
+        //如果本地目录或 .git 文件夹不存在，说明根本没有本地仓库，肯定需要拉取(Clone)
+        if (!localDir.exists() || !new File(localDir, ".git").exists()) {
+            log.info("checkFromScm: 本地仓库不存在，需要执行 Clone 目录={}", basePath);
+            return true;
+        }
+
+        //获取代理配置
+        var proxyEnable = registrySdk.getInt(AppRegistry.FG_PROXY_ENABLE.getFullKey(), 0);
+        var proxyHost = registrySdk.getString(AppRegistry.FG_PROXY_HOST.getFullKey(), "127.0.0.1");
+        int proxyPort = registrySdk.getInt(AppRegistry.FG_PROXY_PORT.getFullKey(), 8080);
+        var proxyUsername = registrySdk.getString(AppRegistry.FG_PROXY_USERNAME.getFullKey(), "?");
+        var proxyPassword = registrySdk.getString(AppRegistry.FG_PROXY_PASSWORD.getFullKey(), "?");
+        boolean useProxy = proxyEnable == 1;
+
+        try (Git git = Git.open(localDir)) {
+            org.eclipse.jgit.lib.Repository repository = git.getRepository();
+
+            // 兼容分支路径格式 (例如: "main" -> "refs/heads/main")
+            String targetBranch = scmPo.getScmBranch();
+            String fullBranchPath = targetBranch.startsWith("refs/") ? targetBranch : "refs/heads/" + targetBranch;
+
+            //解析本地仓库对应分支当前的 Commit Hash
+            org.eclipse.jgit.lib.ObjectId localHead = repository.resolve(fullBranchPath);
+
+            //构建 ls-remote 请求获取远程分支的 Commit Hash
+            LsRemoteCommand lsRemoteCmd = Git.lsRemoteRepository()
+                    .setRemote(scmPo.getScmUrl())
+                    .setTimeout(10); // 检测通常极快，10秒足够
+
+            //根据授权类型注入凭证和代理
+            if (scmPo.getScmAuthKind() == 1 || scmPo.getScmAuthKind() == 3) {
+                lsRemoteCmd.setCredentialsProvider(
+                        new UsernamePasswordCredentialsProvider(scmPo.getScmUsername(), scmPo.getScmPassword())
+                );
+                if (useProxy) {
+                    setupHttpProxy(lsRemoteCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            } else if (scmPo.getScmAuthKind() == 2) {
+                setupSshAuthentication(lsRemoteCmd, scmPo.getScmPk(),
+                        useProxy ? proxyHost : null, useProxy ? proxyPort : -1,
+                        proxyUsername, proxyPassword);
+            } else if (scmPo.getScmAuthKind() == 0) {
+                lsRemoteCmd.setCredentialsProvider(null);
+                if (useProxy) {
+                    setupHttpProxy(lsRemoteCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                }
+            }
+
+            //执行请求并提取目标分支的远程 Hash
+            Collection<Ref> remoteRefs = lsRemoteCmd.call();
+            org.eclipse.jgit.lib.ObjectId remoteHead = null;
+
+            for (Ref ref : remoteRefs) {
+                if (ref.getName().equalsIgnoreCase(fullBranchPath)) {
+                    remoteHead = ref.getObjectId();
+                    break;
+                }
+            }
+
+            //结果对比分析
+            if (localHead == null) {
+                log.info("checkFromScm: 本地找不到分支指针 {}, 判定为需要更新", fullBranchPath);
+                return true;
+            }
+            if (remoteHead == null) {
+                log.warn("checkFromScm: 远程未找到分支 {}, 无法执行对比，保险起见判定为需要更新", fullBranchPath);
+                return true;
+            }
+
+            boolean isUpToDate = localHead.equals(remoteHead);
+            if (isUpToDate) {
+                log.info("checkFromScm: 分支 [{}] 本地已是最新 (Hash: {}), 无需拉取", targetBranch, localHead.getName());
+                return false;
+            } else {
+                log.info("checkFromScm: 发现更新 (本地 Hash: {}, 远程 Hash: {}), 需要拉取", localHead.getName(), remoteHead.getName());
+                return true;
+            }
+
+        } catch (Exception e) {
+            // 容错处理：如果检测过程发生网络异常或 Git 异常，为了不阻塞主干业务，返回 true 让接下来的 clone/pull 逻辑去真正接管错误
+            log.error("checkFromScm: 检测远程仓库状态时发生异常: {}, 降级判定为需要更新", e.getMessage());
+            return true;
+        }
+    }
 
     /**
      * 将非标准的 Git SSH URL 统一规范化为 JGit 支持的标准格式
