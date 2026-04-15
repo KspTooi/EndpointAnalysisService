@@ -54,7 +54,6 @@ import java.util.List;
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
 
-
 @Slf4j
 @Service
 @RowScopeUser
@@ -343,38 +342,56 @@ public class ScmService {
                 // 已存在仓库时直接拉取远程分支
                 log.info("pullFromScm: pull 目录={}", basePath);
                 try (Git git = Git.open(localDir)) {
+
+                    var config = git.getRepository().getConfig();
+                    config.setString("protocol", null, "version", "2"); // 启用 v2 协议
+                    config.save();
+
                     // 丢弃本地所有未提交变更，避免 pull 时产生冲突
                     git.checkout().setAllPaths(true).call();
                     git.clean().setForce(true).setCleanDirectories(true).call();
 
-                    var pullCmd = git.pull()
-                            .setRemoteBranchName(scmPo.getScmBranch())
-                            .setTimeout(30);
+                    //浅拉取单分支
+                    var fetchCmd = git.fetch()
+                            .setRemote("origin")
+                            .setDepth(1)
+                            .setRefSpecs(new RefSpec("+refs/heads/" + scmPo.getScmBranch() + ":refs/remotes/origin/" + scmPo.getScmBranch()));
+
+
+                    //var pullCmd = git.pull()
+                    //        .setRemoteBranchName(scmPo.getScmBranch())
+                    //        .setTimeout(30);
 
                     // 公开仓库不带凭证，仅按需挂代理
                     if (scmPo.getScmAuthKind() == 0) {
-                        pullCmd.setCredentialsProvider(null);
+                        //pullCmd.setCredentialsProvider(null);
+                        fetchCmd.setCredentialsProvider(null);
                         if (useProxy) {
-                            setupHttpProxy(pullCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                            setupHttpProxy(fetchCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
                         }
                     }
 
                     // 账号密码和 PAT 统一走 HTTP 凭证
                     if (scmPo.getScmAuthKind() == 1 || scmPo.getScmAuthKind() == 3) {
-                        pullCmd.setCredentialsProvider(
+                        fetchCmd.setCredentialsProvider(
                                 new UsernamePasswordCredentialsProvider(scmPo.getScmUsername(), scmPo.getScmPassword()));
                         if (useProxy) {
-                            setupHttpProxy(pullCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
+                            setupHttpProxy(fetchCmd, proxyHost, proxyPort, proxyUsername, proxyPassword);
                         }
                     }
 
                     if (scmPo.getScmAuthKind() == 2) {
-                        setupSshAuthentication(pullCmd, scmPo.getScmPk(),
+                        setupSshAuthentication(fetchCmd, scmPo.getScmPk(),
                                 useProxy ? proxyHost : null, useProxy ? proxyPort : -1,
                                 proxyUsername, proxyPassword);
                     }
 
-                    pullCmd.call();
+                    fetchCmd.call();
+
+                    git.reset()
+                            .setMode(org.eclipse.jgit.api.ResetCommand.ResetType.HARD)
+                            .setRef("origin/" + scmPo.getScmBranch())
+                            .call();
                 }
                 return;
             }
