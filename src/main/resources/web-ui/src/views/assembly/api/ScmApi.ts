@@ -70,6 +70,22 @@ export interface EditScmDto {
   remark: string; // SCM备注
 }
 
+/**
+ * 获取导航锚点DTO
+ */
+export interface GetAnchorPointsDto {
+  scmId: string; // SCM ID
+  kind: number; // 类型 0:输入 1:输出
+}
+
+/**
+ * 获取导航锚点VO
+ */
+export interface GetAnchorPointsVo {
+  name: string; // 名称
+  relativePath: string; // 相对路径
+}
+
 export default {
   /**
    * 获取SCM列表
@@ -129,6 +145,17 @@ export default {
     const result = await Http.postEntity<Result<string>>("/scm/testScmConnection", dto);
     if (result.code === 0) {
       return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 获取导航锚点
+   */
+  getAnchorPoints: async (dto: GetAnchorPointsDto): Promise<GetAnchorPointsVo[]> => {
+    const result = await Http.postEntity<Result<GetAnchorPointsVo[]>>("/scm/getAnchorPoints", dto);
+    if (result.code === 0) {
+      return result.data;
     }
     throw new Error(result.message);
   },

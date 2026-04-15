@@ -47,9 +47,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 import static com.ksptool.entities.Entities.as;
 import static com.ksptool.entities.Entities.assign;
@@ -513,8 +513,6 @@ public class ScmService {
 
         try {
 
-            //初始化蓝图读取器
-            QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
 
             var ret = new ArrayList<GetAnchorPointsVo>();
 
@@ -523,11 +521,13 @@ public class ScmService {
 
                 //检出输入SCM
                 pullFromScm(po, workSpaceInputPath.toString());
-                
+
+                //初始化蓝图读取器
+                QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
                 reader.setBlueprintExtension("qbeinput");
 
                 List<QbeBlueprint> allBlueprints = reader.readBlueprint();
-                
+
                 for (QbeBlueprint blueprint : allBlueprints) {
                     var vo = new GetAnchorPointsVo();
                     vo.setName(blueprint.getFileName());
@@ -541,6 +541,8 @@ public class ScmService {
             //检出输出SCM
             pullFromScm(po, workSpaceOutputPath.toString());
 
+            //初始化蓝图读取器
+            QbeBlueprintReader reader = new QbeBlueprintReader(workSpaceInputPath.toString());
             reader.setBlueprintExtension("qbeoutput");
             List<QbeBlueprint> allBlueprints = reader.readBlueprint();
             for (QbeBlueprint blueprint : allBlueprints) {

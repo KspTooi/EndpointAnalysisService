@@ -187,14 +187,8 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="SCM基准路径" prop="baseInput">
-                <el-input
-                  v-model="modalForm.baseInput"
-                  placeholder="请输入SCM基准路径"
-                  clearable
-                  maxlength="320"
-                  show-word-limit
-                />
+              <el-form-item label="输入基准路径" prop="baseInput">
+                <AnchorPointBrowser v-model="modalForm.baseInput" :scm-id="modalForm.inputScmId" :kind="0" />
               </el-form-item>
             </el-card>
           </el-col>
@@ -316,14 +310,8 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="SCM基准路径" prop="baseOutput">
-                <el-input
-                  v-model="modalForm.baseOutput"
-                  placeholder="请输入SCM基准路径"
-                  clearable
-                  maxlength="320"
-                  show-word-limit
-                />
+              <el-form-item label="输出基准路径" prop="baseOutput">
+                <AnchorPointBrowser v-model="modalForm.baseOutput" :scm-id="modalForm.outputScmId" :kind="1" />
               </el-form-item>
               <el-form-item v-if="false" label="写出策略" prop="policyOverride">
                 <el-select v-model="modalForm.policyOverride" placeholder="请选择写出策略" style="width: 100%">
@@ -392,6 +380,7 @@ import StdListAreaQuery from "@/soa/std-series/StdListAreaQuery.vue";
 import StdListAreaAction from "@/soa/std-series/StdListAreaAction.vue";
 import StdListAreaTable from "@/soa/std-series/StdListAreaTable.vue";
 import DataSourceTableBrowser from "@/views/assembly/components/DataSourceTableBrowser.vue";
+import AnchorPointBrowser from "@/views/assembly/components/AnchorPointBrowser.vue";
 import ComDirectRouteContext from "@/soa/com-series/service/ComDirectRouteContext.ts";
 import ComIconService from "@/soa/com-series/service/ComIconService";
 import type { GetOpSchemaListVo } from "@/views/assembly/api/OpSchemaApi";
