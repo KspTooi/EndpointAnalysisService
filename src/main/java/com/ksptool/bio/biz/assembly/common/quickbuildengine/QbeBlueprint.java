@@ -102,4 +102,21 @@ public class QbeBlueprint {
         this.setOutputFilePath(resolvedRelativePath);
     }
 
+    /**
+     * 获取相对路径
+     * 只到目录、去除文件
+     * @return 相对路径，如果为空则返回null
+     */
+    public String getRelativeDirectoryPath() {
+        if (StringUtils.isBlank(relativeFilePath)) {
+            return null;
+        }
+        int lastIndex = relativeFilePath.lastIndexOf('/');
+        if (lastIndex != -1) {
+            return relativeFilePath.substring(0, lastIndex);
+        }
+        return relativeFilePath;
+    }
+
+
 }

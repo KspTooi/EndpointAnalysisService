@@ -136,5 +136,4 @@ public class QbeBlueprintReader {
         return blueprint;
     }
 
-
 }

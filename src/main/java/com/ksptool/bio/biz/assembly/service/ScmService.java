@@ -531,7 +531,8 @@ public class ScmService {
                 for (QbeBlueprint blueprint : allBlueprints) {
                     var vo = new GetAnchorPointsVo();
                     vo.setName(blueprint.getFileName());
-                    vo.setRelativePath(blueprint.getRelativeFilePath());
+                    //取相对路径 只到目录、去除文件
+                    vo.setRelativePath(blueprint.getRelativeDirectoryPath());
                     ret.add(vo);
                 }
 
@@ -548,7 +549,9 @@ public class ScmService {
             for (QbeBlueprint blueprint : allBlueprints) {
                 var vo = new GetAnchorPointsVo();
                 vo.setName(blueprint.getFileName());
-                vo.setRelativePath(blueprint.getRelativeFilePath());
+
+                //取相对路径 只到目录、去除文件
+                vo.setRelativePath(blueprint.getRelativeDirectoryPath());
                 ret.add(vo);
             }
 
