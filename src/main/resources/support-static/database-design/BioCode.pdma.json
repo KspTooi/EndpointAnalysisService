@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-18 23:52:46",
+  "updatedTime": "2026-4-19 01:17:39",
   "dbConns": [],
   "profile": {
     "default": {
@@ -31723,25 +31723,6 @@
           "uiHint": null
         },
         {
-          "defKey": "org_id",
-          "defName": "直属企业ID",
-          "comment": "",
-          "type": "",
-          "len": "",
-          "scale": "",
-          "primaryKey": false,
-          "notNull": true,
-          "autoIncrement": false,
-          "defaultValue": "",
-          "hideInGraph": false,
-          "refDict": null,
-          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
-          "extProps": {},
-          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
-          "id": "B364D889-72C4-4B42-B4C4-45436858E7BE",
-          "uiHint": null
-        },
-        {
           "defKey": "dept_id",
           "defName": "所属部门ID",
           "comment": "",
@@ -32660,7 +32641,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "53939FB0-185B-442D-BC44-6122ED1A6E25",
           "uiHint": null
         },
@@ -32679,7 +32660,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "263CFA31-DDF3-4660-A825-DEBF6DFFF991",
           "uiHint": null
         },
@@ -32698,7 +32679,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "B80EA3EB-2F0F-4A03-BB80-10104F727CF9",
           "uiHint": null
         },
@@ -32717,7 +32698,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "CF98A23D-B4E2-47D8-AE3A-0E3FF8E7FDA6",
           "uiHint": null
         },
@@ -32755,7 +32736,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "16DCDE56-C447-469A-B624-B2B4CC776197",
           "id": "B387FB7F-57DE-40BF-8725-C3C8C3948194",
           "uiHint": null
         },
@@ -32772,9 +32753,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": null,
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "28BD266F-DA23-4DF5-972F-7A02DBC2DA36",
           "extProps": {},
-          "domain": "4C3E20FF-3AA3-49A2-A990-23FED3B28195",
+          "domain": "71E820A5-F07F-42F8-B3E5-0AB24995AAAC",
           "id": "06D74748-1887-4B99-8CD8-BFA2AD60167B",
           "uiHint": null
         },
@@ -32793,16 +32774,16 @@
           "refDict": null,
           "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
           "extProps": {},
-          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "domain": "5FAA886E-14ED-43BD-8790-93F649EB8354",
           "id": "2709896A-02C2-4128-97CF-A233845B8B09",
           "uiHint": null
         },
         {
           "defKey": "eng_deployment_id",
-          "defName": "引擎\"部署ID\"(部署失败为NULL)",
+          "defName": "引擎部署ID(部署失败为NULL)",
           "comment": "",
-          "type": "VARCHAR",
-          "len": 128,
+          "type": "",
+          "len": "",
           "scale": "",
           "primaryKey": false,
           "notNull": false,
@@ -32812,16 +32793,16 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": null,
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "id": "9CE82A3B-2D3D-417E-8311-D0F2E5049C3E",
           "uiHint": null
         },
         {
           "defKey": "eng_process_def_id",
-          "defName": "引擎\"流程ID\"(部署失败为NULL)",
+          "defName": "引擎流程ID(部署失败为NULL)",
           "comment": "",
-          "type": "VARCHAR",
-          "len": 128,
+          "type": "",
+          "len": "",
           "scale": "",
           "primaryKey": false,
           "notNull": false,
@@ -32831,7 +32812,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": null,
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "id": "6D665161-A236-40BE-BB0B-3E1B0E59239C",
           "uiHint": null
         },
@@ -32850,7 +32831,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "4C3E20FF-3AA3-49A2-A990-23FED3B28195",
+          "domain": "E67CDB2A-3452-4ACA-AB6A-FD59997D392D",
           "id": "AB44C5C6-B889-4CDC-872E-B7CB88B36291",
           "uiHint": null
         },
@@ -33188,7 +33169,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "25AB2C04-38E6-4C6B-B3F8-E9B04EA6FCCD",
           "uiHint": null
         },
@@ -33207,7 +33188,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "D221539B-FA5D-48BC-86B6-D8CA3BF31F90",
           "uiHint": null
         },
@@ -33226,7 +33207,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "9CD65C3D-C7F9-4244-AF22-6B7CA5DE1E53",
           "uiHint": null
         },
@@ -33245,7 +33226,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "id": "B04BE6AC-1294-4EB9-A15B-617012B862B1",
           "uiHint": null
         },
@@ -33264,7 +33245,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "id": "6D35CB18-C5D5-49AF-9C63-6F7BB42BC788",
           "uiHint": null
         },
@@ -33283,7 +33264,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "7B93A3CB-8A02-4C3C-B3F9-7D2162E2C8D2",
           "uiHint": null
         },
@@ -33321,7 +33302,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "8D4D47BB-5218-4D52-8709-8B77F7B94ECB",
           "uiHint": null
         },
@@ -33359,7 +33340,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "056FE01A-CABB-4A1F-88DA-324DA5891426",
+          "domain": "4C3E20FF-3AA3-49A2-A990-23FED3B28195",
           "id": "3730D468-F49A-4CC0-80F5-837293CDC719",
           "uiHint": null
         },
@@ -33376,9 +33357,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": null,
-          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
           "extProps": {},
-          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
           "id": "32D4C205-3DF6-4516-B307-D0AF22F54BD7",
           "uiHint": null
         },
@@ -33395,9 +33376,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": null,
-          "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+          "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "0246976E-EEF4-4B72-A46E-864E2FF1D183",
           "uiHint": null
         },
@@ -33416,7 +33397,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "56422B2A-230B-459C-B74C-DE73D63E9903",
           "uiHint": null
         },
@@ -33435,7 +33416,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "86646A97-FB0A-4A25-BBC9-9F99DA6CF645",
           "id": "6777A8CE-4D69-4136-A177-730A7635E3D2",
           "uiHint": null
         },
@@ -33685,7 +33666,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "7A89EED8-9148-4AB5-ADE2-62B78EDDA47F",
           "id": "9F505C3A-3950-407B-911C-B1D06D83FEEB",
           "uiHint": null
         },
@@ -33704,7 +33685,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "EFD46E8F-8617-4870-BDA9-91E35462F703",
           "id": "D881C1B4-BD9F-49F6-A0DC-65447A102B65",
           "uiHint": null
         },
@@ -33721,9 +33702,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": null,
-          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
           "extProps": {},
-          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
           "id": "C0C13498-E801-4421-BE97-1BD1515CE55D",
           "uiHint": null
         },
@@ -33780,7 +33761,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "056FE01A-CABB-4A1F-88DA-324DA5891426",
+          "domain": "B64A0102-0F8B-442C-AB6D-4F0971BC71DA",
           "id": "53070AB7-1ECC-4549-94F9-38970FB5DECE",
           "uiHint": null
         },
@@ -33799,7 +33780,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "056FE01A-CABB-4A1F-88DA-324DA5891426",
+          "domain": "B64A0102-0F8B-442C-AB6D-4F0971BC71DA",
           "id": "E59CEAF2-2802-4461-A8CE-D9F7CB5F97BE",
           "uiHint": null
         },
@@ -33816,9 +33797,9 @@
           "defaultValue": "",
           "hideInGraph": false,
           "refDict": null,
-          "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
+          "baseType": "03F05E70-3F80-47EE-AA1A-9348591BD47D",
           "extProps": {},
-          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "domain": "1B3F3434-1CE8-4D13-A4C3-CDAE3CDF0498",
           "id": "B5524770-6D7C-470D-A1E1-C1E7D80E3FC7",
           "uiHint": null
         },
@@ -33837,7 +33818,7 @@
           "refDict": null,
           "baseType": "D6F266BC-0AF9-4E75-BD79-56B34FA0191F",
           "extProps": {},
-          "domain": "D209B1E4-22F0-448B-B944-33EC0844DDFC",
+          "domain": "5FAA886E-14ED-43BD-8790-93F649EB8354",
           "id": "B187678B-1F87-4D6D-851A-7660EDF8D40F",
           "uiHint": null
         },
@@ -34106,7 +34087,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "ABC23983-1088-463F-BFDC-FC2FC6574B7B",
           "uiHint": null
         },
@@ -34125,7 +34106,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "6C6E0DBF-0CED-4FDA-85BF-EB725C38F3C2",
           "uiHint": null
         },
@@ -34144,7 +34125,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "2C2AD80D-A11F-4F7C-AFA3-F89CE8C38C59",
           "uiHint": null
         },
@@ -34163,7 +34144,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "F2582099-204A-41AF-97D1-E00A9C1B910E",
           "uiHint": null
         },
@@ -34179,7 +34160,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34208,7 +34189,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "A72E09BF-CBE2-4ECA-932C-38DAD7497466",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34237,7 +34218,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34288,7 +34269,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "CF7026F4-18E7-4238-8A90-3CBC8B2D5C5E",
           "uiHint": null
         },
@@ -34304,7 +34285,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "28D593C9-ECBB-4C43-829D-3FBB68A7B55E",
+          "domain": "7A89EED8-9148-4AB5-ADE2-62B78EDDA47F",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34333,7 +34314,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "056FE01A-CABB-4A1F-88DA-324DA5891426",
+          "domain": "4C3E20FF-3AA3-49A2-A990-23FED3B28195",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34365,7 +34346,7 @@
           "refDict": null,
           "baseType": "D4F3414B-7780-49DE-979F-E697B65AE78D",
           "extProps": {},
-          "domain": "6AF16962-271B-4EAD-A807-705E81F24B8C",
+          "domain": "3F9E08C8-96C1-4FD0-9F00-BEF0DB7FB7B9",
           "id": "5C8CEE9F-D712-4BC7-95DC-5489408FC4B6",
           "uiHint": null
         },
@@ -34381,7 +34362,7 @@
           "autoIncrement": false,
           "defaultValue": "",
           "hideInGraph": false,
-          "domain": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5",
+          "domain": "86646A97-FB0A-4A25-BBC9-9F99DA6CF645",
           "refDict": null,
           "extProps": {},
           "notes": {},
@@ -34432,7 +34413,7 @@
           "refDict": null,
           "baseType": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
           "extProps": {},
-          "domain": "47007A80-8DBB-4CB6-B2D4-A3AFFE6429B9",
+          "domain": "4C3E20FF-3AA3-49A2-A990-23FED3B28195",
           "id": "95D3A2BE-55B6-49A2-9471-241149398198",
           "uiHint": null
         },
@@ -35536,8 +35517,8 @@
         "7F8448A3-05BD-40A1-95DC-E6F67F2C5343",
         "245E3FAD-F21E-4645-A65D-38C9D3EAF16E",
         "7B1F6AF1-FDBE-403E-910C-269BDFEB4A83",
-        "A4E9A400-FD44-4B25-BD50-E7D128A9FF19",
         "EA5A6B39-E1DA-4D3A-AA24-59A4FBC68E00",
+        "A4E9A400-FD44-4B25-BD50-E7D128A9FF19",
         "47A34494-4DDC-4D05-BDB7-AA333924891B",
         "1AA5BC3B-700E-4C70-8A04-94E26C5C2C9D"
       ],
@@ -35867,8 +35848,17 @@
       "id": "E8BE6EBB-CA13-475A-BBEE-6E54CB5815E5"
     },
     {
+      "defKey": "BI-T",
+      "defName": "BIT (微型业务用名)",
+      "applyFor": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+      "len": 40,
+      "scale": "",
+      "uiHint": "",
+      "id": "7A89EED8-9148-4AB5-ADE2-62B78EDDA47F"
+    },
+    {
       "defKey": "BI",
-      "defName": "BI (小型业务用名)",
+      "defName": "BIS (小型业务用名)",
       "applyFor": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
       "len": 80,
       "scale": "",
@@ -36029,6 +36019,15 @@
       "id": "AC82FD57-E353-4561-A61F-20F3CE0C686A"
     },
     {
+      "defKey": "RT",
+      "defName": "RT (微型备注)",
+      "applyFor": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
+      "len": 200,
+      "scale": "",
+      "uiHint": "",
+      "id": "D37A0C33-C576-4073-AFD6-C935ECB22DEA"
+    },
+    {
       "defKey": "DescText",
       "defName": "RS (小型备注)",
       "applyFor": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
@@ -36183,7 +36182,7 @@
     },
     {
       "defKey": "IdOrKey",
-      "defName": "P (雪花ID)",
+      "defName": "PI (雪花ID)",
       "applyFor": "D4F3414B-7780-49DE-979F-E697B65AE78D",
       "len": "",
       "scale": "",
