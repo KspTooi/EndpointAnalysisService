@@ -15,7 +15,6 @@ CREATE TABLE qf_model_group(
                                PRIMARY KEY (id)
 )  COMMENT = '流程模型分组';
 
-
 DROP TABLE IF EXISTS qf_model;
 CREATE TABLE qf_model(
                          `id` BIGINT NOT NULL  COMMENT '主键ID' ,
@@ -47,8 +46,8 @@ CREATE TABLE qf_model_deploy_rcd(
                                     `code` VARCHAR(32) NOT NULL  COMMENT '模型编码' ,
                                     `bpmn_xml` LONGTEXT   COMMENT '模型BPMN XML' ,
                                     `version` INT NOT NULL  COMMENT '模型版本号' ,
-                                    `eng_deployment_id` VARCHAR(32)   COMMENT '引擎部署ID(部署失败为NULL)' ,
-                                    `eng_process_def_id` VARCHAR(32)   COMMENT '引擎流程ID(部署失败为NULL)' ,
+                                    `eng_deployment_id` VARCHAR(50)   COMMENT '引擎部署ID(部署失败为NULL)' ,
+                                    `eng_process_def_id` VARCHAR(50)   COMMENT '引擎流程ID(部署失败为NULL)' ,
                                     `eng_deploy_result` VARCHAR(2000) NOT NULL  COMMENT '引擎返回的部署结果' ,
                                     `status` TINYINT NOT NULL  COMMENT '部署状态 0:正常 1:部署失败' ,
                                     `create_time` DATETIME NOT NULL  COMMENT '创建时间' ,
@@ -84,8 +83,8 @@ CREATE TABLE qf_todo(
                         `id` BIGINT NOT NULL  COMMENT '主键ID' ,
                         `root_id` BIGINT NOT NULL  COMMENT '租户ID' ,
                         `dept_id` BIGINT NOT NULL  COMMENT '部门ID' ,
-                        `eng_task_id` VARCHAR(32) NOT NULL  COMMENT '引擎任务ID' ,
-                        `eng_proc_id` VARCHAR(32) NOT NULL  COMMENT '引擎流程ID' ,
+                        `eng_task_id` VARCHAR(50) NOT NULL  COMMENT '引擎任务ID' ,
+                        `eng_proc_id` VARCHAR(50) NOT NULL  COMMENT '引擎流程ID' ,
                         `biz_form_id` BIGINT NOT NULL  COMMENT '业务表单ID' ,
                         `table_name` VARCHAR(200) NOT NULL  COMMENT '物理表名(带入业务表单数据)' ,
                         `data_id` BIGINT NOT NULL  COMMENT '物理表数据主键ID' ,
@@ -107,8 +106,8 @@ CREATE TABLE qf_done(
                         `root_id` BIGINT NOT NULL  COMMENT '租户ID' ,
                         `dept_id` BIGINT NOT NULL  COMMENT '部门ID' ,
                         `todo_id` BIGINT NOT NULL  COMMENT '待办ID' ,
-                        `eng_task_id` VARCHAR(32) NOT NULL  COMMENT '引擎任务ID' ,
-                        `eng_proc_id` VARCHAR(32) NOT NULL  COMMENT '引擎流程ID' ,
+                        `eng_task_id` VARCHAR(50) NOT NULL  COMMENT '引擎任务ID' ,
+                        `eng_proc_id` VARCHAR(50) NOT NULL  COMMENT '引擎流程ID' ,
                         `biz_form_id` BIGINT NOT NULL  COMMENT '业务表单ID' ,
                         `table_name` VARCHAR(200) NOT NULL  COMMENT '物理表名(带入业务表单数据)' ,
                         `data_id` BIGINT NOT NULL  COMMENT '物理表数据主键ID' ,

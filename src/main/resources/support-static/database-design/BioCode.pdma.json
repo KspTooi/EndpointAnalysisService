@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.9.4",
   "createdTime": "2025-5-31 18:54:43",
-  "updatedTime": "2026-4-19 01:17:39",
+  "updatedTime": "2026-4-19 01:33:24",
   "dbConns": [],
   "profile": {
     "default": {
@@ -36193,7 +36193,7 @@
       "defKey": "PU",
       "defName": "PU (UUID)",
       "applyFor": "566FB128-DBDE-4D78-9260-24C96D09CFE0",
-      "len": 32,
+      "len": 50,
       "scale": "",
       "uiHint": "",
       "id": "A72E09BF-CBE2-4ECA-932C-38DAD7497466"
