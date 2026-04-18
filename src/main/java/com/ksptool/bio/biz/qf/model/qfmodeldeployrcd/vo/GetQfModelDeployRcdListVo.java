@@ -25,7 +25,7 @@ public class GetQfModelDeployRcdListVo {
     @Schema(description = "模型版本号")
     private Integer version;
 
-    @Schema(description = "部署状态 0:正常 1:部署失败")
+    @Schema(description = "部署状态 0:正常 1:部署失败 2:已挂起")
     private Integer status;
 
     @Schema(description = "部署时间")

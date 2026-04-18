@@ -1,38 +1,38 @@
 package com.ksptool.bio.biz.qf.repository;
 
 import com.ksptool.bio.biz.qf.model.qfmodel.QfModelPo;
-import com.ksptool.bio.biz.qf.model.qfmodelgroup.QfModelGroupPo;
 import com.ksptool.bio.biz.qf.model.qfmodel.dto.GetQfModelListDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelListVo;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 @Repository
-public interface QfModelRepository extends JpaRepository<QfModelPo, Long>{
+public interface QfModelRepository extends JpaRepository<QfModelPo, Long> {
 
     @Query("""
-    SELECT new com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelListVo(
-        u.id,
-        g.name,
-        u.name,
-        u.code,
-        u.version,
-        u.status,
-        u.seq,
-        u.createTime
-    )
-    FROM QfModelPo u
-    LEFT JOIN QfModelGroupPo g ON g.id = u.groupId
-    WHERE
-    (:#{#dto.name} IS NULL OR u.name LIKE CONCAT('%', :#{#dto.name}, '%'))
-    AND (:#{#dto.code} IS NULL OR u.code LIKE CONCAT('%', :#{#dto.code}, '%'))
-    AND (:#{#dto.groupName} IS NULL OR g.name LIKE CONCAT('%', :#{#dto.groupName}, '%'))
-    ORDER BY u.seq ASC, u.createTime DESC
-    """)
+            SELECT new com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelListVo(
+                u.id,
+                g.name,
+                u.name,
+                u.code,
+                u.version,
+                u.status,
+                u.seq,
+                u.createTime
+            )
+            FROM QfModelPo u
+            LEFT JOIN QfModelGroupPo g ON g.id = u.groupId
+            WHERE
+            (:#{#dto.name} IS NULL OR u.name LIKE CONCAT('%', :#{#dto.name}, '%'))
+            AND (:#{#dto.code} IS NULL OR u.code LIKE CONCAT('%', :#{#dto.code}, '%'))
+            AND (:#{#dto.groupName} IS NULL OR g.name LIKE CONCAT('%', :#{#dto.groupName}, '%'))
+            AND (:#{#dto.status} IS NULL OR u.status IN :#{#dto.status})
+            ORDER BY u.seq ASC, u.createTime DESC
+            """)
     Page<GetQfModelListVo> getQfModelList(@Param("dto") GetQfModelListDto dto, Pageable pageable);
 
     /**
@@ -43,9 +43,9 @@ public interface QfModelRepository extends JpaRepository<QfModelPo, Long>{
      * @return 流程模型数量
      */
     @Query("""
-    SELECT COUNT(t) FROM QfModelPo t
-    WHERE t.code = :code AND (:id IS NULL OR t.id != :id)
-    """)
+            SELECT COUNT(t) FROM QfModelPo t
+            WHERE t.code = :code AND (:id IS NULL OR t.id != :id)
+            """)
     Long countByCodeExcludeId(@Param("code") String code, @Param("id") Long id);
 
     /**
@@ -55,8 +55,33 @@ public interface QfModelRepository extends JpaRepository<QfModelPo, Long>{
      * @return 流程模型数量
      */
     @Query("""
-    SELECT COUNT(u) FROM QfModelPo u
-    WHERE u.groupId = :groupId
-    """)
+            SELECT COUNT(u) FROM QfModelPo u
+            WHERE u.groupId = :groupId
+            """)
     int countByGroupId(@Param("groupId") Long groupId);
+
+    /**
+     * 根据模型ID查询是否有部署物
+     *
+     * @param modelId 模型ID
+     * @return 是否有部署物
+     */
+    @Query("""
+            SELECT COUNT(u) FROM QfModelDeployRcdPo u
+            WHERE u.modelId = :modelId
+            """)
+    int countDeployByModelId(@Param("modelId") Long modelId);
+
+    /**
+     * 根据模型ID和版本查询是否有活跃的部署
+     *
+     * @param modelId 模型ID
+     * @param version 版本
+     * @return 是否有活跃的部署
+     */
+    @Query("""
+            SELECT COUNT(u) FROM QfModelDeployRcdPo u
+            WHERE u.modelId = :modelId AND u.version = :version AND u.status = 0
+            """)
+    int countActiveDeployByModelIdAndVersion(@Param("modelId") Long modelId, @Param("version") Integer version);
 }

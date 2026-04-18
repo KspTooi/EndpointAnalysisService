@@ -4,6 +4,7 @@ import com.ksptool.assembly.entity.web.CommonIdDto;
 import com.ksptool.assembly.entity.web.PageResult;
 import com.ksptool.assembly.entity.web.Result;
 import com.ksptool.bio.biz.qf.model.qfmodel.dto.AddQfModelDto;
+import com.ksptool.bio.biz.qf.model.qfmodel.dto.DesignQfModelDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.dto.EditQfModelDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.dto.GetQfModelListDto;
 import com.ksptool.bio.biz.qf.model.qfmodel.vo.GetQfModelDetailsVo;
@@ -46,13 +47,30 @@ public class QfModelController {
         return Result.success("新增成功");
     }
 
+    @PreAuthorize("@auth.hasCode('qf:model:add')")
+    @Operation(summary = "创建新版本流程模型")
+    @PostMapping("/createNewVersion")
+    public Result<String> createNewVersion(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        qfModelService.createNewVersionQfModel(dto);
+        return Result.success("创建新版本成功");
+    }
+
     @PreAuthorize("@auth.hasCode('qf:model:edit')")
-    @Operation(summary = "编辑流程模型")
+    @Operation(summary = "编辑流程模型(基础信息)")
     @PostMapping("/editQfModel")
     public Result<String> editQfModel(@RequestBody @Valid EditQfModelDto dto) throws Exception {
         qfModelService.editQfModel(dto);
         return Result.success("修改成功");
     }
+
+    @PreAuthorize("@auth.hasCode('qf:model:edit')")
+    @Operation(summary = "设计流程模型BPMN")
+    @PostMapping("/designQfModel")
+    public Result<String> designQfModel(@RequestBody @Valid DesignQfModelDto dto) throws Exception {
+        qfModelService.designQfModel(dto);
+        return Result.success("修改成功");
+    }
+    
 
     @PreAuthorize("@auth.hasCode('qf:model:view')")
     @Operation(summary = "查询流程模型详情")
@@ -76,6 +94,14 @@ public class QfModelController {
         }
 
         qfModelService.removeQfModel(dto);
+        return Result.success("操作成功");
+    }
+
+    @PreAuthorize("@auth.hasCode('qf:model:deploy')")
+    @Operation(summary = "部署流程模型")
+    @PostMapping("/deployQfModel")
+    public Result<String> deployQfModel(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        qfModelService.deployQfModel(dto);
         return Result.success("操作成功");
     }
 

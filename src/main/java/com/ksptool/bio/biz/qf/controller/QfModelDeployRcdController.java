@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PrintLog
 @RestController
 @RequestMapping("/qfModelDeployRcd")
-@Tag(name = "流程模型部署历史", description = "流程模型部署历史")
+@Tag(name = "流程模型部署", description = "流程模型部署")
 @Slf4j
 public class QfModelDeployRcdController {
 
@@ -33,29 +33,13 @@ public class QfModelDeployRcdController {
 
     @PreAuthorize("@auth.hasCode('qf:model:deploy:view')")
     @PostMapping("/getQfModelDeployRcdList")
-    @Operation(summary = "查询流程模型部署历史列表")
+    @Operation(summary = "查询流程模型部署列表")
     public PageResult<GetQfModelDeployRcdListVo> getQfModelDeployRcdList(@RequestBody @Valid GetQfModelDeployRcdListDto dto) throws Exception {
         return qfModelDeployRcdService.getQfModelDeployRcdList(dto);
     }
 
-    @PreAuthorize("@auth.hasCode('qf:model:deploy:add')")
-    @Operation(summary = "新增流程模型部署历史")
-    @PostMapping("/addQfModelDeployRcd")
-    public Result<String> addQfModelDeployRcd(@RequestBody @Valid AddQfModelDeployRcdDto dto) throws Exception {
-        qfModelDeployRcdService.addQfModelDeployRcd(dto);
-        return Result.success("新增成功");
-    }
-
-    @PreAuthorize("@auth.hasCode('qf:model:deploy:edit')")
-    @Operation(summary = "编辑流程模型部署历史")
-    @PostMapping("/editQfModelDeployRcd")
-    public Result<String> editQfModelDeployRcd(@RequestBody @Valid EditQfModelDeployRcdDto dto) throws Exception {
-        qfModelDeployRcdService.editQfModelDeployRcd(dto);
-        return Result.success("修改成功");
-    }
-
     @PreAuthorize("@auth.hasCode('qf:model:deploy:view')")
-    @Operation(summary = "查询流程模型部署历史详情")
+    @Operation(summary = "查询流程模型部署详情")
     @PostMapping("/getQfModelDeployRcdDetails")
     public Result<GetQfModelDeployRcdDetailsVo> getQfModelDeployRcdDetails(@RequestBody @Valid CommonIdDto dto) throws Exception {
         GetQfModelDeployRcdDetailsVo details = qfModelDeployRcdService.getQfModelDeployRcdDetails(dto);
@@ -66,10 +50,26 @@ public class QfModelDeployRcdController {
     }
 
     @PreAuthorize("@auth.hasCode('qf:model:deploy:remove')")
-    @Operation(summary = "删除流程模型部署历史")
+    @Operation(summary = "删除流程模型部署")
     @PostMapping("/removeQfModelDeployRcd")
     public Result<String> removeQfModelDeployRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
         qfModelDeployRcdService.removeQfModelDeployRcd(dto);
+        return Result.success("操作成功");
+    }
+
+    @PreAuthorize("@auth.hasCode('qf:model:deploy:edit')")
+    @Operation(summary = "挂起流程模型部署")
+    @PostMapping("/suspendQfModelDeployRcd")
+    public Result<String> suspendQfModelDeployRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        qfModelDeployRcdService.suspendQfModelDeployRcd(dto);
+        return Result.success("操作成功");
+    }
+
+    @PreAuthorize("@auth.hasCode('qf:model:deploy:edit')")
+    @Operation(summary = "激活流程模型部署")
+    @PostMapping("/activateQfModelDeployRcd")
+    public Result<String> activateQfModelDeployRcd(@RequestBody @Valid CommonIdDto dto) throws Exception {
+        qfModelDeployRcdService.activateQfModelDeployRcd(dto);
         return Result.success("操作成功");
     }
 

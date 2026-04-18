@@ -1,7 +1,6 @@
-package com.ksptool.bio.biz.qf.model.qfmodel;
+package com.ksptool.bio.biz.qf.model.qfbizform;
 
 import com.ksptool.assembly.entity.exception.AuthException;
-import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.jpa.SnowflakeIdGenerated;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,42 +18,39 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "qf_model")
+@Table(name = "qf_biz_form")
 @EntityListeners(AuditingEntityListener.class)
-@SQLDelete(sql = "UPDATE qf_model SET delete_time = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE qf_biz_form SET delete_time = NOW() WHERE id = ?")
 @SQLRestriction("delete_time IS NULL")
-public class QfModelPo {
+public class BizFormPo {
 
     @Id
     @SnowflakeIdGenerated
     @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
-    @Column(name = "root_id", nullable = false, comment = "所属企业/租户ID")
-    private Long rootId;
-
-    @Column(name = "dept_id", nullable = false, comment = "所属部门ID")
-    private Long deptId;
-
-    @Column(name = "active_deploy_id", comment = "该模型生效的部署ID")
-    private Long activeDeployId;
-
-    @Column(name = "group_id", comment = "模型组ID")
-    private Long groupId;
-
-    @Column(name = "name", nullable = false, length = 80, comment = "模型名称")
+    @Column(name = "name", nullable = false, length = 32, comment = "业务名称")
     private String name;
 
-    @Column(name = "code", nullable = false, length = 32, comment = "模型编码")
+    @Column(name = "code", nullable = false, length = 32, comment = "业务编码")
     private String code;
 
-    @Column(name = "bpmn_xml", columnDefinition = "longtext", comment = "模型BPMN XML")
-    private String bpmnXml;
+    @Column(name = "form_type", nullable = false, comment = "表单类型 0:手搓表单 1:动态表单")
+    private Integer formType;
 
-    @Column(name = "version", nullable = false, comment = "模型版本号")
-    private Integer version;
+    @Column(name = "icon", nullable = false, length = 80, comment = "表单图标")
+    private String icon;
 
-    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "模型状态 0:草稿 1:已部署 2:历史")
+    @Column(name = "table_name", nullable = false, length = 200, comment = "物理表名")
+    private String tableName;
+
+    @Column(name = "route_pc", length = 200, comment = "PC端路由名")
+    private String routePc;
+
+    @Column(name = "route_mobile", length = 200, comment = "移动端路由名")
+    private String routeMobile;
+
+    @Column(name = "status", nullable = false, comment = "状态 0:正常 1:停用")
     private Integer status;
 
     @Column(name = "seq", nullable = false, comment = "排序")
@@ -76,19 +72,12 @@ public class QfModelPo {
     @Column(name = "updater_id", nullable = false, comment = "更新人ID")
     private Long updaterId;
 
-    @Column(name = "delete_time", comment = "删除时间 NULL未删")
+    @Column(name = "delete_time", comment = "删除时间")
     private LocalDateTime deleteTime;
 
 
     @PrePersist
     private void onCreate() throws AuthException {
-        var session = SessionService.session();
-        if (this.rootId == null) {
-            this.rootId = session.getRootId();
-        }
-        if (this.deptId == null) {
-            this.deptId = session.getDeptId();
-        }
     }
 
     @PreUpdate

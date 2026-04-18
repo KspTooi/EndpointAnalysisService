@@ -1,9 +1,5 @@
 package com.ksptool.bio.biz.qf.model.qfmodel.dto;
 
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +11,6 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 public class EditQfModelDto {
 
-    @NotNull(message = "模型分组ID不能为空")
     @Schema(description="模型分组ID")
     private Long groupId;
 
@@ -27,11 +22,6 @@ public class EditQfModelDto {
     @Length(max = 80, message = "模型名称长度不能超过80个字符")
     @Schema(description="模型名称")
     private String name;
-
-    @NotNull(message = "模型编码不能为空")
-    @Length(max = 32, message = "模型编码长度不能超过32个字符")
-    @Schema(description="模型编码")
-    private String code;
 
     @NotNull(message = "排序不能为空")
     @Min(value = 0, message = "排序必须大于等于0")

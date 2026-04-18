@@ -45,26 +45,26 @@ public class QfModelDeployRcdPo {
     @Column(name = "code", nullable = false, length = 32, comment = "模型编码")
     private String code;
 
-    @Column(name = "bpmn_xml", comment = "模型BPMN XML")
+    @Column(name = "bpmn_xml", columnDefinition = "longtext", comment = "模型BPMN XML")
     private String bpmnXml;
 
     @Column(name = "version", nullable = false, comment = "模型版本号")
     private Integer version;
 
-    @Column(name = "eng_deployment_id", length = 128, comment = "引擎部署ID(部署失败为NULL)")
+    @Column(name = "eng_deployment_id", length = 128, comment = "引擎\"部署ID\"(部署失败为NULL)")
     private String engDeploymentId;
 
-    @Column(name = "eng_process_def_id", length = 128, comment = "引擎流程ID(部署失败为NULL)")
+    @Column(name = "eng_process_def_id", length = 128, comment = "引擎\"流程ID\"(部署失败为NULL)")
     private String engProcessDefId;
 
-    @Column(name = "eng_deploy_result", nullable = false, comment = "引擎返回的部署结果")
+    @Column(name = "eng_deploy_result", nullable = false, columnDefinition = "longtext", comment = "引擎返回的部署结果")
     private String engDeployResult;
 
-    @Column(name = "status", nullable = false, comment = "部署状态 0:正常 1:部署失败")
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "部署状态 0:正常 1:部署失败 2:已挂起")
     private Integer status;
 
     @CreatedDate
-    @Column(name = "create_time", nullable = false, comment = "部署时间")
+    @Column(name = "create_time", nullable = false, comment = "创建时间")
     private LocalDateTime createTime;
 
     @CreatedBy

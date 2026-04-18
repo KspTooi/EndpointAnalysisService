@@ -15,7 +15,7 @@ public class GetQfModelDeployRcdListDto extends PageQuery {
     @Schema(description = "模型编码")
     private String code;
 
-    @Schema(description = "部署状态 0:正常 1:部署失败")
+    @Schema(description = "部署状态 0:正常 1:部署失败 2:已挂起")
     private Integer status;
 
 }
