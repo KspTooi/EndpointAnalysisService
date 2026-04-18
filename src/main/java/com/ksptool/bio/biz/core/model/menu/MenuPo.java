@@ -47,7 +47,7 @@ public class MenuPo {
     @Column(name = "name", nullable = false, length = 32, comment = "菜单项名")
     private String name;
 
-    @Column(name = "kind", nullable = false, comment = "菜单项类型 0:目录 1:菜单 2:按钮")
+    @Column(name = "kind", nullable = false,columnDefinition = "TINYINT", comment = "菜单项类型 0:目录 1:菜单 2:按钮")
     private Integer kind;
 
     @Column(name = "path", length = 500, comment = "指向路径")
@@ -56,7 +56,7 @@ public class MenuPo {
     @Column(name = "icon", nullable = false, length = 80, comment = "菜单图标")
     private String icon;
 
-    @Column(name = "hide", nullable = false, comment = "隐藏 0:否 1:是")
+    @Column(name = "hide", nullable = false,columnDefinition = "TINYINT", comment = "隐藏 0:否 1:是")
     private Integer hide;
 
     @Column(name = "permission_code", length = 500, comment = "所需权限码(多个逗号)")
