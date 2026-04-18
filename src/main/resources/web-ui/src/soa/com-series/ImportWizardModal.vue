@@ -257,7 +257,7 @@ defineExpose({
     &.active {
       opacity: 1;
       .step-index {
-        background-color: #009688;
+        background-color: var(--el-color-primary);
         color: #fff;
       }
       .step-label {
@@ -310,7 +310,7 @@ defineExpose({
     margin-bottom: 12px;
 
     .el-icon {
-      color: #009688;
+      color: var(--el-color-primary);
       font-size: 16px;
     }
   }
@@ -332,8 +332,8 @@ defineExpose({
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f0f7f7;
-    border-color: #009688;
+    background-color: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary);
   }
 
   .card-info {
@@ -371,8 +371,8 @@ defineExpose({
     border-radius: 0;
 
     &:hover {
-      border-color: #009688;
-      background-color: #f0f7f7;
+      border-color: var(--el-color-primary);
+      background-color: var(--el-color-primary-light-9);
     }
   }
 }
@@ -393,7 +393,7 @@ defineExpose({
     color: #666;
 
     em {
-      color: #009688;
+      color: var(--el-color-primary);
       font-style: normal;
       font-weight: 600;
     }
@@ -409,7 +409,7 @@ defineExpose({
 
   .file-icon {
     font-size: 28px;
-    color: #00a8be;
+    color: var(--el-color-primary);
   }
 
   .file-meta {
@@ -429,7 +429,7 @@ defineExpose({
 
     .status {
       font-size: 11px;
-      color: #00a8be;
+      color: var(--el-color-primary);
       margin-top: 2px;
     }
   }
@@ -442,17 +442,17 @@ defineExpose({
 /* 底部按钮 */
 .dialog-footer {
   .submit-btn {
-    background-color: #009688;
-    border-color: #009688;
+    background-color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
 
     &:hover {
-      background-color: #00796b;
-      border-color: #00796b;
+      background-color: var(--el-color-primary-dark-2);
+      border-color: var(--el-color-primary-dark-2);
     }
 
     &.is-disabled {
-      background-color: #a2cfcb;
-      border-color: #a2cfcb;
+      background-color: var(--el-color-primary-light-5);
+      border-color: var(--el-color-primary-light-5);
     }
   }
 }
