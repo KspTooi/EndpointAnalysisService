@@ -132,11 +132,11 @@ export default {
     const modalRules: FormRules = {
       name: [
         { required: true, message: "请输入业务名称", trigger: "blur" },
-        { max: 32, message: "业务名称长度不能超过32个字符", trigger: "blur" },
+        { max: 40, message: "业务名称长度不能超过40个字符", trigger: "blur" },
       ],
       code: [
         { required: true, message: "请输入业务编码", trigger: "blur" },
-        { max: 32, message: "业务编码长度不能超过32个字符", trigger: "blur" },
+        { max: 16, message: "业务编码长度不能超过16个字符", trigger: "blur" },
       ],
       formType: [{ required: true, message: "请输入表单类型 0:手搓表单 1:动态表单", trigger: "blur" }],
       icon: [
@@ -147,8 +147,8 @@ export default {
         { required: true, message: "请输入物理表名", trigger: "blur" },
         { max: 200, message: "物理表名长度不能超过200个字符", trigger: "blur" },
       ],
-      routePc: [{ max: 200, message: "PC端路由名长度不能超过200个字符", trigger: "blur" }],
-      routeMobile: [{ max: 200, message: "移动端路由名长度不能超过200个字符", trigger: "blur" }],
+      routePc: [{ max: 512, message: "PC端路由名长度不能超过512个字符", trigger: "blur" }],
+      routeMobile: [{ max: 512, message: "移动端路由名长度不能超过512个字符", trigger: "blur" }],
       status: [{ required: true, message: "请输入状态 0:正常 1:停用", trigger: "blur" }],
       seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
     };

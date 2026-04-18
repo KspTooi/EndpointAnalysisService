@@ -18,7 +18,7 @@ public class EditBizFormDto {
     private Long id;
 
     @NotBlank(message = "业务名称不能为空")
-    @Length(max = 32, message = "业务名称最多32个字符")
+    @Length(max = 40, message = "业务名称最多40个字符")
     @Schema(description = "业务名称")
     private String name;
 
@@ -37,11 +37,11 @@ public class EditBizFormDto {
     @Schema(description = "物理表名")
     private String tableName;
 
-    @Length(max = 200, message = "PC端路由名最多200个字符")
+    @Length(max = 512, message = "PC端路由名最多512个字符")
     @Schema(description = "PC端路由名")
     private String routePc;
 
-    @Length(max = 200, message = "移动端路由名最多200个字符")
+    @Length(max = 512, message = "移动端路由名最多512个字符")
     @Schema(description = "移动端路由名")
     private String routeMobile;
 

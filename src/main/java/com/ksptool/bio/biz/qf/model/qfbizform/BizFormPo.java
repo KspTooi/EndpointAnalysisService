@@ -29,28 +29,28 @@ public class BizFormPo {
     @Column(name = "id", nullable = false, comment = "主键ID")
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 32, comment = "业务名称")
+    @Column(name = "name", nullable = false, length = 40, comment = "业务名称(如采购申请)")
     private String name;
 
-    @Column(name = "code", nullable = false, length = 32, comment = "业务编码")
+    @Column(name = "code", nullable = false, length = 16, comment = "业务编码(如PURCHASE_APPLY, 必须全局唯一)")
     private String code;
 
-    @Column(name = "form_type", nullable = false, comment = "表单类型 0:手搓表单 1:动态表单")
+    @Column(name = "form_type", nullable = false, columnDefinition = "tinyint", comment = "表单类型 0:手搓表单 1:动态表单")
     private Integer formType;
 
-    @Column(name = "icon", nullable = false, length = 80, comment = "表单图标")
+    @Column(name = "icon", nullable = false, length = 80, comment = "图标")
     private String icon;
 
-    @Column(name = "table_name", nullable = false, length = 200, comment = "物理表名")
+    @Column(name = "table_name", nullable = false, length = 200, comment = "对应物理表名")
     private String tableName;
 
-    @Column(name = "route_pc", length = 200, comment = "PC端路由名")
+    @Column(name = "route_pc", length = 512, comment = "PC端路由名")
     private String routePc;
 
-    @Column(name = "route_mobile", length = 200, comment = "移动端路由名")
+    @Column(name = "route_mobile", length = 512, comment = "移动端路由名")
     private String routeMobile;
 
-    @Column(name = "status", nullable = false, comment = "状态 0:正常 1:停用")
+    @Column(name = "status", nullable = false, columnDefinition = "tinyint", comment = "状态 0:正常 1:停用")
     private Integer status;
 
     @Column(name = "seq", nullable = false, comment = "排序")

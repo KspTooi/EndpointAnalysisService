@@ -106,10 +106,13 @@
         :validate-on-rule-change="false"
       >
         <el-form-item label="业务名称" prop="name">
-          <el-input v-model="modalForm.name" placeholder="请输入业务名称" clearable :maxlength="32" show-word-limit />
+          <el-input v-model="modalForm.name" placeholder="请输入业务名称" clearable :maxlength="40" show-word-limit />
         </el-form-item>
-        <el-form-item label="业务编码" prop="code">
-          <el-input v-model="modalForm.code" placeholder="请输入业务编码" clearable :maxlength="32" show-word-limit />
+        <el-form-item v-if="modalMode === 'add'" label="业务编码" prop="code">
+          <el-input v-model="modalForm.code" placeholder="请输入业务编码" clearable :maxlength="16" show-word-limit />
+        </el-form-item>
+        <el-form-item v-else label="业务编码">
+          <el-input v-model="modalForm.code" disabled />
         </el-form-item>
         <el-form-item label="表单类型" prop="formType">
           <el-select v-model="modalForm.formType" placeholder="请选择表单类型" clearable>
@@ -124,14 +127,14 @@
           <el-input v-model="modalForm.tableName" placeholder="请输入物理表名" clearable :maxlength="200" show-word-limit />
         </el-form-item>
         <el-form-item label="PC端路由名" prop="routePc">
-          <el-input v-model="modalForm.routePc" placeholder="请输入PC端路由名" clearable :maxlength="200" show-word-limit />
+          <el-input v-model="modalForm.routePc" placeholder="请输入PC端路由名" clearable :maxlength="512" show-word-limit />
         </el-form-item>
         <el-form-item label="移动端路由名" prop="routeMobile">
           <el-input
             v-model="modalForm.routeMobile"
             placeholder="请输入移动端路由名"
             clearable
-            :maxlength="200"
+            :maxlength="512"
             show-word-limit
           />
         </el-form-item>

@@ -42,7 +42,7 @@ public class QfModelGroupPo {
     @Column(name = "code", nullable = false, length = 32, comment = "组编码")
     private String code;
 
-    @Column(name = "remark", columnDefinition = "text", comment = "备注")
+    @Column(name = "remark", length = 500, comment = "备注")
     private String remark;
 
     @Column(name = "seq", nullable = false, comment = "排序")

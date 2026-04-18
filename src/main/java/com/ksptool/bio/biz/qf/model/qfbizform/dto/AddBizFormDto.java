@@ -14,12 +14,12 @@ import org.hibernate.validator.constraints.Length;
 public class AddBizFormDto {
 
     @NotBlank(message = "业务名称不能为空")
-    @Length(max = 32, message = "业务名称最多32个字符")
+    @Length(max = 40, message = "业务名称最多40个字符")
     @Schema(description = "业务名称")
     private String name;
 
     @NotBlank(message = "业务编码不能为空")
-    @Length(max = 32, message = "业务编码最多32个字符")
+    @Length(max = 16, message = "业务编码最多16个字符")
     @Schema(description = "业务编码")
     private String code;
 
@@ -38,11 +38,11 @@ public class AddBizFormDto {
     @Schema(description = "物理表名")
     private String tableName;
 
-    @Length(max = 200, message = "PC端路由名最多200个字符")
+    @Length(max = 512, message = "PC端路由名最多512个字符")
     @Schema(description = "PC端路由名")
     private String routePc;
 
-    @Length(max = 200, message = "移动端路由名最多200个字符")
+    @Length(max = 512, message = "移动端路由名最多512个字符")
     @Schema(description = "移动端路由名")
     private String routeMobile;
 
