@@ -16,6 +16,27 @@
     "info": (
       "base": #9c27b0,
     ),
+    "cyan": (
+      "base": #00bcd4,
+    ),
+    "pink": (
+      "base": #e91e63,
+    ),
+    "teal": (
+      "base": #009688,
+    ),
+    "indigo": (
+      "base": #3f51b5,
+    ),
+    "deep-orange": (
+      "base": #ff5722,
+    ),
+    "brown": (
+      "base": #795548,
+    ),
+    "lime": (
+      "base": #cddc39,
+    ),
   )
 );
 
@@ -26,10 +47,12 @@
 //  )
 //);
 
+@use "sass:color";
 @use "element-plus/theme-chalk/src/index.scss";
 @use "./element-modal.scss";
 @use "./element-confirm.scss";
 @use "./element-btn.scss";
+@use "./element-search.scss";
 
 /* 全局自定义 Element Plus v-loading 样式 */
 .el-loading-mask {
