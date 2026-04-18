@@ -13,11 +13,11 @@
           <el-form-item label="物理表名">
             <el-input v-model="listForm.tableName" placeholder="输入物理表名" clearable />
           </el-form-item>
-          <el-form-item label="状态 0:正常 1:停用">
-            <el-input v-model="listForm.status" placeholder="输入状态 0:正常 1:停用" clearable />
-          </el-form-item>
-          <el-form-item label="排序">
-            <el-input v-model="listForm.seq" placeholder="输入排序" clearable />
+          <el-form-item label="状态">
+            <el-select v-model="listForm.status" placeholder="请选择状态" clearable>
+              <el-option label="正常" :value="0" />
+              <el-option label="停用" :value="1" />
+            </el-select>
           </el-form-item>
         </div>
         <el-form-item>
