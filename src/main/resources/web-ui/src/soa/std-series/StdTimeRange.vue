@@ -3,7 +3,7 @@
     <div class="oper-time-edit__item">
       <el-date-picker
         v-model="rangeStartValue"
-        class="w-full! min-w-0!"
+        class="min-w-0!"
         type="datetime"
         :placeholder="startPlaceholder"
         :value-format="valueFormat"
@@ -11,13 +11,13 @@
         :disabled="disableds?.[0]"
         :disabled-date="disableStartDate"
       />
-      <div v-if="startValidateMessage" class="oper-time-edit__message">{{ startValidateMessage }}</div>
+      <div v-if="showMsg && startValidateMessage" class="oper-time-edit__message">{{ startValidateMessage }}</div>
     </div>
     <span class="oper-time-edit__separator">{{ rangeSeparator }}</span>
     <div class="oper-time-edit__item">
       <el-date-picker
         v-model="rangeEndValue"
-        class="w-full! min-w-0!"
+        class="min-w-0!"
         type="datetime"
         :placeholder="endPlaceholder"
         :value-format="valueFormat"
@@ -26,7 +26,7 @@
         :disabled="disableds?.[1]"
         :disabled-date="disableEndDate"
       />
-      <div v-if="endValidateMessage" class="oper-time-edit__message">{{ endValidateMessage }}</div>
+      <div v-if="showMsg && endValidateMessage" class="oper-time-edit__message">{{ endValidateMessage }}</div>
     </div>
   </div>
 </template>
@@ -52,6 +52,8 @@ withDefaults(
     clearable?: boolean;
     rangeSeparator?: string;
     disableds?: boolean[];
+    showMsg?: boolean;
+    width?: string;
   }>(),
   {
     type: "datetimerange",
@@ -61,6 +63,8 @@ withDefaults(
     clearable: true,
     rangeSeparator: "至",
     disableds: () => [false, false],
+    showMsg: true,
+    width: "100%",
   }
 );
 
@@ -218,7 +222,7 @@ function disableEndDate(date: Date): boolean {
 }
 
 .oper-time-edit :deep(.el-date-editor) {
-  width: 100% !important;
+  width: v-bind(width) !important;
   min-width: 0;
 }
 
