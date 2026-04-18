@@ -12,16 +12,19 @@ import com.ksptool.bio.BioRunner;
 import com.ksptool.bio.biz.auth.model.auth.AuthUserDetails;
 import com.ksptool.bio.biz.auth.model.auth.dto.UserLoginDto;
 import com.ksptool.bio.biz.auth.model.auth.vo.UserLoginVo;
+import com.ksptool.bio.biz.auth.model.session.UserSessionPo;
 import com.ksptool.bio.biz.auth.model.session.vo.UserSessionVo;
 import com.ksptool.bio.biz.auth.service.SessionService;
 import com.ksptool.bio.biz.core.common.AppRegistry;
 import com.ksptool.bio.biz.core.model.user.dto.RegisterDto;
 import com.ksptool.bio.biz.core.service.RegistrySdk;
 import com.ksptool.bio.biz.core.service.UserService;
+import com.ksptool.bio.commons.WebUtils;
 import com.ksptool.bio.commons.annotation.PrintLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,8 +126,16 @@ public class AuthController {
 
     @Operation(summary = "用户注销")
     @PostMapping("/logout")
-    public Result<String> logout() throws AuthException {
-        sessionService.closeSession(SessionService.session().getUserId());
+    public Result<String> logout(HttpServletRequest request) throws AuthException, BizException {
+        String sessionId = WebUtils.getAuthenticationBearerSessionId(request);
+        if (sessionId == null) {
+            return Result.error("未登录");
+        }
+        UserSessionPo userSessionPo = sessionService.getSessionBySessionId(sessionId);
+        if (userSessionPo == null) {
+            return Result.error("未登录");
+        }
+        sessionService.closeSessionByPrimaryKey(userSessionPo.getId());
         return Result.success("注销成功");
     }
 
