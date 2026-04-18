@@ -11,6 +11,7 @@ export interface GetQfModelListDto extends PageQuery {
   groupName?: string; // 模型分组
   name?: string; // 模型名称
   code?: string; // 模型编码
+  status?: number[]; // 模型状态 0:草稿 1:已部署 2:历史
 }
 
 /**
@@ -56,8 +57,15 @@ export interface EditQfModelDto {
   id: string; // 主键ID
   groupId?: string; // 模型分组ID
   name: string; // 模型名称
-  code: string; // 模型编码
   seq: number; // 排序
+}
+
+/**
+ * 设计流程模型BPMNDto
+ */
+export interface DesignQfModelDto {
+  id: string; // 流程模型ID
+  bpmnXml: string; // BPMN XML
 }
 
 export default {
@@ -75,6 +83,17 @@ export default {
     const result = await Http.postEntity<Result<GetQfModelDetailsVo>>("/qfModel/getQfModelDetails", dto);
     if (result.code === 0) {
       return result.data;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 创建新版本流程模型
+   */
+  createNewVersionQfModel: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qfModel/createNewVersion", dto);
+    if (result.code === 0) {
+      return result.message;
     }
     throw new Error(result.message);
   },
@@ -102,10 +121,32 @@ export default {
   },
 
   /**
+   * 设计流程模型BPMN
+   */
+  designQfModel: async (dto: DesignQfModelDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qfModel/designQfModel", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
    * 删除流程模型
    */
   removeQfModel: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/qfModel/removeQfModel", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 部署流程模型
+   */
+  deployQfModel: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qfModel/deployQfModel", dto);
     if (result.code === 0) {
       return result.message;
     }

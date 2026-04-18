@@ -85,6 +85,32 @@ export default {
       }
     };
 
+    /**
+     * 挂起流程模型部署
+     */
+    const suspendQfModelDeployRcd = async (row: GetQfModelDeployRcdListVo): Promise<void> => {
+      try {
+        await QfModelDeployRcdApi.suspendQfModelDeployRcd({ id: row.id });
+        ElMessage.success("挂起成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
+    /**
+     * 激活流程模型部署
+     */
+    const activateQfModelDeployRcd = async (row: GetQfModelDeployRcdListVo): Promise<void> => {
+      try {
+        await QfModelDeployRcdApi.activateQfModelDeployRcd({ id: row.id });
+        ElMessage.success("激活成功");
+        await loadList();
+      } catch (error: any) {
+        ElMessage.error(error.message);
+      }
+    };
+
     onMounted(async () => {
       await loadList();
     });
@@ -97,6 +123,8 @@ export default {
       loadList,
       resetList,
       removeList,
+      suspendQfModelDeployRcd,
+      activateQfModelDeployRcd,
     };
   },
 

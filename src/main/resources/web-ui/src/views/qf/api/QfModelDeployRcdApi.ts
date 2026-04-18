@@ -10,7 +10,7 @@ import type Result from "@/commons/model/Result.ts";
 export interface GetQfModelDeployRcdListDto extends PageQuery {
   name?: string; // 模型名称
   code?: string; // 模型编码
-  status?: number; // 部署状态 0:正常 1:部署失败
+  status?: number; // 部署状态 0:正常 1:部署失败 2:已挂起
 }
 
 /**
@@ -22,7 +22,7 @@ export interface GetQfModelDeployRcdListVo {
   name: string; // 模型名称
   code: string; // 模型编码
   version: number; // 模型版本号
-  status: number; // 部署状态 0:正常 1:部署失败
+  status: number; // 部署状态 0:正常 1:部署失败 2:已挂起
   createTime: string; // 部署时间
 }
 
@@ -61,6 +61,28 @@ export default {
    */
   removeQfModelDeployRcd: async (dto: CommonIdDto): Promise<string> => {
     const result = await Http.postEntity<Result<string>>("/qfModelDeployRcd/removeQfModelDeployRcd", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 挂起流程模型部署
+   */
+  suspendQfModelDeployRcd: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qfModelDeployRcd/suspendQfModelDeployRcd", dto);
+    if (result.code === 0) {
+      return result.message;
+    }
+    throw new Error(result.message);
+  },
+
+  /**
+   * 激活流程模型部署
+   */
+  activateQfModelDeployRcd: async (dto: CommonIdDto): Promise<string> => {
+    const result = await Http.postEntity<Result<string>>("/qfModelDeployRcd/activateQfModelDeployRcd", dto);
     if (result.code === 0) {
       return result.message;
     }

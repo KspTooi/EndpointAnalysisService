@@ -1,38 +1,37 @@
 import { onMounted, reactive, ref, type Ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type {
-  GetQfModelListDto,
-  GetQfModelListVo,
-  GetQfModelDetailsVo,
-  AddQfModelDto,
-  EditQfModelDto,
-} from "@/views/qf/api/QfModelApi.ts";
-import QfModelApi from "@/views/qf/api/QfModelApi.ts";
-import type { GetQfModelGroupListVo } from "@/views/qf/api/QfModelGroupApi.ts";
-import QfModelGroupApi from "@/views/qf/api/QfModelGroupApi.ts";
+  GetQfBizFormListDto,
+  GetQfBizFormListVo,
+  GetQfBizFormDetailsVo,
+  AddQfBizFormDto,
+  EditQfBizFormDto,
+} from "@/views/qf/api/QfBizFormApi.ts";
+import QfBizFormApi from "@/views/qf/api/QfBizFormApi.ts";
 import { Result } from "@/commons/model/Result";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 /**
  * 模态框模式类型
  */
-type ModalMode = "add" | "edit" | "view";
+type ModalMode = "add" | "edit";
 
 export default {
   /**
-   * 流程模型列表管理
+   * 业务表单列表管理
    */
-  useQfModelList() {
-    const listForm = ref<GetQfModelListDto>({
+  useQfBizFormList() {
+    const listForm = ref<GetQfBizFormListDto>({
       pageNum: 1,
       pageSize: 20,
-      groupName: "",
       name: "",
       code: "",
-      status: [0, 1], //固定查询草稿和已部署
+      tableName: "",
+      status: null,
+      seq: null,
     });
 
-    const listData = ref<GetQfModelListVo[]>([]);
+    const listData = ref<GetQfBizFormListVo[]>([]);
     const listTotal = ref(0);
     const listLoading = ref(false);
 
@@ -41,7 +40,7 @@ export default {
      */
     const loadList = async (): Promise<void> => {
       listLoading.value = true;
-      const result = await QfModelApi.getQfModelList(listForm.value);
+      const result = await QfBizFormApi.getQfBizFormList(listForm.value);
 
       if (Result.isSuccess(result)) {
         listData.value = result.data;
@@ -61,17 +60,18 @@ export default {
     const resetList = (): void => {
       listForm.value.pageNum = 1;
       listForm.value.pageSize = 20;
-      listForm.value.groupName = "";
       listForm.value.name = "";
       listForm.value.code = "";
-      listForm.value.status = [0, 1];
+      listForm.value.tableName = "";
+      listForm.value.status = null;
+      listForm.value.seq = null;
       loadList();
     };
 
     /**
      * 删除记录
      */
-    const removeList = async (row: GetQfModelListVo): Promise<void> => {
+    const removeList = async (row: GetQfBizFormListVo): Promise<void> => {
       try {
         await ElMessageBox.confirm("确定删除该条记录吗？", "提示", {
           confirmButtonText: "确定",
@@ -83,58 +83,8 @@ export default {
       }
 
       try {
-        await QfModelApi.removeQfModel({ id: row.id });
+        await QfBizFormApi.removeQfBizForm({ id: row.id });
         ElMessage.success("删除成功");
-        await loadList();
-      } catch (error: any) {
-        ElMessage.error(error.message);
-      }
-    };
-
-    /**
-     * 创建新版本
-     */
-    const createNewVersion = async (row: GetQfModelListVo): Promise<void> => {
-      try {
-        //确认创建新版本
-        await ElMessageBox.confirm(`确定为模型 [ ${row.name}(${row.code}) ] 创建新版本吗？`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        });
-      } catch {
-        return;
-      }
-
-      try {
-        listLoading.value = true;
-        await QfModelApi.createNewVersionQfModel({ id: row.id });
-        ElMessage.success(`已为模型[ ${row.name}(${row.code}) ]创建新版本！`);
-        await loadList();
-      } catch (error: any) {
-        ElMessage.error(error.message);
-      } finally {
-        listLoading.value = false;
-      }
-    };
-
-    /**
-     * 部署流程模型
-     */
-    const deployQfModel = async (row: GetQfModelListVo): Promise<void> => {
-      try {
-        await ElMessageBox.confirm(`确定部署模型 [ ${row.name}(${row.code}) ] 吗？`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        });
-      } catch {
-        return;
-      }
-
-      try {
-        await QfModelApi.deployQfModel({ id: row.id });
-        ElMessage.success(`已成功部署模型[ ${row.name}(${row.code}) ]！`);
         await loadList();
       } catch (error: any) {
         ElMessage.error(error.message);
@@ -153,55 +103,54 @@ export default {
       loadList,
       resetList,
       removeList,
-      createNewVersion,
-      deployQfModel,
     };
   },
 
   /**
    * 模态框管理（统一处理新增和编辑）
    */
-  useQfModelModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
+  useQfBizFormModal(modalFormRef: Ref<FormInstance | undefined>, reloadCallback: () => void) {
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalMode = ref<ModalMode>("add");
-    const groupList = ref<GetQfModelGroupListVo[]>([]);
-    const modalForm = reactive<GetQfModelDetailsVo>({
+    const modalForm = reactive<GetQfBizFormDetailsVo>({
       id: "",
-      groupId: "",
       name: "",
-      code: null,
-      bpmnXml: "",
+      code: "",
+      formType: 0,
+      icon: "",
+      tableName: "",
+      routePc: "",
+      routeMobile: "",
+      status: 0,
       seq: 0,
     });
-
-    /**
-     * 加载分组列表
-     */
-    const loadGroupList = async (): Promise<void> => {
-      const result = await QfModelGroupApi.getQfModelGroupList({ pageNum: 1, pageSize: 999 });
-      if (Result.isSuccess(result)) {
-        groupList.value = result.data;
-      }
-    };
 
     /**
      * 表单验证规则
      */
     const modalRules: FormRules = {
       name: [
-        { required: true, message: "请输入模型名称", trigger: "blur" },
-        { max: 80, message: "模型名称长度不能超过80个字符", trigger: "blur" },
+        { required: true, message: "请输入业务名称", trigger: "blur" },
+        { max: 32, message: "业务名称长度不能超过32个字符", trigger: "blur" },
       ],
       code: [
-        { required: true, message: "请输入模型编码", trigger: "blur" },
-        { max: 32, message: "模型编码长度不能超过32个字符", trigger: "blur" },
+        { required: true, message: "请输入业务编码", trigger: "blur" },
+        { max: 32, message: "业务编码长度不能超过32个字符", trigger: "blur" },
       ],
-      seq: [
-        { required: true, message: "请输入排序", trigger: "blur" },
-        { type: "number", min: 0, message: "排序必须大于等于0", trigger: "blur" },
-        { type: "number", max: 655350, message: "排序不能超过655350", trigger: "blur" },
+      formType: [{ required: true, message: "请输入表单类型 0:手搓表单 1:动态表单", trigger: "blur" }],
+      icon: [
+        { required: true, message: "请输入表单图标", trigger: "blur" },
+        { max: 80, message: "表单图标长度不能超过80个字符", trigger: "blur" },
       ],
+      tableName: [
+        { required: true, message: "请输入物理表名", trigger: "blur" },
+        { max: 200, message: "物理表名长度不能超过200个字符", trigger: "blur" },
+      ],
+      routePc: [{ max: 200, message: "PC端路由名长度不能超过200个字符", trigger: "blur" }],
+      routeMobile: [{ max: 200, message: "移动端路由名长度不能超过200个字符", trigger: "blur" }],
+      status: [{ required: true, message: "请输入状态 0:正常 1:停用", trigger: "blur" }],
+      seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
     };
 
     /**
@@ -209,35 +158,41 @@ export default {
      * @param mode 模式: 'add' | 'edit'
      * @param row 编辑时传入的行数据
      */
-    const openModal = async (mode: ModalMode, row: GetQfModelListVo | null): Promise<void> => {
+    const openModal = async (mode: ModalMode, row: GetQfBizFormListVo | null): Promise<void> => {
       modalMode.value = mode;
-
-      await loadGroupList();
 
       if (mode === "add") {
         modalForm.id = "";
-        modalForm.groupId = "";
         modalForm.name = "";
         modalForm.code = "";
-        modalForm.bpmnXml = "";
+        modalForm.formType = 0;
+        modalForm.icon = "";
+        modalForm.tableName = "";
+        modalForm.routePc = "";
+        modalForm.routeMobile = "";
+        modalForm.status = 0;
         modalForm.seq = 0;
         modalVisible.value = true;
         return;
       }
 
-      if (mode === "edit" || mode === "view") {
+      if (mode === "edit") {
         if (!row) {
           ElMessage.error("未选择要编辑的数据");
           return;
         }
 
         try {
-          const details = await QfModelApi.getQfModelDetails({ id: row.id });
+          const details = await QfBizFormApi.getQfBizFormDetails({ id: row.id });
           modalForm.id = details.id;
-          modalForm.groupId = details.groupId;
           modalForm.name = details.name;
           modalForm.code = details.code;
-          modalForm.bpmnXml = details.bpmnXml;
+          modalForm.formType = details.formType;
+          modalForm.icon = details.icon;
+          modalForm.tableName = details.tableName;
+          modalForm.routePc = details.routePc;
+          modalForm.routeMobile = details.routeMobile;
+          modalForm.status = details.status;
           modalForm.seq = details.seq;
           modalVisible.value = true;
         } catch (error: any) {
@@ -255,10 +210,14 @@ export default {
       }
       modalFormRef.value.resetFields();
       modalForm.id = "";
-      modalForm.groupId = "";
       modalForm.name = "";
       modalForm.code = "";
-      modalForm.bpmnXml = "";
+      modalForm.formType = 0;
+      modalForm.icon = "";
+      modalForm.tableName = "";
+      modalForm.routePc = "";
+      modalForm.routeMobile = "";
+      modalForm.status = 0;
       modalForm.seq = 0;
     };
 
@@ -280,13 +239,18 @@ export default {
 
       if (modalMode.value === "add") {
         try {
-          const addDto: AddQfModelDto = {
-            groupId: modalForm.groupId || undefined,
+          const addDto: AddQfBizFormDto = {
             name: modalForm.name,
             code: modalForm.code,
+            formType: modalForm.formType,
+            icon: modalForm.icon,
+            tableName: modalForm.tableName,
+            routePc: modalForm.routePc,
+            routeMobile: modalForm.routeMobile,
+            status: modalForm.status,
             seq: modalForm.seq,
           };
-          await QfModelApi.addQfModel(addDto);
+          await QfBizFormApi.addQfBizForm(addDto);
           ElMessage.success("新增成功");
           modalVisible.value = false;
           resetModal();
@@ -306,13 +270,18 @@ export default {
         }
 
         try {
-          const editDto: EditQfModelDto = {
+          const editDto: EditQfBizFormDto = {
             id: modalForm.id,
-            groupId: modalForm.groupId || undefined,
             name: modalForm.name,
+            formType: modalForm.formType,
+            icon: modalForm.icon,
+            tableName: modalForm.tableName,
+            routePc: modalForm.routePc,
+            routeMobile: modalForm.routeMobile,
+            status: modalForm.status,
             seq: modalForm.seq,
           };
-          await QfModelApi.editQfModel(editDto);
+          await QfBizFormApi.editQfBizForm(editDto);
           ElMessage.success("编辑成功");
           modalVisible.value = false;
           resetModal();
@@ -330,7 +299,6 @@ export default {
       modalMode,
       modalForm,
       modalRules,
-      groupList,
       openModal,
       resetModal,
       submitModal,

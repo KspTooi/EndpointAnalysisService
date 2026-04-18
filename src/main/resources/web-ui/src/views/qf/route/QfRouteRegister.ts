@@ -32,6 +32,13 @@ export default class QfRouteRegister extends GenricRouteRegister {
         component: () => import("@/views/qf/sfc_private/QfModelDeginer.vue"),
         meta: { breadcrumb: "Flowable 流程设计" },
       }),
+      RouteEntryPo.build({
+        biz: "qf",
+        path: "qfBizForm",
+        name: "qfBizForm",
+        component: () => import("@/views/qf/QfBizForm.vue"),
+        meta: { breadcrumb: "业务表单" },
+      }),
     ];
   }
 }

@@ -1,6 +1,10 @@
 import { onBeforeUnmount, ref, shallowRef, type Ref, type ShallowRef } from "vue";
 import BpmnModeler from "bpmn-js/lib/Modeler";
-import { getFlowableModdleExtensions, buildEmptyFlowableDiagram } from "@/views/qf/sfc_private/flowable-designer/flowableEngine";
+import NavigatedViewer from "bpmn-js/lib/NavigatedViewer";
+import {
+  getFlowableModdleExtensions,
+  buildEmptyFlowableDiagram,
+} from "@/views/qf/sfc_private/flowable-designer/flowableEngine";
 import translateModule from "@/views/qf/sfc_private/flowable-designer/translateModule";
 
 export type BpmnElement = {
@@ -9,11 +13,17 @@ export type BpmnElement = {
   businessObject: Record<string, unknown>;
 };
 
+export type ModelStatus = {
+  valid: boolean;
+  issues: string[];
+};
+
 export type UseFlowableModelerReturn = {
   modeler: ShallowRef<InstanceType<typeof BpmnModeler> | null>;
   defaultZoom: Ref<number>;
   revocable: Ref<boolean>;
   recoverable: Ref<boolean>;
+  modelStatus: Ref<ModelStatus>;
   init: () => void;
   destroy: () => void;
   importXml: (xml: string) => Promise<void>;
@@ -28,20 +38,105 @@ export type UseFlowableModelerReturn = {
   syncCommandStack: () => void;
 };
 
-export function useFlowableModeler(containerRef: Ref<HTMLElement | null>): UseFlowableModelerReturn {
+const TASK_TYPES = new Set([
+  "bpmn:UserTask",
+  "bpmn:ServiceTask",
+  "bpmn:ScriptTask",
+  "bpmn:Task",
+  "bpmn:SubProcess",
+  "bpmn:CallActivity",
+]);
+
+function checkEventCount(
+  issues: string[],
+  startEvents: any[],
+  endEvents: any[]
+): void {
+  if (startEvents.length === 0) {
+    issues.push("缺少开始事件");
+  }
+  if (startEvents.length > 1) {
+    issues.push("存在多个开始事件");
+  }
+  if (endEvents.length === 0) {
+    issues.push("缺少结束事件");
+  }
+}
+
+function checkConnections(
+  issues: string[],
+  elements: any[],
+  label: string,
+  needIncoming: boolean,
+  needOutgoing: boolean
+): void {
+  for (const el of elements) {
+    const bo = el.businessObject;
+    const name = bo?.name || el.id;
+    if (needIncoming && ((bo?.incoming ?? []) as any[]).length === 0) {
+      issues.push(`${label} [${name}] 没有入口连线`);
+    }
+    if (needOutgoing && ((bo?.outgoing ?? []) as any[]).length === 0) {
+      issues.push(`${label} [${name}] 没有出口连线`);
+    }
+  }
+}
+
+function collectModelIssues(m: InstanceType<typeof BpmnModeler>): string[] {
+  const issues: string[] = [];
+  const registry = m.get("elementRegistry") as {
+    filter: (fn: (e: any) => boolean) => any[];
+  };
+  const allElements = registry.filter(() => true);
+
+  const startEvents = allElements.filter((e: any) => e.type === "bpmn:StartEvent");
+  const endEvents = allElements.filter((e: any) => e.type === "bpmn:EndEvent");
+  const tasks = allElements.filter((e: any) => TASK_TYPES.has(e.type));
+  const gateways = allElements.filter((e: any) => e.type?.includes("Gateway"));
+
+  checkEventCount(issues, startEvents, endEvents);
+  checkConnections(issues, startEvents, "开始事件", false, true);
+  checkConnections(issues, endEvents, "结束事件", true, false);
+  checkConnections(issues, tasks, "任务", true, true);
+  checkConnections(issues, gateways, "网关", true, true);
+
+  return issues;
+}
+
+export function useFlowableModeler(containerRef: Ref<HTMLElement | null>, readonly = false): UseFlowableModelerReturn {
   const modeler = shallowRef<InstanceType<typeof BpmnModeler> | null>(null);
   const defaultZoom = ref(1);
   const revocable = ref(false);
   const recoverable = ref(false);
+  const modelStatus = ref<ModelStatus>({ valid: false, issues: ["模型未加载"] });
+
+  const validateModel = (): void => {
+    const m = modeler.value;
+    if (!m) {
+      modelStatus.value = { valid: false, issues: ["模型未加载"] };
+      return;
+    }
+    try {
+      const issues = collectModelIssues(m);
+      modelStatus.value = { valid: issues.length === 0, issues };
+    } catch {
+      modelStatus.value = { valid: false, issues: ["模型解析异常"] };
+    }
+  };
 
   const syncCommandStack = (): void => {
     const m = modeler.value;
     if (!m) {
       return;
     }
+    if (readonly) {
+      validateModel();
+      return;
+    }
     const commandStack = m.get("commandStack") as { canUndo: () => boolean; canRedo: () => boolean };
     revocable.value = commandStack.canUndo();
     recoverable.value = commandStack.canRedo();
+    validateModel();
   };
 
   const init = (): void => {
@@ -52,15 +147,24 @@ export function useFlowableModeler(containerRef: Ref<HTMLElement | null>): UseFl
     if (modeler.value) {
       return;
     }
-    const m = new BpmnModeler({
+    const commonOptions = {
       container: el,
-      keyboard: {},
       additionalModules: [translateModule],
       moddleExtensions: getFlowableModdleExtensions(),
-    });
+      bpmnRenderer: {
+        defaultFillColor: "#ffffff",
+        defaultStrokeColor: "#333333",
+        defaultLabelColor: "#222222",
+      },
+    };
+    const m: any = readonly
+      ? new NavigatedViewer(commonOptions)
+      : new BpmnModeler({ ...commonOptions, keyboard: {} });
     modeler.value = m;
     const eventBus = m.get("eventBus");
-    eventBus.on("commandStack.changed", syncCommandStack);
+    if (!readonly) {
+      eventBus.on("commandStack.changed", syncCommandStack);
+    }
     m.on("canvas.viewbox.changed", ({ viewbox }: { viewbox: { scale: number } }) => {
       defaultZoom.value = Math.round(viewbox.scale * 100) / 100;
     });
@@ -95,6 +199,7 @@ export function useFlowableModeler(containerRef: Ref<HTMLElement | null>): UseFl
       throw e;
     }
     syncCommandStack();
+    validateModel();
   };
 
   const saveXml = async (formatted = true): Promise<string | undefined> => {
@@ -172,6 +277,7 @@ export function useFlowableModeler(containerRef: Ref<HTMLElement | null>): UseFl
     defaultZoom,
     revocable,
     recoverable,
+    modelStatus,
     init,
     destroy,
     importXml,

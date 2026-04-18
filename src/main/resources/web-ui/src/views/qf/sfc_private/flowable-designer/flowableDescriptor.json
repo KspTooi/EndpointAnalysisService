@@ -158,9 +158,14 @@
         { "name": "assignee", "isAttr": true, "type": "String" },
         { "name": "candidateUsers", "isAttr": true, "type": "String" },
         { "name": "candidateGroups", "isAttr": true, "type": "String" },
+        { "name": "assigneeKind", "isAttr": true, "type": "String" },
+        { "name": "candidateUserNames", "isAttr": true, "type": "String" },
+        { "name": "candidateDeptNames", "isAttr": true, "type": "String" },
+        { "name": "candidateGroupNames", "isAttr": true, "type": "String" },
         { "name": "dueDate", "isAttr": true, "type": "String" },
         { "name": "followUpDate", "isAttr": true, "type": "String" },
-        { "name": "priority", "isAttr": true, "type": "String" }
+        { "name": "priority", "isAttr": true, "type": "String" },
+        { "name": "skipExpression", "isAttr": true, "type": "String" }
       ]
     },
     {

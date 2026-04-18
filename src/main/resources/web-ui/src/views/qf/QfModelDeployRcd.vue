@@ -10,8 +10,12 @@
           <el-form-item label="模型编码">
             <el-input v-model="listForm.code" placeholder="输入模型编码" clearable />
           </el-form-item>
-          <el-form-item label="部署状态 0:正常 1:部署失败">
-            <el-input v-model.number="listForm.status" placeholder="输入部署状态 0:正常 1:部署失败" clearable />
+          <el-form-item label="部署状态">
+            <el-select v-model="listForm.status" placeholder="选择部署状态" clearable>
+              <el-option label="正常" :value="0" />
+              <el-option label="部署失败" :value="1" />
+              <el-option label="已挂起" :value="2" />
+            </el-select>
           </el-form-item>
         </div>
         <el-form-item>
@@ -32,11 +36,16 @@
         <el-table-column type="index" label="序号" width="60" show-overflow-tooltip align="center" />
         <el-table-column prop="name" label="模型名称" min-width="120" show-overflow-tooltip />
         <el-table-column prop="code" label="模型编码" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="version" label="模型版本号" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="部署状态" min-width="120" show-overflow-tooltip>
+        <el-table-column prop="version" label="模型版本号" min-width="60" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <el-tag>V{{ scope.row.version }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="部署状态" min-width="80" show-overflow-tooltip align="center">
           <template #default="scope">
             <el-tag v-if="scope.row.status === 0" type="success">正常</el-tag>
             <el-tag v-else-if="scope.row.status === 1" type="danger">失败</el-tag>
+            <el-tag v-else-if="scope.row.status === 2" type="warning">已挂起</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="部署时间" min-width="120" show-overflow-tooltip />
@@ -45,6 +54,24 @@
             <!-- <el-button link type="primary" size="small" @click="openModal('edit', scope.row)" :icon="EditIcon">
               编辑
             </el-button> -->
+            <el-button
+              link
+              type="primary"
+              size="small"
+              :icon="Edit"
+              @click="suspendQfModelDeployRcd(scope.row)"
+              :disabled="scope.row.status !== 0"
+              >挂起</el-button
+            >
+            <el-button
+              link
+              type="primary"
+              size="small"
+              :icon="Edit"
+              @click="activateQfModelDeployRcd(scope.row)"
+              :disabled="scope.row.status !== 2"
+              >激活</el-button
+            >
             <el-button link type="danger" size="small" @click="removeList(scope.row)" :icon="DeleteIcon"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -121,8 +148,17 @@ const EditIcon = markRaw(Edit);
 const DeleteIcon = markRaw(Delete);
 
 // 列表管理打包
-const { listForm, listData, listTotal, listLoading, loadList, resetList, removeList } =
-  QfModelDeployRcdService.useQfModelDeployRcdList();
+const {
+  listForm,
+  listData,
+  listTotal,
+  listLoading,
+  loadList,
+  resetList,
+  removeList,
+  suspendQfModelDeployRcd,
+  activateQfModelDeployRcd,
+} = QfModelDeployRcdService.useQfModelDeployRcdList();
 
 // 模态框表单引用
 const modalFormRef = ref<FormInstance>();
